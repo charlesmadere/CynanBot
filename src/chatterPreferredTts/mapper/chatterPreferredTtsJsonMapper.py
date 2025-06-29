@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .chatterPreferredTtsJsonMapperInterface import ChatterPreferredTtsJsonMapperInterface
 from ..models.absTtsProperties import AbsTtsProperties
@@ -57,13 +57,13 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         elif not isinstance(ttsMonsterPrivateApiJsonMapper, TtsMonsterPrivateApiJsonMapperInterface):
             raise TypeError(f'ttsMonsterPrivateApiJsonMapper argument is malformed: \"{ttsMonsterPrivateApiJsonMapper}\"')
 
-        self.__decTalkVoiceMapper: DecTalkVoiceMapperInterface = decTalkVoiceMapper
-        self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeVoiceParser
-        self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
-        self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
-        self.__microsoftTtsJsonParser: MicrosoftTtsJsonParserInterface = microsoftTtsJsonParser
-        self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
-        self.__ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = ttsMonsterPrivateApiJsonMapper
+        self.__decTalkVoiceMapper: Final[DecTalkVoiceMapperInterface] = decTalkVoiceMapper
+        self.__halfLifeJsonParser: Final[HalfLifeVoiceParserInterface] = halfLifeVoiceParser
+        self.__languagesRepository: Final[LanguagesRepositoryInterface] = languagesRepository
+        self.__microsoftSamJsonParser: Final[MicrosoftSamJsonParserInterface] = microsoftSamJsonParser
+        self.__microsoftTtsJsonParser: Final[MicrosoftTtsJsonParserInterface] = microsoftTtsJsonParser
+        self.__streamElementsJsonParser: Final[StreamElementsJsonParserInterface] = streamElementsJsonParser
+        self.__ttsMonsterPrivateApiJsonMapper: Final[TtsMonsterPrivateApiJsonMapperInterface] = ttsMonsterPrivateApiJsonMapper
 
     async def __parseCommodoreSamTtsProperties(
         self,

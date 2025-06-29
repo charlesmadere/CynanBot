@@ -52,10 +52,6 @@ class ChatterPreferredTtsSettingsRepository(ChatterPreferredTtsSettingsRepositor
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'isEnabled', fallback = True)
 
-    async def isTtsProviderEnabled(self, provider: TtsProvider) -> bool:
-        enabledProviders = await self.getEnabledTtsProviders()
-        return provider in enabledProviders
-
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
             return self.__cache
