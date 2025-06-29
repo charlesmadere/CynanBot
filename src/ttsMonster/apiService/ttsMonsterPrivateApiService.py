@@ -76,13 +76,13 @@ class TtsMonsterPrivateApiService(TtsMonsterPrivateApiServiceInterface):
         jsonBody = await self.__ttsMonsterPrivateApiJsonMapper.serializeGenerateTtsJsonBody(
             key = key,
             message = message,
-            userId = userId
+            userId = userId,
         )
 
         try:
             response = await clientSession.post(
                 url = f'https://us-central1-tts-monster.cloudfunctions.net/generateTTS',
-                json = jsonBody
+                json = jsonBody,
             )
         except GenericNetworkException as e:
             self.__timber.log('TtsMonsterPrivateApiService', f'Encountered network error when generating TTS ({key=}) ({message=}) ({userId=}): {e}', e, traceback.format_exc())

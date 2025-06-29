@@ -95,23 +95,28 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
 
         preferredTts = await self.__chatterPreferredTtsHelper.get(
             chatterUserId = event.userId,
-            twitchChannelId = event.twitchChannelId
+            twitchChannelId = event.twitchChannelId,
         )
 
         if preferredTts is None:
             return event.provider
 
-        if preferredTts.properties.provider is TtsProvider.RANDO_TTS:
+        if preferredTts.provider is TtsProvider.RANDO_TTS:
             availableProviders: set[TtsProvider] = set()
 
             for key, value in self.__ttsProviderToManagerMap.items():
-                if value is not None:
+                if key is TtsProvider.GOOGLE:
+                    # not allowing Google for this as it potentially has financial concerns
+                    continue
+                elif value is None:
+                    continue
+                else:
                     availableProviders.add(key)
 
             if len(availableProviders) >= 1:
-                ttsProvider = random.choice(list(availableProviders))
-                self.__timber.log('CompositeTtsManager', f'Chatter uses random preferred TTS ({ttsProvider=}) ({preferredTts=}) ({event=})')
-                return ttsProvider
+                chosenProvider = random.choice(list(availableProviders))
+                self.__timber.log('CompositeTtsManager', f'Chatter uses random preferred TTS ({chosenProvider=}) ({preferredTts=}) ({event=})')
+                return chosenProvider
 
         self.__timber.log('CompositeTtsManager', f'Chatter has a preferred TTS ({preferredTts=}) ({event=})')
         return preferredTts.properties.provider

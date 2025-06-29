@@ -1,4 +1,5 @@
 import asyncio
+import random
 import traceback
 from typing import Final
 
@@ -66,17 +67,24 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
 
         preferredTts = await self.__chatterPreferredTtsHelper.get(
             chatterUserId = event.userId,
-            twitchChannelId = event.twitchChannelId
+            twitchChannelId = event.twitchChannelId,
         )
 
         if preferredTts is None:
             return None
+        elif isinstance(preferredTts.properties, DecTalkTtsProperties):
+            return preferredTts.properties.voice
+        elif preferredTts.provider is TtsProvider.RANDO_TTS:
+            voices: list[DecTalkVoice] = list(DecTalkVoice)
 
-        if not isinstance(preferredTts.properties, DecTalkTtsProperties):
+            # This voice might be able to be exploited/manipulated, I don't really know...
+            # So let's just keep it out of the random selection list for now.
+            voices.remove(DecTalkVoice.URSULA)
+
+            return random.choice(voices)
+        else:
             self.__timber.log('DecTalkTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
-
-        return preferredTts.properties.voice
 
     async def __executeTts(self, fileReference: DecTalkFileReference):
         volume = await self.__decTalkSettingsRepository.getMediaPlayerVolume()
@@ -134,7 +142,7 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
             donationPrefix = donationPrefix,
             message = message,
             twitchChannel = event.twitchChannel,
-            twitchChannelId = event.twitchChannelId
+            twitchChannelId = event.twitchChannelId,
         )
 
     async def stopTtsEvent(self):
@@ -144,7 +152,3 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         await self.__soundPlayerManager.stop()
         self.__isLoadingOrPlaying = False
         self.__timber.log('DecTalkTtsManager', f'Stopped TTS event')
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.DEC_TALK

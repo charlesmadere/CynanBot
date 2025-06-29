@@ -1,5 +1,7 @@
 import asyncio
+import random
 import traceback
+from typing import Final
 
 from .googleTtsManagerInterface import GoogleTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
@@ -14,8 +16,8 @@ from ...google.helpers.googleTtsHelperInterface import GoogleTtsHelperInterface
 from ...google.helpers.googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
 from ...google.models.absGoogleVoicePreset import AbsGoogleVoicePreset
 from ...google.models.googleTtsFileReference import GoogleTtsFileReference
-from ...google.models.googleVoicePreset import GoogleVoicePreset
 from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
+from ...language.languageEntry import LanguageEntry
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -53,15 +55,15 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
-        self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = chatterPreferredTtsHelper
-        self.__googleSettingsRepository: GoogleSettingsRepositoryInterface = googleSettingsRepository
-        self.__googleTtsHelper: GoogleTtsHelperInterface = googleTtsHelper
-        self.__googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = googleTtsMessageCleaner
-        self.__googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = googleTtsVoicesHelper
-        self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
-        self.__timber: TimberInterface = timber
-        self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
-        self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
+        self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = chatterPreferredTtsHelper
+        self.__googleSettingsRepository: Final[GoogleSettingsRepositoryInterface] = googleSettingsRepository
+        self.__googleTtsHelper: Final[GoogleTtsHelperInterface] = googleTtsHelper
+        self.__googleTtsMessageCleaner: Final[GoogleTtsMessageCleanerInterface] = googleTtsMessageCleaner
+        self.__googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = googleTtsVoicesHelper
+        self.__soundPlayerManager: Final[SoundPlayerManagerInterface] = soundPlayerManager
+        self.__timber: Final[TimberInterface] = timber
+        self.__ttsCommandBuilder: Final[TtsCommandBuilderInterface] = ttsCommandBuilder
+        self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
         self.__isLoadingOrPlaying: bool = False
 
@@ -71,24 +73,30 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
 
         preferredTts = await self.__chatterPreferredTtsHelper.get(
             chatterUserId = event.userId,
-            twitchChannelId = event.twitchChannelId
+            twitchChannelId = event.twitchChannelId,
         )
 
         if preferredTts is None:
             return None
+        elif isinstance(preferredTts.properties, GoogleTtsProperties):
+            languageEntry = preferredTts.properties.languageEntry
 
-        if not isinstance(preferredTts.properties, GoogleTtsProperties):
+            if languageEntry is None:
+                return None
+            else:
+                return await self.__googleTtsVoicesHelper.getVoiceForLanguage(languageEntry)
+        elif preferredTts.provider is TtsProvider.RANDO_TTS:
+            languageEntriesWithVoices: list[LanguageEntry] = list()
+
+            for languageEntry in LanguageEntry:
+                if await self.__googleTtsVoicesHelper.getVoiceForLanguage(languageEntry) is not None:
+                    languageEntriesWithVoices.append(languageEntry)
+
+            chosenLanguageEntry = random.choice(languageEntriesWithVoices)
+            return await self.__googleTtsVoicesHelper.getVoiceForLanguage(chosenLanguageEntry)
+        else:
             self.__timber.log('GoogleTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
-
-        languageEntry = preferredTts.properties.languageEntry
-
-        if languageEntry is None:
-            return None
-        else:
-            return await self.__googleTtsVoicesHelper.getVoiceForLanguage(
-                languageEntry = languageEntry
-            )
 
     async def __executeTts(self, fileReference: GoogleTtsFileReference):
         volume = await self.__googleSettingsRepository.getMediaPlayerVolume()
@@ -147,7 +155,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
             donationPrefix = donationPrefix,
             message = message,
             twitchChannel = event.twitchChannel,
-            twitchChannelId = event.twitchChannelId
+            twitchChannelId = event.twitchChannelId,
         )
 
     async def stopTtsEvent(self):
@@ -157,7 +165,3 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         await self.__soundPlayerManager.stop()
         self.__isLoadingOrPlaying = False
         self.__timber.log('GoogleTtsManager', f'Stopped TTS event')
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.GOOGLE

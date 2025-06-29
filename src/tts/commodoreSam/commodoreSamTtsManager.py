@@ -5,7 +5,6 @@ from typing import Final
 from .commodoreSamTtsManagerInterface import CommodoreSamTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..models.ttsEvent import TtsEvent
-from ..models.ttsProvider import TtsProvider
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...commodoreSam.commodoreSamMessageCleanerInterface import CommodoreSamMessageCleanerInterface
 from ...commodoreSam.helper.commodoreSamHelperInterface import CommodoreSamHelperInterface
@@ -106,7 +105,7 @@ class CommodoreSamTtsManager(CommodoreSamTtsManagerInterface):
             donationPrefix = donationPrefix,
             message = message,
             twitchChannel = event.twitchChannel,
-            twitchChannelId = event.twitchChannelId
+            twitchChannelId = event.twitchChannelId,
         )
 
     async def stopTtsEvent(self):
@@ -116,7 +115,3 @@ class CommodoreSamTtsManager(CommodoreSamTtsManagerInterface):
         await self.__soundPlayerManager.stop()
         self.__isLoadingOrPlaying = False
         self.__timber.log('CommodoreSamTtsManager', f'Stopped TTS event')
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.COMMODORE_SAM

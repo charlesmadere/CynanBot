@@ -56,7 +56,7 @@ class TtsMonsterPrivateApiHelper(TtsMonsterPrivateApiHelperInterface):
             ttsResponse = await self.__ttsMonsterPrivateApiService.generateTts(
                 key = tokens.key,
                 message = message,
-                userId = tokens.userId
+                userId = tokens.userId,
             )
         except GenericNetworkException as e:
             self.__timber.log('TtsMonsterPrivateApiHelper', f'Encountered network error when generating TTS ({message=}) ({twitchChannel=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())

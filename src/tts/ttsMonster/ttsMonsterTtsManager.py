@@ -1,5 +1,7 @@
 import asyncio
+import random
 import traceback
+from typing import Final
 
 from .ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
@@ -48,14 +50,14 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
-        self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = chatterPreferredTtsHelper
-        self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
-        self.__timber: TimberInterface = timber
-        self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
-        self.__ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = ttsMonsterMessageCleaner
-        self.__ttsMonsterHelper: TtsMonsterHelperInterface = ttsMonsterHelper
-        self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
-        self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
+        self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = chatterPreferredTtsHelper
+        self.__soundPlayerManager: Final[SoundPlayerManagerInterface] = soundPlayerManager
+        self.__timber: Final[TimberInterface] = timber
+        self.__ttsCommandBuilder: Final[TtsCommandBuilderInterface] = ttsCommandBuilder
+        self.__ttsMonsterMessageCleaner: Final[TtsMonsterMessageCleanerInterface] = ttsMonsterMessageCleaner
+        self.__ttsMonsterHelper: Final[TtsMonsterHelperInterface] = ttsMonsterHelper
+        self.__ttsMonsterSettingsRepository: Final[TtsMonsterSettingsRepositoryInterface] = ttsMonsterSettingsRepository
+        self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
         self.__isLoadingOrPlaying: bool = False
 
@@ -74,17 +76,18 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
 
         preferredTts = await self.__chatterPreferredTtsHelper.get(
             chatterUserId = event.userId,
-            twitchChannelId = event.twitchChannelId
+            twitchChannelId = event.twitchChannelId,
         )
 
         if preferredTts is None:
             return None
-
-        if not isinstance(preferredTts.properties, TtsMonsterTtsProperties):
+        elif isinstance(preferredTts.properties, TtsMonsterTtsProperties):
+            return preferredTts.properties.voice
+        elif preferredTts.provider is TtsProvider.RANDO_TTS:
+            return random.choice(list(TtsMonsterVoice))
+        else:
             self.__timber.log('TtsMonsterTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
-
-        return preferredTts.properties.voice
 
     async def __determineVolume(self, fileReference: TtsMonsterFileReference) -> int | None:
         useVoiceDependentMediaPlayerVolume = await self.__ttsMonsterSettingsRepository.useVoiceDependentMediaPlayerVolume()
@@ -154,7 +157,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             message = message,
             twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId,
-            voice = voice
+            voice = voice,
         )
 
     async def stopTtsEvent(self):
@@ -164,7 +167,3 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         await self.__soundPlayerManager.stop()
         self.__isLoadingOrPlaying = False
         self.__timber.log('TtsMonsterTtsManager', f'Stopped TTS event')
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.TTS_MONSTER

@@ -255,13 +255,13 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
 
         preferredTts = await self.__chatterPreferredTtsRepository.get(
             chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if preferredTts is None:
             return None
         elif not await self.__chatterPreferredTtsSettingsRepository.isTtsProviderEnabled(
-            provider = preferredTts.properties.provider
+            provider = preferredTts.provider
         ):
             return None
         else:

@@ -5,7 +5,6 @@ from frozenlist import FrozenList
 
 from .halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
 from ..models.ttsEvent import TtsEvent
-from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
@@ -125,7 +124,7 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
 
         return await self.__halfLifeTtsHelper.generateTts(
             voice = voice,
-            message = cleanedMessage
+            message = cleanedMessage,
         )
 
     async def stopTtsEvent(self):
@@ -135,7 +134,3 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         await self.__soundPlayerManager.stop()
         self.__isLoadingOrPlaying = False
         self.__timber.log('HalfLifeTtsManager', f'Stopped TTS event')
-
-    @property
-    def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.HALF_LIFE
