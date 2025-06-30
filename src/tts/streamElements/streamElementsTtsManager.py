@@ -63,7 +63,9 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         self.__isLoadingOrPlaying: bool = False
 
     async def __determineVoice(self, event: TtsEvent) -> StreamElementsVoice | None:
-        if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
+        if event.provider is TtsProvider.SHOTGUN_TTS:
+            return random.choice(list(StreamElementsVoice))
+        elif event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return None
 
         preferredTts = await self.__chatterPreferredTtsHelper.get(

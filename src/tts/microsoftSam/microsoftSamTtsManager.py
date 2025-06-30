@@ -62,7 +62,9 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         self.__isLoadingOrPlaying: bool = False
 
     async def __determineVoice(self, event: TtsEvent) -> MicrosoftSamVoice | None:
-        if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
+        if event.provider is TtsProvider.SHOTGUN_TTS:
+            return random.choice(list(MicrosoftSamVoice))
+        elif event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return None
 
         preferredTts = await self.__chatterPreferredTtsHelper.get(

@@ -5,6 +5,7 @@ from frozenlist import FrozenList
 
 from .halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
 from ..models.ttsEvent import TtsEvent
+from ..models.ttsProvider import TtsProvider
 from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
@@ -55,22 +56,25 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         self.__isLoadingOrPlaying: bool = False
 
     async def __determineVoice(self, event: TtsEvent) -> HalfLifeVoice | None:
-        if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
+        if event.provider is TtsProvider.SHOTGUN_TTS:
+            return HalfLifeVoice.ALL
+        elif event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return None
 
         preferredTts = await self.__chatterPreferredTtsHelper.get(
             chatterUserId = event.userId,
-            twitchChannelId = event.twitchChannelId
+            twitchChannelId = event.twitchChannelId,
         )
 
         if preferredTts is None:
             return None
-
-        if not isinstance(preferredTts.properties, HalfLifeTtsProperties):
+        elif isinstance(preferredTts.properties, HalfLifeTtsProperties):
+            return preferredTts.properties.voice
+        elif preferredTts.provider is TtsProvider.RANDO_TTS:
+            return HalfLifeVoice.ALL
+        else:
             self.__timber.log('HalfLifeTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
-
-        return preferredTts.properties.voice
 
     async def __executeTts(self, fileNames: FrozenList[str]):
         volume = await self.__halfLifeSettingsRepository.getMediaPlayerVolume()

@@ -1717,10 +1717,10 @@ streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = Stream
 
 streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
     backgroundTaskHelper = backgroundTaskHelper,
-    compositeTtsManager = compositeTtsManagerProvider.getSharedInstance(),
-    soundPlayerManager = soundPlayerManagerProvider.getSharedInstance(),
+    compositeTtsManagerProvider = compositeTtsManagerProvider,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
     streamAlertsSettingsRepository = streamAlertsSettingsRepository,
-    timber = timber
+    timber = timber,
 )
 
 

@@ -18,6 +18,8 @@ class GlacialTtsDataMapper(GlacialTtsDataMapperInterface):
             case 'half_life': return TtsProvider.HALF_LIFE
             case 'microsoft': return TtsProvider.MICROSOFT
             case 'microsoft_sam': return TtsProvider.MICROSOFT_SAM
+            case 'rando_tts': return TtsProvider.RANDO_TTS
+            case 'shotgun_tts': return TtsProvider.SHOTGUN_TTS
             case 'singing_dec_talk': return TtsProvider.SINGING_DEC_TALK
             case 'stream_elements': return TtsProvider.STREAM_ELEMENTS
             case 'tts_monster': return TtsProvider.TTS_MONSTER
@@ -34,6 +36,8 @@ class GlacialTtsDataMapper(GlacialTtsDataMapperInterface):
             case TtsProvider.HALF_LIFE: return 'half_life'
             case TtsProvider.MICROSOFT: return 'microsoft'
             case TtsProvider.MICROSOFT_SAM: return 'microsoft_sam'
+            case TtsProvider.RANDO_TTS: return 'rando_tts'
+            case TtsProvider.SHOTGUN_TTS: return 'shotgun_tts'
             case TtsProvider.SINGING_DEC_TALK: return 'singing_dec_talk'
             case TtsProvider.STREAM_ELEMENTS: return 'stream_elements'
             case TtsProvider.TTS_MONSTER: return 'tts_monster'
@@ -50,6 +54,8 @@ class GlacialTtsDataMapper(GlacialTtsDataMapperInterface):
             case TtsProvider.HALF_LIFE: return 'half_life'
             case TtsProvider.MICROSOFT: return 'microsoft'
             case TtsProvider.MICROSOFT_SAM: return 'microsoft_sam'
+            case TtsProvider.RANDO_TTS: return 'rando_tts'
+            case TtsProvider.SHOTGUN_TTS: return 'shotgun_tts'
             case TtsProvider.SINGING_DEC_TALK: return 'singing_dec_talk'
             case TtsProvider.STREAM_ELEMENTS: return 'stream_elements'
             case TtsProvider.TTS_MONSTER: return 'tts_monster'

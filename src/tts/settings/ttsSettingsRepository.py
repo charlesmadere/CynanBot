@@ -4,6 +4,7 @@ from .ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from ..models.shotgun.shotgunProviderUseParameters import ShotgunProviderUseParameters
 from ..models.shotgun.useExactAmountShotgunParameters import UseExactAmountShotgunParameters
+from ..models.ttsProvider import TtsProvider
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 
@@ -14,6 +15,22 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
         self,
         settingsJsonReader: JsonReaderInterface,
         ttsJsonMapper: TtsJsonMapperInterface,
+        defaultRandoEnabledTtsProviders: frozenset[TtsProvider] = frozenset({
+            TtsProvider.DEC_TALK,
+            TtsProvider.HALF_LIFE,
+            TtsProvider.MICROSOFT,
+            TtsProvider.MICROSOFT_SAM,
+            TtsProvider.STREAM_ELEMENTS,
+            TtsProvider.TTS_MONSTER,
+        }),
+        defaultShotgunEnabledTtsProviders: frozenset[TtsProvider] = frozenset({
+            TtsProvider.DEC_TALK,
+            TtsProvider.HALF_LIFE,
+            TtsProvider.MICROSOFT,
+            TtsProvider.MICROSOFT_SAM,
+            TtsProvider.STREAM_ELEMENTS,
+            TtsProvider.TTS_MONSTER,
+        }),
         defaultShotgunProviderUseParameters: ShotgunProviderUseParameters = UseExactAmountShotgunParameters(
             amount = 3,
         ),
@@ -22,11 +39,17 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
         elif not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
             raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
+        elif not isinstance(defaultRandoEnabledTtsProviders, frozenset):
+            raise TypeError(f'defaultRandoEnabledTtsProviders argument is malformed: \"{defaultRandoEnabledTtsProviders}\"')
+        elif not isinstance(defaultShotgunEnabledTtsProviders, frozenset):
+            raise TypeError(f'defaultShotgunEnabledTtsProviders argument is malformed: \"{defaultShotgunEnabledTtsProviders}\"')
         elif not isinstance(defaultShotgunProviderUseParameters, ShotgunProviderUseParameters):
             raise TypeError(f'defaultShotgunProviderUseParameters argument is malformed: \"{defaultShotgunProviderUseParameters}\"')
 
         self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
         self.__ttsJsonMapper: Final[TtsJsonMapperInterface] = ttsJsonMapper
+        self.__defaultRandoEnabledTtsProviders: Final[frozenset[TtsProvider]] = defaultRandoEnabledTtsProviders
+        self.__defaultShotgunEnabledTtsProviders: Final[frozenset[TtsProvider]] = defaultShotgunEnabledTtsProviders
         self.__defaultShotgunProviderUseParameters: Final[ShotgunProviderUseParameters] = defaultShotgunProviderUseParameters
 
         self.__settingsCache: dict[str, Any] | None = None
@@ -48,13 +71,41 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
 
         return maxMessageSize
 
+    async def getRandoEnabledProviders(self) -> frozenset[TtsProvider]:
+        jsonContents = await self.__readJson()
+        enabledProvidersStrings: list[str] | None = jsonContents.get('randoEnabledProviders', None)
+
+        if enabledProvidersStrings is None:
+            return self.__defaultRandoEnabledTtsProviders
+
+        enabledProviders: set[TtsProvider] = set()
+
+        for enabledProviderString in enabledProvidersStrings:
+            enabledProviders.add(await self.__ttsJsonMapper.asyncRequireProvider(enabledProviderString))
+
+        return frozenset(enabledProviders)
+
+    async def getShotgunEnabledProviders(self) -> frozenset[TtsProvider]:
+        jsonContents = await self.__readJson()
+        enabledProvidersStrings: list[str] | None = jsonContents.get('shotgunEnabledProviders', None)
+
+        if enabledProvidersStrings is None:
+            return self.__defaultShotgunEnabledTtsProviders
+
+        enabledProviders: set[TtsProvider] = set()
+
+        for enabledProviderString in enabledProvidersStrings:
+            enabledProviders.add(await self.__ttsJsonMapper.asyncRequireProvider(enabledProviderString))
+
+        return frozenset(enabledProviders)
+
     async def getShotgunProviderUseParameters(self) -> ShotgunProviderUseParameters:
         jsonContents = await self.__readJson()
         shotgunParametersJson: dict[str, Any] | Any | None = jsonContents.get('shotgunParameters', None)
         shotgunParameters: ShotgunProviderUseParameters | None = None
 
         if isinstance(shotgunParametersJson, dict):
-            shotgunParameters = self.__ttsJsonMapper.parseShotgunProviderUseParameters(
+            shotgunParameters = await self.__ttsJsonMapper.asyncParseShotgunProviderUseParameters(
                 jsonContents = shotgunParametersJson
             )
 

@@ -71,7 +71,9 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         return False
 
     async def __determineVoice(self, event: TtsEvent) -> TtsMonsterVoice | None:
-        if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
+        if event.provider is TtsProvider.SHOTGUN_TTS:
+            return random.choice(list(TtsMonsterVoice))
+        elif event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return None
 
         preferredTts = await self.__chatterPreferredTtsHelper.get(

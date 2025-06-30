@@ -10,6 +10,9 @@ from .google.googleTtsManagerInterface import GoogleTtsManagerInterface
 from .halfLife.halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
 from .microsoft.microsoftTtsManagerInterface import MicrosoftTtsManagerInterface
 from .microsoftSam.microsoftSamTtsManagerInterface import MicrosoftSamTtsManagerInterface
+from .models.shotgun.useAllShotgunParameters import UseAllShotgunParameters
+from .models.shotgun.useExactAmountShotgunParameters import UseExactAmountShotgunParameters
+from .models.shotgun.useRandomAmountShotgunParameters import UseRandomAmountShotgunParameters
 from .models.ttsEvent import TtsEvent
 from .models.ttsProvider import TtsProvider
 from .models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
@@ -102,15 +105,13 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
 
         if preferredTts.provider is TtsProvider.RANDO_TTS:
             availableProviders: set[TtsProvider] = set()
+            randoEnabledProviders = await self.__ttsSettingsRepository.getRandoEnabledProviders()
 
             for key, value in self.__ttsProviderToManagerMap.items():
-                if key is TtsProvider.GOOGLE:
-                    # not allowing Google for this as it potentially has financial concerns
+                if key not in randoEnabledProviders or value is None:
                     continue
-                elif value is None:
-                    continue
-                else:
-                    availableProviders.add(key)
+
+                availableProviders.add(key)
 
             if len(availableProviders) >= 1:
                 chosenProvider = random.choice(list(availableProviders))
@@ -121,7 +122,127 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         return preferredTts.properties.provider
 
     async def __handleShotgunTtsEvent(self, event: TtsEvent) -> bool:
-        # TODO
+        parameters = await self.__ttsSettingsRepository.getShotgunProviderUseParameters()
+
+        if isinstance(parameters, UseAllShotgunParameters):
+            return await self.__handleShotgunUseAllTtsEvent(
+                event = event,
+                parameters = parameters,
+            )
+
+        elif isinstance(parameters, UseExactAmountShotgunParameters):
+            return await self.__handleShotgunUseExactAmountTtsEvent(
+                event = event,
+                parameters = parameters,
+            )
+
+        elif isinstance(parameters, UseRandomAmountShotgunParameters):
+            return await self.__handleShotgunUseRandomAmountTtsEvent(
+                event = event,
+                parameters = parameters,
+            )
+
+        else:
+            self.__timber.log('CompositeTtsManager', f'Encountered unknown shotgun parameters ({parameters=}) ({event=})')
+            return False
+
+    async def __handleShotgunUseAllTtsEvent(
+        self,
+        event: TtsEvent,
+        parameters: UseAllShotgunParameters,
+    ) -> bool:
+        if not isinstance(parameters, UseAllShotgunParameters):
+            raise TypeError(f'parameters argument is malformed: \"{parameters}\"')
+
+        enabledProviders = await self.__ttsSettingsRepository.getShotgunEnabledProviders()
+        chosenProviders: dict[TtsProvider, TtsManagerInterface] = dict()
+
+        for provider, manager in self.__ttsProviderToManagerMap.items():
+            if provider in enabledProviders and manager is not None:
+                chosenProviders[provider] = manager
+
+        if len(chosenProviders) == 0:
+            self.__timber.log('CompositeTtsManager', f'This shotgun TTS event was unable to find any available TTS Providers ({chosenProviders=}) ({event=}) ({parameters=})')
+            return False
+
+        self.__timber.log('CompositeTtsManager', f'This shotgun TTS event is using all available TTS Providers ({chosenProviders.keys()=}) ({event=}) ({parameters=})')
+
+        for provider, manager in chosenProviders.items():
+            self.__backgroundTaskHelper.createTask(manager.playTtsEvent(event))
+
+        return True
+
+    async def __handleShotgunUseExactAmountTtsEvent(
+        self,
+        event: TtsEvent,
+        parameters: UseExactAmountShotgunParameters,
+    ) -> bool:
+        if not isinstance(parameters, UseExactAmountShotgunParameters):
+            raise TypeError(f'parameters argument is malformed: \"{parameters}\"')
+
+        enabledProviders = await self.__ttsSettingsRepository.getShotgunEnabledProviders()
+        availableProviders: list[TtsProvider] = list()
+
+        for provider, manager in self.__ttsProviderToManagerMap.items():
+            if provider in enabledProviders and manager is not None:
+                availableProviders.append(provider)
+
+        chosenProviders: list[TtsProvider] = list()
+
+        while len(chosenProviders) < parameters.amount and len(availableProviders) >= 1:
+            chosenProvider = random.choice(availableProviders)
+            chosenProviders.append(chosenProvider)
+            availableProviders.remove(chosenProvider)
+
+        if len(chosenProviders) == 0:
+            self.__timber.log('CompositeTtsManager', f'This shotgun TTS event was unable to find any available TTS Providers ({chosenProviders=}) ({event=}) ({parameters=})')
+            return False
+
+        self.__timber.log('CompositeTtsManager', f'This shotgun TTS event is using {len(chosenProviders)} available TTS Provider(s) ({chosenProviders=}) ({event=}) ({parameters=})')
+
+        for chosenProvider in chosenProviders:
+            manager = self.__ttsProviderToManagerMap.get(chosenProvider, None)
+
+            if manager is not None:
+                self.__backgroundTaskHelper.createTask(manager.playTtsEvent(event))
+
+        return True
+
+    async def __handleShotgunUseRandomAmountTtsEvent(
+        self,
+        event: TtsEvent,
+        parameters: UseRandomAmountShotgunParameters,
+    ) -> bool:
+        if not isinstance(parameters, UseRandomAmountShotgunParameters):
+            raise TypeError(f'parameters argument is malformed: \"{parameters}\"')
+
+        enabledProviders = await self.__ttsSettingsRepository.getShotgunEnabledProviders()
+        availableProviders: list[TtsProvider] = list()
+
+        for provider, manager in self.__ttsProviderToManagerMap.items():
+            if provider in enabledProviders and manager is not None:
+                availableProviders.append(provider)
+
+        chosenProviders: list[TtsProvider] = list()
+        chosenAmount = random.randint(parameters.minAmount, parameters.maxAmount)
+
+        while len(chosenProviders) < chosenAmount and len(availableProviders) >= 1:
+            chosenProvider = random.choice(availableProviders)
+            chosenProviders.append(chosenProvider)
+            availableProviders.remove(chosenProvider)
+
+        if len(chosenProviders) == 0:
+            self.__timber.log('CompositeTtsManager', f'This shotgun TTS event was unable to find any available TTS Providers ({chosenAmount=}) ({chosenProviders=}) ({event=}) ({parameters=})')
+            return False
+
+        self.__timber.log('CompositeTtsManager', f'This shotgun TTS event is using {len(chosenProviders)} available TTS Provider(s) ({chosenAmount=}) ({chosenProviders=}) ({event=}) ({parameters=})')
+
+        for chosenProvider in chosenProviders:
+            manager = self.__ttsProviderToManagerMap.get(chosenProvider, None)
+
+            if manager is not None:
+                self.__backgroundTaskHelper.createTask(manager.playTtsEvent(event))
+
         return True
 
     @property

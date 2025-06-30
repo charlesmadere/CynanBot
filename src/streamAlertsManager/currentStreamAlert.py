@@ -1,23 +1,41 @@
-from typing import Any
+from typing import Any, Final
 
 from .streamAlert import StreamAlert
 from .streamAlertState import StreamAlertState
 from ..soundPlayerManager.soundAlert import SoundAlert
+from ..soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
+from ..tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
 from ..tts.models.ttsEvent import TtsEvent
 
 
 class CurrentStreamAlert:
 
-    def __init__(self, streamAlert: StreamAlert):
-        if not isinstance(streamAlert, StreamAlert):
+    def __init__(
+        self,
+        compositeTtsManager: CompositeTtsManagerInterface,
+        soundPlayerManager: SoundPlayerManagerInterface,
+        streamAlert: StreamAlert,
+    ):
+        if not isinstance(compositeTtsManager, CompositeTtsManagerInterface):
+            raise TypeError(f'compositeTtsManager argument is malformed: \"{compositeTtsManager}\"')
+        elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
+            raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
+        elif not isinstance(streamAlert, StreamAlert):
             raise TypeError(f'streamAlert argument is malformed: \"{streamAlert}\"')
 
-        self.__streamAlert: StreamAlert = streamAlert
+        self.__compositeTtsManager: Final[CompositeTtsManagerInterface] = compositeTtsManager
+        self.__soundPlayerManager: Final[SoundPlayerManagerInterface] = soundPlayerManager
+        self.__streamAlert: Final[StreamAlert] = streamAlert
+
         self.__alertState: StreamAlertState = StreamAlertState.NOT_STARTED
 
     @property
     def alertState(self) -> StreamAlertState:
         return self.__alertState
+
+    @property
+    def compositeTtsManager(self) -> CompositeTtsManagerInterface:
+        return self.__compositeTtsManager
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
@@ -34,13 +52,19 @@ class CurrentStreamAlert:
         return self.__streamAlert.soundAlert
 
     @property
+    def soundPlayerManager(self) -> SoundPlayerManagerInterface:
+        return self.__soundPlayerManager
+
+    @property
     def streamAlert(self) -> StreamAlert:
         return self.__streamAlert
 
     def toDictionary(self) -> dict[str, Any]:
         return {
             'alertState': self.__alertState,
-            'streamAlert': self.__streamAlert
+            'compositeTtsManager': self.__compositeTtsManager,
+            'soundPlayerManager': self.__soundPlayerManager,
+            'streamAlert': self.__streamAlert,
         }
 
     @property

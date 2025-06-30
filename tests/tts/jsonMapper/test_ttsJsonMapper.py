@@ -4,6 +4,9 @@ from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
 from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
+from src.tts.models.shotgun.useAllShotgunParameters import UseAllShotgunParameters
+from src.tts.models.shotgun.useExactAmountShotgunParameters import UseExactAmountShotgunParameters
+from src.tts.models.shotgun.useRandomAmountShotgunParameters import UseRandomAmountShotgunParameters
 from src.tts.models.ttsProvider import TtsProvider
 
 
@@ -12,7 +15,7 @@ class TestTtsJsonMapper:
     timber: TimberInterface = TimberStub()
 
     jsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
-        timber = timber
+        timber = timber,
     )
 
     @pytest.mark.asyncio
@@ -144,6 +147,64 @@ class TestTtsJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_asyncParseShotgunProviderUseParameters_withEmptyDictionary(self):
+        result = await self.jsonMapper.asyncParseShotgunProviderUseParameters(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_asyncParseShotgunProviderUseParameters_withNone(self):
+        result = await self.jsonMapper.asyncParseShotgunProviderUseParameters(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_asyncParseShotgunProviderUseParameters_withUseAllParameters(self):
+        result = await self.jsonMapper.asyncParseShotgunProviderUseParameters({
+            'useAll': True,
+        })
+
+        assert isinstance(result, UseAllShotgunParameters)
+
+    @pytest.mark.asyncio
+    async def test_asyncParseShotgunProviderUseParameters_withUseExactAmountParameters(self):
+        parameters = UseExactAmountShotgunParameters(
+            amount = 3,
+        )
+
+        result = await self.jsonMapper.asyncParseShotgunProviderUseParameters({
+            'amount': parameters.amount,
+        })
+
+        assert isinstance(result, UseExactAmountShotgunParameters)
+        assert result == parameters
+        assert result.amount == parameters.amount
+
+    @pytest.mark.asyncio
+    async def test_asyncParseShotgunProviderUseParameters_withUseRandomAmountParameters(self):
+        parameters = UseRandomAmountShotgunParameters(
+            maxAmount = 5,
+            minAmount = 2,
+        )
+
+        result = await self.jsonMapper.asyncParseShotgunProviderUseParameters({
+            'maxAmount': parameters.maxAmount,
+            'minAmount': parameters.minAmount,
+        })
+
+        assert isinstance(result, UseRandomAmountShotgunParameters)
+        assert result == parameters
+        assert result.maxAmount == parameters.maxAmount
+        assert result.minAmount == parameters.minAmount
+
+    @pytest.mark.asyncio
+    async def test_asyncSerializeProvider_withAll(self):
+        results: set[str] = set()
+
+        for provider in TtsProvider:
+            results.add(await self.jsonMapper.asyncSerializeProvider(provider))
+
+        assert len(results) == len(TtsProvider)
+
+    @pytest.mark.asyncio
     async def test_asyncSerializeProvider_withCommodoreSam(self):
         result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.COMMODORE_SAM)
         assert result == 'commodore_sam'
@@ -177,6 +238,11 @@ class TestTtsJsonMapper:
     async def test_asyncSerializeProvider_withRandoTts(self):
         result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.RANDO_TTS)
         assert result == 'rando_tts'
+
+    @pytest.mark.asyncio
+    async def test_asyncSerializeProvider_withShotgunTts(self):
+        result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.SHOTGUN_TTS)
+        assert result == 'shotgun_tts'
 
     @pytest.mark.asyncio
     async def test_asyncSerializeProvider_withSingingDecTalk(self):
@@ -326,6 +392,14 @@ class TestTtsJsonMapper:
         assert self.jsonMapper is not None
         assert isinstance(self.jsonMapper, TtsJsonMapper)
         assert isinstance(self.jsonMapper, TtsJsonMapperInterface)
+
+    def test_serializeProvider_withAll(self):
+        results: set[str] = set()
+
+        for provider in TtsProvider:
+            results.add(self.jsonMapper.serializeProvider(provider))
+
+        assert len(results) == len(TtsProvider)
 
     def test_serializeProvider_withCommodoreSam(self):
         result = self.jsonMapper.serializeProvider(TtsProvider.COMMODORE_SAM)

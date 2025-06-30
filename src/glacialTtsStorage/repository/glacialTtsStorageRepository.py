@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Final
 
 import aiosqlite
 from aiosqlite import Connection
@@ -34,11 +35,11 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         elif not utils.isValidStr(databaseFile):
             raise TypeError(f'databaseFile argument is malformed: \"{databaseFile}\"')
 
-        self.__glacialTtsDataMapper: GlacialTtsDataMapperInterface = glacialTtsDataMapper
-        self.__glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface = glacialTtsIdGenerator
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__databaseFile: str = databaseFile
+        self.__glacialTtsDataMapper: Final[GlacialTtsDataMapperInterface] = glacialTtsDataMapper
+        self.__glacialTtsIdGenerator: Final[GlacialTtsIdGeneratorInterface] = glacialTtsIdGenerator
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__databaseFile: Final[str] = databaseFile
 
         self.__isDatabaseReady: bool = False
 

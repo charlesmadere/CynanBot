@@ -242,11 +242,13 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                 twitchChannelId = broadcasterUserId,
                 userId = cheerUserId,
                 userName = cheerUserLogin,
-                donation = TtsCheerDonation(bits = bits),
+                donation = TtsCheerDonation(
+                    bits = bits,
+                ),
                 provider = provider,
                 providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
-                raidInfo = None
-            )
+                raidInfo = None,
+            ),
         ))
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):

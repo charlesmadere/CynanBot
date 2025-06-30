@@ -121,31 +121,40 @@ class TtsJsonMapper(TtsJsonMapperInterface):
 
         return None
 
-    def parseShotgunProviderUseParameters(
+    async def asyncParseShotgunProviderUseParameters(
         self,
         jsonContents: dict[str, Any] | Any | None
     ) -> ShotgunProviderUseParameters | None:
-        if not isinstance(jsonContents, dict):
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
-        if 'useAll' in jsonContents and utils.getBoolFromDict(jsonContents, 'useAll', fallback = False):
-            return UseAllShotgunParameters()
-
-        elif 'amount' in jsonContents and utils.isValidInt(jsonContents.get('amount', None)):
-            return UseExactAmountShotgunParameters(
-                amount = utils.getIntFromDict(jsonContents, 'amount'),
-            )
-
+        useAll: bool | Any | None = jsonContents.get('useAll', None)
+        amount: int | None = jsonContents.get('amount', None)
         maxAmount: int | None = jsonContents.get('maxAmount', None)
         minAmount: int | None = jsonContents.get('minAmount', None)
 
-        if utils.isValidInt(maxAmount) and utils.isValidInt(minAmount):
+        if utils.isValidBool(useAll) and useAll:
+            return UseAllShotgunParameters()
+
+        elif utils.isValidInt(amount):
+            if amount < 1 or amount > utils.getIntMaxSafeSize():
+                raise ValueError(f'amount value is out of bounds ({amount=}) ({jsonContents=})')
+
+            return UseExactAmountShotgunParameters(
+                amount = amount,
+            )
+
+        elif utils.isValidInt(maxAmount) and utils.isValidInt(minAmount):
+            if minAmount < 1 or minAmount >= maxAmount or maxAmount > utils.getIntMaxSafeSize():
+                raise ValueError(f'minAmount and/or maxAmount values are out of bounds ({minAmount=}) ({maxAmount=}) ({jsonContents=})')
+
             return UseRandomAmountShotgunParameters(
                 maxAmount = maxAmount,
                 minAmount = minAmount,
             )
 
-        return None
+        else:
+            return None
 
     def requireProvider(
         self,

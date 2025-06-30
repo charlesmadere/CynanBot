@@ -3,6 +3,8 @@ import random
 import traceback
 from typing import Final
 
+from frozenlist import FrozenList
+
 from .decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..models.ttsEvent import TtsEvent
@@ -62,7 +64,17 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         self.__isLoadingOrPlaying: bool = False
 
     async def __determineVoice(self, event: TtsEvent) -> DecTalkVoice | None:
-        if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
+        randomVoices: FrozenList[DecTalkVoice] = FrozenList(DecTalkVoice)
+
+        # This voice might be able to be exploited/manipulated, I don't really know...
+        # So let's just keep it out of the random selection list for now.
+        randomVoices.remove(DecTalkVoice.URSULA)
+
+        randomVoices.freeze()
+
+        if event.provider is TtsProvider.SHOTGUN_TTS:
+            return random.choice(randomVoices)
+        elif event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return None
 
         preferredTts = await self.__chatterPreferredTtsHelper.get(
@@ -75,13 +87,7 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         elif isinstance(preferredTts.properties, DecTalkTtsProperties):
             return preferredTts.properties.voice
         elif preferredTts.provider is TtsProvider.RANDO_TTS:
-            voices: list[DecTalkVoice] = list(DecTalkVoice)
-
-            # This voice might be able to be exploited/manipulated, I don't really know...
-            # So let's just keep it out of the random selection list for now.
-            voices.remove(DecTalkVoice.URSULA)
-
-            return random.choice(voices)
+            return random.choice(randomVoices)
         else:
             self.__timber.log('DecTalkTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None

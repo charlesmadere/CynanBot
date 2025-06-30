@@ -30,9 +30,24 @@ class TestGlacialTtsDataMapper:
         assert result is TtsProvider.HALF_LIFE
 
     @pytest.mark.asyncio
+    async def test_fromDatabaseName_withMicrosoft(self):
+        result = await self.mapper.fromDatabaseName('microsoft')
+        assert result is TtsProvider.MICROSOFT
+
+    @pytest.mark.asyncio
     async def test_fromDatabaseName_withMicrosoftSam(self):
         result = await self.mapper.fromDatabaseName('microsoft_sam')
         assert result is TtsProvider.MICROSOFT_SAM
+
+    @pytest.mark.asyncio
+    async def test_fromDatabaseName_withRandoTts(self):
+        result = await self.mapper.fromDatabaseName('rando_tts')
+        assert result is TtsProvider.RANDO_TTS
+
+    @pytest.mark.asyncio
+    async def test_fromDatabaseName_withShotgunTts(self):
+        result = await self.mapper.fromDatabaseName('shotgun_tts')
+        assert result is TtsProvider.SHOTGUN_TTS
 
     @pytest.mark.asyncio
     async def test_fromDatabaseName_withSingingDecTalk(self):
@@ -48,6 +63,20 @@ class TestGlacialTtsDataMapper:
     async def test_fromDatabaseName_withTtsMonster(self):
         result = await self.mapper.fromDatabaseName('tts_monster')
         assert result is TtsProvider.TTS_MONSTER
+
+    def test_sanity(self):
+        assert self.mapper is not None
+        assert isinstance(self.mapper, GlacialTtsDataMapper)
+        assert isinstance(self.mapper, GlacialTtsDataMapperInterface)
+
+    @pytest.mark.asyncio
+    async def test_toDatabaseName_withAll(self):
+        results: set[str] = set()
+
+        for provider in TtsProvider:
+            results.add(await self.mapper.toDatabaseName(provider))
+
+        assert len(results) == len(TtsProvider)
 
     @pytest.mark.asyncio
     async def test_toDatabaseName_withCommodoreSam(self):
@@ -70,9 +99,24 @@ class TestGlacialTtsDataMapper:
         assert result == 'half_life'
 
     @pytest.mark.asyncio
+    async def test_toDatabaseName_withMicrosoft(self):
+        result = await self.mapper.toDatabaseName(TtsProvider.MICROSOFT)
+        assert result == 'microsoft'
+
+    @pytest.mark.asyncio
     async def test_toDatabaseName_withMicrosoftSam(self):
         result = await self.mapper.toDatabaseName(TtsProvider.MICROSOFT_SAM)
         assert result == 'microsoft_sam'
+
+    @pytest.mark.asyncio
+    async def test_toDatabaseName_withRandoTts(self):
+        result = await self.mapper.toDatabaseName(TtsProvider.RANDO_TTS)
+        assert result == 'rando_tts'
+
+    @pytest.mark.asyncio
+    async def test_toDatabaseName_withShotgunTts(self):
+        result = await self.mapper.toDatabaseName(TtsProvider.SHOTGUN_TTS)
+        assert result == 'shotgun_tts'
 
     @pytest.mark.asyncio
     async def test_toDatabaseName_withSingingDecTalk(self):
@@ -88,6 +132,15 @@ class TestGlacialTtsDataMapper:
     async def test_toDatabaseName_withTtsMonster(self):
         result = await self.mapper.toDatabaseName(TtsProvider.TTS_MONSTER)
         assert result == 'tts_monster'
+
+    @pytest.mark.asyncio
+    async def test_toFolderName_withAll(self):
+        results: set[str] = set()
+
+        for provider in TtsProvider:
+            results.add(await self.mapper.toFolderName(provider))
+
+        assert len(results) == len(TtsProvider)
 
     @pytest.mark.asyncio
     async def test_toFolderName_withCommodoreSam(self):
@@ -110,9 +163,24 @@ class TestGlacialTtsDataMapper:
         assert result == 'half_life'
 
     @pytest.mark.asyncio
+    async def test_toFolderName_withMicrosoft(self):
+        result = await self.mapper.toFolderName(TtsProvider.MICROSOFT)
+        assert result == 'microsoft'
+
+    @pytest.mark.asyncio
     async def test_toFolderName_withMicrosoftSam(self):
         result = await self.mapper.toFolderName(TtsProvider.MICROSOFT_SAM)
         assert result == 'microsoft_sam'
+
+    @pytest.mark.asyncio
+    async def test_toFolderName_withRandoTts(self):
+        result = await self.mapper.toFolderName(TtsProvider.RANDO_TTS)
+        assert result == 'rando_tts'
+
+    @pytest.mark.asyncio
+    async def test_toFolderName_withShotgunTts(self):
+        result = await self.mapper.toFolderName(TtsProvider.SHOTGUN_TTS)
+        assert result == 'shotgun_tts'
 
     @pytest.mark.asyncio
     async def test_toFolderName_withSingingDecTalk(self):
@@ -128,8 +196,3 @@ class TestGlacialTtsDataMapper:
     async def test_toFolderName_withTtsMonster(self):
         result = await self.mapper.toFolderName(TtsProvider.TTS_MONSTER)
         assert result == 'tts_monster'
-
-    def test_sanity(self):
-        assert self.mapper is not None
-        assert isinstance(self.mapper, GlacialTtsDataMapper)
-        assert isinstance(self.mapper, GlacialTtsDataMapperInterface)

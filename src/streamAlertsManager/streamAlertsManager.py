@@ -11,9 +11,12 @@ from .streamAlertsManagerInterface import StreamAlertsManagerInterface
 from .streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..timber.timberInterface import TimberInterface
 from ..tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
+from ..tts.models.ttsProvider import TtsProvider
+from ..tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
 
 
 class StreamAlertsManager(StreamAlertsManagerInterface):
@@ -21,8 +24,8 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        compositeTtsManager: CompositeTtsManagerInterface,
-        soundPlayerManager: SoundPlayerManagerInterface,
+        compositeTtsManagerProvider: CompositeTtsManagerProviderInterface,
+        soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface,
         timber: TimberInterface,
         queueSleepTimeSeconds: float = 0.25,
@@ -30,10 +33,10 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(compositeTtsManager, CompositeTtsManagerInterface):
-            raise TypeError(f'compositeTtsManager argument is malformed: \"{compositeTtsManager}\"')
-        elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
-            raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
+        elif not isinstance(compositeTtsManagerProvider, CompositeTtsManagerProviderInterface):
+            raise TypeError(f'compositeTtsManagerProvider argument is malformed: \"{compositeTtsManagerProvider}\"')
+        elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
+            raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(streamAlertsSettingsRepository, StreamAlertsSettingsRepositoryInterface):
             raise TypeError(f'streamAlertsSettingsRepository argument is malformed: \"{streamAlertsSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -48,8 +51,8 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
-        self.__compositeTtsManager: Final[CompositeTtsManagerInterface] = compositeTtsManager
-        self.__soundPlayerManager: Final[SoundPlayerManagerInterface] = soundPlayerManager
+        self.__compositeTtsManagerProvider: Final[CompositeTtsManagerProviderInterface] = compositeTtsManagerProvider
+        self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
         self.__streamAlertsSettingsRepository: Final[StreamAlertsSettingsRepositoryInterface] = streamAlertsSettingsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__queueSleepTimeSeconds: Final[float] = queueSleepTimeSeconds
@@ -59,6 +62,26 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
         self.__currentAlert: CurrentStreamAlert | None = None
         self.__alertQueue: Final[SimpleQueue[StreamAlert]] = SimpleQueue()
 
+    async def __createCurrentAlert(self, alert: StreamAlert) -> CurrentStreamAlert:
+        compositeTtsManager: CompositeTtsManagerInterface
+        soundPlayerManager: SoundPlayerManagerInterface
+
+        if alert.ttsEvent is not None and alert.ttsEvent.provider is TtsProvider.SHOTGUN_TTS:
+            compositeTtsManager = self.__compositeTtsManagerProvider.constructNewInstance(
+                useSharedSoundPlayerManager = False,
+            )
+
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+        else:
+            compositeTtsManager = self.__compositeTtsManagerProvider.getSharedInstance()
+            soundPlayerManager = self.__soundPlayerManagerProvider.getSharedInstance()
+
+        return CurrentStreamAlert(
+            compositeTtsManager = compositeTtsManager,
+            soundPlayerManager = soundPlayerManager,
+            streamAlert = alert,
+        )
+
     async def __processCurrentAlert(self) -> bool:
         currentAlert = self.__currentAlert
 
@@ -66,25 +89,28 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
             return False
 
         soundAlert = currentAlert.soundAlert
+        soundPlayerManager = currentAlert.soundPlayerManager
+
         ttsEvent = currentAlert.ttsEvent
+        compositeTtsManager = currentAlert.compositeTtsManager
 
         if (currentAlert.alertState is StreamAlertState.NOT_STARTED or currentAlert.alertState is StreamAlertState.SOUND_STARTED) and soundAlert is not None:
-            if self.__soundPlayerManager.isLoadingOrPlaying:
+            if soundPlayerManager.isLoadingOrPlaying:
                 return True
             elif currentAlert.alertState is StreamAlertState.SOUND_STARTED:
                 currentAlert.setAlertState(StreamAlertState.SOUND_FINISHED)
-            elif await self.__soundPlayerManager.playSoundAlert(soundAlert):
+            elif await soundPlayerManager.playSoundAlert(soundAlert):
                 currentAlert.setAlertState(StreamAlertState.SOUND_STARTED)
                 return True
             else:
                 currentAlert.setAlertState(StreamAlertState.SOUND_FINISHED)
 
         if (currentAlert.alertState is StreamAlertState.NOT_STARTED or currentAlert.alertState is StreamAlertState.TTS_STARTED or currentAlert.alertState is StreamAlertState.SOUND_FINISHED) and ttsEvent is not None:
-            if self.__compositeTtsManager.isLoadingOrPlaying:
+            if compositeTtsManager.isLoadingOrPlaying:
                 return True
             elif currentAlert.alertState is StreamAlertState.TTS_STARTED:
                 currentAlert.setAlertState(StreamAlertState.TTS_FINISHED)
-            elif await self.__compositeTtsManager.playTtsEvent(ttsEvent):
+            elif await compositeTtsManager.playTtsEvent(ttsEvent):
                 currentAlert.setAlertState(StreamAlertState.TTS_STARTED)
                 return True
             else:
@@ -117,7 +143,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
                     self.__timber.log('StreamAlertsManager', f'Encountered queue.Empty when grabbing alert from queue (queue size: {self.__alertQueue.qsize()}): {e}', e, traceback.format_exc())
 
             if newAlert is not None:
-                self.__currentAlert = CurrentStreamAlert(newAlert)
+                self.__currentAlert = await self.__createCurrentAlert(newAlert)
 
             alertsDelayBetweenSeconds = await self.__streamAlertsSettingsRepository.getAlertsDelayBetweenSeconds()
             await asyncio.sleep(alertsDelayBetweenSeconds)

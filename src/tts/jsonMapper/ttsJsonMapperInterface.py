@@ -15,6 +15,13 @@ class TtsJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def asyncParseShotgunProviderUseParameters(
+        self,
+        jsonContents: dict[str, Any] | Any | None
+    ) -> ShotgunProviderUseParameters | None:
+        pass
+
+    @abstractmethod
     async def asyncRequireProvider(
         self,
         ttsProvider: str | Any | None
@@ -33,13 +40,6 @@ class TtsJsonMapperInterface(ABC):
         self,
         ttsProvider: str | Any | None
     ) -> TtsProvider | None:
-        pass
-
-    @abstractmethod
-    def parseShotgunProviderUseParameters(
-        self,
-        jsonContents: dict[str, Any] | Any | None
-    ) -> ShotgunProviderUseParameters | None:
         pass
 
     @abstractmethod
