@@ -4,6 +4,7 @@ from typing import Final
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
+from ..twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
@@ -25,6 +26,7 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
+        activeChattersRepository: ActiveChattersRepositoryInterface,
         timber: TimberInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
@@ -33,7 +35,9 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
         voicemailHelper: VoicemailHelperInterface,
         voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
+            raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
@@ -48,6 +52,7 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
         elif not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
             raise TypeError(f'voicemailSettingsRepository argument is malformed: \"{voicemailSettingsRepository}\"')
 
+        self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__timber: Final[TimberInterface] = timber
         self.__twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface] = twitchFollowingStatusRepository
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
@@ -112,6 +117,21 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
 
         if targetedUserData is None:
             self.__timber.log('VoicemailPointRedemption', f'Received channel point redemption without a valid targeted user ({twitchChannel=}) ({twitchChannelPointsMessage=}) ({targetedUserData=})')
+            return True
+
+        requiresNotActiveInChat = await self.__voicemailSettingsRepository.targetUserMustNotBeActiveInChat()
+
+        if requiresNotActiveInChat and await self.__activeChattersRepository.isActiveIn(
+            chatterUserId = targetedUserData.userId,
+            twitchChannelId = await twitchChannel.getTwitchChannelId()
+        ):
+            self.__timber.log('VoicemailPointRedemption', f'Received voicemail cheer action but the targeted user is active in chat ({twitchChannel=}) ({twitchChannelPointsMessage=}) ({targetedUserData=})')
+
+            await self.__twitchUtils.safeSend(
+                messageable = twitchChannel,
+                message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, you can only send voicemails to users who aren\t active in chat.'
+            )
+
             return True
 
         requiresFollowing = await self.__voicemailSettingsRepository.targetUserMustBeFollowing()

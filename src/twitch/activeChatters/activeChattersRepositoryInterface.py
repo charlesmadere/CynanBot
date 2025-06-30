@@ -25,6 +25,14 @@ class ActiveChattersRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def isActiveIn(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str
+    ) -> bool:
+        pass
+
+    @abstractmethod
     async def remove(
         self,
         chatterUserId: str,

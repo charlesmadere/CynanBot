@@ -8,6 +8,7 @@ from .voicemailCheerActionHelperInterface import VoicemailCheerActionHelperInter
 from ..absCheerAction import AbsCheerAction
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
+from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ...twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
@@ -29,6 +30,7 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
 
     def __init__(
         self,
+        activeChattersRepository: ActiveChattersRepositoryInterface,
         timber: TimberInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
@@ -37,7 +39,9 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
         voicemailHelper: VoicemailHelperInterface,
         voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
+            raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
@@ -52,6 +56,7 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
         elif not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
             raise TypeError(f'voicemailSettingsRepository argument is malformed: \"{voicemailSettingsRepository}\"')
 
+        self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__timber: Final[TimberInterface] = timber
         self.__twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface] = twitchFollowingStatusRepository
         self.__twitchMessageStringUtils: Final[TwitchMessageStringUtilsInterface] = twitchMessageStringUtils
@@ -118,6 +123,23 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
 
         if targetedUserData is None:
             self.__timber.log('VoicemailCheerActionHelper', f'Received voicemail cheer action without a valid targeted user ({bits=}) ({broadcasterUserId=}) ({cheerUserId=}) ({cheerUserName=}) ({message=}) ({action=}) ({targetedUserData=})')
+            return True
+
+        requiresNotActiveInChat = await self.__voicemailSettingsRepository.targetUserMustNotBeActiveInChat()
+
+        if requiresNotActiveInChat and await self.__activeChattersRepository.isActiveIn(
+            chatterUserId = targetedUserData.userId,
+            twitchChannelId = broadcasterUserId
+        ):
+            self.__timber.log('VoicemailCheerActionHelper', f'Received voicemail cheer action but the targeted user is active in chat ({bits=}) ({broadcasterUserId=}) ({cheerUserId=}) ({cheerUserName=}) ({message=}) ({action=}) ({targetedUserData=})')
+
+            await self.__sendMessage(
+                message = f'⚠ Sorry @{cheerUserName}, you can only send voicemails to users who aren\t active in chat.',
+                twitchChatMessageId = twitchChatMessageId,
+                user = user,
+                action = action
+            )
+
             return True
 
         requiresFollowing = await self.__voicemailSettingsRepository.targetUserMustBeFollowing()

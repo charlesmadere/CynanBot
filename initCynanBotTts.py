@@ -1882,6 +1882,7 @@ voicemailChatAction = VoicemailChatAction(
 )
 
 voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheerActionHelper(
+    activeChattersRepository = activeChattersRepository,
     timber = timber,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchMessageStringUtils = twitchMessageStringUtils,
@@ -1892,6 +1893,7 @@ voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheer
 )
 
 voicemailPointRedemption = VoicemailPointRedemption(
+    activeChattersRepository = activeChattersRepository,
     timber = timber,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchTokensRepository = twitchTokensRepository,
