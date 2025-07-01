@@ -1,3 +1,4 @@
+aborted
 abortion
 abuse
 adolf
@@ -100,6 +101,8 @@ massacre
 "meth"
 methamphetamine
 midget
+miscarriage
+misscarriage
 molest
 molestation
 murder
