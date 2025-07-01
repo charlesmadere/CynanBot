@@ -30,6 +30,7 @@ from ..models.twitchChattersResponse import TwitchChattersResponse
 from ..models.twitchCheerMetadata import TwitchCheerMetadata
 from ..models.twitchCommunitySubGift import TwitchCommunitySubGift
 from ..models.twitchConduitRequest import TwitchConduitRequest
+from ..models.twitchConduitResponse import TwitchConduitResponse
 from ..models.twitchConduitResponseEntry import TwitchConduitResponseEntry
 from ..models.twitchConduitShard import TwitchConduitShard
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
@@ -761,7 +762,34 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             toBroadcasterUserName = toBroadcasterUserName,
             userId = userId,
             userLogin = userLogin,
-            userName = userName
+            userName = userName,
+        )
+
+    async def parseConduitResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchConduitResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data', None)
+        if not isinstance(dataArray, list) or len(dataArray) == 0:
+            return None
+
+        data: FrozenList[TwitchConduitResponseEntry] = FrozenList()
+
+        for index, dataItem in enumerate(dataArray):
+            responseEntry = await self.parseConduitResponseEntry(dataItem)
+
+            if responseEntry is None:
+                self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"data\" element ({jsonResponse=})')
+            else:
+                data.append(responseEntry)
+
+        data.freeze()
+
+        return TwitchConduitResponse(
+            data = data,
         )
 
     async def parseConduitResponseEntry(
