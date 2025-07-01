@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import Any
 
 import pytest
+from frozenlist import FrozenList
 
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -20,6 +21,7 @@ from src.twitch.api.models.twitchChatMessageType import TwitchChatMessageType
 from src.twitch.api.models.twitchChatter import TwitchChatter
 from src.twitch.api.models.twitchCheerMetadata import TwitchCheerMetadata
 from src.twitch.api.models.twitchConduitRequest import TwitchConduitRequest
+from src.twitch.api.models.twitchConduitResponse import TwitchConduitResponse
 from src.twitch.api.models.twitchConduitResponseEntry import TwitchConduitResponseEntry
 from src.twitch.api.models.twitchConduitShard import TwitchConduitShard
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat
@@ -595,6 +597,50 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseCondition_withNone(self):
         result = await self.jsonMapper.parseCondition(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseConduitResponse(self):
+        entry = TwitchConduitResponseEntry(
+            shardCount = 5,
+            shardId = 'abc123',
+        )
+
+        data: FrozenList[TwitchConduitResponseEntry] = FrozenList()
+        data.append(entry)
+        data.freeze()
+
+        response = TwitchConduitResponse(
+            data = data,
+        )
+
+        result = await self.jsonMapper.parseConduitResponse({
+            'data': [
+                {
+                    'id': entry.shardId,
+                    'shard_count': entry.shardCount,
+                },
+            ],
+        })
+
+        assert isinstance(result, TwitchConduitResponse)
+        assert result == response
+        assert len(result.data) == 1
+
+        resultEntry = result.data[0]
+        assert isinstance(resultEntry, TwitchConduitResponseEntry)
+        assert resultEntry == entry
+        assert resultEntry.shardCount == entry.shardCount
+        assert resultEntry.shardId == entry.shardId
+
+    @pytest.mark.asyncio
+    async def test_parseConduitResponse_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseConduitResponse(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseConduitResponse_withNone(self):
+        result = await self.jsonMapper.parseConduitResponse(None)
         assert result is None
 
     @pytest.mark.asyncio
