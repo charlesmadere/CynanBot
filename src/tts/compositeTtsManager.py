@@ -107,11 +107,9 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             availableProviders: set[TtsProvider] = set()
             randoEnabledProviders = await self.__ttsSettingsRepository.getRandoEnabledProviders()
 
-            for key, value in self.__ttsProviderToManagerMap.items():
-                if key not in randoEnabledProviders or value is None:
-                    continue
-
-                availableProviders.add(key)
+            for provider, manager in self.__ttsProviderToManagerMap.items():
+                if provider in randoEnabledProviders and manager is not None:
+                    availableProviders.add(provider)
 
             if len(availableProviders) >= 1:
                 chosenProvider = random.choice(list(availableProviders))
