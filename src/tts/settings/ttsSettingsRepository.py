@@ -3,7 +3,7 @@ from typing import Any, Final
 from .ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ..jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from ..models.shotgun.shotgunProviderUseParameters import ShotgunProviderUseParameters
-from ..models.shotgun.useExactAmountShotgunParameters import UseExactAmountShotgunParameters
+from ..models.shotgun.useAllShotgunParameters import UseAllShotgunParameters
 from ..models.ttsProvider import TtsProvider
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
@@ -31,9 +31,7 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
             TtsProvider.STREAM_ELEMENTS,
             TtsProvider.TTS_MONSTER,
         }),
-        defaultShotgunProviderUseParameters: ShotgunProviderUseParameters = UseExactAmountShotgunParameters(
-            amount = 3,
-        ),
+        defaultShotgunProviderUseParameters: ShotgunProviderUseParameters = UseAllShotgunParameters(),
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
