@@ -108,14 +108,14 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
             case TtsProvider.SHOTGUN_TTS:
                 properties = None
 
-            case TtsProvider.SINGING_DEC_TALK:
-                properties = None
-
             case TtsProvider.STREAM_ELEMENTS:
                 properties = await self.__chooseRandomStreamElementsProperties()
 
             case TtsProvider.TTS_MONSTER:
                 properties = await self.__chooseRandomTtsMonsterProperties()
+
+            case TtsProvider.UNRESTRICTED_DEC_TALK:
+                properties = None
 
             case _:
                 raise ValueError(f'The given TTS Provider is unknown ({properties=}) ({ttsProvider=}) ({enabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=})')

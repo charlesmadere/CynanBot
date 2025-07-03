@@ -16,17 +16,12 @@ class DecTalkSongBoosterPackParser(DecTalkSongBoosterPackParserInterface):
         if not isinstance(jsonContents, dict):
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
-        song = utils.getStrFromDict(jsonContents, 'song')
         rewardId = utils.getStrFromDict(jsonContents, 'rewardId')
-
-        if not utils.isValidStr(song):
-            raise ValueError(f'song argument is malformed: \"{song}\"')
-        elif not utils.isValidStr(rewardId):
-            raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
+        song = utils.getStrFromDict(jsonContents, 'song')
 
         return DecTalkSongBoosterPack(
             rewardId = rewardId,
-            song = song
+            song = song,
         )
 
     def parseBoosterPacks(

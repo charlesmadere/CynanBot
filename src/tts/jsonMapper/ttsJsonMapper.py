@@ -55,7 +55,7 @@ class TtsJsonMapper(TtsJsonMapperInterface):
         decTalk.freeze()
 
         google: FrozenList[Pattern] = FrozenList()
-        google.append(re.compile(r'^\s*google\s*$', re.IGNORECASE))
+        google.append(re.compile(r'^\s*goog(?:le?)?\s*$', re.IGNORECASE))
         google.freeze()
 
         halfLife: FrozenList[Pattern] = FrozenList()
@@ -81,17 +81,18 @@ class TtsJsonMapper(TtsJsonMapperInterface):
         shotgunTts.append(re.compile(r'^\s*shotgun(?:\s+|_|-)?(?:tts)?\s*$', re.IGNORECASE))
         shotgunTts.freeze()
 
-        singingDecTalk: FrozenList[Pattern] = FrozenList()
-        singingDecTalk.append(re.compile(r'^\s*singing(?:\s+|_|-)?dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE))
-        singingDecTalk.freeze()
-
         streamElements: FrozenList[Pattern] = FrozenList()
-        streamElements.append(re.compile(r'^\s*stream(?:\s+|_|-)?elements\s*$', re.IGNORECASE))
+        streamElements.append(re.compile(r'^\s*stream(?:\s+|_|-)?elements?\s*$', re.IGNORECASE))
         streamElements.freeze()
 
         ttsMonster: FrozenList[Pattern] = FrozenList()
         ttsMonster.append(re.compile(r'^\s*tts(?:\s+|_|-)?monster\s*$', re.IGNORECASE))
         ttsMonster.freeze()
+
+        unrestrictedDecTalk: FrozenList[Pattern] = FrozenList()
+        unrestrictedDecTalk.append(re.compile(r'^\s*singing(?:\s+|_|-)?dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE))
+        unrestrictedDecTalk.append(re.compile(r'^\s*unrestricted(?:\s+|_|-)?dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE))
+        unrestrictedDecTalk.freeze()
 
         return frozendict({
             TtsProvider.COMMODORE_SAM: commodoreSam,
@@ -102,9 +103,9 @@ class TtsJsonMapper(TtsJsonMapperInterface):
             TtsProvider.MICROSOFT_SAM: microsoftSam,
             TtsProvider.RANDO_TTS: randoTts,
             TtsProvider.SHOTGUN_TTS: shotgunTts,
-            TtsProvider.SINGING_DEC_TALK: singingDecTalk,
             TtsProvider.STREAM_ELEMENTS: streamElements,
             TtsProvider.TTS_MONSTER: ttsMonster,
+            TtsProvider.UNRESTRICTED_DEC_TALK: unrestrictedDecTalk,
         })
 
     def parseProvider(
@@ -183,7 +184,7 @@ class TtsJsonMapper(TtsJsonMapperInterface):
             case TtsProvider.MICROSOFT_SAM: return 'microsoft_sam'
             case TtsProvider.RANDO_TTS: return 'rando_tts'
             case TtsProvider.SHOTGUN_TTS: return 'shotgun_tts'
-            case TtsProvider.SINGING_DEC_TALK: return 'singing_dec_talk'
             case TtsProvider.STREAM_ELEMENTS: return 'stream_elements'
             case TtsProvider.TTS_MONSTER: return 'tts_monster'
+            case TtsProvider.UNRESTRICTED_DEC_TALK: return 'unrestricted_dec_talk'
             case _: raise ValueError(f'The given TtsProvider value is unknown: \"{ttsProvider}\"')

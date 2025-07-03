@@ -1,6 +1,5 @@
 from asyncio import AbstractEventLoop
-
-from frozenlist import FrozenList
+from typing import Any, Final
 
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..storage.jsonFileReader import JsonFileReader
@@ -21,7 +20,7 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
         self,
         eventLoop: AbstractEventLoop,
         streamAlertsManager: StreamAlertsManagerInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -30,10 +29,10 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
-        self.__timber: TimberInterface = timber
+        self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
+        self.__timber: Final[TimberInterface] = timber
 
-        self.__decTalkSongsRepository: JsonReaderInterface = JsonFileReader(
+        self.__decTalkSongsRepository: Final[JsonReaderInterface] = JsonFileReader(
             eventLoop = eventLoop,
             fileName = 'decTalkSongsRepository.json'
         )
@@ -47,6 +46,10 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
         if not twitchUser.isDecTalkSongsEnabled:
             return False
 
+        decTalkSongs = await self.__decTalkSongsRepository.readJsonAsync()
+        if decTalkSongs is None or len(decTalkSongs) == 0:
+            return False
+
         decTalkSongBoosterPacks = twitchUser.decTalkSongBoosterPacks
         if decTalkSongBoosterPacks is None or len(decTalkSongBoosterPacks) == 0:
             return False
@@ -55,30 +58,25 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
         if decTalkSongBoosterPack is None:
             return False
 
-        decTalkSongs = await self.__decTalkSongsRepository.readJsonAsync()
-        if decTalkSongs is None or len(decTalkSongs) == 0:
+        songStrings: list[str] | Any | None = decTalkSongs.get(decTalkSongBoosterPack.song, None)
+
+        if not isinstance(songStrings, list) or len(songStrings) == 0:
             return False
 
-        songData = FrozenList(decTalkSongs.get(decTalkSongBoosterPack.song, None))
-        songData.freeze()
-
-        if len(songData) == 0:
-            return False
-
-        songData = ''.join(songData)
+        message = ''.join(songStrings)
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
             twitchChannel = twitchUser.handle,
             twitchChannelId = await twitchChannel.getTwitchChannelId(),
             ttsEvent = TtsEvent(
-                message = songData,
+                message = message,
                 twitchChannel = twitchUser.handle,
                 twitchChannelId = await twitchChannel.getTwitchChannelId(),
                 userId = twitchChannelPointsMessage.userId,
                 userName = twitchChannelPointsMessage.userName,
                 donation = None,
-                provider = TtsProvider.SINGING_DEC_TALK,
+                provider = TtsProvider.UNRESTRICTED_DEC_TALK,
                 providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
                 raidInfo = None
             )

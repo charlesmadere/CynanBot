@@ -2,8 +2,8 @@ from .decTalkTtsManagerProvider import DecTalkTtsManagerProvider
 from ..models.ttsProvider import TtsProvider
 
 
-class SingingDecTalkTtsManagerProvider(DecTalkTtsManagerProvider):
+class UnrestrictedDecTalkTtsManagerProvider(DecTalkTtsManagerProvider):
 
     @property
     def ttsProvider(self) -> TtsProvider:
-        return TtsProvider.SINGING_DEC_TALK
+        return TtsProvider.UNRESTRICTED_DEC_TALK

@@ -60,6 +60,12 @@ class TestTtsJsonMapper:
         result = await self.jsonMapper.asyncParseProvider('google')
         assert result is TtsProvider.GOOGLE
 
+        result = await self.jsonMapper.asyncParseProvider('googl')
+        assert result is TtsProvider.GOOGLE
+
+        result = await self.jsonMapper.asyncParseProvider('goog')
+        assert result is TtsProvider.GOOGLE
+
     @pytest.mark.asyncio
     async def test_asyncParseProvider_withHalfLifeString(self):
         result = await self.jsonMapper.asyncParseProvider('half_life')
@@ -129,17 +135,40 @@ class TestTtsJsonMapper:
     @pytest.mark.asyncio
     async def test_asyncParseProvider_withSingingDecTalk(self):
         result = await self.jsonMapper.asyncParseProvider('singing_dec_talk')
-        assert result is TtsProvider.SINGING_DEC_TALK
+        assert result is TtsProvider.UNRESTRICTED_DEC_TALK
 
     @pytest.mark.asyncio
     async def test_asyncParseProvider_withStreamElementsString(self):
         result = await self.jsonMapper.asyncParseProvider('stream_elements')
         assert result is TtsProvider.STREAM_ELEMENTS
 
+        result = await self.jsonMapper.asyncParseProvider('stream-elements')
+        assert result is TtsProvider.STREAM_ELEMENTS
+
+        result = await self.jsonMapper.asyncParseProvider('stream elements')
+        assert result is TtsProvider.STREAM_ELEMENTS
+
     @pytest.mark.asyncio
     async def test_asyncParseProvider_withTtsMonsterString(self):
         result = await self.jsonMapper.asyncParseProvider('tts_monster')
         assert result is TtsProvider.TTS_MONSTER
+
+        result = await self.jsonMapper.asyncParseProvider('tts-monster')
+        assert result is TtsProvider.TTS_MONSTER
+
+        result = await self.jsonMapper.asyncParseProvider('tts monster')
+        assert result is TtsProvider.TTS_MONSTER
+
+    @pytest.mark.asyncio
+    async def test_asyncParseProvider_withUnrestrictedDecTalk(self):
+        result = await self.jsonMapper.asyncParseProvider('unrestricted_dec_talk')
+        assert result is TtsProvider.UNRESTRICTED_DEC_TALK
+
+        result = await self.jsonMapper.asyncParseProvider('unrestricted-dec-talk')
+        assert result is TtsProvider.UNRESTRICTED_DEC_TALK
+
+        result = await self.jsonMapper.asyncParseProvider('unrestricted dec talk')
+        assert result is TtsProvider.UNRESTRICTED_DEC_TALK
 
     @pytest.mark.asyncio
     async def test_asyncParseProvider_withWhitespaceString(self):
@@ -196,6 +225,20 @@ class TestTtsJsonMapper:
         assert result.minAmount == parameters.minAmount
 
     @pytest.mark.asyncio
+    async def test_asyncRequireProvider_withTtsMonster(self):
+        result = await self.jsonMapper.asyncRequireProvider('tts_monster')
+        assert result is TtsProvider.TTS_MONSTER
+
+        result = await self.jsonMapper.asyncRequireProvider('tts-monster')
+        assert result is TtsProvider.TTS_MONSTER
+
+        result = await self.jsonMapper.asyncRequireProvider('tts monster')
+        assert result is TtsProvider.TTS_MONSTER
+
+        result = await self.jsonMapper.asyncRequireProvider('ttsmonster')
+        assert result is TtsProvider.TTS_MONSTER
+
+    @pytest.mark.asyncio
     async def test_asyncSerializeProvider_withAll(self):
         results: set[str] = set()
 
@@ -245,11 +288,6 @@ class TestTtsJsonMapper:
         assert result == 'shotgun_tts'
 
     @pytest.mark.asyncio
-    async def test_asyncSerializeProvider_withSingingDecTalk(self):
-        result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.SINGING_DEC_TALK)
-        assert result == 'singing_dec_talk'
-
-    @pytest.mark.asyncio
     async def test_asyncSerializeProvider_withStreamElements(self):
         result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.STREAM_ELEMENTS)
         assert result == 'stream_elements'
@@ -260,9 +298,9 @@ class TestTtsJsonMapper:
         assert result == 'tts_monster'
 
     @pytest.mark.asyncio
-    async def test_asyncSerializeProvider_withWhitespaceString(self):
-        result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.TTS_MONSTER)
-        assert result == 'tts_monster'
+    async def test_asyncSerializeProvider_withUnrestrictedDecTalk(self):
+        result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.UNRESTRICTED_DEC_TALK)
+        assert result == 'unrestricted_dec_talk'
 
     def test_parseProvider_withCommodoreSamString(self):
         result = self.jsonMapper.parseProvider('commodore_sam')
@@ -278,6 +316,12 @@ class TestTtsJsonMapper:
 
     def test_parseProvider_withGoogleString(self):
         result = self.jsonMapper.parseProvider('google')
+        assert result is TtsProvider.GOOGLE
+
+        result = self.jsonMapper.parseProvider('googl')
+        assert result is TtsProvider.GOOGLE
+
+        result = self.jsonMapper.parseProvider('goog')
         assert result is TtsProvider.GOOGLE
 
     def test_parseProvider_withHalfLifeString(self):
@@ -304,17 +348,60 @@ class TestTtsJsonMapper:
         result = self.jsonMapper.parseProvider('shotgun_tts')
         assert result is TtsProvider.SHOTGUN_TTS
 
-    def test_parseProvider_withSingingDecTalkString(self):
+    def test_parseProvider_withSingingDecTalkStrings(self):
         result = self.jsonMapper.parseProvider('singing_dec_talk')
-        assert result is TtsProvider.SINGING_DEC_TALK
+        assert result is TtsProvider.UNRESTRICTED_DEC_TALK
 
-    def test_parseProvider_withStreamElementsString(self):
+        result = self.jsonMapper.parseProvider('singing-dec-talk')
+        assert result is TtsProvider.UNRESTRICTED_DEC_TALK
+
+        result = self.jsonMapper.parseProvider('singing dec talk')
+        assert result is TtsProvider.UNRESTRICTED_DEC_TALK
+
+    def test_parseProvider_withStreamElementsStrings(self):
         result = self.jsonMapper.parseProvider('stream_elements')
         assert result is TtsProvider.STREAM_ELEMENTS
 
-    def test_parseProvider_withTtsMonsterString(self):
+        result = self.jsonMapper.parseProvider('stream-elements')
+        assert result is TtsProvider.STREAM_ELEMENTS
+
+        result = self.jsonMapper.parseProvider('stream elements')
+        assert result is TtsProvider.STREAM_ELEMENTS
+
+        result = self.jsonMapper.parseProvider('streamelements')
+        assert result is TtsProvider.STREAM_ELEMENTS
+
+        result = self.jsonMapper.parseProvider('stream_element')
+        assert result is TtsProvider.STREAM_ELEMENTS
+
+        result = self.jsonMapper.parseProvider('stream-element')
+        assert result is TtsProvider.STREAM_ELEMENTS
+
+        result = self.jsonMapper.parseProvider('stream element')
+        assert result is TtsProvider.STREAM_ELEMENTS
+
+        result = self.jsonMapper.parseProvider('streamelement')
+        assert result is TtsProvider.STREAM_ELEMENTS
+
+    def test_parseProvider_withTtsMonsterStrings(self):
         result = self.jsonMapper.parseProvider('tts_monster')
         assert result is TtsProvider.TTS_MONSTER
+
+        result = self.jsonMapper.parseProvider('tts-monster')
+        assert result is TtsProvider.TTS_MONSTER
+
+        result = self.jsonMapper.parseProvider('tts monster')
+        assert result is TtsProvider.TTS_MONSTER
+
+    def test_parseProvider_withUnrestrictedDecTalkStrings(self):
+        result = self.jsonMapper.parseProvider('unrestricted_dec_talk')
+        assert result is TtsProvider.UNRESTRICTED_DEC_TALK
+
+        result = self.jsonMapper.parseProvider('unrestricted-dec-talk')
+        assert result is TtsProvider.UNRESTRICTED_DEC_TALK
+
+        result = self.jsonMapper.parseProvider('unrestricted dec talk')
+        assert result is TtsProvider.UNRESTRICTED_DEC_TALK
 
     def test_parseProvider_withWhitespaceString(self):
         result = self.jsonMapper.parseProvider(' ')
@@ -338,6 +425,12 @@ class TestTtsJsonMapper:
 
     def test_requireProvider_withGoogleString(self):
         result = self.jsonMapper.requireProvider('google')
+        assert result is TtsProvider.GOOGLE
+
+        result = self.jsonMapper.requireProvider('googl')
+        assert result is TtsProvider.GOOGLE
+
+        result = self.jsonMapper.requireProvider('goog')
         assert result is TtsProvider.GOOGLE
 
     def test_requireProvider_withHalfLifeString(self):
@@ -370,15 +463,22 @@ class TestTtsJsonMapper:
 
     def test_requireProvider_withSingingDecTalkString(self):
         result = self.jsonMapper.requireProvider('singing_dec_talk')
-        assert result is TtsProvider.SINGING_DEC_TALK
+        assert result is TtsProvider.UNRESTRICTED_DEC_TALK
 
     def test_requireProvider_withStreamElementsString(self):
         result = self.jsonMapper.requireProvider('stream_elements')
         assert result is TtsProvider.STREAM_ELEMENTS
 
+        result = self.jsonMapper.requireProvider('stream_element')
+        assert result is TtsProvider.STREAM_ELEMENTS
+
     def test_requireProvider_withTtsMonsterString(self):
         result = self.jsonMapper.requireProvider('tts_monster')
         assert result is TtsProvider.TTS_MONSTER
+
+    def test_requireProvider_withUnrestrictedDecTalkString(self):
+        result = self.jsonMapper.requireProvider('unrestricted_dec_talk')
+        assert result is TtsProvider.UNRESTRICTED_DEC_TALK
 
     def test_requireProvider_withWhitespaceString(self):
         result: TtsProvider | None = None
@@ -433,10 +533,6 @@ class TestTtsJsonMapper:
         result = self.jsonMapper.serializeProvider(TtsProvider.SHOTGUN_TTS)
         assert result == 'shotgun_tts'
 
-    def test_serializeProvider_withSingingDecTalk(self):
-        result = self.jsonMapper.serializeProvider(TtsProvider.SINGING_DEC_TALK)
-        assert result == 'singing_dec_talk'
-
     def test_serializeProvider_withStreamElements(self):
         result = self.jsonMapper.serializeProvider(TtsProvider.STREAM_ELEMENTS)
         assert result == 'stream_elements'
@@ -444,3 +540,7 @@ class TestTtsJsonMapper:
     def test_serializeProvider_withTtsMonster(self):
         result = self.jsonMapper.serializeProvider(TtsProvider.TTS_MONSTER)
         assert result == 'tts_monster'
+
+    def test_serializeProvider_withUnrestrictedDecTalk(self):
+        result = self.jsonMapper.serializeProvider(TtsProvider.UNRESTRICTED_DEC_TALK)
+        assert result == 'unrestricted_dec_talk'

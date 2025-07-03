@@ -26,11 +26,11 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
         chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface | None,
         commodoreSamTtsManagerProvider: CommodoreSamTtsManagerProviderInterface,
         decTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface,
+        unrestrictedDecTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface,
         googleTtsManagerProvider: GoogleTtsManagerProviderInterface,
         halfLifeTtsManagerProvider: HalfLifeTtsManagerProviderInterface,
         microsoftTtsManagerProvider: MicrosoftTtsManagerProviderInterface,
         microsoftSamTtsManagerProvider: MicrosoftSamTtsManagerProviderInterface,
-        singingDecTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface,
         streamElementsTtsManagerProvider: StreamElementsTtsManagerProviderInterface,
         timber: TimberInterface,
         ttsMonsterTtsManagerProvider: TtsMonsterTtsManagerProviderInterface,
@@ -44,6 +44,8 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
             raise TypeError(f'commodoreSamTtsManagerProvider argument is malformed: \"{commodoreSamTtsManagerProvider}\"')
         elif not isinstance(decTalkTtsManagerProvider, DecTalkTtsManagerProviderInterface):
             raise TypeError(f'decTalkTtsManagerProvider argument is malformed: \"{decTalkTtsManagerProvider}\"')
+        elif not isinstance(unrestrictedDecTalkTtsManagerProvider, DecTalkTtsManagerProviderInterface):
+            raise TypeError(f'unrestrictedDecTalkTtsManagerProvider argument is malformed: \"{unrestrictedDecTalkTtsManagerProvider}\"')
         elif not isinstance(googleTtsManagerProvider, GoogleTtsManagerProviderInterface):
             raise TypeError(f'googleTtsManagerProvider argument is malformed: \"{googleTtsManagerProvider}\"')
         elif not isinstance(halfLifeTtsManagerProvider, HalfLifeTtsManagerProviderInterface):
@@ -52,8 +54,6 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
             raise TypeError(f'microsoftTtsManagerProvider argument is malformed: \"{microsoftTtsManagerProvider}\"')
         elif not isinstance(microsoftSamTtsManagerProvider, MicrosoftSamTtsManagerProviderInterface):
             raise TypeError(f'microsoftSamTtsManagerProvider argument is malformed: \"{microsoftSamTtsManagerProvider}\"')
-        elif not isinstance(singingDecTalkTtsManagerProvider, DecTalkTtsManagerProviderInterface):
-            raise TypeError(f'singingDecTalkTtsManagerProvider argument is malformed: \"{singingDecTalkTtsManagerProvider}\"')
         elif not isinstance(streamElementsTtsManagerProvider, StreamElementsTtsManagerProviderInterface):
             raise TypeError(f'streamElementsTtsManagerProvider argument is malformed: \"{streamElementsTtsManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
@@ -67,11 +67,11 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
         self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface | None] = chatterPreferredTtsHelper
         self.__commodoreSamTtsManagerProvider: Final[CommodoreSamTtsManagerProviderInterface] = commodoreSamTtsManagerProvider
         self.__decTalkTtsManagerProvider: Final[DecTalkTtsManagerProviderInterface] = decTalkTtsManagerProvider
+        self.__unrestrictedDecTalkTtsManagerProvider: Final[DecTalkTtsManagerProviderInterface] = unrestrictedDecTalkTtsManagerProvider
         self.__googleTtsManagerProvider: Final[GoogleTtsManagerProviderInterface] = googleTtsManagerProvider
         self.__halfLifeTtsManagerProvider: Final[HalfLifeTtsManagerProviderInterface] = halfLifeTtsManagerProvider
         self.__microsoftTtsManagerProvider: Final[MicrosoftTtsManagerProviderInterface] = microsoftTtsManagerProvider
         self.__microsoftSamTtsManagerProvider: Final[MicrosoftSamTtsManagerProviderInterface] = microsoftSamTtsManagerProvider
-        self.__singingDecTalkTtsManagerProvider: Final[DecTalkTtsManagerProviderInterface] = singingDecTalkTtsManagerProvider
         self.__streamElementsTtsManagerProvider: Final[StreamElementsTtsManagerProviderInterface] = streamElementsTtsManagerProvider
         self.__timber: Final[TimberInterface] = timber
         self.__ttsMonsterTtsManagerProvider: Final[TtsMonsterTtsManagerProviderInterface] = ttsMonsterTtsManagerProvider
@@ -94,6 +94,10 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
             useSharedSoundPlayerManager = useSharedSoundPlayerManager
         )
 
+        unrestrictedDecTalkTtsManager = self.__unrestrictedDecTalkTtsManagerProvider.constructNewInstance(
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+        )
+
         googleTtsManager = self.__googleTtsManagerProvider.constructNewInstance(
             useSharedSoundPlayerManager = useSharedSoundPlayerManager
         )
@@ -110,10 +114,6 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
             useSharedSoundPlayerManager = useSharedSoundPlayerManager
         )
 
-        singingDecTalkTtsManager = self.__singingDecTalkTtsManagerProvider.constructNewInstance(
-            useSharedSoundPlayerManager = useSharedSoundPlayerManager
-        )
-
         streamElementsTtsManager = self.__streamElementsTtsManagerProvider.constructNewInstance(
             useSharedSoundPlayerManager = useSharedSoundPlayerManager
         )
@@ -127,11 +127,11 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
             chatterPreferredTtsHelper = self.__chatterPreferredTtsHelper,
             commodoreSamTtsManager = commodoreSamTtsManager,
             decTalkTtsManager = decTalkTtsManager,
+            unrestrictedDecTalkTtsManager = unrestrictedDecTalkTtsManager,
             googleTtsManager = googleTtsManager,
             halfLifeTtsManager = halfLifeTtsManager,
             microsoftTtsManager = microsoftTtsManager,
             microsoftSamTtsManager = microsoftSamTtsManager,
-            singingDecTalkTtsManager = singingDecTalkTtsManager,
             streamElementsTtsManager = streamElementsTtsManager,
             timber = self.__timber,
             ttsMonsterTtsManager = ttsMonsterTtsManager,
@@ -146,11 +146,11 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
 
         commodoreSamTtsManager = self.__commodoreSamTtsManagerProvider.getSharedInstance()
         decTalkTtsManager = self.__decTalkTtsManagerProvider.getSharedInstance()
+        unrestrictedDecTalkTtsManager = self.__unrestrictedDecTalkTtsManagerProvider.getSharedInstance()
         googleTtsManager = self.__googleTtsManagerProvider.getSharedInstance()
         halfLifeTtsManager = self.__halfLifeTtsManagerProvider.getSharedInstance()
         microsoftTtsManager = self.__microsoftTtsManagerProvider.getSharedInstance()
         microsoftSamTtsManager = self.__microsoftSamTtsManagerProvider.getSharedInstance()
-        singingDecTalkTtsManager = self.__singingDecTalkTtsManagerProvider.getSharedInstance()
         streamElementsTtsManager = self.__streamElementsTtsManagerProvider.getSharedInstance()
         ttsMonsterTtsManager = self.__ttsMonsterTtsManagerProvider.getSharedInstance()
 
@@ -159,11 +159,11 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
             chatterPreferredTtsHelper = self.__chatterPreferredTtsHelper,
             commodoreSamTtsManager = commodoreSamTtsManager,
             decTalkTtsManager = decTalkTtsManager,
+            unrestrictedDecTalkTtsManager = unrestrictedDecTalkTtsManager,
             googleTtsManager = googleTtsManager,
             halfLifeTtsManager = halfLifeTtsManager,
             microsoftTtsManager = microsoftTtsManager,
             microsoftSamTtsManager = microsoftSamTtsManager,
-            singingDecTalkTtsManager = singingDecTalkTtsManager,
             streamElementsTtsManager = streamElementsTtsManager,
             timber = self.__timber,
             ttsMonsterTtsManager = ttsMonsterTtsManager,

@@ -10,9 +10,9 @@ from ..models.microsoft.microsoftTtsTtsProperties import MicrosoftTtsTtsProperti
 from ..models.microsoftSam.microsoftSamTtsProperties import MicrosoftSamTtsProperties
 from ..models.randoTts.randoTtsTtsProperties import RandoTtsTtsProperties
 from ..models.shotgunTts.shotgunTtsTtsProperties import ShotgunTtsTtsProperties
-from ..models.singingDecTalk.singingDecTalkTtsProperties import SingingDecTalkTtsProperties
 from ..models.streamElements.streamElementsTtsProperties import StreamElementsTtsProperties
 from ..models.ttsMonster.ttsMonsterTtsProperties import TtsMonsterTtsProperties
+from ..models.unrestrictedDecTalk.unrestrictedDecTalkTtsProperties import UnrestrictedDecTalkTtsProperties
 from ...decTalk.mapper.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
 from ...decTalk.models.decTalkVoice import DecTalkVoice
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
@@ -166,12 +166,6 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
     ) -> ShotgunTtsTtsProperties:
         return ShotgunTtsTtsProperties()
 
-    async def __parseSingingDecTalkTtsProperties(
-        self,
-        configurationJson: dict[str, Any]
-    ) -> SingingDecTalkTtsProperties:
-        return SingingDecTalkTtsProperties()
-
     async def __parseStreamElementsTtsProperties(
         self,
         configurationJson: dict[str, Any]
@@ -207,6 +201,12 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         return TtsMonsterTtsProperties(
             voice = voice
         )
+
+    async def __parseUnrestrictedDecTalkTtsProperties(
+        self,
+        configurationJson: dict[str, Any]
+    ) -> UnrestrictedDecTalkTtsProperties:
+        return UnrestrictedDecTalkTtsProperties()
 
     async def parseTtsProperties(
         self,
@@ -259,11 +259,6 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
                     configurationJson = configurationJson
                 )
 
-            case TtsProvider.SINGING_DEC_TALK:
-                return await self.__parseSingingDecTalkTtsProperties(
-                    configurationJson = configurationJson
-                )
-
             case TtsProvider.STREAM_ELEMENTS:
                 return await self.__parseStreamElementsTtsProperties(
                     configurationJson = configurationJson
@@ -271,6 +266,11 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
             case TtsProvider.TTS_MONSTER:
                 return await self.__parseTtsMonsterTtsProperties(
+                    configurationJson = configurationJson
+                )
+
+            case TtsProvider.UNRESTRICTED_DEC_TALK:
+                return await self.__parseUnrestrictedDecTalkTtsProperties(
                     configurationJson = configurationJson
                 )
 
@@ -354,12 +354,6 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
     ) -> dict[str, Any]:
         return dict()
 
-    async def __serializeSingingDecTalkTtsProperties(
-        self,
-        ttsProperties: SingingDecTalkTtsProperties
-    ) -> dict[str, Any]:
-        return dict()
-
     async def __serializeStreamElementsTtsProperties(
         self,
         ttsProperties: StreamElementsTtsProperties
@@ -385,6 +379,12 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             )
 
         return configurationJson
+
+    async def __serializeUnrestrictedDecTalkTtsProperties(
+        self,
+        ttsProperties: UnrestrictedDecTalkTtsProperties
+    ) -> dict[str, Any]:
+        return dict()
 
     async def serializeTtsProperties(
         self,
@@ -433,11 +433,6 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
                 ttsProperties = ttsProperties
             )
 
-        elif isinstance(ttsProperties, SingingDecTalkTtsProperties):
-            return await self.__serializeSingingDecTalkTtsProperties(
-                ttsProperties = ttsProperties
-            )
-
         elif isinstance(ttsProperties, StreamElementsTtsProperties):
             return await self.__serializeStreamElementsTtsProperties(
                 ttsProperties = ttsProperties
@@ -445,6 +440,11 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
 
         elif isinstance(ttsProperties, TtsMonsterTtsProperties):
             return await self.__serializeTtsMonsterTtsProperties(
+                ttsProperties = ttsProperties
+            )
+
+        elif isinstance(ttsProperties, UnrestrictedDecTalkTtsProperties):
+            return await self.__serializeUnrestrictedDecTalkTtsProperties(
                 ttsProperties = ttsProperties
             )
 

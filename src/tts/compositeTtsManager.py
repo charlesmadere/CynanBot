@@ -33,11 +33,11 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface | None,
         commodoreSamTtsManager: CommodoreSamTtsManagerInterface | None,
         decTalkTtsManager: DecTalkTtsManagerInterface | None,
+        unrestrictedDecTalkTtsManager: DecTalkTtsManagerInterface | None,
         googleTtsManager: GoogleTtsManagerInterface | None,
         halfLifeTtsManager: HalfLifeTtsManagerInterface | None,
         microsoftTtsManager: MicrosoftTtsManagerInterface | None,
         microsoftSamTtsManager: MicrosoftSamTtsManagerInterface | None,
-        singingDecTalkTtsManager: DecTalkTtsManagerInterface | None,
         streamElementsTtsManager: StreamElementsTtsManagerInterface | None,
         timber: TimberInterface,
         ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None,
@@ -51,6 +51,8 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             raise TypeError(f'commodoreSamTtsManager argument is malformed: \"{commodoreSamTtsManager}\"')
         elif decTalkTtsManager is not None and not isinstance(decTalkTtsManager, DecTalkTtsManagerInterface):
             raise TypeError(f'decTalkTtsManager argument is malformed: \"{decTalkTtsManager}\"')
+        elif unrestrictedDecTalkTtsManager is not None and not isinstance(unrestrictedDecTalkTtsManager, DecTalkTtsManagerInterface):
+            raise TypeError(f'unrestrictedDecTalkTtsManager argument is malformed: \"{unrestrictedDecTalkTtsManager}\"')
         elif googleTtsManager is not None and not isinstance(googleTtsManager, GoogleTtsManagerInterface):
             raise TypeError(f'googleTtsManager argument is malformed: \"{googleTtsManager}\"')
         elif halfLifeTtsManager is not None and not isinstance(halfLifeTtsManager, HalfLifeTtsManagerInterface):
@@ -59,8 +61,6 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             raise TypeError(f'microsoftTtsManager argument is malformed: \"{microsoftTtsManager}\"')
         elif microsoftSamTtsManager is not None and not isinstance(microsoftSamTtsManager, MicrosoftSamTtsManagerInterface):
             raise TypeError(f'microsoftSamTtsManager argument is malformed: \"{microsoftSamTtsManager}\"')
-        elif singingDecTalkTtsManager is not None and not isinstance(singingDecTalkTtsManager, DecTalkTtsManagerInterface):
-            raise TypeError(f'singingDecTalkTtsManager argument is malformed: \"{singingDecTalkTtsManager}\"')
         elif streamElementsTtsManager is not None and not isinstance(streamElementsTtsManager, StreamElementsTtsManagerInterface):
             raise TypeError(f'streamElementsTtsManager argument is malformed: \"{streamElementsTtsManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -82,9 +82,9 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             TtsProvider.HALF_LIFE: halfLifeTtsManager,
             TtsProvider.MICROSOFT: microsoftTtsManager,
             TtsProvider.MICROSOFT_SAM: microsoftSamTtsManager,
-            TtsProvider.SINGING_DEC_TALK: singingDecTalkTtsManager,
             TtsProvider.STREAM_ELEMENTS: streamElementsTtsManager,
             TtsProvider.TTS_MONSTER: ttsMonsterTtsManager,
+            TtsProvider.UNRESTRICTED_DEC_TALK: unrestrictedDecTalkTtsManager,
         })
 
         self.__currentTtsManager: TtsManagerInterface | None = None

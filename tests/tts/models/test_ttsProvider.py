@@ -39,10 +39,6 @@ class TestTtsProvider:
         result = TtsProvider.RANDO_TTS.humanName
         assert result == 'Rando TTS'
 
-    def test_humanName_withSingingDecTalk(self):
-        result = TtsProvider.SINGING_DEC_TALK.humanName
-        assert result == 'Singing DECtalk'
-
     def test_humanName_withStreamElements(self):
         result = TtsProvider.STREAM_ELEMENTS.humanName
         assert result == 'Stream Elements'
@@ -50,3 +46,7 @@ class TestTtsProvider:
     def test_humanName_withTtsMonster(self):
         result = TtsProvider.TTS_MONSTER.humanName
         assert result == 'TTS Monster'
+
+    def test_humanName_withUnrestrictedDecTalk(self):
+        result = TtsProvider.UNRESTRICTED_DEC_TALK.humanName
+        assert result == 'Unrestricted DECtalk'

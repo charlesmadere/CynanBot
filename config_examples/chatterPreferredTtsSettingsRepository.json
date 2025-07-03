@@ -5,8 +5,8 @@
         "google",
         "half_life",
         "microsoft_sam",
-        "singing_dec_talk",
         "stream_elements",
-        "tts_monster"
+        "tts_monster",
+        "unrestricted_dec_talk"
     ]
 }

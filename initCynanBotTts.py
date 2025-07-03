@@ -323,7 +323,7 @@ from src.tts.commodoreSam.commodoreSamTtsManagerProvider import CommodoreSamTtsM
 from src.tts.commodoreSam.commodoreSamTtsManagerProviderInterface import CommodoreSamTtsManagerProviderInterface
 from src.tts.decTalk.decTalkTtsManagerProvider import DecTalkTtsManagerProvider
 from src.tts.decTalk.decTalkTtsManagerProviderInterface import DecTalkTtsManagerProviderInterface
-from src.tts.decTalk.singingDecTalkTtsManagerProvider import SingingDecTalkTtsManagerProvider
+from src.tts.decTalk.unrestrictedDecTalkTtsManagerProvider import UnrestrictedDecTalkTtsManagerProvider
 from src.tts.directoryProvider.ttsDirectoryProvider import TtsDirectoryProvider
 from src.tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
 from src.tts.google.googleTtsManagerProvider import GoogleTtsManagerProvider
@@ -1242,23 +1242,23 @@ decTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface = DecTalkTtsManage
     ttsSettingsRepository = ttsSettingsRepository
 )
 
-singingDecTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
+unrestrictedDecTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
     emojiHelper = emojiHelper,
     timber = timber,
     ttsSettingsRepository = ttsSettingsRepository,
     twitchMessageStringUtils = twitchMessageStringUtils,
-    sing = True
+    isUnrestricted = True,
 )
 
-singingDecTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface = SingingDecTalkTtsManagerProvider(
+unrestrictedDecTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface = UnrestrictedDecTalkTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     decTalkHelper = decTalkHelper,
-    decTalkMessageCleaner = singingDecTalkMessageCleaner,
+    decTalkMessageCleaner = unrestrictedDecTalkMessageCleaner,
     decTalkSettingsRepository = decTalkSettingsRepository,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
 )
 
 googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepository(
@@ -1562,7 +1562,7 @@ compositeTtsManagerProvider: CompositeTtsManagerProviderInterface = CompositeTts
     halfLifeTtsManagerProvider = halfLifeTtsManagerProvider,
     microsoftSamTtsManagerProvider = microsoftSamTtsManagerProvider,
     microsoftTtsManagerProvider = microsoftTtsManagerProvider,
-    singingDecTalkTtsManagerProvider = singingDecTalkTtsManagerProvider,
+    unrestrictedDecTalkTtsManagerProvider= unrestrictedDecTalkTtsManagerProvider,
     streamElementsTtsManagerProvider = streamElementsTtsManagerProvider,
     timber = timber,
     ttsMonsterTtsManagerProvider = ttsMonsterTtsManagerProvider,

@@ -11,9 +11,9 @@ class TtsProvider(Enum):
     MICROSOFT_SAM = auto()
     RANDO_TTS = auto()
     SHOTGUN_TTS = auto()
-    SINGING_DEC_TALK = auto()
     STREAM_ELEMENTS = auto()
     TTS_MONSTER = auto()
+    UNRESTRICTED_DEC_TALK = auto()
 
     @property
     def humanName(self) -> str:
@@ -26,7 +26,7 @@ class TtsProvider(Enum):
             case TtsProvider.MICROSOFT_SAM: return 'Microsoft Sam'
             case TtsProvider.RANDO_TTS: return 'Rando TTS'
             case TtsProvider.SHOTGUN_TTS: return 'Shotgun TTS'
-            case TtsProvider.SINGING_DEC_TALK: return 'Singing DECtalk'
             case TtsProvider.STREAM_ELEMENTS: return 'Stream Elements'
             case TtsProvider.TTS_MONSTER: return 'TTS Monster'
+            case TtsProvider.UNRESTRICTED_DEC_TALK: return 'Unrestricted DECtalk'
             case _: raise ValueError(f'Encountered unknown TtsProvider value: \"{self}\"')

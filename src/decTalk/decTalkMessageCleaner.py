@@ -1,6 +1,6 @@
 import re
 import traceback
-from typing import Any, Collection, Pattern
+from typing import Any, Collection, Final, Pattern
 
 from frozenlist import FrozenList
 
@@ -20,7 +20,7 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         timber: TimberInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
-        sing: bool = False
+        isUnrestricted: bool = False
     ):
         if not isinstance(emojiHelper, EmojiHelperInterface):
             raise TypeError(f'emojiHelper argument is malformed: \"{emojiHelper}\"')
@@ -30,14 +30,14 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
         elif not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
             raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
-        elif not isinstance(sing, bool):
-            raise TypeError(f'sing argument is malformed: \"{sing}\"')
+        elif not isinstance(isUnrestricted, bool):
+            raise TypeError(f'isUnrestricted argument is malformed: \"{isUnrestricted}\"')
 
-        self.__emojiHelper: EmojiHelperInterface = emojiHelper
-        self.__timber: TimberInterface = timber
-        self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
-        self.__twitchMessageStringUtils: TwitchMessageStringUtilsInterface = twitchMessageStringUtils
-        self.__sing: bool = sing
+        self.__emojiHelper: Final[EmojiHelperInterface] = emojiHelper
+        self.__timber: Final[TimberInterface] = timber
+        self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
+        self.__twitchMessageStringUtils: Final[TwitchMessageStringUtilsInterface] = twitchMessageStringUtils
+        self.__isUnrestricted: Final[bool] = isUnrestricted
 
         self.__decTalkInlineCommandRegExes: Collection[Pattern] = self.__buildDecTalkInlineCommandRegExes()
         self.__decTalkInputFlagRegExes: Collection[Pattern] = self.__buildDecTalkInputFlagRegExes()
@@ -156,7 +156,7 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         if not utils.isValidStr(message):
             return None
 
-        if not self.__sing:
+        if not self.__isUnrestricted:
             message = await self.__purge(self.__decTalkInlineCommandRegExes, message)
             if not utils.isValidStr(message):
                 return None

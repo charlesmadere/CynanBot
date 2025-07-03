@@ -52,7 +52,7 @@ class TestGlacialTtsDataMapper:
     @pytest.mark.asyncio
     async def test_fromDatabaseName_withSingingDecTalk(self):
         result = await self.mapper.fromDatabaseName('singing_dec_talk')
-        assert result is TtsProvider.SINGING_DEC_TALK
+        assert result is TtsProvider.UNRESTRICTED_DEC_TALK
 
     @pytest.mark.asyncio
     async def test_fromDatabaseName_withStreamElements(self):
@@ -63,6 +63,11 @@ class TestGlacialTtsDataMapper:
     async def test_fromDatabaseName_withTtsMonster(self):
         result = await self.mapper.fromDatabaseName('tts_monster')
         assert result is TtsProvider.TTS_MONSTER
+
+    @pytest.mark.asyncio
+    async def test_fromDatabaseName_withUnrestrictedDecTalk(self):
+        result = await self.mapper.fromDatabaseName('unrestricted_dec_talk')
+        assert result is TtsProvider.UNRESTRICTED_DEC_TALK
 
     def test_sanity(self):
         assert self.mapper is not None
@@ -119,11 +124,6 @@ class TestGlacialTtsDataMapper:
         assert result == 'shotgun_tts'
 
     @pytest.mark.asyncio
-    async def test_toDatabaseName_withSingingDecTalk(self):
-        result = await self.mapper.toDatabaseName(TtsProvider.SINGING_DEC_TALK)
-        assert result == 'singing_dec_talk'
-
-    @pytest.mark.asyncio
     async def test_toDatabaseName_withStreamElements(self):
         result = await self.mapper.toDatabaseName(TtsProvider.STREAM_ELEMENTS)
         assert result == 'stream_elements'
@@ -132,6 +132,11 @@ class TestGlacialTtsDataMapper:
     async def test_toDatabaseName_withTtsMonster(self):
         result = await self.mapper.toDatabaseName(TtsProvider.TTS_MONSTER)
         assert result == 'tts_monster'
+
+    @pytest.mark.asyncio
+    async def test_toDatabaseName_withUnrestrictedDecTalk(self):
+        result = await self.mapper.toDatabaseName(TtsProvider.UNRESTRICTED_DEC_TALK)
+        assert result == 'unrestricted_dec_talk'
 
     @pytest.mark.asyncio
     async def test_toFolderName_withAll(self):
@@ -183,11 +188,6 @@ class TestGlacialTtsDataMapper:
         assert result == 'shotgun_tts'
 
     @pytest.mark.asyncio
-    async def test_toFolderName_withSingingDecTalk(self):
-        result = await self.mapper.toFolderName(TtsProvider.SINGING_DEC_TALK)
-        assert result == 'singing_dec_talk'
-
-    @pytest.mark.asyncio
     async def test_toFolderName_withStreamElements(self):
         result = await self.mapper.toFolderName(TtsProvider.STREAM_ELEMENTS)
         assert result == 'stream_elements'
@@ -196,3 +196,8 @@ class TestGlacialTtsDataMapper:
     async def test_toFolderName_withTtsMonster(self):
         result = await self.mapper.toFolderName(TtsProvider.TTS_MONSTER)
         assert result == 'tts_monster'
+
+    @pytest.mark.asyncio
+    async def test_toFolderName_withUnrestrictedDecTalk(self):
+        result = await self.mapper.toFolderName(TtsProvider.UNRESTRICTED_DEC_TALK)
+        assert result == 'unrestricted_dec_talk'

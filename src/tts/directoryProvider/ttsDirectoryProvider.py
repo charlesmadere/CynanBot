@@ -35,7 +35,7 @@ class TtsDirectoryProvider(TtsDirectoryProviderInterface):
             case TtsProvider.MICROSOFT_SAM: return 'microsoft_sam'
             case TtsProvider.RANDO_TTS: return 'rando_tts'
             case TtsProvider.SHOTGUN_TTS: return 'shotgun_tts'
-            case TtsProvider.SINGING_DEC_TALK: return 'singing_dec_talk'
             case TtsProvider.STREAM_ELEMENTS: return 'stream_elements'
             case TtsProvider.TTS_MONSTER: return 'tts_monster'
+            case TtsProvider.UNRESTRICTED_DEC_TALK: return 'unrestricted_dec_talk'
             case _: raise ValueError(f'encountered unknown TtsProvider value: \"{provider}\"')

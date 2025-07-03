@@ -68,6 +68,11 @@ class TestTtsDirectoryProvider:
         result = await self.directoryProvider.getTtsDirectoryFor(TtsProvider.TTS_MONSTER)
         assert result == 'tts_monster'
 
+    @pytest.mark.asyncio
+    async def test_getTtsDirectoryFor_withUnrestrictedDecTalk(self):
+        result = await self.directoryProvider.getTtsDirectoryFor(TtsProvider.UNRESTRICTED_DEC_TALK)
+        assert result == 'unrestricted_dec_talk'
+
     def test_sanity(self):
         assert self.directoryProvider is not None
         assert isinstance(self.directoryProvider, TtsDirectoryProvider)

@@ -4,6 +4,7 @@ from .decTalkTtsManager import DecTalkTtsManager
 from .decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from .decTalkTtsManagerProviderInterface import DecTalkTtsManagerProviderInterface
 from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
+from ..models.ttsProvider import TtsProvider
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInterface
@@ -78,7 +79,7 @@ class DecTalkTtsManagerProvider(DecTalkTtsManagerProviderInterface):
             soundPlayerManager = soundPlayerManager,
             timber = self.__timber,
             ttsCommandBuilder = self.__ttsCommandBuilder,
-            ttsSettingsRepository = self.__ttsSettingsRepository
+            ttsSettingsRepository = self.__ttsSettingsRepository,
         )
 
     def getSharedInstance(self) -> DecTalkTtsManagerInterface | None:
@@ -89,3 +90,7 @@ class DecTalkTtsManagerProvider(DecTalkTtsManagerProviderInterface):
             self.__sharedInstance = sharedInstance
 
         return sharedInstance
+
+    @property
+    def ttsProvider(self) -> TtsProvider:
+        return TtsProvider.DEC_TALK

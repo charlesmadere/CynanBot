@@ -5,9 +5,9 @@ from .models.google.googleTtsProperties import GoogleTtsProperties
 from .models.halfLife.halfLifeTtsProperties import HalfLifeTtsProperties
 from .models.microsoft.microsoftTtsTtsProperties import MicrosoftTtsTtsProperties
 from .models.microsoftSam.microsoftSamTtsProperties import MicrosoftSamTtsProperties
-from .models.singingDecTalk.singingDecTalkTtsProperties import SingingDecTalkTtsProperties
 from .models.streamElements.streamElementsTtsProperties import StreamElementsTtsProperties
 from .models.ttsMonster.ttsMonsterTtsProperties import TtsMonsterTtsProperties
+from .models.unrestrictedDecTalk.unrestrictedDecTalkTtsProperties import UnrestrictedDecTalkTtsProperties
 from ..misc import utils as utils
 from ..tts.models.ttsProvider import TtsProvider
 
@@ -62,9 +62,6 @@ class ChatterPreferredTtsPresenter:
 
         return f'{TtsProvider.MICROSOFT.humanName} ({voice.humanName})'
 
-    async def __singingDecTalk(self, properties: SingingDecTalkTtsProperties) -> str:
-        return TtsProvider.SINGING_DEC_TALK.humanName
-
     async def __streamElements(self, properties: StreamElementsTtsProperties) -> str:
         voice = properties.voice
 
@@ -80,6 +77,9 @@ class ChatterPreferredTtsPresenter:
             return TtsProvider.TTS_MONSTER.humanName
 
         return f'{TtsProvider.TTS_MONSTER.humanName} ({voice.humanName})'
+
+    async def __unrestrictedDecTalk(self, properties: UnrestrictedDecTalkTtsProperties) -> str:
+        return TtsProvider.UNRESTRICTED_DEC_TALK.humanName
 
     async def printOut(self, preferredTts: ChatterPreferredTts) -> str:
         if not isinstance(preferredTts, ChatterPreferredTts):
@@ -105,14 +105,14 @@ class ChatterPreferredTtsPresenter:
         elif isinstance(properties, MicrosoftTtsTtsProperties):
             return await self.__microsoftTts(properties)
 
-        elif isinstance(properties, SingingDecTalkTtsProperties):
-            return await self.__singingDecTalk(properties)
-
         elif isinstance(properties, StreamElementsTtsProperties):
             return await self.__streamElements(properties)
 
         elif isinstance(properties, TtsMonsterTtsProperties):
             return await self.__ttsMonster(properties)
+
+        elif isinstance(properties, UnrestrictedDecTalkTtsProperties):
+            return await self.__unrestrictedDecTalk(properties)
 
         else:
             raise ValueError(f'Encountered unknown AbsTtsProperties ({preferredTts=}) ({properties=})')

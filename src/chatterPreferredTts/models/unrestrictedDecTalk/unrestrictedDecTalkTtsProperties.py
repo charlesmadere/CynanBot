@@ -5,8 +5,8 @@ from ....tts.models.ttsProvider import TtsProvider
 
 
 @dataclass(frozen = True)
-class SingingDecTalkTtsProperties(AbsTtsProperties):
+class UnrestrictedDecTalkTtsProperties(AbsTtsProperties):
 
     @property
     def provider(self) -> TtsProvider:
-        return TtsProvider.SINGING_DEC_TALK
+        return TtsProvider.UNRESTRICTED_DEC_TALK

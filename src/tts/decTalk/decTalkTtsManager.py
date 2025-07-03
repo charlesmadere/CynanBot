@@ -158,3 +158,7 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         await self.__soundPlayerManager.stop()
         self.__isLoadingOrPlaying = False
         self.__timber.log('DecTalkTtsManager', f'Stopped TTS event')
+
+    @property
+    def ttsProvider(self) -> TtsProvider:
+        return TtsProvider.DEC_TALK

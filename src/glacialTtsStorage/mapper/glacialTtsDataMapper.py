@@ -20,9 +20,10 @@ class GlacialTtsDataMapper(GlacialTtsDataMapperInterface):
             case 'microsoft_sam': return TtsProvider.MICROSOFT_SAM
             case 'rando_tts': return TtsProvider.RANDO_TTS
             case 'shotgun_tts': return TtsProvider.SHOTGUN_TTS
-            case 'singing_dec_talk': return TtsProvider.SINGING_DEC_TALK
+            case 'singing_dec_talk': return TtsProvider.UNRESTRICTED_DEC_TALK
             case 'stream_elements': return TtsProvider.STREAM_ELEMENTS
             case 'tts_monster': return TtsProvider.TTS_MONSTER
+            case 'unrestricted_dec_talk': return TtsProvider.UNRESTRICTED_DEC_TALK
             case _: raise ValueError(f'Encountered unknown TtsProvider value: \"{ttsProvider}\"')
 
     async def toDatabaseName(self, ttsProvider: TtsProvider) -> str:
@@ -38,9 +39,9 @@ class GlacialTtsDataMapper(GlacialTtsDataMapperInterface):
             case TtsProvider.MICROSOFT_SAM: return 'microsoft_sam'
             case TtsProvider.RANDO_TTS: return 'rando_tts'
             case TtsProvider.SHOTGUN_TTS: return 'shotgun_tts'
-            case TtsProvider.SINGING_DEC_TALK: return 'singing_dec_talk'
             case TtsProvider.STREAM_ELEMENTS: return 'stream_elements'
             case TtsProvider.TTS_MONSTER: return 'tts_monster'
+            case TtsProvider.UNRESTRICTED_DEC_TALK: return 'unrestricted_dec_talk'
             case _: raise ValueError(f'Encountered unknown TtsProvider value: \"{ttsProvider}\"')
 
     async def toFolderName(self, ttsProvider: TtsProvider) -> str:
@@ -56,7 +57,7 @@ class GlacialTtsDataMapper(GlacialTtsDataMapperInterface):
             case TtsProvider.MICROSOFT_SAM: return 'microsoft_sam'
             case TtsProvider.RANDO_TTS: return 'rando_tts'
             case TtsProvider.SHOTGUN_TTS: return 'shotgun_tts'
-            case TtsProvider.SINGING_DEC_TALK: return 'singing_dec_talk'
             case TtsProvider.STREAM_ELEMENTS: return 'stream_elements'
             case TtsProvider.TTS_MONSTER: return 'tts_monster'
+            case TtsProvider.UNRESTRICTED_DEC_TALK: return 'unrestricted_dec_talk'
             case _: raise ValueError(f'encountered unknown TtsProvider value: \"{ttsProvider}\"')

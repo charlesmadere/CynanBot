@@ -11,9 +11,9 @@ from ..models.microsoft.microsoftTtsTtsProperties import MicrosoftTtsTtsProperti
 from ..models.microsoftSam.microsoftSamTtsProperties import MicrosoftSamTtsProperties
 from ..models.randoTts.randoTtsTtsProperties import RandoTtsTtsProperties
 from ..models.shotgunTts.shotgunTtsTtsProperties import ShotgunTtsTtsProperties
-from ..models.singingDecTalk.singingDecTalkTtsProperties import SingingDecTalkTtsProperties
 from ..models.streamElements.streamElementsTtsProperties import StreamElementsTtsProperties
 from ..models.ttsMonster.ttsMonsterTtsProperties import TtsMonsterTtsProperties
+from ..models.unrestrictedDecTalk.unrestrictedDecTalkTtsProperties import UnrestrictedDecTalkTtsProperties
 from ...decTalk.mapper.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
 from ...decTalk.models.decTalkVoice import DecTalkVoice
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
@@ -79,9 +79,9 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         self.__microsoftTtsRegEx: Final[Pattern] = re.compile(r'^\s*(?:microsoft|ms):?\s*([\w|\s\-]+)?\s*$', re.IGNORECASE)
         self.__randoTtsRegEx: Final[Pattern] = re.compile(r'^\s*random?(?:\s+|_|-)?(?:tts)?\s*$', re.IGNORECASE)
         self.__shotgunTtsRegEx: Final[Pattern] = re.compile(r'^\s*shotgun?(?:\s+|_|-)?(?:tts)?\s*$', re.IGNORECASE)
-        self.__singingDecTalkRegEx: Final[Pattern] = re.compile(r'^\s*singing(?:\s+|_|-)?dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE)
         self.__streamElementsRegEx: Final[Pattern] = re.compile(r'^\s*stream(?:\s+|_|-)?elements:?\s*([\w|\s\-]+)?\s*$', re.IGNORECASE)
         self.__ttsMonsterRegEx: Final[Pattern] = re.compile(r'^\s*tts(?:\s+|_|-)?monster:?\s*([\w|\s\-]+)?\s*$', re.IGNORECASE)
+        self.__unrestrictedDecTalkRegEx: Final[Pattern] = re.compile(r'^\s*unrestricted(?:\s+|_|-)?dec(?:\s+|_|-)?talk\s*$', re.IGNORECASE)
 
     async def __createCommodoreSamTtsProperties(
         self,
@@ -205,15 +205,6 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
         return ShotgunTtsTtsProperties()
 
-    async def __createSingingDecTalkTtsProperties(
-        self,
-        match: Match[str]
-    ) -> AbsTtsProperties | None:
-        if not isinstance(match, Match):
-            raise TypeError(f'match argument is malformed: \"{match}\"')
-
-        return SingingDecTalkTtsProperties()
-
     async def __createStreamElementsTtsProperties(
         self,
         match: Match[str]
@@ -252,6 +243,15 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
             voice = ttsMonsterVoice
         )
 
+    async def __createUnrestrictedDecTalkTtsProperties(
+        self,
+        match: Match[str]
+    ) -> AbsTtsProperties | None:
+        if not isinstance(match, Match):
+            raise TypeError(f'match argument is malformed: \"{match}\"')
+
+        return UnrestrictedDecTalkTtsProperties()
+
     async def parseUserMessage(
         self,
         userMessage: str | Any | None
@@ -269,9 +269,9 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         microsoftTtsMatch = self.__microsoftTtsRegEx.fullmatch(userMessage)
         randoTtsMatch = self.__randoTtsRegEx.fullmatch(userMessage)
         shotgunTtsMatch = self.__shotgunTtsRegEx.fullmatch(userMessage)
-        singingDecTalkMatch = self.__singingDecTalkRegEx.fullmatch(userMessage)
         streamElementsMatch = self.__streamElementsRegEx.fullmatch(userMessage)
         ttsMonsterMatch = self.__ttsMonsterRegEx.fullmatch(userMessage)
+        unrestrictedDecTalkMatch = self.__unrestrictedDecTalkRegEx.fullmatch(userMessage)
 
         if commodoreSamMatch is not None:
             return await self.__createCommodoreSamTtsProperties(commodoreSamMatch)
@@ -297,14 +297,14 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         elif shotgunTtsMatch is not None:
             return await self.__createShotgunTtsTtsProperties(shotgunTtsMatch)
 
-        elif singingDecTalkMatch is not None:
-            return await self.__createSingingDecTalkTtsProperties(singingDecTalkMatch)
-
         elif streamElementsMatch is not None:
             return await self.__createStreamElementsTtsProperties(streamElementsMatch)
 
         elif ttsMonsterMatch is not None:
             return await self.__createTtsMonsterTtsProperties(ttsMonsterMatch)
+
+        elif unrestrictedDecTalkMatch is not None:
+            return await self.__createUnrestrictedDecTalkTtsProperties(unrestrictedDecTalkMatch)
 
         elif utils.isValidStr(userMessage):
             # User input edge case: let's assume the user might've been confused by the
@@ -321,5 +321,20 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
                 self.__timber.log('ChatterPreferredTtsUserMessageHelper', f'Hit fall-back language-based case for user message ({googleProperties=}) ({languageEntry=}) ({userMessage=})')
                 return googleProperties
+
+            # User input edge case: let's assume the user might've been confused by the
+            # directions for this command, and just typed in the name of a TTS Monster
+            # voice instead.
+            ttsMonsterVoice = await self.__ttsMonsterPrivateApiJsonMapper.parseVoice(
+                string = userMessage
+            )
+
+            if ttsMonsterVoice is not None:
+                ttsMonsterTtsProperties = TtsMonsterTtsProperties(
+                    voice = ttsMonsterVoice
+                )
+
+                self.__timber.log('ChatterPreferredTtsUserMessageHelper', f'Hit fall-back TTS Monster voice case for user message ({ttsMonsterTtsProperties=}) ({ttsMonsterVoice=}) ({userMessage=})')
+                return ttsMonsterTtsProperties
 
         return None
