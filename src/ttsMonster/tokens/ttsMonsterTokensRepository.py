@@ -1,5 +1,5 @@
 import traceback
-from typing import Any
+from typing import Any, Final
 
 from .ttsMonsterTokensRepositoryInterface import TtsMonsterTokensRepositoryInterface
 from ..models.ttsMonsterTokens import TtsMonsterTokens
@@ -30,13 +30,13 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
         elif seedFileReader is not None and not isinstance(seedFileReader, JsonReaderInterface):
             raise TypeError(f'seedFileReader argument is malformed: \"{seedFileReader}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timber: TimberInterface = timber
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__seedFileReader: JsonReaderInterface | None = seedFileReader
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timber: Final[TimberInterface] = timber
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__seedFileReader: Final[JsonReaderInterface | None] = seedFileReader
 
         self.__isDatabaseReady: bool = False
-        self.__cache: dict[str, TtsMonsterTokens | None] = dict()
+        self.__cache: Final[dict[str, TtsMonsterTokens | None]] = dict()
 
     async def clearCaches(self):
         self.__cache.clear()

@@ -1,9 +1,9 @@
 import traceback
+from typing import Final
 
 from .ttsMonsterPrivateApiHelperInterface import TtsMonsterPrivateApiHelperInterface
 from ..apiService.ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
-from ..tokens.ttsMonsterTokensRepositoryInterface import \
-    TtsMonsterTokensRepositoryInterface
+from ..tokens.ttsMonsterTokensRepositoryInterface import TtsMonsterTokensRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...timber.timberInterface import TimberInterface
@@ -24,9 +24,9 @@ class TtsMonsterPrivateApiHelper(TtsMonsterPrivateApiHelperInterface):
         elif not isinstance(ttsMonsterTokensRepository, TtsMonsterTokensRepositoryInterface):
             raise TypeError(f'ttsMonsterTokensRepository argument is malformed: \"{ttsMonsterTokensRepository}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface = ttsMonsterPrivateApiService
-        self.__ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface = ttsMonsterTokensRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__ttsMonsterPrivateApiService: Final[TtsMonsterPrivateApiServiceInterface] = ttsMonsterPrivateApiService
+        self.__ttsMonsterTokensRepository: Final[TtsMonsterTokensRepositoryInterface] = ttsMonsterTokensRepository
 
     async def getSpeech(
         self,

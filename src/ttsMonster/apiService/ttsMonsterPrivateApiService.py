@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from .ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
 from ..mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
@@ -24,9 +25,9 @@ class TtsMonsterPrivateApiService(TtsMonsterPrivateApiServiceInterface):
         elif not isinstance(ttsMonsterPrivateApiJsonMapper, TtsMonsterPrivateApiJsonMapperInterface):
             raise TypeError(f'ttsMonsterPrivateApiJsonMapper argument is malformed: \"{ttsMonsterPrivateApiJsonMapper}\"')
 
-        self.__networkClientProvider: NetworkClientProvider = networkClientProvider
-        self.__timber: TimberInterface = timber
-        self.__ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = ttsMonsterPrivateApiJsonMapper
+        self.__networkClientProvider: Final[NetworkClientProvider] = networkClientProvider
+        self.__timber: Final[TimberInterface] = timber
+        self.__ttsMonsterPrivateApiJsonMapper: Final[TtsMonsterPrivateApiJsonMapperInterface] = ttsMonsterPrivateApiJsonMapper
 
     async def fetchGeneratedTts(
         self,
