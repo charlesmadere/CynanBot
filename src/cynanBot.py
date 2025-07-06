@@ -82,6 +82,7 @@ from .chatCommands.removeRecurringWordOfTheDayAction import RemoveRecurringWordO
 from .chatCommands.removeTriviaControllerChatCommand import RemoveTriviaControllerChatCommand
 from .chatCommands.removeTtsChatterChatCommand import RemoveTtsChatterChatCommand
 from .chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferredTtsChatCommand
+from .chatCommands.setTwitchCodeChatCommand import SetTwitchCodeChatCommand
 from .chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from .chatCommands.stubChatCommand import StubChatCommand
 from .chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
@@ -114,8 +115,7 @@ from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperIn
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from .cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
-from .commands import (AbsCommand, ConfirmCommand, PbsCommand, SetFuntoonTokenCommand, SetTwitchCodeCommand,
-                       StubCommand, SwQuoteCommand)
+from .commands import AbsCommand, ConfirmCommand, PbsCommand, SetFuntoonTokenCommand, StubCommand, SwQuoteCommand
 from .commodoreSam.settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSettingsRepositoryInterface
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .crowdControl.automator.crowdControlAutomatorInterface import CrowdControlAutomatorInterface
@@ -777,7 +777,7 @@ class CynanBot(
         self.__loremIpsumCommand: AbsChatCommand = LoremIpsumChatCommand(administratorProvider, timber, twitchUtils, usersRepository)
         self.__mastodonCommand: AbsCommand = StubCommand()
         self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
-        self.__setTwitchCodeCommand: AbsCommand = SetTwitchCodeCommand(administratorProvider, timber, twitchTokensRepository, twitchUtils, usersRepository)
+        self.__setTwitchCodeCommand: AbsChatCommand = SetTwitchCodeChatCommand(administratorProvider, timber, twitchTokensRepository, twitchUtils, usersRepository)
         self.__skipTtsCommand: AbsChatCommand = SkipTtsChatCommand(administratorProvider, compositeTtsManagerProvider, timber, twitchChannelEditorsRepository)
         self.__timeCommand: AbsChatCommand = TimeChatCommand(timber, twitchUtils, usersRepository)
         self.__twitchUserInfoCommand: AbsChatCommand = TwitchUserInfoChatCommand(administratorProvider, timber, twitchApiService, authRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
@@ -1569,7 +1569,7 @@ class CynanBot(
     @commands.command(name = 'settwitchcode')
     async def command_settwitchcode(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__setTwitchCodeCommand.handleCommand(context)
+        await self.__setTwitchCodeCommand.handleChatCommand(context)
 
     @commands.command(name = 'skiptts', aliases = [ 'skipTts', 'skipTTS', 'SkipTts', 'Skiptts', 'SkipTTS', 'SKIPTTS' ])
     async def command_skiptts(self, ctx: Context):
