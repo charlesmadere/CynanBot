@@ -29,7 +29,7 @@ pywin32 = { version = "310", markers = "sys_platform == 'win32'" }
 requests = "2.32.4"
 roman = "5.0"
 twitchio = "2.10.0"
-typing_extensions = "4.14.0"
+typing_extensions = "4.14.1"
 websockets = "15.0.1"
 xmltodict = "0.14.2"
 
