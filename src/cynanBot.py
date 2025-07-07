@@ -81,12 +81,15 @@ from .chatCommands.removeRecurringWeatherActionCommand import RemoveRecurringWea
 from .chatCommands.removeRecurringWordOfTheDayAction import RemoveRecurringWordOfTheDayActionCommand
 from .chatCommands.removeTriviaControllerChatCommand import RemoveTriviaControllerChatCommand
 from .chatCommands.removeTtsChatterChatCommand import RemoveTtsChatterChatCommand
+from .chatCommands.removeUserChatCommand import RemoveUserChatCommand
 from .chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferredTtsChatCommand
+from .chatCommands.setFuntoonTokenChatCommand import SetFuntoonTokenChatCommand
 from .chatCommands.setTwitchCodeChatCommand import SetTwitchCodeChatCommand
 from .chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from .chatCommands.stubChatCommand import StubChatCommand
 from .chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from .chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
+from .chatCommands.swQuoteChatCommand import SwQuoteChatCommand
 from .chatCommands.testCheerChatCommand import TestCheerChatCommand
 from .chatCommands.timeChatCommand import TimeChatCommand
 from .chatCommands.translateChatCommand import TranslateChatCommand
@@ -115,7 +118,7 @@ from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperIn
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from .cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
-from .commands import AbsCommand, ConfirmCommand, PbsCommand, SetFuntoonTokenCommand, StubCommand, SwQuoteCommand
+from .commands import AbsCommand, ConfirmCommand, PbsCommand, StubCommand
 from .commodoreSam.settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSettingsRepositoryInterface
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .crowdControl.automator.crowdControlAutomatorInterface import CrowdControlAutomatorInterface
@@ -777,6 +780,7 @@ class CynanBot(
         self.__loremIpsumCommand: AbsChatCommand = LoremIpsumChatCommand(administratorProvider, timber, twitchUtils, usersRepository)
         self.__mastodonCommand: AbsCommand = StubCommand()
         self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
+        self.__removeUserCommand: AbsChatCommand = RemoveUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
         self.__setTwitchCodeCommand: AbsChatCommand = SetTwitchCodeChatCommand(administratorProvider, timber, twitchTokensRepository, twitchUtils, usersRepository)
         self.__skipTtsCommand: AbsChatCommand = SkipTtsChatCommand(administratorProvider, compositeTtsManagerProvider, timber, twitchChannelEditorsRepository)
         self.__timeCommand: AbsChatCommand = TimeChatCommand(timber, twitchUtils, usersRepository)
@@ -916,9 +920,9 @@ class CynanBot(
             self.__myCutenessCommand: AbsChatCommand = MyCutenessChatCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, usersRepository)
 
         if funtoonTokensRepository is None:
-            self.__setFuntoonTokenCommand: AbsCommand = StubCommand()
+            self.__setFuntoonTokenCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__setFuntoonTokenCommand: AbsCommand = SetFuntoonTokenCommand(administratorProvider, funtoonTokensRepository, timber, twitchUtils, usersRepository)
+            self.__setFuntoonTokenCommand: AbsChatCommand = SetFuntoonTokenChatCommand(administratorProvider, funtoonTokensRepository, timber, twitchUtils, usersRepository)
 
         if jishoHelper is None:
             self.__jishoCommand: AbsChatCommand = StubChatCommand()
@@ -943,9 +947,9 @@ class CynanBot(
             self.__availableGrenadesCommand: AbsChatCommand = AvailableGrenadesChatCommand(recentGrenadeAttacksHelper, timber, twitchUtils, userIdsRepository, usersRepository)
 
         if starWarsQuotesRepository is None:
-            self.__swQuoteCommand: AbsCommand = StubCommand()
+            self.__swQuoteCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__swQuoteCommand: AbsCommand = SwQuoteCommand(starWarsQuotesRepository, timber, twitchUtils, usersRepository)
+            self.__swQuoteCommand: AbsChatCommand = SwQuoteChatCommand(starWarsQuotesRepository, timber, twitchUtils, usersRepository)
 
         if translationHelper is None:
             self.__translateCommand: AbsChatCommand = StubChatCommand()
@@ -1559,7 +1563,7 @@ class CynanBot(
     @commands.command(name = 'setfuntoontoken')
     async def command_setfuntoontoken(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__setFuntoonTokenCommand.handleCommand(context)
+        await self.__setFuntoonTokenCommand.handleChatCommand(context)
 
     @commands.command(name = 'setpreferredtts', aliases = [ 'settts' ])
     async def command_setpreferredtts(self, ctx: Context):
@@ -1589,7 +1593,7 @@ class CynanBot(
     @commands.command(name = 'swquote')
     async def command_swquote(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__swQuoteCommand.handleCommand(context)
+        await self.__swQuoteCommand.handleChatCommand(context)
 
     @commands.command(name = 'testcheer', aliases = [ 'testcheeraction' ])
     async def command_testcheer(self, ctx: Context):

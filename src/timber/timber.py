@@ -2,10 +2,12 @@ import asyncio
 import queue
 from collections import defaultdict
 from queue import SimpleQueue
+from typing import Final
 
 import aiofiles
 import aiofiles.os
 import aiofiles.ospath
+from frozenlist import FrozenList
 
 from .timberEntry import TimberEntry
 from .timberInterface import TimberInterface
@@ -35,13 +37,13 @@ class Timber(TimberInterface):
         elif not utils.isValidStr(timberRootDirectory):
             raise TypeError(f'timberRootDirectory argument is malformed: \"{timberRootDirectory}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__sleepTimeSeconds: float = sleepTimeSeconds
-        self.__timberRootDirectory: str = timberRootDirectory
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
+        self.__timberRootDirectory: Final[str] = timberRootDirectory
 
         self.__isStarted: bool = False
-        self.__entryQueue: SimpleQueue[TimberEntry] = SimpleQueue()
+        self.__entryQueue: Final[SimpleQueue[TimberEntry]] = SimpleQueue()
 
     def __getErrorStatement(self, ensureNewLine: bool, timberEntry: TimberEntry) -> str | None:
         if not utils.isValidBool(ensureNewLine):
@@ -83,7 +85,7 @@ class Timber(TimberInterface):
         tag: str,
         msg: str,
         exception: Exception | None = None,
-        traceback: str | None = None
+        traceback: str | None = None,
     ):
         if not utils.isValidStr(tag):
             raise TypeError(f'tag argument is malformed: \"{tag}\"')
@@ -95,7 +97,7 @@ class Timber(TimberInterface):
             raise TypeError(f'traceback argument is malformed: \"{traceback}\"')
 
         logTime = SimpleDateTime(
-            timeZone = self.__timeZoneRepository.getDefault()
+            timeZone = self.__timeZoneRepository.getDefault(),
         )
 
         timberEntry = TimberEntry(
@@ -103,7 +105,7 @@ class Timber(TimberInterface):
             logTime = logTime,
             msg = msg,
             tag = tag,
-            traceback = traceback
+            traceback = traceback,
         )
 
         self.__entryQueue.put(timberEntry)
@@ -119,7 +121,7 @@ class Timber(TimberInterface):
 
     async def __startEventLoop(self):
         while True:
-            entries: list[TimberEntry] = list()
+            entries: FrozenList[TimberEntry] = FrozenList()
 
             try:
                 while not self.__entryQueue.empty():
@@ -128,10 +130,11 @@ class Timber(TimberInterface):
             except queue.Empty:
                 pass
 
+            entries.freeze()
             await self.__writeToLogFiles(entries)
             await asyncio.sleep(self.__sleepTimeSeconds)
 
-    async def __writeToLogFiles(self, entries: list[TimberEntry]):
+    async def __writeToLogFiles(self, entries: FrozenList[TimberEntry]):
         if len(entries) == 0:
             return
 

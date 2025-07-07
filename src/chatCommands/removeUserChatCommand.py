@@ -13,11 +13,11 @@ from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class AddUserChatCommand(AbsChatCommand):
+class RemoveUserChatCommand(AbsChatCommand):
 
     def __init__(
         self,
-        addOrRemoveDataHelper: AddOrRemoveUserDataHelperInterface,
+        addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface,
         administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
@@ -25,8 +25,8 @@ class AddUserChatCommand(AbsChatCommand):
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
     ):
-        if not isinstance(addOrRemoveDataHelper, AddOrRemoveUserDataHelperInterface):
-            raise TypeError(f'addOrRemoveDataHelper argument is malformed: \"{addOrRemoveDataHelper}\"')
+        if not isinstance(addOrRemoveUserDataHelper, AddOrRemoveUserDataHelperInterface):
+            raise TypeError(f'addOrRemoveUserDataHelper argument is malformed: \"{addOrRemoveUserDataHelper}\"')
         elif not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(timber, TimberInterface):
@@ -40,7 +40,7 @@ class AddUserChatCommand(AbsChatCommand):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__addOrRemoveUserDataHelper: Final[AddOrRemoveUserDataHelperInterface] = addOrRemoveDataHelper
+        self.__addOrRemoveUserDataHelper: Final[AddOrRemoveUserDataHelperInterface] = addOrRemoveUserDataHelper
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__timber: Final[TimberInterface] = timber
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
@@ -53,42 +53,34 @@ class AddUserChatCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if ctx.getAuthorId() != administrator:
-            self.__timber.log('AddUserChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
+            self.__timber.log('RemoveUserChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('AddUserChatCommand', f'Not enough arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !adduser command: \"{splits}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.handle}')
+            self.__timber.log('RemoveUserChatCommand', f'Not enough arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !adduser command: \"{splits}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.handle}')
             return
 
         userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
-            self.__timber.log('AddUserChatCommand', f'Invalid username argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !adduser command: \"{splits}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.handle}')
+            self.__timber.log('RemoveUserChatCommand', f'Invalid username argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !removeuser command: \"{splits}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.handle}')
             return
 
-        if await self.__usersRepository.containsUserAsync(userName):
-            self.__timber.log('AddUserChatCommand', f'Username argument (\"{userName}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} already exists as a user')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add \"{userName}\" as this user already exists!')
+        if not await self.__usersRepository.containsUserAsync(userName):
+            self.__timber.log('RemoveUserChatCommand', f'Username argument (\"{userName}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} does not already exist as a user')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove \"{userName}\" as this user does not already exist!')
             return
 
-        userId = await self.__userIdsRepository.fetchUserId(
-            userName = userName,
-            twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-                twitchChannelId = await ctx.getTwitchChannelId()
-            )
-        )
-
-        if not utils.isValidStr(userId):
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to fetch user ID for \"{userName}\"!')
-            return
+        await self.__twitchTokensRepository.removeUser(twitchChannel = userName)
+        userId = await self.__userIdsRepository.requireUserId(userName = userName)
 
         await self.__addOrRemoveUserDataHelper.setUserData(
-            actionType = AddOrRemoveUserActionType.ADD,
+            actionType = AddOrRemoveUserActionType.REMOVE,
             userId = userId,
-            userName = userName
+            userName = userName,
         )
 
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ To add user \"{userName}\" ({userId}), please respond with `!confirm`')
-        self.__timber.log('AddUserChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ To remove user \"{userName}\" ({userId}), please respond with `!confirm`')
+        self.__timber.log('RemoveUserChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

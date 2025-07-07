@@ -1,6 +1,7 @@
 import random
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from typing import Final
 
 from .mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from .whichAnivUserHelperInterface import WhichAnivUserHelperInterface
@@ -49,7 +50,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtilsInterface,
-        whichAnivUserHelper: WhichAnivUserHelperInterface
+        whichAnivUserHelper: WhichAnivUserHelperInterface,
     ):
         if not isinstance(anivCopyMessageTimeoutScoreRepository, AnivCopyMessageTimeoutScoreRepositoryInterface):
             raise TypeError(f'anivCopyMessageTimeoutScoreRepository argument is malformed: \"{anivCopyMessageTimeoutScoreRepository}\"')
@@ -78,19 +79,19 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         elif not isinstance(whichAnivUserHelper, WhichAnivUserHelperInterface):
             raise TypeError(f'whichAnivUserHelper argument is malformed: \"{whichAnivUserHelper}\"')
 
-        self.__anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = anivCopyMessageTimeoutScoreRepository
-        self.__anivSettingsRepository: AnivSettingsRepositoryInterface = anivSettingsRepository
-        self.__mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = mostRecentAnivMessageRepository
-        self.__timber: TimberInterface = timber
-        self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
-        self.__twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface = twitchChannelEditorsRepository
-        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__twitchTimeoutHelper: TwitchTimeoutHelperInterface = twitchTimeoutHelper
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__whichAnivUserHelper: WhichAnivUserHelperInterface = whichAnivUserHelper
+        self.__anivCopyMessageTimeoutScoreRepository: Final[AnivCopyMessageTimeoutScoreRepositoryInterface] = anivCopyMessageTimeoutScoreRepository
+        self.__anivSettingsRepository: Final[AnivSettingsRepositoryInterface] = anivSettingsRepository
+        self.__mostRecentAnivMessageRepository: Final[MostRecentAnivMessageRepositoryInterface] = mostRecentAnivMessageRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
+        self.__twitchChannelEditorsRepository: Final[TwitchChannelEditorsRepositoryInterface] = twitchChannelEditorsRepository
+        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = twitchTimeoutHelper
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__whichAnivUserHelper: Final[WhichAnivUserHelperInterface] = whichAnivUserHelper
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
@@ -116,7 +117,10 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if not user.isAnivMessageCopyTimeoutEnabled:
             return False
 
-        anivUser = await self.__whichAnivUserHelper.getAnivUser(user.whichAnivUser)
+        anivUser = await self.__whichAnivUserHelper.getAnivUser(
+            twitchChannelId = twitchChannelId,
+            whichAnivUser = user.whichAnivUser,
+        )
 
         if anivUser is None or anivUser.userId == chatterUserId or twitchChannelId == chatterUserId:
             return False
@@ -138,7 +142,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         if await self.__isImmuneChatter(
             chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         ):
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, not proceeding with potentially timing out {chatterUserId}:{chatterUserId}, as they are an immune editor ({twitchChannelId=})')
             return False
@@ -163,14 +167,15 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
                 chatterUserId = chatterUserId,
                 chatterUserName = chatterUserName,
                 twitchChannel = user.handle,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
 
             return False
 
         reason = await self.__determineTimeoutReason(
             timeoutData = timeoutData,
-            user = user
+            user = user,
+            anivUser = anivUser,
         )
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
@@ -180,7 +185,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             twitchChannelAccessToken = twitchChannelAccessToken,
             twitchChannelId = twitchChannelId,
             userIdToTimeout = chatterUserId,
-            user = user
+            user = user,
         )
 
         if timeoutResult is not TwitchTimeoutResult.SUCCESS:
@@ -256,13 +261,18 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             durationSeconds = durationSeconds
         )
 
-    async def __determineTimeoutReason(self, timeoutData: AnivTimeoutData, user: UserInterface) -> str:
+    async def __determineTimeoutReason(
+        self,
+        timeoutData: AnivTimeoutData,
+        user: UserInterface,
+        anivUser: WhichAnivUserHelperInterface.Result,
+    ) -> str:
         match user.defaultLanguage:
             case LanguageEntry.SPANISH:
-                return f'{timeoutData.durationSecondsStr} de suspension por copiar un mensaje de aniv'
+                return f'{timeoutData.durationSecondsStr} de suspension por copiar un mensaje de {anivUser.userName}'
 
             case _:
-                return f'{timeoutData.durationSecondsStr}s timeout for copying an aniv message'
+                return f'{timeoutData.durationSecondsStr}s timeout for copying an {anivUser.userName} message'
 
     async def __isImmuneChatter(
         self,
@@ -270,12 +280,12 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         twitchChannelId: str
     ) -> bool:
         if await self.__timeoutImmuneUserIdsRepository.isImmune(
-            userId = chatterUserId
+            userId = chatterUserId,
         ):
             return True
         elif await self.__twitchChannelEditorsRepository.isEditor(
             chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         ):
             return True
         else:
@@ -303,7 +313,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
-            message = msg
+            message = msg,
         )
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):

@@ -1,6 +1,6 @@
 import random
 import re
-from typing import Pattern
+from typing import Final, Pattern
 
 from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
@@ -43,14 +43,14 @@ class TtsChatCommand(AbsChatCommand):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
-        self.__timber: TimberInterface = timber
-        self.__ttsJsonMapper: TtsJsonMapperInterface = ttsJsonMapper
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
+        self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
+        self.__timber: Final[TimberInterface] = timber
+        self.__ttsJsonMapper: Final[TtsJsonMapperInterface] = ttsJsonMapper
+        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-        self.__ttsProviderRegEx: Pattern = re.compile(r'^--(\w+)$', re.IGNORECASE)
+        self.__ttsProviderRegEx: Final[Pattern] = re.compile(r'^--(\w+)$', re.IGNORECASE)
 
     async def __displayTtsCheerAmounts(self, ctx: TwitchContext, user: UserInterface):
         cheerAmountStrings = await self.__getTtsCheerAmountStrings(user)
@@ -59,7 +59,7 @@ class TtsChatCommand(AbsChatCommand):
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = f'ⓘ TTS cheers have not been set up for this channel',
-                replyMessageId = await ctx.getMessageId()
+                replyMessageId = await ctx.getMessageId(),
             )
         else:
             cheerAmountString = ', '.join(cheerAmountStrings)
@@ -67,7 +67,7 @@ class TtsChatCommand(AbsChatCommand):
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = f'ⓘ TTS cheer information — {cheerAmountString}',
-                replyMessageId = await ctx.getMessageId()
+                replyMessageId = await ctx.getMessageId(),
             )
 
     async def __getTtsCheerAmountStrings(self, user: UserInterface) -> list[str]:
@@ -157,14 +157,14 @@ class TtsChatCommand(AbsChatCommand):
                 donation = None,
                 provider = ttsProvider,
                 providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
-                raidInfo = None
-            )
+                raidInfo = None,
+            ),
         ))
 
         await self.__twitchUtils.safeSend(
             messageable = ctx,
-            message = f'ⓘ Submitted TTS message using {ttsProvider.humanName}',
-            replyMessageId = await ctx.getMessageId()
+            message = f'ⓘ Submitted TTS message using {ttsProvider.humanName}…',
+            replyMessageId = await ctx.getMessageId(),
         )
 
-        self.__timber.log('TtsChatCommand', f'Handled !tts command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('TtsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

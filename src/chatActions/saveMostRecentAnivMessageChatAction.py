@@ -27,7 +27,10 @@ class SaveMostRecentAnivMessageChatAction(AbsChatAction):
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:
-        anivUser = await self.__whichAnivUserHelper.getAnivUser(user.whichAnivUser)
+        anivUser = await self.__whichAnivUserHelper.getAnivUser(
+            twitchChannelId = await message.getTwitchChannelId(),
+            whichAnivUser = user.whichAnivUser,
+        )
 
         if anivUser is None or anivUser.userId != message.getAuthorId():
             return False

@@ -71,8 +71,12 @@ class AnivCheckChatAction(AbsChatAction):
         if not user.isAnivContentScanningEnabled:
             return False
 
-        anivUser = await self.__whichAnivUserHelper.getAnivUser(user.whichAnivUser)
-        if anivUser is None or message.getAuthorId() != anivUser.userId:
+        anivUser = await self.__whichAnivUserHelper.getAnivUser(
+            twitchChannelId = await message.getTwitchChannelId(),
+            whichAnivUser = user.whichAnivUser,
+        )
+
+        if anivUser is None or anivUser.userId != message.getAuthorId():
             return False
 
         contentCode = await self.__anivContentScanner.scan(message.getContent())
@@ -88,29 +92,31 @@ class AnivCheckChatAction(AbsChatAction):
 
         twitchId = await self.__userIdsRepository.requireUserId(
             userName = twitchHandle,
-            twitchAccessToken = twitchAccessToken
+            twitchAccessToken = twitchAccessToken,
         )
-
-        channel = message.getChannel()
 
         banRequest = TwitchBanRequest(
             duration = self.__timeoutDurationSeconds,
-            broadcasterUserId = await channel.getTwitchChannelId(),
+            broadcasterUserId = await message.getTwitchChannelId(),
             moderatorUserId = twitchId,
             reason = f'{message.getAuthorName()} posted bad content ({contentCode})',
-            userIdToBan = anivUser.userId
+            userIdToBan = anivUser.userId,
         )
 
         try:
             await self.__twitchApiService.banUser(
                 twitchAccessToken = twitchAccessToken,
-                banRequest = banRequest
+                banRequest = banRequest,
             )
         except Exception as e:
             self.__timber.log('AnivCheckChatAction', f'Failed to timeout {message.getAuthorName()} ({anivUser=}) for posting bad content (\"{message.getContent()}\") ({contentCode=})', e, traceback.format_exc())
             return False
 
-        await self.__twitchUtils.safeSend(channel, f'ⓘ Timed out {message.getAuthorName()} for {self.__timeoutDurationSeconds} second(s) — {contentCode}')
+        await self.__twitchUtils.safeSend(
+            messageable = message.getChannel(),
+            message = f'ⓘ Timed out {message.getAuthorName()} for {self.__timeoutDurationSeconds} second(s) — {contentCode}',
+        )
+
         self.__timber.log('AnivCheckChatAction', f'Timed out {message.getAuthorName()} ({anivUser=}) for {self.__timeoutDurationSeconds} second(s) due to posting bad content (\"{message.getContent()}\") ({contentCode=})')
 
         return True

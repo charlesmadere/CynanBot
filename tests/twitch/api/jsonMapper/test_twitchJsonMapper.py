@@ -1979,6 +1979,15 @@ class TestTwitchJsonMapper:
         assert data['user_id'] == request.userIdToBan
 
     @pytest.mark.asyncio
+    async def test_serializeChatAnnouncementColor_withAll(self):
+        results: set[str] = set()
+
+        for announcementColor in TwitchChatAnnouncementColor:
+            results.add(await self.jsonMapper.serializeChatAnnouncementColor(announcementColor))
+
+        assert len(results) == len(TwitchChatAnnouncementColor)
+
+    @pytest.mark.asyncio
     async def test_serializeChatAnnouncementColor_withBlue(self):
         result = await self.jsonMapper.serializeChatAnnouncementColor(TwitchChatAnnouncementColor.BLUE)
         assert result == 'blue'
@@ -2234,6 +2243,15 @@ class TestTwitchJsonMapper:
         assert result['sender_id'] == request.senderId
 
     @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withAll(self):
+        results: set[str] = set()
+
+        for subscriptionType in TwitchWebsocketSubscriptionType:
+            results.add(await self.jsonMapper.serializeSubscriptionType(subscriptionType))
+
+        assert len(results) == len(TwitchWebsocketSubscriptionType)
+
+    @pytest.mark.asyncio
     async def test_serializeSubscriptionType_withChannelChatMessage(self):
         string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE)
         assert string == 'channel.chat.message'
@@ -2383,12 +2401,12 @@ class TestTwitchJsonMapper:
 
     @pytest.mark.asyncio
     async def test_serializeTransportMethod_withAll(self):
-        strings: set[str] = set()
+        results: set[str] = set()
 
         for transportMethod in TwitchWebsocketTransportMethod:
-            strings.add(await self.jsonMapper.serializeTransportMethod(transportMethod))
+            results.add(await self.jsonMapper.serializeTransportMethod(transportMethod))
 
-        assert len(strings) == len(TwitchWebsocketTransportMethod)
+        assert len(results) == len(TwitchWebsocketTransportMethod)
 
     @pytest.mark.asyncio
     async def test_serializeTransportMethod_withConduit(self):

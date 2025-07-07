@@ -9,11 +9,13 @@ class WhichAnivUserHelperInterface(ABC):
     @dataclass(frozen = True)
     class Result:
         userId: str
+        userName: str
         whichAnivUser: WhichAnivUser
 
     @abstractmethod
     async def getAnivUser(
         self,
-        whichAnivUser: WhichAnivUser | None
+        twitchChannelId: str,
+        whichAnivUser: WhichAnivUser | None,
     ) -> Result | None:
         pass

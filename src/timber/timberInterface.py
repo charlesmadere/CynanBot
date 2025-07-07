@@ -9,7 +9,7 @@ class TimberInterface(ABC):
         tag: str,
         msg: str,
         exception: Exception | None = None,
-        traceback: str | None = None
+        traceback: str | None = None,
     ):
         pass
 
