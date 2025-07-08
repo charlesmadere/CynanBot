@@ -1,15 +1,17 @@
+from typing import Final
+
 from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class FakeUserIdsRepository(UserIdsRepositoryInterface):
 
     def __init__(self):
-        self.__userIdsToUserNames: dict[str, str | None] = {
+        self.__userIdsToUserNames: Final[dict[str, str | None]] = {
             '111111': 'CynanBot',
             '222222': 'Eddie',
             '333333': 'imyt',
             '444444': 'smCharles',
-            '555555': 'stashiocat'
+            '555555': 'stashiocat',
         }
 
     async def clearCaches(self):

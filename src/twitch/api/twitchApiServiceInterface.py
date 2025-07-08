@@ -86,7 +86,7 @@ class TwitchApiServiceInterface(ABC):
         pass
 
     @abstractmethod
-    async def fetchEmotes(
+    async def fetchChannelEmotes(
         self,
         broadcasterId: str,
         twitchAccessToken: str

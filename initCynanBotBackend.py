@@ -1795,7 +1795,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
-    voicemailCheerActionHelper = None
+    voicemailCheerActionHelper = None,
 )
 
 

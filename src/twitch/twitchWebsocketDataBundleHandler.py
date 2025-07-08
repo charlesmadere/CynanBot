@@ -162,15 +162,15 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 await self.__channelPointRedemptionHandler.onNewChannelPointRedemption(
                     userId = userId,
                     user = user,
-                    dataBundle = dataBundle
+                    dataBundle = dataBundle,
                 )
 
         elif await self.__isChatType(subscriptionType):
             if self.__chatHandler is not None:
-                await self.__chatHandler.onNewChat(
-                    userId = userId,
+                await self.__chatHandler.onNewChatDataBundle(
+                    broadcasterUserId = userId,
                     user = user,
-                    dataBundle = dataBundle
+                    dataBundle = dataBundle,
                 )
 
         elif await self.__isCheerType(subscriptionType):
@@ -178,7 +178,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 await self.__cheerHandler.onNewCheerDataBundle(
                     broadcasterUserId = userId,
                     user = user,
-                    dataBundle = dataBundle
+                    dataBundle = dataBundle,
                 )
 
         elif await self.__isFollowType(subscriptionType):
@@ -186,7 +186,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 await self.__followHandler.onNewFollow(
                     userId = userId,
                     user = user,
-                    dataBundle = dataBundle
+                    dataBundle = dataBundle,
                 )
 
         elif await self.__isPollType(subscriptionType):
@@ -194,7 +194,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 await self.__pollHandler.onNewPoll(
                     userId = userId,
                     user = user,
-                    dataBundle = dataBundle
+                    dataBundle = dataBundle,
                 )
 
         elif await self.__isPredictionType(subscriptionType):
@@ -202,7 +202,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 await self.__predictionHandler.onNewPrediction(
                     userId = userId,
                     user = user,
-                    dataBundle = dataBundle
+                    dataBundle = dataBundle,
                 )
 
         elif await self.__isRaidType(subscriptionType):
@@ -210,7 +210,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 await self.__raidHandler.onNewRaid(
                     userId = userId,
                     user = user,
-                    dataBundle = dataBundle
+                    dataBundle = dataBundle,
                 )
 
         elif await self.__isSubscriptionType(subscriptionType):
@@ -218,11 +218,11 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 await self.__subscriptionHandler.onNewSubscriptionDataBundle(
                     broadcasterUserId = userId,
                     user = user,
-                    dataBundle = dataBundle
+                    dataBundle = dataBundle,
                 )
 
         else:
-            self.__timber.log('TwitchWebsocketDataBundleHandler', f'Received unhandled data bundle: \"{dataBundle}\"')
+            self.__timber.log('TwitchWebsocketDataBundleHandler', f'Received unhandled data bundle ({userId=}) ({user=}) ({dataBundle=})')
 
     async def __persistUserInfo(self, event: TwitchWebsocketEvent | None):
         if event is None:

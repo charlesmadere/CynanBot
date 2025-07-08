@@ -9,7 +9,7 @@ class TestMicrosoftSamVoice:
         for voice in MicrosoftSamVoice:
             apiValues.append(voice.apiValue)
 
-        assert len(apiValues) == len(list(MicrosoftSamVoice))
+        assert len(apiValues) == len(MicrosoftSamVoice)
 
     def test_apiValue_withBonziBuddy(self):
         result = MicrosoftSamVoice.BONZI_BUDDY.apiValue
@@ -25,7 +25,7 @@ class TestMicrosoftSamVoice:
         for voice in MicrosoftSamVoice:
             humanNames.append(voice.humanName)
 
-        assert len(humanNames) == len(list(MicrosoftSamVoice))
+        assert len(humanNames) == len(MicrosoftSamVoice)
 
     def test_humanName_withBonziBuddy(self):
         result = MicrosoftSamVoice.BONZI_BUDDY.humanName
@@ -41,7 +41,7 @@ class TestMicrosoftSamVoice:
         for voice in MicrosoftSamVoice:
             pitchValues.append(voice.pitch)
 
-        assert len(pitchValues) == len(list(MicrosoftSamVoice))
+        assert len(pitchValues) == len(MicrosoftSamVoice)
 
     def test_speed_withAll(self):
         speedValues: list[int] = list()
@@ -49,4 +49,4 @@ class TestMicrosoftSamVoice:
         for voice in MicrosoftSamVoice:
             speedValues.append(voice.speed)
 
-        assert len(speedValues) == len(list(MicrosoftSamVoice))
+        assert len(speedValues) == len(MicrosoftSamVoice)

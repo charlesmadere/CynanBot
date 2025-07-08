@@ -10,9 +10,23 @@ class AbsTwitchChatHandler(ABC):
     @abstractmethod
     async def onNewChat(
         self,
-        userId: str,
+        bits: int | None,
+        chatMessage: str,
+        chatterUserId: str,
+        chatterUserLogin: str,
+        chatterUserName: str,
+        twitchChannelId: str,
+        twitchChatMessageId: str | None,
         user: UserInterface,
-        dataBundle: TwitchWebsocketDataBundle
+    ):
+        pass
+
+    @abstractmethod
+    async def onNewChatDataBundle(
+        self,
+        broadcasterUserId: str,
+        user: UserInterface,
+        dataBundle: TwitchWebsocketDataBundle,
     ):
         pass
 

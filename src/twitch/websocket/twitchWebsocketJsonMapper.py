@@ -16,6 +16,7 @@ from ..api.models.twitchOutcome import TwitchOutcome
 from ..api.models.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..api.models.twitchPollChoice import TwitchPollChoice
 from ..api.models.twitchPollStatus import TwitchPollStatus
+from ..api.models.twitchPowerUp import TwitchPowerUp
 from ..api.models.twitchPredictionStatus import TwitchPredictionStatus
 from ..api.models.twitchRaid import TwitchRaid
 from ..api.models.twitchResub import TwitchResub
@@ -119,6 +120,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         isGift: bool | None = None
         if 'is_gift' in eventJson and eventJson.get('is_gift') is not None:
             isGift = utils.getBoolFromDict(eventJson, 'is_gift')
+
+        isSourceOnly: bool | None = None
+        if 'is_source_only' in eventJson and utils.isValidBool(eventJson.get('is_source_only')):
+            isSourceOnly = utils.getBoolFromDict(eventJson, 'is_source_only')
 
         followedAt: datetime | None = None
         if 'followed_at' in eventJson and utils.isValidStr(eventJson.get('followed_at')):
@@ -407,6 +412,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'notice_type' in eventJson and utils.isValidStr(eventJson.get('notice_type')):
             noticeType = await self.__twitchJsonMapper.parseNoticeType(utils.getStrFromDict(eventJson, 'notice_type'))
 
+        powerUp: TwitchPowerUp | None = None
+        if 'power_up' in eventJson:
+            powerUp = await self.__twitchJsonMapper.parsePowerUp(eventJson.get('power_up'))
+
         resub: TwitchResub | None = None
         if 'resub' in eventJson:
             resub = await self.__twitchJsonMapper.parseResub(eventJson.get('resub'))
@@ -427,6 +436,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             isAnonymous = isAnonymous,
             isChatterAnonymous = isChatterAnonymous,
             isGift = isGift,
+            isSourceOnly = isSourceOnly,
             endedAt = endedAt,
             endsAt = endsAt,
             followedAt = followedAt,
@@ -489,9 +499,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             resub = resub,
             rewardRedemptionStatus = rewardRedemptionStatus,
             noticeType = noticeType,
+            powerUp = powerUp,
             reward = reward,
             subGift = subGift,
-            sub = sub
+            sub = sub,
         )
 
     async def parseTwitchOutcome(

@@ -12,6 +12,7 @@ from .twitchNoticeType import TwitchNoticeType
 from .twitchOutcome import TwitchOutcome
 from .twitchPollChoice import TwitchPollChoice
 from .twitchPollStatus import TwitchPollStatus
+from .twitchPowerUp import TwitchPowerUp
 from .twitchPredictionStatus import TwitchPredictionStatus
 from .twitchRaid import TwitchRaid
 from .twitchResub import TwitchResub
@@ -28,6 +29,7 @@ class TwitchWebsocketEvent:
     isAnonymous: bool | None = None
     isChatterAnonymous: bool | None = None
     isGift: bool | None = None
+    isSourceOnly: bool | None = None
     endedAt: datetime | None = None
     endsAt: datetime | None = None
     followedAt: datetime | None = None
@@ -90,6 +92,7 @@ class TwitchWebsocketEvent:
     resub: TwitchResub | None = None
     rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
     noticeType: TwitchNoticeType | None = None
+    powerUp: TwitchPowerUp | None = None
     reward: TwitchReward | None = None
     subGift: TwitchSubGift | None = None
     sub: TwitchWebsocketSub | None = None

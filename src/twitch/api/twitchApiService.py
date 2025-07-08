@@ -421,7 +421,7 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         return twitchChattersResponse
 
-    async def fetchEmotes(
+    async def fetchChannelEmotes(
         self,
         broadcasterId: str,
         twitchAccessToken: str
@@ -440,8 +440,8 @@ class TwitchApiService(TwitchApiServiceInterface):
                 url = f'https://api.twitch.tv/helix/chat/emotes?broadcaster_id={broadcasterId}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
-                    'Client-Id': twitchClientId
-                }
+                    'Client-Id': twitchClientId,
+                },
             )
         except GenericNetworkException as e:
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching emotes ({broadcasterId=}) ({twitchAccessToken=}): {e}', e, traceback.format_exc())

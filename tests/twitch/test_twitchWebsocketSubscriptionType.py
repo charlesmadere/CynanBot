@@ -1,5 +1,4 @@
-from src.twitch.api.models.twitchWebsocketSubscriptionType import \
-    TwitchWebsocketSubscriptionType
+from src.twitch.api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 
 
 class TestTwitchWebsocketSubscriptionType:

@@ -28,6 +28,7 @@ class User(UserInterface):
         areBeanStatsEnabled: bool,
         areChatSoundAlertsEnabled: bool,
         areCheerActionsEnabled: bool,
+        arePranksEnabled: bool,
         areRecurringActionsEnabled: bool,
         areRedemptionCountersEnabled: bool,
         areSoundAlertsEnabled: bool,
@@ -142,6 +143,8 @@ class User(UserInterface):
             raise TypeError(f'areChatSoundAlertsEnabled argument is malformed: \"{areChatSoundAlertsEnabled}\"')
         elif not utils.isValidBool(areCheerActionsEnabled):
             raise TypeError(f'areCheerActionsEnabled argument is malformed: \"{areCheerActionsEnabled}\"')
+        elif not utils.isValidBool(arePranksEnabled):
+            raise TypeError(f'arePranksEnabled argument is malformed: \"{arePranksEnabled}\"')
         elif not utils.isValidBool(areRecurringActionsEnabled):
             raise TypeError(f'areRecurringActionsEnabled argument is malformed: \"{areRecurringActionsEnabled}\"')
         elif not utils.isValidBool(areRedemptionCountersEnabled):
@@ -353,6 +356,7 @@ class User(UserInterface):
         self.__areBeanStatsEnabled: bool = areBeanStatsEnabled
         self.__areChatSoundAlertsEnabled: bool = areChatSoundAlertsEnabled
         self.__areCheerActionsEnabled: bool = areCheerActionsEnabled
+        self.__arePranksEnabled: bool = arePranksEnabled
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
         self.__areRedemptionCountersEnabled: bool = areRedemptionCountersEnabled
         self.__areSoundAlertsEnabled: bool = areSoundAlertsEnabled
@@ -490,6 +494,10 @@ class User(UserInterface):
     @property
     def areCheerActionsEnabled(self) -> bool:
         return self.__areCheerActionsEnabled
+
+    @property
+    def arePranksEnabled(self) -> bool:
+        return self.__arePranksEnabled
 
     @property
     def areRecurringActionsEnabled(self) -> bool:

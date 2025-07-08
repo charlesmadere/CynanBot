@@ -63,6 +63,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def arePranksEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def areRecurringActionsEnabled(self) -> bool:
         pass
 

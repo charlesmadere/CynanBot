@@ -20,7 +20,7 @@ class TestTwitchWebsocketConditionBuilder:
 
     conditionBuilder: TwitchWebsocketConditionBuilderInterface = TwitchWebsocketConditionBuilder(
         twitchHandleProvider = twitchHandleProvider,
-        userIdsRepository = userIdsRepository
+        userIdsRepository = userIdsRepository,
     )
 
     @pytest.mark.asyncio
@@ -31,29 +31,29 @@ class TestTwitchWebsocketConditionBuilder:
         websocketUserName = 'stashiocat'
         websocketUser = TwitchWebsocketUser(
             userId = await self.userIdsRepository.requireUserId(websocketUserName),
-            userName = websocketUserName
+            userName = websocketUserName,
         )
 
         result = await self.conditionBuilder.build(
             subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE,
-            user = websocketUser
+            user = websocketUser,
         )
 
         assert isinstance(result, TwitchWebsocketCondition)
         assert result.broadcasterUserId == websocketUser.userId
-        assert result.userId == twitchId
+        assert result.userId == websocketUser.userId
 
     @pytest.mark.asyncio
     async def test_build_withChannelPointsRedemption(self):
         websocketUserName = 'imyt'
         websocketUser = TwitchWebsocketUser(
             userId = await self.userIdsRepository.requireUserId(websocketUserName),
-            userName = websocketUserName
+            userName = websocketUserName,
         )
 
         result = await self.conditionBuilder.build(
             subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,
-            user = websocketUser
+            user = websocketUser,
         )
 
         assert isinstance(result, TwitchWebsocketCondition)

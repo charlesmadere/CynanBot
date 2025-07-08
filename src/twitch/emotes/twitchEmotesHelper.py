@@ -86,7 +86,7 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         subscriptionStatus: TwitchSubscriptionStatus | None = None
 
         try:
-            emotesResponse = await self.__twitchApiService.fetchEmotes(
+            emotesResponse = await self.__twitchApiService.fetchChannelEmotes(
                 broadcasterId = twitchChannelId,
                 twitchAccessToken = twitchAccessToken
             )

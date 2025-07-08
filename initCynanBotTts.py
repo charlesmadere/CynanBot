@@ -1980,7 +1980,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
-    voicemailCheerActionHelper = voicemailCheerActionHelper
+    voicemailCheerActionHelper = voicemailCheerActionHelper,
 )
 
 

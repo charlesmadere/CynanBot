@@ -49,6 +49,9 @@ from ..models.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..models.twitchPaginationResponse import TwitchPaginationResponse
 from ..models.twitchPollChoice import TwitchPollChoice
 from ..models.twitchPollStatus import TwitchPollStatus
+from ..models.twitchPowerUp import TwitchPowerUp
+from ..models.twitchPowerUpEmote import TwitchPowerUpEmote
+from ..models.twitchPowerUpType import TwitchPowerUpType
 from ..models.twitchPredictionStatus import TwitchPredictionStatus
 from ..models.twitchRaid import TwitchRaid
 from ..models.twitchResub import TwitchResub
@@ -645,7 +648,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         bits = utils.getIntFromDict(jsonResponse, 'bits', fallback = 0)
 
         return TwitchCheerMetadata(
-            bits = bits
+            bits = bits,
         )
 
     async def parseCommunitySubGift(
@@ -1231,6 +1234,62 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'invalid': return TwitchPollStatus.INVALID
             case 'moderated': return TwitchPollStatus.MODERATED
             case 'terminated': return TwitchPollStatus.TERMINATED
+            case _: return None
+
+    async def parsePowerUp(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchPowerUp | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        messageEffectId: str | None = None
+        if 'message_effect_id' in jsonResponse and utils.isValidStr(jsonResponse.get('message_effect_id')):
+            messageEffectId = utils.getStrFromDict(jsonResponse, 'message_effect_id')
+
+        powerUpEmote = await self.parsePowerUpEmote(jsonResponse.get('emote'))
+
+        powerUpTypeString: str | Any | None = jsonResponse.get('power_up')
+        powerUpType = await self.parsePowerUpType(powerUpTypeString)
+
+        if powerUpType is None:
+            self.__timber.log('TwitchJsonMapper', f'Encountered unknown \"type\" field in JSON data: ({powerUpTypeString=}) ({jsonResponse=})')
+            return None
+
+        return TwitchPowerUp(
+            messageEffectId = messageEffectId,
+            powerUpEmote = powerUpEmote,
+            powerUpType = powerUpType,
+        )
+
+    async def parsePowerUpEmote(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchPowerUpEmote | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        emoteId = utils.getStrFromDict(jsonResponse, 'id')
+        emoteName = utils.getStrFromDict(jsonResponse, 'name')
+
+        return TwitchPowerUpEmote(
+            emoteId = emoteId,
+            emoteName = emoteName,
+        )
+
+    async def parsePowerUpType(
+        self,
+        powerUpType: str | Any | None
+    ) -> TwitchPowerUpType | None:
+        if not utils.isValidStr(powerUpType):
+            return None
+
+        powerUpType = powerUpType.lower()
+
+        match powerUpType:
+            case 'celebration': return TwitchPowerUpType.CELEBRATION
+            case 'gigantify_an_emote': return TwitchPowerUpType.GIGANTIFY_AN_EMOTE
+            case 'message_effect': return TwitchPowerUpType.MESSAGE_EFFECT
             case _: return None
 
     async def parsePredictionStatus(

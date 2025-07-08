@@ -4,7 +4,7 @@ import queue
 import traceback
 from datetime import datetime, timedelta
 from queue import SimpleQueue
-from typing import Any, Coroutine
+from typing import Any, Coroutine, Final
 
 import websockets
 
@@ -64,6 +64,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         websocketCreationDelayTimeSeconds: float = 0.5,
         websocketRetrySleepTimeSeconds: float = 3,
         subscriptionTypes: frozenset[TwitchWebsocketSubscriptionType] = frozenset({
+            TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE,
             TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,
             TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN,
             TwitchWebsocketSubscriptionType.CHANNEL_POLL_END,
@@ -76,10 +77,11 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             TwitchWebsocketSubscriptionType.RAID,
             TwitchWebsocketSubscriptionType.SUBSCRIBE,
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT,
-            TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
+            TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE,
         }),
         twitchWebsocketInstabilityThreshold: int = 3,
-        maxMessageAge: timedelta = timedelta(minutes = 1, seconds = 30)
+        twitchWebsocketMessageIdCacheSize: int = 1024,
+        maxMessageAge: timedelta = timedelta(minutes = 1, seconds = 30),
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -133,35 +135,39 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'twitchWebsocketInstabilityThreshold argument is malformed: \"{twitchWebsocketInstabilityThreshold}\"')
         elif twitchWebsocketInstabilityThreshold < 1 or twitchWebsocketInstabilityThreshold > 8:
             raise ValueError(f'twitchWebsocketInstabilityThreshold argument is out of bounds: {twitchWebsocketInstabilityThreshold}')
+        elif not utils.isValidInt(twitchWebsocketMessageIdCacheSize):
+            raise TypeError(f'twitchWebsocketMessageIdCacheSize argument is malformed: \"{twitchWebsocketMessageIdCacheSize}\"')
+        elif twitchWebsocketMessageIdCacheSize < 128 or twitchWebsocketMessageIdCacheSize > utils.getIntMaxSafeSize():
+            raise ValueError(f'twitchWebsocketMessageIdCacheSize argument is out of bounds: {twitchWebsocketMessageIdCacheSize}')
         elif not isinstance(maxMessageAge, timedelta):
             raise TypeError(f'maxMessageAge argument is malformed: \"{maxMessageAge}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
-        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface = twitchWebsocketAllowedUsersRepository
-        self.__twitchWebsocketConditionBuilder: TwitchWebsocketConditionBuilderInterface = twitchWebsocketConditionBuilder
-        self.__twitchWebsocketConnectionActionHelper: TwitchWebsocketConnectionActionHelperInterface = twitchWebsocketConnectionActionHelper
-        self.__twitchWebsocketEndpointHelper: TwitchWebsocketEndpointHelperInterface = twitchWebsocketEndpointHelper
-        self.__twitchWebsocketInstabilityHelper: TwitchWebsocketInstabilityHelperInterface = twitchWebsocketInstabilityHelper
-        self.__twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = twitchWebsocketJsonMapper
-        self.__twitchWebsocketSessionIdHelper: TwitchWebsocketSessionIdHelperInterface = twitchWebsocketSessionIdHelper
-        self.__twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface = twitchWebsocketSettingsRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
-        self.__queueTimeoutSeconds: float = queueTimeoutSeconds
-        self.__websocketCreationDelayTimeSeconds: float = websocketCreationDelayTimeSeconds
-        self.__websocketRetrySleepTimeSeconds: float = websocketRetrySleepTimeSeconds
-        self.__subscriptionTypes: frozenset[TwitchWebsocketSubscriptionType] = subscriptionTypes
-        self.__twitchWebsocketInstabilityThreshold: int = twitchWebsocketInstabilityThreshold
-        self.__maxMessageAge: timedelta = maxMessageAge
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
+        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__twitchWebsocketAllowedUsersRepository: Final[TwitchWebsocketAllowedUsersRepositoryInterface] = twitchWebsocketAllowedUsersRepository
+        self.__twitchWebsocketConditionBuilder: Final[TwitchWebsocketConditionBuilderInterface] = twitchWebsocketConditionBuilder
+        self.__twitchWebsocketConnectionActionHelper: Final[TwitchWebsocketConnectionActionHelperInterface] = twitchWebsocketConnectionActionHelper
+        self.__twitchWebsocketEndpointHelper: Final[TwitchWebsocketEndpointHelperInterface] = twitchWebsocketEndpointHelper
+        self.__twitchWebsocketInstabilityHelper: Final[TwitchWebsocketInstabilityHelperInterface] = twitchWebsocketInstabilityHelper
+        self.__twitchWebsocketJsonMapper: Final[TwitchWebsocketJsonMapperInterface] = twitchWebsocketJsonMapper
+        self.__twitchWebsocketSessionIdHelper: Final[TwitchWebsocketSessionIdHelperInterface] = twitchWebsocketSessionIdHelper
+        self.__twitchWebsocketSettingsRepository: Final[TwitchWebsocketSettingsRepositoryInterface] = twitchWebsocketSettingsRepository
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__queueSleepTimeSeconds: Final[float] = queueSleepTimeSeconds
+        self.__queueTimeoutSeconds: Final[float] = queueTimeoutSeconds
+        self.__websocketCreationDelayTimeSeconds: Final[float] = websocketCreationDelayTimeSeconds
+        self.__websocketRetrySleepTimeSeconds: Final[float] = websocketRetrySleepTimeSeconds
+        self.__subscriptionTypes: Final[frozenset[TwitchWebsocketSubscriptionType]] = subscriptionTypes
+        self.__twitchWebsocketInstabilityThreshold: Final[int] = twitchWebsocketInstabilityThreshold
+        self.__maxMessageAge: Final[timedelta] = maxMessageAge
 
         self.__isStarted: bool = False
-        self.__messageIdCache: LruCache = LruCache(128)
-        self.__dataBundleQueue: SimpleQueue[TwitchWebsocketDataBundle] = SimpleQueue()
+        self.__messageIdCache: Final[LruCache] = LruCache(twitchWebsocketMessageIdCacheSize)
+        self.__dataBundleQueue: Final[SimpleQueue[TwitchWebsocketDataBundle]] = SimpleQueue()
         self.__dataBundleListener: TwitchWebsocketDataBundleListener | None = None
 
     async def __createEventSubSubscription(self, user: TwitchWebsocketUser):
@@ -191,7 +197,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         for subscriptionType in self.__subscriptionTypes:
             condition = await self.__twitchWebsocketConditionBuilder.build(
                 subscriptionType = subscriptionType,
-                user = user
+                user = user,
             )
 
             if condition is None:
@@ -202,12 +208,12 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                 twitchChannelId = user.userId,
                 condition = condition,
                 subscriptionType = subscriptionType,
-                transport = transport
+                transport = transport,
             )
 
             createEventSubScriptionCoroutines.append(self.__twitchApiService.createEventSubSubscription(
                 twitchAccessToken = userAccessToken,
-                eventSubRequest = eventSubRequest
+                eventSubRequest = eventSubRequest,
             ))
 
         try:
@@ -226,13 +232,11 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             return False
 
         self.__messageIdCache.put(dataBundle.metadata.messageId)
-
-        # ensure that this message isn't gratuitously old
-        messageTimestamp = dataBundle.metadata.messageTimestamp
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
-        if now - messageTimestamp >= self.__maxMessageAge:
-            self.__timber.log('TwitchWebsocketClient', f'Encountered a message that is too old ({dataBundle.metadata.messageId=}) ({dataBundle=})')
+        # ensure that this message isn't gratuitously old
+        if now - dataBundle.metadata.messageTimestamp >= self.__maxMessageAge:
+            self.__timber.log('TwitchWebsocketClient', f'Encountered a message that is too old ({now=}) ({dataBundle.metadata.messageTimestamp=}) ({dataBundle=})')
             return False
 
         return True

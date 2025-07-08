@@ -32,6 +32,8 @@ from src.twitch.api.models.twitchNoticeType import TwitchNoticeType
 from src.twitch.api.models.twitchOutcomeColor import TwitchOutcomeColor
 from src.twitch.api.models.twitchPaginationResponse import TwitchPaginationResponse
 from src.twitch.api.models.twitchPollStatus import TwitchPollStatus
+from src.twitch.api.models.twitchPowerUpEmote import TwitchPowerUpEmote
+from src.twitch.api.models.twitchPowerUpType import TwitchPowerUpType
 from src.twitch.api.models.twitchPredictionStatus import TwitchPredictionStatus
 from src.twitch.api.models.twitchRaid import TwitchRaid
 from src.twitch.api.models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
@@ -546,14 +548,17 @@ class TestTwitchJsonMapper:
 
     @pytest.mark.asyncio
     async def test_parseCheer(self):
-        bits = 250
+        cheerMetadata = TwitchCheerMetadata(
+            bits = 250,
+        )
 
         result = await self.jsonMapper.parseCheerMetadata({
-            'bits': bits
+            'bits': cheerMetadata.bits,
         })
 
         assert isinstance(result, TwitchCheerMetadata)
-        assert result.bits == bits
+        assert result == cheerMetadata
+        assert result.bits == cheerMetadata.bits
 
     @pytest.mark.asyncio
     async def test_parseCheer_withEmptyDictionary(self):
@@ -1021,6 +1026,73 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parsePollStatus_withWhitespaceString(self):
         result = await self.jsonMapper.parsePollStatus(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePowerUp_withEmptyDictionary(self):
+        result = await self.jsonMapper.parsePowerUp(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePowerUp_withNone(self):
+        result = await self.jsonMapper.parsePowerUp(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePowerUpEmote(self):
+        powerUpEmote = TwitchPowerUpEmote(
+            emoteId = 'abc123',
+            emoteName = 'samusWow',
+        )
+
+        result = await self.jsonMapper.parsePowerUpEmote({
+            'id': powerUpEmote.emoteId,
+            'name': powerUpEmote.emoteName,
+        })
+
+        assert isinstance(result, TwitchPowerUpEmote)
+        assert result == powerUpEmote
+        assert result.emoteId == powerUpEmote.emoteId
+        assert result.emoteName == powerUpEmote.emoteName
+
+    @pytest.mark.asyncio
+    async def test_parsePowerUpEmote_withEmptyDictionary(self):
+        result = await self.jsonMapper.parsePowerUpEmote(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePowerUpEmote_withNone(self):
+        result = await self.jsonMapper.parsePowerUpEmote(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePowerUpType_withCelebration(self):
+        result = await self.jsonMapper.parsePowerUpType('celebration')
+        assert result is TwitchPowerUpType.CELEBRATION
+
+    @pytest.mark.asyncio
+    async def test_parsePowerUpType_withEmptyString(self):
+        result = await self.jsonMapper.parsePowerUpType('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePowerUpType_withGigantifyAnEmote(self):
+        result = await self.jsonMapper.parsePowerUpType('gigantify_an_emote')
+        assert result is TwitchPowerUpType.GIGANTIFY_AN_EMOTE
+
+    @pytest.mark.asyncio
+    async def test_parsePowerUpType_withMessageEffect(self):
+        result = await self.jsonMapper.parsePowerUpType('message_effect')
+        assert result is TwitchPowerUpType.MESSAGE_EFFECT
+
+    @pytest.mark.asyncio
+    async def test_parsePowerUpType_withNone(self):
+        result = await self.jsonMapper.parsePowerUpType(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePowerUpType_withWhitespaceString(self):
+        result = await self.jsonMapper.parsePowerUpType(' ')
         assert result is None
 
     @pytest.mark.asyncio

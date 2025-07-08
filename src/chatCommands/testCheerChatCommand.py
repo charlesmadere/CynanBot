@@ -78,13 +78,13 @@ class TestCheerChatCommand(AbsChatCommand):
         try:
             await self.__twitchCheerHandler.onNewCheer(
                 bits = bits,
-                broadcasterUserId = twitchChannelId,
                 chatMessage = chatMessage,
                 cheerUserId = ctx.getAuthorId(),
                 cheerUserLogin = ctx.getAuthorName(),
                 cheerUserName = ctx.getAuthorName(),
+                twitchChannelId = twitchChannelId,
                 twitchChatMessageId = await ctx.getMessageId(),
-                user = user
+                user = user,
             )
         except Exception as e:
             exception = e
@@ -93,7 +93,7 @@ class TestCheerChatCommand(AbsChatCommand):
         await self.__twitchUtils.safeSend(
             messageable = ctx,
             message = f'ⓘ Cheer test results ({bits=}) ({chatMessage=}) ({exception=})',
-            replyMessageId = await ctx.getMessageId()
+            replyMessageId = await ctx.getMessageId(),
         )
 
-        self.__timber.log('TestCheerChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({bits=}) ({chatMessage=})')
+        self.__timber.log('TestCheerChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({bits=}) ({chatMessage=}) ({exception=})')
