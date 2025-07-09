@@ -577,6 +577,13 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def requireContributionType(
+        self,
+        contributionType: str | Any | None
+    ) -> TwitchContributionType:
+        pass
+
+    @abstractmethod
     async def requireNoticeType(
         self,
         noticeType: str | Any | None

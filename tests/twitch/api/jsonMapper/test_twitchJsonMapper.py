@@ -1703,6 +1703,48 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_requireContributionType_withBits(self):
+        result = await self.jsonMapper.requireContributionType('bits')
+        assert result is TwitchContributionType.BITS
+
+    @pytest.mark.asyncio
+    async def test_requireContributionType_withEmptyString(self):
+        result: TwitchContributionType | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.jsonMapper.requireContributionType('')
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireContributionType_withNone(self):
+        result: TwitchContributionType | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.jsonMapper.requireContributionType(None)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireContributionType_withOther(self):
+        result = await self.jsonMapper.requireContributionType('other')
+        assert result is TwitchContributionType.OTHER
+
+    @pytest.mark.asyncio
+    async def test_requireContributionType_withSubscription(self):
+        result = await self.jsonMapper.requireContributionType('subscription')
+        assert result is TwitchContributionType.SUBSCRIPTION
+
+    @pytest.mark.asyncio
+    async def test_requireContributionType_withWhitespaceString(self):
+        result: TwitchContributionType | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.jsonMapper.requireContributionType(' ')
+
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_requireNoticeType_withAnnouncementString(self):
         result = await self.jsonMapper.requireNoticeType('announcement')
         assert result is TwitchNoticeType.ANNOUNCEMENT

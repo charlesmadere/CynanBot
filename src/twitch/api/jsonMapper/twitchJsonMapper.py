@@ -1920,6 +1920,17 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         return result
 
+    async def requireContributionType(
+        self,
+        contributionType: str | Any | None
+    ) -> TwitchContributionType:
+        result = await self.parseContributionType(contributionType)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{contributionType}\" into TwitchContributionType value!')
+
+        return result
+
     async def requireNoticeType(
         self,
         noticeType: str | Any | None
@@ -1927,7 +1938,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         result = await self.parseNoticeType(noticeType)
 
         if result is None:
-            raise ValueError(f'Unable to parse \"{noticeType}\" into TwitchWebsocketNoticeType value!')
+            raise ValueError(f'Unable to parse \"{noticeType}\" into TwitchNoticeType value!')
 
         return result
 
