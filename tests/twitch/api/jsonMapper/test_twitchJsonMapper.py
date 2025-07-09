@@ -24,6 +24,7 @@ from src.twitch.api.models.twitchConduitRequest import TwitchConduitRequest
 from src.twitch.api.models.twitchConduitResponse import TwitchConduitResponse
 from src.twitch.api.models.twitchConduitResponseEntry import TwitchConduitResponseEntry
 from src.twitch.api.models.twitchConduitShard import TwitchConduitShard
+from src.twitch.api.models.twitchContributionType import TwitchContributionType
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from src.twitch.api.models.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.models.twitchEmoteType import TwitchEmoteType
@@ -740,6 +741,36 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseConnectionStatus_withWhitespaceString(self):
         result = await self.jsonMapper.parseConnectionStatus(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseContributionType_withBits(self):
+        result = await self.jsonMapper.parseContributionType('bits')
+        assert result is TwitchContributionType.BITS
+
+    @pytest.mark.asyncio
+    async def test_parseContributionType_withEmptyString(self):
+        result = await self.jsonMapper.parseContributionType('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseContributionType_withNone(self):
+        result = await self.jsonMapper.parseContributionType(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseContributionType_withOther(self):
+        result = await self.jsonMapper.parseContributionType('other')
+        assert result is TwitchContributionType.OTHER
+
+    @pytest.mark.asyncio
+    async def test_parseContributionType_withSubscription(self):
+        result = await self.jsonMapper.parseContributionType('subscription')
+        assert result is TwitchContributionType.SUBSCRIPTION
+
+    @pytest.mark.asyncio
+    async def test_parseContributionType_withWhitespaceString(self):
+        result = await self.jsonMapper.parseContributionType(' ')
         assert result is None
 
     @pytest.mark.asyncio

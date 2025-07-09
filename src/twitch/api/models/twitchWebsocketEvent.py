@@ -29,6 +29,7 @@ class TwitchWebsocketEvent:
     isAnonymous: bool | None = None
     isChatterAnonymous: bool | None = None
     isGift: bool | None = None
+    isGoldenKappaTrain: bool | None = None
     isSourceOnly: bool | None = None
     endedAt: datetime | None = None
     endsAt: datetime | None = None
@@ -44,6 +45,7 @@ class TwitchWebsocketEvent:
     cumulativeMonths: int | None = None
     cumulativeTotal: int | None = None
     durationMonths: int | None = None
+    level: int | None = None
     streakMonths: int | None = None
     total: int | None = None
     viewers: int | None = None

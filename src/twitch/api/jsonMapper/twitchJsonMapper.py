@@ -33,6 +33,7 @@ from ..models.twitchConduitRequest import TwitchConduitRequest
 from ..models.twitchConduitResponse import TwitchConduitResponse
 from ..models.twitchConduitResponseEntry import TwitchConduitResponseEntry
 from ..models.twitchConduitShard import TwitchConduitShard
+from ..models.twitchContributionType import TwitchContributionType
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -842,6 +843,21 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'user_removed': return TwitchWebsocketConnectionStatus.USER_REMOVED
             case 'version_removed': return TwitchWebsocketConnectionStatus.VERSION_REMOVED
             case 'webhook_callback_verification_pending': return TwitchWebsocketConnectionStatus.WEBHOOK_CALLBACK_VERIFICATION_PENDING
+            case _: return None
+
+    async def parseContributionType(
+        self,
+        contributionType: str | Any | None
+    ) -> TwitchContributionType | None:
+        if not utils.isValidStr(contributionType):
+            return None
+
+        contributionType = contributionType.lower()
+
+        match contributionType:
+            case 'bits': return TwitchContributionType.BITS
+            case 'other': return TwitchContributionType.OTHER
+            case 'subscription': return TwitchContributionType.SUBSCRIPTION
             case _: return None
 
     async def parseEmoteDetails(

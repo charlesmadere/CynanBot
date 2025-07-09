@@ -28,6 +28,7 @@ from ..models.twitchConduitRequest import TwitchConduitRequest
 from ..models.twitchConduitResponse import TwitchConduitResponse
 from ..models.twitchConduitResponseEntry import TwitchConduitResponseEntry
 from ..models.twitchConduitShard import TwitchConduitShard
+from ..models.twitchContributionType import TwitchContributionType
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -258,6 +259,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         connectionStatus: str | Any | None
     ) -> TwitchWebsocketConnectionStatus | None:
+        pass
+
+    @abstractmethod
+    async def parseContributionType(
+        self,
+        contributionType: str | Any | None
+    ) -> TwitchContributionType | None:
         pass
 
     @abstractmethod

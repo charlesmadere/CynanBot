@@ -118,8 +118,12 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             isChatterAnonymous = utils.getBoolFromDict(eventJson, 'chatter_is_anonymous')
 
         isGift: bool | None = None
-        if 'is_gift' in eventJson and eventJson.get('is_gift') is not None:
+        if 'is_gift' in eventJson and utils.isValidBool(eventJson.get('is_gift')):
             isGift = utils.getBoolFromDict(eventJson, 'is_gift')
+
+        isGoldenKappaTrain: bool | None = None
+        if 'is_golden_kappa_train' in eventJson and utils.isValidBool(eventJson.get('is_golden_kappa_train')):
+            isGoldenKappaTrain = utils.getBoolFromDict(eventJson, 'is_golden_kappa_train')
 
         isSourceOnly: bool | None = None
         if 'is_source_only' in eventJson and utils.isValidBool(eventJson.get('is_source_only')):
@@ -144,6 +148,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         durationMonths: int | None = None
         if 'duration_months' in eventJson and utils.isValidInt(eventJson.get('duration_months')):
             durationMonths = utils.getIntFromDict(eventJson, 'duration_months')
+
+        level: int | None = None
+        if 'level' in eventJson and utils.isValidInt(eventJson.get('level')):
+            level = utils.getIntFromDict(eventJson, 'level')
 
         streakMonths: int | None = None
         if 'streak_months' in eventJson and utils.isValidInt(eventJson.get('streak_months')):
@@ -436,6 +444,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             isAnonymous = isAnonymous,
             isChatterAnonymous = isChatterAnonymous,
             isGift = isGift,
+            isGoldenKappaTrain = isGoldenKappaTrain,
             isSourceOnly = isSourceOnly,
             endedAt = endedAt,
             endsAt = endsAt,
@@ -451,6 +460,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             cumulativeMonths = cumulativeMonths,
             cumulativeTotal = cumulativeTotal,
             durationMonths = durationMonths,
+            level = level,
             streakMonths = streakMonths,
             total = total,
             viewers = viewers,
