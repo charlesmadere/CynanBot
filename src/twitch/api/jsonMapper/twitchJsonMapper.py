@@ -33,6 +33,7 @@ from ..models.twitchConduitRequest import TwitchConduitRequest
 from ..models.twitchConduitResponse import TwitchConduitResponse
 from ..models.twitchConduitResponseEntry import TwitchConduitResponseEntry
 from ..models.twitchConduitShard import TwitchConduitShard
+from ..models.twitchContribution import TwitchContribution
 from ..models.twitchContributionType import TwitchContributionType
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
@@ -844,6 +845,27 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'version_removed': return TwitchWebsocketConnectionStatus.VERSION_REMOVED
             case 'webhook_callback_verification_pending': return TwitchWebsocketConnectionStatus.WEBHOOK_CALLBACK_VERIFICATION_PENDING
             case _: return None
+
+    async def parseContribution(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchContribution | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        total = utils.getIntFromDict(jsonResponse, 'total')
+        userId = utils.getStrFromDict(jsonResponse, 'user_id')
+        userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
+        userName = utils.getStrFromDict(jsonResponse, 'user_name')
+        contributionType = await self.requireContributionType(utils.getStrFromDict(jsonResponse, 'type'))
+
+        return TwitchContribution(
+            total = total,
+            userId = userId,
+            userLogin = userLogin,
+            userName = userName,
+            contributionType = contributionType,
+        )
 
     async def parseContributionType(
         self,

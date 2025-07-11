@@ -149,9 +149,17 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'duration_months' in eventJson and utils.isValidInt(eventJson.get('duration_months')):
             durationMonths = utils.getIntFromDict(eventJson, 'duration_months')
 
+        goal: int | None = None
+        if 'goal' in eventJson and utils.isValidInt(eventJson.get('goal')):
+            goal = utils.getIntFromDict(eventJson, 'goal')
+
         level: int | None = None
         if 'level' in eventJson and utils.isValidInt(eventJson.get('level')):
             level = utils.getIntFromDict(eventJson, 'level')
+
+        progress: int | None = None
+        if 'progress' in eventJson and utils.isValidInt(eventJson.get('progress')):
+            progress = utils.getIntFromDict(eventJson, 'progress')
 
         streakMonths: int | None = None
         if 'streak_months' in eventJson and utils.isValidInt(eventJson.get('streak_months')):
@@ -172,6 +180,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         endsAt: datetime | None = None
         if 'ends_at' in eventJson and utils.isValidStr(eventJson.get('ends_at')):
             endsAt = utils.getDateTimeFromDict(eventJson, 'ends_at')
+
+        expiresAt: datetime | None = None
+        if 'expires_at' in eventJson and utils.isValidStr(eventJson.get('expires_at')):
+            expiresAt = utils.getDateTimeFromDict(eventJson, 'expires_at')
 
         lockedAt: datetime | None = None
         if 'locked_at' in eventJson and utils.isValidStr(eventJson.get('locked_at')):
@@ -448,6 +460,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             isSourceOnly = isSourceOnly,
             endedAt = endedAt,
             endsAt = endsAt,
+            expiresAt = expiresAt,
             followedAt = followedAt,
             lockedAt = lockedAt,
             locksAt = locksAt,
@@ -460,7 +473,9 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             cumulativeMonths = cumulativeMonths,
             cumulativeTotal = cumulativeTotal,
             durationMonths = durationMonths,
+            goal = goal,
             level = level,
+            progress = progress,
             streakMonths = streakMonths,
             total = total,
             viewers = viewers,

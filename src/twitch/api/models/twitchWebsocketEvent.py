@@ -33,6 +33,7 @@ class TwitchWebsocketEvent:
     isSourceOnly: bool | None = None
     endedAt: datetime | None = None
     endsAt: datetime | None = None
+    expiresAt: datetime | None = None
     followedAt: datetime | None = None
     lockedAt: datetime | None = None
     locksAt: datetime | None = None
@@ -45,7 +46,9 @@ class TwitchWebsocketEvent:
     cumulativeMonths: int | None = None
     cumulativeTotal: int | None = None
     durationMonths: int | None = None
+    goal: int | None = None
     level: int | None = None
+    progress: int | None = None
     streakMonths: int | None = None
     total: int | None = None
     viewers: int | None = None
