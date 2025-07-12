@@ -495,6 +495,7 @@ from src.websocketConnection.websocketConnectionServerInterface import Websocket
 # should just inherit LC_ALL from the environment
 locale.setlocale(locale.LC_ALL, '')
 
+
 #################################
 ## Core initialization section ##
 #################################

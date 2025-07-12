@@ -710,7 +710,6 @@ from src.websocketConnection.websocketConnectionServerInterface import Websocket
 #     level = logging.DEBUG
 # )
 
-
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 
