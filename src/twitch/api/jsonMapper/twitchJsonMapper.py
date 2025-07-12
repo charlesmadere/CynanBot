@@ -91,7 +91,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface
+        timeZoneRepository: TimeZoneRepositoryInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
