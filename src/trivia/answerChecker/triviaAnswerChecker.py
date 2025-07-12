@@ -1018,6 +1018,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'dialog'
         if word == 'flavour':
             yield 'flavor'
+        if word == 'flouride':
+            yield 'fluoride'
         if word == 'labour':
             yield 'labor'
         if word == 'licence':
