@@ -1,3 +1,5 @@
+from typing import Final
+
 from twitchio import Message
 from twitchio.channel import Channel
 from twitchio.ext.commands import Context
@@ -19,15 +21,15 @@ class TwitchIoConfiguration(TwitchConfiguration):
     def __init__(
         self,
         twitchIrcTagsParser: TwitchIrcTagsParserInterface,
-        userIdsRepository: UserIdsRepositoryInterface
+        userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(twitchIrcTagsParser, TwitchIrcTagsParserInterface):
             raise TypeError(f'twitchIrcTagsParser argument is malformed: \"{twitchIrcTagsParser}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__twitchIrcTagsParser: TwitchIrcTagsParserInterface = twitchIrcTagsParser
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__twitchIrcTagsParser: Final[TwitchIrcTagsParserInterface] = twitchIrcTagsParser
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
     def getChannel(self, channel: Channel) -> TwitchChannel:
         if not isinstance(channel, Channel):

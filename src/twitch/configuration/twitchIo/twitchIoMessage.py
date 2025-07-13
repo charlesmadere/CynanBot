@@ -1,4 +1,5 @@
 from typing import Any
+from typing import Final
 
 from twitchio import Message
 
@@ -20,7 +21,7 @@ class TwitchIoMessage(TwitchMessage):
         self,
         message: Message,
         twitchIrcTagsParser: TwitchIrcTagsParserInterface,
-        userIdsRepository: UserIdsRepositoryInterface
+        userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(message, Message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -29,16 +30,16 @@ class TwitchIoMessage(TwitchMessage):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__message: Message = message
-        self.__twitchIrcTagsParser: TwitchIrcTagsParserInterface = twitchIrcTagsParser
+        self.__message: Final[Message] = message
+        self.__twitchIrcTagsParser: Final[TwitchIrcTagsParserInterface] = twitchIrcTagsParser
 
-        self.__author: TwitchAuthor = TwitchIoAuthor(
-            author = message.author
+        self.__author: Final[TwitchAuthor] = TwitchIoAuthor(
+            author = message.author,
         )
 
-        self.__channel: TwitchChannel = TwitchIoChannel(
+        self.__channel: Final[TwitchChannel] = TwitchIoChannel(
             channel = message.channel,
-            userIdsRepository = userIdsRepository
+            userIdsRepository = userIdsRepository,
         )
 
         self.__tags: TwitchIrcTags | None = None

@@ -1,3 +1,5 @@
+from typing import Final
+
 from twitchio.ext.commands import Context
 
 from .twitchIoAuthor import TwitchIoAuthor
@@ -18,7 +20,7 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
         self,
         context: Context,
         twitchIrcTagsParser: TwitchIrcTagsParserInterface,
-        userIdsRepository: UserIdsRepositoryInterface
+        userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(context, Context):
             raise TypeError(f'context argument is malformed: \"{context}\"')
@@ -27,16 +29,16 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__context: Context = context
+        self.__context: Final[Context] = context
 
-        self.__author: TwitchAuthor = TwitchIoAuthor(
-            author = context.author
+        self.__author: Final[TwitchAuthor] = TwitchIoAuthor(
+            author = context.author,
         )
 
-        self.__message: TwitchMessage = TwitchIoMessage(
+        self.__message: Final[TwitchMessage] = TwitchIoMessage(
             message = context.message,
             twitchIrcTagsParser = twitchIrcTagsParser,
-            userIdsRepository = userIdsRepository
+            userIdsRepository = userIdsRepository,
         )
 
     def getAuthor(self) -> TwitchAuthor:

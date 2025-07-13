@@ -1,3 +1,5 @@
+from typing import Final
+
 from twitchio import Chatter, PartialChatter
 
 from ..twitchAuthor import TwitchAuthor
@@ -8,12 +10,12 @@ class TwitchIoAuthor(TwitchAuthor):
 
     def __init__(
         self,
-        author: Chatter | PartialChatter
+        author: Chatter | PartialChatter,
     ):
         if not isinstance(author, Chatter) and not isinstance(author, PartialChatter):
             raise TypeError(f'author argument is malformed: \"{author}\"')
 
-        self.__author: Chatter | PartialChatter = author
+        self.__author: Final[Chatter | PartialChatter] = author
 
     def getDisplayName(self) -> str:
         displayName: str | None = self.__author.display_name # type: ignore
