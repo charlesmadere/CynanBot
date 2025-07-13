@@ -1,3 +1,5 @@
+from typing import Final
+
 from twitchio.channel import Channel
 
 from ..twitchChannel import TwitchChannel
@@ -11,15 +13,15 @@ class TwitchIoChannel(TwitchChannel, TwitchMessageable):
     def __init__(
         self,
         channel: Channel,
-        userIdsRepository: UserIdsRepositoryInterface
+        userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(channel, Channel):
             raise TypeError(f'channel argument is malformed: \"{channel}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__channel: Channel = channel
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__channel: Final[Channel] = channel
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
         self.__twitchChannelId: str | None = None
 
