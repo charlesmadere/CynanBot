@@ -1613,6 +1613,12 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE
             case 'channel.channel_points_custom_reward_redemption.add':
                 return TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
+            case 'channel.hype_train.begin':
+                return TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_BEGIN
+            case 'channel.hype_train.end':
+                return TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_END
+            case 'channel.hype_train.progress':
+                return TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_PROGRESS
             case 'channel.poll.begin':
                 return TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN
             case 'channel.poll.end':
@@ -2192,6 +2198,12 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return 'channel.chat.message'
             case TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
                 return 'channel.channel_points_custom_reward_redemption.add'
+            case TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_BEGIN:
+                return 'channel.hype_train.begin'
+            case TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_END:
+                return 'channel.hype_train.end'
+            case TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_PROGRESS:
+                return 'channel.hype_train.progress'
             case TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
                 return 'channel.poll.begin'
             case TwitchWebsocketSubscriptionType.CHANNEL_POLL_END:

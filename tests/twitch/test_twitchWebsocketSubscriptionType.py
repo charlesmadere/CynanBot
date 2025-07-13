@@ -15,6 +15,18 @@ class TestTwitchWebsocketSubscriptionType:
         version = TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE.version
         assert version == '1'
 
+    def test_version_withChannelHypeTrainBegin(self):
+        version = TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_BEGIN.version
+        assert version == '2'
+
+    def test_version_withChannelHypeTrainEnd(self):
+        version = TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_END.version
+        assert version == '2'
+
+    def test_version_withChannelHypeTrainProgress(self):
+        version = TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_PROGRESS.version
+        assert version == '2'
+
     def test_version_withChannelPointsRedemption(self):
         version = TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION.version
         assert version == '1'
