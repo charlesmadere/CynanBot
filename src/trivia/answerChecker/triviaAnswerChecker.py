@@ -1042,7 +1042,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'tuesday'
         if word in ('wed', 'weds'):
             yield 'wednesday'
-        if word == 'thurs':
+        if word in ('thur', 'thurs'):
             yield 'thursday'
         if word == 'fri':
             yield 'friday'
