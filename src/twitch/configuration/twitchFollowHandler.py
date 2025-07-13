@@ -27,11 +27,11 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
-    async def onNewFollow(
+    async def onNewFollowDataBundle(
         self,
         userId: str,
         user: UserInterface,
-        dataBundle: TwitchWebsocketDataBundle
+        dataBundle: TwitchWebsocketDataBundle,
     ):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
@@ -56,24 +56,22 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
         await self.__persistFollowingStatus(
             followedAt = followedAt,
             broadcasterUserId = userId,
-            followerUserId = followerUserId
+            followerUserId = followerUserId,
         )
 
     async def __persistFollowingStatus(
         self,
         followedAt: datetime,
         broadcasterUserId: str,
-        followerUserId: str
+        followerUserId: str,
     ):
-        twitchFollowingStatusRepository = self.__twitchFollowingStatusRepository
-
-        if twitchFollowingStatusRepository is None:
+        if self.__twitchFollowingStatusRepository is None:
             return
 
-        await twitchFollowingStatusRepository.persistFollowingStatus(
+        await self.__twitchFollowingStatusRepository.persistFollowingStatus(
             followedAt = followedAt,
             twitchChannelId = broadcasterUserId,
-            userId = followerUserId
+            userId = followerUserId,
         )
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):

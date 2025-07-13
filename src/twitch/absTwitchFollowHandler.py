@@ -8,11 +8,11 @@ from ..users.userInterface import UserInterface
 class AbsTwitchFollowHandler(ABC):
 
     @abstractmethod
-    async def onNewFollow(
+    async def onNewFollowDataBundle(
         self,
         userId: str,
         user: UserInterface,
-        dataBundle: TwitchWebsocketDataBundle
+        dataBundle: TwitchWebsocketDataBundle,
     ):
         pass
 

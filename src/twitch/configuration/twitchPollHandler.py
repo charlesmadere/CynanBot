@@ -1,3 +1,5 @@
+from typing import Final
+
 from frozenlist import FrozenList
 
 from .twitchChannelProvider import TwitchChannelProvider
@@ -35,10 +37,10 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
-        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
-        self.__timber: TimberInterface = timber
-        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
+        self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
+        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
@@ -47,7 +49,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         pollChoices: FrozenList[TwitchPollChoice],
         pollStatus: TwitchPollStatus | None,
         subscriptionType: TwitchWebsocketSubscriptionType,
-        user: UserInterface
+        user: UserInterface,
     ):
         if not user.isNotifyOfPollResultsEnabled:
             return
@@ -115,7 +117,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         self,
         title: str,
         subscriptionType: TwitchWebsocketSubscriptionType,
-        user: UserInterface
+        user: UserInterface,
     ):
         if not user.isNotifyOfPollStartEnabled:
             return
@@ -125,11 +127,11 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         # TODO
         pass
 
-    async def onNewPoll(
+    async def onNewPollDataBundle(
         self,
         userId: str,
         user: UserInterface,
-        dataBundle: TwitchWebsocketDataBundle
+        dataBundle: TwitchWebsocketDataBundle,
     ):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
@@ -138,8 +140,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
-        payload = dataBundle.requirePayload()
-        event = payload.event
+        event = dataBundle.requirePayload().event
 
         if event is None:
             self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing event data ({user=}) ({dataBundle=})')
@@ -148,7 +149,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         broadcasterUserId = event.broadcasterUserId
         title = event.title
         choices = event.choices
-        subscriptionType = payload.requireSubscription().subscriptionType
+        subscriptionType = dataBundle.metadata.requireSubscriptionType()
 
         if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or choices is None or len(choices) == 0:
             self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({choices=})')
@@ -160,14 +161,14 @@ class TwitchPollHandler(AbsTwitchPollHandler):
                 title = title,
                 userId = userId,
                 subscriptionType = subscriptionType,
-                user = user
+                user = user,
             )
 
         if user.isNotifyOfPollStartEnabled:
             await self.__notifyChatOfPollStart(
                 title = title,
                 subscriptionType = subscriptionType,
-                user = user
+                user = user,
             )
 
         if user.isNotifyOfPollResultsEnabled:
@@ -175,7 +176,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
                 pollChoices = choices,
                 pollStatus = event.pollStatus,
                 subscriptionType = subscriptionType,
-                user = user
+                user = user,
             )
 
     async def __processTtsEvent(
@@ -206,8 +207,8 @@ class TwitchPollHandler(AbsTwitchPollHandler):
                 donation = None,
                 provider = user.defaultTtsProvider,
                 providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
-                raidInfo = None
-            )
+                raidInfo = None,
+            ),
         ))
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):

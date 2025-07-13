@@ -183,7 +183,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
         elif await self.__isFollowType(subscriptionType):
             if self.__followHandler is not None:
-                await self.__followHandler.onNewFollow(
+                await self.__followHandler.onNewFollowDataBundle(
                     userId = userId,
                     user = user,
                     dataBundle = dataBundle,
@@ -191,7 +191,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
         elif await self.__isPollType(subscriptionType):
             if self.__pollHandler is not None:
-                await self.__pollHandler.onNewPoll(
+                await self.__pollHandler.onNewPollDataBundle(
                     userId = userId,
                     user = user,
                     dataBundle = dataBundle,

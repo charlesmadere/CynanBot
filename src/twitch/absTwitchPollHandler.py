@@ -8,11 +8,11 @@ from ..users.userInterface import UserInterface
 class AbsTwitchPollHandler(ABC):
 
     @abstractmethod
-    async def onNewPoll(
+    async def onNewPollDataBundle(
         self,
         userId: str,
         user: UserInterface,
-        dataBundle: TwitchWebsocketDataBundle
+        dataBundle: TwitchWebsocketDataBundle,
     ):
         pass
 
