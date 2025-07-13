@@ -11,6 +11,8 @@ from ..api.models.twitchChatMessage import TwitchChatMessage
 from ..api.models.twitchChatMessageType import TwitchChatMessageType
 from ..api.models.twitchCheerMetadata import TwitchCheerMetadata
 from ..api.models.twitchCommunitySubGift import TwitchCommunitySubGift
+from ..api.models.twitchContribution import TwitchContribution
+from ..api.models.twitchHypeTrainType import TwitchHypeTrainType
 from ..api.models.twitchNoticeType import TwitchNoticeType
 from ..api.models.twitchOutcome import TwitchOutcome
 from ..api.models.twitchOutcomePredictor import TwitchOutcomePredictor
@@ -121,9 +123,9 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'is_gift' in eventJson and utils.isValidBool(eventJson.get('is_gift')):
             isGift = utils.getBoolFromDict(eventJson, 'is_gift')
 
-        isGoldenKappaTrain: bool | None = None
-        if 'is_golden_kappa_train' in eventJson and utils.isValidBool(eventJson.get('is_golden_kappa_train')):
-            isGoldenKappaTrain = utils.getBoolFromDict(eventJson, 'is_golden_kappa_train')
+        isSharedTrain: bool | None = None
+        if 'is_shared_train' in eventJson and utils.isValidBool(eventJson.get('is_shared_train')):
+            isSharedTrain = utils.getBoolFromDict(eventJson, 'is_shared_train')
 
         isSourceOnly: bool | None = None
         if 'is_source_only' in eventJson and utils.isValidBool(eventJson.get('is_source_only')):
@@ -218,6 +220,24 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
                     badges.sort(key = lambda badge: badge.badgeId)
                     frozenBadges = FrozenList(badges)
                     frozenBadges.freeze()
+
+        frozenTopContributions: FrozenList[TwitchContribution] | None = None
+        if 'top_contributions' in eventJson:
+            topContributionsItem: Any | None = eventJson.get('top_contributions')
+
+            if isinstance(topContributionsItem, list) and len(topContributionsItem) >= 1:
+                topContributions: list[TwitchContribution] = list()
+
+                for topContributionItem in topContributionsItem:
+                    topContribution = await self.__twitchJsonMapper.parseContribution(topContributionItem)
+
+                    if topContribution is not None:
+                        topContributions.append(topContribution)
+
+                if len(topContributions) >= 1:
+                    topContributions.sort(key = lambda topContribution: topContribution.userName.casefold())
+                    frozenTopContributions = FrozenList(topContributions)
+                    frozenTopContributions.freeze()
 
         frozenOutcomes: FrozenList[TwitchOutcome] | None = None
         if 'outcomes' in eventJson:
@@ -416,13 +436,19 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'community_sub_gift' in eventJson:
             communitySubGift = await self.__twitchJsonMapper.parseCommunitySubGift(eventJson.get('community_sub_gift'))
 
+        hypeTrainType: TwitchHypeTrainType | None = None
+        if 'type' in eventJson and utils.isValidStr(eventJson.get('type')):
+            typeString = utils.getStrFromDict(eventJson, 'type')
+            hypeTrainType = await self.__twitchJsonMapper.parseHypeTrainType(typeString)
+
         pollStatus: TwitchPollStatus | None = None
         predictionStatus: TwitchPredictionStatus | None = None
         rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
         if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
-            pollStatus = await self.__twitchJsonMapper.parsePollStatus(utils.getStrFromDict(eventJson, 'status'))
-            predictionStatus = await self.__twitchJsonMapper.parsePredictionStatus(utils.getStrFromDict(eventJson, 'status'))
-            rewardRedemptionStatus = await self.__twitchJsonMapper.parseRewardRedemptionStatus(utils.getStrFromDict(eventJson, 'status'))
+            statusString = utils.getStrFromDict(eventJson, 'status')
+            pollStatus = await self.__twitchJsonMapper.parsePollStatus(statusString)
+            predictionStatus = await self.__twitchJsonMapper.parsePredictionStatus(statusString)
+            rewardRedemptionStatus = await self.__twitchJsonMapper.parseRewardRedemptionStatus(statusString)
 
         raid: TwitchRaid | None = None
         if 'raid' in eventJson:
@@ -456,7 +482,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             isAnonymous = isAnonymous,
             isChatterAnonymous = isChatterAnonymous,
             isGift = isGift,
-            isGoldenKappaTrain = isGoldenKappaTrain,
+            isSharedTrain = isSharedTrain,
             isSourceOnly = isSourceOnly,
             endedAt = endedAt,
             endsAt = endsAt,
@@ -467,6 +493,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             redeemedAt = redeemedAt,
             startedAt = startedAt,
             badges = frozenBadges,
+            topContributions = frozenTopContributions,
             outcomes = frozenOutcomes,
             choices = frozenChoices,
             bits = bits,
@@ -515,6 +542,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             chatMessage = chatMessage,
             chatMessageType = chatMessageType,
             cheer = cheer,
+            hypeTrainType = hypeTrainType,
             tier = tier,
             channelPointsVoting = channelPointsVoting,
             communitySubGift = communitySubGift,

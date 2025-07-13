@@ -15,6 +15,7 @@ class TwitchApiScope(Enum):
     CHANNEL_MODERATE = auto()
     CHANNEL_READ_ADS = auto()
     CHANNEL_READ_EDITORS = auto()
+    CHANNEL_READ_HYPE_TRAIN = auto()
     CHANNEL_READ_POLLS = auto()
     CHANNEL_READ_PREDICTIONS = auto()
     CHANNEL_READ_REDEMPTIONS = auto()

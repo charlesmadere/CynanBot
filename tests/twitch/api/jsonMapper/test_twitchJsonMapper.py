@@ -29,6 +29,7 @@ from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from src.twitch.api.models.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.models.twitchEmoteType import TwitchEmoteType
 from src.twitch.api.models.twitchEventSubRequest import TwitchEventSubRequest
+from src.twitch.api.models.twitchHypeTrainType import TwitchHypeTrainType
 from src.twitch.api.models.twitchNoticeType import TwitchNoticeType
 from src.twitch.api.models.twitchOutcomeColor import TwitchOutcomeColor
 from src.twitch.api.models.twitchPaginationResponse import TwitchPaginationResponse
@@ -124,6 +125,11 @@ class TestTwitchJsonMapper:
     async def test_parseApiScope_withChannelReadEditorsString(self):
         result = await self.jsonMapper.parseApiScope('channel:read:editors')
         assert result is TwitchApiScope.CHANNEL_READ_EDITORS
+
+    @pytest.mark.asyncio
+    async def test_parseApiScope_withChannelReadHypeTrainString(self):
+        result = await self.jsonMapper.parseApiScope('channel:read:hype_train')
+        assert result is TwitchApiScope.CHANNEL_READ_HYPE_TRAIN
 
     @pytest.mark.asyncio
     async def test_parseApiScope_withChannelReadPollsString(self):
@@ -744,6 +750,16 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseContribution_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseContribution(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseContribution_withNone(self):
+        result = await self.jsonMapper.parseContribution(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseContributionType_withBits(self):
         result = await self.jsonMapper.parseContributionType('bits')
         assert result is TwitchContributionType.BITS
@@ -871,6 +887,36 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseEmoteType_withWhitespaceString(self):
         result = await self.jsonMapper.parseEmoteType(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseHypeTrainType_withEmptyString(self):
+        result = await self.jsonMapper.parseHypeTrainType('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseHypeTrainType_withGoldenKappa(self):
+        result = await self.jsonMapper.parseHypeTrainType('golden_kappa')
+        assert result is TwitchHypeTrainType.GOLDEN_KAPPA
+
+    @pytest.mark.asyncio
+    async def test_parseHypeTrainType_withNone(self):
+        result = await self.jsonMapper.parseHypeTrainType(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseHypeTrainType_withRegular(self):
+        result = await self.jsonMapper.parseHypeTrainType('regular')
+        assert result is TwitchHypeTrainType.REGULAR
+
+    @pytest.mark.asyncio
+    async def test_parseHypeTrainType_withTreasure(self):
+        result = await self.jsonMapper.parseHypeTrainType('treasure')
+        assert result is TwitchHypeTrainType.TREASURE
+
+    @pytest.mark.asyncio
+    async def test_parseHypeTrainType_withWhitespaceString(self):
+        result = await self.jsonMapper.parseHypeTrainType(' ')
         assert result is None
 
     @pytest.mark.asyncio

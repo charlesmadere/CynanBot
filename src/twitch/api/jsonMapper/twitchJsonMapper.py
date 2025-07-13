@@ -45,6 +45,7 @@ from ..models.twitchEventSubRequest import TwitchEventSubRequest
 from ..models.twitchEventSubResponse import TwitchEventSubResponse
 from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
+from ..models.twitchHypeTrainType import TwitchHypeTrainType
 from ..models.twitchNoticeType import TwitchNoticeType
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
 from ..models.twitchOutcomePredictor import TwitchOutcomePredictor
@@ -130,6 +131,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'channel:moderate': return TwitchApiScope.CHANNEL_MODERATE
             case 'channel:read:ads': return TwitchApiScope.CHANNEL_READ_ADS
             case 'channel:read:editors': return TwitchApiScope.CHANNEL_READ_EDITORS
+            case 'channel:read:hype_train': return TwitchApiScope.CHANNEL_READ_HYPE_TRAIN
             case 'channel:read:polls': return TwitchApiScope.CHANNEL_READ_POLLS
             case 'channel:read:predictions': return TwitchApiScope.CHANNEL_READ_PREDICTIONS
             case 'channel:read:redemptions': return TwitchApiScope.CHANNEL_READ_REDEMPTIONS
@@ -1158,6 +1160,21 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             total = total,
             pagination = pagination
         )
+
+    async def parseHypeTrainType(
+        self,
+        hypeTrainType: str | Any | None
+    ) -> TwitchHypeTrainType | None:
+        if not utils.isValidStr(hypeTrainType):
+            return None
+
+        hypeTrainType = hypeTrainType.lower()
+
+        match hypeTrainType:
+            case 'golden_kappa': return TwitchHypeTrainType.GOLDEN_KAPPA
+            case 'regular': return TwitchHypeTrainType.REGULAR
+            case 'treasure': return TwitchHypeTrainType.TREASURE
+            case _: return None
 
     async def parseNoticeType(
         self,

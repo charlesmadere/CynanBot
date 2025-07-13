@@ -8,6 +8,8 @@ from .twitchChatMessage import TwitchChatMessage
 from .twitchChatMessageType import TwitchChatMessageType
 from .twitchCheerMetadata import TwitchCheerMetadata
 from .twitchCommunitySubGift import TwitchCommunitySubGift
+from .twitchContribution import TwitchContribution
+from .twitchHypeTrainType import TwitchHypeTrainType
 from .twitchNoticeType import TwitchNoticeType
 from .twitchOutcome import TwitchOutcome
 from .twitchPollChoice import TwitchPollChoice
@@ -29,7 +31,7 @@ class TwitchWebsocketEvent:
     isAnonymous: bool | None = None
     isChatterAnonymous: bool | None = None
     isGift: bool | None = None
-    isGoldenKappaTrain: bool | None = None
+    isSharedTrain: bool | None = None
     isSourceOnly: bool | None = None
     endedAt: datetime | None = None
     endsAt: datetime | None = None
@@ -40,6 +42,7 @@ class TwitchWebsocketEvent:
     redeemedAt: datetime | None = None
     startedAt: datetime | None = None
     badges: FrozenList[TwitchChatBadge] | None = None
+    topContributions: FrozenList[TwitchContribution] | None = None
     outcomes: FrozenList[TwitchOutcome] | None = None
     choices: FrozenList[TwitchPollChoice] | None = None
     bits: int | None = None
@@ -88,6 +91,7 @@ class TwitchWebsocketEvent:
     chatMessage: TwitchChatMessage | None = None
     chatMessageType: TwitchChatMessageType | None = None
     cheer: TwitchCheerMetadata | None = None
+    hypeTrainType: TwitchHypeTrainType | None = None
     tier: TwitchSubscriberTier | None = None
     channelPointsVoting: TwitchWebsocketChannelPointsVoting | None = None
     communitySubGift: TwitchCommunitySubGift | None = None
