@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
@@ -44,14 +45,14 @@ class SuperTriviaChatCommand(AbsChatCommand):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
-        self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
-        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaGameBuilder: Final[TriviaGameBuilderInterface] = triviaGameBuilder
+        self.__triviaGameMachine: Final[TriviaGameMachineInterface] = triviaGameMachine
+        self.__triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = triviaSettingsRepository
+        self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
+        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -68,7 +69,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
         if not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
-            userId = ctx.getAuthorId()
+            userId = ctx.getAuthorId(),
         ):
             return
 
@@ -85,7 +86,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
                 await self.__twitchUtils.safeSend(
                     messageable = ctx,
                     message = f'⚠ Error converting the given count into an int. Example: !supertrivia 2',
-                    replyMessageId = await ctx.getMessageId()
+                    replyMessageId = await ctx.getMessageId(),
                 )
                 return
 
@@ -96,7 +97,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
                 await self.__twitchUtils.safeSend(
                     messageable = ctx,
                     message = f'⚠ The given count is an unexpected number, please try again. Example: !supertrivia 2',
-                    replyMessageId = await ctx.getMessageId()
+                    replyMessageId = await ctx.getMessageId(),
                 )
                 return
 
@@ -106,11 +107,18 @@ class SuperTriviaChatCommand(AbsChatCommand):
             case '!supertrivialotr':
                 triviaSource = TriviaSource.LORD_OF_THE_RINGS
 
+        if user.arePranksEnabled and await self.__stopForPrank(
+            twitchChannelId = await ctx.getTwitchChannelId(),
+            userId = ctx.getAuthorId(),
+            triviaSource = triviaSource,
+        ):
+            return
+
         startNewSuperTriviaGameAction = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
             numberOfGames = numberOfGames,
-            requiredTriviaSource = triviaSource
+            requiredTriviaSource = triviaSource,
         )
 
         if startNewSuperTriviaGameAction is None:
@@ -118,3 +126,15 @@ class SuperTriviaChatCommand(AbsChatCommand):
 
         self.__triviaGameMachine.submitAction(startNewSuperTriviaGameAction)
         self.__timber.log('SuperTriviaChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+
+    async def __stopForPrank(
+        self,
+        twitchChannelId: str,
+        userId: str,
+        triviaSource: TriviaSource | None,
+    ) -> bool:
+        if triviaSource is not TriviaSource.LORD_OF_THE_RINGS:
+            return False
+
+        # TODO prank code goes here
+        return False
