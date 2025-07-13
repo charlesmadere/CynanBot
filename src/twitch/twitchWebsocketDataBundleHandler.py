@@ -184,7 +184,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         elif await self.__isFollowType(subscriptionType):
             if self.__followHandler is not None:
                 await self.__followHandler.onNewFollowDataBundle(
-                    userId = userId,
+                    twitchChannelId = userId,
                     user = user,
                     dataBundle = dataBundle,
                 )

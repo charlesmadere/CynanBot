@@ -27,14 +27,42 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
+    async def onNewFollow(
+        self,
+        followedAt: datetime,
+        followerUserId: str,
+        followerUserLogin: str,
+        followerUserName: str,
+        twitchChannelId: str,
+        user: UserInterface,
+    ):
+        if not isinstance(followedAt, datetime):
+            raise TypeError(f'followedAt argument is malformed: \"{followedAt}\"')
+        elif not utils.isValidStr(followerUserId):
+            raise TypeError(f'followerUserId argument is malformed: \"{followerUserId}\"')
+        elif not utils.isValidStr(followerUserLogin):
+            raise TypeError(f'followerUserLogin argument is malformed: \"{followerUserLogin}\"')
+        elif not utils.isValidStr(followerUserName):
+            raise TypeError(f'followerUserName argument is malformed: \"{followerUserName}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
+
+        await self.__persistFollowingStatus(
+            followedAt = followedAt,
+            followerUserId = followerUserId,
+            twitchChannelId = twitchChannelId,
+        )
+
     async def onNewFollowDataBundle(
         self,
-        userId: str,
+        twitchChannelId: str,
         user: UserInterface,
         dataBundle: TwitchWebsocketDataBundle,
     ):
-        if not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
@@ -48,29 +76,34 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
 
         followedAt = event.followedAt
         followerUserId = event.userId
+        followerUserLogin = event.userLogin
+        followerUserName = event.userName
 
-        if followedAt is None or not utils.isValidStr(followerUserId):
-            self.__timber.log('TwitchFollowHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({userId=}) ({dataBundle=}) ({followedAt=}) ({followerUserId=})')
+        if followedAt is None or not utils.isValidStr(followerUserId) or not utils.isValidStr(followerUserLogin) or not utils.isValidStr(followerUserName):
+            self.__timber.log('TwitchFollowHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({followedAt=}) ({followerUserId=}) ({followerUserLogin=}) ({followerUserName=})')
             return
 
-        await self.__persistFollowingStatus(
+        await self.onNewFollow(
             followedAt = followedAt,
-            broadcasterUserId = userId,
             followerUserId = followerUserId,
+            followerUserLogin = followerUserLogin,
+            followerUserName = followerUserName,
+            twitchChannelId = twitchChannelId,
+            user = user,
         )
 
     async def __persistFollowingStatus(
         self,
         followedAt: datetime,
-        broadcasterUserId: str,
         followerUserId: str,
+        twitchChannelId: str,
     ):
         if self.__twitchFollowingStatusRepository is None:
             return
 
         await self.__twitchFollowingStatusRepository.persistFollowingStatus(
             followedAt = followedAt,
-            twitchChannelId = broadcasterUserId,
+            twitchChannelId = twitchChannelId,
             userId = followerUserId,
         )
 
