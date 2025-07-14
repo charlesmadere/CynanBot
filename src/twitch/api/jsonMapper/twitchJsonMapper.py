@@ -16,6 +16,7 @@ from ..models.twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubs
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
 from ..models.twitchChannelEditor import TwitchChannelEditor
 from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
+from ..models.twitchChannelPointsVoting import TwitchChannelPointsVoting
 from ..models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
 from ..models.twitchChatBadge import TwitchChatBadge
 from ..models.twitchChatMessage import TwitchChatMessage
@@ -67,18 +68,17 @@ from ..models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from ..models.twitchStartCommercialDetails import TwitchStartCommercialDetails
 from ..models.twitchStartCommercialResponse import TwitchStartCommercialResponse
 from ..models.twitchStreamType import TwitchStreamType
+from ..models.twitchSub import TwitchSub
 from ..models.twitchSubscriberTier import TwitchSubscriberTier
 from ..models.twitchThemeMode import TwitchThemeMode
 from ..models.twitchTokensDetails import TwitchTokensDetails
 from ..models.twitchUserSubscription import TwitchUserSubscription
 from ..models.twitchUserType import TwitchUserType
 from ..models.twitchValidationResponse import TwitchValidationResponse
-from ..models.twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
 from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from ..models.twitchWebsocketMessageType import TwitchWebsocketMessageType
 from ..models.twitchWebsocketMetadata import TwitchWebsocketMetadata
-from ..models.twitchWebsocketSub import TwitchWebsocketSub
 from ..models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..models.twitchWebsocketTransport import TwitchWebsocketTransport
 from ..models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
@@ -364,10 +364,10 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseChannelEditor(
         self,
-        jsonResponse: dict[str, Any]
-    ) -> TwitchChannelEditor:
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChannelEditor | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            raise TypeError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+            return None
 
         createdAt = utils.getDateTimeFromDict(jsonResponse, 'created_at')
         userId = utils.getStrFromDict(jsonResponse, 'user_id')
@@ -376,7 +376,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         return TwitchChannelEditor(
             createdAt = createdAt,
             userId = userId,
-            userName = userName
+            userName = userName,
         )
 
     async def parseChannelEditorsResponse(
@@ -387,12 +387,16 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             return None
 
         channelEditors: list[TwitchChannelEditor] = list()
-        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        dataJson: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
 
-        if isinstance(data, list) and len(data) >= 1:
-            for channelEditorJson in data:
+        if isinstance(dataJson, list) and len(dataJson) >= 1:
+            for index, channelEditorJson in enumerate(dataJson):
                 channelEditor = await self.parseChannelEditor(channelEditorJson)
-                channelEditors.append(channelEditor)
+
+                if channelEditor is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"data\" data ({jsonResponse=})')
+                else:
+                    channelEditors.append(channelEditor)
 
             channelEditors.sort(key = lambda editor: editor.createdAt, reverse = True)
 
@@ -400,7 +404,22 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         frozenChannelEditors.freeze()
 
         return TwitchChannelEditorsResponse(
-            editors = frozenChannelEditors
+            editors = frozenChannelEditors,
+        )
+
+    async def parseChannelPointsVoting(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChannelPointsVoting | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        isEnabled = utils.getBoolFromDict(jsonResponse, 'is_enabled')
+        amountPerVote = utils.getIntFromDict(jsonResponse, 'amount_per_vote')
+
+        return TwitchChannelPointsVoting(
+            isEnabled = isEnabled,
+            amountPerVote = amountPerVote,
         )
 
     async def parseChatBadge(
@@ -421,7 +440,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         return TwitchChatBadge(
             badgeId = badgeId,
             info = info,
-            setId = setId
+            setId = setId,
         )
 
     async def parseChatMessage(
@@ -438,13 +457,11 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not utils.isValidStr(text):
             return None
 
-        fragments: FrozenList[TwitchChatMessageFragment] | None = None
-        fragmentsList: list[dict[str, Any]] | Any | None = jsonResponse.get('fragments')
+        fragments: list[TwitchChatMessageFragment] = list()
+        fragmentsJson: list[dict[str, Any]] | Any | None = jsonResponse.get('fragments')
 
-        if isinstance(fragmentsList, list) and len(fragmentsList) >= 1:
-            fragments = FrozenList()
-
-            for index, fragmentJson in enumerate(fragmentsList):
+        if isinstance(fragmentsJson, list) and len(fragmentsJson) >= 1:
+            for index, fragmentJson in enumerate(fragmentsJson):
                 fragment = await self.parseChatMessageFragment(fragmentJson)
 
                 if fragment is None:
@@ -452,11 +469,12 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 else:
                     fragments.append(fragment)
 
-            fragments.freeze()
+        frozenFragments: FrozenList[TwitchChatMessageFragment] = FrozenList(fragments)
+        frozenFragments.freeze()
 
         return TwitchChatMessage(
-            fragments = fragments,
-            text = text
+            fragments = frozenFragments,
+            text = text,
         )
 
     async def parseChatMessageFragment(
@@ -466,7 +484,17 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        text = utils.getStrFromDict(jsonResponse, 'text', clean = True)
+        text = utils.getStrFromDict(
+            d = jsonResponse,
+            key = 'text',
+            fallback = ' ',
+            clean = True,
+        )
+
+        if len(text) == 0 or text.isspace():
+            # it's possible for a message fragment to be blank, so in those cases,
+            # let's use a 1 space string instead
+            text = ' '
 
         cheermote: TwitchChatMessageFragmentCheermote | None = None
         if 'cheermote' in jsonResponse:
@@ -488,7 +516,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             cheermote = cheermote,
             emote = emote,
             mention = mention,
-            fragmentType = fragmentType
+            fragmentType = fragmentType,
         )
 
     async def parseChatMessageFragmentCheermote(
@@ -505,7 +533,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         return TwitchChatMessageFragmentCheermote(
             bits = bits,
             tier = tier,
-            prefix = prefix
+            prefix = prefix,
         )
 
     async def parseChatMessageFragmentEmote(
@@ -515,13 +543,11 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        frozenFormats: frozenset[TwitchEmoteImageFormat] | None = None
-        formatsList: list[str] | Any | None = jsonResponse.get('format')
+        formats: set[TwitchEmoteImageFormat] = set()
+        formatsJson: list[str] | Any | None = jsonResponse.get('format')
 
-        if isinstance(formatsList, list) and len(formatsList) >= 1:
-            formats: set[TwitchEmoteImageFormat] = set()
-
-            for index, formatString in enumerate(formatsList):
+        if isinstance(formatsJson, list) and len(formatsJson) >= 1:
+            for index, formatString in enumerate(formatsJson):
                 emoteImageFormat = await self.parseEmoteImageFormat(formatString)
 
                 if emoteImageFormat is None:
@@ -529,8 +555,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 else:
                     formats.add(emoteImageFormat)
 
-            frozenFormats = frozenset(formats)
-
+        frozenFormats: frozenset[TwitchEmoteImageFormat] = frozenset(formats)
         emoteId = utils.getStrFromDict(jsonResponse, 'id')
         emoteSetId = utils.getStrFromDict(jsonResponse, 'emote_set_id')
         ownerId = utils.getStrFromDict(jsonResponse, 'owner_id')
@@ -539,7 +564,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             formats = frozenFormats,
             emoteId = emoteId,
             emoteSetId = emoteSetId,
-            ownerId = ownerId
+            ownerId = ownerId,
         )
 
     async def parseChatMessageFragmentMention(
@@ -556,7 +581,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         return TwitchChatMessageFragmentMention(
             userId = userId,
             userLogin = userLogin,
-            userName = userName
+            userName = userName,
         )
 
     async def parseChatMessageFragmentType(
@@ -674,102 +699,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             cumulativeTotal = cumulativeTotal,
             total = total,
             communitySubGiftId = communitySubGiftId,
-            subTier = subTier
-        )
-
-    async def parseCondition(
-        self,
-        jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchWebsocketCondition | None:
-        if not isinstance(jsonResponse, dict):
-            return None
-
-        broadcasterUserId: str | None = None
-        if 'broadcaster_user_id' in jsonResponse and utils.isValidStr(jsonResponse.get('broadcaster_user_id')):
-            broadcasterUserId = utils.getStrFromDict(jsonResponse, 'broadcaster_user_id')
-
-        broadcasterUserLogin: str | None = None
-        if 'broadcaster_user_login' in jsonResponse and utils.isValidStr(jsonResponse.get('broadcaster_user_login')):
-            broadcasterUserLogin = utils.getStrFromDict(jsonResponse, 'broadcaster_user_login')
-
-        broadcasterUserName: str | None = None
-        if 'broadcaster_user_name' in jsonResponse and utils.isValidStr(jsonResponse.get('broadcaster_user_name')):
-            broadcasterUserName = utils.getStrFromDict(jsonResponse, 'broadcaster_user_name')
-
-        clientId: str | None = None
-        if 'client_id' in jsonResponse and utils.isValidStr(jsonResponse.get('client_id')):
-            clientId = utils.getStrFromDict(jsonResponse, 'client_id')
-
-        fromBroadcasterUserId: str | None = None
-        if 'from_broadcaster_user_id' in jsonResponse and utils.isValidStr(jsonResponse.get('from_broadcaster_user_id')):
-            fromBroadcasterUserId = utils.getStrFromDict(jsonResponse, 'from_broadcaster_user_id')
-
-        fromBroadcasterUserLogin: str | None = None
-        if 'from_broadcaster_user_login' in jsonResponse and utils.isValidStr(jsonResponse.get('from_broadcaster_user_login')):
-            fromBroadcasterUserLogin = utils.getStrFromDict(jsonResponse, 'from_broadcaster_user_login')
-
-        fromBroadcasterUserName: str | None = None
-        if 'from_broadcaster_user_name' in jsonResponse and utils.isValidStr(jsonResponse.get('from_broadcaster_user_name')):
-            fromBroadcasterUserName = utils.getStrFromDict(jsonResponse, 'from_broadcaster_user_name')
-
-        moderatorUserId: str | None = None
-        if 'moderator_user_id' in jsonResponse and utils.isValidStr(jsonResponse.get('moderator_user_id')):
-            moderatorUserId = utils.getStrFromDict(jsonResponse, 'moderator_user_id')
-
-        moderatorUserLogin: str | None = None
-        if 'moderator_user_login' in jsonResponse and utils.isValidStr(jsonResponse.get('moderator_user_login')):
-            moderatorUserLogin = utils.getStrFromDict(jsonResponse, 'moderator_user_login')
-
-        moderatorUserName: str | None = None
-        if 'moderator_user_name' in jsonResponse and utils.isValidStr(jsonResponse.get('moderator_user_name')):
-            moderatorUserName = utils.getStrFromDict(jsonResponse, 'moderator_user_name')
-
-        rewardId: str | None = None
-        if 'reward_id' in jsonResponse and utils.isValidStr(jsonResponse.get('reward_id')):
-            rewardId = utils.getStrFromDict(jsonResponse, 'reward_id')
-
-        toBroadcasterUserId: str | None = None
-        if 'to_broadcaster_user_id' in jsonResponse and utils.isValidStr(jsonResponse.get('to_broadcaster_user_id')):
-            toBroadcasterUserId = utils.getStrFromDict(jsonResponse, 'to_broadcaster_user_id')
-
-        toBroadcasterUserLogin: str | None = None
-        if 'to_broadcaster_user_login' in jsonResponse and utils.isValidStr(jsonResponse.get('to_broadcaster_user_login')):
-            toBroadcasterUserLogin = utils.getStrFromDict(jsonResponse, 'to_broadcaster_user_login')
-
-        toBroadcasterUserName: str | None = None
-        if 'to_broadcaster_user_name' in jsonResponse and utils.isValidStr(jsonResponse.get('to_broadcaster_user_name')):
-            toBroadcasterUserName = utils.getStrFromDict(jsonResponse, 'to_broadcaster_user_name')
-
-        userId: str | None = None
-        if 'user_id' in jsonResponse and utils.isValidStr(jsonResponse.get('user_id')):
-            userId = utils.getStrFromDict(jsonResponse, 'user_id')
-
-        userLogin: str | None = None
-        if 'user_login' in jsonResponse and utils.isValidStr(jsonResponse.get('user_login')):
-            userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
-
-        userName: str | None = None
-        if 'user_name' in jsonResponse and utils.isValidStr(jsonResponse.get('user_name')):
-            userName = utils.getStrFromDict(jsonResponse, 'user_name')
-
-        return TwitchWebsocketCondition(
-            broadcasterUserId = broadcasterUserId,
-            broadcasterUserLogin = broadcasterUserLogin,
-            broadcasterUserName = broadcasterUserName,
-            clientId = clientId,
-            fromBroadcasterUserId = fromBroadcasterUserId,
-            fromBroadcasterUserLogin = fromBroadcasterUserLogin,
-            fromBroadcasterUserName = fromBroadcasterUserName,
-            moderatorUserId = moderatorUserId,
-            moderatorUserLogin = moderatorUserLogin,
-            moderatorUserName = moderatorUserName,
-            rewardId = rewardId,
-            toBroadcasterUserId = toBroadcasterUserId,
-            toBroadcasterUserLogin = toBroadcasterUserLogin,
-            toBroadcasterUserName = toBroadcasterUserName,
-            userId = userId,
-            userLogin = userLogin,
-            userName = userName,
+            subTier = subTier,
         )
 
     async def parseConduitResponse(
@@ -1068,7 +998,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         cost = utils.getIntFromDict(jsonResponse, 'cost')
         detailsId = utils.getStrFromDict(jsonResponse, 'id')
         version = utils.getStrFromDict(jsonResponse, 'version')
-        condition = await self.requireCondition(jsonResponse.get('condition'))
+        condition = await self.requireWebsocketCondition(jsonResponse.get('condition'))
         connectionStatus = await self.requireConnectionStatus(utils.getStrFromDict(jsonResponse, 'status'))
         connectionType = await self.requireSubscriptionType(utils.getStrFromDict(jsonResponse, 'type'))
         transport = await self.requireTransport(jsonResponse.get('transport'))
@@ -1581,6 +1511,23 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'live': return TwitchStreamType.LIVE
             case _: return TwitchStreamType.UNKNOWN
 
+    async def parseSub(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchSub | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        isPrime = utils.getBoolFromDict(jsonResponse, 'is_prime', fallback = False)
+        durationMonths = utils.getIntFromDict(jsonResponse, 'duration_months')
+        subTier = await self.requireSubscriberTier(utils.getStrFromDict(jsonResponse, 'sub_tier'))
+
+        return TwitchSub(
+            isPrime = isPrime,
+            durationMonths = durationMonths,
+            subTier = subTier,
+        )
+
     async def parseSubscriberTier(
         self,
         subscriberTier: str | Any | None
@@ -1852,22 +1799,102 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             expiresInSeconds = expiresInSeconds,
             clientId = clientId,
             login = login,
-            userId = userId
+            userId = userId,
         )
 
-    async def parseWebsocketChannelPointsVoting(
+    async def parseWebsocketCondition(
         self,
         jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchWebsocketChannelPointsVoting | None:
-        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+    ) -> TwitchWebsocketCondition | None:
+        if not isinstance(jsonResponse, dict):
             return None
 
-        isEnabled = utils.getBoolFromDict(jsonResponse, 'is_enabled')
-        amountPerVote = utils.getIntFromDict(jsonResponse, 'amount_per_vote')
+        broadcasterUserId: str | None = None
+        if 'broadcaster_user_id' in jsonResponse and utils.isValidStr(jsonResponse.get('broadcaster_user_id')):
+            broadcasterUserId = utils.getStrFromDict(jsonResponse, 'broadcaster_user_id')
 
-        return TwitchWebsocketChannelPointsVoting(
-            isEnabled = isEnabled,
-            amountPerVote = amountPerVote
+        broadcasterUserLogin: str | None = None
+        if 'broadcaster_user_login' in jsonResponse and utils.isValidStr(jsonResponse.get('broadcaster_user_login')):
+            broadcasterUserLogin = utils.getStrFromDict(jsonResponse, 'broadcaster_user_login')
+
+        broadcasterUserName: str | None = None
+        if 'broadcaster_user_name' in jsonResponse and utils.isValidStr(jsonResponse.get('broadcaster_user_name')):
+            broadcasterUserName = utils.getStrFromDict(jsonResponse, 'broadcaster_user_name')
+
+        clientId: str | None = None
+        if 'client_id' in jsonResponse and utils.isValidStr(jsonResponse.get('client_id')):
+            clientId = utils.getStrFromDict(jsonResponse, 'client_id')
+
+        fromBroadcasterUserId: str | None = None
+        if 'from_broadcaster_user_id' in jsonResponse and utils.isValidStr(jsonResponse.get('from_broadcaster_user_id')):
+            fromBroadcasterUserId = utils.getStrFromDict(jsonResponse, 'from_broadcaster_user_id')
+
+        fromBroadcasterUserLogin: str | None = None
+        if 'from_broadcaster_user_login' in jsonResponse and utils.isValidStr(jsonResponse.get('from_broadcaster_user_login')):
+            fromBroadcasterUserLogin = utils.getStrFromDict(jsonResponse, 'from_broadcaster_user_login')
+
+        fromBroadcasterUserName: str | None = None
+        if 'from_broadcaster_user_name' in jsonResponse and utils.isValidStr(jsonResponse.get('from_broadcaster_user_name')):
+            fromBroadcasterUserName = utils.getStrFromDict(jsonResponse, 'from_broadcaster_user_name')
+
+        moderatorUserId: str | None = None
+        if 'moderator_user_id' in jsonResponse and utils.isValidStr(jsonResponse.get('moderator_user_id')):
+            moderatorUserId = utils.getStrFromDict(jsonResponse, 'moderator_user_id')
+
+        moderatorUserLogin: str | None = None
+        if 'moderator_user_login' in jsonResponse and utils.isValidStr(jsonResponse.get('moderator_user_login')):
+            moderatorUserLogin = utils.getStrFromDict(jsonResponse, 'moderator_user_login')
+
+        moderatorUserName: str | None = None
+        if 'moderator_user_name' in jsonResponse and utils.isValidStr(jsonResponse.get('moderator_user_name')):
+            moderatorUserName = utils.getStrFromDict(jsonResponse, 'moderator_user_name')
+
+        rewardId: str | None = None
+        if 'reward_id' in jsonResponse and utils.isValidStr(jsonResponse.get('reward_id')):
+            rewardId = utils.getStrFromDict(jsonResponse, 'reward_id')
+
+        toBroadcasterUserId: str | None = None
+        if 'to_broadcaster_user_id' in jsonResponse and utils.isValidStr(jsonResponse.get('to_broadcaster_user_id')):
+            toBroadcasterUserId = utils.getStrFromDict(jsonResponse, 'to_broadcaster_user_id')
+
+        toBroadcasterUserLogin: str | None = None
+        if 'to_broadcaster_user_login' in jsonResponse and utils.isValidStr(jsonResponse.get('to_broadcaster_user_login')):
+            toBroadcasterUserLogin = utils.getStrFromDict(jsonResponse, 'to_broadcaster_user_login')
+
+        toBroadcasterUserName: str | None = None
+        if 'to_broadcaster_user_name' in jsonResponse and utils.isValidStr(jsonResponse.get('to_broadcaster_user_name')):
+            toBroadcasterUserName = utils.getStrFromDict(jsonResponse, 'to_broadcaster_user_name')
+
+        userId: str | None = None
+        if 'user_id' in jsonResponse and utils.isValidStr(jsonResponse.get('user_id')):
+            userId = utils.getStrFromDict(jsonResponse, 'user_id')
+
+        userLogin: str | None = None
+        if 'user_login' in jsonResponse and utils.isValidStr(jsonResponse.get('user_login')):
+            userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
+
+        userName: str | None = None
+        if 'user_name' in jsonResponse and utils.isValidStr(jsonResponse.get('user_name')):
+            userName = utils.getStrFromDict(jsonResponse, 'user_name')
+
+        return TwitchWebsocketCondition(
+            broadcasterUserId = broadcasterUserId,
+            broadcasterUserLogin = broadcasterUserLogin,
+            broadcasterUserName = broadcasterUserName,
+            clientId = clientId,
+            fromBroadcasterUserId = fromBroadcasterUserId,
+            fromBroadcasterUserLogin = fromBroadcasterUserLogin,
+            fromBroadcasterUserName = fromBroadcasterUserName,
+            moderatorUserId = moderatorUserId,
+            moderatorUserLogin = moderatorUserLogin,
+            moderatorUserName = moderatorUserName,
+            rewardId = rewardId,
+            toBroadcasterUserId = toBroadcasterUserId,
+            toBroadcasterUserLogin = toBroadcasterUserLogin,
+            toBroadcasterUserName = toBroadcasterUserName,
+            userId = userId,
+            userLogin = userLogin,
+            userName = userName,
         )
 
     async def parseWebsocketMessageType(
@@ -1915,23 +1942,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             subscriptionType = subscriptionType
         )
 
-    async def parseWebsocketSub(
-        self,
-        jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchWebsocketSub | None:
-        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            return None
-
-        isPrime = utils.getBoolFromDict(jsonResponse, 'is_prime', fallback = False)
-        durationMonths = utils.getIntFromDict(jsonResponse, 'duration_months')
-        subTier = await self.requireSubscriberTier(utils.getStrFromDict(jsonResponse, 'sub_tier'))
-
-        return TwitchWebsocketSub(
-            isPrime = isPrime,
-            durationMonths = durationMonths,
-            subTier = subTier
-        )
-
     async def requireChatMessageFragmentType(
         self,
         fragmentType: str | Any | None
@@ -1940,17 +1950,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         if result is None:
             raise ValueError(f'Unable to parse \"{fragmentType}\" into TwitchChatMessageFragmentType value!')
-
-        return result
-
-    async def requireCondition(
-        self,
-        jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchWebsocketCondition:
-        result = await self.parseCondition(jsonResponse)
-
-        if result is None:
-            raise ValueError(f'Unable to parse \"{jsonResponse}\" into TwitchWebsocketCondition value!')
 
         return result
 
@@ -2039,6 +2038,17 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         if result is None:
             raise ValueError(f'Unable to parse \"{transportMethod}\" into TwitchWebsocketTransportMethod value!')
+
+        return result
+
+    async def requireWebsocketCondition(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchWebsocketCondition:
+        result = await self.parseWebsocketCondition(jsonResponse)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{jsonResponse}\" into TwitchWebsocketCondition value!')
 
         return result
 
@@ -2185,6 +2195,20 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             dictionary['reply_parent_message_id'] = chatRequest.replyParentMessageId
 
         return dictionary
+
+    async def serializeSubscriberTier(
+        self,
+        subscriberTier: TwitchSubscriberTier
+    ) -> str:
+        if not isinstance(subscriberTier, TwitchSubscriberTier):
+            raise TypeError(f'subscriberTier argument is malformed: \"{subscriberTier}\"')
+
+        match subscriberTier:
+            case TwitchSubscriberTier.PRIME: return 'prime'
+            case TwitchSubscriberTier.TIER_ONE: return '1000'
+            case TwitchSubscriberTier.TIER_TWO: return '2000'
+            case TwitchSubscriberTier.TIER_THREE: return '3000'
+            case _: raise ValueError(f'Encountered unknown TwitchSubscriberTier value: \"{subscriberTier}\"')
 
     async def serializeSubscriptionType(
         self,

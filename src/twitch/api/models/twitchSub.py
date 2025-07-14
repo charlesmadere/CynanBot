@@ -4,7 +4,7 @@ from .twitchSubscriberTier import TwitchSubscriberTier
 
 
 @dataclass(frozen = True)
-class TwitchWebsocketSub:
+class TwitchSub:
     isPrime: bool
     durationMonths: int
     subTier: TwitchSubscriberTier

@@ -378,7 +378,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
                         connectionAction = await self.__twitchWebsocketConnectionActionHelper.handleConnectionRelatedActions(
                             dataBundle = dataBundle,
-                            user = user
+                            user = user,
                         )
 
                         match connectionAction:

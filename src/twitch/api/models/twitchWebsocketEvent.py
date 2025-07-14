@@ -3,6 +3,7 @@ from datetime import datetime
 
 from frozenlist import FrozenList
 
+from .twitchChannelPointsVoting import TwitchChannelPointsVoting
 from .twitchChatBadge import TwitchChatBadge
 from .twitchChatMessage import TwitchChatMessage
 from .twitchChatMessageType import TwitchChatMessageType
@@ -20,10 +21,9 @@ from .twitchRaid import TwitchRaid
 from .twitchResub import TwitchResub
 from .twitchReward import TwitchReward
 from .twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
+from .twitchSub import TwitchSub
 from .twitchSubGift import TwitchSubGift
 from .twitchSubscriberTier import TwitchSubscriberTier
-from .twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
-from .twitchWebsocketSub import TwitchWebsocketSub
 
 
 @dataclass(frozen = True)
@@ -88,20 +88,20 @@ class TwitchWebsocketEvent:
     userLogin: str | None = None
     userName: str | None = None
     winningOutcomeId: str | None = None
+    channelPointsVoting: TwitchChannelPointsVoting | None = None
     chatMessage: TwitchChatMessage | None = None
     chatMessageType: TwitchChatMessageType | None = None
     cheer: TwitchCheerMetadata | None = None
-    hypeTrainType: TwitchHypeTrainType | None = None
-    tier: TwitchSubscriberTier | None = None
-    channelPointsVoting: TwitchWebsocketChannelPointsVoting | None = None
     communitySubGift: TwitchCommunitySubGift | None = None
+    hypeTrainType: TwitchHypeTrainType | None = None
+    noticeType: TwitchNoticeType | None = None
     pollStatus: TwitchPollStatus | None = None
+    powerUp: TwitchPowerUp | None = None
     predictionStatus: TwitchPredictionStatus | None = None
     raid: TwitchRaid | None = None
     resub: TwitchResub | None = None
-    rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
-    noticeType: TwitchNoticeType | None = None
-    powerUp: TwitchPowerUp | None = None
     reward: TwitchReward | None = None
+    rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
+    sub: TwitchSub | None = None
     subGift: TwitchSubGift | None = None
-    sub: TwitchWebsocketSub | None = None
+    tier: TwitchSubscriberTier | None = None

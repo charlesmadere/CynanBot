@@ -11,6 +11,6 @@ class TwitchWebsocketConnectionActionHelperInterface(ABC):
     async def handleConnectionRelatedActions(
         self,
         dataBundle: TwitchWebsocketDataBundle,
-        user: TwitchWebsocketUser
+        user: TwitchWebsocketUser,
     ) -> TwitchWebsocketConnectionAction:
         pass

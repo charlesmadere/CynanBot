@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Final
 
 from .twitchChannelProvider import TwitchChannelProvider
@@ -15,7 +14,7 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
     def __init__(
         self,
         timber: TimberInterface,
-        twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None
+        twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -27,33 +26,11 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
-    async def onNewFollow(
-        self,
-        followedAt: datetime,
-        followerUserId: str,
-        followerUserLogin: str,
-        followerUserName: str,
-        twitchChannelId: str,
-        user: UserInterface,
-    ):
-        if not isinstance(followedAt, datetime):
-            raise TypeError(f'followedAt argument is malformed: \"{followedAt}\"')
-        elif not utils.isValidStr(followerUserId):
-            raise TypeError(f'followerUserId argument is malformed: \"{followerUserId}\"')
-        elif not utils.isValidStr(followerUserLogin):
-            raise TypeError(f'followerUserLogin argument is malformed: \"{followerUserLogin}\"')
-        elif not utils.isValidStr(followerUserName):
-            raise TypeError(f'followerUserName argument is malformed: \"{followerUserName}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
+    async def onNewFollow(self, followData: AbsTwitchFollowHandler.FollowData):
+        if not isinstance(followData, AbsTwitchFollowHandler.FollowData):
+            raise TypeError(f'followData argument is malformed: \"{followData}\"')
 
-        await self.__persistFollowingStatus(
-            followedAt = followedAt,
-            followerUserId = followerUserId,
-            twitchChannelId = twitchChannelId,
-        )
+        await self.__persistFollowingStatus(followData)
 
     async def onNewFollowDataBundle(
         self,
@@ -83,7 +60,7 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
             self.__timber.log('TwitchFollowHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({followedAt=}) ({followerUserId=}) ({followerUserLogin=}) ({followerUserName=})')
             return
 
-        await self.onNewFollow(
+        followData = AbsTwitchFollowHandler.FollowData(
             followedAt = followedAt,
             followerUserId = followerUserId,
             followerUserLogin = followerUserLogin,
@@ -92,19 +69,21 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
             user = user,
         )
 
-    async def __persistFollowingStatus(
-        self,
-        followedAt: datetime,
-        followerUserId: str,
-        twitchChannelId: str,
-    ):
+        await self.onNewFollow(
+            followData = followData,
+        )
+
+    async def __persistFollowingStatus(self, followData: AbsTwitchFollowHandler.FollowData):
+        if not isinstance(followData, AbsTwitchFollowHandler.FollowData):
+            raise TypeError(f'followData argument is malformed: \"{followData}\"')
+
         if self.__twitchFollowingStatusRepository is None:
             return
 
         await self.__twitchFollowingStatusRepository.persistFollowingStatus(
-            followedAt = followedAt,
-            twitchChannelId = twitchChannelId,
-            userId = followerUserId,
+            followedAt = followData.followedAt,
+            twitchChannelId = followData.twitchChannelId,
+            userId = followData.followerUserId,
         )
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):

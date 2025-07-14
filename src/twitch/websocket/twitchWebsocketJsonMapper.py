@@ -6,6 +6,7 @@ from frozenlist import FrozenList
 from .twitchWebsocketJsonLoggingLevel import TwitchWebsocketJsonLoggingLevel
 from .twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from ..api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from ..api.models.twitchChannelPointsVoting import TwitchChannelPointsVoting
 from ..api.models.twitchChatBadge import TwitchChatBadge
 from ..api.models.twitchChatMessage import TwitchChatMessage
 from ..api.models.twitchChatMessageType import TwitchChatMessageType
@@ -24,14 +25,13 @@ from ..api.models.twitchRaid import TwitchRaid
 from ..api.models.twitchResub import TwitchResub
 from ..api.models.twitchReward import TwitchReward
 from ..api.models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
+from ..api.models.twitchSub import TwitchSub
 from ..api.models.twitchSubGift import TwitchSubGift
 from ..api.models.twitchSubscriberTier import TwitchSubscriberTier
-from ..api.models.twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketEvent import TwitchWebsocketEvent
 from ..api.models.twitchWebsocketPayload import TwitchWebsocketPayload
 from ..api.models.twitchWebsocketSession import TwitchWebsocketSession
-from ..api.models.twitchWebsocketSub import TwitchWebsocketSub
 from ..api.models.twitchWebsocketSubscription import TwitchWebsocketSubscription
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -337,7 +337,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         message: str | None = None
         if 'message' in eventJson:
-            messageElement: str | Any | None = eventJson.get('message')
+            messageElement: dict[str, Any] | str | Any | None = eventJson.get('message')
 
             if utils.isValidStr(messageElement):
                 message = utils.getStrFromDict(eventJson, 'message', clean = True)
@@ -378,7 +378,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         title: str | None = None
         if 'title' in eventJson and utils.isValidStr(eventJson.get('title')):
-            title = utils.getStrFromDict(eventJson, 'title')
+            title = utils.getStrFromDict(eventJson, 'title', clean = True)
 
         toBroadcasterUserId: str | None = None
         if 'to_broadcaster_user_id' in eventJson and utils.isValidStr(eventJson.get('to_broadcaster_user_id')):
@@ -412,25 +412,21 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'winning_outcome_id' in eventJson and utils.isValidStr(eventJson.get('winning_outcome_id')):
             winningOutcomeId = utils.getStrFromDict(eventJson, 'winning_outcome_id')
 
+        channelPointsVoting: TwitchChannelPointsVoting | None = None
+        if 'channel_points_voting' in eventJson:
+            channelPointsVoting = await self.__twitchJsonMapper.parseChannelPointsVoting(eventJson.get('channel_points_voting'))
+
         chatMessage: TwitchChatMessage | None = None
         if 'message' in eventJson:
             chatMessage = await self.__twitchJsonMapper.parseChatMessage(eventJson.get('message'))
 
         chatMessageType: TwitchChatMessageType | None = None
-        if 'message_type' in eventJson:
+        if 'message_type' in eventJson and utils.isValidStr(eventJson.get('message_type')):
             chatMessageType = await self.__twitchJsonMapper.parseChatMessageType(eventJson.get('message_type'))
 
         cheer: TwitchCheerMetadata | None = None
         if 'cheer' in eventJson:
             cheer = await self.__twitchJsonMapper.parseCheerMetadata(eventJson.get('cheer'))
-
-        tier: TwitchSubscriberTier | None = None
-        if 'tier' in eventJson and utils.isValidStr(eventJson.get('tier')):
-            tier = await self.__twitchJsonMapper.parseSubscriberTier(eventJson.get('tier'))
-
-        channelPointsVoting: TwitchWebsocketChannelPointsVoting | None = None
-        if 'channel_points_voting' in eventJson:
-            channelPointsVoting = await self.__twitchJsonMapper.parseWebsocketChannelPointsVoting(eventJson.get('channel_points_voting'))
 
         communitySubGift: TwitchCommunitySubGift | None = None
         if 'community_sub_gift' in eventJson:
@@ -441,26 +437,28 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             typeString = utils.getStrFromDict(eventJson, 'type')
             hypeTrainType = await self.__twitchJsonMapper.parseHypeTrainType(typeString)
 
+        noticeType: TwitchNoticeType | None = None
+        if 'notice_type' in eventJson and utils.isValidStr(eventJson.get('notice_type')):
+            noticeTypeString = utils.getStrFromDict(eventJson, 'notice_type')
+            noticeType = await self.__twitchJsonMapper.parseNoticeType(noticeTypeString)
+
         pollStatus: TwitchPollStatus | None = None
-        predictionStatus: TwitchPredictionStatus | None = None
-        rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
         if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
             statusString = utils.getStrFromDict(eventJson, 'status')
             pollStatus = await self.__twitchJsonMapper.parsePollStatus(statusString)
-            predictionStatus = await self.__twitchJsonMapper.parsePredictionStatus(statusString)
-            rewardRedemptionStatus = await self.__twitchJsonMapper.parseRewardRedemptionStatus(statusString)
-
-        raid: TwitchRaid | None = None
-        if 'raid' in eventJson:
-            raid = await self.__twitchJsonMapper.parseRaid(eventJson.get('raid'))
-
-        noticeType: TwitchNoticeType | None = None
-        if 'notice_type' in eventJson and utils.isValidStr(eventJson.get('notice_type')):
-            noticeType = await self.__twitchJsonMapper.parseNoticeType(utils.getStrFromDict(eventJson, 'notice_type'))
 
         powerUp: TwitchPowerUp | None = None
         if 'power_up' in eventJson:
             powerUp = await self.__twitchJsonMapper.parsePowerUp(eventJson.get('power_up'))
+
+        predictionStatus: TwitchPredictionStatus | None = None
+        if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
+            statusString = utils.getStrFromDict(eventJson, 'status')
+            predictionStatus = await self.__twitchJsonMapper.parsePredictionStatus(statusString)
+
+        raid: TwitchRaid | None = None
+        if 'raid' in eventJson:
+            raid = await self.__twitchJsonMapper.parseRaid(eventJson.get('raid'))
 
         resub: TwitchResub | None = None
         if 'resub' in eventJson:
@@ -470,13 +468,22 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'reward' in eventJson:
             reward = await self.__twitchJsonMapper.parseReward(eventJson.get('reward'))
 
+        rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
+        if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
+            statusString = utils.getStrFromDict(eventJson, 'status')
+            rewardRedemptionStatus = await self.__twitchJsonMapper.parseRewardRedemptionStatus(statusString)
+
+        sub: TwitchSub | None = None
+        if 'sub' in eventJson:
+            sub = await self.__twitchJsonMapper.parseSub(eventJson.get('sub'))
+
         subGift: TwitchSubGift | None = None
         if 'sub_gift' in eventJson:
             subGift = await self.parseWebsocketSubGift(eventJson.get('sub_gift'))
 
-        sub: TwitchWebsocketSub | None = None
-        if 'sub' in eventJson:
-            sub = await self.__twitchJsonMapper.parseWebsocketSub(eventJson.get('sub'))
+        tier: TwitchSubscriberTier | None = None
+        if 'tier' in eventJson and utils.isValidStr(eventJson.get('tier')):
+            tier = await self.__twitchJsonMapper.parseSubscriberTier(eventJson.get('tier'))
 
         return TwitchWebsocketEvent(
             isAnonymous = isAnonymous,
@@ -539,23 +546,23 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userLogin = userLogin,
             userName = userName,
             winningOutcomeId = winningOutcomeId,
+            channelPointsVoting = channelPointsVoting,
             chatMessage = chatMessage,
             chatMessageType = chatMessageType,
             cheer = cheer,
-            hypeTrainType = hypeTrainType,
-            tier = tier,
-            channelPointsVoting = channelPointsVoting,
             communitySubGift = communitySubGift,
+            hypeTrainType = hypeTrainType,
+            noticeType = noticeType,
             pollStatus = pollStatus,
+            powerUp = powerUp,
             predictionStatus = predictionStatus,
             raid = raid,
             resub = resub,
-            rewardRedemptionStatus = rewardRedemptionStatus,
-            noticeType = noticeType,
-            powerUp = powerUp,
             reward = reward,
-            subGift = subGift,
+            rewardRedemptionStatus = rewardRedemptionStatus,
             sub = sub,
+            subGift = subGift,
+            tier = tier,
         )
 
     async def parseTwitchOutcome(
@@ -670,7 +677,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         createdAt = utils.getDateTimeFromDict(subscriptionJson, 'created_at')
         subscriptionId = utils.getStrFromDict(subscriptionJson, 'id')
         version = utils.getStrFromDict(subscriptionJson, 'version')
-        condition = await self.__twitchJsonMapper.parseCondition(subscriptionJson.get('condition'))
+        condition = await self.__twitchJsonMapper.parseWebsocketCondition(subscriptionJson.get('condition'))
         status = await self.__twitchJsonMapper.requireConnectionStatus(utils.getStrFromDict(subscriptionJson, 'status'))
         subscriptionType = await self.__twitchJsonMapper.requireSubscriptionType(utils.getStrFromDict(subscriptionJson, 'type'))
         transport = await self.__twitchJsonMapper.requireTransport(subscriptionJson.get('transport'))

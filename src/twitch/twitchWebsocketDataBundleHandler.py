@@ -176,7 +176,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         elif await self.__isCheerType(subscriptionType):
             if self.__cheerHandler is not None:
                 await self.__cheerHandler.onNewCheerDataBundle(
-                    broadcasterUserId = userId,
+                    twitchChannelId = userId,
                     user = user,
                     dataBundle = dataBundle,
                 )
@@ -207,8 +207,8 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
         elif await self.__isRaidType(subscriptionType):
             if self.__raidHandler is not None:
-                await self.__raidHandler.onNewRaid(
-                    userId = userId,
+                await self.__raidHandler.onNewRaidDataBundle(
+                    twitchChannelId = userId,
                     user = user,
                     dataBundle = dataBundle,
                 )

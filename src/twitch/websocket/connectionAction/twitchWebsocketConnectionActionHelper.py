@@ -1,3 +1,5 @@
+from typing import Final
+
 from .twitchWebsocketConnectionAction import TwitchWebsocketConnectionAction
 from .twitchWebsocketConnectionActionHelperInterface import TwitchWebsocketConnectionActionHelperInterface
 from ..endpointHelper.twitchWebsocketEndpointHelperInterface import TwitchWebsocketEndpointHelperInterface
@@ -15,7 +17,7 @@ class TwitchWebsocketConnectionActionHelper(TwitchWebsocketConnectionActionHelpe
         self,
         timber: TimberInterface,
         twitchWebsocketEndpointHelper: TwitchWebsocketEndpointHelperInterface,
-        twitchWebsocketSessionIdHelper: TwitchWebsocketSessionIdHelperInterface
+        twitchWebsocketSessionIdHelper: TwitchWebsocketSessionIdHelperInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -24,14 +26,14 @@ class TwitchWebsocketConnectionActionHelper(TwitchWebsocketConnectionActionHelpe
         elif not isinstance(twitchWebsocketSessionIdHelper, TwitchWebsocketSessionIdHelperInterface):
             raise TypeError(f'twitchWebsocketSessionIdHelper argument is malformed: \"{twitchWebsocketSessionIdHelper}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__twitchWebsocketEndpointHelper: TwitchWebsocketEndpointHelperInterface = twitchWebsocketEndpointHelper
-        self.__twitchWebsocketSessionIdHelper: TwitchWebsocketSessionIdHelperInterface = twitchWebsocketSessionIdHelper
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchWebsocketEndpointHelper: Final[TwitchWebsocketEndpointHelperInterface] = twitchWebsocketEndpointHelper
+        self.__twitchWebsocketSessionIdHelper: Final[TwitchWebsocketSessionIdHelperInterface] = twitchWebsocketSessionIdHelper
 
     async def handleConnectionRelatedActions(
         self,
         dataBundle: TwitchWebsocketDataBundle,
-        user: TwitchWebsocketUser
+        user: TwitchWebsocketUser,
     ) -> TwitchWebsocketConnectionAction:
         if not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
@@ -40,7 +42,7 @@ class TwitchWebsocketConnectionActionHelper(TwitchWebsocketConnectionActionHelpe
 
         await self.__updateConnectionStates(
             dataBundle = dataBundle,
-            user = user
+            user = user,
         )
 
         match dataBundle.metadata.messageType:
@@ -60,12 +62,12 @@ class TwitchWebsocketConnectionActionHelper(TwitchWebsocketConnectionActionHelpe
                 return TwitchWebsocketConnectionAction.CREATE_EVENT_SUB_SUBSCRIPTION
 
             case _:
-                raise ValueError(f'Encountered unexpected TwitchWebsocketMessageType ({dataBundle.metadata.messageType=}) ({dataBundle=})')
+                raise ValueError(f'Encountered unexpected TwitchWebsocketMessageType ({dataBundle.metadata.messageType=}) ({dataBundle=}) ({user=})')
 
     async def __updateConnectionStates(
         self,
         dataBundle: TwitchWebsocketDataBundle,
-        user: TwitchWebsocketUser
+        user: TwitchWebsocketUser,
     ):
         payload = dataBundle.payload
         if payload is None:

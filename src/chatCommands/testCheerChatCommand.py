@@ -76,16 +76,16 @@ class TestCheerChatCommand(AbsChatCommand):
         exception: Exception | None = None
 
         try:
-            await self.__twitchCheerHandler.onNewCheer(
+            await self.__twitchCheerHandler.onNewCheer(AbsTwitchCheerHandler.CheerData(
                 bits = bits,
                 chatMessage = chatMessage,
                 cheerUserId = ctx.getAuthorId(),
                 cheerUserLogin = ctx.getAuthorName(),
-                cheerUserName = ctx.getAuthorName(),
+                cheerUserName = ctx.getAuthorDisplayName(),
                 twitchChannelId = twitchChannelId,
                 twitchChatMessageId = await ctx.getMessageId(),
                 user = user,
-            )
+            ))
         except Exception as e:
             exception = e
             self.__timber.log('TestCheerChatCommand', f'Encountered exception when attempting to run onNewCheer() for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({bits=}) ({chatMessage=}): {e}', e, traceback.format_exc())

@@ -15,6 +15,7 @@ from src.twitch.api.models.twitchBanRequest import TwitchBanRequest
 from src.twitch.api.models.twitchBroadcasterType import TwitchBroadcasterType
 from src.twitch.api.models.twitchChannelEditor import TwitchChannelEditor
 from src.twitch.api.models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
+from src.twitch.api.models.twitchChannelPointsVoting import TwitchChannelPointsVoting
 from src.twitch.api.models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
 from src.twitch.api.models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 from src.twitch.api.models.twitchChatMessageType import TwitchChatMessageType
@@ -43,13 +44,12 @@ from src.twitch.api.models.twitchSendChatAnnouncementRequest import TwitchSendCh
 from src.twitch.api.models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from src.twitch.api.models.twitchStartCommercialDetails import TwitchStartCommercialDetails
 from src.twitch.api.models.twitchStreamType import TwitchStreamType
+from src.twitch.api.models.twitchSub import TwitchSub
 from src.twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier
 from src.twitch.api.models.twitchUserType import TwitchUserType
-from src.twitch.api.models.twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
 from src.twitch.api.models.twitchWebsocketCondition import TwitchWebsocketCondition
 from src.twitch.api.models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from src.twitch.api.models.twitchWebsocketMessageType import TwitchWebsocketMessageType
-from src.twitch.api.models.twitchWebsocketSub import TwitchWebsocketSub
 from src.twitch.api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from src.twitch.api.models.twitchWebsocketTransport import TwitchWebsocketTransport
 from src.twitch.api.models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
@@ -325,13 +325,23 @@ class TestTwitchJsonMapper:
         result = await self.jsonMapper.parseChannelEditor({
             'created_at': createdAt.isoformat(),
             'user_id': userId,
-            'user_name': userName
+            'user_name': userName,
         })
 
         assert isinstance(result, TwitchChannelEditor)
         assert result.createdAt == createdAt
         assert result.userId == userId
         assert result.userName == userName
+
+    @pytest.mark.asyncio
+    async def test_parseChannelEditor_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseChannelEditor(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChannelEditor_withNone(self):
+        result = await self.jsonMapper.parseChannelEditor(None)
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_parseChannelEditorsResponse(self):
@@ -391,6 +401,33 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseChannelEditorsResponse_withNone(self):
         result = await self.jsonMapper.parseChannelEditorsResponse(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChannelPointsVoting(self):
+        channelPointsVoting = TwitchChannelPointsVoting(
+            isEnabled = True,
+            amountPerVote = 100,
+        )
+
+        result = await self.jsonMapper.parseChannelPointsVoting({
+            'is_enabled': channelPointsVoting.isEnabled,
+            'amount_per_vote': channelPointsVoting.amountPerVote,
+        })
+
+        assert isinstance(result, TwitchChannelPointsVoting)
+        assert result == channelPointsVoting
+        assert result.isEnabled == channelPointsVoting.isEnabled
+        assert result.amountPerVote == channelPointsVoting.amountPerVote
+
+    @pytest.mark.asyncio
+    async def test_parseChannelPointsVoting_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseChannelPointsVoting(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChannelPointsVoting_withNone(self):
+        result = await self.jsonMapper.parseChannelPointsVoting(None)
         assert result is None
 
     @pytest.mark.asyncio
@@ -575,40 +612,6 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseCheer_withNone(self):
         result = await self.jsonMapper.parseCheerMetadata(None)
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseCondition_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseCondition(dict())
-        assert isinstance(result, TwitchWebsocketCondition)
-        assert result.broadcasterUserId is None
-        assert result.broadcasterUserLogin is None
-        assert result.broadcasterUserName is None
-        assert result.clientId is None
-        assert result.fromBroadcasterUserId is None
-        assert result.fromBroadcasterUserLogin is None
-        assert result.fromBroadcasterUserName is None
-        assert result.moderatorUserId is None
-        assert result.moderatorUserLogin is None
-        assert result.moderatorUserName is None
-        assert result.rewardId is None
-        assert result.toBroadcasterUserId is None
-        assert result.toBroadcasterUserLogin is None
-        assert result.toBroadcasterUserName is None
-        assert result.userId is None
-        assert result.userLogin is None
-        assert result.userName is None
-
-        broadcasterUserId: str | None = None
-
-        with pytest.raises(Exception):
-            broadcasterUserId = result.requireBroadcasterUserId()
-
-        assert broadcasterUserId is None
-
-    @pytest.mark.asyncio
-    async def test_parseCondition_withNone(self):
-        result = await self.jsonMapper.parseCondition(None)
         assert result is None
 
     @pytest.mark.asyncio
@@ -1559,30 +1562,6 @@ class TestTwitchJsonMapper:
         assert result is TwitchUserType.NORMAL
 
     @pytest.mark.asyncio
-    async def test_parseWebsocketChannelPointsVoting(self):
-        isEnabled = True
-        amountPerVote = 100
-
-        result = await self.jsonMapper.parseWebsocketChannelPointsVoting({
-            'is_enabled': isEnabled,
-            'amount_per_vote': amountPerVote
-        })
-
-        assert isinstance(result, TwitchWebsocketChannelPointsVoting)
-        assert result.isEnabled == isEnabled
-        assert result.amountPerVote == amountPerVote
-
-    @pytest.mark.asyncio
-    async def test_parseWebsocketChannelPointsVoting_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseWebsocketChannelPointsVoting(dict())
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseWebsocketChannelPointsVoting_withNone(self):
-        result = await self.jsonMapper.parseWebsocketChannelPointsVoting(None)
-        assert result is None
-
-    @pytest.mark.asyncio
     async def test_parseWebsocketMessageType_withEmptyString(self):
         result = await self.jsonMapper.parseWebsocketMessageType('')
         assert result is None
@@ -1633,30 +1612,67 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_parseWebsocketSub(self):
-        isPrime = False
-        durationMonths = 12
-        subTier = '1000'
+    async def test_parseSub(self):
+        sub = TwitchSub(
+            isPrime = False,
+            durationMonths = 12,
+            subTier = TwitchSubscriberTier.TIER_ONE,
+        )
 
-        result = await self.jsonMapper.parseWebsocketSub({
-            'is_prime': isPrime,
-            'duration_months': durationMonths,
-            'sub_tier': subTier
+        result = await self.jsonMapper.parseSub({
+            'is_prime': sub.isPrime,
+            'duration_months': sub.durationMonths,
+            'sub_tier': await self.jsonMapper.serializeSubscriberTier(sub.subTier),
         })
 
-        assert isinstance(result, TwitchWebsocketSub)
-        assert result.isPrime == isPrime
-        assert result.durationMonths == durationMonths
-        assert result.subTier is TwitchSubscriberTier.TIER_ONE
+        assert isinstance(result, TwitchSub)
+        assert result == sub
+        assert result.isPrime == sub.isPrime
+        assert result.durationMonths == sub.durationMonths
+        assert result.subTier is sub.subTier
 
     @pytest.mark.asyncio
-    async def test_parseWebsocketSub_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseWebsocketSub(dict())
+    async def test_parseSub_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseSub(dict())
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_parseWebsocketSub_withNone(self):
-        result = await self.jsonMapper.parseWebsocketSub(None)
+    async def test_parseSub_withNone(self):
+        result = await self.jsonMapper.parseSub(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseWebsocketCondition_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseWebsocketCondition(dict())
+        assert isinstance(result, TwitchWebsocketCondition)
+        assert result.broadcasterUserId is None
+        assert result.broadcasterUserLogin is None
+        assert result.broadcasterUserName is None
+        assert result.clientId is None
+        assert result.fromBroadcasterUserId is None
+        assert result.fromBroadcasterUserLogin is None
+        assert result.fromBroadcasterUserName is None
+        assert result.moderatorUserId is None
+        assert result.moderatorUserLogin is None
+        assert result.moderatorUserName is None
+        assert result.rewardId is None
+        assert result.toBroadcasterUserId is None
+        assert result.toBroadcasterUserLogin is None
+        assert result.toBroadcasterUserName is None
+        assert result.userId is None
+        assert result.userLogin is None
+        assert result.userName is None
+
+        broadcasterUserId: str | None = None
+
+        with pytest.raises(ValueError):
+            broadcasterUserId = result.requireBroadcasterUserId()
+
+        assert broadcasterUserId is None
+
+    @pytest.mark.asyncio
+    async def test_parseWebsocketCondition_withNone(self):
+        result = await self.jsonMapper.parseWebsocketCondition(None)
         assert result is None
 
     @pytest.mark.asyncio
@@ -1930,9 +1946,27 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_requireSubscriberTier_withEmptyString(self):
+        result: TwitchSubscriberTier | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.jsonMapper.requireSubscriberTier('')
+
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_requireSubscriberTier_withPrimeString(self):
         result = await self.jsonMapper.requireSubscriberTier('prime')
         assert result is TwitchSubscriberTier.PRIME
+
+    @pytest.mark.asyncio
+    async def test_requireSubscriberTier_withNone(self):
+        result: TwitchSubscriberTier | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.jsonMapper.requireSubscriberTier(None)
+
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_requireSubscriberTier_with1000String(self):
@@ -1950,28 +1984,10 @@ class TestTwitchJsonMapper:
         assert result is TwitchSubscriberTier.TIER_THREE
 
     @pytest.mark.asyncio
-    async def test_requireSubscriberTier_withEmptyString(self):
-        result: TwitchSubscriberTier | None = None
-
-        with pytest.raises(Exception):
-            result = await self.jsonMapper.requireSubscriberTier('')
-
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_requireSubscriberTier_withNone(self):
-        result: TwitchSubscriberTier | None = None
-
-        with pytest.raises(Exception):
-            result = await self.jsonMapper.requireSubscriberTier(None)
-
-        assert result is None
-
-    @pytest.mark.asyncio
     async def test_requireSubscriberTier_withWhitespaceString(self):
         result: TwitchSubscriberTier | None = None
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             result = await self.jsonMapper.requireSubscriberTier(' ')
 
         assert result is None
@@ -2447,6 +2463,35 @@ class TestTwitchJsonMapper:
         assert result['message'] == request.message
         assert result['reply_parent_message_id'] == request.replyParentMessageId
         assert result['sender_id'] == request.senderId
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriberTier_withAll(self):
+        strings: set[str] = set()
+
+        for subscriberTier in TwitchSubscriberTier:
+            strings.add(await self.jsonMapper.serializeSubscriberTier(subscriberTier))
+
+        assert len(strings) == len(TwitchSubscriberTier)
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriberTier_withPrime(self):
+        result = await self.jsonMapper.serializeSubscriberTier(TwitchSubscriberTier.PRIME)
+        assert result == 'prime'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriberTier_withTier1(self):
+        result = await self.jsonMapper.serializeSubscriberTier(TwitchSubscriberTier.TIER_ONE)
+        assert result == '1000'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriberTier_withTier2(self):
+        result = await self.jsonMapper.serializeSubscriberTier(TwitchSubscriberTier.TIER_TWO)
+        assert result == '2000'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriberTier_withTier3(self):
+        result = await self.jsonMapper.serializeSubscriberTier(TwitchSubscriberTier.TIER_THREE)
+        assert result == '3000'
 
     @pytest.mark.asyncio
     async def test_serializeSubscriptionType_withAll(self):

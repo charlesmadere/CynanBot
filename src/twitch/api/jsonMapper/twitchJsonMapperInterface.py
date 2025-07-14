@@ -11,6 +11,7 @@ from ..models.twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubs
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
 from ..models.twitchChannelEditor import TwitchChannelEditor
 from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
+from ..models.twitchChannelPointsVoting import TwitchChannelPointsVoting
 from ..models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
 from ..models.twitchChatBadge import TwitchChatBadge
 from ..models.twitchChatMessage import TwitchChatMessage
@@ -62,18 +63,17 @@ from ..models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from ..models.twitchStartCommercialDetails import TwitchStartCommercialDetails
 from ..models.twitchStartCommercialResponse import TwitchStartCommercialResponse
 from ..models.twitchStreamType import TwitchStreamType
+from ..models.twitchSub import TwitchSub
 from ..models.twitchSubscriberTier import TwitchSubscriberTier
 from ..models.twitchThemeMode import TwitchThemeMode
 from ..models.twitchTokensDetails import TwitchTokensDetails
 from ..models.twitchUserSubscription import TwitchUserSubscription
 from ..models.twitchUserType import TwitchUserType
 from ..models.twitchValidationResponse import TwitchValidationResponse
-from ..models.twitchWebsocketChannelPointsVoting import TwitchWebsocketChannelPointsVoting
 from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from ..models.twitchWebsocketMessageType import TwitchWebsocketMessageType
 from ..models.twitchWebsocketMetadata import TwitchWebsocketMetadata
-from ..models.twitchWebsocketSub import TwitchWebsocketSub
 from ..models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..models.twitchWebsocketTransport import TwitchWebsocketTransport
 from ..models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
@@ -133,8 +133,8 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseChannelEditor(
         self,
-        jsonResponse: dict[str, Any]
-    ) -> TwitchChannelEditor:
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChannelEditor | None:
         pass
 
     @abstractmethod
@@ -142,6 +142,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchChannelEditorsResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseChannelPointsVoting(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchChannelPointsVoting | None:
         pass
 
     @abstractmethod
@@ -226,13 +233,6 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchCommunitySubGift | None:
-        pass
-
-    @abstractmethod
-    async def parseCondition(
-        self,
-        jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchWebsocketCondition | None:
         pass
 
     @abstractmethod
@@ -481,6 +481,13 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseSub(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchSub | None:
+        pass
+
+    @abstractmethod
     async def parseSubscriberTier(
         self,
         subscriberTier: str | Any | None
@@ -544,10 +551,10 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
-    async def parseWebsocketChannelPointsVoting(
+    async def parseWebsocketCondition(
         self,
         jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchWebsocketChannelPointsVoting | None:
+    ) -> TwitchWebsocketCondition | None:
         pass
 
     @abstractmethod
@@ -565,24 +572,10 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
-    async def parseWebsocketSub(
-        self,
-        jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchWebsocketSub | None:
-        pass
-
-    @abstractmethod
     async def requireChatMessageFragmentType(
         self,
         fragmentType: str | Any | None
     ) -> TwitchChatMessageFragmentType:
-        pass
-
-    @abstractmethod
-    async def requireCondition(
-        self,
-        jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchWebsocketCondition:
         pass
 
     @abstractmethod
@@ -642,6 +635,13 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def requireWebsocketCondition(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchWebsocketCondition:
+        pass
+
+    @abstractmethod
     async def requireWebsocketMessageType(
         self,
         messageType: str | Any | None
@@ -695,6 +695,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         chatRequest: TwitchSendChatMessageRequest
     ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeSubscriberTier(
+        self,
+        subscriberTier: TwitchSubscriberTier
+    ) -> str:
         pass
 
     @abstractmethod
