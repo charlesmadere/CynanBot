@@ -25,9 +25,6 @@ class TestTwitchWebsocketConditionBuilder:
 
     @pytest.mark.asyncio
     async def test_build_withChannelChatMessage(self):
-        twitchHandle = await self.twitchHandleProvider.getTwitchHandle()
-        twitchId = await self.userIdsRepository.requireUserId(twitchHandle)
-
         websocketUserName = 'stashiocat'
         websocketUser = TwitchWebsocketUser(
             userId = await self.userIdsRepository.requireUserId(websocketUserName),

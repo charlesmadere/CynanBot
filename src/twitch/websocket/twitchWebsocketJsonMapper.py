@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, Final
 
 from frozenlist import FrozenList
 
@@ -16,7 +16,6 @@ from ..api.models.twitchContribution import TwitchContribution
 from ..api.models.twitchHypeTrainType import TwitchHypeTrainType
 from ..api.models.twitchNoticeType import TwitchNoticeType
 from ..api.models.twitchOutcome import TwitchOutcome
-from ..api.models.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..api.models.twitchPollChoice import TwitchPollChoice
 from ..api.models.twitchPollStatus import TwitchPollStatus
 from ..api.models.twitchPowerUp import TwitchPowerUp
@@ -42,15 +41,15 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        twitchJsonMapper: TwitchJsonMapperInterface
+        twitchJsonMapper: TwitchJsonMapperInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchJsonMapper, TwitchJsonMapperInterface):
             raise TypeError(f'twitchJsonMapper argument is malformed: \"{twitchJsonMapper}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__twitchJsonMapper: TwitchJsonMapperInterface = twitchJsonMapper
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchJsonMapper: Final[TwitchJsonMapperInterface] = twitchJsonMapper
 
     async def parseLoggingLevel(
         self,
@@ -75,18 +74,18 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             return None
 
         event = await self.parseWebsocketEvent(payloadJson.get('event'))
-        session = await self.parseTwitchWebsocketSession(payloadJson.get('session'))
+        session = await self.parseWebsocketSession(payloadJson.get('session'))
         subscription = await self.parseWebsocketSubscription(payloadJson.get('subscription'))
 
         return TwitchWebsocketPayload(
             event = event,
             session = session,
-            subscription = subscription
+            subscription = subscription,
         )
 
     async def parseWebsocketDataBundle(
         self,
-        dataBundleJson: dict[str, Any] | None
+        dataBundleJson: dict[str, Any] | Any | None
     ) -> TwitchWebsocketDataBundle | None:
         if not isinstance(dataBundleJson, dict) or len(dataBundleJson) == 0:
             return None
@@ -94,19 +93,19 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         metadata = await self.__twitchJsonMapper.parseWebsocketMetadata(dataBundleJson.get('metadata'))
 
         if metadata is None:
-            self.__timber.log('TwitchWebsocketJsonMapper', f'Websocket message ({dataBundleJson}) is missing \"metadata\" ({metadata}) field')
+            self.__timber.log('TwitchWebsocketJsonMapper', f'Websocket message is missing \"metadata\" field ({metadata=}) ({dataBundleJson}=)')
             return None
 
         payload = await self.__parsePayload(dataBundleJson.get('payload'))
 
         return TwitchWebsocketDataBundle(
             metadata = metadata,
-            payload = payload
+            payload = payload,
         )
 
     async def parseWebsocketEvent(
         self,
-        eventJson: dict[str, Any] | None
+        eventJson: dict[str, Any] | Any | None
     ) -> TwitchWebsocketEvent | None:
         if not isinstance(eventJson, dict) or len(eventJson) == 0:
             return None
@@ -247,7 +246,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
                 outcomes: list[TwitchOutcome] = list()
 
                 for outcomeItem in outcomesItem:
-                    outcome = await self.parseTwitchOutcome(outcomeItem)
+                    outcome = await self.__twitchJsonMapper.parseOutcome(outcomeItem)
 
                     if outcome is not None:
                         outcomes.append(outcome)
@@ -479,7 +478,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         subGift: TwitchSubGift | None = None
         if 'sub_gift' in eventJson:
-            subGift = await self.parseWebsocketSubGift(eventJson.get('sub_gift'))
+            subGift = await self.__twitchJsonMapper.parseSubGift(eventJson.get('sub_gift'))
 
         tier: TwitchSubscriberTier | None = None
         if 'tier' in eventJson and utils.isValidStr(eventJson.get('tier')):
@@ -565,49 +564,9 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             tier = tier,
         )
 
-    async def parseTwitchOutcome(
+    async def parseWebsocketSession(
         self,
-        outcomeJson: dict[str, Any] | None
-    ) -> TwitchOutcome | None:
-        if not isinstance(outcomeJson, dict) or len(outcomeJson) == 0:
-            return None
-
-        channelPoints = utils.getIntFromDict(outcomeJson, 'channel_points', fallback = 0)
-        users = utils.getIntFromDict(outcomeJson, 'users', fallback = 0)
-        outcomeId = utils.getStrFromDict(outcomeJson, 'id')
-        title = utils.getStrFromDict(outcomeJson, 'title')
-        color = await self.__twitchJsonMapper.requireOutcomeColor(utils.getStrFromDict(outcomeJson, 'color'))
-
-        frozenTopPredictors: FrozenList[TwitchOutcomePredictor] | None = None
-        if 'top_predictors' in outcomeJson:
-            topPredictorsItem: Any | None = outcomeJson.get('top_predictors')
-
-            if isinstance(topPredictorsItem, list) and len(topPredictorsItem) >= 1:
-                topPredictors: list[TwitchOutcomePredictor] = list()
-
-                for topPredictorItem in topPredictorsItem:
-                    topPredictor = await self.__twitchJsonMapper.parseOutcomePredictor(topPredictorItem)
-
-                    if topPredictor is not None:
-                        topPredictors.append(topPredictor)
-
-                if len(topPredictors) >= 1:
-                    topPredictors.sort(key = lambda element: element.channelPointsUsed, reverse = True)
-                    frozenTopPredictors = FrozenList(topPredictors)
-                    frozenTopPredictors.freeze()
-
-        return TwitchOutcome(
-            topPredictors = frozenTopPredictors,
-            channelPoints = channelPoints,
-            users = users,
-            outcomeId = outcomeId,
-            title = title,
-            color = color
-        )
-
-    async def parseTwitchWebsocketSession(
-        self,
-        sessionJson: dict[str, Any] | None
+        sessionJson: dict[str, Any] | Any | None
     ) -> TwitchWebsocketSession | None:
         if not isinstance(sessionJson, dict) or len(sessionJson) == 0:
             return None
@@ -635,40 +594,12 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             reconnectUrl = reconnectUrl,
             recoveryUrl = recoveryUrl,
             sessionId = sessionId,
-            status = status
-        )
-
-    async def parseWebsocketSubGift(
-        self,
-        giftJson: dict[str, Any] | None
-    ) -> TwitchSubGift | None:
-        if not isinstance(giftJson, dict) or len(giftJson) == 0:
-            return None
-
-        cumulativeTotal: int | None = None
-        if 'cumulative_total' in giftJson and utils.isValidInt(giftJson.get('cumulative_total')):
-            cumulativeTotal = utils.getIntFromDict(giftJson, 'cumulative_total')
-
-        durationMonths = utils.getIntFromDict(giftJson, 'duration_months')
-        communityGiftId = utils.getStrFromDict(giftJson, 'community_gift_id')
-        recipientUserId = utils.getStrFromDict(giftJson, 'recipient_user_id')
-        recipientUserLogin = utils.getStrFromDict(giftJson, 'recipient_user_login')
-        recipientUserName = utils.getStrFromDict(giftJson, 'recipient_user_name')
-        subTier = await self.__twitchJsonMapper.requireSubscriberTier(utils.getStrFromDict(giftJson, 'sub_tier'))
-
-        return TwitchSubGift(
-            cumulativeTotal = cumulativeTotal,
-            durationMonths = durationMonths,
-            communityGiftId = communityGiftId,
-            recipientUserId = recipientUserId,
-            recipientUserLogin = recipientUserLogin,
-            recipientUserName = recipientUserName,
-            subTier = subTier
+            status = status,
         )
 
     async def parseWebsocketSubscription(
         self,
-        subscriptionJson: dict[str, Any] | None
+        subscriptionJson: dict[str, Any] | Any | None
     ) -> TwitchWebsocketSubscription | None:
         if not isinstance(subscriptionJson, dict) or len(subscriptionJson) == 0:
             return None
@@ -690,7 +621,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             condition = condition,
             status = status,
             subscriptionType = subscriptionType,
-            transport = transport
+            transport = transport,
         )
 
     async def serializeLoggingLevel(

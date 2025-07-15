@@ -1,33 +1,29 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from frozenlist import FrozenList
-
-from .api.models.twitchPollChoice import TwitchPollChoice
-from .api.models.twitchPollStatus import TwitchPollStatus
+from .api.models.twitchHypeTrainType import TwitchHypeTrainType
 from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
-from .api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from .configuration.twitchChannelProvider import TwitchChannelProvider
 from ..users.userInterface import UserInterface
 
 
-class AbsTwitchPollHandler(ABC):
+class AbsTwitchHypeTrainHandler(ABC):
 
     @dataclass(frozen = True)
-    class PollData:
-        choices: FrozenList[TwitchPollChoice]
-        title: str
+    class HypeTrainData:
+        isSharedTrain: bool
+        level: int
+        total: int
         twitchChannelId: str
-        pollStatus: TwitchPollStatus
-        subscriptionType: TwitchWebsocketSubscriptionType
+        hypeTrainType: TwitchHypeTrainType
         user: UserInterface
 
     @abstractmethod
-    async def onNewPoll(self, pollData: PollData):
+    async def onNewHypeTrain(self, hypeTrainData: HypeTrainData):
         pass
 
     @abstractmethod
-    async def onNewPollDataBundle(
+    async def onNewHypeTrainDataBundle(
         self,
         twitchChannelId: str,
         user: UserInterface,

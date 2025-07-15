@@ -42,7 +42,7 @@ class TestTwitchIrcTagsParser:
             'turbo': '1',
             'user-id': userId,
             'user-type': '',
-            'vip': '1'
+            'vip': '1',
         }
 
         result = await self.parser.parseTwitchIrcTags(rawIrcTags)
@@ -85,7 +85,7 @@ class TestTwitchIrcTagsParser:
             'turbo': '1',
             'user-id': userId,
             'user-type': '',
-            'vip': '1'
+            'vip': '1',
         }
 
         result: TwitchIrcTags | None = None
@@ -118,7 +118,7 @@ class TestTwitchIrcTagsParser:
             'turbo': '1',
             'user-id': userId,
             'user-type': '',
-            'vip': '1'
+            'vip': '1',
         }
 
         result: TwitchIrcTags | None = None
@@ -151,7 +151,7 @@ class TestTwitchIrcTagsParser:
             'turbo': '1',
             'user-id': userId,
             'user-type': '',
-            'vip': '1'
+            'vip': '1',
         }
 
         result: TwitchIrcTags | None = None
@@ -184,7 +184,7 @@ class TestTwitchIrcTagsParser:
             'tmi-sent-ts': '',
             'turbo': '1',
             'user-type': '',
-            'vip': '1'
+            'vip': '1',
         }
 
         result: TwitchIrcTags | None = None

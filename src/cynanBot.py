@@ -217,6 +217,7 @@ from .twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPoint
 from .twitch.absTwitchChatHandler import AbsTwitchChatHandler
 from .twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from .twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
+from .twitch.absTwitchHypeTrainHandler import AbsTwitchHypeTrainHandler
 from .twitch.absTwitchPollHandler import AbsTwitchPollHandler
 from .twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from .twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
@@ -280,6 +281,7 @@ class CynanBot(
         twitchChatHandler: AbsTwitchChatHandler | None,
         twitchCheerHandler: AbsTwitchCheerHandler | None,
         twitchFollowHandler: AbsTwitchFollowHandler | None,
+        twitchHypeTrainHandler: AbsTwitchHypeTrainHandler | None,
         twitchPollHandler: AbsTwitchPollHandler | None,
         twitchPredictionHandler: AbsTwitchPredictionHandler | None,
         twitchRaidHandler: AbsTwitchRaidHandler | None,
@@ -444,6 +446,8 @@ class CynanBot(
             raise TypeError(f'twitchCheerHandler argument is malformed: \"{twitchCheerHandler}\"')
         elif twitchFollowHandler is not None and not isinstance(twitchFollowHandler, AbsTwitchFollowHandler):
             raise TypeError(f'twitchFollowHandler argument is malformed: \"{twitchFollowHandler}\"')
+        elif twitchHypeTrainHandler is not None and not isinstance(twitchHypeTrainHandler, AbsTwitchHypeTrainHandler):
+            raise TypeError(f'twitchHypeTrainHandler argument is malformed: \"{twitchHypeTrainHandler}\"')
         elif twitchPollHandler is not None and not isinstance(twitchPollHandler, AbsTwitchPollHandler):
             raise TypeError(f'twitchPollHandler argument is malformed: \"{twitchPollHandler}\"')
         elif twitchPredictionHandler is not None and not isinstance(twitchPredictionHandler, AbsTwitchPredictionHandler):
@@ -731,6 +735,7 @@ class CynanBot(
         self.__twitchChatHandler: AbsTwitchChatHandler | None = twitchChatHandler
         self.__twitchCheerHandler: AbsTwitchCheerHandler | None = twitchCheerHandler
         self.__twitchFollowHandler: AbsTwitchFollowHandler | None = twitchFollowHandler
+        self.__twitchHypeTrainHandler: AbsTwitchHypeTrainHandler | None = twitchHypeTrainHandler
         self.__twitchPollHandler: AbsTwitchPollHandler | None = twitchPollHandler
         self.__twitchPredictionHandler: AbsTwitchPredictionHandler | None = twitchPredictionHandler
         self.__twitchRaidHandler: AbsTwitchRaidHandler | None = twitchRaidHandler
@@ -1148,6 +1153,9 @@ class CynanBot(
         if self.__twitchFollowHandler is not None:
             self.__twitchFollowHandler.setTwitchChannelProvider(self)
 
+        if self.__twitchHypeTrainHandler is not None:
+            self.__twitchHypeTrainHandler.setTwitchChannelProvider(self)
+
         if self.__twitchPollHandler is not None:
             self.__twitchPollHandler.setTwitchChannelProvider(self)
 
@@ -1217,13 +1225,14 @@ class CynanBot(
                 chatHandler = self.__twitchChatHandler,
                 cheerHandler = self.__twitchCheerHandler,
                 followHandler = self.__twitchFollowHandler,
+                hypeTrainHandler = self.__twitchHypeTrainHandler,
                 pollHandler = self.__twitchPollHandler,
                 predictionHandler = self.__twitchPredictionHandler,
                 raidHandler = self.__twitchRaidHandler,
                 subscriptionHandler = self.__twitchSubscriptionHandler,
                 timber = self.__timber,
                 userIdsRepository = self.__userIdsRepository,
-                usersRepository = self.__usersRepository
+                usersRepository = self.__usersRepository,
             ))
 
             self.__twitchWebsocketClient.start()

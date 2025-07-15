@@ -4,6 +4,7 @@ from .absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedempt
 from .absTwitchChatHandler import AbsTwitchChatHandler
 from .absTwitchCheerHandler import AbsTwitchCheerHandler
 from .absTwitchFollowHandler import AbsTwitchFollowHandler
+from .absTwitchHypeTrainHandler import AbsTwitchHypeTrainHandler
 from .absTwitchPollHandler import AbsTwitchPollHandler
 from .absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from .absTwitchRaidHandler import AbsTwitchRaidHandler
@@ -26,13 +27,14 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         chatHandler: AbsTwitchChatHandler | None,
         cheerHandler: AbsTwitchCheerHandler | None,
         followHandler: AbsTwitchFollowHandler | None,
+        hypeTrainHandler: AbsTwitchHypeTrainHandler | None,
         pollHandler: AbsTwitchPollHandler | None,
         predictionHandler: AbsTwitchPredictionHandler | None,
         raidHandler: AbsTwitchRaidHandler | None,
         subscriptionHandler: AbsTwitchSubscriptionHandler | None,
         timber: TimberInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface
+        usersRepository: UsersRepositoryInterface,
     ):
         if channelPointRedemptionHandler is not None and not isinstance(channelPointRedemptionHandler, AbsTwitchChannelPointRedemptionHandler):
             raise TypeError(f'channelPointRedemptionHandler argument is malformed: \"{channelPointRedemptionHandler}\"')
@@ -42,6 +44,8 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
             raise TypeError(f'cheerHandler argument is malformed: \"{cheerHandler}\"')
         elif followHandler is not None and not isinstance(followHandler, AbsTwitchFollowHandler):
             raise TypeError(f'followHandler argument is malformed: \"{followHandler}\"')
+        elif hypeTrainHandler is not None and not isinstance(hypeTrainHandler, AbsTwitchHypeTrainHandler):
+            raise TypeError(f'hypeTrainHandler argument is malformed: \"{hypeTrainHandler}\"')
         elif pollHandler is not None and not isinstance(pollHandler, AbsTwitchPollHandler):
             raise TypeError(f'pollHandler argument is malformed: \"{pollHandler}\"')
         elif predictionHandler is not None and not isinstance(predictionHandler, AbsTwitchPredictionHandler):
@@ -61,6 +65,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         self.__chatHandler: Final[AbsTwitchChatHandler | None] = chatHandler
         self.__cheerHandler: Final[AbsTwitchCheerHandler | None] = cheerHandler
         self.__followHandler: Final[AbsTwitchFollowHandler | None] = followHandler
+        self.__hypeTrainHandler: Final[AbsTwitchHypeTrainHandler | None] = hypeTrainHandler
         self.__pollHandler: Final[AbsTwitchPollHandler | None] = pollHandler
         self.__predictionHandler: Final[AbsTwitchPredictionHandler | None] = predictionHandler
         self.__raidHandler: Final[AbsTwitchRaidHandler | None] = raidHandler
@@ -92,6 +97,14 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         subscriptionType: TwitchWebsocketSubscriptionType | None
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.FOLLOW
+
+    async def __isHypeTrainType(
+        self,
+        subscriptionType: TwitchWebsocketSubscriptionType | None
+    ) -> bool:
+        return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_BEGIN \
+            or subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_END \
+            or subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_PROGRESS
 
     async def __isPollType(
         self,
@@ -189,10 +202,18 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                     dataBundle = dataBundle,
                 )
 
+        elif await self.__isHypeTrainType(subscriptionType):
+            if self.__hypeTrainHandler is not None:
+                await self.__hypeTrainHandler.onNewHypeTrainDataBundle(
+                    twitchChannelId = userId,
+                    user = user,
+                    dataBundle = dataBundle,
+                )
+
         elif await self.__isPollType(subscriptionType):
             if self.__pollHandler is not None:
                 await self.__pollHandler.onNewPollDataBundle(
-                    userId = userId,
+                    twitchChannelId = userId,
                     user = user,
                     dataBundle = dataBundle,
                 )
@@ -222,7 +243,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 )
 
         else:
-            self.__timber.log('TwitchWebsocketDataBundleHandler', f'Received unhandled data bundle ({userId=}) ({user=}) ({dataBundle=})')
+            self.__timber.log('TwitchWebsocketDataBundleHandler', f'Received unhandled data bundle ({userId=}) ({user=}) ({subscriptionType=}) ({dataBundle=})')
 
     async def __persistUserInfo(self, event: TwitchWebsocketEvent | None):
         if event is None:

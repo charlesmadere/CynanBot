@@ -998,6 +998,16 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseOutcome_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseOutcome(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseOutcome_withNone(self):
+        result = await self.jsonMapper.parseOutcome(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseOutcomeColor_withBlue(self):
         result = await self.jsonMapper.parseOutcomeColor('blue')
         assert result is TwitchOutcomeColor.BLUE
@@ -1034,7 +1044,7 @@ class TestTwitchJsonMapper:
         assert result.cursor == 'abc123'
 
     @pytest.mark.asyncio
-    async def test_parsePaginationResponse_withBlankCursor(self):
+    async def test_parsePaginationResponse_withEmptyCursor(self):
         cursor = ''
 
         result = await self.jsonMapper.parsePaginationResponse({
@@ -1056,6 +1066,16 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parsePaginationResponse_withNoneCursor(self):
         cursor: str | None = None
+
+        result = await self.jsonMapper.parsePaginationResponse({
+            'cursor': cursor
+        })
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePaginationResponse_withWhitespaceCursor(self):
+        cursor = ' '
 
         result = await self.jsonMapper.parsePaginationResponse({
             'cursor': cursor
@@ -1639,6 +1659,16 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseSub_withNone(self):
         result = await self.jsonMapper.parseSub(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSubGift_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseSubGift(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSubGift_withNone(self):
+        result = await self.jsonMapper.parseSubGift(None)
         assert result is None
 
     @pytest.mark.asyncio

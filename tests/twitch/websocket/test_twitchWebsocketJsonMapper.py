@@ -19,12 +19,12 @@ class TestTwitchWebsocketJsonMapper:
 
     jsonMapper: TwitchJsonMapperInterface = TwitchJsonMapper(
         timber = timber,
-        timeZoneRepository = timeZoneRepository
+        timeZoneRepository = timeZoneRepository,
     )
 
     websocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
         timber = timber,
-        twitchJsonMapper = jsonMapper
+        twitchJsonMapper = jsonMapper,
     )
 
     @pytest.mark.asyncio
@@ -63,33 +63,13 @@ class TestTwitchWebsocketJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_parseWebsocketOutcome_withEmptyDictionary(self):
-        result = await self.websocketJsonMapper.parseTwitchOutcome(dict())
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseWebsocketOutcome_withNone(self):
-        result = await self.websocketJsonMapper.parseTwitchOutcome(None)
-        assert result is None
-
-    @pytest.mark.asyncio
     async def test_parseWebsocketSession_withEmptyDictionary(self):
-        result = await self.websocketJsonMapper.parseTwitchWebsocketSession(dict())
+        result = await self.websocketJsonMapper.parseWebsocketSession(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketSession_withNone(self):
-        result = await self.websocketJsonMapper.parseTwitchWebsocketSession(None)
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseWebsocketSubGift_withEmptyDictionary(self):
-        result = await self.websocketJsonMapper.parseWebsocketSubGift(dict())
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_parseWebsocketSubGift_withNone(self):
-        result = await self.websocketJsonMapper.parseWebsocketSubGift(None)
+        result = await self.websocketJsonMapper.parseWebsocketSession(None)
         assert result is None
 
     @pytest.mark.asyncio
@@ -106,6 +86,15 @@ class TestTwitchWebsocketJsonMapper:
         assert self.websocketJsonMapper is not None
         assert isinstance(self.websocketJsonMapper, TwitchWebsocketJsonMapper)
         assert isinstance(self.websocketJsonMapper, TwitchWebsocketJsonMapperInterface)
+
+    @pytest.mark.asyncio
+    async def test_serializeLoggingLevel(self):
+        results: set[str] = set()
+
+        for loggingLevel in TwitchWebsocketJsonLoggingLevel:
+            results.add(await self.websocketJsonMapper.serializeLoggingLevel(loggingLevel))
+
+        assert len(results) == len(TwitchWebsocketJsonLoggingLevel)
 
     @pytest.mark.asyncio
     async def test_serializeLoggingLevel_withAll(self):

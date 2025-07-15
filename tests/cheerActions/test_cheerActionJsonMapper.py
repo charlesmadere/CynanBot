@@ -3,6 +3,7 @@ import json
 import pytest
 
 from src.cheerActions.absCheerAction import AbsCheerAction
+from src.cheerActions.airStrike.airStrikeCheerAction import AirStrikeCheerAction
 from src.cheerActions.beanChance.beanChanceCheerAction import BeanChanceCheerAction
 from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
 from src.cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
@@ -13,7 +14,6 @@ from src.cheerActions.crowdControl.crowdControlGameShuffleCheerAction import Cro
 from src.cheerActions.soundAlert.soundAlertCheerAction import SoundAlertCheerAction
 from src.cheerActions.timeout.timeoutCheerAction import TimeoutCheerAction
 from src.cheerActions.timeout.timeoutCheerActionTargetType import TimeoutCheerActionTargetType
-from src.cheerActions.airStrike.airStrikeCheerAction import AirStrikeCheerAction
 from src.cheerActions.voicemail.voicemailCheerAction import VoicemailCheerAction
 
 

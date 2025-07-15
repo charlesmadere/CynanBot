@@ -43,6 +43,7 @@ from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
 from ..models.twitchHypeTrainType import TwitchHypeTrainType
 from ..models.twitchNoticeType import TwitchNoticeType
+from ..models.twitchOutcome import TwitchOutcome
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
 from ..models.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..models.twitchPaginationResponse import TwitchPaginationResponse
@@ -64,6 +65,7 @@ from ..models.twitchStartCommercialDetails import TwitchStartCommercialDetails
 from ..models.twitchStartCommercialResponse import TwitchStartCommercialResponse
 from ..models.twitchStreamType import TwitchStreamType
 from ..models.twitchSub import TwitchSub
+from ..models.twitchSubGift import TwitchSubGift
 from ..models.twitchSubscriberTier import TwitchSubscriberTier
 from ..models.twitchThemeMode import TwitchThemeMode
 from ..models.twitchTokensDetails import TwitchTokensDetails
@@ -84,7 +86,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseApiScope(
         self,
-        apiScope: str | None
+        apiScope: str | Any | None
     ) -> TwitchApiScope | None:
         pass
 
@@ -308,7 +310,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseEmoteType(
         self,
-        emoteType: str | None
+        emoteType: str | Any | None
     ) -> TwitchEmoteType | None:
         pass
 
@@ -355,6 +357,13 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseOutcome(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchOutcome | None:
+        pass
+
+    @abstractmethod
     async def parseOutcomeColor(
         self,
         outcomeColor: str | Any | None
@@ -378,7 +387,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parsePollChoice(
         self,
-        jsonResponse: dict[str, Any] | None
+        jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchPollChoice | None:
         pass
 
@@ -476,7 +485,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseStreamType(
         self,
-        streamType: str | None
+        streamType: str | Any | None
     ) -> TwitchStreamType:
         pass
 
@@ -485,6 +494,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchSub | None:
+        pass
+
+    @abstractmethod
+    async def parseSubGift(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchSubGift | None:
         pass
 
     @abstractmethod
@@ -504,7 +520,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseThemeMode(
         self,
-        themeMode: str | None
+        themeMode: str | Any | None
     ) -> TwitchThemeMode | None:
         pass
 

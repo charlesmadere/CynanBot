@@ -12,7 +12,7 @@ class AbsTwitchPredictionHandler(ABC):
         self,
         userId: str,
         user: UserInterface,
-        dataBundle: TwitchWebsocketDataBundle
+        dataBundle: TwitchWebsocketDataBundle,
     ):
         pass
 

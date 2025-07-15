@@ -366,6 +366,7 @@ from src.twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPo
 from src.twitch.absTwitchChatHandler import AbsTwitchChatHandler
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
+from src.twitch.absTwitchHypeTrainHandler import AbsTwitchHypeTrainHandler
 from src.twitch.absTwitchPollHandler import AbsTwitchPollHandler
 from src.twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
@@ -2094,14 +2095,16 @@ twitchFollowHandler: AbsTwitchFollowHandler = TwitchFollowHandler(
     twitchFollowingStatusRepository = twitchFollowingStatusRepository
 )
 
-twitchPollHandler: AbsTwitchPollHandler | None = TwitchPollHandler(
+twitchHypeTrainHandler: AbsTwitchHypeTrainHandler | None = None
+
+twitchPollHandler: AbsTwitchPollHandler = TwitchPollHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     twitchApiService = twitchApiService,
     twitchUtils = twitchUtils
 )
 
-twitchPredictionHandler: AbsTwitchPredictionHandler | None = TwitchPredictionHandler(
+twitchPredictionHandler: AbsTwitchPredictionHandler = TwitchPredictionHandler(
     activeChattersRepository = activeChattersRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
@@ -2110,13 +2113,13 @@ twitchPredictionHandler: AbsTwitchPredictionHandler | None = TwitchPredictionHan
     websocketConnectionServer = websocketConnectionServer
 )
 
-twitchRaidHandler: AbsTwitchRaidHandler | None = TwitchRaidHandler(
+twitchRaidHandler: AbsTwitchRaidHandler = TwitchRaidHandler(
     chatLogger = chatLogger,
     streamAlertsManager = streamAlertsManager,
     timber = timber
 )
 
-twitchSubscriptionHandler: AbsTwitchSubscriptionHandler | None = TwitchSubscriptionHandler(
+twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHandler(
     officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
@@ -2140,6 +2143,7 @@ cynanBot = CynanBot(
     twitchChatHandler = twitchChatHandler,
     twitchCheerHandler = twitchCheerHandler,
     twitchFollowHandler = twitchFollowHandler,
+    twitchHypeTrainHandler = twitchHypeTrainHandler,
     twitchPollHandler = twitchPollHandler,
     twitchPredictionHandler = twitchPredictionHandler,
     twitchRaidHandler = twitchRaidHandler,
@@ -2281,7 +2285,7 @@ cynanBot = CynanBot(
     weatherRepository = weatherRepository,
     websocketConnectionServer = None,
     wordOfTheDayPresenter = wordOfTheDayPresenter,
-    wordOfTheDayRepository = wordOfTheDayRepository
+    wordOfTheDayRepository = wordOfTheDayRepository,
 )
 
 

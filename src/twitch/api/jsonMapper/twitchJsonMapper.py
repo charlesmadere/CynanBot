@@ -48,6 +48,7 @@ from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
 from ..models.twitchHypeTrainType import TwitchHypeTrainType
 from ..models.twitchNoticeType import TwitchNoticeType
+from ..models.twitchOutcome import TwitchOutcome
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
 from ..models.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..models.twitchPaginationResponse import TwitchPaginationResponse
@@ -69,6 +70,7 @@ from ..models.twitchStartCommercialDetails import TwitchStartCommercialDetails
 from ..models.twitchStartCommercialResponse import TwitchStartCommercialResponse
 from ..models.twitchStreamType import TwitchStreamType
 from ..models.twitchSub import TwitchSub
+from ..models.twitchSubGift import TwitchSubGift
 from ..models.twitchSubscriberTier import TwitchSubscriberTier
 from ..models.twitchThemeMode import TwitchThemeMode
 from ..models.twitchTokensDetails import TwitchTokensDetails
@@ -112,7 +114,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseApiScope(
         self,
-        apiScope: str | None
+        apiScope: str | Any | None
     ) -> TwitchApiScope | None:
         if not utils.isValidStr(apiScope):
             return None
@@ -158,9 +160,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'user_subscriptions': return TwitchApiScope.USER_SUBSCRIPTIONS
             case 'whispers:edit': return TwitchApiScope.WHISPERS_EDIT
             case 'whispers:read': return TwitchApiScope.WHISPERS_READ
-            case _:
-                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchApiScope value: \"{apiScope}\"')
-                return None
+            case _: return None
 
     async def parseBanResponse(
         self,
@@ -974,7 +974,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseEmoteType(
         self,
-        emoteType: str | None
+        emoteType: str | Any | None
     ) -> TwitchEmoteType | None:
         if not utils.isValidStr(emoteType):
             return None
@@ -1130,6 +1130,46 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'unraid': return TwitchNoticeType.UN_RAID
             case _: return None
 
+    async def parseOutcome(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchOutcome | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        channelPoints = utils.getIntFromDict(jsonResponse, 'channel_points', fallback = 0)
+        users = utils.getIntFromDict(jsonResponse, 'users', fallback = 0)
+        outcomeId = utils.getStrFromDict(jsonResponse, 'id')
+        title = utils.getStrFromDict(jsonResponse, 'title', clean = True)
+        color = await self.requireOutcomeColor(utils.getStrFromDict(jsonResponse, 'color'))
+
+        frozenTopPredictors: FrozenList[TwitchOutcomePredictor] | None = None
+        if 'top_predictors' in jsonResponse:
+            topPredictorsItem: Any | None = jsonResponse.get('top_predictors')
+
+            if isinstance(topPredictorsItem, list) and len(topPredictorsItem) >= 1:
+                topPredictors: list[TwitchOutcomePredictor] = list()
+
+                for topPredictorItem in topPredictorsItem:
+                    topPredictor = await self.parseOutcomePredictor(topPredictorItem)
+
+                    if topPredictor is not None:
+                        topPredictors.append(topPredictor)
+
+                if len(topPredictors) >= 1:
+                    topPredictors.sort(key = lambda element: element.channelPointsUsed, reverse = True)
+                    frozenTopPredictors = FrozenList(topPredictors)
+                    frozenTopPredictors.freeze()
+
+        return TwitchOutcome(
+            topPredictors = frozenTopPredictors,
+            channelPoints = channelPoints,
+            users = users,
+            outcomeId = outcomeId,
+            title = title,
+            color = color,
+        )
+
     async def parseOutcomeColor(
         self,
         outcomeColor: str | Any | None
@@ -1186,7 +1226,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parsePollChoice(
         self,
-        jsonResponse: dict[str, Any] | None
+        jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchPollChoice | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1500,7 +1540,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseStreamType(
         self,
-        streamType: str | None
+        streamType: str | Any | None
     ) -> TwitchStreamType:
         if not utils.isValidStr(streamType):
             return TwitchStreamType.UNKNOWN
@@ -1528,6 +1568,34 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             subTier = subTier,
         )
 
+    async def parseSubGift(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchSubGift | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        cumulativeTotal: int | None = None
+        if 'cumulative_total' in jsonResponse and utils.isValidInt(jsonResponse.get('cumulative_total')):
+            cumulativeTotal = utils.getIntFromDict(jsonResponse, 'cumulative_total')
+
+        durationMonths = utils.getIntFromDict(jsonResponse, 'duration_months')
+        communityGiftId = utils.getStrFromDict(jsonResponse, 'community_gift_id')
+        recipientUserId = utils.getStrFromDict(jsonResponse, 'recipient_user_id')
+        recipientUserLogin = utils.getStrFromDict(jsonResponse, 'recipient_user_login')
+        recipientUserName = utils.getStrFromDict(jsonResponse, 'recipient_user_name')
+        subTier = await self.requireSubscriberTier(utils.getStrFromDict(jsonResponse, 'sub_tier'))
+
+        return TwitchSubGift(
+            cumulativeTotal = cumulativeTotal,
+            durationMonths = durationMonths,
+            communityGiftId = communityGiftId,
+            recipientUserId = recipientUserId,
+            recipientUserLogin = recipientUserLogin,
+            recipientUserName = recipientUserName,
+            subTier = subTier,
+        )
+
     async def parseSubscriberTier(
         self,
         subscriberTier: str | Any | None
@@ -1542,9 +1610,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case '1000': return TwitchSubscriberTier.TIER_ONE
             case '2000': return TwitchSubscriberTier.TIER_TWO
             case '3000': return TwitchSubscriberTier.TIER_THREE
-            case _:
-                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchSubscriberTier value: \"{subscriberTier}\"')
-                return None
+            case _: return None
 
     async def parseSubscriptionType(
         self,
@@ -1605,7 +1671,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseThemeMode(
         self,
-        themeMode: str | None
+        themeMode: str | Any | None
     ) -> TwitchThemeMode | None:
         if not utils.isValidStr(themeMode):
             return None
@@ -1615,9 +1681,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         match themeMode:
             case 'dark': return TwitchThemeMode.DARK
             case 'light': return TwitchThemeMode.LIGHT
-            case _:
-                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchThemeMode value: \"{themeMode}\"')
-                return None
+            case _: return None
 
     async def parseTokensDetails(
         self,
@@ -1630,17 +1694,17 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             expiresInSeconds = utils.getIntFromDict(jsonResponse, 'expires_in', fallback = -1)
         )
 
-        if 'access_token' not in jsonResponse or not utils.isValidStr(jsonResponse.get('access_token', None)):
-            self.__timber.log('TwitchJsonMapper', f'Tokens details JSON data does not include valid \"access_token\" value ({jsonResponse=})')
+        accessToken: str | None = None
+        if 'access_token' in jsonResponse and utils.isValidStr(jsonResponse.get('access_token')):
+            accessToken = utils.getStrFromDict(jsonResponse, 'access_token')
+
+        refreshToken: str | None = None
+        if 'refresh_token' in jsonResponse and utils.isValidStr(jsonResponse.get('refresh_token')):
+            refreshToken = utils.getStrFromDict(jsonResponse, 'refresh_token')
+
+        if not utils.isValidStr(accessToken) or not utils.isValidStr(refreshToken):
+            self.__timber.log('TwitchJsonMapper', f'Tokens details JSON data is missing required \"access_token\" or \"refresh_token\" values ({accessToken=}) ({refreshToken=}) ({jsonResponse=})')
             return None
-
-        accessToken = utils.getStrFromDict(jsonResponse, 'access_token')
-
-        if 'refresh_token' not in jsonResponse or not utils.isValidStr(jsonResponse.get('refresh_token', None)):
-            self.__timber.log('TwitchJsonMapper', f'Tokens details JSON data does not include valid \"refresh_token\" value ({jsonResponse=})')
-            return None
-
-        refreshToken = utils.getStrFromDict(jsonResponse, 'refresh_token')
 
         return TwitchTokensDetails(
             expirationTime = expirationTime,
@@ -2263,7 +2327,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case TwitchWebsocketSubscriptionType.USER_UPDATE:
                 return 'user.update'
             case _:
-                raise RuntimeError(f'unknown TwitchWebsocketSubscriptionType: \"{self}\"')
+                raise ValueError(f'Encountered unknown TwitchWebsocketSubscriptionType: \"{self}\"')
 
     async def serializeTransport(
         self,
@@ -2288,7 +2352,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 dictionary['session_id'] = transport.requireSessionId()
 
             case _:
-                raise ValueError(f'Unknown TwitchWebsocketTransportMethod value: \"{transport}\"')
+                raise ValueError(f'Encountered unknown TwitchWebsocketTransportMethod value: \"{transport}\"')
 
         return dictionary
 

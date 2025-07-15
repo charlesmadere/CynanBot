@@ -370,6 +370,7 @@ from src.twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPo
 from src.twitch.absTwitchChatHandler import AbsTwitchChatHandler
 from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
+from src.twitch.absTwitchHypeTrainHandler import AbsTwitchHypeTrainHandler
 from src.twitch.absTwitchPollHandler import AbsTwitchPollHandler
 from src.twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
@@ -2203,6 +2204,8 @@ twitchFollowHandler: AbsTwitchFollowHandler = TwitchFollowHandler(
     twitchFollowingStatusRepository = twitchFollowingStatusRepository
 )
 
+twitchHypeTrainHandler: AbsTwitchHypeTrainHandler | None = None
+
 twitchPollHandler: AbsTwitchPollHandler = TwitchPollHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
@@ -2249,6 +2252,7 @@ cynanBot = CynanBot(
     twitchChatHandler = twitchChatHandler,
     twitchCheerHandler = twitchCheerHandler,
     twitchFollowHandler = twitchFollowHandler,
+    twitchHypeTrainHandler = twitchHypeTrainHandler,
     twitchPollHandler = twitchPollHandler,
     twitchPredictionHandler = twitchPredictionHandler,
     twitchRaidHandler = twitchRaidHandler,
@@ -2390,7 +2394,7 @@ cynanBot = CynanBot(
     weatherRepository = None,
     websocketConnectionServer = websocketConnectionServer,
     wordOfTheDayPresenter = None,
-    wordOfTheDayRepository = None
+    wordOfTheDayRepository = None,
 )
 
 

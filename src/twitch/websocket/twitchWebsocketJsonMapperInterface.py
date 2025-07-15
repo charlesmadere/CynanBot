@@ -2,8 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from .twitchWebsocketJsonLoggingLevel import TwitchWebsocketJsonLoggingLevel
-from ..api.models.twitchOutcome import TwitchOutcome
-from ..api.models.twitchSubGift import TwitchSubGift
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketEvent import TwitchWebsocketEvent
 from ..api.models.twitchWebsocketSession import TwitchWebsocketSession
@@ -22,42 +20,28 @@ class TwitchWebsocketJsonMapperInterface(ABC):
     @abstractmethod
     async def parseWebsocketDataBundle(
         self,
-        dataBundleJson: dict[str, Any] | None
+        dataBundleJson: dict[str, Any] | Any | None
     ) -> TwitchWebsocketDataBundle | None:
         pass
 
     @abstractmethod
     async def parseWebsocketEvent(
         self,
-        eventJson: dict[str, Any] | None
+        eventJson: dict[str, Any] | Any | None
     ) -> TwitchWebsocketEvent | None:
         pass
 
     @abstractmethod
-    async def parseTwitchOutcome(
+    async def parseWebsocketSession(
         self,
-        outcomeJson: dict[str, Any] | None
-    ) -> TwitchOutcome | None:
-        pass
-
-    @abstractmethod
-    async def parseTwitchWebsocketSession(
-        self,
-        sessionJson: dict[str, Any] | None
+        sessionJson: dict[str, Any] | Any | None
     ) -> TwitchWebsocketSession | None:
-        pass
-
-    @abstractmethod
-    async def parseWebsocketSubGift(
-        self,
-        giftJson: dict[str, Any] | None
-    ) -> TwitchSubGift | None:
         pass
 
     @abstractmethod
     async def parseWebsocketSubscription(
         self,
-        subscriptionJson: dict[str, Any] | None
+        subscriptionJson: dict[str, Any] | Any | None
     ) -> TwitchWebsocketSubscription | None:
         pass
 
