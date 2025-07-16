@@ -13,7 +13,7 @@ num2words==0.5.14
 polyleven==0.9
 pyjwt==2.10.1
 pytest==8.4.1
-pytest-asyncio==1.0.0
+pytest-asyncio==1.1.0
 pytz==2025.2
 requests==2.32.4
 roman==5.0
