@@ -30,7 +30,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
-        triviaGameMachine: TriviaGameMachineInterface | None
+        triviaGameMachine: TriviaGameMachineInterface | None,
     ):
         if not isinstance(chatLogger, ChatLoggerInterface):
             raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
@@ -140,12 +140,12 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
     async def onNewChatDataBundle(
         self,
-        broadcasterUserId: str,
+        twitchChannelId: str,
         user: UserInterface,
         dataBundle: TwitchWebsocketDataBundle,
     ):
-        if not utils.isValidStr(broadcasterUserId):
-            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
@@ -154,7 +154,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         event = dataBundle.requirePayload().event
 
         if event is None:
-            self.__timber.log('TwitchChatHandler', f'Received a data bundle that has no event: ({user=}) ({broadcasterUserId=}) ({dataBundle=})')
+            self.__timber.log('TwitchChatHandler', f'Received a data bundle that has no event: ({user=}) ({twitchChannelId=}) ({dataBundle=})')
             return
 
         ##################################################################################################
@@ -171,7 +171,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         #     return
         #
         # await self.__handleCheer(
-        #     broadcasterUserId = userId,
+        #     twitchChannelId = twitchChannelId,
         #     chatterUserId = chatterUserId,
         #     chatterUserLogin = chatterUserLogin,
         #     chatMessage = chatMessage,

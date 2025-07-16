@@ -24,7 +24,7 @@ class AbsTwitchChatHandler(ABC):
     @abstractmethod
     async def onNewChatDataBundle(
         self,
-        broadcasterUserId: str,
+        twitchChannelId: str,
         user: UserInterface,
         dataBundle: TwitchWebsocketDataBundle,
     ):

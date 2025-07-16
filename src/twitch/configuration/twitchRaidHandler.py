@@ -91,7 +91,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         event = dataBundle.requirePayload().event
 
         if event is None:
-            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that has no event ({user=}) ({dataBundle=})')
+            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that has no event ({user=}) ({twitchChannelId=}) ({dataBundle=})')
             return
 
         viewers = event.viewers
@@ -100,7 +100,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         fromUserName = event.fromBroadcasterUserName
 
         if not utils.isValidInt(viewers) or not utils.isValidStr(fromUserId) or not utils.isValidStr(fromUserLogin) or not utils.isValidStr(fromUserName):
-            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({viewers=}) ({fromUserId=}) ({fromUserLogin=}) ({fromUserName=})')
+            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({viewers=}) ({fromUserId=}) ({fromUserLogin=}) ({fromUserName=})')
             return
 
         raidData = AbsTwitchRaidHandler.RaidData(

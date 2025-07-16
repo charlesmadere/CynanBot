@@ -78,124 +78,104 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
-    async def __handleSubscription(
-        self,
-        isAnonymous: bool | None,
-        isGift: bool | None,
-        total: int | None,
-        broadcasterUserId: str,
-        chatMessage: str | None,
-        eventUserId: str,
-        eventUserLogin: str,
-        eventUserName: str,
-        userInput: str | None,
-        communitySubGift: TwitchCommunitySubGift | None,
-        resub: TwitchResub | None,
-        subGift: TwitchSubGift | None,
-        tier: TwitchSubscriberTier,
-        subscriptionType: TwitchWebsocketSubscriptionType,
-        user: UserInterface
-    ):
+    async def onNewSubscription(self, subscriptionData: AbsTwitchSubscriptionHandler.SubscriptionData):
+        if not isinstance(subscriptionData, AbsTwitchSubscriptionHandler.SubscriptionData):
+            raise TypeError(f'subscriptionData argument is malformed: \"{subscriptionData}\"')
+
+        user = subscriptionData.user
+
         if user.isSubGiftThankingEnabled:
             await self.__processCynanBotAsGiftRecipient(
-                broadcasterUserId = broadcasterUserId,
-                eventUserId = eventUserId,
-                subGift = subGift,
-                subscriptionType = subscriptionType,
-                user = user
+                eventUserId = subscriptionData.eventUserId,
+                twitchChannelId = subscriptionData.twitchChannelId,
+                subGift = subscriptionData.subGift,
+                subscriptionType = subscriptionData.subscriptionType,
+                user = user,
             )
 
         if user.isSuperTriviaGameEnabled:
             await self.__processSuperTriviaEvent(
-                broadcasterUserId = broadcasterUserId,
-                communitySubGift = communitySubGift,
-                subscriptionType = subscriptionType,
-                user = user
+                twitchChannelId = subscriptionData.twitchChannelId,
+                communitySubGift = subscriptionData.communitySubGift,
+                subscriptionType = subscriptionData.subscriptionType,
+                user = user,
             )
 
         if user.isTtsEnabled:
             await self.__processTtsEvent(
-                isAnonymous = isAnonymous,
-                isGift = isGift,
-                total = total,
-                broadcasterUserId = broadcasterUserId,
-                chatMessage = chatMessage,
-                eventUserId = eventUserId,
-                eventUserName = eventUserLogin,
-                userInput = userInput,
-                communitySubGift = communitySubGift,
-                resub = resub,
-                subGift = subGift,
-                tier = tier,
-                subscriptionType = subscriptionType,
-                user = user
+                isAnonymous = subscriptionData.isAnonymous,
+                isGift = subscriptionData.isGift,
+                total = subscriptionData.total,
+                chatMessage = subscriptionData.chatMessage,
+                eventUserId = subscriptionData.eventUserId,
+                eventUserName = subscriptionData.eventUserLogin,
+                twitchChannelId = subscriptionData.twitchChannelId,
+                userInput = subscriptionData.userInput,
+                communitySubGift = subscriptionData.communitySubGift,
+                resub = subscriptionData.resub,
+                subGift = subscriptionData.subGift,
+                tier = subscriptionData.tier,
+                subscriptionType = subscriptionData.subscriptionType,
+                user = user,
             )
 
     async def onNewSubscriptionDataBundle(
         self,
-        broadcasterUserId: str,
+        twitchChannelId: str,
         user: UserInterface,
-        dataBundle: TwitchWebsocketDataBundle
+        dataBundle: TwitchWebsocketDataBundle,
     ):
-        if not utils.isValidStr(broadcasterUserId):
-            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
-        payload = dataBundle.requirePayload()
-        event = payload.event
-        subscription = payload.subscription
+        event = dataBundle.requirePayload().event
 
-        if event is None or subscription is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that has no event ({user=}) ({dataBundle=})')
+        if event is None:
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that has no event ({user=}) ({twitchChannelId=}) ({dataBundle=})')
             return
 
-        subscriptionType = subscription.subscriptionType
-        isAnonymous = event.isAnonymous
-        isGift = event.isGift
-        total = event.total
-        communitySubGift = event.communitySubGift
-        chatMessage = event.message
-        eventId = event.eventId
-        resub = event.resub
-        subGift = event.subGift
         eventUserId = event.userId
         eventUserLogin = event.userLogin
         eventUserName = event.userName
-        userInput = event.userInput
         tier = event.tier
 
         if not utils.isValidStr(eventUserId) or not utils.isValidStr(eventUserLogin) or not utils.isValidStr(eventUserName) or tier is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({resub=}) ({subGift=}) ({total=}) ({chatMessage=}) ({broadcasterUserId=}) ({eventId=}) ({eventUserId=}) ({eventUserLogin=}) ({eventUserName=}) ({userInput=}) ({tier=})')
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({eventUserId=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
             return
 
-        await self.__handleSubscription(
-            isAnonymous = isAnonymous,
-            isGift = isGift,
-            total = total,
-            broadcasterUserId = broadcasterUserId,
-            chatMessage = chatMessage,
+        subscriptionData = AbsTwitchSubscriptionHandler.SubscriptionData(
+            isAnonymous = event.isAnonymous,
+            isGift = event.isGift,
+            total = event.total,
+            chatMessage = event.chatMessage,
             eventUserId = eventUserId,
             eventUserLogin = eventUserLogin,
             eventUserName = eventUserName,
-            userInput = userInput,
-            communitySubGift = communitySubGift,
-            resub = resub,
-            subGift = subGift,
+            twitchChannelId = twitchChannelId,
+            userInput = event.userInput,
+            communitySubGift = event.communitySubGift,
+            resub = event.resub,
+            subGift = event.subGift,
             tier = tier,
-            subscriptionType = subscriptionType,
-            user = user
+            subscriptionType = dataBundle.metadata.subscriptionType,
+            user = user,
+        )
+
+        await self.onNewSubscription(
+            subscriptionData = subscriptionData,
         )
 
     async def __processCynanBotAsGiftRecipient(
         self,
-        broadcasterUserId: str,
         eventUserId: str,
+        twitchChannelId: str,
         subGift: TwitchSubGift | None,
         subscriptionType: TwitchWebsocketSubscriptionType,
-        user: UserInterface
+        user: UserInterface,
     ):
         if not user.isSubGiftThankingEnabled:
             return
@@ -218,7 +198,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             return
 
         viableEmoteNames = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
-            twitchChannelId = broadcasterUserId
+            twitchChannelId = twitchChannelId
         )
 
         allViableEmotes: set[str] = { 'KomodoHype' }
@@ -236,14 +216,14 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             message = f'{emoji1} thanks for the sub!!! {emoji2}'
         )
 
-        self.__timber.log('TwitchSubscriptionHandler', f'Received and thanked in {user.handle} for a gifted sub! ({broadcasterUserId=}) ({eventUserId=}) ({subGift=}) ({subscriptionType=}) ({user=})')
+        self.__timber.log('TwitchSubscriptionHandler', f'Received and thanked in {user.handle} for a gifted sub! ({twitchChannelId=}) ({eventUserId=}) ({subGift=}) ({subscriptionType=}) ({user=})')
 
     async def __processSuperTriviaEvent(
         self,
-        broadcasterUserId: str,
+        twitchChannelId: str,
         communitySubGift: TwitchCommunitySubGift | None,
         subscriptionType: TwitchWebsocketSubscriptionType,
-        user: UserInterface
+        user: UserInterface,
     ):
         triviaGameBuilder = self.__triviaGameBuilder
         triviaGameMachine = self.__triviaGameMachine
@@ -274,7 +254,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         action = await triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.handle,
-            twitchChannelId = broadcasterUserId,
+            twitchChannelId = twitchChannelId,
             numberOfGames = numberOfGames
         )
 
@@ -286,10 +266,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         isAnonymous: bool | None,
         isGift: bool | None,
         total: int | None,
-        broadcasterUserId: str,
         chatMessage: str | None,
         eventUserId: str | None,
         eventUserName: str | None,
+        twitchChannelId: str,
         userInput: str | None,
         communitySubGift: TwitchCommunitySubGift | None,
         resub: TwitchResub | None,
@@ -300,7 +280,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
     ):
         if not user.isTtsEnabled:
             return
-        elif isGift is True:
+        elif isGift is not None and isGift is True:
             # Community gift sub bombs will send out an event where this is true for every single
             # individual person who received a gifted sub. We don't want to do a TTS alert for all
             # users who received a gifted sub, so we're going to return here.
@@ -322,7 +302,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         if not utils.isValidStr(actualUserId) or not utils.isValidStr(actualUserName):
             if isAnonymous:
                 twitchAccessToken = await self.__twitchTokensUtils.requireAccessTokenByIdOrFallback(
-                    twitchChannelId = broadcasterUserId
+                    twitchChannelId = twitchChannelId
                 )
 
                 actualUserId = await self.__officialTwitchAccountUserIdProvider.getTwitchAnonymousGifterUserId()
@@ -355,11 +335,11 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.SUBSCRIBE,
             twitchChannel = user.handle,
-            twitchChannelId = broadcasterUserId,
+            twitchChannelId = twitchChannelId,
             ttsEvent = TtsEvent(
                 message = actualMessage,
                 twitchChannel = user.handle,
-                twitchChannelId = broadcasterUserId,
+                twitchChannelId = twitchChannelId,
                 userId = actualUserId,
                 userName = actualUserName,
                 donation = TtsSubscriptionDonation(
@@ -367,12 +347,12 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                     cumulativeMonths = cumulativeMonths,
                     durationMonths = durationMonths,
                     numberOfGiftedSubs = total,
-                    tier = tier
+                    tier = tier,
                 ),
                 provider = user.defaultTtsProvider,
                 providerOverridableStatus = providerOverridableStatus,
-                raidInfo = None
-            )
+                raidInfo = None,
+            ),
         ))
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
