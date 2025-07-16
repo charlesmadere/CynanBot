@@ -1,11 +1,9 @@
-from frozenlist import FrozenList
+from typing import Final
 
 from ..absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from ..activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
-from ..api.models.twitchOutcome import TwitchOutcome
 from ..api.models.twitchPredictionStatus import TwitchPredictionStatus
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
-from ..api.models.twitchWebsocketEvent import TwitchWebsocketEvent
 from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..configuration.twitchChannelProvider import TwitchChannelProvider
 from ..twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
@@ -30,7 +28,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
         twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
-        websocketConnectionServer: WebsocketConnectionServerInterface
+        websocketConnectionServer: WebsocketConnectionServerInterface,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -43,34 +41,30 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         elif not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
             raise TypeError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
 
-        self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
-        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None = twitchPredictionWebsocketUtils
-        self.__websocketConnectionServer: WebsocketConnectionServerInterface = websocketConnectionServer
+        self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
+        self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchPredictionWebsocketUtils: Final[TwitchPredictionWebsocketUtilsInterface | None] = twitchPredictionWebsocketUtils
+        self.__websocketConnectionServer: Final[WebsocketConnectionServerInterface] = websocketConnectionServer
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
-    async def __notifyChatOfPredictionResults(
-        self,
-        outcomes: FrozenList[TwitchOutcome],
-        winningOutcomeId: str | None,
-        predictionStatus: TwitchPredictionStatus | None,
-        subscriptionType: TwitchWebsocketSubscriptionType,
-        user: UserInterface,
-    ):
+    async def __notifyChatOfPredictionResults(self, predictionData: AbsTwitchPredictionHandler.PredictionData):
         twitchChannelProvider = self.__twitchChannelProvider
+        outcomes = predictionData.outcomes
+        winningOutcomeId = predictionData.winningOutcomeId
+        user = predictionData.user
 
         if twitchChannelProvider is None:
             return
+        elif not user.isNotifyOfPredictionResultsEnabled:
+            return
         elif not utils.isValidStr(winningOutcomeId):
             return
-        elif predictionStatus is not TwitchPredictionStatus.RESOLVED:
+        elif predictionData.predictionStatus is not TwitchPredictionStatus.RESOLVED:
             return
-        elif subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END:
-            return
-        elif not user.isNotifyOfPredictionResultsEnabled:
+        elif predictionData.subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END:
             return
 
         winningOutcome = [ outcome for outcome in outcomes if outcome.outcomeId == winningOutcomeId ][0]
@@ -101,129 +95,108 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         await self.__twitchUtils.safeSend(twitchChannel, outcomeString)
 
-    async def __notifyChatOfPredictionStart(
-        self,
-        title: str,
-        subscriptionType: TwitchWebsocketSubscriptionType,
-        user: UserInterface
-    ):
+    async def __notifyChatOfPredictionStart(self, predictionData: AbsTwitchPredictionHandler.PredictionData):
+        user = predictionData.user
+
         if not user.isNotifyOfPredictionStartEnabled:
             return
-        elif subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
+        elif predictionData.subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
             return
 
         # TODO
         pass
 
-    async def __notifyWebsocketOfPredictionEvent(
-        self,
-        broadcasterUserId: str,
-        event: TwitchWebsocketEvent,
-        subscriptionType: TwitchWebsocketSubscriptionType,
-        user: UserInterface
-    ):
-        twitchPredictionWebsocketUtils = self.__twitchPredictionWebsocketUtils
-
-        if twitchPredictionWebsocketUtils is None:
+    async def __notifyWebsocketOfPredictionEvent(self, predictionData: AbsTwitchPredictionHandler.PredictionData):
+        if self.__twitchPredictionWebsocketUtils is None:
             return
-        elif not user.isChannelPredictionChartEnabled:
+        elif not predictionData.user.isChannelPredictionChartEnabled:
             return
 
-        eventData = await twitchPredictionWebsocketUtils.websocketEventToEventDataDictionary(
-            event = event,
-            subscriptionType = subscriptionType
+        eventData = await self.__twitchPredictionWebsocketUtils.websocketEventToEventDataDictionary(
+            outcomes = predictionData.outcomes,
+            eventId = predictionData.eventId,
+            title = predictionData.title,
+            subscriptionType = predictionData.subscriptionType,
         )
 
         if eventData is None or len(eventData) == 0:
             return
 
         self.__websocketConnectionServer.submitEvent(
-            twitchChannel = user.handle,
-            twitchChannelId = broadcasterUserId,
+            twitchChannel = predictionData.user.handle,
+            twitchChannelId = predictionData.twitchChannelId,
             eventType = WebsocketEventType.CHANNEL_PREDICTION,
-            eventData = eventData
+            eventData = eventData,
         )
 
-    async def onNewPrediction(
+    async def onNewPrediction(self, predictionData: AbsTwitchPredictionHandler.PredictionData):
+        if not isinstance(predictionData, AbsTwitchPredictionHandler.PredictionData):
+            raise TypeError(f'predictionData argument is malformed: \"{predictionData}\"')
+
+        await self.__processActiveChatters(predictionData)
+        await self.__notifyWebsocketOfPredictionEvent(predictionData)
+
+        if predictionData.user.isTtsEnabled:
+            await self.__processTtsEvent(predictionData)
+
+        if predictionData.user.isNotifyOfPredictionStartEnabled:
+            await self.__notifyChatOfPredictionStart(predictionData)
+
+        if predictionData.user.isNotifyOfPredictionResultsEnabled:
+            await self.__notifyChatOfPredictionResults(predictionData)
+
+    async def onNewPredictionDataBundle(
         self,
-        userId: str,
+        twitchChannelId: str,
         user: UserInterface,
-        dataBundle: TwitchWebsocketDataBundle
+        dataBundle: TwitchWebsocketDataBundle,
     ):
-        if not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
-        payload = dataBundle.requirePayload()
-        event = payload.event
+        event = dataBundle.requirePayload().event
 
         if event is None:
             self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing event data ({user=}) ({dataBundle=})')
             return
 
-        broadcasterUserId = event.broadcasterUserId
-        title = event.title
         outcomes = event.outcomes
+        eventId = event.eventId
+        title = event.title
         winningOutcomeId = event.winningOutcomeId
-        subscriptionType = payload.requireSubscription().subscriptionType
+        predictionStatus = event.predictionStatus
+        subscriptionType = dataBundle.metadata.subscriptionType
 
-        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or outcomes is None or len(outcomes) == 0:
-            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({outcomes=})')
+        if outcomes is None or len(outcomes) == 0 or not utils.isValidStr(eventId) or not utils.isValidStr(title) or predictionStatus is None or subscriptionType is None:
+            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({outcomes=}) ({eventId=}) ({title=}) ({winningOutcomeId=}) ({predictionStatus=}) ({subscriptionType=})')
             return
 
-        await self.__processActiveChatters(
+        predictionData = AbsTwitchPredictionHandler.PredictionData(
             outcomes = outcomes,
-            broadcasterUserId = broadcasterUserId,
-            subscriptionType = subscriptionType
-        )
-
-        if user.isTtsEnabled:
-            await self.__processTtsEvent(
-                broadcasterUserId = broadcasterUserId,
-                title = title,
-                userId = userId,
-                subscriptionType = subscriptionType,
-                user = user
-            )
-
-        if user.isNotifyOfPredictionStartEnabled:
-            await self.__notifyChatOfPredictionStart(
-                title = title,
-                subscriptionType = subscriptionType,
-                user = user
-            )
-
-        if user.isNotifyOfPredictionResultsEnabled:
-            await self.__notifyChatOfPredictionResults(
-                outcomes = outcomes,
-                winningOutcomeId = winningOutcomeId,
-                predictionStatus = event.predictionStatus,
-                subscriptionType = subscriptionType,
-                user = user
-            )
-
-        await self.__notifyWebsocketOfPredictionEvent(
-            broadcasterUserId = broadcasterUserId,
-            event = event,
+            eventId = eventId,
+            title = title,
+            twitchChannelId = twitchChannelId,
+            winningOutcomeId = winningOutcomeId,
+            user = user,
+            predictionStatus = predictionStatus,
             subscriptionType = subscriptionType,
-            user = user
         )
 
-    async def __processActiveChatters(
-        self,
-        outcomes: FrozenList[TwitchOutcome],
-        broadcasterUserId: str,
-        subscriptionType: TwitchWebsocketSubscriptionType
-    ):
-        if subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK:
+        await self.onNewPrediction(
+            predictionData = predictionData,
+        )
+
+    async def __processActiveChatters(self, predictionData: AbsTwitchPredictionHandler.PredictionData):
+        if predictionData.subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK:
             return
 
         userIdsToUserNames: dict[str, str] = dict()
 
-        for outcome in outcomes:
+        for outcome in predictionData.outcomes:
             topPredictors = outcome.topPredictors
 
             if topPredictors is not None and len(topPredictors) >= 1:
@@ -234,39 +207,34 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             await self.__activeChattersRepository.add(
                 chatterUserId = userId,
                 chatterUserName = userName,
-                twitchChannelId = broadcasterUserId
+                twitchChannelId = predictionData.twitchChannelId,
             )
 
-    async def __processTtsEvent(
-        self,
-        broadcasterUserId: str,
-        title: str,
-        userId: str,
-        subscriptionType: TwitchWebsocketSubscriptionType,
-        user: UserInterface
-    ):
+    async def __processTtsEvent(self, predictionData: AbsTwitchPredictionHandler.PredictionData):
+        user = predictionData.user
+
         if not user.isTtsEnabled:
             return
         elif not user.isNotifyOfPredictionStartEnabled:
             return
-        elif subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
+        elif predictionData.subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
             return
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
             twitchChannel = user.handle,
-            twitchChannelId = broadcasterUserId,
+            twitchChannelId = predictionData.twitchChannelId,
             ttsEvent = TtsEvent(
-                message = f'A new prediction has begun! \"{title}\"',
+                message = f'A new prediction has begun! \"{predictionData.title}\"',
                 twitchChannel = user.handle,
-                twitchChannelId = broadcasterUserId,
-                userId = userId,
+                twitchChannelId = predictionData.twitchChannelId,
+                userId = predictionData.twitchChannelId,
                 userName = user.handle,
                 donation = None,
                 provider = user.defaultTtsProvider,
                 providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
-                raidInfo = None
-            )
+                raidInfo = None,
+            ),
         ))
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):

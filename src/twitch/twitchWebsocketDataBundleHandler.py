@@ -220,8 +220,8 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
         elif await self.__isPredictionType(subscriptionType):
             if self.__predictionHandler is not None:
-                await self.__predictionHandler.onNewPrediction(
-                    userId = userId,
+                await self.__predictionHandler.onNewPredictionDataBundle(
+                    twitchChannelId = userId,
                     user = user,
                     dataBundle = dataBundle,
                 )

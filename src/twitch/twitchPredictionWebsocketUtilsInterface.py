@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Any, Collection
 
+from frozenlist import FrozenList
+
 from .api.models.twitchOutcome import TwitchOutcome
 from .api.models.twitchOutcomeColor import TwitchOutcomeColor
-from .api.models.twitchWebsocketEvent import TwitchWebsocketEvent
 from .api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 
 
@@ -12,8 +13,10 @@ class TwitchPredictionWebsocketUtilsInterface(ABC):
     @abstractmethod
     async def websocketEventToEventDataDictionary(
         self,
-        event: TwitchWebsocketEvent,
-        subscriptionType: TwitchWebsocketSubscriptionType
+        outcomes: FrozenList[TwitchOutcome],
+        eventId: str,
+        title: str,
+        subscriptionType: TwitchWebsocketSubscriptionType,
     ) -> dict[str, Any] | None:
         pass
 

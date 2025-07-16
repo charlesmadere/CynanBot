@@ -193,6 +193,7 @@ class UsersRepository(UsersRepositoryInterface):
         isNotifyOfPollStartEnabled = utils.getBoolFromDict(userJson, 'notifyOfPollStartEnabled', True)
         isNotifyOfPredictionResultsEnabled = utils.getBoolFromDict(userJson, 'notifyOfPredictionResultsEnabled', True)
         isNotifyOfPredictionStartEnabled = utils.getBoolFromDict(userJson, 'notifyOfPredictionStartEnabled', True)
+        isNotifyOfRaidEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.NOTIFY_OF_RAID_ENABLED.jsonKey, True)
         isPkmnEnabled = utils.getBoolFromDict(userJson, 'pkmnEnabled', False)
         isPokepediaEnabled = utils.getBoolFromDict(userJson, 'pokepediaEnabled', False)
         isRaceEnabled = utils.getBoolFromDict(userJson, 'raceEnabled', False)
@@ -425,6 +426,7 @@ class UsersRepository(UsersRepositoryInterface):
             isNotifyOfPollStartEnabled = isNotifyOfPollStartEnabled,
             isNotifyOfPredictionResultsEnabled = isNotifyOfPredictionResultsEnabled,
             isNotifyOfPredictionStartEnabled = isNotifyOfPredictionStartEnabled,
+            isNotifyOfRaidEnabled = isNotifyOfRaidEnabled,
             isPkmnEnabled = isPkmnEnabled,
             isPokepediaEnabled = isPokepediaEnabled,
             isRaceEnabled = isRaceEnabled,

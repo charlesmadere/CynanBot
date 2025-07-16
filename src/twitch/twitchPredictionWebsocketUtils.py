@@ -1,21 +1,27 @@
-from typing import Any, Collection
+from typing import Any, Collection, Final
 
 from frozenlist import FrozenList
 
 from .api.models.twitchOutcome import TwitchOutcome
 from .api.models.twitchOutcomeColor import TwitchOutcomeColor
-from .api.models.twitchWebsocketEvent import TwitchWebsocketEvent
 from .api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from .twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from ..misc import utils as utils
+from ..timber.timberInterface import TimberInterface
 
 
 class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
 
+    def __init__(self, timber: TimberInterface):
+        if not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+
+        self.__timber: Final[TimberInterface] = timber
+
     async def __appendIndexBasedColorDictionary(
         self,
         colors: FrozenList[dict[str, int]],
-        index: int
+        index: int,
     ):
         if not isinstance(colors, FrozenList):
             raise TypeError(f'colors argument is malformed: \"{colors}\"')
@@ -36,7 +42,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
                 colors.append({
                     'red': 255,
                     'green': 127,
-                    'blue': 0
+                    'blue': 0,
                 })
 
             case 3:
@@ -44,7 +50,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
                 colors.append({
                     'red': 127,
                     'green': 255,
-                    'blue': 0
+                    'blue': 0,
                 })
 
             case 4:
@@ -52,7 +58,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
                 colors.append({
                     'red': 0,
                     'green': 255,
-                    'blue': 255
+                    'blue': 255,
                 })
 
             case 5:
@@ -60,7 +66,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
                 colors.append({
                     'red': 0,
                     'green': 127,
-                    'blue': 255
+                    'blue': 255,
                 })
 
             case 6:
@@ -68,7 +74,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
                 colors.append({
                     'red': 255,
                     'green': 0,
-                    'blue': 255
+                    'blue': 255,
                 })
 
             case 7:
@@ -76,7 +82,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
                 colors.append({
                     'red': 255,
                     'green': 0,
-                    'blue': 0
+                    'blue': 0,
                 })
 
             case 8:
@@ -84,7 +90,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
                 colors.append({
                     'red': 255,
                     'green': 255,
-                    'blue': 0
+                    'blue': 0,
                 })
 
             case 9:
@@ -92,7 +98,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
                 colors.append({
                     'red': 127,
                     'green': 0,
-                    'blue': 255
+                    'blue': 255,
                 })
 
             case 10:
@@ -100,7 +106,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
                 colors.append({
                     'red': 192,
                     'green': 192,
-                    'blue': 192
+                    'blue': 192,
                 })
 
             case 11:
@@ -108,34 +114,39 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
                 colors.append({
                     'red': 47,
                     'green': 79,
-                    'blue': 79
+                    'blue': 79,
                 })
+
+            case _:
+                self.__timber.log('TwitchPredictionWebsocketUtils', f'Encountered unexpected color index ({index=}) ({colors=})')
 
     async def websocketEventToEventDataDictionary(
         self,
-        event: TwitchWebsocketEvent,
-        subscriptionType: TwitchWebsocketSubscriptionType
+        outcomes: FrozenList[TwitchOutcome],
+        eventId: str,
+        title: str,
+        subscriptionType: TwitchWebsocketSubscriptionType,
     ) -> dict[str, Any] | None:
-        if not isinstance(event, TwitchWebsocketEvent):
-            raise TypeError(f'event argument is malformed: \"{event}\"')
+        if not isinstance(outcomes, FrozenList):
+            raise TypeError(f'outcomes argument is malformed: \"{outcomes}\"')
+        elif not utils.isValidStr(eventId):
+            raise TypeError(f'eventId argument is malformed: \"{eventId}\"')
+        elif not utils.isValidStr(title):
+            raise TypeError(f'title argument is malformed: \"{title}\"')
         elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
-        if not utils.isValidStr(event.eventId):
-            return None
-        elif not utils.isValidStr(event.title):
-            return None
-        elif event.outcomes is None or len(event.outcomes) == 0:
+        if len(outcomes) == 0:
             return None
 
-        outcomesArray = await self.outcomesToEventDataArray(event.outcomes)
+        outcomesArray = await self.outcomesToEventDataArray(outcomes)
         predictionTypeString = await self.websocketSubscriptionTypeToString(subscriptionType)
 
         return {
-            'eventId': event.eventId,
+            'eventId': eventId,
             'outcomes': outcomesArray,
             'predictionType': predictionTypeString,
-            'title': event.title
+            'title': title,
         }
 
     async def websocketOutcomesToColorsArray(
@@ -154,7 +165,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
             for index, outcome in enumerate(outcomes):
                 await self.__appendIndexBasedColorDictionary(
                     colors = colors,
-                    index = index
+                    index = index,
                 )
 
         colors.freeze()
@@ -228,4 +239,4 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
             case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS:
                 return 'prediction_progress'
             case _:
-                raise ValueError(f'Can\'t convert the given WebsocketSubscriptionType (\"{subscriptionType}\") into a string!')
+                raise ValueError(f'Can\'t convert the given TwitchWebsocketSubscriptionType (\"{subscriptionType}\") into a string!')

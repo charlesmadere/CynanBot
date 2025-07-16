@@ -413,6 +413,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def isNotifyOfRaidEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isPkmnEnabled(self) -> bool:
         pass
 

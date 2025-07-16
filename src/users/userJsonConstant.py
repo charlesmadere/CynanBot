@@ -21,6 +21,7 @@ class UserJsonConstant(Enum):
     GIVE_CUTENESS_ENABLED = auto()
     LOCATION_ID = auto()
     MAXIMUM_GRENADES_WITHIN_COOLDOWN = auto()
+    NOTIFY_OF_RAID_ENABLED = auto()
     PRANKS_ENABLED = auto()
     RECURRING_ACTIONS_ENABLED = auto()
     REDEMPTION_COUNTERS_ENABLED = auto()
@@ -55,6 +56,7 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.GIVE_CUTENESS_ENABLED: return 'giveCutenessEnabled'
             case UserJsonConstant.LOCATION_ID: return 'locationId'
             case UserJsonConstant.MAXIMUM_GRENADES_WITHIN_COOLDOWN: return 'maximumGrenadesWithinCooldown'
+            case UserJsonConstant.NOTIFY_OF_RAID_ENABLED: return 'notifyOfRaidEnabled'
             case UserJsonConstant.PRANKS_ENABLED: return 'pranksEnabled'
             case UserJsonConstant.RECURRING_ACTIONS_ENABLED: return 'recurringActionsEnabled'
             case UserJsonConstant.REDEMPTION_COUNTERS_ENABLED: return 'redemptionCountersEnabled'

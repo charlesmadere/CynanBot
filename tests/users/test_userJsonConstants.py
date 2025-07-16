@@ -83,6 +83,10 @@ class TestUserJsonConstants:
         result = UserJsonConstant.MAXIMUM_GRENADES_WITHIN_COOLDOWN.jsonKey
         assert result == 'maximumGrenadesWithinCooldown'
 
+    def test_jsonKey_withNotifyOfRaidEnabled(self):
+        result = UserJsonConstant.NOTIFY_OF_RAID_ENABLED.jsonKey
+        assert result == 'notifyOfRaidEnabled'
+
     def test_jsonKey_withPranksEnabled(self):
         result = UserJsonConstant.PRANKS_ENABLED.jsonKey
         assert result == 'pranksEnabled'

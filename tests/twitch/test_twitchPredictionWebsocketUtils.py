@@ -2,6 +2,8 @@ from typing import Any
 
 import pytest
 
+from src.timber.timberInterface import TimberInterface
+from src.timber.timberStub import TimberStub
 from src.twitch.api.models.twitchOutcome import TwitchOutcome
 from src.twitch.api.models.twitchOutcomeColor import TwitchOutcomeColor
 from src.twitch.api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
@@ -11,12 +13,19 @@ from src.twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionW
 
 class TestTwitchPredictionWebsocketUtils:
 
-    utils: TwitchPredictionWebsocketUtilsInterface = TwitchPredictionWebsocketUtils()
+    timber: TimberInterface = TimberStub()
+
+    utils: TwitchPredictionWebsocketUtilsInterface = TwitchPredictionWebsocketUtils(
+        timber = timber,
+    )
+
+    def test_sanity(self):
+        assert self.utils is not None
+        assert isinstance(self.utils, TwitchPredictionWebsocketUtils)
+        assert isinstance(self.utils, TwitchPredictionWebsocketUtilsInterface)
 
     @pytest.mark.asyncio
-    async def test_twitchOutcomesToEventDataArray(self):
-        result: list[dict[str, Any]] | None = None
-
+    async def test_outcomesToEventDataArray(self):
         outcomes: list[TwitchOutcome] = [
             TwitchOutcome(
                 topPredictors = None,
@@ -24,7 +33,7 @@ class TestTwitchPredictionWebsocketUtils:
                 users = 0,
                 outcomeId = 'abc',
                 title = 'Whomp',
-                color = TwitchOutcomeColor.BLUE
+                color = TwitchOutcomeColor.BLUE,
             ),
             TwitchOutcome(
                 topPredictors = None,
@@ -32,7 +41,7 @@ class TestTwitchPredictionWebsocketUtils:
                 users = 1,
                 outcomeId = 'def',
                 title = 'Thwomp',
-                color = TwitchOutcomeColor.BLUE
+                color = TwitchOutcomeColor.BLUE,
             ),
             TwitchOutcome(
                 topPredictors = None,
@@ -40,7 +49,7 @@ class TestTwitchPredictionWebsocketUtils:
                 users = 2,
                 outcomeId = 'ghi',
                 title = 'Boo',
-                color = TwitchOutcomeColor.BLUE
+                color = TwitchOutcomeColor.BLUE,
             ),
             TwitchOutcome(
                 topPredictors = None,
@@ -48,8 +57,8 @@ class TestTwitchPredictionWebsocketUtils:
                 users = 3,
                 outcomeId = 'jkl',
                 title = 'Bob-omb',
-                color = TwitchOutcomeColor.BLUE
-            )
+                color = TwitchOutcomeColor.BLUE,
+            ),
         ]
 
         result = await self.utils.outcomesToEventDataArray(outcomes)
@@ -93,7 +102,7 @@ class TestTwitchPredictionWebsocketUtils:
         assert result[3]['users'] == 0
 
     @pytest.mark.asyncio
-    async def test_websocketOutcomesToEventDataArray_withEmptyList(self):
+    async def test_outcomesToEventDataArray_withEmptyList(self):
         result: list[dict[str, Any]] | None = None
         outcomes: list[TwitchOutcome] = list()
 
@@ -105,7 +114,7 @@ class TestTwitchPredictionWebsocketUtils:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_websocketOutcomeColorToEventData_withBlue(self):
+    async def test_outcomeColorToEventData_withBlue(self):
         result = await self.utils.outcomeColorToEventData(TwitchOutcomeColor.BLUE)
         assert isinstance(result, dict)
         assert len(result) == 3
@@ -114,7 +123,7 @@ class TestTwitchPredictionWebsocketUtils:
         assert result['blue'] == 235
 
     @pytest.mark.asyncio
-    async def test_websocketOutcomeColorToEventData_withPink(self):
+    async def test_outcomeColorToEventData_withPink(self):
         result = await self.utils.outcomeColorToEventData(TwitchOutcomeColor.PINK)
         assert isinstance(result, dict)
         assert len(result) == 3

@@ -54,6 +54,7 @@ class User(UserInterface):
         isNotifyOfPollStartEnabled: bool,
         isNotifyOfPredictionResultsEnabled: bool,
         isNotifyOfPredictionStartEnabled: bool,
+        isNotifyOfRaidEnabled: bool,
         isPkmnEnabled: bool,
         isPokepediaEnabled: bool,
         isRaceEnabled: bool,
@@ -195,6 +196,8 @@ class User(UserInterface):
             raise TypeError(f'isNotifyOfPredictionResultsEnabled argument is malformed: \"{isNotifyOfPredictionResultsEnabled}\"')
         elif not utils.isValidBool(isNotifyOfPredictionStartEnabled):
             raise TypeError(f'isNotifyOfPredictionStartEnabled argument is malformed: \"{isNotifyOfPredictionStartEnabled}\"')
+        elif not utils.isValidBool(isNotifyOfRaidEnabled):
+            raise TypeError(f'isNotifyOfRaidEnabled argument is malformed: \"{isNotifyOfRaidEnabled}\"')
         elif not utils.isValidBool(isPkmnEnabled):
             raise TypeError(f'isPkmnEnabled argument is malformed: \"{isPkmnEnabled}\"')
         elif not utils.isValidBool(isPokepediaEnabled):
@@ -381,6 +384,7 @@ class User(UserInterface):
         self.__isNotifyOfPollStartEnabled: bool = isNotifyOfPollStartEnabled
         self.__isNotifyOfPredictionResultsEnabled: bool = isNotifyOfPredictionResultsEnabled
         self.__isNotifyOfPredictionStartEnabled: bool = isNotifyOfPredictionStartEnabled
+        self.__isNotifyOfRaidEnabled: bool = isNotifyOfRaidEnabled
         self.__isPkmnEnabled: bool = isPkmnEnabled
         self.__isPokepediaEnabled: bool = isPokepediaEnabled
         self.__isRaceEnabled: bool = isRaceEnabled
@@ -790,6 +794,10 @@ class User(UserInterface):
     @property
     def isNotifyOfPredictionStartEnabled(self) -> bool:
         return self.__isNotifyOfPredictionStartEnabled
+
+    @property
+    def isNotifyOfRaidEnabled(self) -> bool:
+        return self.__isNotifyOfRaidEnabled
 
     @property
     def isPkmnEnabled(self) -> bool:

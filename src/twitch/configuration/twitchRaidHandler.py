@@ -117,31 +117,35 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         )
 
     async def __processTtsEvent(self, raidData: AbsTwitchRaidHandler.RaidData):
-        if not raidData.user.isTtsEnabled:
+        user = raidData.user
+
+        if not user.isTtsEnabled:
             return
         elif raidData.viewers < 1:
+            return
+        elif not user.isNotifyOfRaidEnabled:
             return
 
         raidMessage = await self.__buildRaidMessage(raidData)
         providerOverridableStatus: TtsProviderOverridableStatus
 
-        if raidData.user.isChatterPreferredTtsEnabled:
+        if user.isChatterPreferredTtsEnabled:
             providerOverridableStatus = TtsProviderOverridableStatus.CHATTER_OVERRIDABLE
         else:
             providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.RAID,
-            twitchChannel = raidData.user.handle,
+            twitchChannel = user.handle,
             twitchChannelId = raidData.twitchChannelId,
             ttsEvent = TtsEvent(
                 message = raidMessage,
-                twitchChannel = raidData.user.handle,
+                twitchChannel = user.handle,
                 twitchChannelId = raidData.twitchChannelId,
                 userId = raidData.raidUserId,
                 userName = raidData.raidUserName,
                 donation = None,
-                provider = raidData.user.defaultTtsProvider,
+                provider = user.defaultTtsProvider,
                 providerOverridableStatus = providerOverridableStatus,
                 raidInfo = TtsRaidInfo(
                     viewers = raidData.viewers,

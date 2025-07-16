@@ -12,9 +12,3 @@ class TwitchWebsocketMetadata:
     subscriptionVersion: str | None
     messageType: TwitchWebsocketMessageType
     subscriptionType: TwitchWebsocketSubscriptionType | None
-
-    def requireSubscriptionType(self) -> TwitchWebsocketSubscriptionType:
-        if self.subscriptionType is None:
-            raise RuntimeError(f'this TwitchWebsocketMetadata has no subscriptionType ({self})')
-
-        return self.subscriptionType
