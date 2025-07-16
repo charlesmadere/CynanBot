@@ -1156,6 +1156,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'low'
         if word == 'mid':
             yield 'middle'
+        if word == 'n':
+            yield 'and'
         if word == 'pow':
             yield 'power'
 
