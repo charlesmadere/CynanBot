@@ -44,7 +44,7 @@ def cleanStr(
     s: str | None,
     replacement: str = ' ',
     htmlUnescape: bool = False,
-    removeCarrots: bool = False
+    removeCarrots: bool = False,
 ) -> str:
     if s is not None and not isinstance(s, str):
         raise TypeError(f's argument is malformed: \"{s}\"')
@@ -360,7 +360,7 @@ def getStrFromDict(
         value = cleanStr(
             s = value,
             htmlUnescape = htmlUnescape,
-            removeCarrots = removeCarrots
+            removeCarrots = removeCarrots,
         )
 
     return value

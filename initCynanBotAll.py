@@ -3053,6 +3053,7 @@ redemptionCounterPointRedemption: RedemptionCounterPointRedemption | None = Rede
 ##########################################
 
 twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = TwitchChannelPointRedemptionHandler(
+    backgroundTaskHelper = backgroundTaskHelper,
     casualGamePollPointRedemption = casualGamePollPointRedemption,
     chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = cutenessPointRedemption,
@@ -3069,7 +3070,7 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = Tw
     ttsChatterPointRedemption = ttsChatterPointRedemption,
     timber = timber,
     userIdsRepository = userIdsRepository,
-    voicemailPointRedemption = voicemailPointRedemption
+    voicemailPointRedemption = voicemailPointRedemption,
 )
 
 twitchChatHandler: AbsTwitchChatHandler = TwitchChatHandler(

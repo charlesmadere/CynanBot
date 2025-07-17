@@ -49,14 +49,14 @@ class EccoChatCommand(AbsChatCommand):
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = f'⚠ Error fetching Ecco time remaining',
-                replyMessageId = await ctx.getMessageId()
+                replyMessageId = await ctx.getMessageId(),
             )
             return
 
         await self.__twitchUtils.safeSend(
             messageable = ctx,
             message = await self.__toString(eccoTimeRemaining),
-            replyMessageId = await ctx.getMessageId()
+            replyMessageId = await ctx.getMessageId(),
         )
 
         self.__timber.log('EccoChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

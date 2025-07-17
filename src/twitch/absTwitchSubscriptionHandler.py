@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from .api.models.twitchCommunitySubGift import TwitchCommunitySubGift
 from .api.models.twitchResub import TwitchResub
+from .api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage
 from .api.models.twitchSubGift import TwitchSubGift
 from .api.models.twitchSubscriberTier import TwitchSubscriberTier
 from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
@@ -23,9 +24,9 @@ class AbsTwitchSubscriptionHandler(ABC):
         eventUserLogin: str
         eventUserName: str
         twitchChannelId: str
-        userInput: str | None
         communitySubGift: TwitchCommunitySubGift | None
         resub: TwitchResub | None
+        resubscriptionMessage: TwitchResubscriptionMessage | None
         subGift: TwitchSubGift | None
         tier: TwitchSubscriberTier
         subscriptionType: TwitchWebsocketSubscriptionType

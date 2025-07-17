@@ -317,14 +317,14 @@ class UsersRepository(UsersRepositoryInterface):
             if 'superTriviaCheerTriggerAmount' in userJson and utils.isValidInt(userJson.get('superTriviaCheerTriggerAmount')):
                 superTriviaCheerTriggerAmount = utils.getIntFromDict(userJson, 'superTriviaCheerTriggerAmount')
 
-            superTriviaCheerTriggerMaximum = utils.getIntFromDict(userJson, 'superTriviaCheerTriggerMaximum', 5)
+            superTriviaCheerTriggerMaximum = utils.getIntFromDict(userJson, 'superTriviaCheerTriggerMaximum', 2)
             superTriviaGamePoints = userJson.get('superTriviaGamePoints')
             superTriviaGameRewardId = userJson.get('superTriviaGameRewardId')
             superTriviaGameShinyMultiplier = userJson.get('superTriviaGameShinyMultiplier')
             superTriviaGameToxicMultiplier = userJson.get('superTriviaGameToxicMultiplier')
             superTriviaGameToxicPunishmentMultiplier = userJson.get('superTriviaGameToxicPunishmentMultiplier')
             superTriviaPerUserAttempts = userJson.get('superTriviaPerUserAttempts')
-            superTriviaSubscribeTriggerMaximum = utils.getIntFromDict(userJson, 'superTriviaSubscribeTriggerMaximum', 5)
+            superTriviaSubscribeTriggerMaximum = utils.getIntFromDict(userJson, 'superTriviaSubscribeTriggerMaximum', 2)
             triviaGamePoints = userJson.get('triviaGamePoints')
             triviaGameShinyMultiplier = userJson.get('triviaGameShinyMultiplier')
             triviaGameRewardId = userJson.get('triviaGameRewardId')

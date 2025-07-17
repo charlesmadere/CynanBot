@@ -2165,6 +2165,7 @@ websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnect
 ##########################################
 
 twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = TwitchChannelPointRedemptionHandler(
+    backgroundTaskHelper = backgroundTaskHelper,
     casualGamePollPointRedemption = casualGamePollPointRedemption,
     chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = None,
@@ -2181,7 +2182,7 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = Tw
     ttsChatterPointRedemption = ttsChatterPointRedemption,
     timber = timber,
     userIdsRepository = userIdsRepository,
-    voicemailPointRedemption = voicemailPointRedemption
+    voicemailPointRedemption = voicemailPointRedemption,
 )
 
 twitchChatHandler: AbsTwitchChatHandler = TwitchChatHandler(

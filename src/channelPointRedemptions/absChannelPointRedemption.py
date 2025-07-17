@@ -10,6 +10,6 @@ class AbsChannelPointRedemption(ABC):
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> bool:
         pass

@@ -172,8 +172,8 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
         if await self.__isChannelPointsRedemptionType(subscriptionType):
             if self.__channelPointRedemptionHandler is not None:
-                await self.__channelPointRedemptionHandler.onNewChannelPointRedemption(
-                    userId = userId,
+                await self.__channelPointRedemptionHandler.onNewChannelPointRedemptionDataBundle(
+                    twitchChannelId = userId,
                     user = user,
                     dataBundle = dataBundle,
                 )

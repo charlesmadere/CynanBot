@@ -60,6 +60,8 @@ from ..models.twitchPowerUpType import TwitchPowerUpType
 from ..models.twitchPredictionStatus import TwitchPredictionStatus
 from ..models.twitchRaid import TwitchRaid
 from ..models.twitchResub import TwitchResub
+from ..models.twitchResubscriptionMessage import TwitchResubscriptionMessage
+from ..models.twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote
 from ..models.twitchReward import TwitchReward
 from ..models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from ..models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
@@ -1403,6 +1405,56 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             subTier = subTier
         )
 
+    async def parseResubscriptionMessage(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchResubscriptionMessage | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        text: str | None = None
+        if 'text' in jsonResponse and utils.isValidStr(jsonResponse.get('text')):
+            text = utils.getStrFromDict(jsonResponse, 'text', clean = True)
+
+        if not utils.isValidStr(text):
+            return None
+
+        emotesArray: list[dict[str, Any]] | Any | None = jsonResponse.get('emotes')
+        emotes: FrozenList[TwitchResubscriptionMessageEmote] = FrozenList()
+
+        if isinstance(emotesArray, list) and len(emotesArray) >= 1:
+            for index, emoteJson in enumerate(emotesArray):
+                emote = await self.parseResubscriptionMessageEmote(emoteJson)
+
+                if emote is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"emotes\" data ({emoteJson=}) ({jsonResponse=})')
+                else:
+                    emotes.append(emote)
+
+        emotes.freeze()
+
+        return TwitchResubscriptionMessage(
+            emotes = emotes,
+            text = text,
+        )
+
+    async def parseResubscriptionMessageEmote(
+        self,
+        jsonResponse: dict[str, Any] | Any | None
+    ) -> TwitchResubscriptionMessageEmote | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        begin = utils.getIntFromDict(jsonResponse, 'begin')
+        end = utils.getIntFromDict(jsonResponse, 'end')
+        emoteId = utils.getStrFromDict(jsonResponse, 'id')
+
+        return TwitchResubscriptionMessageEmote(
+            begin = begin,
+            end = end,
+            emoteId = emoteId,
+        )
+
     async def parseReward(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -1457,7 +1509,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         return TwitchSendChatDropReason(
             code = code,
-            message = message
+            message = message,
         )
 
     async def parseSendChatMessageResponse(

@@ -22,6 +22,7 @@ from ..api.models.twitchPowerUp import TwitchPowerUp
 from ..api.models.twitchPredictionStatus import TwitchPredictionStatus
 from ..api.models.twitchRaid import TwitchRaid
 from ..api.models.twitchResub import TwitchResub
+from ..api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage
 from ..api.models.twitchReward import TwitchReward
 from ..api.models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from ..api.models.twitchSub import TwitchSub
@@ -339,7 +340,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             messageElement: dict[str, Any] | str | Any | None = eventJson.get('message')
 
             if utils.isValidStr(messageElement):
-                message = utils.getStrFromDict(eventJson, 'message', clean = True)
+                message = utils.cleanStr(messageElement)
             elif isinstance(messageElement, dict) and utils.isValidStr(messageElement.get('text')):
                 message = utils.getStrFromDict(messageElement, 'text', clean = True)
 
@@ -397,7 +398,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         userInput: str | None = None
         if 'user_input' in eventJson and utils.isValidStr(eventJson.get('user_input')):
-            userInput = utils.getStrFromDict(eventJson, 'user_input')
+            userInput = utils.getStrFromDict(eventJson, 'user_input', clean = True)
 
         userLogin: str | None = None
         if 'user_login' in eventJson and utils.isValidStr(eventJson.get('user_login')):
@@ -462,6 +463,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         resub: TwitchResub | None = None
         if 'resub' in eventJson:
             resub = await self.__twitchJsonMapper.parseResub(eventJson.get('resub'))
+
+        resubscriptionMessage: TwitchResubscriptionMessage | None = None
+        if 'message' in eventJson:
+            resubscriptionMessage = await self.__twitchJsonMapper.parseResubscriptionMessage(eventJson.get('message'))
 
         reward: TwitchReward | None = None
         if 'reward' in eventJson:
@@ -557,6 +562,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             predictionStatus = predictionStatus,
             raid = raid,
             resub = resub,
+            resubscriptionMessage = resubscriptionMessage,
             reward = reward,
             rewardRedemptionStatus = rewardRedemptionStatus,
             sub = sub,

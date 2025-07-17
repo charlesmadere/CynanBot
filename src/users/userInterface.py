@@ -248,7 +248,7 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def superTriviaSubscribeTriggerMaximum(self) -> float | None:
+    def superTriviaSubscribeTriggerMaximum(self) -> int | None:
         pass
 
     @property

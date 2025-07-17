@@ -1264,6 +1264,26 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseResubscriptionMessage_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseResubscriptionMessage(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseResubscriptionMessage_withNone(self):
+        result = await self.jsonMapper.parseResubscriptionMessage(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseResubscriptionMessageEmote_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseResubscriptionMessageEmote(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseResubscriptionMessageEmote_withNone(self):
+        result = await self.jsonMapper.parseResubscriptionMessageEmote(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseReward_withEmptyDictionary(self):
         result = await self.jsonMapper.parseReward(dict())
         assert result is None

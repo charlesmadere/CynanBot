@@ -1143,6 +1143,7 @@ class CynanBot(
 
         if self.__twitchChannelPointRedemptionHandler is not None:
             self.__twitchChannelPointRedemptionHandler.setTwitchChannelProvider(self)
+            self.__twitchChannelPointRedemptionHandler.start()
 
         if self.__twitchChatHandler is not None:
             self.__twitchChatHandler.setTwitchChannelProvider(self)

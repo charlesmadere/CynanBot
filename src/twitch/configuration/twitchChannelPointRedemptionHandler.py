@@ -1,3 +1,11 @@
+import asyncio
+import queue
+import traceback
+from queue import SimpleQueue
+from typing import Final
+
+from frozenlist import FrozenList
+
 from .twitchChannelPointsMessage import TwitchChannelPointsMessage
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
@@ -20,6 +28,7 @@ from ...channelPointRedemptions.triviaGamePointRedemption import TriviaGamePoint
 from ...channelPointRedemptions.ttsChatterPointRedemption import TtsChatterPointRedemption
 from ...channelPointRedemptions.voicemailPointRedemption import VoicemailPointRedemption
 from ...misc import utils as utils
+from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
@@ -29,6 +38,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         casualGamePollPointRedemption: CasualGamePollPointRedemption | None,
         chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None,
         cutenessPointRedemption: CutenessPointRedemption | None,
@@ -46,8 +56,12 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         timber: TimberInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         voicemailPointRedemption: VoicemailPointRedemption | None,
+        queueSleepTimeSeconds: float = 1,
+        queueTimeoutSeconds: float = 3,
     ):
-        if casualGamePollPointRedemption is not None and not isinstance(casualGamePollPointRedemption, CasualGamePollPointRedemption):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif casualGamePollPointRedemption is not None and not isinstance(casualGamePollPointRedemption, CasualGamePollPointRedemption):
             raise TypeError(f'casualGamePollPointRedemption argument is malformed: \"{casualGamePollPointRedemption}\"')
         elif chatterPreferredTtsPointRedemption is not None and not isinstance(chatterPreferredTtsPointRedemption, ChatterPreferredTtsPointRedemption):
             raise TypeError(f'chatterPreferredTtsPointRedemption argument is malformed: \"{chatterPreferredTtsPointRedemption}\"')
@@ -81,6 +95,24 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif voicemailPointRedemption is not None and not isinstance(voicemailPointRedemption, VoicemailPointRedemption):
             raise TypeError(f'voicemailPointRedemption argument is malformed: \"{voicemailPointRedemption}\"')
+        elif not utils.isValidNum(queueSleepTimeSeconds):
+            raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
+        elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 15:
+            raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
+        elif not utils.isValidNum(queueTimeoutSeconds):
+            raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
+        elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
+            raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
+
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__timber: Final[TimberInterface] = timber
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__queueSleepTimeSeconds: Final[float] = queueSleepTimeSeconds
+        self.__queueTimeoutSeconds: Final[float] = queueTimeoutSeconds
+
+        self.__isStarted: bool = False
+        self.__channelPointsMessagesQueue: Final[SimpleQueue[TwitchChannelPointsMessage]] = SimpleQueue()
+        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
         if casualGamePollPointRedemption is None:
             self.__casualGamePollPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
@@ -157,59 +189,11 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         else:
             self.__voicemailPointRedemption: AbsChannelPointRedemption = voicemailPointRedemption
 
-        self.__timber: TimberInterface = timber
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+    async def __handleChannelPointsMessage(self, channelPointsMessage: TwitchChannelPointsMessage):
+        if not isinstance(channelPointsMessage, TwitchChannelPointsMessage):
+            raise TypeError(f'channelPointsMessage argument is malformed: \"{channelPointsMessage}\"')
 
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
-
-    async def onNewChannelPointRedemption(
-        self,
-        userId: str,
-        user: UserInterface,
-        dataBundle: TwitchWebsocketDataBundle
-    ):
-        if not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
-            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
-
-        event = dataBundle.requirePayload().event
-
-        if event is None:
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that has no event: ({user=}) ({userId=}) ({dataBundle=})')
-            return
-
-        broadcasterUserId = event.broadcasterUserId
-        eventId = dataBundle.metadata.messageId
-        reward = event.reward
-        redemptionUserId = event.userId
-        redemptionUserInput = event.userInput
-        redemptionUserLogin = event.userLogin
-
-        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(eventId) or reward is None or not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin):
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({broadcasterUserId=}) ({eventId=}) ({redemptionUserId=}) ({redemptionUserInput=}) ({redemptionUserLogin=}) ({reward=})')
-            return
-
-        self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received an event: ({user=}) ({broadcasterUserId=}) ({eventId=}) ({redemptionUserId=}) ({redemptionUserInput=}) ({redemptionUserLogin=}) ({reward=})')
-
-        await self.__userIdsRepository.setUser(
-            userId = redemptionUserId,
-            userName = redemptionUserLogin
-        )
-
-        channelPointsMessage = TwitchChannelPointsMessage(
-            rewardCost = reward.cost,
-            eventId = eventId,
-            redemptionMessage = redemptionUserInput,
-            rewardId = reward.rewardId,
-            twitchChannelId = broadcasterUserId,
-            userId = redemptionUserId,
-            userName = redemptionUserLogin,
-            twitchUser = user
-        )
-
+        user = channelPointsMessage.twitchUser
         twitchChannelProvider = self.__twitchChannelProvider
 
         if twitchChannelProvider is None:
@@ -221,34 +205,34 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         if user.areRedemptionCountersEnabled:
             await self.__redemptionCounterPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
+                twitchChannelPointsMessage = channelPointsMessage,
             )
 
         if user.isCasualGamePollEnabled and channelPointsMessage.rewardId == user.casualGamePollRewardId:
             if await self.__casualGamePollPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
+                twitchChannelPointsMessage = channelPointsMessage,
             ):
                 return
 
         if user.isChatterPreferredTtsEnabled and channelPointsMessage.rewardId == user.setChatterPreferredTtsRewardId:
             if await self.__chatterPreferredTtsPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
+                twitchChannelPointsMessage = channelPointsMessage,
             ):
                 return
 
         if user.isCutenessEnabled:
             if await self.__cutenessPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
+                twitchChannelPointsMessage = channelPointsMessage,
             ):
                 return
 
         if user.isDecTalkSongsEnabled:
             if await self.__decTalkSongPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
+                twitchChannelPointsMessage = channelPointsMessage,
             ):
                 return
 
@@ -256,73 +240,170 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             if channelPointsMessage.rewardId == user.pkmnBattleRewardId:
                 if await self.__pkmnBattlePointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
-                    twitchChannelPointsMessage = channelPointsMessage
+                    twitchChannelPointsMessage = channelPointsMessage,
                 ):
                     return
 
             if await self.__pkmnCatchPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
+                twitchChannelPointsMessage = channelPointsMessage,
             ):
                 return
 
             if channelPointsMessage.rewardId == user.pkmnEvolveRewardId:
                 if await self.__pkmnEvolvePointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
-                    twitchChannelPointsMessage = channelPointsMessage
+                    twitchChannelPointsMessage = channelPointsMessage,
                 ):
                     return
 
             if channelPointsMessage.rewardId == user.pkmnShinyRewardId:
                 if await self.__pkmnShinyPointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
-                    twitchChannelPointsMessage = channelPointsMessage
+                    twitchChannelPointsMessage = channelPointsMessage,
                 ):
                     return
 
         if user.areSoundAlertsEnabled:
             if await self.__soundAlertPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
+                twitchChannelPointsMessage = channelPointsMessage,
             ):
                 return
 
         if user.isSuperTriviaGameEnabled and channelPointsMessage.rewardId == user.superTriviaGameRewardId:
             if await self.__superTriviaGamePointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
+                twitchChannelPointsMessage = channelPointsMessage,
             ):
                 return
 
         if await self.__timeoutPointRedemption.handlePointRedemption(
             twitchChannel = twitchChannel,
-            twitchChannelPointsMessage = channelPointsMessage
+            twitchChannelPointsMessage = channelPointsMessage,
         ):
             return
 
         if user.isTriviaGameEnabled and channelPointsMessage.rewardId == user.triviaGameRewardId:
             if await self.__triviaGamePointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
+                twitchChannelPointsMessage = channelPointsMessage,
             ):
                 return
 
         if user.areTtsChattersEnabled and channelPointsMessage.rewardId == user.ttsChatterRewardId:
             if await self.__ttsChatterPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
+                twitchChannelPointsMessage = channelPointsMessage,
             ):
                 return
 
         if user.isVoicemailEnabled and channelPointsMessage.rewardId == user.voicemailRewardId:
             if await self.__voicemailPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
+                twitchChannelPointsMessage = channelPointsMessage,
             ):
                 return
+
+    async def onNewChannelPointRedemption(self, channelPointsMessage: TwitchChannelPointsMessage):
+        if not isinstance(channelPointsMessage, TwitchChannelPointsMessage):
+            raise TypeError(f'channelPointsMessage argument is malformed: \"{channelPointsMessage}\"')
+
+        self.__submitChannelPointsMessage(
+            channelPointsMessage = channelPointsMessage,
+        )
+
+    async def onNewChannelPointRedemptionDataBundle(
+        self,
+        twitchChannelId: str,
+        user: UserInterface,
+        dataBundle: TwitchWebsocketDataBundle,
+    ):
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
+        elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
+            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+
+        event = dataBundle.requirePayload().event
+
+        if event is None:
+            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that has no event: ({user=}) ({twitchChannelId=}) ({dataBundle=})')
+            return
+
+        eventId = dataBundle.metadata.messageId
+        redemptionUserId = event.userId
+        redemptionUserInput = event.userInput
+        redemptionUserLogin = event.userLogin
+        reward = event.reward
+
+        if not utils.isValidStr(eventId) or reward is None or not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin):
+            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({eventId=}) ({redemptionUserId=}) ({redemptionUserInput=}) ({redemptionUserLogin=}) ({reward=})')
+            return
+
+        self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a channel point redemption event: ({user=}) ({twitchChannelId=}) ({eventId=}) ({redemptionUserId=}) ({redemptionUserInput=}) ({redemptionUserLogin=}) ({reward=})')
+
+        await self.__userIdsRepository.setUser(
+            userId = redemptionUserId,
+            userName = redemptionUserLogin,
+        )
+
+        channelPointsMessage = TwitchChannelPointsMessage(
+            rewardCost = reward.cost,
+            eventId = eventId,
+            redemptionMessage = redemptionUserInput,
+            rewardId = reward.rewardId,
+            twitchChannelId = twitchChannelId,
+            userId = redemptionUserId,
+            userName = redemptionUserLogin,
+            twitchUser = user,
+        )
+
+        await self.onNewChannelPointRedemption(
+            channelPointsMessage = channelPointsMessage,
+        )
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
         self.__twitchChannelProvider = provider
+
+    def start(self):
+        if self.__isStarted:
+            self.__timber.log('TwitchChannelPointRedemptionHandler', 'Not starting TwitchChannelPointRedemptionHandler as it has already been started')
+            return
+
+        self.__isStarted = True
+        self.__timber.log('TwitchWebsocketClient', 'Starting TwitchWebsocketClient...')
+        self.__backgroundTaskHelper.createTask(self.__startChannelPointsMessageLoop())
+
+    async def __startChannelPointsMessageLoop(self):
+        while True:
+            channelPointsMessages: FrozenList[TwitchChannelPointsMessage] = FrozenList()
+
+            try:
+                while not self.__channelPointsMessagesQueue.empty():
+                    channelPointsMessages.append(self.__channelPointsMessagesQueue.get_nowait())
+            except queue.Empty as e:
+                self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered queue.Empty when building up channelPointsMessages list (queue size: {self.__channelPointsMessagesQueue.qsize()}) (channelPointsMessages size: {len(channelPointsMessages)}): {e}', e, traceback.format_exc())
+
+            channelPointsMessages.freeze()
+
+            for channelPointsMessage in channelPointsMessages:
+                try:
+                    await self.__handleChannelPointsMessage(channelPointsMessage)
+                except Exception as e:
+                    self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered unknown Exception when looping through channelPointsMessages (queue size: {self.__channelPointsMessagesQueue.qsize()}) ({channelPointsMessage=}): {e}', e, traceback.format_exc())
+
+            await asyncio.sleep(self.__queueSleepTimeSeconds)
+
+    def __submitChannelPointsMessage(self, channelPointsMessage: TwitchChannelPointsMessage):
+        if not isinstance(channelPointsMessage, TwitchChannelPointsMessage):
+            raise TypeError(f'channelPointsMessage argument is malformed: \"{channelPointsMessage}\"')
+
+        try:
+            self.__channelPointsMessagesQueue.put(channelPointsMessage, block = True, timeout = self.__queueTimeoutSeconds)
+        except queue.Full as e:
+            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered queue.Full when submitting a new action ({channelPointsMessage}) into the action queue (queue size: {self.__channelPointsMessagesQueue.qsize()}): {e}', e, traceback.format_exc())
