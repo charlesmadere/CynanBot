@@ -95,10 +95,10 @@ class GetChatterPreferredTtsChatCommand(AbsChatCommand):
         await self.__twitchUtils.safeSend(
             messageable = ctx,
             message = await self.__toString(
-                ctx = ctx,
-                preferredTtsLookupData = preferredTtsLookupData
+                preferredTtsLookupData = preferredTtsLookupData,
+                chatterUserId = ctx.getAuthorId(),
             ),
-            replyMessageId = await ctx.getMessageId()
+            replyMessageId = await ctx.getMessageId(),
         )
 
         self.__timber.log('GetChatterPreferredTtsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
@@ -140,8 +140,8 @@ class GetChatterPreferredTtsChatCommand(AbsChatCommand):
 
     async def __toString(
         self,
-        ctx: TwitchContext,
-        preferredTtsLookupData: PreferredTtsLookupData
+        preferredTtsLookupData: PreferredTtsLookupData,
+        chatterUserId: str,
     ) -> str:
         printOut: str
 
@@ -152,7 +152,7 @@ class GetChatterPreferredTtsChatCommand(AbsChatCommand):
                 preferredTts = preferredTtsLookupData.preferredTts
             )
 
-        if ctx.getAuthorId() == preferredTtsLookupData.chatterUserId:
+        if preferredTtsLookupData.chatterUserId == chatterUserId:
             if preferredTtsLookupData.preferredTts is None:
                 return f'ⓘ You currently don\'t have a preferred TTS'
             else:
