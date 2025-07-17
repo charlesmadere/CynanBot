@@ -5,6 +5,7 @@ from .models.google.googleTtsProperties import GoogleTtsProperties
 from .models.halfLife.halfLifeTtsProperties import HalfLifeTtsProperties
 from .models.microsoft.microsoftTtsTtsProperties import MicrosoftTtsTtsProperties
 from .models.microsoftSam.microsoftSamTtsProperties import MicrosoftSamTtsProperties
+from .models.shotgunTts.shotgunTtsTtsProperties import ShotgunTtsTtsProperties
 from .models.streamElements.streamElementsTtsProperties import StreamElementsTtsProperties
 from .models.ttsMonster.ttsMonsterTtsProperties import TtsMonsterTtsProperties
 from .models.unrestrictedDecTalk.unrestrictedDecTalkTtsProperties import UnrestrictedDecTalkTtsProperties
@@ -62,6 +63,9 @@ class ChatterPreferredTtsPresenter:
 
         return f'{TtsProvider.MICROSOFT.humanName} ({voice.humanName})'
 
+    async def __shotgunTts(self, properties: ShotgunTtsTtsProperties) -> str:
+        return f'{TtsProvider.SHOTGUN_TTS.humanName}'
+
     async def __streamElements(self, properties: StreamElementsTtsProperties) -> str:
         voice = properties.voice
 
@@ -104,6 +108,9 @@ class ChatterPreferredTtsPresenter:
 
         elif isinstance(properties, MicrosoftTtsTtsProperties):
             return await self.__microsoftTts(properties)
+
+        elif isinstance(properties, ShotgunTtsTtsProperties):
+            return await self.__shotgunTts(properties)
 
         elif isinstance(properties, StreamElementsTtsProperties):
             return await self.__streamElements(properties)
