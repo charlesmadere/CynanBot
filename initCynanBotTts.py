@@ -2186,12 +2186,13 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = Tw
 )
 
 twitchChatHandler: AbsTwitchChatHandler = TwitchChatHandler(
+    backgroundTaskHelper = backgroundTaskHelper,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = None,
-    triviaGameMachine = None
+    triviaGameMachine = None,
 )
 
 twitchCheerHandler: AbsTwitchCheerHandler = TwitchCheerHandler(
