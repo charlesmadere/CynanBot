@@ -90,7 +90,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         self,
         subscriptionType: TwitchWebsocketSubscriptionType | None
     ) -> bool:
-        return subscriptionType is TwitchWebsocketSubscriptionType.CHEER
+        return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CHEER
 
     async def __isFollowType(
         self,

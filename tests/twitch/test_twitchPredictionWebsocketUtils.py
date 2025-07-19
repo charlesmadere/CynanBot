@@ -132,6 +132,28 @@ class TestTwitchPredictionWebsocketUtils:
         assert result['blue'] == 132
 
     @pytest.mark.asyncio
+    async def test_websocketSubscriptionTypeToString_withChannelChatMessage(self):
+        result: str | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.utils.websocketSubscriptionTypeToString(
+               subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE
+            )
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_websocketSubscriptionTypeToString_withChannelCheer(self):
+        result: str | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.utils.websocketSubscriptionTypeToString(
+               subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_CHEER
+            )
+
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_websocketSubscriptionTypeToString_withChannelPointsRedemption(self):
         result: str | None = None
 
@@ -181,17 +203,6 @@ class TestTwitchPredictionWebsocketUtils:
         with pytest.raises(ValueError):
             result = await self.utils.websocketSubscriptionTypeToString(
                subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_UPDATE
-            )
-
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_websocketSubscriptionTypeToString_withCheer(self):
-        result: str | None = None
-
-        with pytest.raises(ValueError):
-            result = await self.utils.websocketSubscriptionTypeToString(
-               subscriptionType = TwitchWebsocketSubscriptionType.CHEER
             )
 
         assert result is None

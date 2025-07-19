@@ -1676,6 +1676,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         match subscriptionType:
             case 'channel.chat.message':
                 return TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE
+            case 'channel.cheer':
+                return TwitchWebsocketSubscriptionType.CHANNEL_CHEER
             case 'channel.channel_points_custom_reward_redemption.add':
                 return TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
             case 'channel.hype_train.begin':
@@ -1700,8 +1702,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS
             case 'channel.update':
                 return TwitchWebsocketSubscriptionType.CHANNEL_UPDATE
-            case 'channel.cheer':
-                return TwitchWebsocketSubscriptionType.CHEER
             case 'channel.follow':
                 return TwitchWebsocketSubscriptionType.FOLLOW
             case 'channel.raid':
@@ -2336,6 +2336,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         match subscriptionType:
             case TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE:
                 return 'channel.chat.message'
+            case TwitchWebsocketSubscriptionType.CHANNEL_CHEER:
+                return 'channel.cheer'
             case TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
                 return 'channel.channel_points_custom_reward_redemption.add'
             case TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_BEGIN:
@@ -2360,8 +2362,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return 'channel.prediction.progress'
             case TwitchWebsocketSubscriptionType.CHANNEL_UPDATE:
                 return 'channel.update'
-            case TwitchWebsocketSubscriptionType.CHEER:
-                return 'channel.cheer'
             case TwitchWebsocketSubscriptionType.FOLLOW:
                 return 'channel.follow'
             case TwitchWebsocketSubscriptionType.RAID:

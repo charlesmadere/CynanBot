@@ -65,6 +65,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         websocketRetrySleepTimeSeconds: float = 3,
         subscriptionTypes: frozenset[TwitchWebsocketSubscriptionType] = frozenset({
             TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE,
+            TwitchWebsocketSubscriptionType.CHANNEL_CHEER,
             TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,
             TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN,
             TwitchWebsocketSubscriptionType.CHANNEL_POLL_END,
@@ -72,7 +73,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN,
             TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END,
             TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS,
-            TwitchWebsocketSubscriptionType.CHEER,
             TwitchWebsocketSubscriptionType.FOLLOW,
             TwitchWebsocketSubscriptionType.RAID,
             TwitchWebsocketSubscriptionType.SUBSCRIBE,
