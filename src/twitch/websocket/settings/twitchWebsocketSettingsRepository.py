@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .twitchWebsocketSettingsRepositoryInterface import TwitchWebsocketSettingsRepositoryInterface
 from ..twitchWebsocketJsonLoggingLevel import TwitchWebsocketJsonLoggingLevel
@@ -13,7 +13,7 @@ class TwitchWebsocketSettingsRepository(TwitchWebsocketSettingsRepositoryInterfa
         self,
         settingsJsonReader: JsonReaderInterface,
         twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface,
-        defaultJsonLoggingLevel: TwitchWebsocketJsonLoggingLevel = TwitchWebsocketJsonLoggingLevel.LIMITED
+        defaultJsonLoggingLevel: TwitchWebsocketJsonLoggingLevel = TwitchWebsocketJsonLoggingLevel.LIMITED,
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
@@ -22,9 +22,9 @@ class TwitchWebsocketSettingsRepository(TwitchWebsocketSettingsRepositoryInterfa
         elif not isinstance(defaultJsonLoggingLevel, TwitchWebsocketJsonLoggingLevel):
             raise TypeError(f'defaultJsonLoggingLevel argument is malformed: \"{defaultJsonLoggingLevel}\"')
 
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
-        self.__twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = twitchWebsocketJsonMapper
-        self.__defaultJsonLoggingLevel: TwitchWebsocketJsonLoggingLevel = defaultJsonLoggingLevel
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
+        self.__twitchWebsocketJsonMapper: Final[TwitchWebsocketJsonMapperInterface] = twitchWebsocketJsonMapper
+        self.__defaultJsonLoggingLevel: Final[TwitchWebsocketJsonLoggingLevel] = defaultJsonLoggingLevel
 
         self.__cache: dict[str, Any] | None = None
 
