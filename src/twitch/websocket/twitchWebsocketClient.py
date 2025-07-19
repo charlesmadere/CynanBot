@@ -4,7 +4,7 @@ import queue
 import traceback
 from datetime import datetime, timedelta
 from queue import SimpleQueue
-from typing import Any, Coroutine, Final
+from typing import Any, Collection, Coroutine, Final
 
 import websockets
 
@@ -30,6 +30,7 @@ from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscrip
 from ..api.models.twitchWebsocketTransport import TwitchWebsocketTransport
 from ..api.models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
+from ..exceptions import TwitchAccessTokenMissingException
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -170,17 +171,31 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__dataBundleQueue: Final[SimpleQueue[TwitchWebsocketDataBundle]] = SimpleQueue()
         self.__dataBundleListener: TwitchWebsocketDataBundleListener | None = None
 
-    async def __createEventSubSubscription(self, user: TwitchWebsocketUser):
-        if not isinstance(user, TwitchWebsocketUser):
+    async def __createEventSubSubscription(
+        self,
+        subscriptionTypes: frozenset[TwitchWebsocketSubscriptionType],
+        user: TwitchWebsocketUser,
+    ):
+        if not isinstance(subscriptionTypes, frozenset):
+            raise TypeError(f'subscriptionTypes argument is malformed: \"{subscriptionTypes}\"')
+        elif not isinstance(user, TwitchWebsocketUser):
             raise TypeError(f'user argument is malformed: \"{user}\"')
+
+        if len(subscriptionTypes) == 0:
+            self.__timber.log('TwitchWebsocketClient', f'Skipping creation of EventSub subscriptions as the given set is empty ({user=}) ({subscriptionTypes=})')
+            return
 
         sessionId = self.__twitchWebsocketSessionIdHelper[user]
 
         if not utils.isValidStr(sessionId):
-            self.__timber.log('TwitchWebsocketClient', f'Skipping creation of EventSub subscription(s) ({user=}) ({sessionId=})')
+            self.__timber.log('TwitchWebsocketClient', f'Skipping creation of {len(subscriptionTypes)} EventSub subscription(s) as this user doesn\'t have a valid session ID ({user=}) ({sessionId=})')
             return
 
-        userAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(user.userId)
+        try:
+            userAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(user.userId)
+        except TwitchAccessTokenMissingException as e:
+            self.__timber.log('TwitchWebsocketClient', f'Skipping creation of {len(subscriptionTypes)} EventSub subscription(s) as we failed to fetch this user\'s Twitch access token ({user=}) ({sessionId=}): {e}', e, traceback.format_exc())
+            return
 
         transport = TwitchWebsocketTransport(
             connectedAt = None,
@@ -194,7 +209,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
         createEventSubSubscriptionCoroutines: list[Coroutine[TwitchEventSubResponse, Any, Any]] = list()
 
-        for subscriptionType in self.__subscriptionTypes:
+        for subscriptionType in subscriptionTypes:
             condition = await self.__twitchWebsocketConditionBuilder.build(
                 subscriptionType = subscriptionType,
                 user = user,
@@ -216,11 +231,29 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                 eventSubRequest = eventSubRequest,
             ))
 
+        subscriptionResults: Collection[TwitchEventSubResponse | Any] | Any | None = None
+
         try:
-            await asyncio.gather(*createEventSubSubscriptionCoroutines, return_exceptions = True)
-            self.__timber.log('TwitchWebsocketClient', f'Finished creating EventSub subscription(s) ({user=}) ({sessionId=})')
+            subscriptionResults = await asyncio.gather(*createEventSubSubscriptionCoroutines, return_exceptions = True)
+            self.__timber.log('TwitchWebsocketClient', f'Finished creating {len(subscriptionTypes)} EventSub subscription(s) ({user=}) ({sessionId=})')
         except Exception as e:
             self.__timber.log('TwitchWebsocketClient', f'Encountered unknown error when creating EventSub subscription(s) ({user=}) ({sessionId=}): {e}', e, traceback.format_exc())
+
+        await self.__inspectEventSubSubscriptionResultsAndMaybeResubscribe(
+            subscriptionResults = subscriptionResults,
+            user = user,
+        )
+
+    async def __inspectEventSubSubscriptionResultsAndMaybeResubscribe(
+        self,
+        subscriptionResults: Collection[TwitchEventSubResponse | Any] | Any | None,
+        user: TwitchWebsocketUser,
+    ):
+        if not await self.__twitchWebsocketSettingsRepository.isChatEventToCheerEventSubscriptionFallbackEnabled():
+            return
+
+        # TODO
+        pass
 
     async def __isValidDataBundle(self, dataBundle: TwitchWebsocketDataBundle) -> bool:
         if not isinstance(dataBundle, TwitchWebsocketDataBundle):
@@ -384,7 +417,11 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                         match connectionAction:
                             case TwitchWebsocketConnectionAction.CREATE_EVENT_SUB_SUBSCRIPTION:
                                 self.__timber.log('TwitchWebsocketClient', f'Twitch websocket connection is asking for EventSub subscription(s) to be created ({user=}) ({twitchWebsocketEndpoint=}) ({connectionAction=})')
-                                await self.__createEventSubSubscription(user)
+
+                                await self.__createEventSubSubscription(
+                                    subscriptionTypes = self.__subscriptionTypes,
+                                    user = user,
+                                )
 
                             case TwitchWebsocketConnectionAction.DISCONNECT:
                                 retry = False
