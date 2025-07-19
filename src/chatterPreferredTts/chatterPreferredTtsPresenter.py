@@ -64,7 +64,7 @@ class ChatterPreferredTtsPresenter:
         return f'{TtsProvider.MICROSOFT.humanName} ({voice.humanName})'
 
     async def __shotgunTts(self, properties: ShotgunTtsTtsProperties) -> str:
-        return f'{TtsProvider.SHOTGUN_TTS.humanName}'
+        return TtsProvider.SHOTGUN_TTS.humanName
 
     async def __streamElements(self, properties: StreamElementsTtsProperties) -> str:
         voice = properties.voice
