@@ -1002,7 +1002,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         version = utils.getStrFromDict(jsonResponse, 'version')
         condition = await self.requireWebsocketCondition(jsonResponse.get('condition'))
         connectionStatus = await self.requireConnectionStatus(utils.getStrFromDict(jsonResponse, 'status'))
-        connectionType = await self.requireSubscriptionType(utils.getStrFromDict(jsonResponse, 'type'))
+        subscriptionType = await self.requireSubscriptionType(utils.getStrFromDict(jsonResponse, 'type'))
         transport = await self.requireTransport(jsonResponse.get('transport'))
 
         return TwitchEventSubDetails(
@@ -1012,8 +1012,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             version = version,
             condition = condition,
             connectionStatus = connectionStatus,
-            connectionType = connectionType,
-            transport = transport
+            subscriptionType = subscriptionType,
+            transport = transport,
         )
 
     async def parseEventSubResponse(

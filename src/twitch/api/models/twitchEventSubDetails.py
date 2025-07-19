@@ -15,5 +15,5 @@ class TwitchEventSubDetails:
     version: str
     condition: TwitchWebsocketCondition
     connectionStatus: TwitchWebsocketConnectionStatus
-    connectionType: TwitchWebsocketSubscriptionType
+    subscriptionType: TwitchWebsocketSubscriptionType
     transport: TwitchWebsocketTransport

@@ -231,7 +231,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                 eventSubRequest = eventSubRequest,
             ))
 
-        subscriptionResults: Collection[TwitchEventSubResponse | Any] | Any | None = None
+        subscriptionResults: Collection[TwitchEventSubResponse | Exception | Any | None] | Any | None = None
 
         try:
             subscriptionResults = await asyncio.gather(*createEventSubSubscriptionCoroutines, return_exceptions = True)
@@ -241,19 +241,59 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
         await self.__inspectEventSubSubscriptionResultsAndMaybeResubscribe(
             subscriptionResults = subscriptionResults,
+            requestedSubscriptionTypes = subscriptionTypes,
             user = user,
         )
 
     async def __inspectEventSubSubscriptionResultsAndMaybeResubscribe(
         self,
-        subscriptionResults: Collection[TwitchEventSubResponse | Any] | Any | None,
+        subscriptionResults: Collection[TwitchEventSubResponse | Exception | Any | None] | Any | None,
+        requestedSubscriptionTypes: frozenset[TwitchWebsocketSubscriptionType],
         user: TwitchWebsocketUser,
     ):
+        # This method is rather long-winded but what it does is pretty important. We'd prefer
+        # using the Twitch CHANNEL_CHAT_MESSAGE EventSub subscription if possible, however,
+        # that subscription requires a few more permissions than CHANNEL_CHEER. So what this
+        # method intends to do is that it will check the list of the successfully created
+        # EventSub subscriptions, and if CHANNEL_CHAT_MESSAGE was requested, but failed, and
+        # CHANNEL_CHEER was NOT requested, then we will create a CHANNEL_CHEER subscription.
+
         if not await self.__twitchWebsocketSettingsRepository.isChatEventToCheerEventSubscriptionFallbackEnabled():
             return
+        elif not isinstance(subscriptionResults, Collection):
+            return
+        elif len(requestedSubscriptionTypes) == 0:
+            return
+        elif TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE not in requestedSubscriptionTypes:
+            return
+        elif TwitchWebsocketSubscriptionType.CHANNEL_CHEER in requestedSubscriptionTypes:
+            return
 
-        # TODO
-        pass
+        results: list[TwitchEventSubResponse | Exception | Any | None] = list(subscriptionResults)
+
+        if len(results) == 0:
+            return
+
+        successfulSubscriptionTypes: set[TwitchWebsocketSubscriptionType] = set()
+
+        for result in results:
+            if not isinstance(result, TwitchEventSubResponse):
+                continue
+
+            for data in result.data:
+                successfulSubscriptionTypes.add(data.subscriptionType)
+
+        if TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE in successfulSubscriptionTypes:
+            return
+        elif TwitchWebsocketSubscriptionType.CHANNEL_CHEER in successfulSubscriptionTypes:
+            return
+
+        self.__timber.log('TwitchWebsocketClient', f'It looks like we failed to create a chat message EventSub subscription, so let\'s fallback to creating a cheer EventSub subscription instead ({user=}) ({successfulSubscriptionTypes=})')
+
+        await self.__createEventSubSubscription(
+            subscriptionTypes = frozenset({ TwitchWebsocketSubscriptionType.CHANNEL_CHEER }),
+            user = user,
+        )
 
     async def __isValidDataBundle(self, dataBundle: TwitchWebsocketDataBundle) -> bool:
         if not isinstance(dataBundle, TwitchWebsocketDataBundle):
