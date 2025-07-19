@@ -8,3 +8,7 @@ class TwitchWebsocketSettingsRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def getLoggingLevel(self) -> bool:
         pass
+
+    @abstractmethod
+    async def isChatEventToCheerEventSubscriptionFallbackEnabled(self) -> bool:
+        pass
