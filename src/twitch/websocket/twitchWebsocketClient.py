@@ -268,7 +268,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
     async def __parseMessageToDataBundleFor(
         self,
         message: str | Any | None,
-        user: TwitchWebsocketUser
+        user: TwitchWebsocketUser,
     ) -> TwitchWebsocketDataBundle | None:
         if not isinstance(user, TwitchWebsocketUser):
             raise TypeError(f'user argument is malformed: \"{user}\"')
@@ -370,7 +370,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                     async for message in websocket:
                         dataBundle = await self.__parseMessageToDataBundleFor(
                             message = message,
-                            user = user
+                            user = user,
                         )
 
                         if dataBundle is None or not await self.__isValidDataBundle(dataBundle):
