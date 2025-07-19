@@ -47,7 +47,7 @@ class TwitchApiServiceInterface(ABC):
     async def createEventSubSubscription(
         self,
         twitchAccessToken: str,
-        eventSubRequest: TwitchEventSubRequest
+        eventSubRequest: TwitchEventSubRequest,
     ) -> TwitchEventSubResponse:
         pass
 

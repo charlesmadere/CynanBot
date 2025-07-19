@@ -1,32 +1,15 @@
-from typing import Final
-
 from .twitchWebsocketConditionBuilderInterface import TwitchWebsocketConditionBuilderInterface
 from ..twitchWebsocketUser import TwitchWebsocketUser
 from ...api.models.twitchWebsocketCondition import TwitchWebsocketCondition
 from ...api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
-from ...twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ....users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class TwitchWebsocketConditionBuilder(TwitchWebsocketConditionBuilderInterface):
 
-    def __init__(
-        self,
-        twitchHandleProvider: TwitchHandleProviderInterface,
-        userIdsRepository: UserIdsRepositoryInterface
-    ):
-        if not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
-            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-
-        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
-
     async def build(
         self,
         subscriptionType: TwitchWebsocketSubscriptionType,
-        user: TwitchWebsocketUser
+        user: TwitchWebsocketUser,
     ) -> TwitchWebsocketCondition | None:
         if not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
@@ -34,10 +17,6 @@ class TwitchWebsocketConditionBuilder(TwitchWebsocketConditionBuilderInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
         if subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE:
-            # TODO we maybe don't need these two lines
-            twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-            twitchId = await self.__userIdsRepository.requireUserId(twitchHandle)
-
             return TwitchWebsocketCondition(
                 broadcasterUserId = user.userId,
                 userId = user.userId,

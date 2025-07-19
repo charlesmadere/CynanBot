@@ -186,7 +186,7 @@ class TwitchApiService(TwitchApiServiceInterface):
     async def createEventSubSubscription(
         self,
         twitchAccessToken: str,
-        eventSubRequest: TwitchEventSubRequest
+        eventSubRequest: TwitchEventSubRequest,
     ) -> TwitchEventSubResponse:
         if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')

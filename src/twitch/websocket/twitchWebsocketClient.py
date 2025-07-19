@@ -192,7 +192,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             method = TwitchWebsocketTransportMethod.WEBSOCKET,
         )
 
-        createEventSubScriptionCoroutines: list[Coroutine[TwitchEventSubResponse, Any, Any]] = list()
+        createEventSubSubscriptionCoroutines: list[Coroutine[TwitchEventSubResponse, Any, Any]] = list()
 
         for subscriptionType in self.__subscriptionTypes:
             condition = await self.__twitchWebsocketConditionBuilder.build(
@@ -211,13 +211,13 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                 transport = transport,
             )
 
-            createEventSubScriptionCoroutines.append(self.__twitchApiService.createEventSubSubscription(
+            createEventSubSubscriptionCoroutines.append(self.__twitchApiService.createEventSubSubscription(
                 twitchAccessToken = userAccessToken,
                 eventSubRequest = eventSubRequest,
             ))
 
         try:
-            await asyncio.gather(*createEventSubScriptionCoroutines, return_exceptions = True)
+            await asyncio.gather(*createEventSubSubscriptionCoroutines, return_exceptions = True)
             self.__timber.log('TwitchWebsocketClient', f'Finished creating EventSub subscription(s) ({user=}) ({sessionId=})')
         except Exception as e:
             self.__timber.log('TwitchWebsocketClient', f'Encountered unknown error when creating EventSub subscription(s) ({user=}) ({sessionId=}): {e}', e, traceback.format_exc())

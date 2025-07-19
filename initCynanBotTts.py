@@ -968,10 +968,7 @@ twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInte
     usersRepository = usersRepository
 )
 
-twitchWebsocketConditionBuilder: TwitchWebsocketConditionBuilderInterface = TwitchWebsocketConditionBuilder(
-    twitchHandleProvider = authRepository,
-    userIdsRepository = userIdsRepository
-)
+twitchWebsocketConditionBuilder: TwitchWebsocketConditionBuilderInterface = TwitchWebsocketConditionBuilder()
 
 twitchWebsocketEndpointHelper: TwitchWebsocketEndpointHelperInterface = TwitchWebsocketEndpointHelper(
     timber = timber

@@ -2,33 +2,21 @@ import pytest
 
 from src.twitch.api.models.twitchWebsocketCondition import TwitchWebsocketCondition
 from src.twitch.api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
-from src.twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilder import TwitchWebsocketConditionBuilder
 from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilderInterface import \
     TwitchWebsocketConditionBuilderInterface
 from src.twitch.websocket.twitchWebsocketUser import TwitchWebsocketUser
-from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ...fakeTwitchHandleProvider import FakeTwitchHandleProvider
-from ....users.fakeUserIdsRepository import FakeUserIdsRepository
 
 
 class TestTwitchWebsocketConditionBuilder:
 
-    twitchHandleProvider: TwitchHandleProviderInterface = FakeTwitchHandleProvider()
-
-    userIdsRepository: UserIdsRepositoryInterface = FakeUserIdsRepository()
-
-    conditionBuilder: TwitchWebsocketConditionBuilderInterface = TwitchWebsocketConditionBuilder(
-        twitchHandleProvider = twitchHandleProvider,
-        userIdsRepository = userIdsRepository,
-    )
+    conditionBuilder: TwitchWebsocketConditionBuilderInterface = TwitchWebsocketConditionBuilder()
 
     @pytest.mark.asyncio
     async def test_build_withChannelChatMessage(self):
-        websocketUserName = 'stashiocat'
         websocketUser = TwitchWebsocketUser(
-            userId = await self.userIdsRepository.requireUserId(websocketUserName),
-            userName = websocketUserName,
+            userId = 'abc123',
+            userName = 'stashiocat',
         )
 
         result = await self.conditionBuilder.build(
@@ -42,10 +30,9 @@ class TestTwitchWebsocketConditionBuilder:
 
     @pytest.mark.asyncio
     async def test_build_withChannelPointsRedemption(self):
-        websocketUserName = 'imyt'
         websocketUser = TwitchWebsocketUser(
-            userId = await self.userIdsRepository.requireUserId(websocketUserName),
-            userName = websocketUserName,
+            userId = 'def456',
+            userName = 'imyt',
         )
 
         result = await self.conditionBuilder.build(
@@ -55,6 +42,7 @@ class TestTwitchWebsocketConditionBuilder:
 
         assert isinstance(result, TwitchWebsocketCondition)
         assert result.broadcasterUserId == websocketUser.userId
+        assert result.userId is None
 
     def test_sanity(self):
         assert self.conditionBuilder is not None

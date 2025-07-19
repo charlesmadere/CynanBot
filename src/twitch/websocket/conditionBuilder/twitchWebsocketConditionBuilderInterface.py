@@ -11,6 +11,6 @@ class TwitchWebsocketConditionBuilderInterface(ABC):
     async def build(
         self,
         subscriptionType: TwitchWebsocketSubscriptionType,
-        user: TwitchWebsocketUser
+        user: TwitchWebsocketUser,
     ) -> TwitchWebsocketCondition | None:
         pass
