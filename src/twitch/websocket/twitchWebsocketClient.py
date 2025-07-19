@@ -306,7 +306,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         await self.__logWebsocketMessage(
             message = message,
             dataBundle = dataBundle,
-            user = user
+            user = user,
         )
 
         if exception is not None:
