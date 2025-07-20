@@ -16,7 +16,7 @@ pytest==8.4.1
 pytest-asyncio==1.1.0
 pytz==2025.2
 requests==2.32.4
-roman==5.0
+roman==5.1
 twitchio==2.10.0
 typing_extensions==4.14.1
 websockets==15.0.1
