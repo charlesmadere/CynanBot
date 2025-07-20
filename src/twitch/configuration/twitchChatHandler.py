@@ -109,10 +109,9 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         chatterUserLogin = event.chatterUserLogin
         chatterUserName = event.chatterUserName
         chatMessage = event.chatMessage
-        chatMessageType = event.chatMessageType
 
-        if not utils.isValidStr(chatterUserId) or not utils.isValidStr(chatterUserLogin) or not utils.isValidStr(chatterUserName) or chatMessage is None or chatMessageType is None:
-            self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=}) ({chatMessageType=})')
+        if not utils.isValidStr(chatterUserId) or not utils.isValidStr(chatterUserLogin) or not utils.isValidStr(chatterUserName) or chatMessage is None:
+            self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=})')
             return
 
         chatData = AbsTwitchChatHandler.ChatData(
@@ -122,7 +121,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             twitchChannelId = twitchChannelId,
             twitchChatMessageId = event.messageId,
             message = chatMessage,
-            messageType = chatMessageType,
+            messageType = event.chatMessageType,
             cheer = event.cheer,
             user = user,
         )

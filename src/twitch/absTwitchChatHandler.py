@@ -19,7 +19,7 @@ class AbsTwitchChatHandler(ABC):
         twitchChannelId: str
         twitchChatMessageId: str | None
         message: TwitchChatMessage
-        messageType: TwitchChatMessageType
+        messageType: TwitchChatMessageType | None
         cheer: TwitchCheerMetadata | None
         user: UserInterface
 
