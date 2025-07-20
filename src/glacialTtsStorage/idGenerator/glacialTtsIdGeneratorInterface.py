@@ -10,6 +10,6 @@ class GlacialTtsIdGeneratorInterface(ABC):
         self,
         message: str,
         voice: str | None,
-        provider: TtsProvider
+        provider: TtsProvider,
     ) -> str:
         pass

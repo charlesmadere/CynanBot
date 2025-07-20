@@ -1,7 +1,7 @@
 import re
 from asyncio import AbstractEventLoop
 from dataclasses import dataclass
-from typing import Pattern
+from typing import Final, Pattern
 
 import aiofiles.os
 import aiofiles.ospath
@@ -28,7 +28,7 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         eventLoop: AbstractEventLoop,
         glacialTtsStorageRepository: GlacialTtsStorageRepositoryInterface,
         timber: TimberInterface,
-        ttsDirectoryProvider: TtsDirectoryProviderInterface
+        ttsDirectoryProvider: TtsDirectoryProviderInterface,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -39,18 +39,18 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         elif not isinstance(ttsDirectoryProvider, TtsDirectoryProviderInterface):
             raise TypeError(f'ttsDirectoryProvider argument is malformed: \"{ttsDirectoryProvider}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__glacialTtsStorageRepository: GlacialTtsStorageRepositoryInterface = glacialTtsStorageRepository
-        self.__timber: TimberInterface = timber
-        self.__ttsDirectoryProvider: TtsDirectoryProviderInterface = ttsDirectoryProvider
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__glacialTtsStorageRepository: Final[GlacialTtsStorageRepositoryInterface] = glacialTtsStorageRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__ttsDirectoryProvider: Final[TtsDirectoryProviderInterface] = ttsDirectoryProvider
 
-        self.__fileNameWithoutExtensionRegEx: Pattern = re.compile(r'^(\w+)\.\w+$', re.IGNORECASE)
+        self.__fileNameWithoutExtensionRegEx: Final[Pattern] = re.compile(r'^(\w+)\.\w+$', re.IGNORECASE)
 
     async def findFile(
         self,
         message: str,
         voice: str | None,
-        provider: TtsProvider
+        provider: TtsProvider,
     ) -> GlacialTtsFileReference | None:
         if not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -62,7 +62,7 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         glacialTtsData = await self.__glacialTtsStorageRepository.get(
             message = message,
             voice = voice,
-            provider = provider
+            provider = provider,
         )
 
         if glacialTtsData is None:
@@ -70,7 +70,7 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
 
         fileReference = await self.__findFile(
             glacialId = glacialTtsData.glacialId,
-            provider = provider
+            provider = provider,
         )
 
         if fileReference is None:
@@ -81,32 +81,32 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
             return GlacialTtsFileReference(
                 glacialTtsData = glacialTtsData,
                 fileName = fileReference.fileName,
-                filePath = fileReference.filePath
+                filePath = fileReference.filePath,
             )
 
     async def __findFile(
         self,
         glacialId: str,
-        provider: TtsProvider
+        provider: TtsProvider,
     ) -> FileReference | None:
         providerFolder = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(provider)
 
         if not await aiofiles.ospath.exists(
             path = providerFolder,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             self.__timber.log('GlacialTtsFileRetriever', f'A glacial ID exists for the given TTS, but its folder does not exist ({glacialId=}) ({providerFolder=})')
             return None
         elif not await aiofiles.ospath.isdir(
             s = providerFolder,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             self.__timber.log('GlacialTtsFileRetriever', f'A glacial ID exists for the given TTS, but its folder is not a directory ({glacialId=}) ({providerFolder=})')
             raise GlacialTtsFolderIsNotAFolder(f'A glacial ID exists for the given TTS, but its folder is not a directory ({glacialId=}) ({providerFolder=})')
 
         directoryContents = await aiofiles.os.scandir(
             path = providerFolder,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         )
 
         for entry in directoryContents:
@@ -124,7 +124,7 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
             if glacialId == fileNameWithoutExtension:
                 return GlacialTtsFileRetriever.FileReference(
                     fileName = entry.name,
-                    filePath = f'{providerFolder}/{entry.name}'
+                    filePath = f'{providerFolder}/{entry.name}',
                 )
 
         return None
@@ -134,7 +134,7 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         fileExtension: str,
         message: str,
         voice: str | None,
-        provider: TtsProvider
+        provider: TtsProvider,
     ) -> GlacialTtsFileReference:
         if not utils.isValidStr(fileExtension):
             raise TypeError(f'fileExtension argument is malformed: \"{fileExtension}\"')
@@ -148,7 +148,7 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         glacialTtsData = await self.__glacialTtsStorageRepository.get(
             message = message,
             voice = voice,
-            provider = provider
+            provider = provider,
         )
 
         if glacialTtsData is not None:
@@ -157,12 +157,12 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         glacialTtsData = await self.__glacialTtsStorageRepository.add(
             message = message,
             voice = voice,
-            provider = provider
+            provider = provider,
         )
 
         fileReference = await self.__findFile(
             glacialId = glacialTtsData.glacialId,
-            provider = provider
+            provider = provider,
         )
 
         if fileReference is not None:
@@ -175,5 +175,5 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         return GlacialTtsFileReference(
             glacialTtsData = glacialTtsData,
             fileName = fileName,
-            filePath = filePath
+            filePath = filePath,
         )

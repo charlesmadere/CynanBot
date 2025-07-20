@@ -11,7 +11,7 @@ class GlacialTtsIdGenerator(GlacialTtsIdGeneratorInterface):
         self,
         message: str,
         voice: str | None,
-        provider: TtsProvider
+        provider: TtsProvider,
     ) -> str:
         if not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')

@@ -11,7 +11,7 @@ class GlacialTtsStorageRepositoryInterface(ABC):
         self,
         message: str,
         voice: str | None,
-        provider: TtsProvider
+        provider: TtsProvider,
     ) -> GlacialTtsData:
         pass
 
@@ -20,7 +20,7 @@ class GlacialTtsStorageRepositoryInterface(ABC):
         self,
         message: str,
         voice: str | None,
-        provider: TtsProvider
+        provider: TtsProvider,
     ) -> GlacialTtsData | None:
         pass
 
@@ -28,6 +28,6 @@ class GlacialTtsStorageRepositoryInterface(ABC):
     async def remove(
         self,
         glacialId: str,
-        provider: TtsProvider
+        provider: TtsProvider,
     ) -> GlacialTtsData | None:
         pass

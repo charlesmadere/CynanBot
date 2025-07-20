@@ -11,7 +11,7 @@ class GlacialTtsFileRetrieverInterface(ABC):
         self,
         message: str,
         voice: str | None,
-        provider: TtsProvider
+        provider: TtsProvider,
     ) -> GlacialTtsFileReference | None:
         pass
 
@@ -21,6 +21,6 @@ class GlacialTtsFileRetrieverInterface(ABC):
         fileExtension: str,
         message: str,
         voice: str | None,
-        provider: TtsProvider
+        provider: TtsProvider,
     ) -> GlacialTtsFileReference:
         pass

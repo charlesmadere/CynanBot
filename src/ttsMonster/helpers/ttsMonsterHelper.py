@@ -39,7 +39,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         timber: TimberInterface,
         ttsMonsterMessageChunkParser: TtsMonsterMessageChunkParserInterface,
         ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface,
-        ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface
+        ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -181,7 +181,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         glacialFile = await self.__glacialTtsFileRetriever.findFile(
             message = fullMessage,
             voice = None,
-            provider = TtsProvider.TTS_MONSTER
+            provider = TtsProvider.TTS_MONSTER,
         )
 
         if glacialFile is not None:
@@ -205,7 +205,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             fileExtension = await self.__ttsMonsterSettingsRepository.getFileExtension(),
             message = fullMessage,
             voice = None,
-            provider = TtsProvider.TTS_MONSTER
+            provider = TtsProvider.TTS_MONSTER,
         )
 
         if await self.__saveSpeechBytes(

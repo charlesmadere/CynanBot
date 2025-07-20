@@ -22,7 +22,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        databaseFile: str = '../db/glacialTtsStorageDatabase.sqlite'
+        databaseFile: str = '../db/glacialTtsStorageDatabase.sqlite',
     ):
         if not isinstance(glacialTtsDataMapper, GlacialTtsDataMapperInterface):
             raise TypeError(f'glacialTtsDataMapper argument is malformed: \"{glacialTtsDataMapper}\"')
@@ -47,7 +47,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         self,
         message: str,
         voice: str | None,
-        provider: TtsProvider
+        provider: TtsProvider,
     ) -> GlacialTtsData:
         if not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -59,7 +59,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         glacialTtsData = await self.get(
             message = message,
             voice = voice,
-            provider = provider
+            provider = provider,
         )
 
         if glacialTtsData is not None:
@@ -71,7 +71,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         glacialId = await self.__glacialTtsIdGenerator.generateId(
             message = message,
             voice = voice,
-            provider = provider
+            provider = provider,
         )
 
         providerString = await self.__glacialTtsDataMapper.toDatabaseName(provider)
@@ -94,7 +94,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
             glacialId = glacialId,
             message = message,
             voice = voice,
-            provider = provider
+            provider = provider,
         )
 
         return glacialTtsData
@@ -103,7 +103,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         self,
         message: str,
         voice: str | None,
-        provider: TtsProvider
+        provider: TtsProvider,
     ) -> GlacialTtsData | None:
         if not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -181,7 +181,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
     async def remove(
         self,
         glacialId: str,
-        provider: TtsProvider
+        provider: TtsProvider,
     ) -> GlacialTtsData | None:
         if not utils.isValidStr(glacialId):
             raise TypeError(f'glacialId argument is malformed: \"{glacialId}\"')

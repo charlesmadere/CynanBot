@@ -1,7 +1,7 @@
 import re
 import uuid
 from datetime import datetime
-from typing import Pattern
+from typing import Final, Pattern
 
 from ..fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
 from ..models.glacialTtsData import GlacialTtsData
@@ -18,7 +18,7 @@ class StubGlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         self,
         timeZoneRepository: TimeZoneRepositoryInterface,
         ttsDirectoryProvider: TtsDirectoryProviderInterface,
-        directory: str = '../tts'
+        directory: str = '../tts',
     ):
         if not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
@@ -27,17 +27,17 @@ class StubGlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         elif not utils.isValidStr(directory):
             raise TypeError(f'directory argument is malformed: \"{directory}\"')
 
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__ttsDirectoryProvider: TtsDirectoryProviderInterface = ttsDirectoryProvider
-        self.__directory: str = directory
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__ttsDirectoryProvider: Final[TtsDirectoryProviderInterface] = ttsDirectoryProvider
+        self.__directory: Final[str] = directory
 
-        self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
+        self.__fileNameRegEx: Final[Pattern] = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
     async def findFile(
         self,
         message: str,
         voice: str | None,
-        provider: TtsProvider
+        provider: TtsProvider,
     ) -> GlacialTtsFileReference | None:
         # this method is intentionally empty
         return None
@@ -51,7 +51,7 @@ class StubGlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         fileExtension: str,
         message: str,
         voice: str | None,
-        provider: TtsProvider
+        provider: TtsProvider,
     ) -> GlacialTtsFileReference:
         providerFolder = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(provider)
         glacialId = await self.__generateRandomId()
@@ -64,8 +64,8 @@ class StubGlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
                 glacialId = glacialId,
                 message = message,
                 voice = voice,
-                provider = provider
+                provider = provider,
             ),
             fileName = glacialId,
-            filePath = filePath
+            filePath = filePath,
         )
