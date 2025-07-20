@@ -29,13 +29,7 @@ class SoundAlertRedemptionJsonParser(SoundAlertRedemptionJsonParserInterface):
         isImmediate = utils.getBoolFromDict(jsonContents, 'isImmediate', False)
 
         soundAlertString = utils.getStrFromDict(jsonContents, 'soundAlert', '')
-        soundAlert = self.__soundAlertJsonMapper.parseSoundAlert(soundAlertString)
-
-        if soundAlert is None:
-            raise ValueError(f'\"soundAlert\" JSON value is malformed ({soundAlertString=}) ({jsonContents=})')
-
-        if 'soundAlert' in jsonContents and utils.isValidStr(jsonContents.get('soundAlert')):
-            soundAlertString = utils.getStrFromDict(jsonContents, 'soundAlert')
+        soundAlert = self.__soundAlertJsonMapper.requireSoundAlert(soundAlertString)
 
         directoryPath: str | None = None
         if 'directoryPath' in jsonContents and utils.isValidStr(jsonContents.get('directoryPath')):
