@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ..soundAlert import SoundAlert
@@ -8,11 +8,14 @@ from ...storage.jsonReaderInterface import JsonReaderInterface
 
 class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
 
-    def __init__(self, settingsJsonReader: JsonReaderInterface):
+    def __init__(
+        self,
+        settingsJsonReader: JsonReaderInterface,
+    ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
 
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
 
         self.__settingsCache: dict[str, Any] | None = None
 
@@ -30,6 +33,13 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
 
         match soundAlert:
+            case SoundAlert.AIR_STRIKE:
+                return utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'airStrikeFilePath',
+                    fallback = 'Air Strike.mp3'
+                )
+
             case SoundAlert.BEAN:
                 return utils.getStrFromDict(
                     d = jsonContents,
@@ -49,6 +59,13 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     d = jsonContents,
                     key = 'clickNavigationFilePath',
                     fallback = 'Click Navigation.mp3'
+                )
+
+            case SoundAlert.FOLLOW:
+                return utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'followFilePath',
+                    fallback = 'Follow.mp3'
                 )
 
             case SoundAlert.GRENADE_1:
@@ -238,13 +255,6 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     d = jsonContents,
                     key = 'subscribeFilePath',
                     fallback = 'Subscribe Alert.mp3'
-                )
-
-            case SoundAlert.TNT:
-                return utils.getStrFromDict(
-                    d = jsonContents,
-                    key = 'tntFilePath',
-                    fallback = 'TNT.mp3'
                 )
 
             case _:

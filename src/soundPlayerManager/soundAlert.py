@@ -3,9 +3,11 @@ from enum import Enum, auto
 
 class SoundAlert(Enum):
 
+    AIR_STRIKE = auto()
     BEAN = auto()
     CHEER = auto()
     CLICK_NAVIGATION = auto()
+    FOLLOW = auto()
     GRENADE_1 = auto()
     GRENADE_2 = auto()
     GRENADE_3 = auto()
@@ -34,4 +36,3 @@ class SoundAlert(Enum):
     RANDOM_FROM_DIRECTORY = auto()
     SPLAT = auto()
     SUBSCRIBE = auto()
-    TNT = auto()

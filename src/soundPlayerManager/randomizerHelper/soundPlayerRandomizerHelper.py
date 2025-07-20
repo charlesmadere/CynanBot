@@ -39,8 +39,8 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
             SoundAlert.POINT_REDEMPTION_13,
             SoundAlert.POINT_REDEMPTION_14,
             SoundAlert.POINT_REDEMPTION_15,
-            SoundAlert.POINT_REDEMPTION_16
-        })
+            SoundAlert.POINT_REDEMPTION_16,
+        }),
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')

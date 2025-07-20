@@ -375,7 +375,7 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
         await asyncio.sleep(self.__launchAirStrikeAlertSleepTimeSeconds)
 
         soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
-        self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.TNT))
+        self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.AIR_STRIKE))
         await asyncio.sleep(self.__airStrikeAlertSleepTimeSeconds)
 
         index = 0

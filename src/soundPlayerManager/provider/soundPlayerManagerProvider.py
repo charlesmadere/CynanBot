@@ -1,3 +1,5 @@
+from typing import Final
+
 from .soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..audioPlayer.audioPlayerSoundPlayerManager import AudioPlayerSoundPlayerManager
 from ..settings.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
@@ -21,7 +23,7 @@ class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
         generalSettingsRepository: GeneralSettingsRepository,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface
+        timeZoneRepository: TimeZoneRepositoryInterface,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -36,12 +38,12 @@ class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None = chatBandInstrumentSoundsRepository
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__chatBandInstrumentSoundsRepository: Final[ChatBandInstrumentSoundsRepositoryInterface | None] = chatBandInstrumentSoundsRepository
+        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
+        self.__soundPlayerSettingsRepository: Final[SoundPlayerSettingsRepositoryInterface] = soundPlayerSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
 
         self.__soundPlayerManager: SoundPlayerManagerInterface | None = None
 
@@ -56,7 +58,7 @@ class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
                     chatBandInstrumentSoundsRepository = self.__chatBandInstrumentSoundsRepository,
                     soundPlayerSettingsRepository = self.__soundPlayerSettingsRepository,
                     timber = self.__timber,
-                    timeZoneRepository = self.__timeZoneRepository
+                    timeZoneRepository = self.__timeZoneRepository,
                 )
 
             case SoundPlayerType.STUB:
@@ -66,7 +68,7 @@ class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
                 return VlcSoundPlayerManager(
                     chatBandInstrumentSoundsRepository = self.__chatBandInstrumentSoundsRepository,
                     soundPlayerSettingsRepository = self.__soundPlayerSettingsRepository,
-                    timber = self.__timber
+                    timber = self.__timber,
                 )
 
             case _:

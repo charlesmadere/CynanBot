@@ -1,4 +1,5 @@
 from enum import Enum, auto
+from typing import Final
 
 import vlc
 
@@ -40,12 +41,15 @@ class VlcMediaPlayer:
                 case 7: return VlcMediaPlayer.PlaybackState.ERROR
                 case _: raise ValueError(f'Encountered unexpected vlc.State value: \"{state}\"')
 
-    def __init__(self, timber: TimberInterface):
+    def __init__(
+        self,
+        timber: TimberInterface,
+    ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__mediaPlayer: vlc.MediaPlayer = vlc.MediaPlayer()
+        self.__timber: Final[TimberInterface] = timber
+        self.__mediaPlayer: Final[vlc.MediaPlayer] = vlc.MediaPlayer()
 
     @property
     def isPlaying(self) -> bool:

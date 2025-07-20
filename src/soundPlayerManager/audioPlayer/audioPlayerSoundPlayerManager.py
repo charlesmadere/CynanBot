@@ -29,7 +29,7 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        playbackLoopSleepTimeSeconds: float = 0.25
+        playbackLoopSleepTimeSeconds: float = 0.25,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')

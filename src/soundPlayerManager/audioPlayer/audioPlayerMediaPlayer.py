@@ -22,7 +22,7 @@ class AudioPlayerMediaPlayer:
         eventLoop: AbstractEventLoop,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        playbackLoopSleepTimeSeconds: float = 0.125
+        playbackLoopSleepTimeSeconds: float = 0.125,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')

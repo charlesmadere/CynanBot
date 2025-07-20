@@ -9,6 +9,10 @@ class TestSoundAlertJsonMapper:
 
     jsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper()
 
+    def test_parseSoundAlert_withAirStrikeString(self):
+        result = self.jsonMapper.parseSoundAlert('air_strike')
+        assert result is SoundAlert.AIR_STRIKE
+
     def test_parseSoundAlert_withBeanString(self):
         result = self.jsonMapper.parseSoundAlert('bean')
         assert result is SoundAlert.BEAN
@@ -24,6 +28,10 @@ class TestSoundAlertJsonMapper:
     def test_parseSoundAlert_withEmptyString(self):
         result = self.jsonMapper.parseSoundAlert('')
         assert result is None
+
+    def test_parseSoundAlert_withFollow(self):
+        result = self.jsonMapper.parseSoundAlert('follow')
+        assert result is SoundAlert.FOLLOW
 
     def test_parseSoundAlert_withGrenade_1String(self):
         result = self.jsonMapper.parseSoundAlert('grenade_1')
@@ -143,28 +151,40 @@ class TestSoundAlertJsonMapper:
 
     def test_parseSoundAlert_withTntString(self):
         result = self.jsonMapper.parseSoundAlert('tnt')
-        assert result is SoundAlert.TNT
+        assert result is SoundAlert.AIR_STRIKE
 
     def test_parseSoundAlert_withWhitespaceString(self):
         result = self.jsonMapper.parseSoundAlert(' ')
         assert result is None
 
+    def test_requireSoundAlert_withAirStrike(self):
+        result = self.jsonMapper.requireSoundAlert('air_strike')
+        assert result is SoundAlert.AIR_STRIKE
+
     def test_requireSoundAlert_withCheer(self):
         result = self.jsonMapper.requireSoundAlert('cheer')
         assert result is SoundAlert.CHEER
 
+    def test_requireSoundAlert_withClick(self):
+        result = self.jsonMapper.requireSoundAlert('click_navigation')
+        assert result is SoundAlert.CLICK_NAVIGATION
+
     def test_requireSoundAlert_withEmptyString(self):
         result: SoundAlert | None = None
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             result = self.jsonMapper.requireSoundAlert('')
 
         assert result is None
 
+    def test_requireSoundAlert_withFollow(self):
+        result = self.jsonMapper.requireSoundAlert('follow')
+        assert result is SoundAlert.FOLLOW
+
     def test_requireSoundAlert_withNone(self):
         result: SoundAlert | None = None
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             result = self.jsonMapper.requireSoundAlert(None)
 
         assert result is None
@@ -190,6 +210,10 @@ class TestSoundAlertJsonMapper:
         assert isinstance(self.jsonMapper, SoundAlertJsonMapper)
         assert isinstance(self.jsonMapper, SoundAlertJsonMapperInterface)
 
+    def test_serializeSoundAlert_withAirStrike(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.AIR_STRIKE)
+        assert result == 'air_strike'
+
     def test_serializeSoundAlert_withAllSoundAlertValues(self):
         strings: set[str] = set()
 
@@ -213,6 +237,10 @@ class TestSoundAlertJsonMapper:
     def test_serializeSoundAlert_withClickNavigation(self):
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.CLICK_NAVIGATION)
         assert result == 'click_navigation'
+
+    def test_serializeSoundAlert_withFollow(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.FOLLOW)
+        assert result == 'follow'
 
     def test_serializeSoundAlert_withGrenade_1(self):
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.GRENADE_1)
@@ -325,7 +353,3 @@ class TestSoundAlertJsonMapper:
     def test_serializeSoundAlert_withSubscribe(self):
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.SUBSCRIBE)
         assert result == 'subscribe'
-
-    def test_serializeSoundAlert_withTnt(self):
-        result = self.jsonMapper.serializeSoundAlert(SoundAlert.TNT)
-        assert result == 'tnt'

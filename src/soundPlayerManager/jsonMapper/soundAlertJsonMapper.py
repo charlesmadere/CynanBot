@@ -17,9 +17,11 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
         jsonString = jsonString.lower()
 
         match jsonString:
+            case 'air_strike': return SoundAlert.AIR_STRIKE
             case 'bean': return SoundAlert.BEAN
             case 'cheer': return SoundAlert.CHEER
             case 'click_navigation': return SoundAlert.CLICK_NAVIGATION
+            case 'follow': return SoundAlert.FOLLOW
             case 'grenade_1': return SoundAlert.GRENADE_1
             case 'grenade_2': return SoundAlert.GRENADE_2
             case 'grenade_3': return SoundAlert.GRENADE_3
@@ -48,7 +50,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case 'random_from_directory': return SoundAlert.RANDOM_FROM_DIRECTORY
             case 'splat': return SoundAlert.SPLAT
             case 'subscribe': return SoundAlert.SUBSCRIBE
-            case 'tnt': return SoundAlert.TNT
+            case 'tnt': return SoundAlert.AIR_STRIKE
             case _: return None
 
     def requireSoundAlert(
@@ -70,9 +72,11 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             raise TypeError(f'soundAlert argument is malformed: \"{soundAlert}\"')
 
         match soundAlert:
+            case SoundAlert.AIR_STRIKE: return 'air_strike'
             case SoundAlert.BEAN: return 'bean'
             case SoundAlert.CHEER: return 'cheer'
             case SoundAlert.CLICK_NAVIGATION: return 'click_navigation'
+            case SoundAlert.FOLLOW: return 'follow'
             case SoundAlert.GRENADE_1: return 'grenade_1'
             case SoundAlert.GRENADE_2: return 'grenade_2'
             case SoundAlert.GRENADE_3: return 'grenade_3'
@@ -101,5 +105,4 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case SoundAlert.RANDOM_FROM_DIRECTORY: return 'random_from_directory'
             case SoundAlert.SPLAT: return 'splat'
             case SoundAlert.SUBSCRIBE: return 'subscribe'
-            case SoundAlert.TNT: return 'tnt'
             case _: raise ValueError(f'Unknown SoundAlert value: \"{soundAlert}\"')

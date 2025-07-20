@@ -8,7 +8,7 @@ class AudioPlayerPlaybackTask:
     def __init__(
         self,
         volume: int,
-        filePath: str
+        filePath: str,
     ):
         if not utils.isValidInt(volume):
             raise TypeError(f'volume argument is malformed: \"{volume}\"')
@@ -41,7 +41,7 @@ class AudioPlayerPlaybackTask:
         return {
             'filePath': self.__filePath,
             'isCanceled': self.__isCanceled,
-            'volume': self.__volume
+            'volume': self.__volume,
         }
 
     @property
