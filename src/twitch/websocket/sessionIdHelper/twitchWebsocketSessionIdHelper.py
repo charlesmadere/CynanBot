@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing import Final
 
 from .twitchWebsocketSessionIdHelperInterface import TwitchWebsocketSessionIdHelperInterface
 from ..twitchWebsocketUser import TwitchWebsocketUser
@@ -10,17 +11,17 @@ class TwitchWebsocketSessionIdHelper(TwitchWebsocketSessionIdHelperInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        defaultTwitchWebsocketSessionId: str = ''
+        defaultTwitchWebsocketSessionId: str = '',
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(defaultTwitchWebsocketSessionId, str):
             raise TypeError(f'defaultTwitchWebsocketSessionId argument is malformed: \"{defaultTwitchWebsocketSessionId}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__defaultTwitchWebsocketSessionId: str = defaultTwitchWebsocketSessionId
+        self.__timber: Final[TimberInterface] = timber
+        self.__defaultTwitchWebsocketSessionId: Final[str] = defaultTwitchWebsocketSessionId
 
-        self.__twitchSessionIds: dict[TwitchWebsocketUser, str] = defaultdict(lambda: defaultTwitchWebsocketSessionId)
+        self.__twitchSessionIds: Final[dict[TwitchWebsocketUser, str]] = defaultdict(lambda: defaultTwitchWebsocketSessionId)
 
     def __getitem__(self, key: TwitchWebsocketUser) -> str:
         if not isinstance(key, TwitchWebsocketUser):

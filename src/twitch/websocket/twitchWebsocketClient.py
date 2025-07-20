@@ -171,7 +171,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__dataBundleQueue: Final[SimpleQueue[TwitchWebsocketDataBundle]] = SimpleQueue()
         self.__dataBundleListener: TwitchWebsocketDataBundleListener | None = None
 
-    async def __createEventSubSubscription(
+    async def __createEventSubSubscriptions(
         self,
         subscriptionTypes: frozenset[TwitchWebsocketSubscriptionType],
         user: TwitchWebsocketUser,
@@ -290,7 +290,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
         self.__timber.log('TwitchWebsocketClient', f'It looks like we failed to create a chat message EventSub subscription, so let\'s fallback to creating a cheer EventSub subscription instead ({user=}) ({successfulSubscriptionTypes=})')
 
-        await self.__createEventSubSubscription(
+        await self.__createEventSubSubscriptions(
             subscriptionTypes = frozenset({ TwitchWebsocketSubscriptionType.CHANNEL_CHEER }),
             user = user,
         )
@@ -458,7 +458,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                             case TwitchWebsocketConnectionAction.CREATE_EVENT_SUB_SUBSCRIPTION:
                                 self.__timber.log('TwitchWebsocketClient', f'Twitch websocket connection is asking for EventSub subscription(s) to be created ({user=}) ({twitchWebsocketEndpoint=}) ({connectionAction=})')
 
-                                await self.__createEventSubSubscription(
+                                await self.__createEventSubSubscriptions(
                                     subscriptionTypes = self.__subscriptionTypes,
                                     user = user,
                                 )
