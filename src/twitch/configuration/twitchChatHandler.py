@@ -59,7 +59,16 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __logCheer(self, chatData: AbsTwitchChatHandler.ChatData):
-        pass
+        if chatData.cheer is None or chatData.cheer.bits < 1:
+            return
+
+        self.__chatLogger.logCheer(
+            bits = chatData.cheer.bits,
+            twitchChannel = chatData.user.handle,
+            twitchChannelId = chatData.twitchChannelId,
+            userId = chatData.chatterUserId,
+            userName = chatData.chatterUserName,
+        )
 
     async def onNewChat(self, chatData: AbsTwitchChatHandler.ChatData):
         if not isinstance(chatData, AbsTwitchChatHandler.ChatData):
