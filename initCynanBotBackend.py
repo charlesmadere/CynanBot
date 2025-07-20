@@ -1048,7 +1048,8 @@ twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface = 
         eventLoop = eventLoop,
         fileName = '../config/twitchWebsocketSettingsRepository.json'
     ),
-    twitchWebsocketJsonMapper = twitchWebsocketJsonMapper
+    twitchJsonMapper = twitchJsonMapper,
+    twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
 )
 
 twitchWebsocketClient: TwitchWebsocketClientInterface | None = None
@@ -2084,11 +2085,12 @@ twitchChatHandler: AbsTwitchChatHandler = TwitchChatHandler(
 )
 
 twitchCheerHandler: AbsTwitchCheerHandler = TwitchCheerHandler(
+    chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
-    triviaGameMachine = triviaGameMachine
+    triviaGameMachine = triviaGameMachine,
 )
 
 twitchFollowHandler: AbsTwitchFollowHandler = TwitchFollowHandler(

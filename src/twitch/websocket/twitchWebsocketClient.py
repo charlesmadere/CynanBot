@@ -64,22 +64,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         queueTimeoutSeconds: float = 3,
         websocketCreationDelayTimeSeconds: float = 0.5,
         websocketRetrySleepTimeSeconds: float = 3,
-        subscriptionTypes: frozenset[TwitchWebsocketSubscriptionType] = frozenset({
-            TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE,
-            TwitchWebsocketSubscriptionType.CHANNEL_CHEER,
-            TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,
-            TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN,
-            TwitchWebsocketSubscriptionType.CHANNEL_POLL_END,
-            TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS,
-            TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN,
-            TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END,
-            TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS,
-            TwitchWebsocketSubscriptionType.FOLLOW,
-            TwitchWebsocketSubscriptionType.RAID,
-            TwitchWebsocketSubscriptionType.SUBSCRIBE,
-            TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT,
-            TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE,
-        }),
         twitchWebsocketInstabilityThreshold: int = 3,
         twitchWebsocketMessageIdCacheSize: int = 1024,
         maxMessageAge: timedelta = timedelta(minutes = 1, seconds = 30),
@@ -130,8 +114,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'websocketRetrySleepTimeSeconds argument is malformed: \"{websocketRetrySleepTimeSeconds}\"')
         elif websocketRetrySleepTimeSeconds < 1 or websocketRetrySleepTimeSeconds > 8:
             raise ValueError(f'websocketRetrySleepTimeSeconds argument is out of bounds: {websocketRetrySleepTimeSeconds}')
-        elif not isinstance(subscriptionTypes, frozenset):
-            raise TypeError(f'subscriptionTypes argument is malformed: \"{subscriptionTypes}\"')
         elif not utils.isValidInt(twitchWebsocketInstabilityThreshold):
             raise TypeError(f'twitchWebsocketInstabilityThreshold argument is malformed: \"{twitchWebsocketInstabilityThreshold}\"')
         elif twitchWebsocketInstabilityThreshold < 1 or twitchWebsocketInstabilityThreshold > 8:
@@ -162,7 +144,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__queueTimeoutSeconds: Final[float] = queueTimeoutSeconds
         self.__websocketCreationDelayTimeSeconds: Final[float] = websocketCreationDelayTimeSeconds
         self.__websocketRetrySleepTimeSeconds: Final[float] = websocketRetrySleepTimeSeconds
-        self.__subscriptionTypes: Final[frozenset[TwitchWebsocketSubscriptionType]] = subscriptionTypes
         self.__twitchWebsocketInstabilityThreshold: Final[int] = twitchWebsocketInstabilityThreshold
         self.__maxMessageAge: Final[timedelta] = maxMessageAge
 
@@ -251,12 +232,13 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         requestedSubscriptionTypes: frozenset[TwitchWebsocketSubscriptionType],
         user: TwitchWebsocketUser,
     ):
-        # This method is rather long-winded but what it does is pretty important. We'd prefer
-        # using the Twitch CHANNEL_CHAT_MESSAGE EventSub subscription if possible, however,
-        # that subscription requires a few more permissions than CHANNEL_CHEER. So what this
-        # method intends to do is that it will check the list of the successfully created
-        # EventSub subscriptions, and if CHANNEL_CHAT_MESSAGE was requested, but failed, and
-        # CHANNEL_CHEER was NOT requested, then we will create a CHANNEL_CHEER subscription.
+        # This method is rather long-winded but what it does is pretty important. We'd
+        # prefer using the Twitch CHANNEL_CHAT_MESSAGE EventSub subscription if possible,
+        # however, that subscription requires a few more permissions than CHANNEL_CHEER.
+        # So what this method intends to do is it will check the list of the successfully
+        # created EventSub subscriptions, and if CHANNEL_CHAT_MESSAGE was requested, but
+        # failed, and CHANNEL_CHEER was NOT requested, then we will create a CHANNEL_CHEER
+        # subscription.
 
         if not await self.__twitchWebsocketSettingsRepository.isChatEventToCheerEventSubscriptionFallbackEnabled():
             return
@@ -459,7 +441,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                                 self.__timber.log('TwitchWebsocketClient', f'Twitch websocket connection is asking for EventSub subscription(s) to be created ({user=}) ({twitchWebsocketEndpoint=}) ({connectionAction=})')
 
                                 await self.__createEventSubSubscriptions(
-                                    subscriptionTypes = self.__subscriptionTypes,
+                                    subscriptionTypes = await self.__twitchWebsocketSettingsRepository.getSubscriptionTypes(),
                                     user = user,
                                 )
 

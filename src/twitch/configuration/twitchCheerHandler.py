@@ -4,6 +4,7 @@ from typing import Final
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchCheerHandler import AbsTwitchCheerHandler
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ...chatLogger.chatLoggerInterface import ChatLoggerInterface
 from ...cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundAlert import SoundAlert
@@ -23,12 +24,15 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
 
     def __init__(
         self,
+        chatLogger: ChatLoggerInterface,
         cheerActionHelper: CheerActionHelperInterface | None,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
-        triviaGameMachine: TriviaGameMachineInterface | None
+        triviaGameMachine: TriviaGameMachineInterface | None,
     ):
+        if not isinstance(chatLogger, ChatLoggerInterface):
+            raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
         if cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
             raise TypeError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
@@ -40,6 +44,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
 
+        self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
         self.__cheerActionHelper: Final[CheerActionHelperInterface | None] = cheerActionHelper
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
@@ -48,18 +53,30 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
+    async def __logCheer(self, cheerData: AbsTwitchCheerHandler.CheerData):
+        self.__chatLogger.logCheer(
+            bits = cheerData.bits,
+            twitchChannel = cheerData.user.handle,
+            twitchChannelId = cheerData.twitchChannelId,
+            userId = cheerData.cheerUserId,
+            userName = cheerData.cheerUserName,
+        )
+
     async def onNewCheer(self, cheerData: AbsTwitchCheerHandler.CheerData):
         if not isinstance(cheerData, AbsTwitchCheerHandler.CheerData):
             raise TypeError(f'cheerData argument is malformed: \"{cheerData}\"')
 
+        if cheerData.user.isChatLoggingEnabled:
+            await self.__logCheer(cheerData)
+
         if cheerData.user.areCheerActionsEnabled and await self.__processCheerAction(cheerData):
             return
 
-        if cheerData.user.isTtsEnabled:
-            await self.__processTtsEvent(cheerData)
-
         if cheerData.user.isSuperTriviaGameEnabled:
             await self.__processSuperTriviaEvent(cheerData)
+
+        if cheerData.user.isTtsEnabled:
+            await self.__processTtsEvent(cheerData)
 
     async def onNewCheerDataBundle(
         self,
@@ -86,7 +103,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         cheerUserLogin = event.userLogin
         cheerUserName = event.userName
 
-        if not utils.isValidInt(bits) or not utils.isValidStr(chatMessage) or not utils.isValidStr(cheerUserId) or not utils.isValidStr(cheerUserLogin) or not utils.isValidStr(cheerUserName):
+        if not utils.isValidInt(bits) or bits < 1 or not utils.isValidStr(chatMessage) or not utils.isValidStr(cheerUserId) or not utils.isValidStr(cheerUserLogin) or not utils.isValidStr(cheerUserName):
             self.__timber.log('TwitchCheerHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({bits=}) ({chatMessage=}) ({cheerUserId=}) ({cheerUserLogin=}) ({cheerUserName=})')
             return
 
@@ -125,11 +142,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             )
 
     async def __processSuperTriviaEvent(self, cheerData: AbsTwitchCheerHandler.CheerData):
-        if not isinstance(cheerData, AbsTwitchCheerHandler.CheerData):
-            raise TypeError(f'cheerData argument is malformed: \"{cheerData}\"')
-
         user = cheerData.user
-        bits = cheerData.bits
 
         if not user.isSuperTriviaGameEnabled:
             return
@@ -139,10 +152,10 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         superTriviaCheerTriggerAmount = user.superTriviaCheerTriggerAmount
         superTriviaCheerTriggerMaximum = user.superTriviaCheerTriggerMaximum
 
-        if superTriviaCheerTriggerAmount is None or superTriviaCheerTriggerAmount < 1 or bits < superTriviaCheerTriggerAmount:
+        if superTriviaCheerTriggerAmount is None or superTriviaCheerTriggerAmount < 1 or cheerData.bits < superTriviaCheerTriggerAmount:
             return
 
-        numberOfGames = int(math.floor(float(bits) / float(superTriviaCheerTriggerAmount)))
+        numberOfGames = int(math.floor(float(cheerData.bits) / float(superTriviaCheerTriggerAmount)))
 
         if numberOfGames < 1:
             return
@@ -159,11 +172,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             self.__triviaGameMachine.submitAction(action)
 
     async def __processTtsEvent(self, cheerData: AbsTwitchCheerHandler.CheerData):
-        if not isinstance(cheerData, AbsTwitchCheerHandler.CheerData):
-            raise TypeError(f'cheerData argument is malformed: \"{cheerData}\"')
-
         user = cheerData.user
-        bits = cheerData.bits
 
         if not user.isTtsEnabled:
             return
@@ -175,7 +184,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             return
 
         for ttsBoosterPack in ttsBoosterPacks:
-            if bits >= ttsBoosterPack.cheerAmount:
+            if cheerData.bits >= ttsBoosterPack.cheerAmount:
                 provider = ttsBoosterPack.ttsProvider
                 break
 
@@ -193,7 +202,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                 userId = cheerData.cheerUserId,
                 userName = cheerData.cheerUserLogin,
                 donation = TtsCheerDonation(
-                    bits = bits,
+                    bits = cheerData.bits,
                 ),
                 provider = provider,
                 providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,

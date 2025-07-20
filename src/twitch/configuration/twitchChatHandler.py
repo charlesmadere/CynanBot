@@ -58,54 +58,24 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
+    async def __logCheer(self, chatData: AbsTwitchChatHandler.ChatData):
+        pass
+
     async def onNewChat(self, chatData: AbsTwitchChatHandler.ChatData):
         if not isinstance(chatData, AbsTwitchChatHandler.ChatData):
             raise TypeError(f'chatData argument is malformed: \"{chatData}\"')
 
-        # TODO transition to this when we're no longer listening for cheers elsewhere
+        if chatData.user.isChatLoggingEnabled:
+            await self.__logCheer(chatData)
 
-        # if bits is None or bits < 1:
-        #     return
+        if chatData.user.areCheerActionsEnabled and await self.__processCheerAction(chatData):
+            return
 
-        # if user.isChatLoggingEnabled:
-        #     self.__chatLogger.logCheer(
-        #         bits = bits,
-        #         twitchChannel = user.handle,
-        #         twitchChannelId = twitchChannelId,
-        #         userId = chatterUserId,
-        #         userName = chatterUserLogin,
-        #     )
+        if chatData.user.isSuperTriviaGameEnabled:
+            await self.__processSuperTriviaEvent(chatData)
 
-        # if user.areCheerActionsEnabled:
-        #     if await self.__processCheerAction(
-        #         bits = bits,
-        #         chatterUserId = chatterUserId,
-        #         chatterUserLogin = chatterUserLogin,
-        #         twitchChannelId = twitchChannelId,
-        #         twitchChatMessageId = twitchChatMessageId,
-        #         chatMessage = chatMessage,
-        #         user = user,
-        #     ):
-        #         return
-
-        # if user.isTtsEnabled:
-        #     await self.__processTtsEvent(
-        #         bits = bits,
-        #         chatMessage = chatMessage,
-        #         chatterUserId = chatterUserId,
-        #         chatterUserLogin = chatterUserLogin,
-        #         twitchChannelId = twitchChannelId,
-        #         user = user,
-        #     )
-
-        # if user.isSuperTriviaGameEnabled:
-        #     await self.__processSuperTriviaEvent(
-        #         bits = bits,
-        #         twitchChannelId = twitchChannelId,
-        #         user = user,
-        #     )
-
-        pass
+        if chatData.user.isTtsEnabled:
+            await self.__processTtsEvent(chatData)
 
     async def onNewChatDataBundle(
         self,
@@ -183,7 +153,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             return
 
         cheer = chatData.cheer
-        if cheer is None or cheer.bits <= 0:
+        if cheer is None or cheer.bits < 1:
             return
 
         superTriviaCheerTriggerAmount = user.superTriviaCheerTriggerAmount
@@ -215,7 +185,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             return
 
         cheer = chatData.cheer
-        if cheer is None or cheer.bits <= 0:
+        if cheer is None or cheer.bits < 1:
             return
 
         provider: TtsProvider | None = None
