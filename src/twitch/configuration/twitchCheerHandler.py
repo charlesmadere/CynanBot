@@ -123,10 +123,9 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         )
 
     async def __processCheerAction(self, cheerData: AbsTwitchCheerHandler.CheerData) -> bool:
-        if not isinstance(cheerData, AbsTwitchCheerHandler.CheerData):
-            raise TypeError(f'cheerData argument is malformed: \"{cheerData}\"')
+        user = cheerData.user
 
-        if not cheerData.user.areCheerActionsEnabled:
+        if not user.areCheerActionsEnabled:
             return False
         elif self.__cheerActionHelper is None:
             return False
@@ -138,7 +137,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                 cheerUserName = cheerData.cheerUserLogin,
                 message = cheerData.chatMessage,
                 twitchChatMessageId = cheerData.twitchChatMessageId,
-                user = cheerData.user,
+                user = user,
             )
 
     async def __processSuperTriviaEvent(self, cheerData: AbsTwitchCheerHandler.CheerData):

@@ -130,17 +130,17 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             chatData = chatData,
         )
 
-    async def __processCheerAction(self, chatData: AbsTwitchChatHandler.ChatData):
+    async def __processCheerAction(self, chatData: AbsTwitchChatHandler.ChatData) -> bool:
         user = chatData.user
 
         if not user.areCheerActionsEnabled:
-            return
+            return False
         elif self.__cheerActionHelper is None:
-            return
+            return False
 
         cheer = chatData.cheer
-        if cheer is None or cheer.bits <= 0:
-            return
+        if cheer is None or cheer.bits < 1:
+            return False
 
         return await self.__cheerActionHelper.handleCheerAction(
             bits = cheer.bits,

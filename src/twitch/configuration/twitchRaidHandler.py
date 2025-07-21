@@ -99,7 +99,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         fromUserLogin = event.fromBroadcasterUserLogin
         fromUserName = event.fromBroadcasterUserName
 
-        if not utils.isValidInt(viewers) or not utils.isValidStr(fromUserId) or not utils.isValidStr(fromUserLogin) or not utils.isValidStr(fromUserName):
+        if not utils.isValidInt(viewers) or viewers < 1 or not utils.isValidStr(fromUserId) or not utils.isValidStr(fromUserLogin) or not utils.isValidStr(fromUserName):
             self.__timber.log('TwitchRaidHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({viewers=}) ({fromUserId=}) ({fromUserLogin=}) ({fromUserName=})')
             return
 
