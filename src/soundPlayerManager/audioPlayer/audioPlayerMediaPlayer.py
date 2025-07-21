@@ -114,7 +114,7 @@ class AudioPlayerMediaPlayer:
         except Exception as e:
             self.__playbackTask = None
             self.__isPlayingOrLoading = False
-            self.__timber.log('AudioPlayerMediaPlayer', f'Attemped to play, but encountered exception when trying to determine duration seconds ({task=}) ({audioPlayer=}) ({durationSeconds=}): {e}', e, traceback.format_exc())
+            self.__timber.log('AudioPlayerMediaPlayer', f'Attempted to play, but encountered exception when trying to determine duration seconds ({task=}) ({audioPlayer=}) ({durationSeconds=}): {e}', e, traceback.format_exc())
             return
 
         if not utils.isValidNum(durationSeconds) or durationSeconds < 0 or durationSeconds > utils.getIntMaxSafeSize():
