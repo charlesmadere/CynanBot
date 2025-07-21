@@ -86,6 +86,19 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
         else:
             return None
 
+    async def findSoundFiles(
+        self,
+        voice: HalfLifeVoice | None,
+        message: str | None,
+    ) -> FrozenList[HalfLifeTtsServiceInterface.SoundFile] | None:
+        if voice is not None and not isinstance(voice, HalfLifeVoice):
+            raise TypeError(f'voice argument is malformed: \"{voice}\"')
+        elif message is not None and not isinstance(message, str):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+
+        # TODO
+        return None
+
     async def getWavs(
         self,
         voice: HalfLifeVoice,
