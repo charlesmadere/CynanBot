@@ -110,7 +110,7 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
                 text = word,
             )
 
-            if path is not None:
+            if utils.isValidStr(path):
                 paths.append(path)
 
         frozenPaths: FrozenList[str] = FrozenList(paths)
