@@ -71,7 +71,7 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
                     text = text,
                 )
 
-                if path is not None:
+                if utils.isValidStr(path):
                     break
         else:
             path = await self.__determinePath(

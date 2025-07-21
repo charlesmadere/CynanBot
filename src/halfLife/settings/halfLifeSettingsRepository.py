@@ -13,7 +13,7 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
         self,
         halfLifeJsonParser: HalfLifeVoiceParserInterface,
         settingsJsonReader: JsonReaderInterface,
-        defaultVoice: HalfLifeVoice = HalfLifeVoice.INTERCOM
+        defaultVoice: HalfLifeVoice = HalfLifeVoice.ALL,
     ):
         if not isinstance(halfLifeJsonParser, HalfLifeVoiceParserInterface):
             raise TypeError(f'halfLifeJsonParser argument is malformed: \"{halfLifeJsonParser}\"')
