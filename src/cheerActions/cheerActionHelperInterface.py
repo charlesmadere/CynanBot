@@ -9,11 +9,11 @@ class CheerActionHelperInterface(ABC):
     async def handleCheerAction(
         self,
         bits: int,
-        broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
         message: str,
+        twitchChannelId: str,
         twitchChatMessageId: str | None,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         pass

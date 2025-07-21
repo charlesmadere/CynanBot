@@ -39,14 +39,14 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         self,
         actions: frozendict[int, AbsCheerAction],
         bits: int,
-        broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
         message: str,
         moderatorTwitchAccessToken: str,
         moderatorUserId: str,
+        twitchChannelId: str,
         userTwitchAccessToken: str,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         if not isinstance(actions, frozendict):
             raise TypeError(f'actions argument is malformed: \"{actions}\"')
@@ -54,8 +54,6 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not utils.isValidStr(broadcasterUserId):
-            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(cheerUserId):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
@@ -66,6 +64,8 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
             raise TypeError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
         elif not utils.isValidStr(moderatorUserId):
             raise TypeError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userTwitchAccessToken):
             raise TypeError(f'userTwitchAccessToken argument is malformed: \"{userTwitchAccessToken}\"')
         elif not isinstance(user, UserInterface):
@@ -83,7 +83,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
             action = action,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
-            twitchChannelId = broadcasterUserId,
+            twitchChannelId = twitchChannelId,
             user = user
         )
 

@@ -1,5 +1,6 @@
 from typing import Final
 
+from .adge.adgeCheerActionHelperInterface import AdgeCheerActionHelperInterface
 from .airStrike.airStrikeCheerActionHelperInterface import AirStrikeCheerActionHelperInterface
 from .beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from .cheerActionHelperInterface import CheerActionHelperInterface
@@ -19,6 +20,7 @@ class CheerActionHelper(CheerActionHelperInterface):
 
     def __init__(
         self,
+        adgeCheerActionHelper: AdgeCheerActionHelperInterface | None,
         airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface | None,
         beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None,
         cheerActionsRepository: CheerActionsRepositoryInterface,
@@ -28,9 +30,11 @@ class CheerActionHelper(CheerActionHelperInterface):
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        voicemailCheerActionHelper: VoicemailCheerActionHelperInterface | None
+        voicemailCheerActionHelper: VoicemailCheerActionHelperInterface | None,
     ):
-        if airStrikeCheerActionHelper is not None and not isinstance(airStrikeCheerActionHelper, AirStrikeCheerActionHelperInterface):
+        if adgeCheerActionHelper is not None and not isinstance(adgeCheerActionHelper, AdgeCheerActionHelperInterface):
+            raise TypeError(f'adgeCheerActionHelper argument is malformed: \"{adgeCheerActionHelper}\"')
+        elif airStrikeCheerActionHelper is not None and not isinstance(airStrikeCheerActionHelper, AirStrikeCheerActionHelperInterface):
             raise TypeError(f'airStrikeCheerActionHelper argument is malformed: \"{airStrikeCheerActionHelper}\"')
         elif beanChanceCheerActionHelper is not None and not isinstance(beanChanceCheerActionHelper, BeanChanceCheerActionHelperInterface):
             raise TypeError(f'beanChanceCheerActionHelper argument is malformed: \"{beanChanceCheerActionHelper}\"')
@@ -51,6 +55,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         elif voicemailCheerActionHelper is not None and not isinstance(voicemailCheerActionHelper, VoicemailCheerActionHelperInterface):
             raise TypeError(f'voicemailCheerActionHelper argument is malformed: \"{voicemailCheerActionHelper}\"')
 
+        self.__adgeCheerActionHelper: Final[AdgeCheerActionHelperInterface | None] = adgeCheerActionHelper
         self.__airStrikeCheerActionHelper: Final[AirStrikeCheerActionHelperInterface | None] = airStrikeCheerActionHelper
         self.__beanChanceCheerActionHelper: Final[BeanChanceCheerActionHelperInterface | None] = beanChanceCheerActionHelper
         self.__cheerActionsRepository: Final[CheerActionsRepositoryInterface] = cheerActionsRepository
@@ -65,25 +70,25 @@ class CheerActionHelper(CheerActionHelperInterface):
     async def handleCheerAction(
         self,
         bits: int,
-        broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
         message: str,
+        twitchChannelId: str,
         twitchChatMessageId: str | None,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         if not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not utils.isValidStr(broadcasterUserId):
-            raise TypeError(f'userId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(cheerUserId):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
             raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
         elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif twitchChatMessageId is not None and not isinstance(twitchChatMessageId, str):
             raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
         elif not isinstance(user, UserInterface):
@@ -97,7 +102,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         )
 
         userTwitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
-            twitchChannelId = broadcasterUserId
+            twitchChannelId = twitchChannelId
         )
 
         moderatorUserId = await self.__userIdsRepository.requireUserId(
@@ -106,96 +111,111 @@ class CheerActionHelper(CheerActionHelperInterface):
         )
 
         actions = await self.__cheerActionsRepository.getActions(
-            twitchChannelId = broadcasterUserId
+            twitchChannelId = twitchChannelId
         )
 
         if actions is None or len(actions) == 0:
             return False
 
-        elif self.__airStrikeCheerActionHelper is not None and await self.__airStrikeCheerActionHelper.handleAirStrikeCheerAction(
+        elif self.__adgeCheerActionHelper is not None and await self.__adgeCheerActionHelper.handleAdgeCheerAction(
             actions = actions,
             bits = bits,
-            broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
             message = message,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
+            twitchChannelId = twitchChannelId,
             twitchChatMessageId = twitchChatMessageId,
             userTwitchAccessToken = userTwitchAccessToken,
-            user = user
+            user = user,
+        ):
+            return True
+
+        elif self.__airStrikeCheerActionHelper is not None and await self.__airStrikeCheerActionHelper.handleAirStrikeCheerAction(
+            actions = actions,
+            bits = bits,
+            cheerUserId = cheerUserId,
+            cheerUserName = cheerUserName,
+            message = message,
+            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
+            moderatorUserId = moderatorUserId,
+            twitchChannelId = twitchChannelId,
+            twitchChatMessageId = twitchChatMessageId,
+            userTwitchAccessToken = userTwitchAccessToken,
+            user = user,
         ):
             return True
 
         elif self.__beanChanceCheerActionHelper is not None and await self.__beanChanceCheerActionHelper.handleBeanChanceCheerAction(
             actions = actions,
             bits = bits,
-            broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
             message = message,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
+            twitchChannelId = twitchChannelId,
             twitchChatMessageId = twitchChatMessageId,
             userTwitchAccessToken = userTwitchAccessToken,
-            user = user
+            user = user,
         ):
             return True
 
         elif self.__crowdControlCheerActionHelper is not None and await self.__crowdControlCheerActionHelper.handleCrowdControlCheerAction(
             actions = actions,
             bits = bits,
-            broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
             message = message,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
+            twitchChannelId = twitchChannelId,
             twitchChatMessageId = twitchChatMessageId,
             userTwitchAccessToken = userTwitchAccessToken,
-            user = user
+            user = user,
         ):
             return True
 
         elif self.__soundAlertCheerActionHelper is not None and await self.__soundAlertCheerActionHelper.handleSoundAlertCheerAction(
             actions = actions,
             bits = bits,
-            broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
             message = message,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
+            twitchChannelId = twitchChannelId,
             userTwitchAccessToken = userTwitchAccessToken,
-            user = user
+            user = user,
         ):
             return True
 
         elif self.__timeoutCheerActionHelper is not None and await self.__timeoutCheerActionHelper.handleTimeoutCheerAction(
             actions = actions,
             bits = bits,
-            broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
             message = message,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
+            twitchChannelId = twitchChannelId,
             twitchChatMessageId = twitchChatMessageId,
             userTwitchAccessToken = userTwitchAccessToken,
-            user = user
+            user = user,
         ):
             return True
 
         elif self.__voicemailCheerActionHelper is not None and await self.__voicemailCheerActionHelper.handleVoicemailCheerAction(
             actions = actions,
             bits = bits,
-            broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
             message = message,
+            twitchChannelId = twitchChannelId,
             twitchChatMessageId = twitchChatMessageId,
             userTwitchAccessToken = userTwitchAccessToken,
-            user = user
+            user = user,
         ):
             return True
 

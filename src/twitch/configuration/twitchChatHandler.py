@@ -144,10 +144,10 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
         return await self.__cheerActionHelper.handleCheerAction(
             bits = cheer.bits,
-            broadcasterUserId = chatData.twitchChannelId,
             cheerUserId = chatData.chatterUserId,
             cheerUserName = chatData.chatterUserLogin,
             message = chatData.message.text,
+            twitchChannelId = chatData.twitchChannelId,
             twitchChatMessageId = chatData.twitchChatMessageId,
             user = user,
         )

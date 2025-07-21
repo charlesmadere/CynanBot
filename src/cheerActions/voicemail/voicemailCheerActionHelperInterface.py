@@ -14,13 +14,13 @@ class VoicemailCheerActionHelperInterface(ABC):
         self,
         actions: frozendict[int, AbsCheerAction],
         bits: int,
-        broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
         message: str,
+        twitchChannelId: str,
         twitchChatMessageId: str | None,
         userTwitchAccessToken: str,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         pass
 

@@ -13,13 +13,13 @@ class SoundAlertCheerActionHelperInterface(ABC):
         self,
         actions: frozendict[int, AbsCheerAction],
         bits: int,
-        broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
         message: str,
         moderatorTwitchAccessToken: str,
         moderatorUserId: str,
+        twitchChannelId: str,
         userTwitchAccessToken: str,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         pass

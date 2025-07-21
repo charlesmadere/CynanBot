@@ -75,11 +75,11 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
     async def __determineRandomTimeoutTarget(
         self,
-        broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
+        twitchChannelId: str,
         timeoutAction: TimeoutCheerAction,
-        user: UserInterface
+        user: UserInterface,
     ) -> TimeoutTarget | None:
         additionalReverseProbability = await self.__timeoutActionSettingsRepository.getGrenadeAdditionalReverseProbability()
         randomReverseNumber = random.random()
@@ -95,11 +95,11 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             )
 
         activeChatters = await self.__activeChattersRepository.get(
-            twitchChannelId = broadcasterUserId
+            twitchChannelId = twitchChannelId
         )
 
         vulnerableChatters: dict[str, ActiveChatter] = dict(activeChatters)
-        vulnerableChatters.pop(broadcasterUserId, None)
+        vulnerableChatters.pop(twitchChannelId, None)
 
         allImmuneUserIds = await self.__timeoutImmuneUserIdsRepository.getAllUserIds()
 
@@ -114,7 +114,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         await self.__activeChattersRepository.remove(
             chatterUserId = randomChatter.chatterUserId,
-            twitchChannelId = broadcasterUserId
+            twitchChannelId = twitchChannelId
         )
 
         return TimeoutCheerActionHelper.TimeoutTarget(
@@ -126,13 +126,13 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
     async def __determineAnyTimeoutTarget(
         self,
-        broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
         message: str,
+        twitchChannelId: str,
         userTwitchAccessToken: str,
         timeoutAction: TimeoutCheerAction,
-        user: UserInterface
+        user: UserInterface,
     ) -> TimeoutTarget | None:
         specificUserTimeoutTarget = await self.__determineUserTimeoutTarget(
             cheerUserId = cheerUserId,
@@ -147,16 +147,16 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             return specificUserTimeoutTarget
 
         return await self.__determineRandomTimeoutTarget(
-            broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
+            twitchChannelId = twitchChannelId,
             timeoutAction = timeoutAction,
             user = user
         )
 
     async def __determineTimeoutTarget(
         self,
-        broadcasterUserId: str,
+        twitchChannelId: str,
         cheerUserId: str,
         cheerUserName: str,
         message: str,
@@ -167,10 +167,10 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         match timeoutAction.targetType:
             case TimeoutCheerActionTargetType.ANY:
                 return await self.__determineAnyTimeoutTarget(
-                    broadcasterUserId = broadcasterUserId,
                     cheerUserId = cheerUserId,
                     cheerUserName = cheerUserName,
                     message = message,
+                    twitchChannelId = twitchChannelId,
                     userTwitchAccessToken = userTwitchAccessToken,
                     timeoutAction = timeoutAction,
                     user = user
@@ -178,9 +178,9 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
             case TimeoutCheerActionTargetType.RANDOM_ONLY:
                 return await self.__determineRandomTimeoutTarget(
-                    broadcasterUserId = broadcasterUserId,
                     cheerUserId = cheerUserId,
                     cheerUserName = cheerUserName,
+                    twitchChannelId = twitchChannelId,
                     timeoutAction = timeoutAction,
                     user = user
                 )
@@ -232,15 +232,15 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         self,
         actions: frozendict[int, AbsCheerAction],
         bits: int,
-        broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
         message: str,
         moderatorTwitchAccessToken: str,
         moderatorUserId: str,
+        twitchChannelId: str,
         twitchChatMessageId: str | None,
         userTwitchAccessToken: str,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         if not isinstance(actions, frozendict):
             raise TypeError(f'actions argument is malformed: \"{actions}\"')
@@ -248,8 +248,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not utils.isValidStr(broadcasterUserId):
-            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(cheerUserId):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
@@ -260,6 +258,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
         elif not utils.isValidStr(moderatorUserId):
             raise TypeError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif twitchChatMessageId is not None and not isinstance(twitchChatMessageId, str):
             raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
         elif not utils.isValidStr(userTwitchAccessToken):
@@ -274,13 +274,13 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         elif not await self.__recentGrenadeAttacksHelper.canThrowGrenade(
             attackerUserId = cheerUserId,
             twitchChannel = user.handle,
-            twitchChannelId = broadcasterUserId
+            twitchChannelId = twitchChannelId
         ):
             self.__timber.log('TimeoutCheerActionHelper', f'No grenades available for this user ({cheerUserId=}) ({cheerUserName=}) ({user=}) ({action=})')
             return False
 
         timeoutTarget = await self.__determineTimeoutTarget(
-            broadcasterUserId = broadcasterUserId,
+            twitchChannelId= twitchChannelId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
             message = message,
@@ -296,7 +296,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             attackedUserId = timeoutTarget.userId,
             attackerUserId = cheerUserId,
             twitchChannel = user.handle,
-            twitchChannelId = broadcasterUserId
+            twitchChannelId = twitchChannelId
         )
 
         actionType: TimeoutActionType
@@ -325,7 +325,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             pointRedemptionRewardId = None,
             timeoutTargetUserId = timeoutTarget.userId,
             timeoutTargetUserName = timeoutTarget.userName,
-            twitchChannelId = broadcasterUserId,
+            twitchChannelId = twitchChannelId,
             twitchChatMessageId = twitchChatMessageId,
             userTwitchAccessToken = userTwitchAccessToken,
             actionType = actionType,

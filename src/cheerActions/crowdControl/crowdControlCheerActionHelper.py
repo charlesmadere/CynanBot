@@ -31,7 +31,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface,
         crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface,
         timber: TimberInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface
+        timeZoneRepository: TimeZoneRepositoryInterface,
     ):
         if not isinstance(crowdControlIdGenerator, CrowdControlIdGeneratorInterface):
             raise TypeError(f'crowdControlIdGenerator argument is malformed: \"{crowdControlIdGenerator}\"')
@@ -60,7 +60,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         chatterUserName: str,
         twitchChannel: str,
         twitchChannelId: str,
-        twitchChatMessageId: str | None
+        twitchChatMessageId: str | None,
     ) -> Collection[CrowdControlAction]:
         dateTime = datetime.now(self.__timeZoneRepository.getDefault())
         actions: FrozenList[CrowdControlAction] = FrozenList()
@@ -124,15 +124,15 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         self,
         actions: frozendict[int, AbsCheerAction],
         bits: int,
-        broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
         message: str,
         moderatorTwitchAccessToken: str,
         moderatorUserId: str,
+        twitchChannelId: str,
         twitchChatMessageId: str | None,
         userTwitchAccessToken: str,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         if not isinstance(actions, frozendict):
             raise TypeError(f'actions argument is malformed: \"{actions}\"')
@@ -140,8 +140,6 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not utils.isValidStr(broadcasterUserId):
-            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(cheerUserId):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
@@ -152,6 +150,8 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             raise TypeError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
         elif not utils.isValidStr(moderatorUserId):
             raise TypeError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userTwitchAccessToken):
             raise TypeError(f'userTwitchAccessToken argument is malformed: \"{userTwitchAccessToken}\"')
         elif not isinstance(user, UserInterface):
@@ -172,7 +172,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                 chatterUserId = cheerUserId,
                 chatterUserName = cheerUserName,
                 message = message,
-                twitchChannelId = broadcasterUserId,
+                twitchChannelId = twitchChannelId,
                 twitchChatMessageId = twitchChatMessageId,
                 user = user
             )
@@ -181,7 +181,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                 action = action,
                 chatterUserId = cheerUserId,
                 chatterUserName = cheerUserName,
-                twitchChannelId = broadcasterUserId,
+                twitchChannelId = twitchChannelId,
                 twitchChatMessageId = twitchChatMessageId,
                 user = user
             )
@@ -196,7 +196,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         message: str | None,
         twitchChannelId: str,
         twitchChatMessageId: str | None,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         button = await self.__crowdControlUserInputUtils.parseButtonFromUserInput(
             userInput = message
@@ -229,7 +229,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         chatterUserName: str,
         twitchChannelId: str,
         twitchChatMessageId: str | None,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         gameShuffleActions = await self.__createGameShuffleActions(
             action = action,

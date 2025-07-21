@@ -122,9 +122,9 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
         self,
         airStrikeTargets: frozenset[AirStrikeTarget],
         durationSeconds: int,
-        broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
+        twitchChannelId: str,
         twitchChatMessageId: str | None,
         user: UserInterface
     ):
@@ -176,9 +176,9 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
     async def __determineAirStrikeTargets(
         self,
         airStrikeAction: AirStrikeCheerAction,
-        broadcasterUserId: str,
         cheerUserId: str,
-        cheerUserName: str
+        cheerUserName: str,
+        twitchChannelId: str,
     ) -> frozenset[AirStrikeTarget]:
         airStrikeTargets: set[AirStrikeCheerActionHelper.AirStrikeTarget] = set()
 
@@ -192,11 +192,11 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
             ))
 
         activeChatters = await self.__activeChattersRepository.get(
-            twitchChannelId = broadcasterUserId
+            twitchChannelId = twitchChannelId
         )
 
         vulnerableChatters: dict[str, ActiveChatter] = dict(activeChatters)
-        vulnerableChatters.pop(broadcasterUserId, None)
+        vulnerableChatters.pop(twitchChannelId, None)
 
         allImmuneUserIds = await self.__timeoutImmuneUserIdsRepository.getAllUserIds()
 
@@ -221,7 +221,7 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
         for airStrikeTarget in frozenAirStrikeTargets:
             await self.__activeChattersRepository.remove(
                 chatterUserId = airStrikeTarget.userId,
-                twitchChannelId = broadcasterUserId
+                twitchChannelId = twitchChannelId
             )
 
         self.__timber.log('AirStrikeCheerActionHelper', f'Selected target(s) ({airStrikeAction=}) ({additionalReverseProbability=}) ({randomReverseNumber=}) ({airStrikeTargetCount=}) ({frozenAirStrikeTargets=})')
@@ -232,15 +232,15 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
         self,
         actions: frozendict[int, AbsCheerAction],
         bits: int,
-        broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
         message: str,
         moderatorTwitchAccessToken: str,
         moderatorUserId: str,
+        twitchChannelId: str,
         twitchChatMessageId: str | None,
         userTwitchAccessToken: str,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         if not isinstance(actions, frozendict):
             raise TypeError(f'actions argument is malformed: \"{actions}\"')
@@ -248,8 +248,6 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not utils.isValidStr(broadcasterUserId):
-            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(cheerUserId):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
@@ -260,6 +258,8 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
             raise TypeError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
         elif not utils.isValidStr(moderatorUserId):
             raise TypeError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif twitchChatMessageId is not None and not isinstance(twitchChatMessageId, str):
             raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
         elif not utils.isValidStr(userTwitchAccessToken):
@@ -274,16 +274,16 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
         elif not await self.__recentGrenadeAttacksHelper.canThrowGrenade(
             attackerUserId = cheerUserId,
             twitchChannel = user.handle,
-            twitchChannelId = broadcasterUserId
+            twitchChannelId = twitchChannelId
         ):
             self.__timber.log('AirStrikeCheerActionHelper', f'No grenades available for this user ({cheerUserId=}) ({cheerUserName=}) ({user=}) ({action=})')
             return False
 
         airStrikeTargets = await self.__determineAirStrikeTargets(
             airStrikeAction = action,
-            broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
-            cheerUserName = cheerUserName
+            cheerUserName = cheerUserName,
+            twitchChannelId = twitchChannelId,
         )
 
         if len(airStrikeTargets) == 0:
@@ -292,8 +292,8 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
 
         remainingGrenades = await self.__noteGrenadeThrow(
             airStrikeTargets = airStrikeTargets,
-            broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
+            twitchChannelId = twitchChannelId,
             user = user
         )
 
@@ -311,9 +311,9 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
         self.__backgroundTaskHelper.createTask(self.__alertViaTwitchChat(
             airStrikeTargets= airStrikeTargets,
             durationSeconds = durationSeconds,
-            broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
+            twitchChannelId = twitchChannelId,
             twitchChatMessageId = twitchChatMessageId,
             user = user
         ))
@@ -334,7 +334,7 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
                 pointRedemptionRewardId = None,
                 timeoutTargetUserId = airStrikeTarget.userId,
                 timeoutTargetUserName = airStrikeTarget.userName,
-                twitchChannelId = broadcasterUserId,
+                twitchChannelId = twitchChannelId,
                 twitchChatMessageId = twitchChatMessageId,
                 userTwitchAccessToken = userTwitchAccessToken,
                 actionType = TimeoutActionType.AIR_STRIKE,
@@ -347,8 +347,8 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
     async def __noteGrenadeThrow(
         self,
         airStrikeTargets: frozenset[AirStrikeTarget],
-        broadcasterUserId: str,
         cheerUserId: str,
+        twitchChannelId: str,
         user: UserInterface
     ) -> int | None:
         randomTarget = random.choice(list(airStrikeTargets))
@@ -357,7 +357,7 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
             attackedUserId = randomTarget.userId,
             attackerUserId = cheerUserId,
             twitchChannel = user.handle,
-            twitchChannelId = broadcasterUserId
+            twitchChannelId = twitchChannelId
         )
 
     async def __playSoundAlerts(
