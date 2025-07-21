@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absChatMessage import AbsChatMessage
 from .chatEventType import ChatEventType
 from ..misc import utils as utils
@@ -13,12 +15,12 @@ class ChatMessage(AbsChatMessage):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ):
         super().__init__(
             dateTime = dateTime,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if not utils.isValidStr(msg):
@@ -28,9 +30,9 @@ class ChatMessage(AbsChatMessage):
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__msg: str = msg
-        self.__userId: str = userId
-        self.__userName: str = userName
+        self.__msg: Final[str] = msg
+        self.__userId: Final[str] = userId
+        self.__userName: Final[str] = userName
 
     @property
     def chatEventType(self) -> ChatEventType:

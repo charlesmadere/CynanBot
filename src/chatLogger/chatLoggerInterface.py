@@ -10,7 +10,7 @@ class ChatLoggerInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ):
         pass
 
@@ -21,7 +21,7 @@ class ChatLoggerInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ):
         pass
 
@@ -31,7 +31,7 @@ class ChatLoggerInterface(ABC):
         raidSize: int,
         fromWho: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         pass
 

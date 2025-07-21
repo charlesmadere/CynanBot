@@ -1,4 +1,5 @@
 import locale
+from typing import Final
 
 from .absChatMessage import AbsChatMessage
 from .chatEventType import ChatEventType
@@ -15,12 +16,12 @@ class CheerMessage(AbsChatMessage):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ):
         super().__init__(
             dateTime = dateTime,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if not utils.isValidInt(bits):
@@ -32,9 +33,9 @@ class CheerMessage(AbsChatMessage):
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__bits: int = bits
-        self.__userId: str = userId
-        self.__userName: str = userName
+        self.__bits: Final[int] = bits
+        self.__userId: Final[str] = userId
+        self.__userName: Final[str] = userName
 
     @property
     def bits(self) -> int:

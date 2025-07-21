@@ -963,7 +963,7 @@ addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface = AddOrRemoveUserD
 chatLogger: ChatLoggerInterface = ChatLogger(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepository(

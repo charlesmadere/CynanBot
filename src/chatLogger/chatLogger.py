@@ -3,6 +3,7 @@ import queue
 import traceback
 from collections import defaultdict
 from queue import SimpleQueue
+from typing import Final
 
 import aiofiles
 import aiofiles.os
@@ -28,7 +29,7 @@ class ChatLogger(ChatLoggerInterface):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         sleepTimeSeconds: float = 15,
-        logRootDirectory: str = '../logs/chatLogger'
+        logRootDirectory: str = '../logs/chatLogger',
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -41,14 +42,14 @@ class ChatLogger(ChatLoggerInterface):
         elif not utils.isValidStr(logRootDirectory):
             raise TypeError(f'logRootDirectory argument is malformed: \"{logRootDirectory}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__sleepTimeSeconds: float = sleepTimeSeconds
-        self.__logRootDirectory: str = logRootDirectory
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
+        self.__logRootDirectory: Final[str] = logRootDirectory
 
         self.__isStarted: bool = False
-        self.__messageQueue: SimpleQueue[AbsChatMessage] = SimpleQueue()
+        self.__messageQueue: Final[SimpleQueue[AbsChatMessage]] = SimpleQueue()
 
     def __getLogStatement(self, message: AbsChatMessage) -> str:
         if not isinstance(message, AbsChatMessage):
@@ -76,7 +77,7 @@ class ChatLogger(ChatLoggerInterface):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ):
         if not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
@@ -97,7 +98,7 @@ class ChatLogger(ChatLoggerInterface):
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
             userId = userId,
-            userName = userName
+            userName = userName,
         )
 
         self.__messageQueue.put(cheerMessage)
@@ -108,7 +109,7 @@ class ChatLogger(ChatLoggerInterface):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ):
         if not utils.isValidStr(msg):
             raise TypeError(f'msg argument is malformed: \"{msg}\"')
@@ -127,7 +128,7 @@ class ChatLogger(ChatLoggerInterface):
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
             userId = userId,
-            userName = userName
+            userName = userName,
         )
 
         self.__messageQueue.put(chatMessage)
@@ -137,7 +138,7 @@ class ChatLogger(ChatLoggerInterface):
         raidSize: int,
         fromWho: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         if not utils.isValidInt(raidSize):
             raise TypeError(f'raidSize argument is malformed: \"{raidSize}\"')
@@ -155,7 +156,7 @@ class ChatLogger(ChatLoggerInterface):
             dateTime = SimpleDateTime(timeZone = self.__timeZoneRepository.getDefault()),
             fromWho = fromWho,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         self.__messageQueue.put(raidMessage)

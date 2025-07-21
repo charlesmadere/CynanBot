@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Final
 
 from .chatEventType import ChatEventType
 from ..misc import utils as utils
@@ -11,7 +12,7 @@ class AbsChatMessage(ABC):
         self,
         dateTime: SimpleDateTime,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         if not isinstance(dateTime, SimpleDateTime):
             raise TypeError(f'dateTime argument is malformed: \"{dateTime}\"')
@@ -20,9 +21,9 @@ class AbsChatMessage(ABC):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        self.__dateTime: SimpleDateTime = dateTime
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
+        self.__dateTime: Final[SimpleDateTime] = dateTime
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
 
     @property
     @abstractmethod

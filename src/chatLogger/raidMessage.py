@@ -1,4 +1,5 @@
 import locale
+from typing import Final
 
 from .absChatMessage import AbsChatMessage
 from .chatEventType import ChatEventType
@@ -14,12 +15,12 @@ class RaidMessage(AbsChatMessage):
         dateTime: SimpleDateTime,
         fromWho: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             dateTime = dateTime,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if not utils.isValidInt(raidSize):
@@ -29,8 +30,8 @@ class RaidMessage(AbsChatMessage):
         elif not utils.isValidStr(fromWho):
             raise TypeError(f'fromWho argument is malformed: \"{fromWho}\"')
 
-        self.__raidSize: int = raidSize
-        self.__fromWho: str = fromWho
+        self.__raidSize: Final[int] = raidSize
+        self.__fromWho: Final[str] = fromWho
 
     @property
     def chatEventType(self) -> ChatEventType:
