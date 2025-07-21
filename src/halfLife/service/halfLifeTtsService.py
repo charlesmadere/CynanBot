@@ -5,6 +5,7 @@ from frozenlist import FrozenList
 
 from .halfLifeTtsServiceInterface import HalfLifeTtsServiceInterface
 from ..models.halfLifeVoice import HalfLifeVoice
+from ..settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -13,11 +14,15 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
 
     def __init__(
         self,
-        timber: TimberInterface
+        halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface,
+        timber: TimberInterface,
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(halfLifeSettingsRepository, HalfLifeSettingsRepositoryInterface):
+            raise TypeError(f'halfLifeSettingsRepository argument is malformed: \"{halfLifeSettingsRepository}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__halfLifeSettingsRepository: Final[HalfLifeSettingsRepositoryInterface] = halfLifeSettingsRepository
         self.__timber: Final[TimberInterface] = timber
 
         self.__cache: Final[dict[str, str | None]] = dict()
@@ -26,67 +31,83 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
         self.__cache.clear()
         self.__timber.log('HalfLifeTtsService', 'Caches cleared')
 
-    async def __getPath(
+    async def __determinePath(
         self,
+        voice: HalfLifeVoice,
         directory: str,
-        file: str | None,
-        voice: HalfLifeVoice
+        text: str | None,
     ) -> str | None:
-        if not utils.isValidStr(file):
+        if not utils.isValidStr(text):
             return None
 
-        path = f'{directory}/{voice.keyName}/{file}.wav'
+        fileExtension = await self.__halfLifeSettingsRepository.requireFileExtension()
+        path = f'{directory}/{voice.keyName}/{text}.{fileExtension}'
 
         if await aiofiles.ospath.exists(path) and await aiofiles.ospath.isfile(path):
-            self.__cache[file + voice.keyName] = path
             return path
         else:
             return None
 
-    async def __getWav(
+    async def __findFile(
         self,
+        voice: HalfLifeVoice,
         directory: str,
-        text: str,
-        voice: HalfLifeVoice
+        text: str | None,
     ) -> str | None:
-        cachedWav: str | None = self.__cache.get(text + voice.keyName, None)
+        if not utils.isValidStr(text):
+            return None
 
-        if utils.isValidStr(cachedWav):
-            return cachedWav
+        cachedFile = self.__cache.get(text + voice.keyName, None)
+        if utils.isValidStr(cachedFile):
+            return cachedFile
+
+        path: str | None = None
 
         if voice is HalfLifeVoice.ALL:
             for possibleVoice in HalfLifeVoice:
-                path = await self.__getPath(directory, text, possibleVoice)
-                if path is not None:
-                    return path
-        else:
-            path = await self.__getPath(directory, text, voice)
-            if path is not None:
-                return path
+                path = await self.__determinePath(
+                    voice = possibleVoice,
+                    directory = directory,
+                    text = text,
+                )
 
-        return None
+                if path is not None:
+                    break
+        else:
+            path = await self.__determinePath(
+                voice = voice,
+                directory = directory,
+                text = text,
+            )
+
+        if utils.isValidStr(path):
+            self.__cache[text + voice.keyName] = path
+            return path
+        else:
+            return None
 
     async def getWavs(
         self,
         voice: HalfLifeVoice,
-        directory: str,
-        text: str
-    ) -> FrozenList[str]:
+        message: str | None,
+    ) -> FrozenList[str] | None:
         if not isinstance(voice, HalfLifeVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
-        elif not utils.isValidStr(directory):
-            raise TypeError(f'directory argument is malformed: \"{directory}\"')
-        elif not utils.isValidStr(text):
-            raise TypeError(f'text argument is malformed: \"{text}\"')
+        elif message is not None and not isinstance(message, str):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
 
-        #TODO some filenames contain `_` meaning there's 2 words and this is going to miss them.
-        paths: list[str] = []
+        if not utils.isValidStr(message):
+            return None
 
-        for word in text.split(' '):
-            path = await self.__getWav(
-                directory = directory,
+        paths: list[str] = list()
+        soundsDirectory = await self.__halfLifeSettingsRepository.requireSoundsDirectory()
+
+        # TODO some filenames contain `_` meaning there's 2 words and this is going to miss them.
+        for word in message.split(' '):
+            path = await self.__findFile(
+                voice = voice,
+                directory = soundsDirectory,
                 text = word,
-                voice = voice
             )
 
             if path is not None:
@@ -94,5 +115,4 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
 
         frozenPaths: FrozenList[str] = FrozenList(paths)
         frozenPaths.freeze()
-
         return frozenPaths

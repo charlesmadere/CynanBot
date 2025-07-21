@@ -12,7 +12,6 @@ class HalfLifeTtsServiceInterface(Clearable, ABC):
     async def getWavs(
         self,
         voice: HalfLifeVoice,
-        directory: str,
-        text: str
-    ) -> FrozenList[str]:
+        message: str | None,
+    ) -> FrozenList[str] | None:
         pass

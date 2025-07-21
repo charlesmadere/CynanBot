@@ -83,7 +83,7 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         async def playPlaylist():
             await self.__soundPlayerManager.playSoundFiles(
                 filePaths = fileNames,
-                volume = volume
+                volume = volume,
             )
 
             self.__isLoadingOrPlaying = False

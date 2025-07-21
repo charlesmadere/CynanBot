@@ -2105,7 +2105,8 @@ halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettin
 )
 
 halfLifeTtsService: HalfLifeTtsServiceInterface = HalfLifeTtsService(
-    timber = timber
+    halfLifeSettingsRepository = halfLifeSettingsRepository,
+    timber = timber,
 )
 
 halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = HalfLifeMessageVoiceParser(
@@ -2115,7 +2116,7 @@ halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = HalfLifeMessag
 halfLifeTtsHelper: HalfLifeTtsHelperInterface = HalfLifeTtsHelper(
     halfLifeMessageVoiceParser = halfLifeMessageVoiceParser,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
-    halfLifeTtsService = halfLifeTtsService
+    halfLifeTtsService = halfLifeTtsService,
 )
 
 halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner(
