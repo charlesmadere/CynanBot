@@ -103,7 +103,7 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
         soundsDirectory = await self.__halfLifeSettingsRepository.requireSoundsDirectory()
 
         # TODO some filenames contain `_` meaning there's 2 words and this is going to miss them.
-        for word in message.split(' '):
+        for word in utils.getCleanedSplits(message):
             path = await self.__findFile(
                 voice = voice,
                 directory = soundsDirectory,
