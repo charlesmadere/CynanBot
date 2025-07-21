@@ -1971,6 +1971,7 @@ airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheer
 )
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+    adgeCheerActionHelper = None,
     airStrikeCheerActionHelper = airStrikeCheerActionHelper,
     beanChanceCheerActionHelper = beanChanceCheerActionHelper,
     cheerActionsRepository = cheerActionsRepository,
