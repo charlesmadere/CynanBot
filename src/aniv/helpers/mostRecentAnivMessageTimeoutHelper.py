@@ -272,7 +272,8 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
                 return f'{timeoutData.durationSecondsStr} de suspension por copiar un mensaje de {anivUser.userName}'
 
             case _:
-                return f'{timeoutData.durationSecondsStr}s timeout for copying an {anivUser.userName} message'
+                durationMessage = utils.secondsToDurationMessage(timeoutData.durationSeconds)
+                return f'{durationMessage} timeout for copying an {anivUser.userName} message'
 
     async def __isImmuneChatter(
         self,

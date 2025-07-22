@@ -11,10 +11,10 @@ class HalfLifeVoiceParser(HalfLifeVoiceParserInterface):
         if not utils.isValidStr(voiceString):
             return None
 
-        voiceString = voiceString.lower()
+        voiceString = voiceString.casefold()
 
         for currentVoice in HalfLifeVoice:
-            if currentVoice.keyName.casefold() == voiceString.casefold():
+            if currentVoice.keyName.casefold() == voiceString:
                 return currentVoice
 
         return None

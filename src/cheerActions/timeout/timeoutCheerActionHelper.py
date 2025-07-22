@@ -42,7 +42,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         timeoutCheerActionMapper: TimeoutCheerActionMapper,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface
+        userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -91,11 +91,11 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
                 isRandomChanceEnabled = False,
                 isRandomTarget = True,
                 userId = cheerUserId,
-                userName = cheerUserName
+                userName = cheerUserName,
             )
 
         activeChatters = await self.__activeChattersRepository.get(
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         vulnerableChatters: dict[str, ActiveChatter] = dict(activeChatters)
@@ -114,14 +114,14 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         await self.__activeChattersRepository.remove(
             chatterUserId = randomChatter.chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         return TimeoutCheerActionHelper.TimeoutTarget(
             isRandomChanceEnabled = False,
             isRandomTarget = True,
             userId = randomChatter.chatterUserId,
-            userName = randomChatter.chatterUserName
+            userName = randomChatter.chatterUserName,
         )
 
     async def __determineAnyTimeoutTarget(
@@ -140,7 +140,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             message = message,
             userTwitchAccessToken = userTwitchAccessToken,
             timeoutAction = timeoutAction,
-            user = user
+            user = user,
         )
 
         if specificUserTimeoutTarget is not None:
@@ -151,18 +151,18 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             cheerUserName = cheerUserName,
             twitchChannelId = twitchChannelId,
             timeoutAction = timeoutAction,
-            user = user
+            user = user,
         )
 
     async def __determineTimeoutTarget(
         self,
-        twitchChannelId: str,
         cheerUserId: str,
         cheerUserName: str,
         message: str,
+        twitchChannelId: str,
         userTwitchAccessToken: str,
         timeoutAction: TimeoutCheerAction,
-        user: UserInterface
+        user: UserInterface,
     ) -> TimeoutTarget | None:
         match timeoutAction.targetType:
             case TimeoutCheerActionTargetType.ANY:
@@ -173,7 +173,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
                     twitchChannelId = twitchChannelId,
                     userTwitchAccessToken = userTwitchAccessToken,
                     timeoutAction = timeoutAction,
-                    user = user
+                    user = user,
                 )
 
             case TimeoutCheerActionTargetType.RANDOM_ONLY:
@@ -182,7 +182,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
                     cheerUserName = cheerUserName,
                     twitchChannelId = twitchChannelId,
                     timeoutAction = timeoutAction,
-                    user = user
+                    user = user,
                 )
 
             case TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY:
@@ -192,7 +192,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
                     message = message,
                     userTwitchAccessToken = userTwitchAccessToken,
                     timeoutAction = timeoutAction,
-                    user = user
+                    user = user,
                 )
 
             case _:
@@ -205,7 +205,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         message: str,
         userTwitchAccessToken: str,
         timeoutAction: TimeoutCheerAction,
-        user: UserInterface
+        user: UserInterface,
     ) -> TimeoutTarget | None:
         timeoutTargetUserName = await self.__twitchMessageStringUtils.getUserNameFromCheerMessage(message)
         if not utils.isValidStr(timeoutTargetUserName):
@@ -214,7 +214,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         timeoutTargetUserId = await self.__userIdsRepository.fetchUserId(
             userName = timeoutTargetUserName,
-            twitchAccessToken = userTwitchAccessToken
+            twitchAccessToken = userTwitchAccessToken,
         )
 
         if not utils.isValidStr(timeoutTargetUserId):
@@ -225,7 +225,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             isRandomChanceEnabled = timeoutAction.isRandomChanceEnabled,
             isRandomTarget = False,
             userId = timeoutTargetUserId,
-            userName = timeoutTargetUserName
+            userName = timeoutTargetUserName,
         )
 
     async def handleTimeoutCheerAction(
@@ -274,19 +274,19 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         elif not await self.__recentGrenadeAttacksHelper.canThrowGrenade(
             attackerUserId = cheerUserId,
             twitchChannel = user.handle,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         ):
             self.__timber.log('TimeoutCheerActionHelper', f'No grenades available for this user ({cheerUserId=}) ({cheerUserName=}) ({user=}) ({action=})')
             return False
 
         timeoutTarget = await self.__determineTimeoutTarget(
-            twitchChannelId= twitchChannelId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
             message = message,
+            twitchChannelId = twitchChannelId,
             userTwitchAccessToken = userTwitchAccessToken,
             timeoutAction = action,
-            user = user
+            user = user,
         )
 
         if timeoutTarget is None:
@@ -296,7 +296,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             attackedUserId = timeoutTarget.userId,
             attackerUserId = cheerUserId,
             twitchChannel = user.handle,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         actionType: TimeoutActionType
@@ -307,7 +307,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             actionType = TimeoutActionType.TARGETED
 
         streamStatusRequirement = await self.__timeoutCheerActionMapper.toTimeoutActionDataStreamStatusRequirement(
-            streamStatusRequirement = action.streamStatusRequirement
+            streamStatusRequirement = action.streamStatusRequirement,
         )
 
         self.__timeoutActionHelper.submitTimeout(TimeoutActionData(
@@ -330,7 +330,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             userTwitchAccessToken = userTwitchAccessToken,
             actionType = actionType,
             streamStatusRequirement = streamStatusRequirement,
-            user = user
+            user = user,
         ))
 
         return True

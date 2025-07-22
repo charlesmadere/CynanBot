@@ -37,7 +37,7 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         voicemailHelper: VoicemailHelperInterface,
-        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
+        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -70,7 +70,7 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
     async def __determineTargetedUser(
         self,
         message: str,
-        userTwitchAccessToken: str
+        userTwitchAccessToken: str,
     ) -> TargetedUserData | None:
         cleanedMessage = await self.__twitchMessageStringUtils.removeCheerStrings(message)
         cleanedMessage = utils.cleanStr(cleanedMessage)
@@ -87,7 +87,7 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
 
         targetedUserId = await self.__userIdsRepository.fetchUserId(
             userName = targetedUserName,
-            twitchAccessToken = userTwitchAccessToken
+            twitchAccessToken = userTwitchAccessToken,
         )
 
         if not utils.isValidStr(targetedUserId):
@@ -97,7 +97,7 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
         return VoicemailCheerActionHelper.TargetedUserData(
             cleanedMessage = ' '.join(splits[1:]),
             userId = targetedUserId,
-            userName = targetedUserName
+            userName = targetedUserName,
         )
 
     async def handleVoicemailCheerAction(
@@ -118,7 +118,7 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
 
         targetedUserData = await self.__determineTargetedUser(
             message = message,
-            userTwitchAccessToken = userTwitchAccessToken
+            userTwitchAccessToken = userTwitchAccessToken,
         )
 
         if targetedUserData is None:
@@ -129,7 +129,7 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
 
         if requiresNotActiveInChat and await self.__activeChattersRepository.isActiveIn(
             chatterUserId = targetedUserData.userId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         ):
             self.__timber.log('VoicemailCheerActionHelper', f'Received voicemail cheer action but the targeted user is active in chat ({bits=}) ({twitchChannelId=}) ({cheerUserId=}) ({cheerUserName=}) ({message=}) ({action=}) ({targetedUserData=})')
 
@@ -137,7 +137,7 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
                 message = f'⚠ Sorry @{cheerUserName}, you can only send voicemails to users who aren\t active in chat.',
                 twitchChatMessageId = twitchChatMessageId,
                 user = user,
-                action = action
+                action = action,
             )
 
             return True

@@ -3,6 +3,7 @@ from typing import Final
 from frozenlist import FrozenList
 
 from .halfLifeTtsHelperInterface import HalfLifeTtsHelperInterface
+from ..models.halfLifeSoundFile import HalfLifeSoundFile
 from ..models.halfLifeVoice import HalfLifeVoice
 from ..parser.halfLifeMessageVoiceParserInterface import HalfLifeMessageVoiceParserInterface
 from ..service.halfLifeTtsServiceInterface import HalfLifeTtsServiceInterface
@@ -33,7 +34,7 @@ class HalfLifeTtsHelper(HalfLifeTtsHelperInterface):
         self,
         voice: HalfLifeVoice | None,
         message: str | None,
-    ) -> FrozenList[str] | None:
+    ) -> FrozenList[HalfLifeSoundFile] | None:
         if voice is not None and not isinstance(voice, HalfLifeVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
         elif message is not None and not isinstance(message, str):
@@ -51,7 +52,7 @@ class HalfLifeTtsHelper(HalfLifeTtsHelperInterface):
             voice = messageVoiceResult.voice
             message = messageVoiceResult.message
 
-        return await self.__halfLifeTtsService.getWavs(
+        return await self.__halfLifeTtsService.findSoundFiles(
             voice = voice,
             message = message,
         )

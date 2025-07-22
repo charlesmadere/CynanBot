@@ -1,4 +1,6 @@
-from typing import Any
+from typing import Any, Final
+
+from frozendict import frozendict
 
 from .halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
 from ..models.halfLifeVoice import HalfLifeVoice
@@ -13,18 +15,24 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
         self,
         halfLifeJsonParser: HalfLifeVoiceParserInterface,
         settingsJsonReader: JsonReaderInterface,
+        defaultVoiceVolumes: frozendict[HalfLifeVoice, int | None] | None = frozendict({
+            HalfLifeVoice.SOLDIER: 5,
+        }),
         defaultVoice: HalfLifeVoice = HalfLifeVoice.ALL,
     ):
         if not isinstance(halfLifeJsonParser, HalfLifeVoiceParserInterface):
             raise TypeError(f'halfLifeJsonParser argument is malformed: \"{halfLifeJsonParser}\"')
         elif not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+        elif defaultVoiceVolumes is not None and not isinstance(defaultVoiceVolumes, frozendict):
+            raise TypeError(f'defaultVoiceVolumes argument is malformed: \"{defaultVoiceVolumes}\"')
         elif not isinstance(defaultVoice, HalfLifeVoice):
             raise TypeError(f'defaultVoice argument is malformed: \"{defaultVoice}\"')
 
-        self.__halfLifeJsonParser: HalfLifeVoiceParserInterface = halfLifeJsonParser
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
-        self.__defaultVoice: HalfLifeVoice = defaultVoice
+        self.__halfLifeJsonParser: Final[HalfLifeVoiceParserInterface] = halfLifeJsonParser
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
+        self.__defaultVoiceVolumes: Final[frozendict[HalfLifeVoice, int | None] | None] = defaultVoiceVolumes
+        self.__defaultVoice: Final[HalfLifeVoice] = defaultVoice
 
         self.__cache: dict[str, Any] | None = None
 
@@ -44,7 +52,22 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 7)
+        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 6)
+
+    async def getVoiceVolumes(self) -> frozendict[HalfLifeVoice, int | None]:
+        jsonContents = await self.__readJson()
+        rawVoiceVolumes: dict[str, int] | None = jsonContents.get('voice_volumes', None)
+
+        if rawVoiceVolumes is None:
+            return self.__defaultVoiceVolumes
+
+        voiceVolumes: dict[HalfLifeVoice, int | None] = dict()
+
+        for voiceString, volume in rawVoiceVolumes.items():
+            voice = self.__halfLifeJsonParser.requireVoice(voiceString)
+            voiceVolumes[voice] = volume
+
+        return frozendict(voiceVolumes)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
@@ -69,4 +92,4 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
 
     async def requireSoundsDirectory(self) -> str:
         jsonContents = await self.__readJson()
-        return utils.getStrFromDict(d = jsonContents, key = 'sounds_directory', fallback = '../halfLife')
+        return utils.getStrFromDict(jsonContents, 'sounds_directory', fallback = '../halfLife')

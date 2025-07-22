@@ -19,7 +19,6 @@ from ..crowdControl.settings.crowdControlSettingsRepositoryInterface import Crow
 from ..decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
 from ..funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from ..google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
-from ..halfLife.service.halfLifeTtsServiceInterface import HalfLifeTtsServiceInterface
 from ..halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
 from ..language.wordOfTheDay.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
@@ -103,7 +102,6 @@ class ClearCachesChatCommand(AbsChatCommand):
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
         googleSettingsRepository: GoogleSettingsRepositoryInterface | None,
-        halfLifeTtsService: HalfLifeTtsServiceInterface | None,
         halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface | None,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface | None,
         locationsRepository: LocationsRepositoryInterface | None,
@@ -183,8 +181,6 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif googleSettingsRepository is not None and not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
             raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
-        elif halfLifeTtsService is not None and not isinstance(halfLifeTtsService, HalfLifeTtsServiceInterface):
-            raise TypeError(f'halfLifeService argument is malformed: \"{halfLifeTtsService}\"')
         elif halfLifeSettingsRepository is not None and not isinstance(halfLifeSettingsRepository, HalfLifeSettingsRepositoryInterface):
             raise TypeError(f'halfLifeSettingsRepository argument is malformed: \"{halfLifeSettingsRepository}\"')
         elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
@@ -293,7 +289,6 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(funtoonTokensRepository)
         self.__clearables.append(generalSettingsRepository)
         self.__clearables.append(googleSettingsRepository)
-        self.__clearables.append(halfLifeTtsService)
         self.__clearables.append(halfLifeSettingsRepository)
         self.__clearables.append(isLiveOnTwitchRepository)
         self.__clearables.append(locationsRepository)

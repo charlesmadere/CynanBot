@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 from .api.models.twitchChatMessage import TwitchChatMessage
-from .api.models.twitchChatMessageType import TwitchChatMessageType
 from .api.models.twitchCheerMetadata import TwitchCheerMetadata
 from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from .configuration.twitchChannelProvider import TwitchChannelProvider
@@ -19,7 +18,6 @@ class AbsTwitchChatHandler(ABC):
         twitchChannelId: str
         twitchChatMessageId: str | None
         message: TwitchChatMessage
-        messageType: TwitchChatMessageType | None
         cheer: TwitchCheerMetadata | None
         user: UserInterface
 

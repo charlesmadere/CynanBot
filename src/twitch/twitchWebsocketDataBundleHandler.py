@@ -268,7 +268,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                     for topPredictor in topPredictors:
                         await self.__addToUserIdsToUserNames(userIdsToUserNames, topPredictor.userId, topPredictor.userLogin)
 
-        if event.chatMessage is not None and event.chatMessage.fragments is not None:
+        if event.chatMessage is not None:
             for fragment in event.chatMessage.fragments:
                 if fragment.mention is not None:
                     await self.__addToUserIdsToUserNames(userIdsToUserNames, fragment.mention.userId, fragment.mention.userLogin)
@@ -280,7 +280,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         self,
         userIdsToUserNames: dict[str, str],
         userId: str | None,
-        userLogin: str | None
+        userLogin: str | None,
     ):
         if not utils.isValidStr(userId) or not utils.isValidStr(userLogin):
             return

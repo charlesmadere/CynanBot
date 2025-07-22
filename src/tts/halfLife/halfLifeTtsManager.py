@@ -1,5 +1,6 @@
 import asyncio
 import traceback
+from typing import Final
 
 from frozenlist import FrozenList
 
@@ -14,7 +15,9 @@ from ...halfLife.halfLifeMessageCleanerInterface import HalfLifeMessageCleanerIn
 from ...halfLife.helper.halfLifeTtsHelperInterface import HalfLifeTtsHelperInterface
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
+from ...soundPlayerManager.soundPlaybackFile import SoundPlaybackFile
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
+from ...soundPlayerManager.soundPlayerPlaylist import SoundPlayerPlaylist
 from ...timber.timberInterface import TimberInterface
 
 
@@ -28,7 +31,7 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         halfLifeTtsHelper: HalfLifeTtsHelperInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
@@ -45,13 +48,13 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
-        self.__chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = chatterPreferredTtsHelper
-        self.__halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = halfLifeMessageCleaner
-        self.__halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = halfLifeSettingsRepository
-        self.__halfLifeTtsHelper: HalfLifeTtsHelperInterface = halfLifeTtsHelper
-        self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
-        self.__timber: TimberInterface = timber
-        self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
+        self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = chatterPreferredTtsHelper
+        self.__halfLifeMessageCleaner: Final[HalfLifeMessageCleanerInterface] = halfLifeMessageCleaner
+        self.__halfLifeSettingsRepository: Final[HalfLifeSettingsRepositoryInterface] = halfLifeSettingsRepository
+        self.__halfLifeTtsHelper: Final[HalfLifeTtsHelperInterface] = halfLifeTtsHelper
+        self.__soundPlayerManager: Final[SoundPlayerManagerInterface] = soundPlayerManager
+        self.__timber: Final[TimberInterface] = timber
+        self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
         self.__isLoadingOrPlaying: bool = False
 
@@ -76,14 +79,12 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
             self.__timber.log('HalfLifeTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
 
-    async def __executeTts(self, fileNames: FrozenList[str]):
-        volume = await self.__halfLifeSettingsRepository.getMediaPlayerVolume()
+    async def __executeTts(self, playlist: SoundPlayerPlaylist):
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         async def playPlaylist():
-            await self.__soundPlayerManager.playSoundFiles(
-                filePaths = fileNames,
-                volume = volume,
+            await self.__soundPlayerManager.playPlaylist(
+                playlist = playlist,
             )
 
             self.__isLoadingOrPlaying = False
@@ -91,10 +92,10 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         try:
             await asyncio.wait_for(playPlaylist(), timeout = timeoutSeconds)
         except TimeoutError as e:
-            self.__timber.log('HalfLifeTtsManager', f'Stopping TTS event due to timeout ({fileNames=}) ({timeoutSeconds=}): {e}', e)
+            self.__timber.log('HalfLifeTtsManager', f'Stopping TTS event due to timeout ({playlist=}) ({timeoutSeconds=}): {e}', e)
             await self.stopTtsEvent()
         except Exception as e:
-            self.__timber.log('HalfLifeTtsManager', f'Stopping TTS event due to unknown exception ({fileNames=}) ({timeoutSeconds=}): {e}', e, traceback.format_exc())
+            self.__timber.log('HalfLifeTtsManager', f'Stopping TTS event due to unknown exception ({playlist=}) ({timeoutSeconds=}): {e}', e, traceback.format_exc())
             await self.stopTtsEvent()
 
     @property
@@ -112,23 +113,42 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
             return
 
         self.__isLoadingOrPlaying = True
-        fileNames = await self.__processTtsEvent(event)
+        playlist = await self.__processTtsEvent(event)
 
-        if fileNames is None or len(fileNames) == 0:
-            self.__timber.log('HalfLifeTtsManager', f'Failed to find any TTS files ({event=}) ({fileNames=})')
+        if playlist is None or len(playlist.playlistFiles) == 0:
+            self.__timber.log('HalfLifeTtsManager', f'Failed to find any TTS files ({event=}) ({playlist=})')
             self.__isLoadingOrPlaying = False
             return
 
-        self.__timber.log('HalfLifeTtsManager', f'Playing {len(fileNames)} TTS message(s) in \"{event.twitchChannel}\"...')
-        await self.__executeTts(fileNames)
+        self.__timber.log('HalfLifeTtsManager', f'Playing {len(playlist.playlistFiles)} TTS message(s) in \"{event.twitchChannel}\"...')
+        await self.__executeTts(playlist)
 
-    async def __processTtsEvent(self, event: TtsEvent) -> FrozenList[str] | None:
+    async def __processTtsEvent(self, event: TtsEvent) -> SoundPlayerPlaylist | None:
         cleanedMessage = await self.__halfLifeMessageCleaner.clean(event.message)
         voice = await self.__determineVoice(event)
 
-        return await self.__halfLifeTtsHelper.generateTts(
+        soundFiles = await self.__halfLifeTtsHelper.generateTts(
             voice = voice,
             message = cleanedMessage,
+        )
+
+        if soundFiles is None or len(soundFiles) == 0:
+            return None
+
+        playlistFiles: FrozenList[SoundPlaybackFile] = FrozenList()
+        voiceVolumes = await self.__halfLifeSettingsRepository.getVoiceVolumes()
+
+        for soundFile in soundFiles:
+            playlistFiles.append(SoundPlaybackFile(
+                volume = voiceVolumes.get(soundFile.voice, None),
+                filePath = soundFile.path,
+            ))
+
+        playlistFiles.freeze()
+
+        return SoundPlayerPlaylist(
+            playlistFiles = playlistFiles,
+            volume = await self.__halfLifeSettingsRepository.getMediaPlayerVolume(),
         )
 
     async def stopTtsEvent(self):

@@ -1,0 +1,9 @@
+{
+    "default_voice": "all",
+    "file_extension": "wav",
+    "media_player_volume": 10,
+    "sounds_directory": "../halfLife",
+    "voice_volumes": {
+        "soldier": 5
+    }
+}

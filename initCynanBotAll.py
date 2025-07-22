@@ -2100,11 +2100,12 @@ halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettin
     halfLifeJsonParser = halfLifeVoiceParser,
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/halfLifeTtsSettingsRepository.json'
-    )
+        fileName = '../config/halfLifeSettingsRepository.json',
+    ),
 )
 
 halfLifeTtsService: HalfLifeTtsServiceInterface = HalfLifeTtsService(
+    eventLoop = eventLoop,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
     timber = timber,
 )
@@ -3197,7 +3198,6 @@ cynanBot = CynanBot(
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
     googleSettingsRepository = googleSettingsRepository,
-    halfLifeTtsService = halfLifeTtsService,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     jishoHelper = jishoHelper,

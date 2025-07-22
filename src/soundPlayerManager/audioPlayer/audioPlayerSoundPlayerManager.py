@@ -311,7 +311,7 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
                 eventLoop = self.__eventLoop,
                 timber = self.__timber,
                 timeZoneRepository = self.__timeZoneRepository,
-                playbackLoopSleepTimeSeconds = self.__playbackLoopSleepTimeSeconds
+                playbackLoopSleepTimeSeconds = self.__playbackLoopSleepTimeSeconds,
             )
 
             self.__mediaPlayer = mediaPlayer

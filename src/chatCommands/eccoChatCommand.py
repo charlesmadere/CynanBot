@@ -63,11 +63,11 @@ class EccoChatCommand(AbsChatCommand):
 
     async def __toString(self, eccoTimeRemaining: AbsEccoTimeRemaining) -> str:
         if isinstance(eccoTimeRemaining, EccoReleased):
-            return f'ⓘ Ecco info is available now! https://www.eccothedolphin.com/'
+            return f'🐬 Ecco info is available now! https://www.eccothedolphin.com/'
 
         elif isinstance(eccoTimeRemaining, EccoTimeRemaining):
             durationMessage = utils.secondsToDurationMessage(eccoTimeRemaining.remainingSeconds)
-            return f'ⓘ New Ecco info coming in {durationMessage}!'
+            return f'🐬 New Ecco info coming in {durationMessage}!'
 
         else:
             raise RuntimeError(f'Encountered unknown AbsEccoTimeRemaining type: \"{eccoTimeRemaining}\"')

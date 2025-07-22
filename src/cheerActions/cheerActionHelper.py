@@ -97,21 +97,21 @@ class CheerActionHelper(CheerActionHelperInterface):
         if not user.areCheerActionsEnabled:
             return False
 
-        moderatorTwitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(
-            twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
-        )
-
         userTwitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         moderatorUserId = await self.__userIdsRepository.requireUserId(
             userName = await self.__twitchHandleProvider.getTwitchHandle(),
-            twitchAccessToken = userTwitchAccessToken
+            twitchAccessToken = userTwitchAccessToken,
+        )
+
+        moderatorTwitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
+            twitchChannelId = moderatorUserId,
         )
 
         actions = await self.__cheerActionsRepository.getActions(
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if actions is None or len(actions) == 0:

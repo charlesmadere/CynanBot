@@ -1,31 +1,17 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 
 from frozenlist import FrozenList
 
+from ..models.halfLifeSoundFile import HalfLifeSoundFile
 from ..models.halfLifeVoice import HalfLifeVoice
-from ...misc.clearable import Clearable
 
 
-class HalfLifeTtsServiceInterface(Clearable, ABC):
-
-    @dataclass(frozen = True)
-    class SoundFile:
-        voice: HalfLifeVoice
-        path: str
+class HalfLifeTtsServiceInterface(ABC):
 
     @abstractmethod
     async def findSoundFiles(
         self,
         voice: HalfLifeVoice | None,
         message: str | None,
-    ) -> FrozenList[SoundFile] | None:
-        pass
-
-    @abstractmethod
-    async def getWavs(
-        self,
-        voice: HalfLifeVoice,
-        message: str | None,
-    ) -> FrozenList[str] | None:
+    ) -> FrozenList[HalfLifeSoundFile] | None:
         pass

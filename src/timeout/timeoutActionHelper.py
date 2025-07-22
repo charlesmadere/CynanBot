@@ -613,7 +613,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             twitchChannelAccessToken = timeoutData.userTwitchAccessToken,
             twitchChannelId = timeoutData.twitchChannelId,
             userIdToTimeout = timeoutTargetUserId,
-            user = timeoutData.user
+            user = timeoutData.user,
         )
 
         if timeoutResult is not TwitchTimeoutResult.SUCCESS:

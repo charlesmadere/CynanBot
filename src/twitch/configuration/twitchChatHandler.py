@@ -3,6 +3,8 @@ from typing import Final
 
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchChatHandler import AbsTwitchChatHandler
+from ..api.models.twitchChatMessage import TwitchChatMessage
+from ..api.models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ...chatLogger.chatLoggerInterface import ChatLoggerInterface
 from ...cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
@@ -121,7 +123,6 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             twitchChannelId = twitchChannelId,
             twitchChatMessageId = event.messageId,
             message = chatMessage,
-            messageType = event.chatMessageType,
             cheer = event.cheer,
             user = user,
         )
@@ -141,6 +142,9 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         cheer = chatData.cheer
         if cheer is None or cheer.bits < 1:
             return False
+
+        messageWithoutCheerText = await self.__purgeChatMessageOfCheers(chatData.message)
+        self.__timber.log('TwitchChatHandler', f'Purged message of cheers: ({messageWithoutCheerText=}) ({chatData=})')
 
         return await self.__cheerActionHelper.handleCheerAction(
             bits = cheer.bits,
@@ -228,6 +232,15 @@ class TwitchChatHandler(AbsTwitchChatHandler):
                 raidInfo = None,
             ),
         ))
+
+    async def __purgeChatMessageOfCheers(self, message: TwitchChatMessage) -> str:
+        purgedMessage = ''
+
+        for fragment in message.fragments:
+            if fragment.fragmentType is not TwitchChatMessageFragmentType.CHEERMOTE:
+                purgedMessage = f'{purgedMessage} {fragment.text}'
+
+        return utils.cleanStr(purgedMessage)
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):

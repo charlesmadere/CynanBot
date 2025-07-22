@@ -7,5 +7,5 @@ from .twitchChatMessageFragment import TwitchChatMessageFragment
 
 @dataclass(frozen = True)
 class TwitchChatMessage:
-    fragments: FrozenList[TwitchChatMessageFragment] | None
+    fragments: FrozenList[TwitchChatMessageFragment]
     text: str
