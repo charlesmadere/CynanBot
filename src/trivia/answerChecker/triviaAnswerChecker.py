@@ -1156,13 +1156,14 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'low'
         if word == 'mid':
             yield 'middle'
-        if word == 'n':
+        if word in ('ad', 'an', 'n', '&', '+'):
             yield 'and'
         if word == 'pow':
             yield 'power'
 
         # other
         if word == 'ac':
+            yield 'air condition'
             yield 'air conditioner'
             yield 'air conditioning'
             yield 'alternating current'
@@ -1175,14 +1176,16 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'animated'
             yield 'animation'
         if word == 'auto':
+            yield 'automate'
             yield 'automated'
             yield 'automatic'
         if word == 'bday':
             yield 'birthday'
         if word == 'bunny':
             yield 'rabbit'
-        if word == 'cmd':
+        if word in ('cmd', 'com', 'comm'):
             yield 'command'
+            yield 'commander'
         if word == 'cnn':
             yield 'cable news network'
         if word == 'ctrl':
