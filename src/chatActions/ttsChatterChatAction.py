@@ -63,12 +63,6 @@ class TtsChatterChatAction(AbsChatAction):
         if chatMessage.startswith('!'):
             return False
 
-        # don't commit
-        chatMessage = chatMessage.replace("lucentw", "lucy")
-        chatMessage = chatMessage.replace("LucentW", "lucy")
-        chatMessage = chatMessage.replace("@lucentw", "lucy")
-        chatMessage = chatMessage.replace("@LucentW", "lucy")
-
         if await self.__ttsChatterSettingsRepository.subscriberOnly() and not await self.__accessLevelCheckingHelper.checkStatus(AccessLevel.SUBSCRIBER, message):
             return False
 
