@@ -318,21 +318,77 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'saint'
 
         # common names and nicknames
+        if word in ('trey'):
+            yield '3rd'
+        if word in ('ivy', 'iv'):
+            yield '4th'
+        if word in ('quince', 'quint'):
+            yield '5th'
+        if word in ('erin', 'ron', 'ronnie'):
+            yield 'aaron'
+        if word in ('ab', 'abe', 'eb', 'ebbie'):
+            yield 'abel'
+        if word in ('a.b.', 'ab', 'biah'):
+            yield 'abiah'
+            yield 'abijah'
+        if word in ('biel', 'ab'):
+            yield 'abiel'
+        if word in ('abby', 'nabby', 'gail'):
+            yield 'abigail'
+        if word in ('ab'):
+            yield 'abner'
         if word in ('abe', 'abram'):
             yield 'abraham'
-        if word in ('al', 'fred'):
-            yield 'alfred'
+        if word in ('ada', 'addy', 'dell', 'delia', 'lena'):
+            yield 'adaline'
+            yield 'adeline'
+        if word in ('ad', 'ade'):
+            yield 'adam'
+        if word in ('addy', 'adele', 'dell', 'della', 'heidi'):
+            yield 'adelaide'
+        if word in ('adele', 'addy', 'dell', 'delphia', 'philly'):
+            yield 'adelphia'
+        if word in ('aggy', 'inez', 'nessa'):
+            yield 'agatha'
+            yield 'agnes'
+        if word in ('allie' 'lena'):
+            yield 'aileen'
         if word in ('al', 'alan', 'allan', 'alen', 'allen', 'lonson'):
             yield 'alan'
             yield 'alanson'
             yield 'allen'
-        if word in ('alberta', 'bert', 'berta', 'bertie'):
+        if word in ('allie', 'bert', 'bertie'):
+            yield 'alberta'
+        if word in ('alberta', 'bert', 'berta', 'bertie', 'del', 'delbert', 'elbert'):
             yield 'albert'
+            yield 'adelbert'
+        if word in ('al', 'rich', 'richie'):
+            yield 'aldrich'
         if word in ('alex', 'al', 'eleck', 'sandy'):
             yield 'alexander'
+        if word in ('alex', 'alla', 'sandy'):
+            yield 'alexandra'
+        if word in ('al', 'fred'):
+            yield 'alfred'
+        if word in ('alfy', 'freda', 'freddy', 'frieda'):
+            yield 'alfreda'
         if word in ('allie', 'elsie', 'lisa'):
             yield 'alice'
             yield 'alicia'
+        if word in ('allie', 'mandy'):
+            yield 'almena'
+        if word in ('al', 'lon', 'lonzo'):
+            yield 'alonzo'
+        if word in ('al'):
+            yield 'alvin'
+        if word in ('manda', 'mandy'):
+            yield 'amanda'
+        if word in ('emily', 'mel', 'millie', 'amy'):
+            yield 'amelia'
+        if word in ('am', 'brose'):
+            yield 'ambrose'
+        if word in ('am'):
+            yield 'amos'
         if word in ('ander', 'andersen', 'andy', 'sonny'):
             yield 'anderson'
         if word in ('andy', 'drew'):
@@ -340,9 +396,19 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word in ('annette', 'annie', 'antoinette', 'nan', 'nanny', 'nana', 'nancy'):
             yield 'ann'
             yield 'anne'
-        if word in ('aron', 'aaron', 'aaryn', 'eryn'):
-            yield 'erin'
-        if word in ('august', 'austin', 'gus'):
+        if word in ('ann', 'tony', 'netta'):
+            yield 'antoinette'
+            yield 'antonia'
+        if word in ('ara', 'arry', 'belle', 'bella'):
+            yield 'arabella'
+            yield 'arabelle'
+        if word in ('archie'):
+            yield 'archibald'
+        if word in ('arnie'):
+            yield 'arnold'
+        if word in ('art', 'artie'):
+            yield 'arthur'
+        if word in ('august', 'austin', 'gus', 'gussie'):
             yield 'augustine'
             yield 'augustus'
         if word in ('bab', 'babs', 'barby', 'bobbie'):
@@ -355,12 +421,20 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'beatrice'
         if word in ('ben', 'benjy', 'bennie', 'benny', 'jamie'):
             yield 'benjamin'
+        if word in ('ben', 'bernie'):
+            yield 'bernard'
         if word in ('bert', 'bertie', 'birdie'):
             yield 'bertha'
+        if word in ('bert', 'bertie'):
+            yield 'bertram'
         if word in ('billie', 'billy'):
             yield 'bill'
         if word == 'bob':
             yield 'bobby'
+        if word in ('brad'):
+            yield 'bradford'
+        if word in ('cal', 'cale'):
+            yield 'caleb'
         if word in ('cathleen', 'katherine', 'kathleen', 'kathy'):
             yield 'catherine'
         if word in ('caeser', 'ceasar', 'ceaser'):
@@ -369,50 +443,129 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'charles'
         if word in ('char', 'lottie', 'lotta', 'sherry'):
             yield 'charlotte'
+        if word in ('chet'):
+            yield 'chester'
         if word in ('chris', 'christ', 'cris', 'kit', 'kris'):
             yield 'christian'
             yield 'christopher'
         if word in ('claire', 'clare'):
             yield 'clair'
+            yield 'clarence'
+        if word in ('claudie'):
+            yield 'claude'
+        if word in ('clem'):
+            yield 'clement'
         if word in ('clif', 'cliff', 'cliffy', 'ford'):
             yield 'clifford'
+        if word in ('con', 'connie', 'cornie', 'neel'):
+            yield 'cornelius'
+        if word in ('cy'):
+            yield 'cyrus'
+        if word in ('dan', 'danny'):
+            yield 'daniel'
         if word in ('dave', 'davey', 'day'):
             yield 'david'
         if word == 'delanor':
             yield 'delano'
+        if word in ('denny'):
+            yield 'dennis'
+        if word in ('dom', 'nick'):
+            yield 'dominic'
         if word in ('don', 'donny'):
             yield 'donald'
-        if word in ('dick', 'rich', 'rick', 'rickey', 'rickie', 'ricky'):
-            yield 'richard'
+        if word in ('doug'):
+            yield 'douglas'
         if word in ('ed', 'eddie', 'eddy', 'ned', 'ted', 'teddy'):
             yield 'edward'
-        if word in ('fran', 'frances', 'frank', 'frankie'):
-            yield 'francis'
-            yield 'franklin'
+        if word in ('ed', 'eddie'):
+            yield 'edwin'
+        if word in ('lee', 'lie'):
+            yield 'eli'
+        if word in ('eli', 'lige'):
+            yield 'elijah'
+        if word in ('eli', 'lish'):
+            yield 'elisha'
+        if word in ('eliza', 'bess', 'bessie', 'beth', 'betsy', 'betty', 'lib', 'libby', 'liz', 'liza', 'lisa', 'liz', 'lizzie'):
+            yield 'elizabeth'
+        if word in ('eli', 'elliot', 'lee'):
+            yield 'elliot'
+        if word in ('manuel', 'manny', 'man'):
+            yield 'emmanuel'
+        if word in ('em'):
+            yield 'emory'
+        if word in ('eph', 'ephie', 'ephy'):
+            yield 'ephraim'
+        if word in ('gene'):
+            yield 'eugene'
+        if word in ('aron', 'aaron', 'aaryn', 'eryn'):
+            yield 'erin'
+        if word in ('zeke'):
+            yield 'ezekiel'
+        if word in ('ez', 'ezzy'):
+            yield 'ezra'
+        if word in ('lix', 'lixie'):
+            yield 'felix'
         if word == 'fdr':
             yield 'franklin roosevelt'
             yield 'franklin delano roosevelt'
-        if word == 'goerge':
+        if word in ('fred', 'frankie', 'fran', 'frannie'):
+            yield 'ferdinand'
+        if word in ('fran', 'frances', 'frank', 'frankie'):
+            yield 'francis'
+            yield 'franklin'
+        if word in ('fred', 'freddy', 'fritz', 'rick', 'derick'):
+            yield 'frederick'
+        if word in ('gabe'):
+            yield 'gabriel'
+        if word in ('goerge', 'geordie', 'georgie'):
             yield 'george'
         if word == 'gw':
             yield 'george washington'
+        if word in ('gerry', 'jerry'):
+            yield 'gerald'
+        if word in ('gil', 'bert', 'bertie'):
+            yield 'gilbert'
+        if word in ('gordie'):
+            yield 'gordon'
+        if word in('greg', 'gregg'):
+            yield 'gregory'
+        if word in ('hal', 'harry'):
+            yield 'harold'
         if word in ('ella', 'ellen', 'ellie', 'lena'):
             yield 'helen'
             yield 'helene'
         if word in ('hal', 'hank', 'harry'):
             yield 'henry'
-        if word in ('herb', 'bert'):
+        if word in ('herb', 'bert', 'herbie', 'bertie'):
             yield 'herbert'
+        if word in ('herm', 'hermie'):
+            yield 'herman'
         if word in ('hop', 'hopp'):
             yield 'hopkins'
+        if word in ('race'):
+            yield 'horace'
         if word in ('hugh', 'bert', 'hub'):
             yield 'hubert'
+        if word in ('hughie', 'hew'):
+            yield 'hugh'
         if word in ('igg', 'iggy', 'nace', 'nate', 'natius'):
             yield 'ignatius'
         if word in ('ike', 'isac', 'zeke'):
             yield 'isaac'
-        if word == 'jakob':
+        if word in ('sy', 'zay'):
+            yield 'isaiah'
+        if word in ('jakob', 'jake', 'jay', 'coby'):
             yield 'jacob'
+        if word in ('jim', 'jimmy', 'jamie'):
+            yield 'james'
+        if word in ('jarvie'):
+            yield 'jarvis'
+        if word in ('jace', 'jay'):
+            yield 'jason'
+        if word in ('jed', 'jeddo', 'dyah'):
+            yield 'jedediah'
+        if word in ('jerry', 'jeremy'):
+            yield 'jeremiah'
         if word in ('jen', 'jenn', 'jenny'):
             yield 'jennifer'
         if word in ('jess', 'jesse', 'jessika', 'jessy'):
@@ -420,50 +573,96 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'jfk':
             yield 'john fitzgerald kennedy'
             yield 'john kennedy'
-        if word in ('jo', 'joey', 'josef', 'joseph', 'josephine'):
+        if word in ('jo', 'joey', 'josef', 'joseph', 'josephine','joey', 'josey'):
             yield 'joe'
+            yield 'joseph'
+        if word in ('joe'):
+            yield 'joel'
         if word in ('jack', 'jock', 'jon', 'jhon', 'johnny', 'jhonny', 'jonny'):
             yield 'john'
+            yield 'johnathan'
         if word in ('jos', 'joshua'):
             yield 'josh'
+        if word in ('josh', 'jos'):
+            yield 'joshua'
+        if word in ('si', 'siah'):
+            yield 'josiah'
+        if word in ('jude', 'judy'):
+            yield 'judah'
+        if word in ('jule', 'jules'):
+            yield 'julian'
         if word in ('ken', 'kenny', 'kendall', 'kendrick'):
             yield 'kenneth'
-        if word in('leo', 'leon', 'len', 'lenny', 'lineau'):
+        if word in ('larry', 'lawrie'):
+            yield 'lawrence'
+        if word in ('leo', 'leon', 'len', 'lenny', 'lineau'):
             yield 'leonard'
-        if word in ('lou', 'louie'):
+        if word in ('leo', 'polde'):
+            yield 'leopold'
+        if word in ('roy'):
+            yield 'leroy'
+        if word in ('lou', 'louie', 'lewis'):
             yield 'louis'
+            yield 'lewis'
+        if word in ('mal', 'ky', 'chi'):
+            yield 'malachi'
+        if word in ('manny', 'manu'):
+            yield 'manuel'
         if word in ('marty', 'mat', 'mattie', 'patsy', 'patty'):
             yield 'martha'
         if word == 'marty':
             yield 'martin'
         if word in ('molly', 'polly', 'mae', 'mamie', 'mitzi'):
             yield 'mary'
+        if word in ('matt' 'matty'):
+            yield 'matthew'
         if word in ('linda', 'lindy', 'mel', 'mindy'):
             yield 'melinda'
         if word in ('lisa', 'lissa', 'mel', 'milly', 'missy'):
             yield 'melissa'
         if word in ('micheal', 'mike'):
             yield 'michael'
+        if word in ('milt', 'miltie'):
+            yield 'milton'
+        if word in ('mose', 'moss'):
+            yield 'moses'
         if word in ('nat', 'nate', 'nathan', 'natty', 'than'):
             yield 'nathaniel'
-        if word in ('claas', 'claes', 'nicolas', 'nick'):
+        if word in ('claas', 'claes', 'nicolas', 'nick', 'nicky', 'klaus'):
             yield 'nicholas'
+        if word in ('noe'):
+            yield 'noah'
         if word == 'oliver':
             yield 'ollie'
+        if word in ('ollie', 'noll'):
+            yield 'oliver'
         if word in ('ossy', 'ozzie', 'ozzy', 'waldo'):
             yield 'oswald'
+            yield 'oscar'
         if word in ('paddy', 'pat', 'pate', 'patsy', 'peter'):
             yield 'patrick'
+        if word in ('paulie', 'pol'):
+            yield 'paul'
         if word == 'perry':
             yield 'pelegrine'
-        if word in ('pate', 'pete'):
+        if word in ('pate', 'pete', 'petey'):
             yield 'peter'
         if word in ('phil', 'phili', 'philli'):
             yield 'phillip'
+        if word in ('scott', 'scotty', 'pres'):
+            yield 'prescott'
         if word == 'ralph':
             yield 'raphael'
+        if word in ('rafe'):
+            yield 'ralph'
+        if word in ('ray', 'raymie' 'remy'):
+            yield 'raymond'
         if word in ('reba', 'becca', 'becky', 'beck'):
             yield 'rebecca'
+        if word in ('rube'):
+            yield 'reuben'
+        if word in ('dick', 'rich', 'rick', 'rickey', 'rickie', 'ricky'):
+            yield 'richard'
         if word == 'rfk':
             yield 'robert francis kennedy'
             yield 'robert kennedy'
@@ -471,38 +670,65 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'robert'
         if word in ('ron', 'ronaldo', 'ronnie'):
             yield 'ronald'
+        if word in ('sam', 'sammy'):
+            yield 'samuel'
         if word in ('sadie', 'sally', 'sara'):
             yield 'sarah'
-        if word in ('scott', 'scotty', 'pres'):
-            yield 'prescott'
-        if word in ('steph', 'stephan', 'steven', 'stevenson'):
+        if word in ('sol'):
+            yield 'saul'
+        if word in ('bastian', 'seb', 'sebby', 'bast'):
+            yield 'sebastian
+        if word in ('sy', 'si'):
+            yield 'silas'
+        if word in ('sol', 'solly' 'sully'):
+            yield 'solomon'
+        if word in ('steph', 'stephan', 'steven', 'stevenson', 'stevie'):
             yield 'steve'
+            yield 'stephen'
+            yield 'steven'
         if word in ('si', 'sly', 'sy', 'syl', 'vester', 'vet', 'vessie'):
             yield 'sylvester'
         if word == 'terry':
             yield 'terence'
+        if word in ('theo', 'ted', 'teddy'):
+            yield 'theodore'
         if word in ('terry', 'tess', 'tessie', 'tessa', 'thirza', 'thursa', 'tracy'):
             yield 'theresa'
         if word in ('tim', 'timmy'):
             yield 'timothy'
         if word in ('thom', 'tom', 'tommy', 'tony'):
             yield 'thomas'
+        if word in ('toby'):
+            yield 'tobias'
         if word in ('anthony', 'toni'):
             yield 'tony'
+        if word in ('ulie'):
+            yield 'ulysses'
         if word in ('nessa', 'essa', 'vanna'):
             yield 'vanessa'
         if word in ('franky', 'frony', 'ron', 'ronna', 'ronnie', 'vonnie'):
             yield 'veronica'
-        if word == 'vicky':
+        if word in ('vic', 'vicky', 'vickie'):
             yield 'victoria'
+            yield 'vic'
         if word in ('vin', 'vince', 'vinny'):
             yield 'vincent'
-        if word in ('will', 'willie', 'fred'):
+        if word in ('walt', 'wally'):
+            yield 'walter'
+        if word in ('will')
+        if word in ('will', 'willie', 'fred', 'willy'):
             yield 'wilfred'
-        if word in ('william', 'willie', 'willy'):
+            yield 'wilbur'
+        if word in ('william', 'willie', 'willy', 'billy', 'bill', 'bell', 'bela'):
             yield 'will'
+            yield 'william'
+            yield 'bill'
         if word == 'winnie':
             yield 'winifred'
+        if word in ('zach', 'zachy'):
+            yield 'zachariah'
+        if word in ('zeb'):
+            yield 'zebedee'
         if word in ('diah', 'dyer', 'zed'):
             yield 'zedediah'
 
