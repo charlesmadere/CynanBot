@@ -21,9 +21,5 @@ class HalfLifeSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
-    async def requireFileExtension(self) -> str:
-        pass
-
-    @abstractmethod
     async def requireSoundsDirectory(self) -> str:
         pass

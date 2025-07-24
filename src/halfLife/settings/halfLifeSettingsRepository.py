@@ -89,10 +89,6 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
         self.__cache = jsonContents
         return jsonContents
 
-    async def requireFileExtension(self) -> str:
-        jsonContents = await self.__readJson()
-        return utils.getStrFromDict(jsonContents, 'file_extension', fallback = 'wav')
-
     async def requireSoundsDirectory(self) -> str:
         jsonContents = await self.__readJson()
         return utils.getStrFromDict(jsonContents, 'sounds_directory', fallback = '../halfLife')

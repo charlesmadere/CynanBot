@@ -1,7 +1,10 @@
 import random
+import re
 from asyncio import AbstractEventLoop
-from typing import Collection, Final
+from typing import Collection, Final, Pattern
 
+import aiofiles.os
+import aiofiles.ospath
 import aiofiles.ospath
 from frozenlist import FrozenList
 
@@ -32,25 +35,8 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
         self.__halfLifeSettingsRepository: Final[HalfLifeSettingsRepositoryInterface] = halfLifeSettingsRepository
         self.__timber: Final[TimberInterface] = timber
 
-    async def __determineFilePath(
-        self,
-        voice: HalfLifeVoice,
-        directory: str,
-        text: str | None,
-    ) -> str | None:
-        if not utils.isValidStr(text):
-            return None
-
-        fileExtension = await self.__halfLifeSettingsRepository.requireFileExtension()
-        filePath = f'{directory}/{voice.keyName}/{text}.{fileExtension}'
-
-        if await aiofiles.ospath.isfile(
-            path = filePath,
-            loop = self.__eventLoop,
-        ):
-            return filePath
-        else:
-            return None
+        self.__soundFileNameRegEx: Final[Pattern] = re.compile(r'^(.+)\.(mp3)|(wav)$', re.IGNORECASE)
+        self.__textNormalizerRegEx: Final[Pattern] = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
     async def findSoundFiles(
         self,
@@ -76,15 +62,19 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
 
         voices.freeze()
 
-        message = message.lower()
         soundsDirectory = await self.__halfLifeSettingsRepository.requireSoundsDirectory()
         soundFiles: FrozenList[HalfLifeSoundFile] = FrozenList()
 
         for text in utils.getCleanedSplits(message):
+            normalizedText = self.__textNormalizerRegEx.sub('', text).casefold()
+
+            if not utils.isValidStr(normalizedText):
+                continue
+
             soundFile = await self.__findSoundFile(
                 voices = voices,
                 directory = soundsDirectory,
-                text = text,
+                text = normalizedText,
             )
 
             if soundFile is not None:
@@ -97,27 +87,65 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
         self,
         voices: Collection[HalfLifeVoice],
         directory: str,
-        text: str | None,
+        text: str,
     ) -> HalfLifeSoundFile | None:
-        if not utils.isValidStr(text):
-            return None
-
         # shuffle the voice order to introduce more random/organic/fun voice selections
         shuffledVoices: list[HalfLifeVoice] = list(voices)
         random.shuffle(shuffledVoices)
 
         for voice in shuffledVoices:
-            filePath = await self.__determineFilePath(
+            path = await self.__scanDirectoryForFile(
                 voice = voice,
                 directory = directory,
                 text = text,
             )
 
-            if utils.isValidStr(filePath):
+            if utils.isValidStr(path):
                 return HalfLifeSoundFile(
                     voice = voice,
-                    path = filePath,
+                    path = path,
                     text = text,
                 )
 
         return None
+
+    async def __scanDirectoryForFile(
+        self,
+        voice: HalfLifeVoice,
+        directory: str,
+        text: str,
+    ) -> str | None:
+        directoryPath = f'{directory}/{voice.keyName}'
+
+        if not await aiofiles.ospath.isdir(
+            s = directoryPath,
+            loop = self.__eventLoop,
+        ):
+            return None
+
+        directoryContents = await aiofiles.os.scandir(
+            path = directoryPath,
+            loop = self.__eventLoop,
+        )
+
+        matchingFiles: list[str] = list()
+
+        for entry in directoryContents:
+            if not entry.is_file():
+                continue
+
+            fileNameMatch = self.__soundFileNameRegEx.fullmatch(entry.name)
+            if fileNameMatch is None or not utils.isValidStr(fileNameMatch.group(1)):
+                continue
+
+            normalizedFileName = self.__textNormalizerRegEx.sub('', fileNameMatch.group(1))
+            if not utils.isValidStr(normalizedFileName):
+                continue
+            elif normalizedFileName.casefold() == text:
+                matchingFiles.append(entry.name)
+
+        if len(matchingFiles) == 0:
+            return None
+
+        chosenFile = random.choice(matchingFiles)
+        return f'{directoryPath}/{chosenFile}'
