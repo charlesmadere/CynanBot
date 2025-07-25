@@ -11,7 +11,7 @@ class ChatterInventoryRepositoryInterface(Clearable, ABC):
     async def get(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ChatterInventoryData:
         pass
 
@@ -21,6 +21,6 @@ class ChatterInventoryRepositoryInterface(Clearable, ABC):
         itemType: ChatterItemType,
         changeAmount: int,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ChatterInventoryData:
         pass

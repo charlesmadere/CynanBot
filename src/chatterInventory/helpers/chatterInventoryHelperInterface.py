@@ -11,7 +11,7 @@ class ChatterInventoryHelperInterface(ABC):
     async def get(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> PreparedChatterInventoryData:
         pass
 
@@ -21,6 +21,6 @@ class ChatterInventoryHelperInterface(ABC):
         itemType: ChatterItemType,
         giveAmount: int,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ChatterItemGiveResult:
         pass
