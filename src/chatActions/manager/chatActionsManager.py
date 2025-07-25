@@ -1,3 +1,5 @@
+from typing import Final
+
 from .chatActionsManagerInterface import ChatActionsManagerInterface
 from ..absChatAction import AbsChatAction
 from ..anivCheckChatAction import AnivCheckChatAction
@@ -43,7 +45,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         ttsChatterChatAction: TtsChatterChatAction | None,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
-        voicemailChatAction: VoicemailChatAction | None
+        voicemailChatAction: VoicemailChatAction | None,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -80,21 +82,21 @@ class ChatActionsManager(ChatActionsManagerInterface):
         elif voicemailChatAction is not None and not isinstance(voicemailChatAction, VoicemailChatAction):
             raise TypeError(f'voicemailChatAction argument is malformed: \"{voicemailChatAction}\"')
 
-        self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
-        self.__anivCheckChatAction: AbsChatAction | None = anivCheckChatAction
-        self.__chatBackMessagesChatAction: AbsChatAction | None = chatBackMessagesChatAction
-        self.__chatLoggerChatAction: AbsChatAction | None = chatLoggerChatAction
-        self.__cheerActionsWizardChatAction: CheerActionsWizardChatAction | None = cheerActionsWizardChatAction
-        self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
-        self.__mostRecentChatsRepository: MostRecentChatsRepositoryInterface =  mostRecentChatsRepository
-        self.__persistAllUsersChatAction: AbsChatAction | None = persistAllUsersChatAction
-        self.__recurringActionsWizardChatAction: AbsChatAction | None = recurringActionsWizardChatAction
-        self.__saveMostRecentAnivMessageChatAction: AbsChatAction | None = saveMostRecentAnivMessageChatAction
-        self.__soundAlertChatAction: AbsChatAction | None = soundAlertChatAction
-        self.__supStreamerChatAction: AbsChatAction | None = supStreamerChatAction
-        self.__ttsChatterChatAction: AbsChatAction | None = ttsChatterChatAction
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__voicemailChatAction: VoicemailChatAction | None = voicemailChatAction
+        self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
+        self.__anivCheckChatAction: Final[AbsChatAction | None] = anivCheckChatAction
+        self.__chatBackMessagesChatAction: Final[AbsChatAction | None] = chatBackMessagesChatAction
+        self.__chatLoggerChatAction: Final[AbsChatAction | None] = chatLoggerChatAction
+        self.__cheerActionsWizardChatAction: Final[CheerActionsWizardChatAction | None] = cheerActionsWizardChatAction
+        self.__mostRecentAnivMessageTimeoutHelper: Final[MostRecentAnivMessageTimeoutHelperInterface | None] = mostRecentAnivMessageTimeoutHelper
+        self.__mostRecentChatsRepository: Final[MostRecentChatsRepositoryInterface] = mostRecentChatsRepository
+        self.__persistAllUsersChatAction: Final[AbsChatAction | None] = persistAllUsersChatAction
+        self.__recurringActionsWizardChatAction: Final[AbsChatAction | None] = recurringActionsWizardChatAction
+        self.__saveMostRecentAnivMessageChatAction: Final[AbsChatAction | None] = saveMostRecentAnivMessageChatAction
+        self.__soundAlertChatAction: Final[AbsChatAction | None] = soundAlertChatAction
+        self.__supStreamerChatAction: Final[AbsChatAction | None] = supStreamerChatAction
+        self.__ttsChatterChatAction: Final[AbsChatAction | None] = ttsChatterChatAction
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
+        self.__voicemailChatAction: Final[VoicemailChatAction | None] = voicemailChatAction
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
@@ -102,7 +104,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self,
         mostRecentChat: MostRecentChat | None,
         message: TwitchMessage,
-        user: UserInterface
+        user: UserInterface,
     ):
         if mostRecentChat is not None and not isinstance(mostRecentChat, MostRecentChat):
             raise TypeError(f'mostRecentChat argument is malformed: \"{mostRecentChat}\"')
@@ -115,7 +117,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
             await self.__saveMostRecentAnivMessageChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
                 message = message,
-                user = user
+                user = user,
             )
 
             if self.__mostRecentAnivMessageTimeoutHelper is not None:
@@ -124,14 +126,14 @@ class ChatActionsManager(ChatActionsManagerInterface):
                     chatterUserId = message.getAuthorId(),
                     chatterUserName = message.getAuthorName(),
                     twitchChannelId = await message.getTwitchChannelId(),
-                    user = user
+                    user = user,
                 )
 
         if self.__anivCheckChatAction is not None:
             await self.__anivCheckChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
                 message = message,
-                user = user
+                user = user,
             )
 
     async def handleMessage(self, message: TwitchMessage):
@@ -141,17 +143,17 @@ class ChatActionsManager(ChatActionsManagerInterface):
         await self.__activeChattersRepository.add(
             chatterUserId = message.getAuthorId(),
             chatterUserName = message.getAuthorName(),
-            twitchChannelId = await message.getTwitchChannelId()
+            twitchChannelId = await message.getTwitchChannelId(),
         )
 
         mostRecentChat = await self.__mostRecentChatsRepository.get(
             chatterUserId = message.getAuthorId(),
-            twitchChannelId = await message.getTwitchChannelId()
+            twitchChannelId = await message.getTwitchChannelId(),
         )
 
         await self.__mostRecentChatsRepository.set(
             chatterUserId = message.getAuthorId(),
-            twitchChannelId = await message.getTwitchChannelId()
+            twitchChannelId = await message.getTwitchChannelId(),
         )
 
         user = await self.__usersRepository.getUserAsync(message.getTwitchChannelName())
@@ -159,81 +161,81 @@ class ChatActionsManager(ChatActionsManagerInterface):
         await self.__handleAnivChatActions(
             mostRecentChat = mostRecentChat,
             message = message,
-            user = user
+            user = user,
         )
 
         if self.__chatBackMessagesChatAction is not None:
             await self.__chatBackMessagesChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
                 message = message,
-                user = user
+                user = user,
             )
 
         if self.__chatLoggerChatAction is not None:
             await self.__chatLoggerChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
                 message = message,
-                user = user
+                user = user,
             )
 
         if self.__cheerActionsWizardChatAction is not None:
             await self.__cheerActionsWizardChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
                 message = message,
-                user = user
+                user = user,
             )
 
         if self.__persistAllUsersChatAction is not None:
             await self.__persistAllUsersChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
                 message = message,
-                user = user
+                user = user,
             )
 
         if self.__recurringActionsWizardChatAction is not None:
             await self.__recurringActionsWizardChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
                 message = message,
-                user = user
+                user = user,
             )
 
         if self.__voicemailChatAction is not None:
             await self.__voicemailChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
                 message = message,
-                user = user
+                user = user,
             )
 
         await self.__handleSoundMessage(
             mostRecentChat = mostRecentChat,
             message = message,
-            user = user
+            user = user,
         )
 
     async def __handleSoundMessage(
         self,
         mostRecentChat: MostRecentChat | None,
         message: TwitchMessage,
-        user: UserInterface
+        user: UserInterface,
     ):
         if self.__supStreamerChatAction is not None and await self.__supStreamerChatAction.handleChat(
             mostRecentChat = mostRecentChat,
             message = message,
-            user = user
+            user = user,
         ):
             return
 
         elif self.__soundAlertChatAction is not None and await self.__soundAlertChatAction.handleChat(
             mostRecentChat = mostRecentChat,
             message = message,
-            user = user
+            user = user,
         ):
             return
 
         elif self.__ttsChatterChatAction is not None and await self.__ttsChatterChatAction.handleChat(
             mostRecentChat = mostRecentChat,
             message = message,
-            user = user
+            user = user,
         ):
             return
 

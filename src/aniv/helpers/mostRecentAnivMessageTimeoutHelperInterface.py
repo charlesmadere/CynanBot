@@ -13,7 +13,7 @@ class MostRecentAnivMessageTimeoutHelperInterface(ABC):
         chatterUserId: str,
         chatterUserName: str,
         twitchChannelId: str,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         pass
 

@@ -101,7 +101,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         chatterUserId: str,
         chatterUserName: str,
         twitchChannelId: str,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         if chatterMessage is not None and not isinstance(chatterMessage, str):
             raise TypeError(f'chatterMessage argument is malformed: \"{chatterMessage}\"')
@@ -206,7 +206,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             timeoutScore = timeoutScore,
             timeoutData = timeoutData,
             chatterUserName = chatterUserName,
-            user = user
+            user = user,
         )
 
         return True
@@ -258,7 +258,8 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             randomNumber = randomNumber,
             timeoutScale = timeoutScale,
             timeoutProbability = timeoutProbability,
-            durationSeconds = durationSeconds
+            durationSeconds = durationSeconds,
+            durationMessage = utils.secondsToDurationMessage(durationSeconds),
         )
 
     async def __determineTimeoutReason(
@@ -272,13 +273,12 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
                 return f'{timeoutData.durationSecondsStr} de suspension por copiar un mensaje de {anivUser.userName}'
 
             case _:
-                durationMessage = utils.secondsToDurationMessage(timeoutData.durationSeconds)
-                return f'{durationMessage} timeout for copying an {anivUser.userName} message'
+                return f'{timeoutData.durationMessage} timeout for copying an {anivUser.userName} message'
 
     async def __isImmuneChatter(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> bool:
         if await self.__timeoutImmuneUserIdsRepository.isImmune(
             userId = chatterUserId,
@@ -297,7 +297,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         timeoutScore: AnivCopyMessageTimeoutScore,
         timeoutData: AnivTimeoutData,
         chatterUserName: str,
-        user: UserInterface
+        user: UserInterface,
     ):
         if not user.isAnivMessageCopyTimeoutChatReportingEnabled:
             return
@@ -310,7 +310,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         emote = await self.__trollmojiHelper.getGottemEmoteOrBackup()
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         timeoutScoreString = await self.__timeoutScoreToString(timeoutScore)
-        msg = f'@{chatterUserName} {emote} {timeoutData.durationSecondsStr}s {emote} {timeoutScoreString}'
+        msg = f'@{chatterUserName} {emote} {timeoutData.durationMessage} {emote} {timeoutScoreString}'
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,

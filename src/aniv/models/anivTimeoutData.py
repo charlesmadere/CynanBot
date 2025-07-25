@@ -9,6 +9,7 @@ class AnivTimeoutData:
     timeoutScale: float | None
     timeoutProbability: float
     durationSeconds: int
+    durationMessage: str
 
     @property
     def durationSecondsStr(self) -> str:

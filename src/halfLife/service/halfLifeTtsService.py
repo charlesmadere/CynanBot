@@ -50,13 +50,12 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
         if not utils.isValidStr(message):
             return None
 
-        voices: FrozenList[HalfLifeVoice]
+        voices: FrozenList[HalfLifeVoice] = FrozenList()
 
         if voice is None or voice is HalfLifeVoice.ALL:
-            voices = FrozenList(HalfLifeVoice)
+            voices.extend(HalfLifeVoice)
             voices.remove(HalfLifeVoice.ALL)
         else:
-            voices = FrozenList()
             voices.append(voice)
 
         voices.freeze()
@@ -94,8 +93,7 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
 
         for voice in shuffledVoices:
             path = await self.__scanDirectoryForFile(
-                voice = voice,
-                directory = directory,
+                directory = f'{directory}/{voice.keyName}',
                 text = text,
             )
 
@@ -110,20 +108,17 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
 
     async def __scanDirectoryForFile(
         self,
-        voice: HalfLifeVoice,
         directory: str,
         text: str,
     ) -> str | None:
-        directoryPath = f'{directory}/{voice.keyName}'
-
         if not await aiofiles.ospath.isdir(
-            s = directoryPath,
+            s = directory,
             loop = self.__eventLoop,
         ):
             return None
 
         directoryContents = await aiofiles.os.scandir(
-            path = directoryPath,
+            path = directory,
             loop = self.__eventLoop,
         )
 
@@ -147,4 +142,4 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
             return None
 
         chosenFile = random.choice(matchingFiles)
-        return f'{directoryPath}/{chosenFile}'
+        return f'{directory}/{chosenFile}'
