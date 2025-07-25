@@ -20,6 +20,7 @@ class UserJsonConstant(Enum):
     ENABLED = auto()
     GIVE_CUTENESS_ENABLED = auto()
     LOCATION_ID = auto()
+    MASTODON_URL = auto()
     MAXIMUM_GRENADES_WITHIN_COOLDOWN = auto()
     NOTIFY_OF_RAID_ENABLED = auto()
     PRANKS_ENABLED = auto()
@@ -55,6 +56,7 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.ENABLED: return 'enabled'
             case UserJsonConstant.GIVE_CUTENESS_ENABLED: return 'giveCutenessEnabled'
             case UserJsonConstant.LOCATION_ID: return 'locationId'
+            case UserJsonConstant.MASTODON_URL: return 'mastodonUrl'
             case UserJsonConstant.MAXIMUM_GRENADES_WITHIN_COOLDOWN: return 'maximumGrenadesWithinCooldown'
             case UserJsonConstant.NOTIFY_OF_RAID_ENABLED: return 'notifyOfRaidEnabled'
             case UserJsonConstant.PRANKS_ENABLED: return 'pranksEnabled'

@@ -17,6 +17,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         hokkaidoubareUserId: str | None = '490529357',
         imytUserId: str | None = '20037000',
         jrpUserId: str | None = '47768842',
+        kiawaBotUserId: str | None = '786820295',
         lucentUserId: str | None = '30992900',
         mandooBotUserId: str | None = '761337972',
         merttUserId: str | None = '76798688',
@@ -25,7 +26,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         patLanicusUserId: str | None = '46826466',
         stashiocatUserId: str | None = '20889981',
         volwrathUserId: str | None = '40463997',
-        zanianUserId: str | None = '57704009'
+        zanianUserId: str | None = '57704009',
     ):
         if acacUserId is not None and not isinstance(acacUserId, str):
             raise TypeError(f'acacUserId argument is malformed: \"{acacUserId}\"')
@@ -51,6 +52,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'imytUserId argument is malformed: \"{imytUserId}\"')
         elif jrpUserId is not None and not isinstance(jrpUserId, str):
             raise TypeError(f'jrpUserId argument is malformed: \"{jrpUserId}\"')
+        elif kiawaBotUserId is not None and not isinstance(kiawaBotUserId, str):
+            raise TypeError(f'kiawaBotUserId argument is malformed: \"{kiawaBotUserId}\"')
         elif lucentUserId is not None and not isinstance(lucentUserId, str):
             raise TypeError(f'lucentUserId argument is malformed: \"{lucentUserId}\"')
         elif mandooBotUserId is not None and not isinstance(mandooBotUserId, str):
@@ -82,6 +85,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         self.__hokkaidoubareUserId: str | None = hokkaidoubareUserId
         self.__imytUserId: str | None = imytUserId
         self.__jrpUserId: str | None = jrpUserId
+        self.__kiawaBotUserId: str | None = kiawaBotUserId
         self.__lucentUserId: str | None = lucentUserId
         self.__mandooBotUserId: str | None = mandooBotUserId
         self.__merttUserId: str | None = merttUserId
@@ -127,6 +131,9 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
 
     async def getJrpUserId(self) -> str | None:
         return self.__jrpUserId
+
+    async def getKiawaBotUserId(self) -> str | None:
+        return self.__kiawaBotUserId
 
     async def getLucentUserId(self) -> str | None:
         return self.__lucentUserId

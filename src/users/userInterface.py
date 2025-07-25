@@ -533,6 +533,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def minimumRaidViewersForNotification(self) -> int | None:
+        pass
+
+    @property
+    @abstractmethod
     def pkmnBattleRewardId(self) -> str | None:
         pass
 

@@ -72,6 +72,12 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
                 twitchChannelId = raidData.twitchChannelId,
             )
 
+        minimumRaidViewersForNotification = raidData.user.minimumRaidViewersForNotification
+
+        if minimumRaidViewersForNotification is not None and raidData.viewers < minimumRaidViewersForNotification:
+            self.__timber.log('TwitchRaidHandler', f'Received raid that has too few viewers to be considered for notification ({minimumRaidViewersForNotification=}) ({raidData=})')
+            return
+
         if raidData.user.isTtsEnabled:
             await self.__processTtsEvent(raidData)
 

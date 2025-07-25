@@ -351,7 +351,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word in ('aggy', 'inez', 'nessa'):
             yield 'agatha'
             yield 'agnes'
-        if word in ('allie' 'lena'):
+        if word in ('allie', 'lena'):
             yield 'aileen'
         if word in ('al', 'alan', 'allan', 'alen', 'allen', 'lonson'):
             yield 'alan'
@@ -429,8 +429,6 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'bertram'
         if word in ('billie', 'billy'):
             yield 'bill'
-        if word == 'bob':
-            yield 'bobby'
         if word in ('brad'):
             yield 'bradford'
         if word in ('cal', 'cale'):
@@ -465,7 +463,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'daniel'
         if word in ('dave', 'davey', 'day'):
             yield 'david'
-        if word == 'delanor':
+        if word in ('delanor'):
             yield 'delano'
         if word in ('denny'):
             yield 'dennis'
@@ -610,11 +608,10 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'manuel'
         if word in ('marty', 'mat', 'mattie', 'patsy', 'patty'):
             yield 'martha'
-        if word == 'marty':
             yield 'martin'
         if word in ('molly', 'polly', 'mae', 'mamie', 'mitzi'):
             yield 'mary'
-        if word in ('matt' 'matty'):
+        if word in ('matt', 'matty'):
             yield 'matthew'
         if word in ('linda', 'lindy', 'mel', 'mindy'):
             yield 'melinda'
@@ -630,11 +627,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'nathaniel'
         if word in ('claas', 'claes', 'nicolas', 'nick', 'nicky', 'klaus'):
             yield 'nicholas'
-        if word in ('noe'):
+        if word in ('noa', 'noe'):
             yield 'noah'
-        if word == 'oliver':
-            yield 'ollie'
-        if word in ('ollie', 'noll'):
+        if word in ('olie', 'ollie', 'noll'):
             yield 'oliver'
         if word in ('ossy', 'ozzie', 'ozzy', 'waldo'):
             yield 'oswald'
@@ -643,7 +638,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'patrick'
         if word in ('paulie', 'pol'):
             yield 'paul'
-        if word == 'perry':
+        if word in ('perry'):
             yield 'pelegrine'
         if word in ('pate', 'pete', 'petey'):
             yield 'peter'
@@ -663,7 +658,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'reuben'
         if word in ('dick', 'rich', 'rick', 'rickey', 'rickie', 'ricky'):
             yield 'richard'
-        if word == 'rfk':
+        if word in ('rfk'):
             yield 'robert francis kennedy'
             yield 'robert kennedy'
         if word in ('bob', 'bobby', 'rob', 'robb', 'robbie', 'robby', 'roberto', 'robin', 'rupert'):
@@ -677,7 +672,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word in ('sol'):
             yield 'saul'
         if word in ('bastian', 'seb', 'sebby', 'bast'):
-            yield 'sebastian
+            yield 'sebastian'
         if word in ('sy', 'si'):
             yield 'silas'
         if word in ('sol', 'solly' 'sully'):
@@ -715,7 +710,6 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'vincent'
         if word in ('walt', 'wally'):
             yield 'walter'
-        if word in ('will')
         if word in ('will', 'willie', 'fred', 'willy'):
             yield 'wilfred'
             yield 'wilbur'

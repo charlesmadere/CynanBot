@@ -212,13 +212,14 @@ class UsersRepository(UsersRepositoryInterface):
         isVulnerableChattersEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.VULNERABLE_CHATTERS_ENABLED.jsonKey, False)
         isWeatherEnabled = utils.getBoolFromDict(userJson, 'weatherEnabled', False)
         isWordOfTheDayEnabled = utils.getBoolFromDict(userJson, 'wordOfTheDayEnabled', False)
+        minimumRaidViewersForNotification = utils.getIntFromDict(userJson, 'minimumRaidViewersForNotification', 2)
         blueSkyUrl = utils.getStrFromDict(userJson, UserJsonConstant.BLUE_SKY_URL.jsonKey, '')
         casualGamePollRewardId = utils.getStrFromDict(userJson, 'casualGamePollRewardId', '')
         casualGamePollUrl = utils.getStrFromDict(userJson, 'casualGamePollUrl', '')
         discordUrl = utils.getStrFromDict(userJson, UserJsonConstant.DISCORD_URL.jsonKey, '')
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
-        mastodonUrl = utils.getStrFromDict(userJson, 'mastodonUrl', '')
+        mastodonUrl = utils.getStrFromDict(userJson, UserJsonConstant.MASTODON_URL.jsonKey, '')
         randomSoundAlertRewardId = utils.getStrFromDict(userJson, 'randomSoundAlertRewardId', '')
         setChatterPreferredTtsRewardId = utils.getStrFromDict(userJson, 'setChatterPreferredTtsRewardId', '')
         soundAlertRewardId = utils.getStrFromDict(userJson, 'soundAlertRewardId', '')
@@ -457,6 +458,7 @@ class UsersRepository(UsersRepositoryInterface):
             anivMessageCopyTimeoutMaxSeconds = anivMessageCopyTimeoutMaxSeconds,
             maximumGrenadesWithinCooldown = maximumGrenadesWithinCooldown,
             maximumTtsCheerAmount = maximumTtsCheerAmount,
+            minimumRaidViewersForNotification = minimumRaidViewersForNotification,
             minimumTtsCheerAmount = minimumTtsCheerAmount,
             superTriviaCheerTriggerAmount = superTriviaCheerTriggerAmount,
             superTriviaCheerTriggerMaximum = superTriviaCheerTriggerMaximum,

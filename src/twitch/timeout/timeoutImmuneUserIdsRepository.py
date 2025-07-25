@@ -23,7 +23,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         twitchFriendsUserIdProvider: TwitchFriendsUserIdRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        otherImmuneUserIdsLinesReader: LinesReaderInterface | None = None
+        otherImmuneUserIdsLinesReader: LinesReaderInterface | None = None,
     ):
         if not isinstance(cynanBotUserIdsProvider, CynanBotUserIdsProviderInterface):
             raise TypeError(f'cynanBotUserIdsProvider argument is malformed: \"{cynanBotUserIdsProvider}\"')
@@ -128,6 +128,10 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         funtoonUserId = await self.__funtoonUserIdProvider.getFuntoonUserId()
         if utils.isValidStr(funtoonUserId):
             newUserIds.add(funtoonUserId)
+
+        kiawaBotUserId = await self.__twitchFriendsUserIdProvider.getKiawaBotUserId()
+        if utils.isValidStr(kiawaBotUserId):
+            newUserIds.add(kiawaBotUserId)
 
         mandooBotUserId = await self.__twitchFriendsUserIdProvider.getMandooBotUserId()
         if utils.isValidStr(mandooBotUserId):

@@ -79,6 +79,10 @@ class TestUserJsonConstants:
         result = UserJsonConstant.LOCATION_ID.jsonKey
         assert result == 'locationId'
 
+    def test_jsonKey_withMastodonUrl(self):
+        result = UserJsonConstant.MASTODON_URL.jsonKey
+        assert result == 'mastodonUrl'
+
     def test_jsonKey_withMaximumGrenadesWithinCooldown(self):
         result = UserJsonConstant.MAXIMUM_GRENADES_WITHIN_COOLDOWN.jsonKey
         assert result == 'maximumGrenadesWithinCooldown'

@@ -52,6 +52,10 @@ class TwitchFriendsUserIdRepositoryInterface(ABC):
         pass
 
     @abstractmethod
+    async def getKiawaBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getLucentUserId(self) -> str | None:
         pass
 

@@ -84,6 +84,7 @@ class User(UserInterface):
         anivMessageCopyTimeoutMaxSeconds: int | None,
         maximumGrenadesWithinCooldown: int | None,
         maximumTtsCheerAmount: int | None,
+        minimumRaidViewersForNotification: int | None,
         minimumTtsCheerAmount: int | None,
         superTriviaCheerTriggerAmount: int | None,
         superTriviaCheerTriggerMaximum: int | None,
@@ -256,6 +257,8 @@ class User(UserInterface):
             raise TypeError(f'maximumGrenadesWithinCooldown argument is malformed: \"{maximumGrenadesWithinCooldown}\"')
         elif maximumTtsCheerAmount is not None and not utils.isValidInt(maximumTtsCheerAmount):
             raise TypeError(f'maximumTtsCheerAmount argument is malformed: \"{maximumTtsCheerAmount}\"')
+        elif minimumRaidViewersForNotification is not None and not utils.isValidInt(minimumRaidViewersForNotification):
+            raise TypeError(f'minimumRaidViewersForNotification argument is malformed: \"{minimumRaidViewersForNotification}\"')
         elif minimumTtsCheerAmount is not None and not utils.isValidInt(minimumTtsCheerAmount):
             raise TypeError(f'minimumTtsCheerAmount argument is malformed: \"{minimumTtsCheerAmount}\"')
         elif superTriviaGamePoints is not None and not utils.isValidInt(superTriviaGamePoints):
@@ -415,6 +418,7 @@ class User(UserInterface):
         self.__anivMessageCopyTimeoutMaxSeconds: int | None = anivMessageCopyTimeoutMaxSeconds
         self.__maximumGrenadesWithinCooldown: int | None = maximumGrenadesWithinCooldown
         self.__maximumTtsCheerAmount: int | None = maximumTtsCheerAmount
+        self.__minimumRaidViewersForNotification: int | None = minimumRaidViewersForNotification
         self.__minimumTtsCheerAmount: int | None = minimumTtsCheerAmount
         self.__superTriviaCheerTriggerAmount: int | None = superTriviaCheerTriggerAmount
         self.__superTriviaCheerTriggerMaximum: int | None = superTriviaCheerTriggerMaximum
@@ -890,6 +894,10 @@ class User(UserInterface):
     @property
     def isWordOfTheDayEnabled(self) -> bool:
         return self.__isWordOfTheDayEnabled
+
+    @property
+    def minimumRaidViewersForNotification(self) -> int | None:
+        return self.__minimumRaidViewersForNotification
 
     @property
     def pkmnBattleRewardId(self) -> str | None:
