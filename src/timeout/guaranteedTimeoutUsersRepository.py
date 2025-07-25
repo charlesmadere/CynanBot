@@ -1,3 +1,5 @@
+from typing import Final
+
 from .guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
@@ -9,15 +11,15 @@ class GuaranteedTimeoutUsersRepository(GuaranteedTimeoutUsersRepositoryInterface
     def __init__(
         self,
         timber: TimberInterface,
-        twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface
+        twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = twitchFriendsUserIdRepository
 
         self.__userIds: frozenset[str] | None = None
 

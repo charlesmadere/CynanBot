@@ -43,6 +43,7 @@ from ..streamElements.userKeyRepository.streamElementsUserKeyRepositoryInterface
     StreamElementsUserKeyRepositoryInterface
 from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from ..timber.timberInterface import TimberInterface
+from ..timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from ..timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
 from ..timeout.timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
 from ..trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
@@ -102,6 +103,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
         googleSettingsRepository: GoogleSettingsRepositoryInterface | None,
+        guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface | None,
         halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface | None,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface | None,
         locationsRepository: LocationsRepositoryInterface | None,
@@ -143,7 +145,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         voicemailsRepository: VoicemailsRepositoryInterface | None,
         voicemailSettingsRepository: VoicemailSettingsRepositoryInterface | None,
         weatherRepository: WeatherRepositoryInterface | None,
-        wordOfTheDayRepository: WordOfTheDayRepositoryInterface | None
+        wordOfTheDayRepository: WordOfTheDayRepositoryInterface | None,
     ):
         if not isinstance(addOrRemoveUserDataHelper, AddOrRemoveUserDataHelperInterface):
             raise TypeError(f'addOrRemoveUserDataHelper argument is malformed: \"{addOrRemoveUserDataHelper}\"')
@@ -181,6 +183,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif googleSettingsRepository is not None and not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
             raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
+        elif guaranteedTimeoutUsersRepository is not None and not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
+            raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif halfLifeSettingsRepository is not None and not isinstance(halfLifeSettingsRepository, HalfLifeSettingsRepositoryInterface):
             raise TypeError(f'halfLifeSettingsRepository argument is malformed: \"{halfLifeSettingsRepository}\"')
         elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
@@ -289,6 +293,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(funtoonTokensRepository)
         self.__clearables.append(generalSettingsRepository)
         self.__clearables.append(googleSettingsRepository)
+        self.__clearables.append(guaranteedTimeoutUsersRepository)
         self.__clearables.append(halfLifeSettingsRepository)
         self.__clearables.append(isLiveOnTwitchRepository)
         self.__clearables.append(locationsRepository)

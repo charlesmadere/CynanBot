@@ -1711,7 +1711,7 @@ anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
 
 guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = GuaranteedTimeoutUsersRepository(
     timber = timber,
-    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
 )
 
 mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = MostRecentAnivMessageRepository(
@@ -3198,6 +3198,7 @@ cynanBot = CynanBot(
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
     googleSettingsRepository = googleSettingsRepository,
+    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     jishoHelper = jishoHelper,

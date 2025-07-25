@@ -48,7 +48,7 @@ class ChatterInventoryRepository(ChatterInventoryRepositoryInterface):
     async def get(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ChatterInventoryData:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
@@ -63,7 +63,7 @@ class ChatterInventoryRepository(ChatterInventoryRepositoryInterface):
         inventoryData = await self.__get(
             connection = connection,
             chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         await connection.close()
@@ -74,7 +74,7 @@ class ChatterInventoryRepository(ChatterInventoryRepositoryInterface):
         self,
         connection: DatabaseConnection,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ChatterInventoryData:
         record = await connection.fetchRow(
             '''
@@ -144,7 +144,7 @@ class ChatterInventoryRepository(ChatterInventoryRepositoryInterface):
         itemType: ChatterItemType,
         changeAmount: int,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ChatterInventoryData:
         if not isinstance(itemType, ChatterItemType):
             raise TypeError(f'itemType argument is malformed: \"{itemType}\"')
@@ -161,7 +161,7 @@ class ChatterInventoryRepository(ChatterInventoryRepositoryInterface):
         inventoryData = await self.__get(
             connection = connection,
             chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         newInventory = dict(inventoryData.inventory)
@@ -184,7 +184,7 @@ class ChatterInventoryRepository(ChatterInventoryRepositoryInterface):
         inventoryData = ChatterInventoryData(
             inventory = frozendict(newInventory),
             chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         self.__cache[f'{twitchChannelId}:{chatterUserId}'] = inventoryData
