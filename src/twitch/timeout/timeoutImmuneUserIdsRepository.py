@@ -141,6 +141,10 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         if utils.isValidStr(oathyBotUserId):
             newUserIds.add(oathyBotUserId)
 
+        theCatComputerUserId = await self.__twitchFriendsUserIdProvider.getTheCatComputerUserId()
+        if utils.isValidStr(theCatComputerUserId):
+            newUserIds.add(theCatComputerUserId)
+
         officialTwitchAccountUserIds = await self.__officialTwitchAccountUserIdProvider.getAllUserIds()
         newUserIds.update(officialTwitchAccountUserIds)
 

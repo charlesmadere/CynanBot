@@ -1,3 +1,5 @@
+from typing import Final
+
 from .twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 
 
@@ -23,8 +25,10 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         merttUserId: str | None = '76798688',
         miaGuwuUserId: str | None = '176071941',
         oathyBotUserId: str | None = '147389114',
+        oatsngoatsUserId: str | None = '39886669',
         patLanicusUserId: str | None = '46826466',
         stashiocatUserId: str | None = '20889981',
+        theCatComputerUserId: str | None = '1326985885',
         volwrathUserId: str | None = '40463997',
         zanianUserId: str | None = '57704009',
     ):
@@ -64,37 +68,43 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'miaGuwuUserId argument is malformed: \"{miaGuwuUserId}\"')
         elif oathyBotUserId is not None and not isinstance(oathyBotUserId, str):
             raise TypeError(f'oathyBotUserId argument is malformed: \"{oathyBotUserId}\"')
+        elif oatsngoatsUserId is not None and not isinstance(oatsngoatsUserId, str):
+            raise TypeError(f'oatsngoatsUserId argument is malformed: \"{oatsngoatsUserId}\"')
         elif patLanicusUserId is not None and not isinstance(patLanicusUserId, str):
             raise TypeError(f'patLanicusUserId argument is malformed: \"{patLanicusUserId}\"')
         elif stashiocatUserId is not None and not isinstance(stashiocatUserId, str):
             raise TypeError(f'stashiocatUserId argument is malformed: \"{stashiocatUserId}\"')
+        elif theCatComputerUserId is not None and not isinstance(theCatComputerUserId, str):
+            raise TypeError(f'theCatComputerUserId argument is malformed: \"{theCatComputerUserId}\"')
         elif volwrathUserId is not None and not isinstance(volwrathUserId, str):
             raise TypeError(f'volwrathUserId argument is malformed: \"{volwrathUserId}\"')
         elif zanianUserId is not None and not isinstance(zanianUserId, str):
             raise TypeError(f'zanianUserId argument is malformed: \"{zanianUserId}\"')
 
-        self.__acacUserId: str | None = acacUserId
-        self.__albeeesUserId: str | None = albeeesUserId
-        self.__aneevUserId: str | None = aneevUserId
-        self.__anivUserId: str | None = anivUserId
-        self.__ayAerithUserId: str | None = ayAerithUserId
-        self.__bastionBlueUserId: str | None = bastionBlueUserId
-        self.__charlesUserId: str | None = charlesUserId
-        self.__dylanStewUserId: str | None = dylanStewUserId
-        self.__eddieUserId: str | None = eddieUserId
-        self.__hokkaidoubareUserId: str | None = hokkaidoubareUserId
-        self.__imytUserId: str | None = imytUserId
-        self.__jrpUserId: str | None = jrpUserId
-        self.__kiawaBotUserId: str | None = kiawaBotUserId
-        self.__lucentUserId: str | None = lucentUserId
-        self.__mandooBotUserId: str | None = mandooBotUserId
-        self.__merttUserId: str | None = merttUserId
-        self.__miaGuwuUserId: str | None = miaGuwuUserId
-        self.__oathyBotUserId: str | None = oathyBotUserId
-        self.__patLanicusUserId: str | None = patLanicusUserId
-        self.__stashiocatUserId: str | None = stashiocatUserId
-        self.__volwrathUserId: str | None = volwrathUserId
-        self.__zanianUserId: str | None = zanianUserId
+        self.__acacUserId: Final[str | None] = acacUserId
+        self.__albeeesUserId: Final[str | None] = albeeesUserId
+        self.__aneevUserId: Final[str | None] = aneevUserId
+        self.__anivUserId: Final[str | None] = anivUserId
+        self.__ayAerithUserId: Final[str | None] = ayAerithUserId
+        self.__bastionBlueUserId: Final[str | None] = bastionBlueUserId
+        self.__charlesUserId: Final[str | None] = charlesUserId
+        self.__dylanStewUserId: Final[str | None] = dylanStewUserId
+        self.__eddieUserId: Final[str | None] = eddieUserId
+        self.__hokkaidoubareUserId: Final[str | None] = hokkaidoubareUserId
+        self.__imytUserId: Final[str | None] = imytUserId
+        self.__jrpUserId: Final[str | None] = jrpUserId
+        self.__kiawaBotUserId: Final[str | None] = kiawaBotUserId
+        self.__lucentUserId: Final[str | None] = lucentUserId
+        self.__mandooBotUserId: Final[str | None] = mandooBotUserId
+        self.__merttUserId: Final[str | None] = merttUserId
+        self.__miaGuwuUserId: Final[str | None] = miaGuwuUserId
+        self.__oathyBotUserId: Final[str | None] = oathyBotUserId
+        self.__oatsngoatsUserId: Final[str | None] = oatsngoatsUserId
+        self.__patLanicusUserId: Final[str | None] = patLanicusUserId
+        self.__stashiocatUserId: Final[str | None] = stashiocatUserId
+        self.__theCatComputerUserId: Final[str | None] = theCatComputerUserId
+        self.__volwrathUserId: Final[str | None] = volwrathUserId
+        self.__zanianUserId: Final[str | None] = zanianUserId
 
     async def getAcacUserId(self) -> str | None:
         return self.__acacUserId
@@ -150,11 +160,17 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
     async def getOathyBotUserId(self) -> str | None:
         return self.__oathyBotUserId
 
+    async def getOatsngoatsUserId(self) -> str | None:
+        return self.__oatsngoatsUserId
+
     async def getPatLanicusUserId(self) -> str | None:
         return self.__patLanicusUserId
 
     async def getStashiocatUserId(self) -> str | None:
         return self.__stashiocatUserId
+
+    async def getTheCatComputerUserId(self) -> str | None:
+        return self.__theCatComputerUserId
 
     async def getVolwrathUserId(self) -> str | None:
         return self.__volwrathUserId

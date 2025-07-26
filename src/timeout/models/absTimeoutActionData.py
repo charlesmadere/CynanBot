@@ -1,7 +1,16 @@
 from abc import ABC, abstractmethod
 
+from .absTimeoutDuration import AbsTimeoutDuration
+from .pointRedemptionTimeoutData import PointRedemptionTimeoutData
+from ..timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
+from ...users.userInterface import UserInterface
+
 
 class AbsTimeoutActionData(ABC):
+
+    @abstractmethod
+    def getActionId(self) -> str:
+        pass
 
     @abstractmethod
     def getInstigatorUserId(self) -> str:
@@ -12,7 +21,19 @@ class AbsTimeoutActionData(ABC):
         pass
 
     @abstractmethod
-    def getTwitchChannel(self) -> str:
+    def getModeratorUserId(self) -> str:
+        pass
+
+    @abstractmethod
+    def getPointRedemptionData(self) -> PointRedemptionTimeoutData | None:
+        pass
+
+    @abstractmethod
+    def getStreamStatusRequirement(self) -> TimeoutStreamStatusRequirement | None:
+        pass
+
+    @abstractmethod
+    def getTimeoutDuration(self) -> AbsTimeoutDuration:
         pass
 
     @abstractmethod
@@ -24,5 +45,13 @@ class AbsTimeoutActionData(ABC):
         pass
 
     @abstractmethod
+    def getUser(self) -> UserInterface:
+        pass
+
+    @abstractmethod
     def getUserTwitchAccessToken(self) -> str:
         pass
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.getUser().handle
