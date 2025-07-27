@@ -8,12 +8,10 @@ from ...users.userInterface import UserInterface
 
 
 @dataclass(frozen = True)
-class BananaTimeoutActionData(AbsTimeoutActionData):
+class BasicTimeoutActionData(AbsTimeoutActionData):
     timeoutDuration: AbsTimeoutDuration
-    isRandomChanceEnabled: bool
     pointRedemption: PointRedemptionTimeoutData | None
     actionId: str
-    chatMessage: str | None
     instigatorUserId: str
     moderatorTwitchAccessToken: str
     moderatorUserId: str
