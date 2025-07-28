@@ -34,7 +34,7 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
         self.__halfLifeSettingsRepository: Final[HalfLifeSettingsRepositoryInterface] = halfLifeSettingsRepository
         self.__timber: Final[TimberInterface] = timber
 
-        self.__soundFileNameRegEx: Final[Pattern] = re.compile(r'^(.+)\.(mp3)|(wav)$', re.IGNORECASE)
+        self.__soundFileNameRegEx: Final[Pattern] = re.compile(r'^(.+)\.(?:(?:mp3)|(?:wav))$', re.IGNORECASE)
         self.__textNormalizerRegEx: Final[Pattern] = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
     async def findSoundFiles(
