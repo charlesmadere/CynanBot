@@ -15,6 +15,32 @@ class TesthalfLifeJsonParser:
         assert result is HalfLifeVoice.ALL
 
     @pytest.mark.asyncio
+    async def test_parseVoice_withAllVoices(self):
+        result = self.parser.parseVoice('all voices')
+        assert result is HalfLifeVoice.ALL
+
+        result = self.parser.parseVoice('all-voices')
+        assert result is HalfLifeVoice.ALL
+
+        result = self.parser.parseVoice('all_voices')
+        assert result is HalfLifeVoice.ALL
+
+        result = self.parser.parseVoice('allvoices')
+        assert result is HalfLifeVoice.ALL
+
+        result = self.parser.parseVoice('all voice')
+        assert result is HalfLifeVoice.ALL
+
+        result = self.parser.parseVoice('all-voice')
+        assert result is HalfLifeVoice.ALL
+
+        result = self.parser.parseVoice('all_voice')
+        assert result is HalfLifeVoice.ALL
+
+        result = self.parser.parseVoice('allvoice')
+        assert result is HalfLifeVoice.ALL
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withBarney(self):
         result = self.parser.parseVoice('barney')
         assert result is HalfLifeVoice.BARNEY
@@ -33,6 +59,11 @@ class TesthalfLifeJsonParser:
     async def test_parseVoice_withPolice(self):
         result = self.parser.parseVoice('police')
         assert result is HalfLifeVoice.POLICE
+
+    @pytest.mark.asyncio
+    async def test_parseVoice_withScience(self):
+        result = self.parser.parseVoice('science')
+        assert result is HalfLifeVoice.SCIENTIST
 
     @pytest.mark.asyncio
     async def test_parseVoice_withScientist(self):
