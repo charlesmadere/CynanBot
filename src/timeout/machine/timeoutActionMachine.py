@@ -8,6 +8,7 @@ from frozenlist import FrozenList
 
 from .timeoutActionMachineInterface import TimeoutActionMachineInterface
 from ..exceptions import UnknownTimeoutActionTypeException
+from ..guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from ..listener.timeoutEventListener import TimeoutEventListener
 from ..models.absTimeoutAction import AbsTimeoutAction
 from ..models.airStrikeTimeoutAction import AirStrikeTimeoutAction
@@ -27,6 +28,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
+        guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         timber: TimberInterface,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         sleepTimeSeconds: float = 2,
@@ -35,6 +37,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
         elif not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
+            raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
@@ -46,6 +50,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__timber: Final[TimberInterface] = timber
         self.__twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = twitchTimeoutHelper
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds

@@ -13,7 +13,7 @@ class TimeoutActionHistoryRepositoryInterface(Clearable, ABC):
         chatterUserId: str,
         timedOutByUserId: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         pass
 
@@ -22,6 +22,6 @@ class TimeoutActionHistoryRepositoryInterface(Clearable, ABC):
         self,
         chatterUserId: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> TimeoutActionHistory:
         pass

@@ -61,7 +61,7 @@ class TimeoutActionHistoryRepository(TimeoutActionHistoryRepositoryInterface):
         chatterUserId: str,
         timedOutByUserId: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         if not utils.isValidInt(durationSeconds):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
@@ -139,7 +139,7 @@ class TimeoutActionHistoryRepository(TimeoutActionHistoryRepositoryInterface):
         self,
         chatterUserId: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> TimeoutActionHistory | None:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
