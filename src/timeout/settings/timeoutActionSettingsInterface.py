@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 
-from ..misc.clearable import Clearable
+from ...misc.clearable import Clearable
 
 
-class TimeoutActionSettingsRepositoryInterface(Clearable, ABC):
+class TimeoutActionSettingsInterface(Clearable, ABC):
 
     @abstractmethod
     async def areMassiveTimeoutSoundAlertsEnabled(self) -> bool:

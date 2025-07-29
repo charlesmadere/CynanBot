@@ -6,7 +6,7 @@ from ..timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ...users.userInterface import UserInterface
 
 
-class AbsTimeoutActionData(ABC):
+class AbsTimeoutAction(ABC):
 
     @abstractmethod
     def getActionId(self) -> str:

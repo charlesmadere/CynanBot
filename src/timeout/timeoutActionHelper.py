@@ -10,10 +10,10 @@ from queue import SimpleQueue
 from frozenlist import FrozenList
 
 from .guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
+from .settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from .timeoutActionData import TimeoutActionData
 from .timeoutActionHelperInterface import TimeoutActionHelperInterface
 from .timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
-from .timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
 from .timeoutActionType import TimeoutActionType
 from .timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ..asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
@@ -70,7 +70,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface,
-        timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface,
+        timeoutActionSettings: TimeoutActionSettingsInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         trollmojiHelper: TrollmojiHelperInterface,
@@ -98,8 +98,8 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionHistoryRepository, TimeoutActionHistoryRepositoryInterface):
             raise TypeError(f'timeoutActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
-        elif not isinstance(timeoutActionSettingsRepository, TimeoutActionSettingsRepositoryInterface):
-            raise TypeError(f'timeoutActionSettingsRepository argument is malformed: \"{timeoutActionSettingsRepository}\"')
+        elif not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
+            raise TypeError(f'timeoutActionSettings argument is malformed: \"{timeoutActionSettings}\"')
         elif not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
@@ -126,7 +126,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = timeoutActionHistoryRepository
-        self.__timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = timeoutActionSettingsRepository
+        self.__timeoutActionSettings: TimeoutActionSettingsInterface = timeoutActionSettings
         self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
@@ -269,8 +269,8 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         if not timeoutData.user.areSoundAlertsEnabled:
             return None
 
-        massiveTimeoutSoundAlertsEnabled = await self.__timeoutActionSettingsRepository.areMassiveTimeoutSoundAlertsEnabled()
-        massiveTimeoutHoursTransitionPoint = await self.__timeoutActionSettingsRepository.getMassiveTimeoutHoursTransitionPoint()
+        massiveTimeoutSoundAlertsEnabled = await self.__timeoutActionSettings.areMassiveTimeoutSoundAlertsEnabled()
+        massiveTimeoutHoursTransitionPoint = await self.__timeoutActionSettings.getMassiveTimeoutHoursTransitionPoint()
         useMassiveTimeoutSoundAlerts = False
 
         if massiveTimeoutSoundAlertsEnabled and utils.isValidInt(massiveTimeoutHoursTransitionPoint):
@@ -308,7 +308,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         if history.entries is None or len(history.entries) == 0:
             return 0
 
-        bullyTimeToLiveDays = await self.__timeoutActionSettingsRepository.getBullyTimeToLiveDays()
+        bullyTimeToLiveDays = await self.__timeoutActionSettings.getBullyTimeToLiveDays()
         bullyTimeBuffer = timedelta(days = bullyTimeToLiveDays)
 
         bullyOccurrences = 0
@@ -330,9 +330,9 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         timeoutTargetUserId: str,
         timeoutData: TimeoutActionData
     ) -> RollFailureData:
-        baseFailureProbability = await self.__timeoutActionSettingsRepository.getFailureProbability()
-        maxBullyFailureProbability = await self.__timeoutActionSettingsRepository.getMaxBullyFailureProbability()
-        maxBullyFailureOccurrences = await self.__timeoutActionSettingsRepository.getMaxBullyFailureOccurrences()
+        baseFailureProbability = await self.__timeoutActionSettings.getFailureProbability()
+        maxBullyFailureProbability = await self.__timeoutActionSettings.getMaxBullyFailureProbability()
+        maxBullyFailureOccurrences = await self.__timeoutActionSettings.getMaxBullyFailureOccurrences()
         perBullyFailureProbabilityIncrease = (maxBullyFailureProbability - baseFailureProbability) / float(maxBullyFailureOccurrences)
 
         bullyOccurrences = await self.__discoverBullyOccurrenceCount(
@@ -346,7 +346,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         failureRoll = int(round(failureProbability * float(diceRoll.dieSize)))
         failureRoll = int(min(failureRoll, diceRoll.dieSize))
 
-        reverseProbability = await self.__timeoutActionSettingsRepository.getReverseProbability()
+        reverseProbability = await self.__timeoutActionSettings.getReverseProbability()
         reverseRoll = int(round(reverseProbability * float(diceRoll.dieSize)))
         reverseRoll = int(min(reverseRoll, diceRoll.dieSize))
 
@@ -665,7 +665,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
         )
 
     async def __rollDice(self) -> DiceRoll:
-        dieSize = await self.__timeoutActionSettingsRepository.getDieSize()
+        dieSize = await self.__timeoutActionSettings.getDieSize()
         roll = random.randint(1, dieSize)
 
         return TimeoutActionHelper.DiceRoll(
@@ -699,7 +699,7 @@ class TimeoutActionHelper(TimeoutActionHelperInterface):
                 self.__timber.log('TimeoutActionHelper', f'Encountered queue.Empty when grabbing action (queue size: {self.__actionQueue.qsize()}) ({timeoutData=}): {e}', e, traceback.format_exc())
 
             if timeoutData is None:
-                actionLoopCooldownSeconds = await self.__timeoutActionSettingsRepository.getActionLoopCooldownSeconds()
+                actionLoopCooldownSeconds = await self.__timeoutActionSettings.getActionLoopCooldownSeconds()
                 await asyncio.sleep(actionLoopCooldownSeconds)
             else:
                 await self.__processTimeout(timeoutData)

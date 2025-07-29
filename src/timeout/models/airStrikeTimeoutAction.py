@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from .absTimeoutActionData import AbsTimeoutActionData
+from .absTimeoutAction import AbsTimeoutAction
 from .absTimeoutDuration import AbsTimeoutDuration
 from .pointRedemptionTimeoutData import PointRedemptionTimeoutData
 from ..timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
@@ -8,7 +8,7 @@ from ...users.userInterface import UserInterface
 
 
 @dataclass(frozen = True)
-class GrenadeTimeoutActionData(AbsTimeoutActionData):
+class AirStrikeTimeoutAction(AbsTimeoutAction):
     timeoutDuration: AbsTimeoutDuration
     pointRedemption: PointRedemptionTimeoutData | None
     actionId: str
@@ -41,6 +41,9 @@ class GrenadeTimeoutActionData(AbsTimeoutActionData):
 
     def getTimeoutDuration(self) -> AbsTimeoutDuration:
         return self.timeoutDuration
+
+    def getTwitchChannel(self) -> str:
+        return self.twitchChannel
 
     def getTwitchChannelId(self) -> str:
         return self.twitchChannelId

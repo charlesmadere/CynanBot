@@ -44,8 +44,8 @@ from ..streamElements.userKeyRepository.streamElementsUserKeyRepositoryInterface
 from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
+from ..timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ..timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
-from ..timeout.timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
 from ..trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
 from ..trivia.gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
@@ -122,7 +122,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
         timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface | None,
-        timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface | None,
+        timeoutActionSettings: TimeoutActionSettingsInterface | None,
         triviaGameControllersRepository: TriviaGameControllersRepositoryInterface | None,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface | None,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface | None,
@@ -221,8 +221,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif timeoutActionHistoryRepository is not None and not isinstance(timeoutActionHistoryRepository, TimeoutActionHistoryRepositoryInterface):
             raise TypeError(f'timeoutActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
-        elif timeoutActionSettingsRepository is not None and not isinstance(timeoutActionSettingsRepository, TimeoutActionSettingsRepositoryInterface):
-            raise TypeError(f'timeoutActionSettingsRepository argument is malformed: \"{timeoutActionSettingsRepository}\"')
+        elif timeoutActionSettings is not None and not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
+            raise TypeError(f'timeoutActionSettings argument is malformed: \"{timeoutActionSettings}\"')
         elif triviaGameControllersRepository is not None and not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
             raise TypeError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
         elif triviaGameGlobalControllersRepository is not None and not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
@@ -311,7 +311,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(streamElementsUserKeyRepository)
         self.__clearables.append(supStreamerRepository)
         self.__clearables.append(timeoutActionHistoryRepository)
-        self.__clearables.append(timeoutActionSettingsRepository)
+        self.__clearables.append(timeoutActionSettings)
         self.__clearables.append(triviaGameControllersRepository)
         self.__clearables.append(triviaGameGlobalControllersRepository)
         self.__clearables.append(triviaSettingsRepository)

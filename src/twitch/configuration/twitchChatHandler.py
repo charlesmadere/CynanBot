@@ -66,10 +66,10 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
         self.__chatLogger.logCheer(
             bits = chatData.cheer.bits,
+            cheerUserId = chatData.chatterUserId,
+            cheerUserLogin = chatData.chatterUserLogin,
             twitchChannel = chatData.user.handle,
             twitchChannelId = chatData.twitchChannelId,
-            userId = chatData.chatterUserId,
-            userName = chatData.chatterUserName,
         )
 
     async def onNewChat(self, chatData: AbsTwitchChatHandler.ChatData):

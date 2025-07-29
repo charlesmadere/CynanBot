@@ -56,10 +56,10 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
     async def __logCheer(self, cheerData: AbsTwitchCheerHandler.CheerData):
         self.__chatLogger.logCheer(
             bits = cheerData.bits,
+            cheerUserId = cheerData.cheerUserId,
+            cheerUserLogin = cheerData.cheerUserLogin,
             twitchChannel = cheerData.user.handle,
             twitchChannelId = cheerData.twitchChannelId,
-            userId = cheerData.cheerUserId,
-            userName = cheerData.cheerUserName,
         )
 
     async def onNewCheer(self, cheerData: AbsTwitchCheerHandler.CheerData):

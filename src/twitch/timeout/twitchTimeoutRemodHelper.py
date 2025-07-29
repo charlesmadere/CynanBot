@@ -27,7 +27,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         queueSleepTimeSeconds: float = 3,
-        additionalBufferTime: timedelta = timedelta(seconds = 5)
+        additionalBufferTime: timedelta = timedelta(seconds = 5),
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -91,7 +91,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
 
             if not utils.isValidStr(twitchAccessToken):
                 twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-                    twitchChannelId = remodAction.broadcasterUserId
+                    twitchChannelId = remodAction.broadcasterUserId,
                 )
 
                 if not utils.isValidStr(twitchAccessToken):
@@ -104,13 +104,13 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
 
             userName = await self.__userIdsRepository.requireUserName(
                 userId = remodAction.userId,
-                twitchAccessToken = twitchAccessToken
+                twitchAccessToken = twitchAccessToken,
             )
 
             if await self.__twitchApiService.addModerator(
                 broadcasterId = remodAction.broadcasterUserId,
                 twitchAccessToken = twitchAccessToken,
-                userId = remodAction.userId
+                userId = remodAction.userId,
             ):
                 self.__timber.log('TwitchTimeoutRemodHelper', f'Successfully re-modded user ({remodAction=}) ({userName=})')
             else:
@@ -139,7 +139,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
         timeoutDurationSeconds: int,
         broadcasterUserId: str,
         broadcasterUserName: str,
-        userId: str
+        userId: str,
     ):
         if not utils.isValidInt(timeoutDurationSeconds):
             raise TypeError(f'timeoutDurationSeconds argument is malformed: \"{timeoutDurationSeconds}\"')
@@ -159,5 +159,5 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
             remodDateTime = remodDateTime,
             broadcasterUserId = broadcasterUserId,
             broadcasterUserName = broadcasterUserName,
-            userId = userId
+            userId = userId,
         ))

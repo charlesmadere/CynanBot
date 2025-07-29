@@ -1392,10 +1392,99 @@ class TestTriviaAnswerChecker:
         result = await self.triviaAnswerChecker.checkAnswer('wally world', question)
         assert result is TriviaAnswerCheckResult.INCORRECT
 
+    @pytest.mark.asyncio
+    async def test_checkAnswer_withQuestionAnswerQuestion_withTonyTheTigersStockSymbolQuestion(self):
+        categoryText = 'One Letter Only'
+        questionText = 'Tony the Tiger\'s stock symbol'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText,
+        )
+
+        originalCorrectAnswers: list[str] = [ 'K' ]
+        correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
+
+        expandedCompiledCorrectAnswers: set[str] = set()
+        for compiledCorrectAnswer in compiledCorrectAnswers:
+            expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
+
+        question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = allWords,
+            compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
+            correctAnswers = correctAnswers,
+            originalCorrectAnswers = originalCorrectAnswers,
+            category = categoryText,
+            categoryId = None,
+            question = questionText,
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.FUNTOON,
+        )
+
+        result = await self.triviaAnswerChecker.checkAnswer('k', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('f', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('t', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('ttt', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+    @pytest.mark.asyncio
+    async def test_checkAnswer_withQuestionAnswerQuestion_withBoarAndBearQuestion(self):
+        categoryText = 'Testing Typo Handling'
+        questionText = 'The pig animal, not the drink, or the kumo'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText,
+        )
+
+        originalCorrectAnswers: list[str] = [ 'boar' ]
+        correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
+
+        expandedCompiledCorrectAnswers: set[str] = set()
+        for compiledCorrectAnswer in compiledCorrectAnswers:
+            expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
+
+        question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = allWords,
+            compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
+            correctAnswers = correctAnswers,
+            originalCorrectAnswers = originalCorrectAnswers,
+            category = categoryText,
+            categoryId = None,
+            question = questionText,
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.FUNTOON,
+        )
+
+        result = await self.triviaAnswerChecker.checkAnswer('boar', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('bear', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('beer', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('pig', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
     def test_sanity(self):
         assert self.triviaAnswerChecker is not None
         assert isinstance(self.triviaAnswerChecker, TriviaAnswerCheckerInterface)
         assert isinstance(self.triviaAnswerChecker, TriviaAnswerChecker)
+
 
     ##############################################
     ## New trivia answer checking logic section ##

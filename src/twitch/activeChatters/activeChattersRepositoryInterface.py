@@ -13,14 +13,14 @@ class ActiveChattersRepositoryInterface(Clearable, ABC):
         self,
         chatterUserId: str,
         chatterUserName: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         pass
 
     @abstractmethod
     async def get(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> frozendict[str, ActiveChatter]:
         pass
 
@@ -28,7 +28,7 @@ class ActiveChattersRepositoryInterface(Clearable, ABC):
     async def isActiveIn(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> bool:
         pass
 
@@ -36,6 +36,6 @@ class ActiveChattersRepositoryInterface(Clearable, ABC):
     async def remove(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         pass

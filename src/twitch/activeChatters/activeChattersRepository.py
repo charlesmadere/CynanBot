@@ -45,7 +45,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         def toDictionary(self) -> dict[str, Any]:
             return {
                 'chatters': self.__chatters,
-                'chattersHaveBeenFetched': self.__chattersHaveBeenFetched
+                'chattersHaveBeenFetched': self.__chattersHaveBeenFetched,
             }
 
     def __init__(
@@ -57,7 +57,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         maxActiveChattersSize: int = 256,
-        maxActiveChattersTimeToLive: timedelta = timedelta(hours = 1)
+        maxActiveChattersTimeToLive: timedelta = timedelta(hours = 1),
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -93,7 +93,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         self,
         chatterUserId: str,
         chatterUserName: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
@@ -118,20 +118,20 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         activeChatter = ActiveChatter(
             mostRecentChat = now,
             chatterUserId = chatterUserId,
-            chatterUserName = chatterUserName
+            chatterUserName = chatterUserName,
         )
 
         activeChatters.insert(0, activeChatter)
 
         await self.__clean(
             now = now,
-            activeChatters = activeChatters
+            activeChatters = activeChatters,
         )
 
     async def __clean(
         self,
         now: datetime,
-        activeChatters: list[ActiveChatter]
+        activeChatters: list[ActiveChatter],
     ):
         if len(activeChatters) == 0:
             return
@@ -161,7 +161,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
     async def __fetchCurrentConnectedChatters(
         self,
         entry: Entry,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> list[ActiveChatter]:
         entry.setChattersHaveBeenFetched()
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
@@ -211,7 +211,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
 
     async def get(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> frozendict[str, ActiveChatter]:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
@@ -233,7 +233,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
 
     async def __getCurrentActiveChatters(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> list[ActiveChatter]:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
@@ -263,7 +263,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
     async def isActiveIn(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> bool:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
@@ -276,7 +276,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
     async def remove(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')

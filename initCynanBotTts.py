@@ -305,14 +305,14 @@ from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
 from src.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
 from src.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
+from src.timeout.settings.timeoutActionSettings import TimeoutActionSettings
+from src.timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from src.timeout.timeoutActionHelper import TimeoutActionHelper
 from src.timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
 from src.timeout.timeoutActionHistoryRepository import TimeoutActionHistoryRepository
 from src.timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
 from src.timeout.timeoutActionJsonMapper import TimeoutActionJsonMapper
 from src.timeout.timeoutActionJsonMapperInterface import TimeoutActionJsonMapperInterface
-from src.timeout.timeoutActionSettingsRepository import TimeoutActionSettingsRepository
-from src.timeout.timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
 from src.trollmoji.trollmojiHelper import TrollmojiHelper
 from src.trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepository
@@ -895,7 +895,7 @@ twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = TwitchTimeoutRemod
     twitchApiService = twitchApiService,
     twitchTimeoutRemodRepository = twitchTimeoutRemodRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
 twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
@@ -1813,11 +1813,11 @@ timeoutActionJsonMapper: TimeoutActionJsonMapperInterface = TimeoutActionJsonMap
     timber = timber
 )
 
-timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = TimeoutActionSettingsRepository(
+timeoutActionSettings: TimeoutActionSettingsInterface = TimeoutActionSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/timeoutActionSettings.json'
-    )
+        fileName = '../config/timeoutActionSettings.json',
+    ),
 )
 
 timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = TimeoutActionHistoryRepository(
@@ -1837,14 +1837,14 @@ timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     timeoutActionHistoryRepository = timeoutActionHistoryRepository,
-    timeoutActionSettingsRepository = timeoutActionSettingsRepository,
+    timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     timeZoneRepository = timeZoneRepository,
     trollmojiHelper = trollmojiHelper,
     twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchTimeoutHelper = twitchTimeoutHelper,
-    twitchUtils = twitchUtils
+    twitchUtils = twitchUtils,
 )
 
 
@@ -1950,11 +1950,11 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerAction
     recentGrenadeAttacksHelper = recentGrenadeAttacksHelper,
     timber = timber,
     timeoutActionHelper = timeoutActionHelper,
-    timeoutActionSettingsRepository = timeoutActionSettingsRepository,
+    timeoutActionSettings = timeoutActionSettings,
     timeoutCheerActionMapper = timeoutCheerActionMapper,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     twitchMessageStringUtils = twitchMessageStringUtils,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
 airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheerActionHelper(
@@ -1964,12 +1964,12 @@ airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheer
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     timeoutActionHelper = timeoutActionHelper,
-    timeoutActionSettingsRepository = timeoutActionSettingsRepository,
+    timeoutActionSettings = timeoutActionSettings,
     timeoutCheerActionMapper = timeoutCheerActionMapper,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     trollmojiHelper = trollmojiHelper,
     twitchMessageStringUtils = twitchMessageStringUtils,
-    twitchUtils = twitchUtils
+    twitchUtils = twitchUtils,
 )
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
@@ -2345,7 +2345,7 @@ cynanBot = CynanBot(
     timber = timber,
     timeoutActionHelper = timeoutActionHelper,
     timeoutActionHistoryRepository = timeoutActionHistoryRepository,
-    timeoutActionSettingsRepository = timeoutActionSettingsRepository,
+    timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     timeZoneRepository = timeZoneRepository,
     toxicTriviaOccurencesRepository = None,

@@ -247,7 +247,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self,
         answer: str | None,
         triviaQuestion: AbsTriviaQuestion,
-        extras: dict[str, Any] | None = None
+        extras: dict[str, Any] | None = None,
     ) -> TriviaAnswerCheckResult:
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
@@ -255,8 +255,30 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         return await self.__triviaAnswerChecker.checkAnswer(
             answer = answer,
             triviaQuestion = triviaQuestion,
-            extras = extras
+            extras = extras,
         )
+
+    async def __handleAction(self, action: AbsTriviaAction):
+        if not isinstance(action, AbsTriviaAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
+
+        if isinstance(action, CheckAnswerTriviaAction):
+            await self.__handleActionCheckAnswer(action)
+
+        elif isinstance(action, CheckSuperAnswerTriviaAction):
+            await self.__handleActionCheckSuperAnswer(action)
+
+        elif isinstance(action, ClearSuperTriviaQueueTriviaAction):
+            await self.__handleActionClearSuperTriviaQueue(action)
+
+        elif isinstance(action, StartNewTriviaGameAction):
+            await self.__handleActionStartNewTriviaGame(action)
+
+        elif isinstance(action, StartNewSuperTriviaGameAction):
+            await self.__handleActionStartNewSuperTriviaGame(action)
+
+        else:
+            raise UnknownTriviaActionTypeException(f'Encountered unknown AbsTriviaAction: \"{action}\"')
 
     async def __handleActionCheckAnswer(self, action: CheckAnswerTriviaAction):
         if not isinstance(action, CheckAnswerTriviaAction):
@@ -911,22 +933,11 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
             actions.freeze()
 
-            try:
-                for index, action in enumerate(actions):
-                    if isinstance(action, CheckAnswerTriviaAction):
-                        await self.__handleActionCheckAnswer(action)
-                    elif isinstance(action, CheckSuperAnswerTriviaAction):
-                        await self.__handleActionCheckSuperAnswer(action)
-                    elif isinstance(action, ClearSuperTriviaQueueTriviaAction):
-                        await self.__handleActionClearSuperTriviaQueue(action)
-                    elif isinstance(action, StartNewTriviaGameAction):
-                        await self.__handleActionStartNewTriviaGame(action)
-                    elif isinstance(action, StartNewSuperTriviaGameAction):
-                        await self.__handleActionStartNewSuperTriviaGame(action)
-                    else:
-                        raise UnknownTriviaActionTypeException(f'Encountered unknown AbsTriviaAction ({index=}) ({action=}) ({type(action)=})')
-            except Exception as e:
-                self.__timber.log('TriviaGameMachine', f'Encountered unknown Exception when looping through actions (queue size: {self.__actionQueue.qsize()}) ({len(actions)=}) ({actions=}): {e}', e, traceback.format_exc())
+            for index, action in enumerate(actions):
+                try:
+                    await self.__handleAction(action)
+                except Exception as e:
+                    self.__timber.log('TriviaGameMachine', f'Encountered unknown Exception when looping through actions (queue size: {self.__actionQueue.qsize()}) ({len(actions)=}) ({action=}) ({index=}): {e}', e, traceback.format_exc())
 
             try:
                 await self.__refreshStatusOfTriviaGames()

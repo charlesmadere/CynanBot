@@ -15,7 +15,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
     def __init__(
         self,
         settingsJsonReader: JsonReaderInterface,
-        triviaSourceParser: TriviaSourceParserInterface
+        triviaSourceParser: TriviaSourceParserInterface,
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
@@ -86,20 +86,15 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     async def getMaxSuperTriviaQuestionSpoolSize(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'max_super_trivia_question_spool_size', 25)
+        return utils.getIntFromDict(jsonContents, 'max_super_trivia_question_spool_size', 8)
 
     async def getMaxTriviaQuestionSpoolSize(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'max_trivia_question_spool_size', 25)
+        return utils.getIntFromDict(jsonContents, 'max_trivia_question_spool_size', 8)
 
     async def getMaxRetryCount(self) -> int:
         jsonContents = await self.__readJson()
-        maxRetryCount = utils.getIntFromDict(jsonContents, 'max_retry_count', 5)
-
-        if maxRetryCount < 2:
-            raise ValueError(f'max_retry_count is too small: \"{maxRetryCount}\"')
-
-        return maxRetryCount
+        return utils.getIntFromDict(jsonContents, 'max_retry_count', 5)
 
     async def getMaxSuperTriviaGameQueueSize(self) -> int:
         jsonContents = await self.__readJson()
@@ -153,7 +148,9 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
         triviaSourcesAndProperties: dict[TriviaSource, TriviaSourceAndProperties] = dict()
 
         if not isinstance(triviaSourcesJson, dict) or len(triviaSourcesJson) == 0:
-            return frozendict(triviaSourcesAndProperties)
+            frozenTriviaSourcesAndProperties = frozendict(triviaSourcesAndProperties)
+            self.__cachedTriviaSourcesAndProperties = frozenTriviaSourcesAndProperties
+            return frozenTriviaSourcesAndProperties
 
         for key, triviaSourceJson in triviaSourcesJson.items():
             triviaSource = await self.__triviaSourceParser.parse(key)
@@ -166,7 +163,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
             triviaSourcesAndProperties[triviaSource] = TriviaSourceAndProperties(
                 isEnabled = isEnabled,
                 weight = weight,
-                triviaSource = triviaSource
+                triviaSource = triviaSource,
             )
 
         frozenTriviaSourcesAndProperties = frozendict(triviaSourcesAndProperties)

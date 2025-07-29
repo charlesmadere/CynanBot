@@ -1,9 +1,8 @@
-from abc import ABC, abstractmethod
+from ..chatLoggerInterface import ChatLoggerInterface
 
 
-class ChatLoggerInterface(ABC):
+class StubChatLogger(ChatLoggerInterface):
 
-    @abstractmethod
     def logCheer(
         self,
         bits: int,
@@ -12,9 +11,9 @@ class ChatLoggerInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
     ):
+        # this method is intentionally empty
         pass
 
-    @abstractmethod
     def logMessage(
         self,
         bits: int | None,
@@ -24,9 +23,9 @@ class ChatLoggerInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
     ):
+        # this method is intentionally empty
         pass
 
-    @abstractmethod
     def logRaid(
         self,
         viewers: int,
@@ -35,8 +34,9 @@ class ChatLoggerInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
     ):
+        # this method is intentionally empty
         pass
 
-    @abstractmethod
     def start(self):
+        # this method is intentionally empty
         pass

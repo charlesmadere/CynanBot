@@ -1,11 +1,11 @@
 from typing import Any
 
-from .timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
-from ..misc import utils as utils
-from ..storage.jsonReaderInterface import JsonReaderInterface
+from .timeoutActionSettingsInterface import TimeoutActionSettingsInterface
+from ...misc import utils as utils
+from ...storage.jsonReaderInterface import JsonReaderInterface
 
 
-class TimeoutActionSettingsRepository(TimeoutActionSettingsRepositoryInterface):
+class TimeoutActionSettings(TimeoutActionSettingsInterface):
 
     def __init__(self, settingsJsonReader: JsonReaderInterface):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
@@ -70,7 +70,7 @@ class TimeoutActionSettingsRepository(TimeoutActionSettingsRepositoryInterface):
             jsonContents = dict()
 
         if jsonContents is None:
-            raise IOError(f'Error reading from timeout cheer action settings file: {self.__settingsJsonReader}')
+            raise IOError(f'Error reading from timeout action settings file: {self.__settingsJsonReader}')
 
         self.__cache = jsonContents
         return jsonContents

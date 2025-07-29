@@ -66,8 +66,9 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
 
         if raidData.user.isChatLoggingEnabled:
             self.__chatLogger.logRaid(
-                raidSize = raidData.viewers,
-                fromWho = raidData.raidUserLogin,
+                viewers = raidData.viewers,
+                raidUserId = raidData.raidUserId,
+                raidUserLogin = raidData.raidUserLogin,
                 twitchChannel = raidData.user.handle,
                 twitchChannelId = raidData.twitchChannelId,
             )

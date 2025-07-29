@@ -12,6 +12,6 @@ class TriviaAnswerCheckerInterface(ABC):
         self,
         answer: str | None,
         triviaQuestion: AbsTriviaQuestion,
-        extras: dict[str, Any] | None = None
+        extras: dict[str, Any] | None = None,
     ) -> TriviaAnswerCheckResult:
         pass

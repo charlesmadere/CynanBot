@@ -8,12 +8,13 @@ from typing import Final
 import aiofiles
 import aiofiles.os
 import aiofiles.ospath
+from frozenlist import FrozenList
 
-from .absChatMessage import AbsChatMessage
 from .chatLoggerInterface import ChatLoggerInterface
-from .chatMessage import ChatMessage
-from .cheerMessage import CheerMessage
-from .raidMessage import RaidMessage
+from .models.absChatLog import AbsChatLog
+from .models.cheerChatLog import CheerChatLog
+from .models.messageChatLog import MessageChatLog
+from .models.raidChatLog import RaidChatLog
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -28,7 +29,7 @@ class ChatLogger(ChatLoggerInterface):
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        sleepTimeSeconds: float = 15,
+        sleepTimeSeconds: float = 8,
         logRootDirectory: str = '../logs/chatLogger',
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
@@ -49,117 +50,133 @@ class ChatLogger(ChatLoggerInterface):
         self.__logRootDirectory: Final[str] = logRootDirectory
 
         self.__isStarted: bool = False
-        self.__messageQueue: Final[SimpleQueue[AbsChatMessage]] = SimpleQueue()
+        self.__chatLogQueue: Final[SimpleQueue[AbsChatLog]] = SimpleQueue()
 
-    def __getLogStatement(self, message: AbsChatMessage) -> str:
-        if not isinstance(message, AbsChatMessage):
-            raise TypeError(f'message argument is malformed: \"{message}\"')
+    def __getLogStatement(self, chatLog: AbsChatLog) -> str:
+        if not isinstance(chatLog, AbsChatLog):
+            raise TypeError(f'chatLog argument is malformed: \"{chatLog}\"')
 
-        logStatement = f'{message.dateTime.getDateAndTimeStr(True)} —'
+        logStatement = f'{chatLog.getDateTime().getDateAndTimeStr(True)} —'
 
-        if isinstance(message, ChatMessage):
-            logStatement = f'{logStatement} {message.userName} ({message.userId}) — {message.msg}'
+        if isinstance(chatLog, CheerChatLog):
+            logStatement = f'{logStatement} {chatLog.cheerUserLogin} ({chatLog.cheerUserId}) cheered {chatLog.bitsStr} bit(s)'
 
-        elif isinstance(message, CheerMessage):
-            logStatement = f'{logStatement} {message.userName} ({message.userId}) cheered {message.bitsStr} bit(s)'
+        elif isinstance(chatLog, MessageChatLog):
+            logStatement = f'{logStatement} {chatLog.chatterUserLogin} ({chatLog.chatterUserId}) — {chatLog.message}'
 
-        elif isinstance(message, RaidMessage):
-            logStatement = f'{logStatement} Received raid from {message.fromWho} of {message.raidSizeStr}!'
+        elif isinstance(chatLog, RaidChatLog):
+            logStatement = f'{logStatement} {chatLog.raidUserLogin} ({chatLog.raidUserId}) raided with {chatLog.viewersStr} viewer(s)'
 
         else:
-            raise RuntimeError(f'AbsChatMessage is of an unknown type ({message=})')
+            raise RuntimeError(f'AbsChatLog is of an unknown type ({chatLog=})')
 
         return f'{logStatement.strip()}\n'
 
     def logCheer(
         self,
         bits: int,
+        cheerUserId: str,
+        cheerUserLogin: str,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str,
-        userName: str,
     ):
         if not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is malformed: {bits}')
+        elif not utils.isValidStr(cheerUserId):
+            raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
+        elif not utils.isValidStr(cheerUserLogin):
+            raise TypeError(f'cheerUserLogin argument is malformed: \"{cheerUserLogin}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
-            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        cheerMessage: AbsChatMessage = CheerMessage(
-            bits = bits,
-            dateTime = SimpleDateTime(timeZone = self.__timeZoneRepository.getDefault()),
-            twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId,
-            userId = userId,
-            userName = userName,
+        dateTime = SimpleDateTime(
+            timeZone = self.__timeZoneRepository.getDefault(),
         )
 
-        self.__messageQueue.put(cheerMessage)
+        self.__chatLogQueue.put(CheerChatLog(
+            bits = bits,
+            dateTime = dateTime,
+            cheerUserId = cheerUserId,
+            cheerUserLogin = cheerUserLogin,
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
+        ))
 
     def logMessage(
         self,
-        msg: str,
+        bits: int | None,
+        chatterUserId: str,
+        chatterUserLogin: str,
+        message: str,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str,
-        userName: str,
     ):
-        if not utils.isValidStr(msg):
-            raise TypeError(f'msg argument is malformed: \"{msg}\"')
+        if bits is not None and not utils.isValidInt(bits):
+            raise TypeError(f'bits argument is malformed: \"{bits}\"')
+        elif bits is not None and (bits < 0 or bits > utils.getIntMaxSafeSize()):
+            raise ValueError(f'bits argument is out of bounds: {bits}')
+        elif not utils.isValidStr(chatterUserId):
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(chatterUserLogin):
+            raise TypeError(f'chatterUserLogin argument is malformed: \"{chatterUserLogin}\"')
+        elif not utils.isValidStr(message):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
-            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        chatMessage: AbsChatMessage = ChatMessage(
-            dateTime = SimpleDateTime(timeZone = self.__timeZoneRepository.getDefault()),
-            msg = msg,
-            twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId,
-            userId = userId,
-            userName = userName,
+        dateTime = SimpleDateTime(
+            timeZone = self.__timeZoneRepository.getDefault(),
         )
 
-        self.__messageQueue.put(chatMessage)
+        self.__chatLogQueue.put(MessageChatLog(
+            bits = bits,
+            dateTime = dateTime,
+            chatterUserId = chatterUserId,
+            chatterUserLogin = chatterUserLogin,
+            message = message,
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
+        ))
 
     def logRaid(
         self,
-        raidSize: int,
-        fromWho: str,
+        viewers: int,
+        raidUserId: str,
+        raidUserLogin: str,
         twitchChannel: str,
         twitchChannelId: str,
     ):
-        if not utils.isValidInt(raidSize):
-            raise TypeError(f'raidSize argument is malformed: \"{raidSize}\"')
-        elif raidSize < 0 or raidSize > utils.getIntMaxSafeSize():
-            raise ValueError(f'raidSize argument is out of bounds: {raidSize}')
-        elif not utils.isValidStr(fromWho):
-            raise TypeError(f'fromWho argument is malformed: \"{fromWho}\"')
+        if not utils.isValidInt(viewers):
+            raise TypeError(f'raidSize argument is malformed: \"{viewers}\"')
+        elif viewers < 0 or viewers > utils.getIntMaxSafeSize():
+            raise ValueError(f'viewers argument is out of bounds: {viewers}')
+        elif not utils.isValidStr(raidUserId):
+            raise TypeError(f'raidUserId argument is malformed: \"{raidUserId}\"')
+        elif not utils.isValidStr(raidUserLogin):
+            raise TypeError(f'raidUserLogin argument is malformed: \"{raidUserLogin}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        raidMessage: AbsChatMessage = RaidMessage(
-            raidSize = raidSize,
-            dateTime = SimpleDateTime(timeZone = self.__timeZoneRepository.getDefault()),
-            fromWho = fromWho,
-            twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId,
+        dateTime = SimpleDateTime(
+            timeZone = self.__timeZoneRepository.getDefault(),
         )
 
-        self.__messageQueue.put(raidMessage)
+        self.__chatLogQueue.put(RaidChatLog(
+            viewers = viewers,
+            dateTime = dateTime,
+            raidUserId = raidUserId,
+            raidUserLogin = raidUserLogin,
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
+        ))
 
     def start(self):
         if self.__isStarted:
@@ -168,57 +185,58 @@ class ChatLogger(ChatLoggerInterface):
 
         self.__isStarted = True
         self.__timber.log('ChatLogger', 'Starting ChatLogger...')
-        self.__backgroundTaskHelper.createTask(self.__startMessageLoop())
+        self.__backgroundTaskHelper.createTask(self.__startChatLogLoop())
 
-    async def __startMessageLoop(self):
+    async def __startChatLogLoop(self):
         while True:
-            messages: list[AbsChatMessage] = list()
+            chatLogs: FrozenList[AbsChatLog] = FrozenList()
 
             try:
-                while not self.__messageQueue.empty():
-                    message = self.__messageQueue.get_nowait()
-                    messages.append(message)
+                while not self.__chatLogQueue.empty():
+                    chatLog = self.__chatLogQueue.get_nowait()
+                    chatLogs.append(chatLog)
             except queue.Empty as e:
-                self.__timber.log('ChatLogger', f'Encountered queue.Empty when building up messages list (queue size: {self.__messageQueue.qsize()}) (messages size: {len(messages)}): {e}', e, traceback.format_exc())
+                self.__timber.log('ChatLogger', f'Encountered queue.Empty when building up chatLogs list (queue size: {self.__chatLogQueue.qsize()}) (chatLogs size: {len(chatLogs)}): {e}', e, traceback.format_exc())
 
-            await self.__writeToLogFiles(messages)
+            chatLogs.freeze()
+            await self.__writeToLogFiles(chatLogs)
             await asyncio.sleep(self.__sleepTimeSeconds)
 
-    async def __writeToLogFiles(self, messages: list[AbsChatMessage]):
-        if len(messages) == 0:
+    async def __writeToLogFiles(self, chatLogs: FrozenList[AbsChatLog]):
+        if len(chatLogs) == 0:
             return
 
         # The below logic is kind of intense, however, there is a very similar/nearly identical
         # flow within the Timber class. Check that out for more information and context.
 
-        structure: dict[str, dict[str, list[AbsChatMessage]]] = defaultdict(lambda: defaultdict(lambda: list()))
+        structure: dict[str, dict[str, list[AbsChatLog]]] = defaultdict(lambda: defaultdict(lambda: list()))
 
-        for message in messages:
-            twitchChannel = message.twitchChannel.lower()
-            dateTime = message.dateTime
-            messageDirectory = f'{self.__logRootDirectory}/{twitchChannel}/{dateTime.getYearStr()}/{dateTime.getMonthStr()}'
-            messageFile = f'{messageDirectory}/{dateTime.getDayStr()}.log'
-            structure[messageDirectory][messageFile].append(message)
+        for chatLog in chatLogs:
+            twitchChannel = chatLog.getTwitchChannel().lower()
+            dateTime = chatLog.getDateTime()
+            chatLogDirectory = f'{self.__logRootDirectory}/{twitchChannel}/{dateTime.getYearStr()}/{dateTime.getMonthStr()}'
+            chatLogFile = f'{chatLogDirectory}/{dateTime.getDayStr()}.log'
+            structure[chatLogDirectory][chatLogFile].append(chatLog)
 
-        for messageDirectory, messageFileToMessagesDict in structure.items():
+        for chatLogDirectory, chatLogFileToChatLogsDict in structure.items():
             if not await aiofiles.ospath.exists(
-                path = messageDirectory,
-                loop = self.__backgroundTaskHelper.eventLoop
+                path = chatLogDirectory,
+                loop = self.__backgroundTaskHelper.eventLoop,
             ):
                 await aiofiles.os.makedirs(
-                    name = messageDirectory,
-                    loop = self.__backgroundTaskHelper.eventLoop
+                    name = chatLogDirectory,
+                    loop = self.__backgroundTaskHelper.eventLoop,
                 )
 
-            for messageFile, messagesList in messageFileToMessagesDict.items():
+            for chatLogFile, chatLogList in chatLogFileToChatLogsDict.items():
                 async with aiofiles.open(
-                    file = messageFile,
+                    file = chatLogFile,
                     mode = 'a',
                     encoding = 'utf-8',
-                    loop = self.__backgroundTaskHelper.eventLoop
+                    loop = self.__backgroundTaskHelper.eventLoop,
                 ) as file:
-                    for message in messagesList:
-                        logStatement = self.__getLogStatement(message)
+                    for chatLog in chatLogList:
+                        logStatement = self.__getLogStatement(chatLog)
                         await file.write(logStatement)
 
                     await file.flush()

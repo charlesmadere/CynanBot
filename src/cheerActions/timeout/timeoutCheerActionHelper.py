@@ -11,9 +11,9 @@ from ..absCheerAction import AbsCheerAction
 from ...misc import utils as utils
 from ...recentGrenadeAttacks.helper.recentGrenadeAttacksHelperInterface import RecentGrenadeAttacksHelperInterface
 from ...timber.timberInterface import TimberInterface
+from ...timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ...timeout.timeoutActionData import TimeoutActionData
 from ...timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
-from ...timeout.timeoutActionSettingsRepositoryInterface import TimeoutActionSettingsRepositoryInterface
 from ...timeout.timeoutActionType import TimeoutActionType
 from ...twitch.activeChatters.activeChatter import ActiveChatter
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
@@ -38,7 +38,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         recentGrenadeAttacksHelper: RecentGrenadeAttacksHelperInterface,
         timber: TimberInterface,
         timeoutActionHelper: TimeoutActionHelperInterface,
-        timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface,
+        timeoutActionSettings: TimeoutActionSettingsInterface,
         timeoutCheerActionMapper: TimeoutCheerActionMapper,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
@@ -52,8 +52,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionHelper, TimeoutActionHelperInterface):
             raise TypeError(f'timeoutActionHelper argument is malformed: \"{timeoutActionHelper}\"')
-        elif not isinstance(timeoutActionSettingsRepository, TimeoutActionSettingsRepositoryInterface):
-            raise TypeError(f'timeoutActionSettingsRepository argument is malformed: \"{timeoutActionSettingsRepository}\"')
+        elif not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
+            raise TypeError(f'timeoutActionSettings argument is malformed: \"{timeoutActionSettings}\"')
         elif not isinstance(timeoutCheerActionMapper, TimeoutCheerActionMapper):
             raise TypeError(f'timeoutCheerActionMapper argument is malformed: \"{timeoutCheerActionMapper}\"')
         elif not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
@@ -67,7 +67,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         self.__recentGrenadeAttacksHelper: RecentGrenadeAttacksHelperInterface = recentGrenadeAttacksHelper
         self.__timber: TimberInterface = timber
         self.__timeoutActionHelper: TimeoutActionHelperInterface = timeoutActionHelper
-        self.__timeoutActionSettingsRepository: TimeoutActionSettingsRepositoryInterface = timeoutActionSettingsRepository
+        self.__timeoutActionSettings: TimeoutActionSettingsInterface = timeoutActionSettings
         self.__timeoutCheerActionMapper: TimeoutCheerActionMapper = timeoutCheerActionMapper
         self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
         self.__twitchMessageStringUtils: TwitchMessageStringUtilsInterface = twitchMessageStringUtils
@@ -81,7 +81,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         timeoutAction: TimeoutCheerAction,
         user: UserInterface,
     ) -> TimeoutTarget | None:
-        additionalReverseProbability = await self.__timeoutActionSettingsRepository.getGrenadeAdditionalReverseProbability()
+        additionalReverseProbability = await self.__timeoutActionSettings.getGrenadeAdditionalReverseProbability()
         randomReverseNumber = random.random()
 
         if randomReverseNumber <= additionalReverseProbability:

@@ -5,10 +5,7 @@ from ..models.chatterItemType import ChatterItemType
 from ..models.useGrenadeItemAction import UseGrenadeItemAction
 from ..repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
 from ..settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
-from ...timeout.timeoutActionData import TimeoutActionData
 from ...timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
-from ...timeout.timeoutActionType import TimeoutActionType
-from ...timeout.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.usersRepositoryInterface import UsersRepositoryInterface
 

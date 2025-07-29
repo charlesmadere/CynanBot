@@ -33,7 +33,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        queueTimeoutSeconds: int = 3
+        queueTimeoutSeconds: int = 3,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')

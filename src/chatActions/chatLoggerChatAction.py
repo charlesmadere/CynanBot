@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absChatAction import AbsChatAction
 from ..chatLogger.chatLoggerInterface import ChatLoggerInterface
 from ..misc import utils as utils
@@ -10,30 +12,31 @@ class ChatLoggerChatAction(AbsChatAction):
 
     def __init__(
         self,
-        chatLogger: ChatLoggerInterface
+        chatLogger: ChatLoggerInterface,
     ):
         if not isinstance(chatLogger, ChatLoggerInterface):
             raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
 
-        self.__chatLogger: ChatLoggerInterface = chatLogger
+        self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
 
     async def handleChat(
         self,
         mostRecentChat: MostRecentChat | None,
         message: TwitchMessage,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         if not user.isChatLoggingEnabled:
             return False
 
-        msg = utils.cleanStr(message.getContent())
+        cleanedMessage = utils.cleanStr(message.getContent())
 
         self.__chatLogger.logMessage(
-            msg = msg,
+            bits = None,
+            chatterUserId = message.getAuthorId(),
+            chatterUserLogin = message.getAuthorName(),
+            message = cleanedMessage,
             twitchChannel = user.handle,
             twitchChannelId = await message.getTwitchChannelId(),
-            userId = message.getAuthorId(),
-            userName = message.getAuthorName()
         )
 
         return True
