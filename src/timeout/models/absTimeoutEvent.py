@@ -1,8 +1,21 @@
 from abc import ABC, abstractmethod
 
+from .absTimeoutAction import AbsTimeoutAction
+
 
 class AbsTimeoutEvent(ABC):
 
     @abstractmethod
-    def getActionId(self) -> str:
+    def getEventId(self) -> str:
         pass
+
+    @abstractmethod
+    def getOriginatingAction(self) -> AbsTimeoutAction:
+        pass
+
+    def getTwitchChannelId(self) -> str:
+        return self.getOriginatingAction().getTwitchChannelId()
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.getOriginatingAction().twitchChannel

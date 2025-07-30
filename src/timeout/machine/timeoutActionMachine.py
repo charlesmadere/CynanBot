@@ -9,15 +9,22 @@ from frozenlist import FrozenList
 from .timeoutActionMachineInterface import TimeoutActionMachineInterface
 from ..exceptions import UnknownTimeoutActionTypeException
 from ..guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
+from ..idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
 from ..listener.timeoutEventListener import TimeoutEventListener
 from ..models.absTimeoutAction import AbsTimeoutAction
 from ..models.absTimeoutEvent import AbsTimeoutEvent
+from ..models.airStrikeTargetData import AirStrikeTargetData
 from ..models.airStrikeTimeoutAction import AirStrikeTimeoutAction
 from ..models.bananaTimeoutAction import BananaTimeoutAction
 from ..models.basicTimeoutAction import BasicTimeoutAction
 from ..models.grenadeTimeoutAction import GrenadeTimeoutAction
+from ..models.noInventoryAvailableTimeoutEvent import NoInventoryAvailableTimeoutEvent
+from ..models.noTimeoutTargetAvailableTimeoutEvent import NoTimeoutTargetAvailableTimeoutEvent
+from ..useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
 from ..useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
 from ..useCases.timeoutRollFailureUseCase import TimeoutRollFailureUseCase
+from ...chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
+from ...chatterInventory.models.chatterItemType import ChatterItemType
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
@@ -31,9 +38,12 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
+        chatterInventoryHelper: ChatterInventoryHelperInterface,
+        determineAirStrikeTargetsUseCase: DetermineAirStrikeTargetsUseCase,
         determineGrenadeTargetUseCase: DetermineGrenadeTargetUseCase,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         timber: TimberInterface,
+        timeoutIdGenerator: TimeoutIdGeneratorInterface,
         timeoutRollFailureUseCase: TimeoutRollFailureUseCase,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         sleepTimeSeconds: float = 1,
@@ -43,12 +53,18 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
         elif not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(chatterInventoryHelper, ChatterInventoryHelperInterface):
+            raise TypeError(f'chatterInventoryHelper argument is malformed: \"{chatterInventoryHelper}\"')
+        elif not isinstance(determineAirStrikeTargetsUseCase, DetermineAirStrikeTargetsUseCase):
+            raise TypeError(f'determineAirStrikeTargetsUseCase argument is malformed: \"{determineAirStrikeTargetsUseCase}\"')
         elif not isinstance(determineGrenadeTargetUseCase, DetermineGrenadeTargetUseCase):
             raise TypeError(f'determineGrenadeTargetUseCase argument is malformed: \"{determineGrenadeTargetUseCase}\"')
         elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
             raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeoutIdGenerator, TimeoutIdGeneratorInterface):
+            raise TypeError(f'timeoutIdGenerator argument is malformed: \"{timeoutIdGenerator}\"')
         elif not isinstance(timeoutRollFailureUseCase, TimeoutRollFailureUseCase):
             raise TypeError(f'timeoutRollFailureUseCase argument is malformed: \"{timeoutRollFailureUseCase}\"')
         elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
@@ -64,9 +80,12 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = chatterInventoryHelper
+        self.__determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCase] = determineAirStrikeTargetsUseCase
         self.__determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCase] = determineGrenadeTargetUseCase
         self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__timber: Final[TimberInterface] = timber
+        self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
         self.__timeoutRollFailureUseCase: Final[TimeoutRollFailureUseCase] = timeoutRollFailureUseCase
         self.__twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = twitchTimeoutHelper
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
@@ -80,6 +99,29 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
     async def __handleAirStrikeTimeoutAction(self, action: AirStrikeTimeoutAction):
         if not isinstance(action, AirStrikeTimeoutAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
+
+        inventory = await self.__chatterInventoryHelper.get(
+            chatterUserId = action.instigatorUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        if inventory[ChatterItemType.AIR_STRIKE] < 1:
+            await self.__submitEvent(NoInventoryAvailableTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
+
+        airStrikeTargets = await self.__determineAirStrikeTargetsUseCase.invoke(action)
+        frozenAirStrikeTargets: FrozenList[AirStrikeTargetData] = FrozenList(airStrikeTargets)
+        frozenAirStrikeTargets.freeze()
+
+        if len(frozenAirStrikeTargets) == 0:
+            await self.__submitEvent(NoTimeoutTargetAvailableTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
 
         # TODO
         pass
@@ -101,6 +143,27 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
     async def __handleGrenadeTimeoutAction(self, action: GrenadeTimeoutAction):
         if not isinstance(action, GrenadeTimeoutAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
+
+        inventory = await self.__chatterInventoryHelper.get(
+            chatterUserId = action.instigatorUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        if inventory[ChatterItemType.GRENADE] < 1:
+            await self.__submitEvent(NoInventoryAvailableTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
+
+        grenadeTarget = await self.__determineGrenadeTargetUseCase.invoke(action)
+
+        if grenadeTarget is None:
+            await self.__submitEvent(NoTimeoutTargetAvailableTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
 
         # TODO
         pass
