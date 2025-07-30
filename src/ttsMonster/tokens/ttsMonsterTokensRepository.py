@@ -33,7 +33,7 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
         self.__backingDatabase: Final[BackingDatabase] = backingDatabase
         self.__timber: Final[TimberInterface] = timber
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
-        self.__seedFileReader: Final[JsonReaderInterface | None] = seedFileReader
+        self.__seedFileReader: JsonReaderInterface | None = seedFileReader
 
         self.__isDatabaseReady: bool = False
         self.__cache: Final[dict[str, TtsMonsterTokens | None]] = dict()

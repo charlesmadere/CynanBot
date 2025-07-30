@@ -1,7 +1,7 @@
 import asyncio
 import traceback
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, Final
 
 from .twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..api.models.twitchTokensDetails import TwitchTokensDetails
@@ -60,21 +60,21 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         elif not isinstance(validationExpirationBuffer, timedelta):
             raise TypeError(f'validationExpirationBuffer argument is malformed: \"{validationExpirationBuffer}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__seedFileReader: JsonReaderInterface | None = seedFileReader
-        self.__sleepTimeSeconds: float = sleepTimeSeconds
-        self.__tokensExpirationBuffer: timedelta = tokensExpirationBuffer
-        self.__validationExpirationBuffer: timedelta = validationExpirationBuffer
+        self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
+        self.__tokensExpirationBuffer: Final[timedelta] = tokensExpirationBuffer
+        self.__validationExpirationBuffer: Final[timedelta] = validationExpirationBuffer
 
         self.__isDatabaseReady: bool = False
         self.__isStarted: bool = False
-        self.__cache: dict[str, TwitchTokensDetails | None] = dict()
-        self.__twitchChannelIdToValidationTime: dict[str, datetime | None] = dict()
+        self.__cache: Final[dict[str, TwitchTokensDetails | None]] = dict()
+        self.__twitchChannelIdToValidationTime: Final[dict[str, datetime | None]] = dict()
 
     async def addUser(
         self,
@@ -107,7 +107,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
     async def __areTokensDetailsCurrentlyValid(
         self,
         twitchChannelId: str,
-        tokensDetails: TwitchTokensDetails | None
+        tokensDetails: TwitchTokensDetails | None,
     ) -> bool:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
@@ -217,7 +217,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
     async def __fetchTokensDetailsFromDatabase(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> TwitchTokensDetails | None:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
@@ -245,10 +245,13 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         return TwitchTokensDetails(
             expirationTime = expirationTime,
             accessToken = record[1],
-            refreshToken = record[2]
+            refreshToken = record[2],
         )
 
-    async def getAccessToken(self, twitchChannel: str) -> str | None:
+    async def getAccessToken(
+        self,
+        twitchChannel: str,
+    ) -> str | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
@@ -259,7 +262,10 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         return await self.getAccessTokenById(twitchChannelId)
 
-    async def getAccessTokenById(self, twitchChannelId: str) -> str | None:
+    async def getAccessTokenById(
+        self,
+        twitchChannelId: str,
+    ) -> str | None:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -274,7 +280,10 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         await self.__initDatabaseTable()
         return await self.__backingDatabase.getConnection()
 
-    async def getTokensDetails(self, twitchChannel: str) -> TwitchTokensDetails | None:
+    async def getTokensDetails(
+        self,
+        twitchChannel: str,
+    ) -> TwitchTokensDetails | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
@@ -285,7 +294,10 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         return await self.getTokensDetailsById(twitchChannelId)
 
-    async def getTokensDetailsById(self, twitchChannelId: str) -> TwitchTokensDetails | None:
+    async def getTokensDetailsById(
+        self,
+        twitchChannelId: str,
+    ) -> TwitchTokensDetails | None:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -304,13 +316,16 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         tokensDetails = await self.__validateAndRefreshAccessToken(
             twitchChannelId = twitchChannelId,
-            tokensDetails = tokensDetails
+            tokensDetails = tokensDetails,
         )
 
         self.__cache[twitchChannelId] = tokensDetails
         return tokensDetails
 
-    async def hasAccessToken(self, twitchChannel: str) -> bool:
+    async def hasAccessToken(
+        self,
+        twitchChannel: str,
+    ) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
@@ -321,7 +336,10 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         return await self.hasAccessTokenById(twitchChannelId)
 
-    async def hasAccessTokenById(self, twitchChannelId: str) -> bool:
+    async def hasAccessTokenById(
+        self,
+        twitchChannelId: str,
+    ) -> bool:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -366,14 +384,20 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         await connection.close()
         await self.__consumeSeedFile()
 
-    async def removeUser(self, twitchChannel: str):
+    async def removeUser(
+        self,
+        twitchChannel: str,
+    ):
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         twitchChannelId = await self.__userIdsRepository.requireUserId(twitchChannel)
         await self.removeUserById(twitchChannelId)
 
-    async def removeUserById(self, twitchChannelId: str):
+    async def removeUserById(
+        self,
+        twitchChannelId: str,
+    ):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -391,7 +415,10 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         await connection.close()
         self.__cache.pop(twitchChannelId, None)
 
-    async def requireAccessToken(self, twitchChannel: str) -> str:
+    async def requireAccessToken(
+        self,
+        twitchChannel: str,
+    ) -> str:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
@@ -402,7 +429,10 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         return accessToken
 
-    async def requireAccessTokenById(self, twitchChannelId: str) -> str:
+    async def requireAccessTokenById(
+        self,
+        twitchChannelId: str,
+    ) -> str:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -416,7 +446,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
     async def __setExpirationTime(
         self,
         expirationTime: datetime,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         if not isinstance(expirationTime, datetime):
             raise TypeError(f'expirationTime argument is malformed: \"{expirationTime}\"')
@@ -493,7 +523,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
     async def __validateAndRefreshAccessToken(
         self,
         twitchChannelId: str,
-        tokensDetails: TwitchTokensDetails
+        tokensDetails: TwitchTokensDetails,
     ) -> TwitchTokensDetails:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
@@ -504,7 +534,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         if await self.__areTokensDetailsCurrentlyValid(
             twitchChannelId = twitchChannelId,
-            tokensDetails = tokensDetails
+            tokensDetails = tokensDetails,
         ):
             return tokensDetails
 
@@ -529,7 +559,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         if validationResponse is None or validationResponse.expiresAt + self.__tokensExpirationBuffer > nowDateTime:
             try:
                 newTokensDetails = await self.__twitchApiService.refreshTokens(
-                    twitchRefreshToken = tokensDetails.refreshToken
+                    twitchRefreshToken = tokensDetails.refreshToken,
                 )
             except GenericNetworkException as e:
                 self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to refresh Twitch tokens ({twitchChannelId=}): {e}', e, traceback.format_exc())
@@ -548,11 +578,11 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         await self.__setExpirationTime(
             expirationTime = validationResponse.expiresAt,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         return TwitchTokensDetails(
             expirationTime = validationResponse.expiresAt,
             accessToken = tokensDetails.accessToken,
-            refreshToken = tokensDetails.refreshToken
+            refreshToken = tokensDetails.refreshToken,
         )

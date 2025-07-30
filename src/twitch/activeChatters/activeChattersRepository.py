@@ -185,8 +185,8 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
                 chattersRequest = TwitchChattersRequest(
                     first = first,
                     broadcasterId = twitchChannelId,
-                    moderatorId = twitchId
-                )
+                    moderatorId = twitchId,
+                ),
             )
         except (GenericNetworkException, TwitchJsonException, TwitchStatusCodeException) as e:
             self.__timber.log('ActiveChattersRepository', f'Failed fetching currently connected chatters ({twitchChannelId=}) ({first=}): {e}', e, traceback.format_exc())
