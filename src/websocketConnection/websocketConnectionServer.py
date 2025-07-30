@@ -4,7 +4,7 @@ import queue
 import traceback
 from datetime import datetime, timedelta
 from queue import SimpleQueue
-from typing import Any
+from typing import Any, Final
 
 import websockets
 from frozenlist import FrozenList
@@ -31,7 +31,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         websocketConnectionServerSettings: WebsocketConnectionServerSettingsInterface,
         websocketEventTypeMapper: WebsocketEventTypeMapperInterface,
         websocketSleepTimeSeconds: float = 3,
-        queueTimeoutSeconds: int = 3
+        queueTimeoutSeconds: int = 3,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -52,21 +52,21 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__websocketConnectionServerSettings: WebsocketConnectionServerSettingsInterface = websocketConnectionServerSettings
-        self.__websocketEventTypeMapper: WebsocketEventTypeMapperInterface = websocketEventTypeMapper
-        self.__websocketSleepTimeSeconds: float = websocketSleepTimeSeconds
-        self.__queueTimeoutSeconds: int = queueTimeoutSeconds
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__websocketConnectionServerSettings: Final[WebsocketConnectionServerSettingsInterface] = websocketConnectionServerSettings
+        self.__websocketEventTypeMapper: Final[WebsocketEventTypeMapperInterface] = websocketEventTypeMapper
+        self.__websocketSleepTimeSeconds: Final[float] = websocketSleepTimeSeconds
+        self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
         self.__isStarted: bool = False
-        self.__eventQueue: SimpleQueue[WebsocketEvent] = SimpleQueue()
+        self.__eventQueue: Final[SimpleQueue[WebsocketEvent]] = SimpleQueue()
 
     async def __handleWebsocketEvents(
         self,
         events: FrozenList[WebsocketEvent],
-        serverConnection: ServerConnection
+        serverConnection: ServerConnection,
     ):
         if len(events) == 0:
             return
@@ -114,7 +114,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
                 async with websockets.serve(
                     self.__websocketConnectionReceived,
                     host = host,
-                    port = port
+                    port = port,
                 ) as websocket:
                     self.__timber.log('WebsocketConnectionServer', f'Serving... ({host=}) ({port=})')
                     await websocket.wait_closed()
@@ -136,7 +136,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         twitchChannel: str,
         twitchChannelId: str,
         eventType: WebsocketEventType,
-        eventData: dict[str, Any]
+        eventData: dict[str, Any],
     ):
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -151,13 +151,13 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
             'twitchChannel': twitchChannel,
             'twitchChannelId': twitchChannelId,
             'eventType': self.__websocketEventTypeMapper.toString(eventType),
-            'eventData': eventData
+            'eventData': eventData,
         }
 
         websocketEvent = WebsocketEvent(
             eventTime = datetime.now(self.__timeZoneRepository.getDefault()),
             eventData = event,
-            eventType = eventType
+            eventType = eventType,
         )
 
         try:
@@ -167,7 +167,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
 
     async def __websocketConnectionReceived(
         self,
-        serverConnection: ServerConnection
+        serverConnection: ServerConnection,
     ):
         if not isinstance(serverConnection, ServerConnection):
             raise TypeError(f'serverConnection argument is malformed: \"{serverConnection}\"')
@@ -179,7 +179,8 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
 
             try:
                 while not self.__eventQueue.empty():
-                    events.append(self.__eventQueue.get_nowait())
+                    event = self.__eventQueue.get_nowait()
+                    events.append(event)
             except queue.Empty as e:
                 self.__timber.log('WebsocketConnectionServer', f'Encountered queue.Empty error when looping through events ({serverConnection=}) (qsize: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
 
@@ -187,7 +188,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
 
             await self.__handleWebsocketEvents(
                 events = events,
-                serverConnection = serverConnection
+                serverConnection = serverConnection,
             )
 
             await asyncio.sleep(self.__websocketSleepTimeSeconds)

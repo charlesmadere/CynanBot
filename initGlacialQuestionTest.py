@@ -182,8 +182,8 @@ twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository
     userIdsRepository = userIdsRepository,
     seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/twitchTokensRepositorySeedFile.json'
-    )
+        fileName = '../config/twitchTokensRepositorySeedFile.json',
+    ),
 )
 
 additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = AdditionalTriviaAnswersRepository(

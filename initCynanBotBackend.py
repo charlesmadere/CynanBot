@@ -620,8 +620,8 @@ twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository
     userIdsRepository = userIdsRepository,
     seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/twitchTokensRepositorySeedFile.json'
-    )
+        fileName = '../config/twitchTokensRepositorySeedFile.json',
+    ),
 )
 
 administratorProvider: AdministratorProviderInterface = AdministratorProvider(
@@ -818,7 +818,7 @@ funtoonHelper: FuntoonHelperInterface = FuntoonHelper(
     funtoonApiService = funtoonApiService,
     funtoonJsonMapper = funtoonJsonMapper,
     funtoonTokensRepository = funtoonTokensRepository,
-    timber = timber
+    timber = timber,
 )
 
 emojiRepository: EmojiRepositoryInterface = EmojiRepository(

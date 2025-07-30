@@ -38,7 +38,7 @@ def boolToInt(b: bool) -> int:
 
 CARROT_REMOVAL_REG_EX: Final[Pattern] = re.compile(r'<\/?\w+>', re.IGNORECASE)
 EXTRA_WHITE_SPACE_REG_EX: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
-RIDICULOUS_7TV_CHARACTERS_REG_EX: Final[Pattern] = re.compile(r'\U000e0000', re.IGNORECASE)
+RIDICULOUS_BLANK_CHARACTERS_REG_EX: Final[Pattern] = re.compile(r'[\U000e0000]', re.IGNORECASE)
 
 def cleanStr(
     s: str | None,
@@ -59,7 +59,7 @@ def cleanStr(
         return ''
 
     s = EXTRA_WHITE_SPACE_REG_EX.sub(' ', s).strip()
-    s = RIDICULOUS_7TV_CHARACTERS_REG_EX.sub('', s).strip()
+    s = RIDICULOUS_BLANK_CHARACTERS_REG_EX.sub('', s).strip()
 
     s = s.replace('\r\n', replacement)\
          .replace('\r', replacement)\

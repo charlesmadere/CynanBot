@@ -216,7 +216,7 @@ twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
 twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface = TwitchSubscriptionsRepository(

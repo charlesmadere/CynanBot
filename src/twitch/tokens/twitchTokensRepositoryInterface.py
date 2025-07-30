@@ -6,7 +6,12 @@ from ...misc.clearable import Clearable
 class TwitchTokensRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
-    async def addUser(self, code: str, twitchChannel: str, twitchChannelId: str):
+    async def addUser(
+        self,
+        code: str,
+        twitchChannel: str,
+        twitchChannelId: str,
+    ):
         pass
 
     @abstractmethod

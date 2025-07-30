@@ -16,6 +16,6 @@ class WebsocketConnectionServerInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
         eventType: WebsocketEventType,
-        eventData: dict[str, Any]
+        eventData: dict[str, Any],
     ):
         pass

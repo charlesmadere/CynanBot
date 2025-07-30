@@ -52,6 +52,41 @@ class TestUtils:
         assert isinstance(result, int)
         assert result == 1
 
+    def test_cleanStr_withCleanableString1(self):
+        result = utils.cleanStr(' Hello,  World! \n')
+        assert isinstance(result, str)
+        assert result == 'Hello, World!'
+
+    def test_cleanStr_withCleanableString2(self):
+        result = utils.cleanStr('   Hello,    World!\n\n ')
+        assert isinstance(result, str)
+        assert result == 'Hello, World!'
+
+    def test_cleanStr_withEmptyString(self):
+        result = utils.cleanStr('')
+        assert isinstance(result, str)
+        assert result == ''
+
+    def test_cleanStr_withHelloWorld(self):
+        result = utils.cleanStr('Hello, World!')
+        assert isinstance(result, str)
+        assert result == 'Hello, World!'
+
+    def test_cleanStr_withNone(self):
+        result = utils.cleanStr(None)
+        assert isinstance(result, str)
+        assert result == ''
+
+    def test_cleanStr_withWeirdPuptimeMessage(self):
+        result = utils.cleanStr(' aineAww dviperCopium dviperWitch RalpherZ softPog')
+        assert isinstance(result, str)
+        assert result == 'aineAww dviperCopium dviperWitch RalpherZ softPog'
+
+    def test_cleanStr_withWhitespaceString(self):
+        result = utils.cleanStr(' ')
+        assert isinstance(result, str)
+        assert result == ''
+
     def test_containsUrl_withCynanBotIo(self):
         result = utils.containsUrl('cynanbot.io')
         assert result is True

@@ -1,6 +1,7 @@
 from typing import Any
 
 from ..websocketConnectionServerInterface import WebsocketConnectionServerInterface
+from ..websocketEventType import WebsocketEventType
 
 
 class StubWebsocketConnectionServer(WebsocketConnectionServerInterface):
@@ -12,8 +13,9 @@ class StubWebsocketConnectionServer(WebsocketConnectionServerInterface):
     def submitEvent(
         self,
         twitchChannel: str,
-        eventType: str,
-        eventData: dict[str, Any]
+        twitchChannelId: str,
+        eventType: WebsocketEventType,
+        eventData: dict[str, Any],
     ):
         # this method is intentionally empty
         pass

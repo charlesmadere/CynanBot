@@ -35,7 +35,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         seedFileReader: JsonReaderInterface | None = None,
         sleepTimeSeconds: float = 3300,
         tokensExpirationBuffer: timedelta = timedelta(minutes = 10),
-        validationExpirationBuffer: timedelta = timedelta(minutes = 10)
+        validationExpirationBuffer: timedelta = timedelta(minutes = 10),
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -80,7 +80,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self,
         code: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         if not utils.isValidStr(code):
             raise TypeError(f'code argument is malformed: \"{code}\"')
@@ -101,7 +101,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         await self.__setTokensDetails(
             twitchChannelId = twitchChannelId,
-            tokensDetails = tokensDetails
+            tokensDetails = tokensDetails,
         )
 
     async def __areTokensDetailsCurrentlyValid(
@@ -198,7 +198,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
                 tokensDetails = TwitchTokensDetails(
                     expirationTime = await self.__createExpiredExpirationTime(),
                     accessToken = utils.getStrFromDict(tokensDetailsJson, 'accessToken'),
-                    refreshToken = utils.getStrFromDict(tokensDetailsJson, 'refreshToken')
+                    refreshToken = utils.getStrFromDict(tokensDetailsJson, 'refreshToken'),
                 )
 
             if tokensDetails is not None:
@@ -206,7 +206,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
                 await self.__setTokensDetails(
                     twitchChannelId = twitchChannelId,
-                    tokensDetails = tokensDetails
+                    tokensDetails = tokensDetails,
                 )
 
         self.__timber.log('TwitchTokensRepository', f'Finished reading in seed file \"{seedFileReader}\"')
@@ -541,7 +541,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
             await self.__setTokensDetails(
                 twitchChannelId = twitchChannelId,
-                tokensDetails = newTokensDetails
+                tokensDetails = newTokensDetails,
             )
 
             return newTokensDetails

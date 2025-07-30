@@ -19,7 +19,7 @@ class FuntoonHelper(FuntoonHelperInterface):
         funtoonApiService: FuntoonApiServiceInterface,
         funtoonJsonMapper: FuntoonJsonMapperInterface,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(funtoonApiService, FuntoonApiServiceInterface):
             raise TypeError(f'funtoonApiService argument is malformed: \"{funtoonApiService}\"')
