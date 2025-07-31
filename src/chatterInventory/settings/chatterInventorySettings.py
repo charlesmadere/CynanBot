@@ -50,7 +50,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
     async def isEnabled(self) -> bool:
         jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'enabled', True)
+        return utils.getBoolFromDict(jsonContents, 'enabled', False)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:

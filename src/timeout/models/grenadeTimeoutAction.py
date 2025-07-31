@@ -10,6 +10,7 @@ from ...users.userInterface import UserInterface
 @dataclass(frozen = True)
 class GrenadeTimeoutAction(AbsTimeoutAction):
     timeoutDuration: AbsTimeoutDuration
+    ignoreInventory: bool
     pointRedemption: PointRedemptionTimeoutData | None
     actionId: str
     instigatorUserId: str

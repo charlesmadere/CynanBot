@@ -17,9 +17,11 @@ from ..models.airStrikeTargetData import AirStrikeTargetData
 from ..models.airStrikeTimeoutAction import AirStrikeTimeoutAction
 from ..models.bananaTimeoutAction import BananaTimeoutAction
 from ..models.basicTimeoutAction import BasicTimeoutAction
+from ..models.events.noAirStrikeInventoryAvailableTimeoutEvent import NoAirStrikeInventoryAvailableTimeoutEvent
+from ..models.events.noAirStrikeTargetsAvailableTimeoutEvent import NoAirStrikeTargetsAvailableTimeoutEvent
+from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
+from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
 from ..models.grenadeTimeoutAction import GrenadeTimeoutAction
-from ..models.noInventoryAvailableTimeoutEvent import NoInventoryAvailableTimeoutEvent
-from ..models.noTimeoutTargetAvailableTimeoutEvent import NoTimeoutTargetAvailableTimeoutEvent
 from ..useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
 from ..useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
 from ..useCases.timeoutRollFailureUseCase import TimeoutRollFailureUseCase
@@ -106,18 +108,21 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         )
 
         if inventory[ChatterItemType.AIR_STRIKE] < 1:
-            await self.__submitEvent(NoInventoryAvailableTimeoutEvent(
+            await self.__submitEvent(NoAirStrikeInventoryAvailableTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
             ))
             return
 
-        airStrikeTargets = await self.__determineAirStrikeTargetsUseCase.invoke(action)
+        airStrikeTargets = await self.__determineAirStrikeTargetsUseCase.invoke(
+            timeoutAction = action,
+        )
+
         frozenAirStrikeTargets: FrozenList[AirStrikeTargetData] = FrozenList(airStrikeTargets)
         frozenAirStrikeTargets.freeze()
 
         if len(frozenAirStrikeTargets) == 0:
-            await self.__submitEvent(NoTimeoutTargetAvailableTimeoutEvent(
+            await self.__submitEvent(NoAirStrikeTargetsAvailableTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
             ))
@@ -150,16 +155,18 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         )
 
         if inventory[ChatterItemType.GRENADE] < 1:
-            await self.__submitEvent(NoInventoryAvailableTimeoutEvent(
+            await self.__submitEvent(NoGrenadeInventoryAvailableTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
             ))
             return
 
-        grenadeTarget = await self.__determineGrenadeTargetUseCase.invoke(action)
+        grenadeTarget = await self.__determineGrenadeTargetUseCase.invoke(
+            timeoutAction = action,
+        )
 
         if grenadeTarget is None:
-            await self.__submitEvent(NoTimeoutTargetAvailableTimeoutEvent(
+            await self.__submitEvent(NoGrenadeTargetAvailableTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
             ))

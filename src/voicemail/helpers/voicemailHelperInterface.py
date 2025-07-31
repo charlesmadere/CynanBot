@@ -14,7 +14,7 @@ class VoicemailHelperInterface(ABC):
         message: str | None,
         originatingUserId: str,
         targetUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AddVoicemailResult:
         pass
 
@@ -22,7 +22,7 @@ class VoicemailHelperInterface(ABC):
     async def getAllForOriginatingUser(
         self,
         originatingUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> FrozenList[PreparedVoicemailData]:
         pass
 
@@ -30,7 +30,7 @@ class VoicemailHelperInterface(ABC):
     async def getAllForTargetUser(
         self,
         targetUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> FrozenList[PreparedVoicemailData]:
         pass
 
@@ -38,6 +38,6 @@ class VoicemailHelperInterface(ABC):
     async def popForTargetUser(
         self,
         targetUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> PreparedVoicemailData | None:
         pass

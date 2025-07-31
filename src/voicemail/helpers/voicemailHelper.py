@@ -25,7 +25,7 @@ class VoicemailHelper(VoicemailHelperInterface):
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         voicemailsRepository: VoicemailsRepositoryInterface,
-        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
+        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -52,7 +52,7 @@ class VoicemailHelper(VoicemailHelperInterface):
         message: str | None,
         originatingUserId: str,
         targetUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AddVoicemailResult:
         if message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -95,14 +95,14 @@ class VoicemailHelper(VoicemailHelperInterface):
                 maximumVoicemailCount =  maximumPerOriginatingUser,
                 originatingUserId = originatingUserId,
                 targetUserId = targetUserId,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
 
         return await self.__voicemailsRepository.addVoicemail(
             message = cleanedMessage,
             originatingUserId = originatingUserId,
             targetUserId = targetUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def __deleteOverflowingVoicemails(
@@ -111,7 +111,7 @@ class VoicemailHelper(VoicemailHelperInterface):
         maximumVoicemailCount: int,
         originatingUserId: str,
         targetUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         numberToDelete = len(overflowingVoicemails) - maximumVoicemailCount
 
@@ -128,7 +128,7 @@ class VoicemailHelper(VoicemailHelperInterface):
     async def getAllForOriginatingUser(
         self,
         originatingUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> FrozenList[PreparedVoicemailData]:
         if not utils.isValidStr(originatingUserId):
             raise TypeError(f'originatingUserId argument is malformed: \"{originatingUserId}\"')
@@ -137,7 +137,7 @@ class VoicemailHelper(VoicemailHelperInterface):
 
         allForOriginatingUser = await self.__voicemailsRepository.getAllForOriginatingUser(
             originatingUserId = originatingUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         allPreparedVoicemails: FrozenList[PreparedVoicemailData] = FrozenList()
@@ -145,7 +145,7 @@ class VoicemailHelper(VoicemailHelperInterface):
         for voicemail in allForOriginatingUser:
             preparedVoicemail = await self.__prepareVoicemailData(
                 twitchChannelId = twitchChannelId,
-                voicemail = voicemail
+                voicemail = voicemail,
             )
 
             if preparedVoicemail is not None:
@@ -157,7 +157,7 @@ class VoicemailHelper(VoicemailHelperInterface):
     async def getAllForTargetUser(
         self,
         targetUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> FrozenList[PreparedVoicemailData]:
         if not utils.isValidStr(targetUserId):
             raise TypeError(f'targetUserId argument is malformed: \"{targetUserId}\"')
@@ -166,7 +166,7 @@ class VoicemailHelper(VoicemailHelperInterface):
 
         allForTargetUser = await self.__voicemailsRepository.getAllForTargetUser(
             targetUserId = targetUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         allPreparedVoicemails: FrozenList[PreparedVoicemailData] = FrozenList()
@@ -174,7 +174,7 @@ class VoicemailHelper(VoicemailHelperInterface):
         for voicemail in allForTargetUser:
             preparedVoicemail = await self.__prepareVoicemailData(
                 twitchChannelId = twitchChannelId,
-                voicemail = voicemail
+                voicemail = voicemail,
             )
 
             if preparedVoicemail is not None:
@@ -196,7 +196,7 @@ class VoicemailHelper(VoicemailHelperInterface):
         while True:
             voicemail = await self.__voicemailsRepository.getForTargetUser(
                 targetUserId = targetUserId,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
 
             if voicemail is None:
@@ -204,13 +204,13 @@ class VoicemailHelper(VoicemailHelperInterface):
 
             preparedVoicemail = await self.__prepareVoicemailData(
                 twitchChannelId = twitchChannelId,
-                voicemail = voicemail
+                voicemail = voicemail,
             )
 
             if preparedVoicemail is not None:
                 await self.__voicemailsRepository.removeVoicemail(
                     twitchChannelId = twitchChannelId,
-                    voicemailId = voicemail.voicemailId
+                    voicemailId = voicemail.voicemailId,
                 )
 
                 return preparedVoicemail
@@ -218,7 +218,7 @@ class VoicemailHelper(VoicemailHelperInterface):
     async def __prepareVoicemailData(
         self,
         twitchChannelId: str,
-        voicemail: VoicemailData
+        voicemail: VoicemailData,
     ) -> PreparedVoicemailData | None:
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
@@ -231,23 +231,23 @@ class VoicemailHelper(VoicemailHelperInterface):
 
             await self.__voicemailsRepository.removeVoicemail(
                 twitchChannelId = twitchChannelId,
-                voicemailId = voicemail.voicemailId
+                voicemailId = voicemail.voicemailId,
             )
 
             return None
 
         twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         originatingUserName = await self.__userIdsRepository.fetchUserName(
             userId = voicemail.originatingUserId,
-            twitchAccessToken = twitchAccessToken
+            twitchAccessToken = twitchAccessToken,
         )
 
         targetUserName = await self.__userIdsRepository.fetchUserName(
             userId = voicemail.targetUserId,
-            twitchAccessToken = twitchAccessToken
+            twitchAccessToken = twitchAccessToken,
         )
 
         if not utils.isValidStr(originatingUserName) or not utils.isValidStr(targetUserName):
@@ -255,7 +255,7 @@ class VoicemailHelper(VoicemailHelperInterface):
 
             await self.__voicemailsRepository.removeVoicemail(
                 twitchChannelId = twitchChannelId,
-                voicemailId = voicemail.voicemailId
+                voicemailId = voicemail.voicemailId,
             )
 
             return None
@@ -263,5 +263,5 @@ class VoicemailHelper(VoicemailHelperInterface):
         return PreparedVoicemailData(
             originatingUserName = originatingUserName,
             targetUserName = targetUserName,
-            voicemail = voicemail
+            voicemail = voicemail,
         )

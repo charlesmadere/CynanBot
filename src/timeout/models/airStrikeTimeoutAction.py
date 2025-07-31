@@ -10,6 +10,9 @@ from ...users.userInterface import UserInterface
 @dataclass(frozen = True)
 class AirStrikeTimeoutAction(AbsTimeoutAction):
     timeoutDuration: AbsTimeoutDuration
+    ignoreItemUse: bool
+    maxTimeoutTargets: int
+    minTimeoutTargets: int
     pointRedemption: PointRedemptionTimeoutData | None
     actionId: str
     instigatorUserId: str

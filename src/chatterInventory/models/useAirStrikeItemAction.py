@@ -14,6 +14,9 @@ class UseAirStrikeItemAction(UseChatterItemAction):
     def getActionId(self) -> str:
         return self.actionId
 
+    def getChatterUserId(self) -> str:
+        return self.chatterUserId
+
     def getItemType(self) -> ChatterItemType:
         return ChatterItemType.AIR_STRIKE
 

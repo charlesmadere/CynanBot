@@ -10,6 +10,10 @@ class UseChatterItemAction(ABC):
         pass
 
     @abstractmethod
+    def getChatterUserId(self) -> str:
+        pass
+
+    @abstractmethod
     def getItemType(self) -> ChatterItemType:
         pass
 

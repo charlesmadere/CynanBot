@@ -6,6 +6,7 @@ from .useChatterItemAction import UseChatterItemAction
 
 @dataclass(frozen = True)
 class UseGrenadeItemAction(UseChatterItemAction):
+    durationSeconds: int
     actionId: str
     chatterUserId: str
     twitchChannel: str
@@ -13,6 +14,9 @@ class UseGrenadeItemAction(UseChatterItemAction):
 
     def getActionId(self) -> str:
         return self.actionId
+
+    def getChatterUserId(self) -> str:
+        return self.chatterUserId
 
     def getItemType(self) -> ChatterItemType:
         return ChatterItemType.GRENADE

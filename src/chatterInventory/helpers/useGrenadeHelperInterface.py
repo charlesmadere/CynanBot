@@ -6,5 +6,9 @@ from ..models.useGrenadeItemAction import UseGrenadeItemAction
 class UseGrenadeHelperInterface(ABC):
 
     @abstractmethod
-    async def use(self, action: UseGrenadeItemAction):
+    def start(self):
+        pass
+
+    @abstractmethod
+    def submitAction(self, action: UseGrenadeItemAction):
         pass
