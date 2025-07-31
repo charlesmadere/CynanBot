@@ -8,14 +8,14 @@ class FuntoonTokensRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def getToken(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> str | None:
         pass
 
     @abstractmethod
     async def requireToken(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> str:
         pass
 
@@ -23,6 +23,6 @@ class FuntoonTokensRepositoryInterface(Clearable, ABC):
     async def setToken(
         self,
         token: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         pass
