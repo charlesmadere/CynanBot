@@ -1,5 +1,7 @@
 from typing import Final
 
+from frozendict import frozendict
+
 from .whichAnivUserHelperInterface import WhichAnivUserHelperInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -32,6 +34,17 @@ class WhichAnivUserHelper(WhichAnivUserHelperInterface):
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
+    async def getAllAnivUserIds(self) -> frozendict[WhichAnivUser, str | None]:
+        acacUserId = await self.__twitchFriendsUserIdRepository.getAcacUserId()
+        aneevUserId = await self.__twitchFriendsUserIdRepository.getAneevUserId()
+        anivUserId = await self.__twitchFriendsUserIdRepository.getAnivUserId()
+
+        return frozendict({
+            WhichAnivUser.ACAC: acacUserId,
+            WhichAnivUser.ANEEV: aneevUserId,
+            WhichAnivUser.ANIV: anivUserId,
+        })
+
     async def getAnivUser(
         self,
         twitchChannelId: str,
@@ -45,21 +58,8 @@ class WhichAnivUserHelper(WhichAnivUserHelperInterface):
         if whichAnivUser is None:
             return None
 
-        anivUserId: str | None = None
-
-        match whichAnivUser:
-            case WhichAnivUser.ACAC:
-                anivUserId = await self.__twitchFriendsUserIdRepository.getAcacUserId()
-
-            case WhichAnivUser.ANEEV:
-                anivUserId = await self.__twitchFriendsUserIdRepository.getAneevUserId()
-
-            case WhichAnivUser.ANIV:
-                anivUserId = await self.__twitchFriendsUserIdRepository.getAnivUserId()
-
-            case _:
-                # this case is intentionally empty
-                pass
+        allAnivUserIds = await self.getAllAnivUserIds()
+        anivUserId = allAnivUserIds.get(whichAnivUser, None)
 
         if not utils.isValidStr(anivUserId):
             self.__timber.log('WhichAnivUserHelper', f'No aniv user ID is available for this aniv user ({whichAnivUser=}) ({anivUserId=})')

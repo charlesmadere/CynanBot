@@ -1581,7 +1581,7 @@ anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterf
 anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = AnivCopyMessageTimeoutScoreRepository(
     backingDatabase = backingDatabase,
     timeZoneRepository = timeZoneRepository,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
 anivSettingsRepository: AnivSettingsRepositoryInterface = AnivSettingsRepository(

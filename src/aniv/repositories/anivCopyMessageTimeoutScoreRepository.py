@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Final
 
 from .anivCopyMessageTimeoutScoreRepositoryInterface import AnivCopyMessageTimeoutScoreRepositoryInterface
 from ..models.anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
@@ -16,7 +17,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
         self,
         backingDatabase: BackingDatabase,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface
+        userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -25,9 +26,9 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
         self.__isDatabaseReady: bool = False
 
@@ -36,7 +37,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
         chatterUserId: str,
         chatterUserName: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AnivCopyMessageTimeoutScore:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
@@ -67,7 +68,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
         chatterUserId: str,
         chatterUserName: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AnivCopyMessageTimeoutScore | None:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
@@ -114,7 +115,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
             chatterUserId = chatterUserId,
             chatterUserName = chatterUserName,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def incrementDodgeScore(
@@ -122,7 +123,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
         chatterUserId: str,
         chatterUserName: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AnivCopyMessageTimeoutScore:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
@@ -137,7 +138,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
             chatterUserId = chatterUserId,
             chatterUserName = chatterUserName,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if score is None:
@@ -145,7 +146,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
                 chatterUserId = chatterUserId,
                 chatterUserName = chatterUserName,
                 twitchChannel = twitchChannel,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
 
         score = AnivCopyMessageTimeoutScore(
@@ -156,7 +157,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
             chatterUserId = score.chatterUserId,
             chatterUserName = score.chatterUserName,
             twitchChannel = score.twitchChannel,
-            twitchChannelId = score.twitchChannelId
+            twitchChannelId = score.twitchChannelId,
         )
 
         await self.__saveScoreToDatabase(score)
@@ -168,7 +169,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
         chatterUserId: str,
         chatterUserName: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AnivCopyMessageTimeoutScore:
         if not utils.isValidInt(timeoutDurationSeconds):
             raise TypeError(f'timeoutDurationSeconds argument is malformed: \"{timeoutDurationSeconds}\"')
@@ -185,7 +186,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
             chatterUserId = chatterUserId,
             chatterUserName = chatterUserName,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if score is None:
@@ -193,7 +194,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
                 chatterUserId = chatterUserId,
                 chatterUserName = chatterUserName,
                 twitchChannel = twitchChannel,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
 
         score = AnivCopyMessageTimeoutScore(
@@ -204,7 +205,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
             chatterUserId = score.chatterUserId,
             chatterUserName = score.chatterUserName,
             twitchChannel = score.twitchChannel,
-            twitchChannelId = score.twitchChannelId
+            twitchChannelId = score.twitchChannelId,
         )
 
         await self.__saveScoreToDatabase(score)

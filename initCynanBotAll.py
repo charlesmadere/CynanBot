@@ -1694,7 +1694,7 @@ anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterf
 anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = AnivCopyMessageTimeoutScoreRepository(
     backingDatabase = backingDatabase,
     timeZoneRepository = timeZoneRepository,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
 anivSettingsRepository: AnivSettingsRepositoryInterface = AnivSettingsRepository(
@@ -2763,15 +2763,16 @@ accessLevelCheckingHelper: AccessLevelCheckingHelperInterface = AccessLevelCheck
     twitchTokensRepository = twitchTokensRepository
 )
 
-anivCheckChatAction: AnivCheckChatAction = AnivCheckChatAction(
+anivCheckChatAction = AnivCheckChatAction(
     anivContentScanner = anivContentScanner,
     timber = timber,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
+    twitchTimeoutHelper = twitchTimeoutHelper,
     twitchTokensRepository = twitchTokensRepository,
     twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository,
-    whichAnivUserHelper = whichAnivUserHelper
+    whichAnivUserHelper = whichAnivUserHelper,
 )
 
 chatBackMessagesChatAction = ChatBackMessagesChatAction(

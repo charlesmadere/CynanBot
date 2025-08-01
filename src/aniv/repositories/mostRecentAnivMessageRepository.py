@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Final
 
 from .mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from ..models.mostRecentAnivMessage import MostRecentAnivMessage
@@ -16,7 +17,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface
+        timeZoneRepository: TimeZoneRepositoryInterface,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -25,9 +26,9 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
 
         self.__isDatabaseReady: bool = False
         self.__cache: dict[str, MostRecentAnivMessage | None] = dict()
@@ -36,7 +37,10 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         self.__cache.clear()
         self.__timber.log('MostRecentAnivMessageRepository', 'Caches cleared')
 
-    async def __deleteMessage(self, twitchChannelId: str):
+    async def __deleteMessage(
+        self,
+        twitchChannelId: str,
+    ):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -53,7 +57,10 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
 
         await connection.close()
 
-    async def get(self, twitchChannelId: str) -> MostRecentAnivMessage | None:
+    async def get(
+        self,
+        twitchChannelId: str,
+    ) -> MostRecentAnivMessage | None:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -62,7 +69,10 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         if twitchChannelId in self.__cache:
             message = self.__cache.get(twitchChannelId, None)
         else:
-            message = await self.__getFromDatabase(twitchChannelId = twitchChannelId)
+            message = await self.__getFromDatabase(
+                twitchChannelId = twitchChannelId,
+            )
+
             self.__cache[twitchChannelId] = message
 
         return message
@@ -71,7 +81,10 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         await self.__initDatabaseTable()
         return await self.__backingDatabase.getConnection()
 
-    async def __getFromDatabase(self, twitchChannelId: str) -> MostRecentAnivMessage | None:
+    async def __getFromDatabase(
+        self,
+        twitchChannelId: str,
+    ) -> MostRecentAnivMessage | None:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -97,7 +110,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         if dateTime is not None and utils.isValidStr(message):
             return MostRecentAnivMessage(
                 dateTime = dateTime,
-                message = message
+                message = message,
             )
         else:
             return None
@@ -135,7 +148,11 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
             case _:
                 raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.databaseType}\"')
 
-    async def __saveMessage(self, message: str, twitchChannelId: str):
+    async def __saveMessage(
+        self,
+        message: str,
+        twitchChannelId: str,
+    ):
         if not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -143,7 +160,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
 
         anivMessage = MostRecentAnivMessage(
             dateTime = datetime.now(self.__timeZoneRepository.getDefault()),
-            message = message
+            message = message,
         )
 
         self.__cache[twitchChannelId] = anivMessage
@@ -160,22 +177,28 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
 
         await connection.close()
 
-    async def set(self, message: str | None, twitchChannelId: str):
+    async def set(
+        self,
+        message: str | None,
+        twitchChannelId: str,
+    ):
         if message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        if message is not None:
-            message = utils.cleanStr(message)
+        message = utils.cleanStr(message)
 
         if utils.isValidStr(message):
             await self.__saveMessage(
                 message = message,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
 
             self.__timber.log('MostRecentAnivMessageRepository', f'Updated most recent aniv message in \"{twitchChannelId}\"')
         else:
-            await self.__deleteMessage(twitchChannelId = twitchChannelId)
+            await self.__deleteMessage(
+                twitchChannelId = twitchChannelId,
+            )
+
             self.__timber.log('MostRecentAnivMessageRepository', f'Removed most recent aniv message in \"{twitchChannelId}\"')

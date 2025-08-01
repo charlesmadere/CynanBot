@@ -135,7 +135,11 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             return False
 
         now = datetime.now(self.__timeZoneRepository.getDefault())
-        expirationTime = await self.__determineExpirationTime(anivMessage, user)
+
+        expirationTime = await self.__determineExpirationTime(
+            anivMessage = anivMessage,
+            user = user,
+        )
 
         if chatterMessage != anivMessage.message or expirationTime < now:
             return False
@@ -197,7 +201,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             chatterUserId = chatterUserId,
             chatterUserName = chatterUserName,
             twitchChannel = user.handle,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, {chatterUserName}:{chatterUserId} was timed out for copying a message from aniv')
@@ -214,7 +218,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
     async def __determineExpirationTime(
         self,
         anivMessage: MostRecentAnivMessage,
-        user: UserInterface
+        user: UserInterface,
     ) -> datetime:
         maxAgeSeconds = user.anivMessageCopyMaxAgeSeconds
         if not utils.isValidInt(maxAgeSeconds):

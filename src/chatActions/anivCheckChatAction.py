@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from .absChatAction import AbsChatAction
 from ..aniv.contentScanner.anivContentScannerInterface import AnivContentScannerInterface
@@ -10,6 +11,7 @@ from ..timber.timberInterface import TimberInterface
 from ..twitch.api.models.twitchBanRequest import TwitchBanRequest
 from ..twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..twitch.configuration.twitchMessage import TwitchMessage
+from ..twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -25,11 +27,12 @@ class AnivCheckChatAction(AbsChatAction):
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
+        twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         whichAnivUserHelper: WhichAnivUserHelperInterface,
-        timeoutDurationSeconds: int = 60
+        timeoutDurationSeconds: int = 30,
     ):
         if not isinstance(anivContentScanner, AnivContentScannerInterface):
             raise TypeError(f'anivContentScanner argument is malformed: \"{anivContentScanner}\"')
@@ -39,6 +42,8 @@ class AnivCheckChatAction(AbsChatAction):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+        elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
+            raise TypeError(f'twitchTimeoutHelper argument is malformed: \"{twitchTimeoutHelper}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
@@ -52,21 +57,22 @@ class AnivCheckChatAction(AbsChatAction):
         elif timeoutDurationSeconds < 1 or timeoutDurationSeconds > 1209600:
             raise ValueError(f'timeoutDurationSeconds argument is out of bounds: {timeoutDurationSeconds}')
 
-        self.__anivContentScanner: AnivContentScannerInterface = anivContentScanner
-        self.__timber: TimberInterface = timber
-        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
-        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__whichAnivUserHelper: WhichAnivUserHelperInterface = whichAnivUserHelper
-        self.__timeoutDurationSeconds: int = timeoutDurationSeconds
+        self.__anivContentScanner: Final[AnivContentScannerInterface] = anivContentScanner
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
+        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = twitchTimeoutHelper
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__whichAnivUserHelper: Final[WhichAnivUserHelperInterface] = whichAnivUserHelper
+        self.__timeoutDurationSeconds: Final[int] = timeoutDurationSeconds
 
     async def handleChat(
         self,
         mostRecentChat: MostRecentChat | None,
         message: TwitchMessage,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         if not user.isAnivContentScanningEnabled:
             return False

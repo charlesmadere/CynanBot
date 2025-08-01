@@ -11,7 +11,7 @@ class AnivCopyMessageTimeoutScoreRepositoryInterface(ABC):
         chatterUserId: str,
         chatterUserName: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AnivCopyMessageTimeoutScore | None:
         pass
 
@@ -21,7 +21,7 @@ class AnivCopyMessageTimeoutScoreRepositoryInterface(ABC):
         chatterUserId: str,
         chatterUserName: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AnivCopyMessageTimeoutScore:
         pass
 
@@ -32,6 +32,6 @@ class AnivCopyMessageTimeoutScoreRepositoryInterface(ABC):
         chatterUserId: str,
         chatterUserName: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AnivCopyMessageTimeoutScore:
         pass
