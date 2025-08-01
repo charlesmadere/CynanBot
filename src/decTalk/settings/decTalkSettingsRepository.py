@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
 from ..mapper.decTalkVoiceMapperInterface import DecTalkVoiceMapperInterface
@@ -13,7 +13,7 @@ class DecTalkSettingsRepository(DecTalkSettingsRepositoryInterface):
         self,
         decTalkVoiceMapper: DecTalkVoiceMapperInterface,
         settingsJsonReader: JsonReaderInterface,
-        defaultDecTalkVoice: DecTalkVoice = DecTalkVoice.PAUL
+        defaultDecTalkVoice: DecTalkVoice = DecTalkVoice.PAUL,
     ):
         if not isinstance(decTalkVoiceMapper, DecTalkVoiceMapperInterface):
             raise TypeError(f'decTalkVoiceMapper argument is malformed: \"{decTalkVoiceMapper}\"')
@@ -22,9 +22,9 @@ class DecTalkSettingsRepository(DecTalkSettingsRepositoryInterface):
         elif not isinstance(defaultDecTalkVoice, DecTalkVoice):
             raise TypeError(f'defaultDecTalkVoice argument is malformed: \"{defaultDecTalkVoice}\"')
 
-        self.__decTalkVoiceMapper: DecTalkVoiceMapperInterface = decTalkVoiceMapper
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
-        self.__defaultDecTalkVoice: DecTalkVoice = defaultDecTalkVoice
+        self.__decTalkVoiceMapper: Final[DecTalkVoiceMapperInterface] = decTalkVoiceMapper
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
+        self.__defaultDecTalkVoice: Final[DecTalkVoice] = defaultDecTalkVoice
 
         self.__cache: dict[str, Any] | None = None
 
@@ -33,12 +33,7 @@ class DecTalkSettingsRepository(DecTalkSettingsRepositoryInterface):
 
     async def getDecTalkExecutablePath(self) -> str | None:
         jsonContents = await self.__readJson()
-
-        return utils.getStrFromDict(
-            d = jsonContents,
-            key = 'decTalkPath',
-            fallback = '../dectalk/say.exe'
-        )
+        return utils.getStrFromDict(jsonContents, 'decTalkPath', fallback = '../dectalk/say.exe')
 
     async def getDefaultVoice(self) -> DecTalkVoice:
         jsonContents = await self.__readJson()
@@ -46,7 +41,7 @@ class DecTalkSettingsRepository(DecTalkSettingsRepositoryInterface):
         decTalkVoiceStr = utils.getStrFromDict(
             d = jsonContents,
             key = 'defaultVoice',
-            fallback = await self.__decTalkVoiceMapper.serializeVoice(self.__defaultDecTalkVoice)
+            fallback = await self.__decTalkVoiceMapper.serializeVoice(self.__defaultDecTalkVoice),
         )
 
         return await self.__decTalkVoiceMapper.requireVoice(decTalkVoiceStr)

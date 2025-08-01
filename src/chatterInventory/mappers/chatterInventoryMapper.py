@@ -20,12 +20,17 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         airStrike.append(re.compile(r'^\s*tnts?\s*$', re.IGNORECASE))
         airStrike.freeze()
 
+        banana: FrozenList[Pattern] = FrozenList()
+        banana.append(re.compile(r'^\s*bananas?\s*$', re.IGNORECASE))
+        banana.freeze()
+
         grenade: FrozenList[Pattern] = FrozenList()
         grenade.append(re.compile(r'^\s*grenades?\s*$', re.IGNORECASE))
         grenade.freeze()
 
         return frozendict({
             ChatterItemType.AIR_STRIKE: airStrike,
+            ChatterItemType.BANANA: banana,
             ChatterItemType.GRENADE: grenade,
         })
 
@@ -98,5 +103,6 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
         match itemType:
             case ChatterItemType.AIR_STRIKE: return 'air_strike'
+            case ChatterItemType.BANANA: return 'banana'
             case ChatterItemType.GRENADE: return 'grenade'
             case _: raise ValueError(f'Unknown ChatterItemType value: \"{itemType}\"')

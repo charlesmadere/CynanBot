@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
 from ..models.microsoftSamVoice import MicrosoftSamVoice
@@ -13,7 +13,7 @@ class MicrosoftSamSettingsRepository(MicrosoftSamSettingsRepositoryInterface):
         self,
         microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
         settingsJsonReader: JsonReaderInterface,
-        defaultVoice: MicrosoftSamVoice = MicrosoftSamVoice.SAM
+        defaultVoice: MicrosoftSamVoice = MicrosoftSamVoice.SAM,
     ):
         if not isinstance(microsoftSamJsonParser, MicrosoftSamJsonParserInterface):
             raise TypeError(f'microsoftSamJsonParser argument is malformed: \"{microsoftSamJsonParser}\"')
@@ -22,9 +22,9 @@ class MicrosoftSamSettingsRepository(MicrosoftSamSettingsRepositoryInterface):
         elif not isinstance(defaultVoice, MicrosoftSamVoice):
             raise TypeError(f'defaultVoice argument is malformed: \"{defaultVoice}\"')
 
-        self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
-        self.__defaultVoice: MicrosoftSamVoice = defaultVoice
+        self.__microsoftSamJsonParser: Final[MicrosoftSamJsonParserInterface] = microsoftSamJsonParser
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
+        self.__defaultVoice: Final[MicrosoftSamVoice] = defaultVoice
 
         self.__cache: dict[str, Any] | None = None
 
@@ -37,7 +37,7 @@ class MicrosoftSamSettingsRepository(MicrosoftSamSettingsRepositoryInterface):
         defaultVoice = utils.getStrFromDict(
             d = jsonContents,
             key = 'defaultVoice',
-            fallback = await self.__microsoftSamJsonParser.serializeVoice(self.__defaultVoice)
+            fallback = await self.__microsoftSamJsonParser.serializeVoice(self.__defaultVoice),
         )
 
         return await self.__microsoftSamJsonParser.requireVoice(defaultVoice)

@@ -1,5 +1,6 @@
 import asyncio
 import queue
+import random
 import traceback
 from queue import SimpleQueue
 from typing import Final
@@ -12,17 +13,27 @@ from ..guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRe
 from ..idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
 from ..listener.timeoutEventListener import TimeoutEventListener
 from ..models.absTimeoutAction import AbsTimeoutAction
+from ..models.absTimeoutDuration import AbsTimeoutDuration
 from ..models.absTimeoutEvent import AbsTimeoutEvent
 from ..models.airStrikeTargetData import AirStrikeTargetData
 from ..models.airStrikeTimeoutAction import AirStrikeTimeoutAction
 from ..models.bananaTimeoutAction import BananaTimeoutAction
 from ..models.basicTimeoutAction import BasicTimeoutAction
+from ..models.calculatedTimeoutDuration import CalculatedTimeoutDuration
+from ..models.events.incorrectLiveStatusTimeoutEvent import IncorrectLiveStatusTimeoutEvent
 from ..models.events.noAirStrikeInventoryAvailableTimeoutEvent import NoAirStrikeInventoryAvailableTimeoutEvent
 from ..models.events.noAirStrikeTargetsAvailableTimeoutEvent import NoAirStrikeTargetsAvailableTimeoutEvent
+from ..models.events.noBananaInventoryAvailableTimeoutEvent import NoBananaInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
+from ..models.exactTimeoutDuration import ExactTimeoutDuration
 from ..models.grenadeTimeoutAction import GrenadeTimeoutAction
+from ..models.randomExponentialTimeoutDuration import RandomExponentialTimeoutDuration
+from ..models.randomLinearTimeoutDuration import RandomLinearTimeoutDuration
+from ..timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ..useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
+from ..useCases.determineExponentialTimeoutDurationSecondsUseCase import \
+    DetermineExponentialTimeoutDurationSecondsUseCase
 from ..useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
 from ..useCases.timeoutRollFailureUseCase import TimeoutRollFailureUseCase
 from ...chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
@@ -31,7 +42,10 @@ from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
+from ...twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from ...twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
+from ...twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
+from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class TimeoutActionMachine(TimeoutActionMachineInterface):
@@ -42,12 +56,15 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         chatterInventoryHelper: ChatterInventoryHelperInterface,
         determineAirStrikeTargetsUseCase: DetermineAirStrikeTargetsUseCase,
+        determineExponentialTimeoutDurationSecondsUseCase: DetermineExponentialTimeoutDurationSecondsUseCase,
         determineGrenadeTargetUseCase: DetermineGrenadeTargetUseCase,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
+        isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         timber: TimberInterface,
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
         timeoutRollFailureUseCase: TimeoutRollFailureUseCase,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
+        userIdsRepository: UserIdsRepositoryInterface,
         sleepTimeSeconds: float = 1,
         queueTimeoutSeconds: int = 3,
     ):
@@ -59,10 +76,14 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'chatterInventoryHelper argument is malformed: \"{chatterInventoryHelper}\"')
         elif not isinstance(determineAirStrikeTargetsUseCase, DetermineAirStrikeTargetsUseCase):
             raise TypeError(f'determineAirStrikeTargetsUseCase argument is malformed: \"{determineAirStrikeTargetsUseCase}\"')
+        elif not isinstance(determineExponentialTimeoutDurationSecondsUseCase, DetermineExponentialTimeoutDurationSecondsUseCase):
+            raise TypeError(f'determineExponentialTimeoutDurationSecondsUseCase argument is malformed: \"{determineExponentialTimeoutDurationSecondsUseCase}\"')
         elif not isinstance(determineGrenadeTargetUseCase, DetermineGrenadeTargetUseCase):
             raise TypeError(f'determineGrenadeTargetUseCase argument is malformed: \"{determineGrenadeTargetUseCase}\"')
         elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
             raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
+        elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
+            raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutIdGenerator, TimeoutIdGeneratorInterface):
@@ -71,6 +92,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'timeoutRollFailureUseCase argument is malformed: \"{timeoutRollFailureUseCase}\"')
         elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
             raise TypeError(f'twitchTimeoutHelper argument is malformed: \"{twitchTimeoutHelper}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 0.5 or sleepTimeSeconds > 8:
@@ -84,12 +107,15 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = chatterInventoryHelper
         self.__determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCase] = determineAirStrikeTargetsUseCase
+        self.__determineExponentialTimeoutDurationSecondsUseCase: Final[DetermineExponentialTimeoutDurationSecondsUseCase] = determineExponentialTimeoutDurationSecondsUseCase
         self.__determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCase] = determineGrenadeTargetUseCase
         self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
+        self.__isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
         self.__timeoutRollFailureUseCase: Final[TimeoutRollFailureUseCase] = timeoutRollFailureUseCase
         self.__twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = twitchTimeoutHelper
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
@@ -98,17 +124,55 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__eventQueue: Final[SimpleQueue[AbsTimeoutEvent]] = SimpleQueue()
         self.__eventListener: TimeoutEventListener | None = None
 
+    async def __calculateTimeoutDuration(
+        self,
+        timeoutDuration: AbsTimeoutDuration,
+    ) -> CalculatedTimeoutDuration:
+        if not isinstance(timeoutDuration, AbsTimeoutDuration):
+            raise TypeError(f'timeoutDuration argument is malformed: \"{timeoutDuration}\"')
+
+        durationSeconds: int
+
+        if isinstance(timeoutDuration, ExactTimeoutDuration):
+            durationSeconds = timeoutDuration.seconds
+
+        elif isinstance(timeoutDuration, RandomExponentialTimeoutDuration):
+            durationSeconds = await self.__determineExponentialTimeoutDurationSecondsUseCase.invoke(
+                timeoutDuration = timeoutDuration,
+            )
+
+        elif isinstance(timeoutDuration, RandomLinearTimeoutDuration):
+            durationSeconds = random.randint(timeoutDuration.minimumSeconds, timeoutDuration.maximumSeconds)
+
+        else:
+            raise ValueError(f'Encountered unknown AbsTimeoutDuration type: \"{timeoutDuration}\"')
+
+        message = utils.secondsToDurationMessage(durationSeconds)
+
+        return CalculatedTimeoutDuration(
+            seconds = durationSeconds,
+            message = message,
+        )
+
     async def __handleAirStrikeTimeoutAction(self, action: AirStrikeTimeoutAction):
         if not isinstance(action, AirStrikeTimeoutAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
-        inventory = await self.__chatterInventoryHelper.get(
-            chatterUserId = action.instigatorUserId,
-            twitchChannelId = action.twitchChannelId,
-        )
+        if not action.ignoreInventory:
+            inventory = await self.__chatterInventoryHelper.get(
+                chatterUserId = action.instigatorUserId,
+                twitchChannelId = action.twitchChannelId,
+            )
 
-        if inventory[ChatterItemType.AIR_STRIKE] < 1:
-            await self.__submitEvent(NoAirStrikeInventoryAvailableTimeoutEvent(
+            if inventory[ChatterItemType.AIR_STRIKE] < 1:
+                await self.__submitEvent(NoAirStrikeInventoryAvailableTimeoutEvent(
+                    originatingAction = action,
+                    eventId = await self.__timeoutIdGenerator.generateEventId(),
+                ))
+                return
+
+        if not await self.__verifyStreamLiveStatus(action):
+            await self.__submitEvent(IncorrectLiveStatusTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
             ))
@@ -118,15 +182,57 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             timeoutAction = action,
         )
 
-        frozenAirStrikeTargets: FrozenList[AirStrikeTargetData] = FrozenList(airStrikeTargets)
-        frozenAirStrikeTargets.freeze()
-
-        if len(frozenAirStrikeTargets) == 0:
+        if len(airStrikeTargets) == 0:
             await self.__submitEvent(NoAirStrikeTargetsAvailableTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
             ))
             return
+
+        timeoutDuration = await self.__calculateTimeoutDuration(
+            timeoutDuration = action.timeoutDuration,
+        )
+
+        instigatorUserName = await self.__requireUserName(
+            action = action,
+            chatterUserId = action.instigatorUserId,
+        )
+
+        timeoutResults: dict[AirStrikeTargetData, TwitchTimeoutResult] = dict()
+
+        for airStrikeTarget in airStrikeTargets:
+            timeoutResult = await self.__twitchTimeoutHelper.timeout(
+                durationSeconds = timeoutDuration.seconds,
+                reason = f'{ChatterItemType.AIR_STRIKE.humanName} timeout from {instigatorUserName} for {timeoutDuration.message}',
+                twitchAccessToken = action.moderatorTwitchAccessToken,
+                twitchChannelAccessToken = action.userTwitchAccessToken,
+                twitchChannelId = action.twitchChannelId,
+                userIdToTimeout = airStrikeTarget.targetUserId,
+                user = action.user,
+            )
+
+            timeoutResults[airStrikeTarget] = timeoutResult
+
+        successfulAirStrikeTargets: list[AirStrikeTargetData] = list()
+
+        for airStrikeTarget, timeoutResult in timeoutResults.items():
+            if timeoutResult is TwitchTimeoutResult.SUCCESS:
+                successfulAirStrikeTargets.append(airStrikeTarget)
+
+        if len(successfulAirStrikeTargets) == 0:
+            await self.__submitEvent(NoAirStrikeTargetsAvailableTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
+
+        if not action.ignoreInventory:
+            await self.__chatterInventoryHelper.give(
+                itemType = ChatterItemType.AIR_STRIKE,
+                giveAmount = -1,
+                chatterUserId = action.instigatorUserId,
+                twitchChannelId = action.twitchChannelId,
+            )
 
         # TODO
         pass
@@ -134,6 +240,26 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
     async def __handleBananaTimeoutAction(self, action: BananaTimeoutAction):
         if not isinstance(action, BananaTimeoutAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
+
+        if not action.ignoreInventory:
+            inventory = await self.__chatterInventoryHelper.get(
+                chatterUserId = action.instigatorUserId,
+                twitchChannelId = action.twitchChannelId,
+            )
+
+            if inventory[ChatterItemType.BANANA] < 1:
+                await self.__submitEvent(NoBananaInventoryAvailableTimeoutEvent(
+                    originatingAction = action,
+                    eventId = await self.__timeoutIdGenerator.generateEventId(),
+                ))
+                return
+
+        if not await self.__verifyStreamLiveStatus(action):
+            await self.__submitEvent(IncorrectLiveStatusTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
 
         # TODO
         pass
@@ -149,13 +275,21 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         if not isinstance(action, GrenadeTimeoutAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
-        inventory = await self.__chatterInventoryHelper.get(
-            chatterUserId = action.instigatorUserId,
-            twitchChannelId = action.twitchChannelId,
-        )
+        if not action.ignoreInventory:
+            inventory = await self.__chatterInventoryHelper.get(
+                chatterUserId = action.instigatorUserId,
+                twitchChannelId = action.twitchChannelId,
+            )
 
-        if inventory[ChatterItemType.GRENADE] < 1:
-            await self.__submitEvent(NoGrenadeInventoryAvailableTimeoutEvent(
+            if inventory[ChatterItemType.GRENADE] < 1:
+                await self.__submitEvent(NoGrenadeInventoryAvailableTimeoutEvent(
+                    originatingAction = action,
+                    eventId = await self.__timeoutIdGenerator.generateEventId(),
+                ))
+                return
+
+        if not await self.__verifyStreamLiveStatus(action):
+            await self.__submitEvent(IncorrectLiveStatusTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
             ))
@@ -172,7 +306,41 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
-        # TODO
+        timeoutDuration = await self.__calculateTimeoutDuration(
+            timeoutDuration = action.timeoutDuration,
+        )
+
+        instigatorUserName = await self.__requireUserName(
+            action = action,
+            chatterUserId = action.instigatorUserId,
+        )
+
+        timeoutResult = await self.__twitchTimeoutHelper.timeout(
+            durationSeconds = timeoutDuration.seconds,
+            reason = f'{ChatterItemType.GRENADE.humanName} timeout from {instigatorUserName} for {timeoutDuration.message}',
+            twitchAccessToken = action.moderatorTwitchAccessToken,
+            twitchChannelAccessToken = action.userTwitchAccessToken,
+            twitchChannelId = action.twitchChannelId,
+            userIdToTimeout = grenadeTarget.targetUserId,
+            user = action.user,
+        )
+
+        if timeoutResult is not TwitchTimeoutResult.SUCCESS:
+            await self.__submitEvent(NoGrenadeTargetAvailableTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
+
+        if not action.ignoreInventory:
+            await self.__chatterInventoryHelper.give(
+                itemType = ChatterItemType.GRENADE,
+                giveAmount = -1,
+                chatterUserId = action.instigatorUserId,
+                twitchChannelId = action.twitchChannelId,
+            )
+
+        # TODO report successful timeout
         pass
 
     async def __handleTimeoutAction(self, action: AbsTimeoutAction):
@@ -193,6 +361,16 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
 
         else:
             raise UnknownTimeoutActionTypeException(f'Encountered unknown AbsTimeoutAction: \"{action}\"')
+
+    async def __requireUserName(
+        self,
+        action: AbsTimeoutAction,
+        chatterUserId: str,
+    ) -> str:
+        return await self.__userIdsRepository.requireUserName(
+            userId = chatterUserId,
+            twitchAccessToken = action.getUserTwitchAccessToken(),
+        )
 
     def setEventListener(self, listener: TimeoutEventListener | None):
         if listener is not None and not isinstance(listener, TimeoutEventListener):
@@ -240,7 +418,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
 
                 try:
                     while not self.__eventQueue.empty():
-                        events.append(self.__eventQueue.get_nowait())
+                        event = self.__eventQueue.get_nowait()
+                        events.append(event)
                 except queue.Empty as e:
                     self.__timber.log('TimeoutActionMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=}): {e}', e, traceback.format_exc())
 
@@ -271,3 +450,18 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             self.__eventQueue.put(event, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
             self.__timber.log('TimeoutActionMachine', f'Encountered queue.Full when submitting a new event ({event}) into the event queue (queue size: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
+
+    async def __verifyStreamLiveStatus(self, action: AbsTimeoutAction) -> bool:
+        streamStatusRequirement = action.getStreamStatusRequirement()
+
+        if streamStatusRequirement is None or streamStatusRequirement is TimeoutStreamStatusRequirement.ANY:
+            return True
+
+        isLive = await self.__isLiveOnTwitchRepository.isLive(
+            twitchChannelId = action.getTwitchChannelId(),
+        )
+
+        match streamStatusRequirement:
+            case TimeoutStreamStatusRequirement.ONLINE: return isLive
+            case TimeoutStreamStatusRequirement.OFFLINE: return not isLive
+            case _: raise ValueError(f'Encountered unknown TimeoutStreamStatusRequirement value: \"{streamStatusRequirement}\"')

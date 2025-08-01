@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from .timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from .twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
@@ -27,7 +28,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         twitchConstants: TwitchConstantsInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface,
-        userIdsRepository: UserIdsRepositoryInterface
+        userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -46,14 +47,14 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__activeChattersRepository: ActiveChattersRepositoryInterface = activeChattersRepository
-        self.__timber: TimberInterface = timber
-        self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
-        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
-        self.__twitchConstants: TwitchConstantsInterface = twitchConstants
-        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = twitchTimeoutRemodHelper
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
+        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
+        self.__twitchConstants: Final[TwitchConstantsInterface] = twitchConstants
+        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__twitchTimeoutRemodHelper: Final[TwitchTimeoutRemodHelperInterface] = twitchTimeoutRemodHelper
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
     async def __isAlreadyCurrentlyBannedOrTimedOut(
         self,
@@ -72,7 +73,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             bannedUserResponse = await self.__twitchApiService.fetchBannedUser(
                 broadcasterId = twitchChannelId,
                 chatterUserId = userIdToTimeout,
-                twitchAccessToken = twitchChannelAccessToken
+                twitchAccessToken = twitchChannelAccessToken,
             )
         except Exception as e:
             self.__timber.log('TwitchTimeoutHelper', f'Failed to verify if the given user ID can be timed out ({twitchChannelAccessToken=}) ({twitchChannelId=}) ({userIdToTimeout=}): {e}', e, traceback.format_exc())
@@ -109,7 +110,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             moderatorInfo = await self.__twitchApiService.fetchModerator(
                 broadcasterId = twitchChannelId,
                 twitchAccessToken = twitchChannelAccessToken,
-                userId = userIdToTimeout
+                userId = userIdToTimeout,
             )
         except Exception as e:
             self.__timber.log('TwitchTimeoutHelper', f'Failed to fetch Twitch moderator info for the given user ID ({twitchChannelId=}) ({userIdToTimeout=}): {e}', e, traceback.format_exc())
@@ -134,7 +135,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             return await self.__twitchApiService.removeModerator(
                 broadcasterId = twitchChannelId,
                 moderatorId = userIdToTimeout,
-                twitchAccessToken = twitchChannelAccessToken
+                twitchAccessToken = twitchChannelAccessToken,
             )
         except Exception as e:
             self.__timber.log('TwitchTimeoutHelper', f'Failed to remove Twitch moderator for the given user ID ({twitchChannelId=}) ({userIdToTimeout=}): {e}', e, traceback.format_exc())

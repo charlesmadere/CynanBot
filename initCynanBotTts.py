@@ -933,7 +933,7 @@ twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
     twitchConstants = twitchUtils,
     twitchHandleProvider = authRepository,
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
 googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(

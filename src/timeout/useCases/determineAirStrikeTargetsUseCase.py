@@ -1,5 +1,7 @@
 import random
-from typing import Collection, Final
+from typing import Final
+
+from frozenlist import FrozenList
 
 from ..models.airStrikeTargetData import AirStrikeTargetData
 from ..models.airStrikeTimeoutAction import AirStrikeTimeoutAction
@@ -60,7 +62,7 @@ class DetermineAirStrikeTargetsUseCase:
     async def invoke(
         self,
         timeoutAction: AirStrikeTimeoutAction,
-    ) -> Collection[AirStrikeTargetData]:
+    ) -> FrozenList[AirStrikeTargetData]:
         if not isinstance(timeoutAction, AirStrikeTimeoutAction):
             raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
 
@@ -108,4 +110,10 @@ class DetermineAirStrikeTargetsUseCase:
                 twitchChannelId = timeoutAction.twitchChannelId,
             )
 
-        return frozenset(airStrikeTargets)
+        airStrikeTargetsList: list[AirStrikeTargetData] = list(airStrikeTargets)
+        airStrikeTargetsList.sort(key = lambda target: target.targetUserName.casefold())
+
+        frozenAirStrikeTargetsList: FrozenList[AirStrikeTargetData] = FrozenList(airStrikeTargetsList)
+        frozenAirStrikeTargetsList.freeze()
+
+        return frozenAirStrikeTargetsList

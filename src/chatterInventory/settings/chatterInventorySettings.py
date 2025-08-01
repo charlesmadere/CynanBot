@@ -15,6 +15,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         settingsJsonReader: JsonReaderInterface,
         defaultEnabledItemTypes: frozenset[ChatterItemType] = frozenset({
             ChatterItemType.AIR_STRIKE,
+            ChatterItemType.BANANA,
             ChatterItemType.GRENADE,
         }),
     ):

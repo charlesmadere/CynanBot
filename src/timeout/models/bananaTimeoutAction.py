@@ -10,7 +10,7 @@ from ...users.userInterface import UserInterface
 @dataclass(frozen = True)
 class BananaTimeoutAction(AbsTimeoutAction):
     timeoutDuration: AbsTimeoutDuration
-    ignoreItemUse: bool
+    ignoreInventory: bool
     isRandomChanceEnabled: bool
     pointRedemption: PointRedemptionTimeoutData | None
     actionId: str

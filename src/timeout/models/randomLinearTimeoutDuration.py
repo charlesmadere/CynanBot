@@ -4,6 +4,6 @@ from .absTimeoutDuration import AbsTimeoutDuration
 
 
 @dataclass(frozen = True)
-class RandomRangeTimeoutDuration(AbsTimeoutDuration):
+class RandomLinearTimeoutDuration(AbsTimeoutDuration):
     maximumSeconds: int
     minimumSeconds: int

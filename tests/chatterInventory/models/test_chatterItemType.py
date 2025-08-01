@@ -15,6 +15,10 @@ class TestChatterItemType:
         result = ChatterItemType.AIR_STRIKE.humanName
         assert result == 'Air Strike'
 
+    def test_humanName_withBanana(self):
+        result = ChatterItemType.BANANA.humanName
+        assert result == 'Banana'
+
     def test_humanName_withGrenade(self):
         result = ChatterItemType.GRENADE.humanName
         assert result == 'Grenade'

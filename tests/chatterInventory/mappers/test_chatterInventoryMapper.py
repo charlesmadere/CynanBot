@@ -15,10 +15,12 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_parseInventory1(self):
         airStrikes = round(random.uniform(0.01, 1.00) * 100)
+        bananas = round(random.uniform(0.01, 1.00) * 100)
         grenades = round(random.uniform(0.01, 1.00) * 100)
 
         inventoryJson: dict[str, int] = {
             await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE): airStrikes,
+            await self.mapper.serializeItemType(ChatterItemType.BANANA): bananas,
             await self.mapper.serializeItemType(ChatterItemType.GRENADE): grenades,
         }
 
@@ -26,6 +28,7 @@ class TestChatterInventoryMapper:
         assert len(result) == len(ChatterItemType)
 
         assert result[ChatterItemType.AIR_STRIKE] == airStrikes
+        assert result[ChatterItemType.BANANA] == bananas
         assert result[ChatterItemType.GRENADE] == grenades
 
     @pytest.mark.asyncio
@@ -33,13 +36,14 @@ class TestChatterInventoryMapper:
         airStrikes = round(random.uniform(0.01, 1.00) * 100)
 
         inventoryJson: dict[str, int] = {
-            await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE): airStrikes
+            await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE): airStrikes,
         }
 
         result = await self.mapper.parseInventory(inventoryJson)
         assert len(result) == len(ChatterItemType)
 
         assert result[ChatterItemType.AIR_STRIKE] == airStrikes
+        assert result[ChatterItemType.BANANA] == 0
         assert result[ChatterItemType.GRENADE] == 0
 
     @pytest.mark.asyncio
@@ -47,13 +51,14 @@ class TestChatterInventoryMapper:
         grenades = round(random.uniform(0.01, 1.00) * 100)
 
         inventoryJson: dict[str, int] = {
-            await self.mapper.serializeItemType(ChatterItemType.GRENADE): grenades
+            await self.mapper.serializeItemType(ChatterItemType.GRENADE): grenades,
         }
 
         result = await self.mapper.parseInventory(inventoryJson)
         assert len(result) == len(ChatterItemType)
 
         assert result[ChatterItemType.AIR_STRIKE] == 0
+        assert result[ChatterItemType.BANANA] == 0
         assert result[ChatterItemType.GRENADE] == grenades
 
     @pytest.mark.asyncio
@@ -75,10 +80,12 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_parseInventory_withNegativeNumbers(self):
         airStrikes = round(random.uniform(-1.00, -0.01) * 100)
+        bananas = round(random.uniform(-1.00, -0.01) * 100)
         grenades = round(random.uniform(-1.00, -0.01) * 100)
 
         inventoryJson: dict[str, int] = {
             await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE): airStrikes,
+            await self.mapper.serializeItemType(ChatterItemType.BANANA): bananas,
             await self.mapper.serializeItemType(ChatterItemType.GRENADE): grenades,
         }
 
@@ -87,6 +94,7 @@ class TestChatterInventoryMapper:
 
         # negative numbers should be normalized to 0
         assert result[ChatterItemType.AIR_STRIKE] == 0
+        assert result[ChatterItemType.BANANA] == 0
         assert result[ChatterItemType.GRENADE] == 0
 
     @pytest.mark.asyncio
@@ -122,6 +130,14 @@ class TestChatterInventoryMapper:
 
         result = await self.mapper.parseItemType('airstrikes')
         assert result is ChatterItemType.AIR_STRIKE
+
+    @pytest.mark.asyncio
+    async def test_parseItemType_withBanana(self):
+        result = await self.mapper.parseItemType('banana')
+        assert result is ChatterItemType.BANANA
+
+        result = await self.mapper.parseItemType('bananas')
+        assert result is ChatterItemType.BANANA
 
     @pytest.mark.asyncio
     async def test_parseItemType_withEmptyString(self):
@@ -181,6 +197,14 @@ class TestChatterInventoryMapper:
         assert result is ChatterItemType.AIR_STRIKE
 
     @pytest.mark.asyncio
+    async def test_requireItemType_withBanana(self):
+        result = await self.mapper.requireItemType('banana')
+        assert result is ChatterItemType.BANANA
+
+        result = await self.mapper.requireItemType('banana')
+        assert result is ChatterItemType.BANANA
+
+    @pytest.mark.asyncio
     async def test_requireItemType_withEmptyString(self):
         result: ChatterItemType | None = None
 
@@ -233,13 +257,14 @@ class TestChatterInventoryMapper:
         airStrikes = round(random.uniform(0.01, 1.00)  * 100)
 
         inventory: dict[ChatterItemType, int] = {
-            ChatterItemType.AIR_STRIKE: airStrikes
+            ChatterItemType.AIR_STRIKE: airStrikes,
         }
 
         result = await self.mapper.serializeInventory(inventory)
         assert len(result) == len(ChatterItemType)
 
         assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == airStrikes
+        assert result[await self.mapper.serializeItemType(ChatterItemType.BANANA)] == 0
         assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == 0
 
     @pytest.mark.asyncio
@@ -247,29 +272,33 @@ class TestChatterInventoryMapper:
         grenades = round(random.uniform(0.01, 1.00) * 100)
 
         inventory: dict[ChatterItemType, int] = {
-            ChatterItemType.GRENADE: grenades
+            ChatterItemType.GRENADE: grenades,
         }
 
         result = await self.mapper.serializeInventory(inventory)
         assert len(result) == len(ChatterItemType)
 
         assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == 0
+        assert result[await self.mapper.serializeItemType(ChatterItemType.BANANA)] == 0
         assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == grenades
 
     @pytest.mark.asyncio
     async def test_serializeInventory3(self):
         airStrikes = round(random.uniform(0.01, 1.00) * 100)
+        bananas = round(random.uniform(0.01, 1.00) * 100)
         grenades = round(random.uniform(0.01, 1.00) * 100)
 
         inventory: dict[ChatterItemType, int] = {
             ChatterItemType.AIR_STRIKE: airStrikes,
-            ChatterItemType.GRENADE: grenades
+            ChatterItemType.BANANA: bananas,
+            ChatterItemType.GRENADE: grenades,
         }
 
         result = await self.mapper.serializeInventory(inventory)
         assert len(result) == len(ChatterItemType)
 
         assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == airStrikes
+        assert result[await self.mapper.serializeItemType(ChatterItemType.BANANA)] == bananas
         assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == grenades
 
     @pytest.mark.asyncio
@@ -293,11 +322,13 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_serializeInventory_withNegativeNumbers(self):
         airStrikes = round(random.uniform(-1.00, -0.01) * 100)
+        bananas = round(random.uniform(-1.00, -0.01) * 100)
         grenades = round(random.uniform(-1.00, -0.01) * 100)
 
         inventory: dict[ChatterItemType, int] = {
             ChatterItemType.AIR_STRIKE: airStrikes,
-            ChatterItemType.GRENADE: grenades
+            ChatterItemType.BANANA: bananas,
+            ChatterItemType.GRENADE: grenades,
         }
 
         result = await self.mapper.serializeInventory(inventory)
@@ -305,6 +336,7 @@ class TestChatterInventoryMapper:
 
         # negative numbers should be normalized to 0
         assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == 0
+        assert result[await self.mapper.serializeItemType(ChatterItemType.BANANA)] == 0
         assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == 0
 
     @pytest.mark.asyncio
@@ -320,6 +352,11 @@ class TestChatterInventoryMapper:
     async def test_serializeItemType_withAirStrike(self):
         result = await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)
         assert result == 'air_strike'
+
+    @pytest.mark.asyncio
+    async def test_serializeItemType_withBanana(self):
+        result = await self.mapper.serializeItemType(ChatterItemType.BANANA)
+        assert result == 'banana'
 
     @pytest.mark.asyncio
     async def test_serializeItemType_withGrenade(self):
