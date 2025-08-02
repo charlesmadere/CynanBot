@@ -20,10 +20,15 @@ from ..models.bananaTimeoutAction import BananaTimeoutAction
 from ..models.basicTimeoutAction import BasicTimeoutAction
 from ..models.calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ..models.events.airStrikeTimeoutEvent import AirStrikeTimeoutEvent
+from ..models.events.bananaTimeoutEvent import BananaTimeoutEvent
+from ..models.events.bananaTimeoutFailedTimeoutEvent import BananaTimeoutFailedTimeoutEvent
+from ..models.events.grenadeTimeoutEvent import GrenadeTimeoutEvent
+from ..models.events.grenadeTimeoutFailedTimeoutEvent import GrenadeTimeoutFailedTimeoutEvent
 from ..models.events.incorrectLiveStatusTimeoutEvent import IncorrectLiveStatusTimeoutEvent
 from ..models.events.noAirStrikeInventoryAvailableTimeoutEvent import NoAirStrikeInventoryAvailableTimeoutEvent
 from ..models.events.noAirStrikeTargetsAvailableTimeoutEvent import NoAirStrikeTargetsAvailableTimeoutEvent
 from ..models.events.noBananaInventoryAvailableTimeoutEvent import NoBananaInventoryAvailableTimeoutEvent
+from ..models.events.noBananaTargetAvailableTimeoutEvent import NoBananaTargetAvailableTimeoutEvent
 from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
 from ..models.exactTimeoutDuration import ExactTimeoutDuration
@@ -190,12 +195,12 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
-        timeoutDuration = await self.__calculateTimeoutDuration(action)
-
         instigatorUserName = await self.__requireUserName(
             action = action,
             chatterUserId = action.instigatorUserId,
         )
+
+        timeoutDuration = await self.__calculateTimeoutDuration(action)
 
         timeoutResults: dict[AirStrikeTimeoutTarget, TwitchTimeoutResult] = dict()
 
@@ -239,6 +244,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
 
         await self.__submitEvent(AirStrikeTimeoutEvent(
             originatingAction = action,
+            timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
             targets = successfulTimeoutTargets,
             eventId = await self.__timeoutIdGenerator.generateEventId(),
@@ -273,10 +279,36 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         )
 
         if timeoutTarget is None:
-            # TODO
+            await self.__submitEvent(NoBananaTargetAvailableTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
             return
 
+        instigatorUserName = await self.__requireUserName(
+            action = action,
+            chatterUserId = action.instigatorUserId,
+        )
+
         timeoutDuration = await self.__calculateTimeoutDuration(action)
+
+        timeoutResult = await self.__twitchTimeoutHelper.timeout(
+            durationSeconds = timeoutDuration.seconds,
+            reason = f'{ChatterItemType.BANANA.humanName} timeout from {instigatorUserName} for {timeoutDuration.message}',
+            twitchAccessToken = action.moderatorTwitchAccessToken,
+            twitchChannelAccessToken = action.userTwitchAccessToken,
+            twitchChannelId = action.twitchChannelId,
+            userIdToTimeout = timeoutTarget.targetUserId,
+            user = action.user,
+        )
+
+        if timeoutResult is not TwitchTimeoutResult.SUCCESS:
+            await self.__submitEvent(BananaTimeoutFailedTimeoutEvent(
+                originatingAction = action,
+                target = timeoutTarget,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
 
         updatedInventory: ChatterItemGiveResult | None = None
 
@@ -288,8 +320,13 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 twitchChannelId = action.twitchChannelId,
             )
 
-        # TODO
-        pass
+        await self.__submitEvent(BananaTimeoutEvent(
+            originatingAction = action,
+            target = timeoutTarget,
+            timeoutDuration = timeoutDuration,
+            updatedInventory = updatedInventory,
+            eventId = await self.__timeoutIdGenerator.generateEventId(),
+        ))
 
     async def __handleBasicTimeoutAction(self, action: BasicTimeoutAction):
         if not isinstance(action, BasicTimeoutAction):
@@ -331,23 +368,23 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
-        grenadeTarget = await self.__determineGrenadeTargetUseCase.invoke(
+        timeoutTarget = await self.__determineGrenadeTargetUseCase.invoke(
             timeoutAction = action,
         )
 
-        if grenadeTarget is None:
+        if timeoutTarget is None:
             await self.__submitEvent(NoGrenadeTargetAvailableTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
             ))
             return
 
-        timeoutDuration = await self.__calculateTimeoutDuration(action)
-
         instigatorUserName = await self.__requireUserName(
             action = action,
             chatterUserId = action.instigatorUserId,
         )
+
+        timeoutDuration = await self.__calculateTimeoutDuration(action)
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
             durationSeconds = timeoutDuration.seconds,
@@ -355,27 +392,35 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             twitchAccessToken = action.moderatorTwitchAccessToken,
             twitchChannelAccessToken = action.userTwitchAccessToken,
             twitchChannelId = action.twitchChannelId,
-            userIdToTimeout = grenadeTarget.targetUserId,
+            userIdToTimeout = timeoutTarget.targetUserId,
             user = action.user,
         )
 
         if timeoutResult is not TwitchTimeoutResult.SUCCESS:
-            await self.__submitEvent(NoGrenadeTargetAvailableTimeoutEvent(
+            await self.__submitEvent(GrenadeTimeoutFailedTimeoutEvent(
                 originatingAction = action,
+                target = timeoutTarget,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
             ))
             return
 
+        updatedInventory: ChatterItemGiveResult | None = None
+
         if not action.ignoreInventory:
-            await self.__chatterInventoryHelper.give(
+            updatedInventory = await self.__chatterInventoryHelper.give(
                 itemType = ChatterItemType.GRENADE,
                 giveAmount = -1,
                 chatterUserId = action.instigatorUserId,
                 twitchChannelId = action.twitchChannelId,
             )
 
-        # TODO report successful timeout
-        pass
+        await self.__submitEvent(GrenadeTimeoutEvent(
+            timeoutDuration = timeoutDuration,
+            updatedInventory = updatedInventory,
+            originatingAction = action,
+            target = timeoutTarget,
+            eventId = await self.__timeoutIdGenerator.generateEventId(),
+        ))
 
     async def __handleTimeoutAction(self, action: AbsTimeoutAction):
         if not isinstance(action, AbsTimeoutAction):

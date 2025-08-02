@@ -2,16 +2,12 @@ from dataclasses import dataclass
 
 from ..absTimeoutAction import AbsTimeoutAction
 from ..absTimeoutEvent import AbsTimeoutEvent
-from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ..grenadeTimeoutAction import GrenadeTimeoutAction
 from ..grenadeTimeoutTarget import GrenadeTimeoutTarget
-from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
 
 
 @dataclass(frozen = True)
-class GrenadeTimeoutEvent(AbsTimeoutEvent):
-    timeoutDuration: CalculatedTimeoutDuration
-    updatedInventory: ChatterItemGiveResult | None
+class GrenadeTimeoutFailedTimeoutEvent(AbsTimeoutEvent):
     originatingAction: GrenadeTimeoutAction
     target: GrenadeTimeoutTarget
     eventId: str
