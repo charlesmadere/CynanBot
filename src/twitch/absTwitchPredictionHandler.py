@@ -20,7 +20,7 @@ class AbsTwitchPredictionHandler(ABC):
         title: str
         twitchChannelId: str
         winningOutcomeId: str | None
-        predictionStatus: TwitchPredictionStatus
+        predictionStatus: TwitchPredictionStatus | None
         subscriptionType: TwitchWebsocketSubscriptionType
         user: UserInterface
 

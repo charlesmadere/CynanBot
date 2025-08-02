@@ -167,12 +167,10 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         outcomes = event.outcomes
         eventId = event.eventId
         title = event.title
-        winningOutcomeId = event.winningOutcomeId
-        predictionStatus = event.predictionStatus
         subscriptionType = dataBundle.metadata.subscriptionType
 
-        if outcomes is None or len(outcomes) == 0 or not utils.isValidStr(eventId) or not utils.isValidStr(title) or predictionStatus is None or subscriptionType is None:
-            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({outcomes=}) ({eventId=}) ({title=}) ({winningOutcomeId=}) ({predictionStatus=}) ({subscriptionType=})')
+        if outcomes is None or len(outcomes) == 0 or not utils.isValidStr(eventId) or not utils.isValidStr(title) or subscriptionType is None:
+            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({outcomes=}) ({eventId=}) ({title=}) ({subscriptionType=})')
             return
 
         predictionData = AbsTwitchPredictionHandler.PredictionData(
@@ -180,9 +178,9 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             eventId = eventId,
             title = title,
             twitchChannelId = twitchChannelId,
-            winningOutcomeId = winningOutcomeId,
+            winningOutcomeId = event.winningOutcomeId,
             user = user,
-            predictionStatus = predictionStatus,
+            predictionStatus = event.predictionStatus,
             subscriptionType = subscriptionType,
         )
 
