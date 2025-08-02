@@ -1,3 +1,5 @@
+import random
+
 from ..models.randomExponentialTimeoutDuration import RandomExponentialTimeoutDuration
 
 
@@ -10,7 +12,9 @@ class DetermineExponentialTimeoutDurationSecondsUseCase:
         if not isinstance(timeoutDuration, RandomExponentialTimeoutDuration):
             raise TypeError(f'timeoutDuration argument is malformed: \"{timeoutDuration}\"')
 
-        # TODO
-        pass
+        maxFloat = float(timeoutDuration.maximumSeconds)
+        minFloat = float(timeoutDuration.minimumSeconds)
+        timeoutScale = timeoutDuration.scale
+        randomScale = random.random()
 
-        raise RuntimeError()
+        return round(pow(randomScale, timeoutScale) * (maxFloat - minFloat) + minFloat)

@@ -3,8 +3,8 @@ from typing import Final
 
 from frozenlist import FrozenList
 
-from ..models.airStrikeTargetData import AirStrikeTargetData
 from ..models.airStrikeTimeoutAction import AirStrikeTimeoutAction
+from ..models.airStrikeTimeoutTarget import AirStrikeTimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.activeChatters.activeChatter import ActiveChatter
@@ -62,17 +62,17 @@ class DetermineAirStrikeTargetsUseCase:
     async def invoke(
         self,
         timeoutAction: AirStrikeTimeoutAction,
-    ) -> FrozenList[AirStrikeTargetData]:
+    ) -> FrozenList[AirStrikeTimeoutTarget]:
         if not isinstance(timeoutAction, AirStrikeTimeoutAction):
             raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
 
-        airStrikeTargets: set[AirStrikeTargetData] = set()
+        timeoutTargets: set[AirStrikeTimeoutTarget] = set()
 
         additionalReverseProbability = await self.__timeoutActionSettings.getGrenadeAdditionalReverseProbability()
         randomReverseNumber = random.random()
 
         if randomReverseNumber <= additionalReverseProbability:
-            airStrikeTargets.add(AirStrikeTargetData(
+            timeoutTargets.add(AirStrikeTimeoutTarget(
                 targetUserId = timeoutAction.instigatorUserId,
                 targetUserName = await self.__fetchUserName(
                     twitchChannelId = timeoutAction.twitchChannelId,
@@ -95,12 +95,12 @@ class DetermineAirStrikeTargetsUseCase:
         airStrikeTargetCount = random.randint(timeoutAction.minTimeoutTargets, timeoutAction.maxTimeoutTargets)
         vulnerableChattersList: list[ActiveChatter] = list(vulnerableChatters.values())
 
-        while len(airStrikeTargets) < airStrikeTargetCount and len(vulnerableChattersList) >= 1:
+        while len(timeoutTargets) < airStrikeTargetCount and len(vulnerableChattersList) >= 1:
             randomChatterIndex = random.randint(0, len(vulnerableChattersList) - 1)
             randomChatter = vulnerableChattersList[randomChatterIndex]
             del vulnerableChattersList[randomChatterIndex]
 
-            airStrikeTargets.add(AirStrikeTargetData(
+            timeoutTargets.add(AirStrikeTimeoutTarget(
                 targetUserId = randomChatter.chatterUserId,
                 targetUserName = randomChatter.chatterUserName,
             ))
@@ -110,10 +110,10 @@ class DetermineAirStrikeTargetsUseCase:
                 twitchChannelId = timeoutAction.twitchChannelId,
             )
 
-        airStrikeTargetsList: list[AirStrikeTargetData] = list(airStrikeTargets)
-        airStrikeTargetsList.sort(key = lambda target: target.targetUserName.casefold())
+        timeoutTargetsList: list[AirStrikeTimeoutTarget] = list(timeoutTargets)
+        timeoutTargetsList.sort(key = lambda target: target.targetUserName.casefold())
 
-        frozenAirStrikeTargetsList: FrozenList[AirStrikeTargetData] = FrozenList(airStrikeTargetsList)
-        frozenAirStrikeTargetsList.freeze()
+        frozenTimeoutTargetsList: FrozenList[AirStrikeTimeoutTarget] = FrozenList(timeoutTargetsList)
+        frozenTimeoutTargetsList.freeze()
 
-        return frozenAirStrikeTargetsList
+        return frozenTimeoutTargetsList

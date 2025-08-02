@@ -1,18 +1,16 @@
-import random
 from typing import Final
 
-from ..models.grenadeTimeoutAction import GrenadeTimeoutAction
-from ..models.grenadeTimeoutTarget import GrenadeTimeoutTarget
+from ..models.bananaTimeoutAction import BananaTimeoutAction
+from ..models.bananaTimeoutTarget import BananaTimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ...timber.timberInterface import TimberInterface
-from ...twitch.activeChatters.activeChatter import ActiveChatter
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
-class DetermineGrenadeTargetUseCase:
+class DetermineBananaTargetUseCase:
 
     def __init__(
         self,
@@ -59,47 +57,10 @@ class DetermineGrenadeTargetUseCase:
 
     async def invoke(
         self,
-        timeoutAction: GrenadeTimeoutAction,
-    ) -> GrenadeTimeoutTarget | None:
-        if not isinstance(timeoutAction, GrenadeTimeoutAction):
+        timeoutAction: BananaTimeoutAction,
+    ) -> BananaTimeoutTarget | None:
+        if not isinstance(timeoutAction, BananaTimeoutAction):
             raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
 
-        additionalReverseProbability = await self.__timeoutActionSettings.getGrenadeAdditionalReverseProbability()
-        randomReverseNumber = random.random()
-
-        if randomReverseNumber <= additionalReverseProbability:
-            return GrenadeTimeoutTarget(
-                targetUserId = timeoutAction.instigatorUserId,
-                targetUserName = await self.__fetchUserName(
-                    twitchChannelId = timeoutAction.twitchChannelId,
-                    userId = timeoutAction.instigatorUserId,
-                ),
-            )
-
-        activeChatters = await self.__activeChattersRepository.get(
-            twitchChannelId = timeoutAction.twitchChannelId,
-        )
-
-        vulnerableChatters: dict[str, ActiveChatter] = dict(activeChatters)
-        vulnerableChatters.pop(timeoutAction.twitchChannelId, None)
-
-        allImmuneUserIds = await self.__timeoutImmuneUserIdsRepository.getAllUserIds()
-
-        for immuneUserId in allImmuneUserIds:
-            vulnerableChatters.pop(immuneUserId, None)
-
-        if len(vulnerableChatters) == 0:
-            self.__timber.log('DetermineGrenadeTargetUseCase', f'Attempted to timeout random target, but no active chatter(s) were found ({timeoutAction=}) ({additionalReverseProbability=}) ({randomReverseNumber=}) ({activeChatters=}) ({vulnerableChatters=})')
-            return None
-
-        randomChatter = random.choice(list(vulnerableChatters.values()))
-
-        await self.__activeChattersRepository.remove(
-            chatterUserId = randomChatter.chatterUserId,
-            twitchChannelId = timeoutAction.twitchChannelId,
-        )
-
-        return GrenadeTimeoutTarget(
-            targetUserId = randomChatter.chatterUserId,
-            targetUserName = randomChatter.chatterUserName,
-        )
+        # TODO
+        return None

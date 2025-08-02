@@ -5,6 +5,6 @@ from .absTimeoutDuration import AbsTimeoutDuration
 
 @dataclass(frozen = True)
 class RandomExponentialTimeoutDuration(AbsTimeoutDuration):
-    exponent: float
+    scale: float
     maximumSeconds: int
     minimumSeconds: int
