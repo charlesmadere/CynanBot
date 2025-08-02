@@ -1715,9 +1715,8 @@ guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = Gu
 )
 
 mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = MostRecentAnivMessageRepository(
-    backingDatabase = backingDatabase,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 whichAnivUserHelper: WhichAnivUserHelperInterface = WhichAnivUserHelper(
