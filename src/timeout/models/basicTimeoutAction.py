@@ -15,6 +15,8 @@ class BasicTimeoutAction(AbsTimeoutAction):
     instigatorUserId: str
     moderatorTwitchAccessToken: str
     moderatorUserId: str
+    reason: str | None
+    targetUserId: str
     twitchChannelId: str
     twitchChatMessageId: str | None
     userTwitchAccessToken: str

@@ -18,10 +18,14 @@ from ..models.airStrikeTimeoutAction import AirStrikeTimeoutAction
 from ..models.airStrikeTimeoutTarget import AirStrikeTimeoutTarget
 from ..models.bananaTimeoutAction import BananaTimeoutAction
 from ..models.basicTimeoutAction import BasicTimeoutAction
+from ..models.basicTimeoutTarget import BasicTimeoutTarget
 from ..models.calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ..models.events.airStrikeTimeoutEvent import AirStrikeTimeoutEvent
 from ..models.events.bananaTimeoutEvent import BananaTimeoutEvent
 from ..models.events.bananaTimeoutFailedTimeoutEvent import BananaTimeoutFailedTimeoutEvent
+from ..models.events.basicTimeoutEvent import BasicTimeoutEvent
+from ..models.events.basicTimeoutFailedTimeoutEvent import BasicTimeoutFailedTimeoutEvent
+from ..models.events.basicTimeoutTargetUnavailableTimeoutEvent import BasicTimeoutTargetUnavailableTimeoutEvent
 from ..models.events.grenadeTimeoutEvent import GrenadeTimeoutEvent
 from ..models.events.grenadeTimeoutFailedTimeoutEvent import GrenadeTimeoutFailedTimeoutEvent
 from ..models.events.incorrectLiveStatusTimeoutEvent import IncorrectLiveStatusTimeoutEvent
@@ -339,10 +343,50 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
+        try:
+            targetUserName = await self.__requireUserName(
+                action = action,
+                chatterUserId = action.targetUserId,
+            )
+        except Exception as e:
+            self.__timber.log('TimeoutActionMachine', f'Failed to fetch username for basic timeout target ({action=}): {e}', e, traceback.format_exc())
+            await self.__submitEvent(BasicTimeoutTargetUnavailableTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
+
+        timeoutTarget = BasicTimeoutTarget(
+            targetUserId = action.targetUserId,
+            targetUserName = targetUserName,
+        )
+
         timeoutDuration = await self.__calculateTimeoutDuration(action)
 
-        # TODO
-        pass
+        timeoutResult = await self.__twitchTimeoutHelper.timeout(
+            durationSeconds = timeoutDuration.seconds,
+            reason = action.reason,
+            twitchAccessToken = action.moderatorTwitchAccessToken,
+            twitchChannelAccessToken = action.userTwitchAccessToken,
+            twitchChannelId = action.twitchChannelId,
+            userIdToTimeout = action.targetUserId,
+            user = action.user,
+        )
+
+        if timeoutResult is not TwitchTimeoutResult.SUCCESS:
+            await self.__submitEvent(BasicTimeoutFailedTimeoutEvent(
+                originatingAction = action,
+                target = timeoutTarget,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
+
+        await self.__submitEvent(BasicTimeoutEvent(
+            originatingAction = action,
+            target = timeoutTarget,
+            timeoutDuration = timeoutDuration,
+            eventId = await self.__timeoutIdGenerator.generateEventId(),
+        ))
 
     async def __handleGrenadeTimeoutAction(self, action: GrenadeTimeoutAction):
         if not isinstance(action, GrenadeTimeoutAction):
