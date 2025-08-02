@@ -423,7 +423,7 @@ class CynanBot(
         weatherRepository: WeatherRepositoryInterface | None,
         websocketConnectionServer: WebsocketConnectionServerInterface | None,
         wordOfTheDayPresenter: WordOfTheDayPresenterInterface | None,
-        wordOfTheDayRepository: WordOfTheDayRepositoryInterface | None
+        wordOfTheDayRepository: WordOfTheDayRepositoryInterface | None,
     ):
         super().__init__(
             client_secret = authRepository.getAll().requireTwitchClientSecret(),
