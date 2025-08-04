@@ -4,7 +4,6 @@ from datetime import tzinfo
 from frozendict import frozendict
 from frozenlist import FrozenList
 
-from .aniv.whichAnivUser import WhichAnivUser
 from .chatSoundAlert.absChatSoundAlert import AbsChatSoundAlert
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .cuteness.cutenessBoosterPack import CutenessBoosterPack
@@ -15,6 +14,7 @@ from .soundAlert.soundAlertRedemption import SoundAlertRedemption
 from .supStreamer.supStreamerBoosterPack import SupStreamerBoosterPack
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
+from ..aniv.models.whichAnivUser import WhichAnivUser
 from ..language.languageEntry import LanguageEntry
 from ..tts.models.ttsProvider import TtsProvider
 
