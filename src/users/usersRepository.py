@@ -9,7 +9,6 @@ from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .aniv.anivUserSettingsJsonParserInterface import AnivUserSettingsJsonParserInterface
-from .aniv.whichAnivUser import WhichAnivUser
 from .chatSoundAlert.absChatSoundAlert import AbsChatSoundAlert
 from .chatSoundAlert.chatSoundAlertJsonParserInterface import ChatSoundAlertJsonParserInterface
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
@@ -33,6 +32,7 @@ from .tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
 from .user import User
 from .userJsonConstant import UserJsonConstant
 from .usersRepositoryInterface import UsersRepositoryInterface
+from ..aniv.models.whichAnivUser import WhichAnivUser
 from ..language.jsonMapper.languageEntryJsonMapperInterface import LanguageEntryJsonMapperInterface
 from ..language.languageEntry import LanguageEntry
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
