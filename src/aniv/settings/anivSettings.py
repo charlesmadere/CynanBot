@@ -1,17 +1,17 @@
-from typing import Any
+from typing import Any, Final
 
-from .anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
+from .anivSettingsInterface import AnivSettingsInterface
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 
 
-class AnivSettingsRepository(AnivSettingsRepositoryInterface):
+class AnivSettings(AnivSettingsInterface):
 
     def __init__(self, settingsJsonReader: JsonReaderInterface):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
 
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
 
         self.__settingsCache: dict[str, Any] | None = None
 

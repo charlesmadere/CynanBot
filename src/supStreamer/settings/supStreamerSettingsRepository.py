@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .supStreamerSettingsRepositoryInterface import SupStreamerSettingsRepositoryInterface
 from ...misc import utils as utils
@@ -11,7 +11,7 @@ class SupStreamerSettingsRepository(SupStreamerSettingsRepositoryInterface):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
 
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
 
         self.__cache: dict[str, Any] | None = None
 

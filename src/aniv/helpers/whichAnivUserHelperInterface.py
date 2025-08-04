@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from frozendict import frozendict
 
-from ...users.aniv.whichAnivUser import WhichAnivUser
+from ..models.whichAnivUser import WhichAnivUser
 
 
 class WhichAnivUserHelperInterface(ABC):

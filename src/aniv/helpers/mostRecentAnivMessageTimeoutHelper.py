@@ -11,7 +11,8 @@ from ..models.mostRecentAnivMessage import MostRecentAnivMessage
 from ..repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
     AnivCopyMessageTimeoutScoreRepositoryInterface
 from ..repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
-from ..settings.anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
+from ..settings.anivSettingsInterface import AnivSettingsInterface
+from ...aniv.models.whichAnivUser import WhichAnivUser
 from ...language.languageEntry import LanguageEntry
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
@@ -25,7 +26,6 @@ from ...twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
-from ...users.aniv.whichAnivUser import WhichAnivUser
 from ...users.userInterface import UserInterface
 
 
@@ -39,7 +39,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
     def __init__(
         self,
         anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface,
-        anivSettingsRepository: AnivSettingsRepositoryInterface,
+        anivSettings: AnivSettingsInterface,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface,
         timber: TimberInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
@@ -54,8 +54,8 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
     ):
         if not isinstance(anivCopyMessageTimeoutScoreRepository, AnivCopyMessageTimeoutScoreRepositoryInterface):
             raise TypeError(f'anivCopyMessageTimeoutScoreRepository argument is malformed: \"{anivCopyMessageTimeoutScoreRepository}\"')
-        elif not isinstance(anivSettingsRepository, AnivSettingsRepositoryInterface):
-            raise TypeError(f'anivSettingsRepository argument is malformed: \"{anivSettingsRepository}\"')
+        elif not isinstance(anivSettings, AnivSettingsInterface):
+            raise TypeError(f'anivSettings argument is malformed: \"{anivSettings}\"')
         elif not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
             raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -80,7 +80,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             raise TypeError(f'whichAnivUserHelper argument is malformed: \"{whichAnivUserHelper}\"')
 
         self.__anivCopyMessageTimeoutScoreRepository: Final[AnivCopyMessageTimeoutScoreRepositoryInterface] = anivCopyMessageTimeoutScoreRepository
-        self.__anivSettingsRepository: Final[AnivSettingsRepositoryInterface] = anivSettingsRepository
+        self.__anivSettings: Final[AnivSettingsInterface] = anivSettings
         self.__mostRecentAnivMessageRepository: Final[MostRecentAnivMessageRepositoryInterface] = mostRecentAnivMessageRepository
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
@@ -125,13 +125,13 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if anivUser is None or anivUser.userId == chatterUserId or twitchChannelId == chatterUserId:
             return False
 
-        chatterMessage = utils.cleanStr(chatterMessage)
+        cleanedMessage = utils.cleanStr(chatterMessage)
 
         anivMessage = await self.__mostRecentAnivMessageRepository.get(
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
-        if not utils.isValidStr(chatterMessage) or anivMessage is None or not utils.isValidStr(anivMessage.message):
+        if not utils.isValidStr(cleanedMessage) or anivMessage is None or not utils.isValidStr(anivMessage.message):
             return False
 
         now = datetime.now(self.__timeZoneRepository.getDefault())
@@ -141,7 +141,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             user = user,
         )
 
-        if chatterMessage != anivMessage.message or expirationTime < now:
+        if cleanedMessage != anivMessage.message or expirationTime < now:
             return False
 
         if await self.__isImmuneChatter(
@@ -222,7 +222,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
     ) -> datetime:
         maxAgeSeconds = user.anivMessageCopyMaxAgeSeconds
         if not utils.isValidInt(maxAgeSeconds):
-            maxAgeSeconds = await self.__anivSettingsRepository.getCopyMessageMaxAgeSeconds()
+            maxAgeSeconds = await self.__anivSettings.getCopyMessageMaxAgeSeconds()
 
         return anivMessage.dateTime + timedelta(seconds = maxAgeSeconds)
 
@@ -232,7 +232,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         timeoutProbability = user.anivMessageCopyTimeoutProbability
         if not utils.isValidNum(timeoutProbability):
-            timeoutProbability = await self.__anivSettingsRepository.getCopyMessageTimeoutProbability()
+            timeoutProbability = await self.__anivSettings.getCopyMessageTimeoutProbability()
 
         randomNumber = random.random()
         if randomNumber > timeoutProbability:
@@ -240,16 +240,16 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         minDurationSeconds = user.anivMessageCopyTimeoutMinSeconds
         if not utils.isValidInt(minDurationSeconds):
-            minDurationSeconds = await self.__anivSettingsRepository.getCopyMessageTimeoutSeconds()
+            minDurationSeconds = await self.__anivSettings.getCopyMessageTimeoutSeconds()
 
         maxDurationSeconds = user.anivMessageCopyTimeoutMaxSeconds
         if not utils.isValidInt(maxDurationSeconds):
-            maxDurationSeconds = await self.__anivSettingsRepository.getCopyMessageTimeoutMaxSeconds()
+            maxDurationSeconds = await self.__anivSettings.getCopyMessageTimeoutMaxSeconds()
 
         timeoutScale: float | None
         durationSeconds: int
 
-        if await self.__anivSettingsRepository.isRandomTimeoutScalingEnabled():
+        if await self.__anivSettings.isRandomTimeoutScalingEnabled():
             minFloat = float(minDurationSeconds)
             maxFloat = float(maxDurationSeconds)
             timeoutScale = random.random()

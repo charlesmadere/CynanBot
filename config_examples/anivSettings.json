@@ -1,0 +1,7 @@
+{
+    "copyMessageMaxAgeSeconds": 30,
+    "copyMessageTimeoutMaxSeconds": 300,
+    "copyMessageTimeoutProbability": 0.69,
+    "copyMessageTimeoutSeconds": 30,
+    "randomTimeoutScalingEnabled": true
+}

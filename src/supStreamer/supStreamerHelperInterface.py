@@ -7,6 +7,6 @@ class SupStreamerHelperInterface(ABC):
     async def isSupStreamerMessage(
         self,
         chatMessage: str | None,
-        supStreamerMessage: str
+        supStreamerMessage: str,
     ) -> bool:
         pass

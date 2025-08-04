@@ -60,7 +60,7 @@ class SupStreamerChatAction(AbsChatAction):
         self,
         mostRecentChat: MostRecentChat | None,
         message: TwitchMessage,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         if not user.isSupStreamerEnabled or not user.isTtsEnabled:
             return False
@@ -91,19 +91,19 @@ class SupStreamerChatAction(AbsChatAction):
         now: datetime,
         supStreamerMessage: str,
         reply: str,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         if not utils.isValidStr(chatMessage) or not utils.isValidStr(supStreamerMessage):
             return False
         elif not await self.__supStreamerHelper.isSupStreamerMessage(
             chatMessage = chatMessage,
-            supStreamerMessage = supStreamerMessage
+            supStreamerMessage = supStreamerMessage,
         ):
             return False
 
         supStreamerChatData = await self.__supStreamerRepository.get(
             chatterUserId = message.getAuthorId(),
-            twitchChannelId = await message.getTwitchChannelId()
+            twitchChannelId = await message.getTwitchChannelId(),
         )
 
         if supStreamerChatData is not None and (supStreamerChatData.mostRecentSup + self.__cooldown) > now:
@@ -115,7 +115,7 @@ class SupStreamerChatAction(AbsChatAction):
 
         await self.__supStreamerRepository.set(
             chatterUserId = message.getAuthorId(),
-            twitchChannelId = await message.getTwitchChannelId()
+            twitchChannelId = await message.getTwitchChannelId(),
         )
 
         self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.handle}')
@@ -140,8 +140,8 @@ class SupStreamerChatAction(AbsChatAction):
                 donation = None,
                 provider = user.defaultTtsProvider,
                 providerOverridableStatus = providerOverridableStatus,
-                raidInfo = None
-            )
+                raidInfo = None,
+            ),
         ))
 
         return True
@@ -151,7 +151,7 @@ class SupStreamerChatAction(AbsChatAction):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
         twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-            twitchChannelId = await message.getTwitchChannelId()
+            twitchChannelId = await message.getTwitchChannelId(),
         )
 
         if not utils.isValidStr(twitchAccessToken):
@@ -160,5 +160,5 @@ class SupStreamerChatAction(AbsChatAction):
         return await self.__twitchFollowingStatusRepository.isFollowing(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = await message.getTwitchChannelId(),
-            userId = message.getAuthorId()
+            userId = message.getAuthorId(),
         )

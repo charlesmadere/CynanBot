@@ -3,6 +3,7 @@ from typing import Final
 
 from .mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from ..models.mostRecentAnivMessage import MostRecentAnivMessage
+from ..models.whichAnivUser import WhichAnivUser
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -42,18 +43,22 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         self,
         message: str | None,
         twitchChannelId: str,
+        whichAnivUser: WhichAnivUser,
     ):
         if message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not isinstance(whichAnivUser, WhichAnivUser):
+            raise TypeError(f'whichAnivUser argument is malformed: \"{whichAnivUser}\"')
 
-        message = utils.cleanStr(message)
+        cleanedMessage = utils.cleanStr(message)
 
-        if utils.isValidStr(message):
+        if utils.isValidStr(cleanedMessage):
             self.__cache[twitchChannelId] = MostRecentAnivMessage(
                 dateTime = datetime.now(self.__timeZoneRepository.getDefault()),
-                message = message,
+                message = cleanedMessage,
+                whichAnivUser = whichAnivUser,
             )
             self.__timber.log('MostRecentAnivMessageRepository', f'Updated most recent aniv message in \"{twitchChannelId}\"')
         else:

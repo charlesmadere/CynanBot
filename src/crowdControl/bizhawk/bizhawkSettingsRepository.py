@@ -14,7 +14,7 @@ class BizhawkSettingsRepository(BizhawkSettingsRepositoryInterface):
         self,
         bizhawkKeyMapper: BizhawkKeyMapperInterface,
         settingsJsonReader: JsonReaderInterface,
-        defaultGameShuffleKeyBind: BizhawkKey = BizhawkKey.F15
+        defaultGameShuffleKeyBind: BizhawkKey = BizhawkKey.F15,
     ):
         if not isinstance(bizhawkKeyMapper, BizhawkKeyMapperInterface):
             raise TypeError(f'bizhawkKeyMapper argument is malformed: \"{bizhawkKeyMapper}\"')
@@ -173,7 +173,7 @@ class BizhawkSettingsRepository(BizhawkSettingsRepositoryInterface):
         if self.__cache is not None:
             return self.__cache
 
-        jsonContents: dict[str, Any] | None = None
+        jsonContents: dict[str, Any] | None
 
         if await self.__settingsJsonReader.fileExistsAsync():
             jsonContents = await self.__settingsJsonReader.readJsonAsync()

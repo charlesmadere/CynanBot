@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from datetime import datetime
+from typing import Final
 
 from lru import LRU
 
@@ -22,7 +23,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        cacheSize: int = 100
+        cacheSize: int = 100,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -35,12 +36,12 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
         elif cacheSize < 1 or cacheSize > utils.getIntMaxSafeSize():
             raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
 
         self.__isDatabaseReady: bool = False
-        self.__caches: dict[str, LRU[str, SupStreamerChatter | None]] = defaultdict(lambda: LRU(cacheSize))
+        self.__caches: Final[dict[str, LRU[str, SupStreamerChatter | None]]] = defaultdict(lambda: LRU(cacheSize))
 
     async def clearCaches(self):
         self.__caches.clear()
@@ -49,7 +50,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
     async def get(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> SupStreamerChatter | None:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
@@ -128,7 +129,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
     async def set(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')

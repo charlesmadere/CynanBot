@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from ..models.mostRecentAnivMessage import MostRecentAnivMessage
+from ..models.whichAnivUser import WhichAnivUser
 from ...misc.clearable import Clearable
 
 
@@ -18,5 +19,6 @@ class MostRecentAnivMessageRepositoryInterface(Clearable, ABC):
         self,
         message: str | None,
         twitchChannelId: str,
+        whichAnivUser: WhichAnivUser,
     ):
         pass

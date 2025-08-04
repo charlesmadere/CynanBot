@@ -3,6 +3,7 @@ from typing import Final
 from .absChatAction import AbsChatAction
 from ..aniv.helpers.whichAnivUserHelperInterface import WhichAnivUserHelperInterface
 from ..aniv.repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
+from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..users.userInterface import UserInterface
@@ -37,9 +38,12 @@ class SaveMostRecentAnivMessageChatAction(AbsChatAction):
         if anivUser is None or anivUser.userId != message.getAuthorId():
             return False
 
+        cleanedMessage = utils.cleanStr(message.getContent())
+
         await self.__mostRecentAnivMessageRepository.set(
-            message = message.getContent(),
+            message = cleanedMessage,
             twitchChannelId = await message.getTwitchChannelId(),
+            whichAnivUser = anivUser.whichAnivUser,
         )
 
         return True

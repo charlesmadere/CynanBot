@@ -1,7 +1,7 @@
 from typing import Any
 
 from .anivUserSettingsJsonParserInterface import AnivUserSettingsJsonParserInterface
-from .whichAnivUser import WhichAnivUser
+from ...aniv.models.whichAnivUser import WhichAnivUser
 from ...misc import utils as utils
 
 
@@ -9,7 +9,7 @@ class AnivUserSettingsJsonParser(AnivUserSettingsJsonParserInterface):
 
     def parseWhichAnivUser(
         self,
-        whichAnivUser: str | Any | None
+        whichAnivUser: str | Any | None,
     ) -> WhichAnivUser | None:
         if not utils.isValidStr(whichAnivUser):
             return None
@@ -24,7 +24,7 @@ class AnivUserSettingsJsonParser(AnivUserSettingsJsonParserInterface):
 
     def requireWhichAnivUser(
         self,
-        whichAnivUser: str | Any | None
+        whichAnivUser: str | Any | None,
     ) -> WhichAnivUser:
         result = self.parseWhichAnivUser(whichAnivUser)
 

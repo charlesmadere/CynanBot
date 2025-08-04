@@ -18,8 +18,8 @@ from src.aniv.repositories.anivCopyMessageTimeoutScoreRepositoryInterface import
     AnivCopyMessageTimeoutScoreRepositoryInterface
 from src.aniv.repositories.mostRecentAnivMessageRepository import MostRecentAnivMessageRepository
 from src.aniv.repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
-from src.aniv.settings.anivSettingsRepository import AnivSettingsRepository
-from src.aniv.settings.anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
+from src.aniv.settings.anivSettings import AnivSettings
+from src.aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from src.asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRepository
 from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
@@ -1697,11 +1697,11 @@ anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInte
     userIdsRepository = userIdsRepository,
 )
 
-anivSettingsRepository: AnivSettingsRepositoryInterface = AnivSettingsRepository(
+anivSettings: AnivSettingsInterface = AnivSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/anivSettingsRepository.json'
-    )
+        fileName = '../config/anivSettings.json',
+    ),
 )
 
 anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
@@ -1728,7 +1728,7 @@ whichAnivUserHelper: WhichAnivUserHelperInterface = WhichAnivUserHelper(
 
 mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface = MostRecentAnivMessageTimeoutHelper(
     anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
-    anivSettingsRepository = anivSettingsRepository,
+    anivSettings = anivSettings,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
     timber = timber,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
@@ -2566,8 +2566,8 @@ bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface = BizhawkSettingsR
     bizhawkKeyMapper = bizhawkKeyMapper,
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/bizhawkSettingsRepository.json'
-    )
+        fileName = '../config/bizhawkSettingsRepository.json',
+    ),
 )
 
 crowdControlActionHandler: CrowdControlActionHandler = BizhawkActionHandler(
@@ -3157,7 +3157,7 @@ cynanBot = CynanBot(
     administratorProvider = administratorProvider,
     anivCopyMessageTimeoutScorePresenter = anivCopyMessageTimeoutScorePresenter,
     anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
-    anivSettingsRepository = anivSettingsRepository,
+    anivSettings = anivSettings,
     asplodieStatsPresenter = asplodieStatsPresenter,
     asplodieStatsRepository = asplodieStatsRepository,
     authRepository = authRepository,

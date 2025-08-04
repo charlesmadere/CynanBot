@@ -9,7 +9,7 @@ class AnivCopyMessageTimeoutScorePresenterInterface(ABC):
     @abstractmethod
     async def getChannelEditorsCantPlayString(
         self,
-        language: LanguageEntry
+        language: LanguageEntry,
     ) -> str:
         pass
 
@@ -18,6 +18,6 @@ class AnivCopyMessageTimeoutScorePresenterInterface(ABC):
         self,
         score: AnivCopyMessageTimeoutScore | None,
         language: LanguageEntry,
-        chatterUserName: str
+        chatterUserName: str,
     ) -> str:
         pass

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from ...misc.clearable import Clearable
 
 
-class AnivSettingsRepositoryInterface(Clearable, ABC):
+class AnivSettingsInterface(Clearable, ABC):
 
     @abstractmethod
     async def getCopyMessageMaxAgeSeconds(self) -> int:

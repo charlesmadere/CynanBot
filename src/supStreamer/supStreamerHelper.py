@@ -13,7 +13,7 @@ class SupStreamerHelper(SupStreamerHelperInterface):
     async def isSupStreamerMessage(
         self,
         chatMessage: str | None,
-        supStreamerMessage: str
+        supStreamerMessage: str,
     ) -> bool:
         if chatMessage is not None and not isinstance(chatMessage, str):
             raise TypeError(f'chatMessage argument is malformed: \"{chatMessage}\"')

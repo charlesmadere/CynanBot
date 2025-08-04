@@ -4,7 +4,7 @@ from frozenlist import FrozenList
 
 from .absChatCommand import AbsChatCommand
 from ..aniv.repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
-from ..aniv.settings.anivSettingsRepositoryInterface import AnivSettingsRepositoryInterface
+from ..aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from ..asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from ..chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface import \
     ChatterPreferredTtsRepositoryInterface
@@ -87,7 +87,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self,
         addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface,
         administratorProvider: AdministratorProviderInterface,
-        anivSettingsRepository: AnivSettingsRepositoryInterface | None,
+        anivSettings: AnivSettingsInterface | None,
         asplodieStatsRepository: AsplodieStatsRepositoryInterface | None,
         authRepository: AuthRepository,
         bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface | None,
@@ -151,8 +151,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'addOrRemoveUserDataHelper argument is malformed: \"{addOrRemoveUserDataHelper}\"')
         elif not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif anivSettingsRepository is not None and not isinstance(anivSettingsRepository, AnivSettingsRepositoryInterface):
-            raise TypeError(f'anivSettingsRepository argument is malformed: \"{anivSettingsRepository}\"')
+        elif anivSettings is not None and not isinstance(anivSettings, AnivSettingsInterface):
+            raise TypeError(f'anivSettings argument is malformed: \"{anivSettings}\"')
         elif asplodieStatsRepository is not None and not isinstance(asplodieStatsRepository, AsplodieStatsRepositoryInterface):
             raise TypeError(f'asplodieStatsRepository argument is malformed: \"{asplodieStatsRepository}\"')
         elif not isinstance(authRepository, AuthRepository):
@@ -278,7 +278,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables: Final[FrozenList[Clearable | None]] = FrozenList()
         self.__clearables.append(addOrRemoveUserDataHelper)
         self.__clearables.append(administratorProvider)
-        self.__clearables.append(anivSettingsRepository)
+        self.__clearables.append(anivSettings)
         self.__clearables.append(asplodieStatsRepository)
         self.__clearables.append(authRepository)
         self.__clearables.append(bannedWordsRepository)

@@ -1,8 +1,8 @@
 import pytest
 
+from src.aniv.models.whichAnivUser import WhichAnivUser
 from src.users.aniv.anivUserSettingsJsonParser import AnivUserSettingsJsonParser
 from src.users.aniv.anivUserSettingsJsonParserInterface import AnivUserSettingsJsonParserInterface
-from src.users.aniv.whichAnivUser import WhichAnivUser
 
 
 class TestAnivUserSettingsJsonParser:

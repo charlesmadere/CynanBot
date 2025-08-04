@@ -10,7 +10,7 @@ class SupStreamerRepositoryInterface(Clearable, ABC):
     async def get(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> SupStreamerChatter | None:
         pass
 
@@ -18,6 +18,6 @@ class SupStreamerRepositoryInterface(Clearable, ABC):
     async def set(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         pass

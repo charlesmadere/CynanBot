@@ -1,13 +1,14 @@
+import traceback
 from typing import Final
 
 from frozendict import frozendict
 
 from .whichAnivUserHelperInterface import WhichAnivUserHelperInterface
+from ..models.whichAnivUser import WhichAnivUser
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ...users.aniv.whichAnivUser import WhichAnivUser
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
@@ -62,20 +63,20 @@ class WhichAnivUserHelper(WhichAnivUserHelperInterface):
         anivUserId = allAnivUserIds.get(whichAnivUser, None)
 
         if not utils.isValidStr(anivUserId):
-            self.__timber.log('WhichAnivUserHelper', f'No aniv user ID is available for this aniv user ({whichAnivUser=}) ({anivUserId=})')
+            self.__timber.log('WhichAnivUserHelper', f'No user ID is available for this aniv user ({whichAnivUser=}) ({anivUserId=})')
             return None
 
         twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
             twitchChannelId = twitchChannelId,
         )
 
-        anivUserName = await self.__userIdsRepository.fetchUserName(
-            userId = anivUserId,
-            twitchAccessToken = twitchAccessToken,
-        )
-
-        if not utils.isValidStr(anivUserName):
-            self.__timber.log('WhichAnivUserHelper', f'No aniv user name is available for this aniv user ({whichAnivUser=}) ({anivUserId=}) ({anivUserName=})')
+        try:
+            anivUserName = await self.__userIdsRepository.fetchUserName(
+                userId = anivUserId,
+                twitchAccessToken = twitchAccessToken,
+            )
+        except Exception as e:
+            self.__timber.log('WhichAnivUserHelper', f'Failed to fetch username for this aniv user ({whichAnivUser=}) ({anivUserId=}): {e}', e, traceback.format_exc())
             return None
 
         return WhichAnivUserHelperInterface.Result(

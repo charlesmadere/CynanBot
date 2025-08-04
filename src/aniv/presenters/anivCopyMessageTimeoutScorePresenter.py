@@ -9,7 +9,7 @@ class AnivCopyMessageTimeoutScorePresenter(AnivCopyMessageTimeoutScorePresenterI
     async def __english(
         self,
         score: AnivCopyMessageTimeoutScore | None,
-        chatterUserName: str
+        chatterUserName: str,
     ) -> str:
         if score is None or (score.dodgeScore == 0 and score.timeoutScore == 0):
             return f'ⓘ @{chatterUserName} has no aniv timeouts'
@@ -40,7 +40,7 @@ class AnivCopyMessageTimeoutScorePresenter(AnivCopyMessageTimeoutScorePresenterI
 
     async def getChannelEditorsCantPlayString(
         self,
-        language: LanguageEntry
+        language: LanguageEntry,
     ) -> str:
         if not isinstance(language, LanguageEntry):
             raise TypeError(f'language argument is malformed: \"{language}\"')
@@ -55,7 +55,7 @@ class AnivCopyMessageTimeoutScorePresenter(AnivCopyMessageTimeoutScorePresenterI
     async def __spanish(
         self,
         score: AnivCopyMessageTimeoutScore | None,
-        chatterUserName: str
+        chatterUserName: str,
     ) -> str:
         if score is None or (score.dodgeScore == 0 and score.timeoutScore == 0):
             return f'ⓘ @{chatterUserName} no tiene suspensiones de aniv'
@@ -88,7 +88,7 @@ class AnivCopyMessageTimeoutScorePresenter(AnivCopyMessageTimeoutScorePresenterI
         self,
         score: AnivCopyMessageTimeoutScore | None,
         language: LanguageEntry,
-        chatterUserName: str
+        chatterUserName: str,
     ) -> str:
         if score is not None and not isinstance(score, AnivCopyMessageTimeoutScore):
             raise TypeError(f'score argument is malformed: \"{score}\"')
