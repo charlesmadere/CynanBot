@@ -41,7 +41,7 @@ class VoicemailsRepository(VoicemailsRepositoryInterface):
         self.__voicemailIdGenerator: Final[VoicemailIdGeneratorInterface] = voicemailIdGenerator
 
         self.__isDatabaseReady: bool = False
-        self.__cache: dict[str, dict[str, FrozenList[VoicemailData | None]]] = defaultdict(lambda: dict())
+        self.__cache: dict[str, dict[str, FrozenList[VoicemailData] | None]] = defaultdict(lambda: dict())
 
     async def addVoicemail(
         self,
