@@ -19,7 +19,7 @@ class AnivContentScanner(AnivContentScannerInterface):
     def __init__(
         self,
         contentScanner: ContentScannerInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(contentScanner, ContentScannerInterface):
             raise TypeError(f'contentScanner argument is malformed: \"{contentScanner}\"')

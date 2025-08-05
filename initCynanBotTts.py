@@ -16,6 +16,8 @@ from src.aniv.presenters.anivCopyMessageTimeoutScorePresenterInterface import \
 from src.aniv.repositories.anivCopyMessageTimeoutScoreRepository import AnivCopyMessageTimeoutScoreRepository
 from src.aniv.repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
     AnivCopyMessageTimeoutScoreRepositoryInterface
+from src.aniv.repositories.anivUserIdsRepository import AnivUserIdsRepository
+from src.aniv.repositories.anivUserIdsRepositoryInterface import AnivUserIdsRepositoryInterface
 from src.aniv.repositories.mostRecentAnivMessageRepository import MostRecentAnivMessageRepository
 from src.aniv.repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from src.aniv.settings.anivSettings import AnivSettings
@@ -1591,9 +1593,13 @@ anivSettings: AnivSettingsInterface = AnivSettings(
     ),
 )
 
+anivUserIdsRepository: AnivUserIdsRepositoryInterface = AnivUserIdsRepository(
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
+)
+
 anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
     contentScanner = contentScanner,
-    timber = timber
+    timber = timber,
 )
 
 guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = GuaranteedTimeoutUsersRepository(
@@ -1618,6 +1624,7 @@ if mostRecentAnivMessageRepository is not None:
     mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
         anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
         anivSettings = anivSettings,
+        anivUserIdsRepository = anivUserIdsRepository,
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
         timber = timber,
         timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,

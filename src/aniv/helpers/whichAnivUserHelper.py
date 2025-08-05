@@ -71,7 +71,7 @@ class WhichAnivUserHelper(WhichAnivUserHelperInterface):
         )
 
         try:
-            anivUserName = await self.__userIdsRepository.fetchUserName(
+            anivUserName = await self.__userIdsRepository.requireUserName(
                 userId = anivUserId,
                 twitchAccessToken = twitchAccessToken,
             )
