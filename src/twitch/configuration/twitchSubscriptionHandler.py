@@ -112,8 +112,9 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         eventUserLogin = event.userLogin
         eventUserName = event.userName
         tier = event.tier
+        subscriptionType = dataBundle.metadata.subscriptionType
 
-        if not utils.isValidStr(eventUserId) or not utils.isValidStr(eventUserLogin) or not utils.isValidStr(eventUserName) or tier is None:
+        if not utils.isValidStr(eventUserId) or not utils.isValidStr(eventUserLogin) or not utils.isValidStr(eventUserName) or tier is None or subscriptionType is None:
             self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({eventUserId=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
             return
 
@@ -131,7 +132,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             resubscriptionMessage = event.resubscriptionMessage,
             subGift = event.subGift,
             tier = tier,
-            subscriptionType = dataBundle.metadata.subscriptionType,
+            subscriptionType = subscriptionType,
             user = user,
         )
 
