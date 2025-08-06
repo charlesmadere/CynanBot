@@ -11,6 +11,10 @@ class TestTwitchWebsocketSubscriptionType:
 
         assert len(versions) == len(TwitchWebsocketSubscriptionType)
 
+    def test_version_withChannelBitsUse(self):
+        version = TwitchWebsocketSubscriptionType.CHANNEL_BITS_USE.version
+        assert version == '1'
+
     def test_version_withChannelChatMessage(self):
         version = TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE.version
         assert version == '1'

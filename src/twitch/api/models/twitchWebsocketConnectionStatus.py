@@ -3,10 +3,22 @@ from enum import Enum, auto
 
 class TwitchWebsocketConnectionStatus(Enum):
 
+    BETA_MAINTENANCE = auto()
+    CHAT_USER_BANNED = auto()
     CONNECTED = auto()
     ENABLED = auto()
+    MODERATOR_REMOVED = auto()
     RECONNECTING = auto()
     REVOKED = auto()
     USER_REMOVED = auto()
     VERSION_REMOVED = auto()
+    WEBHOOK_CALLBACK_VERIFICATION_FAILED = auto()
     WEBHOOK_CALLBACK_VERIFICATION_PENDING = auto()
+    WEBSOCKET_CONNECTION_UNUSED = auto()
+    WEBSOCKET_DISCONNECTED = auto()
+    WEBSOCKET_FAILED_PING_PONG = auto()
+    WEBSOCKET_FAILED_TO_RECONNECT = auto()
+    WEBSOCKET_INTERNAL_ERROR = auto()
+    WEBSOCKET_NETWORK_ERROR = auto()
+    WEBSOCKET_NETWORK_TIMEOUT = auto()
+    WEBSOCKET_RECEIVED_INBOUND_TRAFFIC = auto()

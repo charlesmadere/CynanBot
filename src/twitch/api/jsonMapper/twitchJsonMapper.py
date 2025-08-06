@@ -771,13 +771,25 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         connectionStatus = connectionStatus.lower()
 
         match connectionStatus:
+            case 'beta_maintenance': return TwitchWebsocketConnectionStatus.BETA_MAINTENANCE
+            case 'chat_user_banned': return TwitchWebsocketConnectionStatus.CHAT_USER_BANNED
             case 'connected': return TwitchWebsocketConnectionStatus.CONNECTED
             case 'enabled': return TwitchWebsocketConnectionStatus.ENABLED
+            case 'moderator_removed': return TwitchWebsocketConnectionStatus.MODERATOR_REMOVED
             case 'reconnecting': return TwitchWebsocketConnectionStatus.RECONNECTING
             case 'authorization_revoked': return TwitchWebsocketConnectionStatus.REVOKED
             case 'user_removed': return TwitchWebsocketConnectionStatus.USER_REMOVED
             case 'version_removed': return TwitchWebsocketConnectionStatus.VERSION_REMOVED
+            case 'webhook_callback_verification_failed': return TwitchWebsocketConnectionStatus.WEBHOOK_CALLBACK_VERIFICATION_FAILED
             case 'webhook_callback_verification_pending': return TwitchWebsocketConnectionStatus.WEBHOOK_CALLBACK_VERIFICATION_PENDING
+            case 'websocket_connection_unused': return TwitchWebsocketConnectionStatus.WEBSOCKET_CONNECTION_UNUSED
+            case 'websocket_disconnected': return TwitchWebsocketConnectionStatus.WEBSOCKET_DISCONNECTED
+            case 'websocket_failed_ping_pong': return TwitchWebsocketConnectionStatus.WEBSOCKET_FAILED_PING_PONG
+            case 'websocket_failed_to_reconnect': return TwitchWebsocketConnectionStatus.WEBSOCKET_FAILED_TO_RECONNECT
+            case 'websocket_internal_error': return TwitchWebsocketConnectionStatus.WEBSOCKET_INTERNAL_ERROR
+            case 'websocket_network_error': return TwitchWebsocketConnectionStatus.WEBSOCKET_NETWORK_ERROR
+            case 'websocket_network_timeout': return TwitchWebsocketConnectionStatus.WEBSOCKET_NETWORK_TIMEOUT
+            case 'websocket_received_inbound_traffic': return TwitchWebsocketConnectionStatus.WEBSOCKET_RECEIVED_INBOUND_TRAFFIC
             case _: return None
 
     async def parseContribution(
@@ -1674,6 +1686,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         subscriptionType = subscriptionType.lower()
 
         match subscriptionType:
+            case 'channel.bits.use':
+                return TwitchWebsocketSubscriptionType.CHANNEL_BITS_USE
             case 'channel.chat.message':
                 return TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE
             case 'channel.cheer':
@@ -2334,6 +2348,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
         match subscriptionType:
+            case TwitchWebsocketSubscriptionType.CHANNEL_BITS_USE:
+                return 'channel.bits.use'
             case TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE:
                 return 'channel.chat.message'
             case TwitchWebsocketSubscriptionType.CHANNEL_CHEER:

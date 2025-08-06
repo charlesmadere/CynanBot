@@ -708,9 +708,14 @@ class TestTwitchJsonMapper:
         assert result is TwitchWebsocketConnectionStatus.REVOKED
 
     @pytest.mark.asyncio
-    async def test_parseConnectionStatus_withEmptyString(self):
-        result = await self.jsonMapper.parseConnectionStatus('')
-        assert result is None
+    async def test_parseConnectionStatus_withBetaMaintenanceString(self):
+        result = await self.jsonMapper.parseConnectionStatus('beta_maintenance')
+        assert result is TwitchWebsocketConnectionStatus.BETA_MAINTENANCE
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withChatUserBannedString(self):
+        result = await self.jsonMapper.parseConnectionStatus('chat_user_banned')
+        assert result is TwitchWebsocketConnectionStatus.CHAT_USER_BANNED
 
     @pytest.mark.asyncio
     async def test_parseConnectionStatus_withConnectedString(self):
@@ -718,9 +723,19 @@ class TestTwitchJsonMapper:
         assert result is TwitchWebsocketConnectionStatus.CONNECTED
 
     @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withEmptyString(self):
+        result = await self.jsonMapper.parseConnectionStatus('')
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseConnectionStatus_withEnabledString(self):
         result = await self.jsonMapper.parseConnectionStatus('enabled')
         assert result is TwitchWebsocketConnectionStatus.ENABLED
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withModeratorRemovedString(self):
+        result = await self.jsonMapper.parseConnectionStatus('moderator_removed')
+        assert result is TwitchWebsocketConnectionStatus.MODERATOR_REMOVED
 
     @pytest.mark.asyncio
     async def test_parseConnectionStatus_withNone(self):
@@ -743,9 +758,54 @@ class TestTwitchJsonMapper:
         assert result is TwitchWebsocketConnectionStatus.VERSION_REMOVED
 
     @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withWebhookCallbackVerificationFailedString(self):
+        result = await self.jsonMapper.parseConnectionStatus('webhook_callback_verification_failed')
+        assert result is TwitchWebsocketConnectionStatus.WEBHOOK_CALLBACK_VERIFICATION_FAILED
+
+    @pytest.mark.asyncio
     async def test_parseConnectionStatus_withWebhookCallbackVerificationPendingString(self):
         result = await self.jsonMapper.parseConnectionStatus('webhook_callback_verification_pending')
         assert result is TwitchWebsocketConnectionStatus.WEBHOOK_CALLBACK_VERIFICATION_PENDING
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withWebsocketConnectionUnusedString(self):
+        result = await self.jsonMapper.parseConnectionStatus('websocket_connection_unused')
+        assert result is TwitchWebsocketConnectionStatus.WEBSOCKET_CONNECTION_UNUSED
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withWebsocketDisconnectedString(self):
+        result = await self.jsonMapper.parseConnectionStatus('websocket_disconnected')
+        assert result is TwitchWebsocketConnectionStatus.WEBSOCKET_DISCONNECTED
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withWebsocketFailedPingPongString(self):
+        result = await self.jsonMapper.parseConnectionStatus('websocket_failed_ping_pong')
+        assert result is TwitchWebsocketConnectionStatus.WEBSOCKET_FAILED_PING_PONG
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withWebsocketFailedToReconnectString(self):
+        result = await self.jsonMapper.parseConnectionStatus('websocket_failed_to_reconnect')
+        assert result is TwitchWebsocketConnectionStatus.WEBSOCKET_FAILED_TO_RECONNECT
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withWebsocketInternalErrorString(self):
+        result = await self.jsonMapper.parseConnectionStatus('websocket_internal_error')
+        assert result is TwitchWebsocketConnectionStatus.WEBSOCKET_INTERNAL_ERROR
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withWebsocketNetworkErrorString(self):
+        result = await self.jsonMapper.parseConnectionStatus('websocket_network_error')
+        assert result is TwitchWebsocketConnectionStatus.WEBSOCKET_NETWORK_ERROR
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withWebsocketNetworkTimeoutString(self):
+        result = await self.jsonMapper.parseConnectionStatus('websocket_network_timeout')
+        assert result is TwitchWebsocketConnectionStatus.WEBSOCKET_NETWORK_TIMEOUT
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withWebsocketReceivedInboundTrafficString(self):
+        result = await self.jsonMapper.parseConnectionStatus('websocket_received_inbound_traffic')
+        assert result is TwitchWebsocketConnectionStatus.WEBSOCKET_RECEIVED_INBOUND_TRAFFIC
 
     @pytest.mark.asyncio
     async def test_parseConnectionStatus_withWhitespaceString(self):
@@ -1440,6 +1500,11 @@ class TestTwitchJsonMapper:
     async def test_parseSubscriberTier_withWhitespaceString(self):
         result = await self.jsonMapper.parseSubscriberTier(' ')
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriptionType_withChannelBitsUse(self):
+        result = await self.jsonMapper.parseSubscriptionType('channel.bits.use')
+        assert result is TwitchWebsocketSubscriptionType.CHANNEL_BITS_USE
 
     @pytest.mark.asyncio
     async def test_parseSubscriptionType_withChannelChatMessage(self):
@@ -2551,6 +2616,11 @@ class TestTwitchJsonMapper:
             results.add(await self.jsonMapper.serializeSubscriptionType(subscriptionType))
 
         assert len(results) == len(TwitchWebsocketSubscriptionType)
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withChannelBitsUse(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_BITS_USE)
+        assert string == 'channel.bits.use'
 
     @pytest.mark.asyncio
     async def test_serializeSubscriptionType_withChannelChatMessage(self):
