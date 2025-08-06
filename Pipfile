@@ -10,7 +10,7 @@ aiosqlite = "0.21.0"
 asyncpg = "0.30.0"
 audioplayer = { version = "0.6", markers = "sys_platform == 'win32'" }
 charset-normalizer = "3.4.2"
-cryptography = "45.0.5"
+cryptography = "45.0.6"
 emoji = "2.14.1"
 frozendict = "2.4.6"
 frozenlist = "1.7.0"
