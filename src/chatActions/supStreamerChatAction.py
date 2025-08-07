@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import random
 
 from .absChatAction import AbsChatAction
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -28,7 +29,7 @@ class SupStreamerChatAction(AbsChatAction):
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        cooldown: timedelta = timedelta(hours = 6)
+        cooldown: timedelta = timedelta(hours = 6),
     ):
         if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
@@ -66,21 +67,22 @@ class SupStreamerChatAction(AbsChatAction):
             return False
 
         now = datetime.now(self.__timeZoneRepository.getDefault())
-
         if mostRecentChat is not None and (mostRecentChat.mostRecentChat + self.__cooldown) > now:
             return False
 
-        chatMessage = message.getContent()
+        cleanedMessage = utils.cleanStr(message.getContent())
         supStreamerBoosterPacks = user.supStreamerBoosterPacks
 
         if supStreamerBoosterPacks is not None and len(supStreamerBoosterPacks) >= 1:
-            for supStreamerBoosterPack in supStreamerBoosterPacks:
-                success = await self.__checkSupMessage(chatMessage, message, now, supStreamerBoosterPack.message, supStreamerBoosterPack.reply, user)
-                if success:
-                    return success
+            shuffledBoosterPacks = list(supStreamerBoosterPacks)
+            random.shuffle(shuffledBoosterPacks)
+
+            for supStreamerBoosterPack in shuffledBoosterPacks:
+                if await self.__checkSupMessage(cleanedMessage, message, now, supStreamerBoosterPack.message, supStreamerBoosterPack.reply, user):
+                    return True
 
         if utils.isValidStr(user.supStreamerMessage):
-            return await self.__checkSupMessage(chatMessage, message, now, user.supStreamerMessage, "sup", user)
+            return await self.__checkSupMessage(cleanedMessage, message, now, user.supStreamerMessage, 'sup', user)
 
         return False
 
