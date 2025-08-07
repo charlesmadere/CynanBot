@@ -19,6 +19,7 @@ from .models.twitchEventSubResponse import TwitchEventSubResponse
 from .models.twitchFollower import TwitchFollower
 from .models.twitchLiveUserDetails import TwitchLiveUserDetails
 from .models.twitchModUser import TwitchModUser
+from .models.twitchPaginationResponse import TwitchPaginationResponse
 from .models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
 from .models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
@@ -471,20 +472,26 @@ class TwitchApiService(TwitchApiServiceInterface):
         self,
         twitchAccessToken: str,
         userId: str,
+        pagination: TwitchPaginationResponse | None = None,
         status: TwitchWebsocketConnectionStatus | None = TwitchWebsocketConnectionStatus.ENABLED,
     ) -> TwitchEventSubResponse:
         if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
+        elif pagination is not None and not isinstance(pagination, TwitchPaginationResponse):
+            raise TypeError(f'pagination argument is malformed: \"{pagination}\"')
         elif status is not None and not isinstance(status, TwitchWebsocketConnectionStatus):
             raise TypeError(f'status argument is malformed: \"{status}\"')
 
-        self.__timber.log('TwitchApiService', f'Fetching EventSub subscriptions... ({twitchAccessToken=}) ({userId=})')
+        self.__timber.log('TwitchApiService', f'Fetching EventSub subscriptions... ({twitchAccessToken=}) ({userId=}) ({pagination=}) ({status=})')
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
         clientSession = await self.__networkClientProvider.get()
 
         queryString = f'user_id={userId}'
+
+        if pagination is not None:
+            queryString = f'{queryString}&after={pagination.cursor}'
 
         if status is not None:
             statusString = await self.__twitchJsonMapper.serializeWebsocketConnectionStatus(status)
@@ -499,22 +506,22 @@ class TwitchApiService(TwitchApiServiceInterface):
                 },
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchApiService', f'Encountered network error when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}): {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}): {e}')
+            self.__timber.log('TwitchApiService', f'Encountered network error when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({pagination=}) ({status=}): {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({pagination=}) ({status=}): {e}')
 
         responseStatusCode = response.statusCode
         jsonResponse = await response.json()
         await response.close()
 
         if responseStatusCode != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({response=}): {responseStatusCode}')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({response=}): {responseStatusCode}')
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({pagination=}) ({status=}) ({response=}): {responseStatusCode}')
+            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({pagination=}) ({status=}) ({response=}): {responseStatusCode}')
 
         eventSubResponse = await self.__twitchJsonMapper.parseEventSubResponse(jsonResponse)
 
         if eventSubResponse is None:
-            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching EventSub subscriptions ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({eventSubResponse=})')
-            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching EventSub subscriptions ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({eventSubResponse=})')
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({pagination=}) ({status=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({eventSubResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({pagination=}) ({status=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({eventSubResponse=})')
 
         return eventSubResponse
 

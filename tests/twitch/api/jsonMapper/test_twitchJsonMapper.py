@@ -1102,7 +1102,7 @@ class TestTwitchJsonMapper:
         cursor = 'abc123'
 
         result = await self.jsonMapper.parsePaginationResponse({
-            'cursor': cursor
+            'cursor': cursor,
         })
 
         assert isinstance(result, TwitchPaginationResponse)
@@ -1113,7 +1113,7 @@ class TestTwitchJsonMapper:
         cursor = ''
 
         result = await self.jsonMapper.parsePaginationResponse({
-            'cursor': cursor
+            'cursor': cursor,
         })
 
         assert result is None
