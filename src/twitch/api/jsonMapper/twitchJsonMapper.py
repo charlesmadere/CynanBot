@@ -771,13 +771,14 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         connectionStatus = connectionStatus.lower()
 
         match connectionStatus:
+            case 'authorization_revoked': return TwitchWebsocketConnectionStatus.AUTHORIZATION_REVOKED
             case 'beta_maintenance': return TwitchWebsocketConnectionStatus.BETA_MAINTENANCE
             case 'chat_user_banned': return TwitchWebsocketConnectionStatus.CHAT_USER_BANNED
             case 'connected': return TwitchWebsocketConnectionStatus.CONNECTED
             case 'enabled': return TwitchWebsocketConnectionStatus.ENABLED
             case 'moderator_removed': return TwitchWebsocketConnectionStatus.MODERATOR_REMOVED
+            case 'notification_failures_exceeded': return TwitchWebsocketConnectionStatus.NOTIFICATION_FAILURES_EXCEEDED
             case 'reconnecting': return TwitchWebsocketConnectionStatus.RECONNECTING
-            case 'authorization_revoked': return TwitchWebsocketConnectionStatus.REVOKED
             case 'user_removed': return TwitchWebsocketConnectionStatus.USER_REMOVED
             case 'version_removed': return TwitchWebsocketConnectionStatus.VERSION_REMOVED
             case 'webhook_callback_verification_failed': return TwitchWebsocketConnectionStatus.WEBHOOK_CALLBACK_VERIFICATION_FAILED
@@ -2436,3 +2437,54 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case TwitchWebsocketTransportMethod.WEBHOOK: return 'webhook'
             case TwitchWebsocketTransportMethod.WEBSOCKET: return 'websocket'
             case _: raise ValueError(f'Unknown TwitchWebsocketTransportMethod value: \"{transportMethod}\"')
+
+    async def serializeWebsocketConnectionStatus(
+        self,
+        connectionStatus: TwitchWebsocketConnectionStatus,
+    ) -> str:
+        if not isinstance(connectionStatus, TwitchWebsocketConnectionStatus):
+            raise TypeError(f'connectionStatus argument is malformed: \"{connectionStatus}\"')
+
+        match connectionStatus:
+            case TwitchWebsocketConnectionStatus.AUTHORIZATION_REVOKED:
+                return 'authorization_revoked'
+            case TwitchWebsocketConnectionStatus.BETA_MAINTENANCE:
+                return 'beta_maintenance'
+            case TwitchWebsocketConnectionStatus.CHAT_USER_BANNED:
+                return 'chat_user_banned'
+            case TwitchWebsocketConnectionStatus.CONNECTED:
+                return 'connected'
+            case TwitchWebsocketConnectionStatus.ENABLED:
+                return 'enabled'
+            case TwitchWebsocketConnectionStatus.MODERATOR_REMOVED:
+                return 'moderator_removed'
+            case TwitchWebsocketConnectionStatus.NOTIFICATION_FAILURES_EXCEEDED:
+                return 'notification_failures_exceeded'
+            case TwitchWebsocketConnectionStatus.RECONNECTING:
+                return 'reconnecting'
+            case TwitchWebsocketConnectionStatus.USER_REMOVED:
+                return 'user_removed'
+            case TwitchWebsocketConnectionStatus.VERSION_REMOVED:
+                return 'version_removed'
+            case TwitchWebsocketConnectionStatus.WEBHOOK_CALLBACK_VERIFICATION_FAILED:
+                return 'webhook_callback_verification_failed'
+            case TwitchWebsocketConnectionStatus.WEBHOOK_CALLBACK_VERIFICATION_PENDING:
+                return 'webhook_callback_verification_pending'
+            case TwitchWebsocketConnectionStatus.WEBSOCKET_CONNECTION_UNUSED:
+                return 'websocket_connection_unused'
+            case TwitchWebsocketConnectionStatus.WEBSOCKET_DISCONNECTED:
+                return 'websocket_disconnected'
+            case TwitchWebsocketConnectionStatus.WEBSOCKET_FAILED_PING_PONG:
+                return 'websocket_failed_ping_pong'
+            case TwitchWebsocketConnectionStatus.WEBSOCKET_FAILED_TO_RECONNECT:
+                return 'websocket_failed_to_reconnect'
+            case TwitchWebsocketConnectionStatus.WEBSOCKET_INTERNAL_ERROR:
+                return 'websocket_internal_error'
+            case TwitchWebsocketConnectionStatus.WEBSOCKET_NETWORK_ERROR:
+                return 'websocket_network_error'
+            case TwitchWebsocketConnectionStatus.WEBSOCKET_NETWORK_TIMEOUT:
+                return 'websocket_network_timeout'
+            case TwitchWebsocketConnectionStatus.WEBSOCKET_RECEIVED_INBOUND_TRAFFIC:
+                return 'websocket_received_inbound_traffic'
+            case _:
+                raise ValueError(f'Encountered unknown TwitchWebsocketConnectionStatus: \"{connectionStatus}\"')

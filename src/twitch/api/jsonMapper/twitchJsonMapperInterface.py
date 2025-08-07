@@ -756,3 +756,10 @@ class TwitchJsonMapperInterface(ABC):
         transportMethod: TwitchWebsocketTransportMethod
     ) -> str:
         pass
+
+    @abstractmethod
+    async def serializeWebsocketConnectionStatus(
+        self,
+        connectionStatus: TwitchWebsocketConnectionStatus,
+    ) -> str:
+        pass

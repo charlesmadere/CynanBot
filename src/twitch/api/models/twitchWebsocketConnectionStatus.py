@@ -3,13 +3,14 @@ from enum import Enum, auto
 
 class TwitchWebsocketConnectionStatus(Enum):
 
+    AUTHORIZATION_REVOKED = auto()
     BETA_MAINTENANCE = auto()
     CHAT_USER_BANNED = auto()
     CONNECTED = auto()
     ENABLED = auto()
     MODERATOR_REMOVED = auto()
+    NOTIFICATION_FAILURES_EXCEEDED = auto()
     RECONNECTING = auto()
-    REVOKED = auto()
     USER_REMOVED = auto()
     VERSION_REMOVED = auto()
     WEBHOOK_CALLBACK_VERIFICATION_FAILED = auto()

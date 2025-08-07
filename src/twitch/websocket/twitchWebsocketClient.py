@@ -7,6 +7,7 @@ from queue import SimpleQueue
 from typing import Any, Collection, Coroutine, Final
 
 import websockets
+from frozenlist import FrozenList
 
 from .conditionBuilder.twitchWebsocketConditionBuilderInterface import TwitchWebsocketConditionBuilderInterface
 from .connectionAction.twitchWebsocketConnectionAction import TwitchWebsocketConnectionAction
@@ -300,7 +301,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self,
         message: str,
         dataBundle: TwitchWebsocketDataBundle | None,
-        user: TwitchWebsocketUser
+        user: TwitchWebsocketUser,
     ):
         if not isinstance(user, TwitchWebsocketUser):
             raise TypeError(f'user argument is malformed: \"{user}\"')
@@ -394,19 +395,22 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             dataBundleListener = self.__dataBundleListener
 
             if dataBundleListener is not None:
-                dataBundles: list[TwitchWebsocketDataBundle] = list()
+                dataBundles: FrozenList[TwitchWebsocketDataBundle] = FrozenList()
 
                 try:
                     while not self.__dataBundleQueue.empty():
-                        dataBundles.append(self.__dataBundleQueue.get_nowait())
+                        dataBundle = self.__dataBundleQueue.get_nowait()
+                        dataBundles.append(dataBundle)
                 except queue.Empty as e:
                     self.__timber.log('TwitchWebsocketClient', f'Encountered queue.Empty when building up dataBundles list (queue size: {self.__dataBundleQueue.qsize()}) (dataBundles size: {len(dataBundles)}): {e}', e, traceback.format_exc())
 
-                for dataBundle in dataBundles:
+                dataBundles.freeze()
+
+                for index, dataBundle in enumerate(dataBundles):
                     try:
                         await dataBundleListener.onNewWebsocketDataBundle(dataBundle)
                     except Exception as e:
-                        self.__timber.log('TwitchWebsocketClient', f'Encountered unknown Exception when looping through dataBundles (queue size: {self.__dataBundleQueue.qsize()}) ({dataBundle=}): {e}', e, traceback.format_exc())
+                        self.__timber.log('TwitchWebsocketClient', f'Encountered unknown Exception when looping through dataBundles (queue size: {self.__dataBundleQueue.qsize()}) ({index=}) ({dataBundle=}): {e}', e, traceback.format_exc())
 
             await asyncio.sleep(self.__queueSleepTimeSeconds)
 

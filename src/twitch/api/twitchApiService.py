@@ -28,6 +28,7 @@ from .models.twitchUnbanRequest import TwitchUnbanRequest
 from .models.twitchUserDetails import TwitchUserDetails
 from .models.twitchUserSubscription import TwitchUserSubscription
 from .models.twitchValidationResponse import TwitchValidationResponse
+from .models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from .twitchApiServiceInterface import TwitchApiServiceInterface
 from ..exceptions import (TwitchErrorException, TwitchJsonException,
                           TwitchPasswordChangedException, TwitchStatusCodeException,
@@ -466,11 +467,52 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         return emotesResponse
 
+    async def fetchEventSubSubscriptions(
+        self,
+        twitchAccessToken: str,
+        userId: str,
+        status: TwitchWebsocketConnectionStatus = TwitchWebsocketConnectionStatus.ENABLED,
+    ) -> TwitchEventSubResponse:
+        if not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+        elif not isinstance(status, TwitchWebsocketConnectionStatus):
+            raise TypeError(f'status argument is malformed: \"{status}\"')
+
+        self.__timber.log('TwitchApiService', f'Fetching EventSub subscriptions... ({twitchAccessToken=}) ({userId=})')
+        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
+        clientSession = await self.__networkClientProvider.get()
+        statusString = await self.__twitchJsonMapper.serializeWebsocketConnectionStatus(status)
+
+        try:
+            response = await clientSession.get(
+                url = f'https://api.twitch.tv/helix/eventsub/subscriptions?user_id={userId}&status={statusString}',
+                headers = {
+                    'Authorization': f'Bearer {twitchAccessToken}',
+                    'Client-Id': twitchClientId,
+                },
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('TwitchApiService', f'Encountered network error when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}): {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}): {e}')
+
+        responseStatusCode = response.statusCode
+        jsonResponse = await response.json()
+        await response.close()
+
+        if responseStatusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({response=}): {responseStatusCode}')
+            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({response=}): {responseStatusCode}')
+
+        # TODO
+        raise RuntimeError()
+
     async def fetchFollower(
         self,
         broadcasterId: str,
         twitchAccessToken: str,
-        userId: str
+        userId: str,
     ) -> TwitchFollower | None:
         if not utils.isValidStr(broadcasterId):
             raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
@@ -488,8 +530,8 @@ class TwitchApiService(TwitchApiServiceInterface):
                 url = f'https://api.twitch.tv/helix/channels/followers?broadcaster_id={broadcasterId}&user_id={userId}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
-                    'Client-Id': twitchClientId
-                }
+                    'Client-Id': twitchClientId,
+                },
             )
         except GenericNetworkException as e:
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {e}', e, traceback.format_exc())

@@ -22,6 +22,7 @@ from .models.twitchUnbanRequest import TwitchUnbanRequest
 from .models.twitchUserDetails import TwitchUserDetails
 from .models.twitchUserSubscription import TwitchUserSubscription
 from .models.twitchValidationResponse import TwitchValidationResponse
+from .models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 
 
 class TwitchApiServiceInterface(ABC):
@@ -94,11 +95,20 @@ class TwitchApiServiceInterface(ABC):
         pass
 
     @abstractmethod
+    async def fetchEventSubSubscriptions(
+        self,
+        twitchAccessToken: str,
+        userId: str,
+        status: TwitchWebsocketConnectionStatus = TwitchWebsocketConnectionStatus.ENABLED,
+    ) -> TwitchEventSubResponse:
+        pass
+
+    @abstractmethod
     async def fetchFollower(
         self,
         broadcasterId: str,
         twitchAccessToken: str,
-        userId: str
+        userId: str,
     ) -> TwitchFollower | None:
         pass
 

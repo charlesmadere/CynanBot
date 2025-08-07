@@ -705,7 +705,7 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseConnectionStatus_withAuthorizationRevokedString(self):
         result = await self.jsonMapper.parseConnectionStatus('authorization_revoked')
-        assert result is TwitchWebsocketConnectionStatus.REVOKED
+        assert result is TwitchWebsocketConnectionStatus.AUTHORIZATION_REVOKED
 
     @pytest.mark.asyncio
     async def test_parseConnectionStatus_withBetaMaintenanceString(self):
@@ -741,6 +741,11 @@ class TestTwitchJsonMapper:
     async def test_parseConnectionStatus_withNone(self):
         result = await self.jsonMapper.parseConnectionStatus(None)
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseConnectionStatus_withNotificationFailuresExceededString(self):
+        result = await self.jsonMapper.parseConnectionStatus('notification_failures_exceeded')
+        assert result is TwitchWebsocketConnectionStatus.NOTIFICATION_FAILURES_EXCEEDED
 
     @pytest.mark.asyncio
     async def test_parseConnectionStatus_withReconnectingString(self):
@@ -1840,7 +1845,7 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_requireConnectionStatus_withAuthorizationRevokedString(self):
         result = await self.jsonMapper.requireConnectionStatus('authorization_revoked')
-        assert result is TwitchWebsocketConnectionStatus.REVOKED
+        assert result is TwitchWebsocketConnectionStatus.AUTHORIZATION_REVOKED
 
     @pytest.mark.asyncio
     async def test_requireConnectionStatus_withEmptyString(self):
@@ -2808,3 +2813,57 @@ class TestTwitchJsonMapper:
     async def test_serializeTransportMethod_withWebsocket(self):
         string = await self.jsonMapper.serializeTransportMethod(TwitchWebsocketTransportMethod.WEBSOCKET)
         assert string == 'websocket'
+
+    @pytest.mark.asyncio
+    async def test_serializeWebsocketConnectionStatus_withAll(self):
+        results: set[str] = set()
+
+        for connectionStatus in TwitchWebsocketConnectionStatus:
+            results.add(await self.jsonMapper.serializeWebsocketConnectionStatus(connectionStatus))
+
+        assert len(results) == len(TwitchWebsocketConnectionStatus)
+
+    @pytest.mark.asyncio
+    async def test_serializeWebsocketConnectionStatus_withAuthorizationRevoked(self):
+        result = await self.jsonMapper.serializeWebsocketConnectionStatus(TwitchWebsocketConnectionStatus.AUTHORIZATION_REVOKED)
+        assert result == 'authorization_revoked'
+
+    @pytest.mark.asyncio
+    async def test_serializeWebsocketConnectionStatus_withBetaMaintenance(self):
+        result = await self.jsonMapper.serializeWebsocketConnectionStatus(TwitchWebsocketConnectionStatus.BETA_MAINTENANCE)
+        assert result == 'beta_maintenance'
+
+    @pytest.mark.asyncio
+    async def test_serializeWebsocketConnectionStatus_withChatUserBanned(self):
+        result = await self.jsonMapper.serializeWebsocketConnectionStatus(TwitchWebsocketConnectionStatus.CHAT_USER_BANNED)
+        assert result == 'chat_user_banned'
+
+    @pytest.mark.asyncio
+    async def test_serializeWebsocketConnectionStatus_withEnabled(self):
+        result = await self.jsonMapper.serializeWebsocketConnectionStatus(TwitchWebsocketConnectionStatus.ENABLED)
+        assert result == 'enabled'
+
+    @pytest.mark.asyncio
+    async def test_serializeWebsocketConnectionStatus_withModeratorRemoved(self):
+        result = await self.jsonMapper.serializeWebsocketConnectionStatus(TwitchWebsocketConnectionStatus.MODERATOR_REMOVED)
+        assert result == 'moderator_removed'
+
+    @pytest.mark.asyncio
+    async def test_serializeWebsocketConnectionStatus_withUserRemoved(self):
+        result = await self.jsonMapper.serializeWebsocketConnectionStatus(TwitchWebsocketConnectionStatus.USER_REMOVED)
+        assert result == 'user_removed'
+
+    @pytest.mark.asyncio
+    async def test_serializeWebsocketConnectionStatus_withWebhookCallbackVerificationFailed(self):
+        result = await self.jsonMapper.serializeWebsocketConnectionStatus(TwitchWebsocketConnectionStatus.WEBHOOK_CALLBACK_VERIFICATION_FAILED)
+        assert result == 'webhook_callback_verification_failed'
+
+    @pytest.mark.asyncio
+    async def test_serializeWebsocketConnectionStatus_withWebhookCallbackVerificationPending(self):
+        result = await self.jsonMapper.serializeWebsocketConnectionStatus(TwitchWebsocketConnectionStatus.WEBHOOK_CALLBACK_VERIFICATION_PENDING)
+        assert result == 'webhook_callback_verification_pending'
+
+    @pytest.mark.asyncio
+    async def test_serializeWebsocketConnectionStatus_withWebsocketNetworkTimeout(self):
+        result = await self.jsonMapper.serializeWebsocketConnectionStatus(TwitchWebsocketConnectionStatus.WEBSOCKET_NETWORK_TIMEOUT)
+        assert result == 'websocket_network_timeout'

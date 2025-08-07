@@ -18,7 +18,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        provider: str = 'provider'
+        provider: str = 'provider',
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
