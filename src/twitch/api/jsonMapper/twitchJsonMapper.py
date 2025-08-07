@@ -1050,12 +1050,14 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         maxTotalCost = utils.getIntFromDict(jsonResponse, 'max_total_cost')
         total = utils.getIntFromDict(jsonResponse, 'total')
         totalCost = utils.getIntFromDict(jsonResponse, 'total_cost')
+        pagination = await self.parsePaginationResponse(jsonResponse.get('pagination'))
 
         return TwitchEventSubResponse(
             data = frozenEventSubDetails,
             maxTotalCost = maxTotalCost,
             total = total,
-            totalCost = totalCost
+            totalCost = totalCost,
+            pagination = pagination,
         )
 
     async def parseFollower(
