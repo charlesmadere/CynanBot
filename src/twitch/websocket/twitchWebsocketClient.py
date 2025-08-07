@@ -222,8 +222,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             self.__timber.log('TwitchWebsocketClient', f'Encountered unknown error when creating EventSub subscription(s) ({user=}) ({sessionId=}): {e}', e, traceback.format_exc())
 
         await self.__inspectEventSubSubscriptionResultsAndMaybeResubscribe2(
-            subscriptionResults = subscriptionResults,
-            requestedSubscriptionTypes = subscriptionTypes,
             userTwitchAccessToken = userTwitchAccessToken,
             user = user,
         )
