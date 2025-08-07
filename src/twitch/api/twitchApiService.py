@@ -471,23 +471,28 @@ class TwitchApiService(TwitchApiServiceInterface):
         self,
         twitchAccessToken: str,
         userId: str,
-        status: TwitchWebsocketConnectionStatus = TwitchWebsocketConnectionStatus.ENABLED,
+        status: TwitchWebsocketConnectionStatus | None = TwitchWebsocketConnectionStatus.ENABLED,
     ) -> TwitchEventSubResponse:
         if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not isinstance(status, TwitchWebsocketConnectionStatus):
+        elif status is not None and not isinstance(status, TwitchWebsocketConnectionStatus):
             raise TypeError(f'status argument is malformed: \"{status}\"')
 
         self.__timber.log('TwitchApiService', f'Fetching EventSub subscriptions... ({twitchAccessToken=}) ({userId=})')
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
         clientSession = await self.__networkClientProvider.get()
-        statusString = await self.__twitchJsonMapper.serializeWebsocketConnectionStatus(status)
+
+        queryString = f'user_id={userId}'
+
+        if status is not None:
+            statusString = await self.__twitchJsonMapper.serializeWebsocketConnectionStatus(status)
+            queryString = f'{queryString}&status={statusString}'
 
         try:
             response = await clientSession.get(
-                url = f'https://api.twitch.tv/helix/eventsub/subscriptions?user_id={userId}&status={statusString}',
+                url = f'https://api.twitch.tv/helix/eventsub/subscriptions?{queryString}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
                     'Client-Id': twitchClientId,

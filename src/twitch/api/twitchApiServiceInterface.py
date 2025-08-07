@@ -99,7 +99,7 @@ class TwitchApiServiceInterface(ABC):
         self,
         twitchAccessToken: str,
         userId: str,
-        status: TwitchWebsocketConnectionStatus = TwitchWebsocketConnectionStatus.ENABLED,
+        status: TwitchWebsocketConnectionStatus | None = TwitchWebsocketConnectionStatus.ENABLED,
     ) -> TwitchEventSubResponse:
         pass
 
