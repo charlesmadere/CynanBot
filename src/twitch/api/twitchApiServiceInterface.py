@@ -22,7 +22,6 @@ from .models.twitchUnbanRequest import TwitchUnbanRequest
 from .models.twitchUserDetails import TwitchUserDetails
 from .models.twitchUserSubscription import TwitchUserSubscription
 from .models.twitchValidationResponse import TwitchValidationResponse
-from .models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 
 
 class TwitchApiServiceInterface(ABC):
@@ -99,7 +98,6 @@ class TwitchApiServiceInterface(ABC):
         self,
         twitchAccessToken: str,
         userId: str,
-        status: TwitchWebsocketConnectionStatus | None = TwitchWebsocketConnectionStatus.ENABLED,
     ) -> TwitchEventSubResponse:
         pass
 
