@@ -86,6 +86,14 @@ from ..models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMeth
 class TwitchJsonMapperInterface(ABC):
 
     @abstractmethod
+    async def mergeEventSubResponses(
+        self,
+        first: TwitchEventSubResponse | None,
+        second: TwitchEventSubResponse | None,
+    ) -> TwitchEventSubResponse | None:
+        pass
+
+    @abstractmethod
     async def parseApiScope(
         self,
         apiScope: str | Any | None
@@ -320,7 +328,7 @@ class TwitchJsonMapperInterface(ABC):
     async def parseEventSubDetails(
         self,
         jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchEventSubDetails:
+    ) -> TwitchEventSubDetails | None:
         pass
 
     @abstractmethod

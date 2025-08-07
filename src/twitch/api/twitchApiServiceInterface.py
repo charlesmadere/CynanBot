@@ -13,7 +13,6 @@ from .models.twitchEventSubResponse import TwitchEventSubResponse
 from .models.twitchFollower import TwitchFollower
 from .models.twitchLiveUserDetails import TwitchLiveUserDetails
 from .models.twitchModUser import TwitchModUser
-from .models.twitchPaginationResponse import TwitchPaginationResponse
 from .models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
 from .models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
@@ -100,7 +99,6 @@ class TwitchApiServiceInterface(ABC):
         self,
         twitchAccessToken: str,
         userId: str,
-        pagination: TwitchPaginationResponse | None = None,
         status: TwitchWebsocketConnectionStatus | None = TwitchWebsocketConnectionStatus.ENABLED,
     ) -> TwitchEventSubResponse:
         pass

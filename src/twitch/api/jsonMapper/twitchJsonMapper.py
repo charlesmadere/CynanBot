@@ -114,6 +114,44 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         else:
             return now - timedelta(weeks = 1)
 
+    async def mergeEventSubResponses(
+        self,
+        first: TwitchEventSubResponse | None,
+        second: TwitchEventSubResponse | None,
+    ) -> TwitchEventSubResponse | None:
+        if first is not None and not isinstance(first, TwitchEventSubResponse):
+            raise TypeError(f'first argument is malformed: \"{first}\"')
+        elif second is not None and not isinstance(second, TwitchEventSubResponse):
+            raise TypeError(f'second argument is malformed: \"{second}\"')
+
+        if first is None and second is None:
+            return None
+
+        data: FrozenList[TwitchEventSubDetails] = FrozenList()
+
+        if first is not None:
+            data.extend(first.data)
+
+        if second is not None:
+            data.extend(second.data)
+
+        data.freeze()
+
+        sourceResponse: TwitchEventSubResponse
+
+        if second is not None:
+            sourceResponse = second
+        else:
+            sourceResponse = first
+
+        return TwitchEventSubResponse(
+            data = data,
+            maxTotalCost = sourceResponse.maxTotalCost,
+            total = sourceResponse.total,
+            totalCost = sourceResponse.totalCost,
+            pagination = sourceResponse.pagination,
+        )
+
     async def parseApiScope(
         self,
         apiScope: str | Any | None
@@ -1005,9 +1043,9 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
     async def parseEventSubDetails(
         self,
         jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchEventSubDetails:
+    ) -> TwitchEventSubDetails | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            raise TypeError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+            return None
 
         createdAt = utils.getDateTimeFromDict(jsonResponse, 'created_at')
         cost = utils.getIntFromDict(jsonResponse, 'cost')
@@ -1036,16 +1074,19 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        eventSubDetails: list[TwitchEventSubDetails] = list()
-        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        eventSubDetails: FrozenList[TwitchEventSubDetails] = FrozenList()
 
-        if isinstance(data, list) and len(data) >= 1:
-            for eventSubDetailsJson in data:
+        if isinstance(dataArray, list) and len(dataArray) >= 1:
+            for index, eventSubDetailsJson in enumerate(dataArray):
                 details = await self.parseEventSubDetails(eventSubDetailsJson)
-                eventSubDetails.append(details)
 
-        frozenEventSubDetails: FrozenList[TwitchEventSubDetails] = FrozenList(eventSubDetails)
-        frozenEventSubDetails.freeze()
+                if details is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"emotes\" data ({eventSubDetailsJson=}) ({jsonResponse=})')
+                else:
+                    eventSubDetails.append(details)
+
+        eventSubDetails.freeze()
 
         maxTotalCost = utils.getIntFromDict(jsonResponse, 'max_total_cost')
         total = utils.getIntFromDict(jsonResponse, 'total')
@@ -1053,7 +1094,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         pagination = await self.parsePaginationResponse(jsonResponse.get('pagination'))
 
         return TwitchEventSubResponse(
-            data = frozenEventSubDetails,
+            data = eventSubDetails,
             maxTotalCost = maxTotalCost,
             total = total,
             totalCost = totalCost,
@@ -1238,7 +1279,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         cursor = utils.getStrFromDict(jsonResponse, 'cursor')
 
         return TwitchPaginationResponse(
-            cursor = cursor
+            cursor = cursor,
         )
 
     async def parsePollChoice(
