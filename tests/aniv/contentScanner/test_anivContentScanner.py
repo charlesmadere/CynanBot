@@ -4,8 +4,7 @@ from src.aniv.contentScanner.anivContentScanner import AnivContentScanner
 from src.aniv.contentScanner.anivContentScannerInterface import AnivContentScannerInterface
 from src.aniv.models.anivContentCode import AnivContentCode
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
-from src.contentScanner.bannedWordsRepositoryInterface import \
-    BannedWordsRepositoryInterface
+from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
 from src.contentScanner.contentScannerInterface import ContentScannerInterface
 from src.storage.linesStaticReader import LinesStaticReader
