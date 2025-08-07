@@ -1,3 +1,4 @@
+import traceback
 from typing import Any
 
 from .exceptions import WotdApiCodeUnavailableException
@@ -17,7 +18,7 @@ class TransparentApiService(TransparentApiServiceInterface):
         self,
         networkClientProvider: NetworkClientProvider,
         timber: TimberInterface,
-        transparentXmlMapper: TransparentXmlMapperInterface
+        transparentXmlMapper: TransparentXmlMapperInterface,
     ):
         if not isinstance(networkClientProvider, NetworkClientProvider):
             raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
@@ -54,8 +55,8 @@ class TransparentApiService(TransparentApiServiceInterface):
         try:
             response = await clientSession.get(f'https://wotd.transparent.com/rss/{wotdApiCode}-widget.xml?t=0')
         except GenericNetworkException as e:
-            self.__timber.log('TransparentApiService', f'Encountered network error when fetching word of the day ({targetLanguage=})')
-            raise GenericNetworkException(f'TransparentApiService encountered network error when fetching word of the day ({targetLanguage=})')
+            self.__timber.log('TransparentApiService', f'Encountered network error when fetching word of the day ({targetLanguage=}): {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'TransparentApiService encountered network error when fetching word of the day ({targetLanguage=}): {e}')
 
         responseStatusCode = response.statusCode
         xmlResponse = await response.xml()
