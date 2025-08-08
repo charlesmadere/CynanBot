@@ -31,7 +31,7 @@ class TwitchWebsocketSettingsRepository(TwitchWebsocketSettingsRepositoryInterfa
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT,
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE,
         }),
-        defaultJsonLoggingLevel: TwitchWebsocketJsonLoggingLevel = TwitchWebsocketJsonLoggingLevel.LIMITED,
+        defaultJsonLoggingLevel: TwitchWebsocketJsonLoggingLevel = TwitchWebsocketJsonLoggingLevel.NONE,
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
