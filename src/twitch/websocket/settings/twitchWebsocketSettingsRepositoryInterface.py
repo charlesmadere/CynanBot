@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from ..twitchWebsocketJsonLoggingLevel import TwitchWebsocketJsonLoggingLevel
 from ...api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ....misc.clearable import Clearable
 
@@ -7,7 +8,7 @@ from ....misc.clearable import Clearable
 class TwitchWebsocketSettingsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
-    async def getLoggingLevel(self) -> bool:
+    async def getLoggingLevel(self) -> TwitchWebsocketJsonLoggingLevel:
         pass
 
     @abstractmethod
