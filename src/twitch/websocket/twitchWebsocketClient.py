@@ -222,6 +222,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             self.__timber.log('TwitchWebsocketClient', f'Encountered unknown error when creating EventSub subscription(s) ({user=}) ({sessionId=}): {e}', e, traceback.format_exc())
 
         await self.__inspectEventSubSubscriptionResultsAndMaybeResubscribe2(
+            requestedSubscriptionTypes = subscriptionTypes,
             userTwitchAccessToken = userTwitchAccessToken,
             user = user,
         )
@@ -246,7 +247,9 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             return
         elif len(requestedSubscriptionTypes) == 0:
             return
-        elif TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE not in requestedSubscriptionTypes:
+        elif TwitchWebsocketSubscriptionType.CHANNEL_BITS_USE in requestedSubscriptionTypes:
+            return
+        elif TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE in requestedSubscriptionTypes:
             return
         elif TwitchWebsocketSubscriptionType.CHANNEL_CHEER in requestedSubscriptionTypes:
             return
@@ -285,6 +288,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
     async def __inspectEventSubSubscriptionResultsAndMaybeResubscribe2(
         self,
+        requestedSubscriptionTypes: frozenset[TwitchWebsocketSubscriptionType],
         userTwitchAccessToken: str,
         user: TwitchWebsocketUser,
     ):
@@ -297,6 +301,14 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         # subscription.
 
         if not await self.__twitchWebsocketSettingsRepository.isChatEventToCheerEventSubscriptionFallbackEnabled():
+            return
+        elif len(requestedSubscriptionTypes) == 0:
+            return
+        elif TwitchWebsocketSubscriptionType.CHANNEL_BITS_USE in requestedSubscriptionTypes:
+            return
+        elif TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE in requestedSubscriptionTypes:
+            return
+        elif TwitchWebsocketSubscriptionType.CHANNEL_CHEER in requestedSubscriptionTypes:
             return
 
         # Sleep a little bit before making the following API call, just to ensure things are
