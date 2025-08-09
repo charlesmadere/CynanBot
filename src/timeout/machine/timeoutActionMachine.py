@@ -216,7 +216,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         )
 
         timeoutDuration = await self.__calculateTimeoutDuration(action)
-
         timeoutResults: dict[AirStrikeTimeoutTarget, TwitchTimeoutResult] = dict()
 
         for timeoutTarget in timeoutTargets:
