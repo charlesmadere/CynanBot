@@ -1,3 +1,5 @@
+from typing import Any, Final
+
 from .absTriviaEvent import AbsTriviaEvent
 from .triviaEventType import TriviaEventType
 from ...misc import utils as utils
@@ -13,11 +15,11 @@ class SuperGameNotReadyCheckAnswerTriviaEvent(AbsTriviaEvent):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ):
         super().__init__(
             actionId = actionId,
-            eventId = eventId
+            eventId = eventId,
         )
 
         if answer is not None and not isinstance(answer, str):
@@ -31,15 +33,27 @@ class SuperGameNotReadyCheckAnswerTriviaEvent(AbsTriviaEvent):
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__answer: str | None = answer
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
-        self.__userId: str = userId
-        self.__userName: str = userName
+        self.__answer: Final[str | None] = answer
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
+        self.__userId: Final[str] = userId
+        self.__userName: Final[str] = userName
 
     @property
     def answer(self) -> str | None:
         return self.__answer
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'actionId': self.actionId,
+            'answer': self.__answer,
+            'eventId': self.eventId,
+            'twitchChannel': self.__twitchChannel,
+            'twitchChannelId': self.__twitchChannelId,
+            'triviaEventType': self.triviaEventType,
+            'userId': self.__userId,
+            'userName': self.__userName,
+        }
 
     @property
     def triviaEventType(self) -> TriviaEventType:

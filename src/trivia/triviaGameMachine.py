@@ -299,7 +299,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 twitchChannel = action.getTwitchChannel(),
                 twitchChannelId = action.getTwitchChannelId(),
                 userId = action.getUserId(),
-                userName = action.getUserName()
+                userName = action.getUserName(),
             ))
             return
 
@@ -447,7 +447,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 twitchChannel = action.twitchChannel,
                 twitchChannelId = action.twitchChannelId,
                 userId = action.userId,
-                userName = action.userName
+                userName = action.userName,
             ))
             return
 

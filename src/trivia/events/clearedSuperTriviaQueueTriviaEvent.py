@@ -15,11 +15,11 @@ class ClearedSuperTriviaQueueTriviaEvent(AbsTriviaEvent):
         eventId: str,
         twitchChannel: str,
         twitchChannelId: str,
-        twitchChatMessageId: str
+        twitchChatMessageId: str,
     ):
         super().__init__(
             actionId = actionId,
-            eventId = eventId
+            eventId = eventId,
         )
 
         if not utils.isValidInt(numberOfGamesRemoved):

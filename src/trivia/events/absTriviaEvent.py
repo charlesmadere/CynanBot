@@ -10,7 +10,7 @@ class AbsTriviaEvent(ABC):
     def __init__(
         self,
         actionId: str,
-        eventId: str
+        eventId: str,
     ):
         if not utils.isValidStr(actionId):
             raise TypeError(f'actionId argument is malformed: \"{actionId}\"')
@@ -36,7 +36,7 @@ class AbsTriviaEvent(ABC):
         return {
             'actionId': self.__actionId,
             'eventId': self.__eventId,
-            'triviaEventType': self.triviaEventType
+            'triviaEventType': self.triviaEventType,
         }
 
     @property
