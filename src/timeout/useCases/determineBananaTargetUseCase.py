@@ -1,5 +1,6 @@
 import random
 import re
+import traceback
 from typing import Final, Pattern
 
 from ..exceptions import UnknownTimeoutTargetException
@@ -81,7 +82,7 @@ class DetermineBananaTargetUseCase:
         if not utils.isValidStr(messageContainingTarget):
             raise UnknownTimeoutTargetException(f'Given empty/blank/malformed timeout target message ({timeoutAction=}) ({messageContainingTarget=})')
 
-        targetMatch = self.__timeoutTargetRegEx.fullmatch(messageContainingTarget)
+        targetMatch = self.__timeoutTargetRegEx.match(messageContainingTarget)
 
         if targetMatch is None:
             raise UnknownTimeoutTargetException(f'Given empty/blank/malformed timeout target message ({timeoutAction=}) ({messageContainingTarget=}) ({targetMatch=})')
@@ -110,22 +111,9 @@ class DetermineBananaTargetUseCase:
                 userName = userName,
                 twitchAccessToken = twitchAccessToken,
             )
-        except NoSuchUserException:
+        except NoSuchUserException as e:
+            self.__timber.log('DetermineBananaTargetUseCase', f'Failed to fetch user ID to use as a timeout target ({twitchChannelId=}) ({userName=}): {e}', e, traceback.format_exc())
             raise UnknownTimeoutTargetException(f'Failed to fetch user ID to use as a timeout target ({twitchChannelId=}) ({userName=})')
-
-    async def __fetchUserName(
-        self,
-        twitchChannelId: str,
-        userId: str,
-    ) -> str:
-        twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-            twitchChannelId = twitchChannelId,
-        )
-
-        return await self.__userIdsRepository.requireUserName(
-            userId = userId,
-            twitchAccessToken = twitchAccessToken,
-        )
 
     async def __generateDiceRoll(self) -> TimeoutDiceRoll:
         dieSize = await self.__timeoutActionSettings.getDieSize()
@@ -152,11 +140,13 @@ class DetermineBananaTargetUseCase:
             userName = targetUserName,
         )
 
+        timeoutTarget = BananaTimeoutTarget(
+            targetUserId = targetUserId,
+            targetUserName = targetUserName,
+        )
+
         if not timeoutAction.isRandomChanceEnabled:
-            return BananaTimeoutTarget(
-                targetUserId = targetUserId,
-                targetUserName = targetUserName,
-            )
+            return timeoutTarget
 
         # TODO
         diceRoll = await self.__generateDiceRoll()
