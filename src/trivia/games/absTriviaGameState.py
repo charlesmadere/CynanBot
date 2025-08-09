@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
+from typing import Any, Final
 
 from .triviaGameType import TriviaGameType
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
@@ -21,7 +22,7 @@ class AbsTriviaGameState(ABC):
         emote: str,
         gameId: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
@@ -52,17 +53,17 @@ class AbsTriviaGameState(ABC):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion
-        self.__endTime: datetime = endTime
-        self.__basePointsForWinning: int = basePointsForWinning
-        self.__pointsForWinning: int = pointsForWinning
-        self.__secondsToLive: int = secondsToLive
-        self.__specialTriviaStatus: SpecialTriviaStatus | None = specialTriviaStatus
-        self.__actionId: str = actionId
-        self.__emote: str = emote
-        self.__gameId: str = gameId
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
+        self.__triviaQuestion: Final[AbsTriviaQuestion] = triviaQuestion
+        self.__endTime: Final[datetime] = endTime
+        self.__basePointsForWinning: Final[int] = basePointsForWinning
+        self.__pointsForWinning: Final[int] = pointsForWinning
+        self.__secondsToLive: Final[int] = secondsToLive
+        self.__specialTriviaStatus: Final[SpecialTriviaStatus | None] = specialTriviaStatus
+        self.__actionId: Final[str] = actionId
+        self.__emote: Final[str] = emote
+        self.__gameId: Final[str] = gameId
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
 
     @property
     def actionId(self) -> str:
@@ -109,6 +110,21 @@ class AbsTriviaGameState(ABC):
     @property
     def secondsToLive(self) -> int:
         return self.__secondsToLive
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'actionId': self.__actionId,
+            'basePointsForWinning': self.__basePointsForWinning,
+            'emote': self.__emote,
+            'gameId': self.__gameId,
+            'pointsForWinning': self.__pointsForWinning,
+            'secondsToLive': self.__secondsToLive,
+            'specialTriviaStatus': self.__specialTriviaStatus,
+            'triviaGameType': self.triviaGameType,
+            'triviaQuestion': self.__triviaQuestion,
+            'twitchChannel': self.__twitchChannel,
+            'twitchChannelId': self.__twitchChannelId,
+        }
 
     @property
     @abstractmethod

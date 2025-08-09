@@ -24,7 +24,7 @@ class AbsTriviaAction(ABC):
     def toDictionary(self) -> dict[str, Any]:
         return {
             'actionId': self.__actionId,
-            'triviaActionType': self.triviaActionType
+            'triviaActionType': self.triviaActionType,
         }
 
     @property

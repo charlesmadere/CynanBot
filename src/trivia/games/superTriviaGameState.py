@@ -1,5 +1,6 @@
 from collections import defaultdict
 from datetime import datetime
+from typing import Final
 
 from frozendict import frozendict
 
@@ -27,7 +28,7 @@ class SuperTriviaGameState(AbsTriviaGameState):
         emote: str,
         gameId: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             triviaQuestion = triviaQuestion,
@@ -40,7 +41,7 @@ class SuperTriviaGameState(AbsTriviaGameState):
             emote = emote,
             gameId = gameId,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if not utils.isValidInt(perUserAttempts):
@@ -52,11 +53,11 @@ class SuperTriviaGameState(AbsTriviaGameState):
         elif toxicTriviaPunishmentMultiplier < 0 or toxicTriviaPunishmentMultiplier > utils.getIntMaxSafeSize():
             raise ValueError(f'toxicTriviaPunishmentMultiplier argument is out of bounds: {toxicTriviaPunishmentMultiplier}')
 
-        self.__perUserAttempts: int = perUserAttempts
-        self.__regularTriviaPointsForWinning: int = regularTriviaPointsForWinning
-        self.__toxicTriviaPunishmentMultiplier: int = toxicTriviaPunishmentMultiplier
+        self.__perUserAttempts: Final[int] = perUserAttempts
+        self.__regularTriviaPointsForWinning: Final[int] = regularTriviaPointsForWinning
+        self.__toxicTriviaPunishmentMultiplier: Final[int] = toxicTriviaPunishmentMultiplier
 
-        self.__answeredUserIds: dict[str, int] = defaultdict(lambda: 0)
+        self.__answeredUserIds: Final[dict[str, int]] = defaultdict(lambda: 0)
 
     @property
     def answeredUserIds(self) -> frozendict[str, int]:

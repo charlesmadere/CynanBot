@@ -17,7 +17,7 @@ class StartNewTriviaGameAction(AbsTriviaAction):
         twitchChannelId: str,
         userId: str,
         userName: str,
-        triviaFetchOptions: TriviaFetchOptions
+        triviaFetchOptions: TriviaFetchOptions,
     ):
         super().__init__(actionId = actionId)
 

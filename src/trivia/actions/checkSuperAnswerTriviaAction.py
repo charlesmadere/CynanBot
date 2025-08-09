@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Any, Final
 
 from .absTriviaAction import AbsTriviaAction
 from .triviaActionType import TriviaActionType
@@ -15,7 +15,7 @@ class CheckSuperAnswerTriviaAction(AbsTriviaAction):
         twitchChannelId: str,
         twitchChatMessageId: str,
         userId: str,
-        userName: str
+        userName: str,
     ):
         super().__init__(actionId = actionId)
 
@@ -50,6 +50,18 @@ class CheckSuperAnswerTriviaAction(AbsTriviaAction):
             raise ValueError(f'no answer value is available: \"{answer}\"')
 
         return answer
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'actionId': self.actionId,
+            'answer': self.__answer,
+            'triviaActionType': self.triviaActionType,
+            'twitchChannel': self.__twitchChannel,
+            'twitchChannelId': self.__twitchChannelId,
+            'twitchChatMessageId': self.__twitchChatMessageId,
+            'userId': self.__userId,
+            'userName': self.__userName,
+        }
 
     @property
     def triviaActionType(self) -> TriviaActionType:

@@ -1,3 +1,5 @@
+from typing import Any, Final
+
 from .absTriviaAction import AbsTriviaAction
 from .triviaActionType import TriviaActionType
 from ...misc import utils as utils
@@ -13,7 +15,7 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
         twitchChannelId: str,
         twitchChatMessageId: str,
         userId: str,
-        userName: str
+        userName: str,
     ):
         super().__init__(actionId = actionId)
 
@@ -30,12 +32,12 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__answer: str | None = answer
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
-        self.__twitchChatMessageId: str = twitchChatMessageId
-        self.__userId: str = userId
-        self.__userName: str = userName
+        self.__answer: Final[str | None] = answer
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
+        self.__twitchChatMessageId: Final[str] = twitchChatMessageId
+        self.__userId: Final[str] = userId
+        self.__userName: Final[str] = userName
 
     @property
     def answer(self) -> str | None:
@@ -60,6 +62,18 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
             raise ValueError(f'no answer value is available: \"{answer}\"')
 
         return answer
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'actionId': self.actionId,
+            'answer': self.__answer,
+            'triviaActionType': self.triviaActionType,
+            'twitchChannel': self.__twitchChannel,
+            'twitchChannelId': self.__twitchChannelId,
+            'twitchChatMessageId': self.__twitchChatMessageId,
+            'userId': self.__userId,
+            'userName': self.__userName,
+        }
 
     @property
     def triviaActionType(self) -> TriviaActionType:
