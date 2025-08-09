@@ -146,6 +146,11 @@ class DetermineBananaTargetUseCase:
         )
 
         if not timeoutAction.isRandomChanceEnabled:
+            await self.__activeChattersRepository.remove(
+                chatterUserId = timeoutTarget.targetUserId,
+                twitchChannelId = timeoutAction.twitchChannelId,
+            )
+
             return timeoutTarget
 
         # TODO

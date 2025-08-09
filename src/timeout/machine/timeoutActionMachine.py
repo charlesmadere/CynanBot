@@ -48,6 +48,7 @@ from ..useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
 from ..useCases.determineExponentialTimeoutDurationSecondsUseCase import \
     DetermineExponentialTimeoutDurationSecondsUseCase
 from ..useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
+from ...asplodieStats.models.asplodieStats import AsplodieStats
 from ...asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from ...chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from ...chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
@@ -235,12 +236,21 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
 
         frozenTimeoutResults: frozendict[AirStrikeTimeoutTarget, TwitchTimeoutResult] = frozendict(timeoutResults)
         successfulTimeoutTargets: FrozenList[AirStrikeTimeoutTarget] = FrozenList()
+        asplodieStats: dict[AirStrikeTimeoutTarget, AsplodieStats] = dict()
 
         for timeoutTarget, timeoutResult in timeoutResults.items():
             if timeoutResult is TwitchTimeoutResult.SUCCESS:
                 successfulTimeoutTargets.append(timeoutTarget)
 
+                asplodieStats[timeoutTarget] = await self.__asplodieStatsRepository.addAsplodie(
+                    isSelfAsplodie = timeoutTarget.targetUserId == action.instigatorUserId,
+                    durationAsplodiedSeconds = timeoutDuration.seconds,
+                    chatterUserId = timeoutTarget.targetUserId,
+                    twitchChannelId = action.twitchChannelId,
+                )
+
         successfulTimeoutTargets.freeze()
+        frozenAsplodieStats: frozendict[AirStrikeTimeoutTarget, AsplodieStats] = frozendict(asplodieStats)
 
         if len(successfulTimeoutTargets) == 0:
             await self.__submitEvent(NoAirStrikeTargetsAvailableTimeoutEvent(
@@ -261,6 +271,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
 
         await self.__submitEvent(AirStrikeTimeoutEvent(
             originatingAction = action,
+            asplodieStats = frozenAsplodieStats,
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
             targets = successfulTimeoutTargets,
@@ -340,6 +351,13 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
+        asplodieStats = await self.__asplodieStatsRepository.addAsplodie(
+            isSelfAsplodie = timeoutTarget.targetUserId == action.instigatorUserId,
+            durationAsplodiedSeconds = timeoutDuration.seconds,
+            chatterUserId = timeoutTarget.targetUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
         updatedInventory: ChatterItemGiveResult | None = None
 
         if not action.ignoreInventory:
@@ -351,6 +369,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             )
 
         await self.__submitEvent(BananaTimeoutEvent(
+            asplodieStats = asplodieStats,
             originatingAction = action,
             target = timeoutTarget,
             timeoutDuration = timeoutDuration,
@@ -480,6 +499,13 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
+        asplodieStats = await self.__asplodieStatsRepository.addAsplodie(
+            isSelfAsplodie = timeoutTarget.targetUserId == action.instigatorUserId,
+            durationAsplodiedSeconds = timeoutDuration.seconds,
+            chatterUserId = timeoutTarget.targetUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
         updatedInventory: ChatterItemGiveResult | None = None
 
         if not action.ignoreInventory:
@@ -491,6 +517,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             )
 
         await self.__submitEvent(GrenadeTimeoutEvent(
+            asplodieStats = asplodieStats,
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
             originatingAction = action,

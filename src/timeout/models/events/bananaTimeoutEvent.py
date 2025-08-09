@@ -5,12 +5,14 @@ from ..absTimeoutEvent import AbsTimeoutEvent
 from ..bananaTimeoutAction import BananaTimeoutAction
 from ..bananaTimeoutTarget import BananaTimeoutTarget
 from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
+from ....asplodieStats.models.asplodieStats import AsplodieStats
 from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
 @dataclass(frozen = True)
 class BananaTimeoutEvent(AbsTimeoutEvent):
+    asplodieStats: AsplodieStats
     originatingAction: BananaTimeoutAction
     target: BananaTimeoutTarget
     timeoutDuration: CalculatedTimeoutDuration
