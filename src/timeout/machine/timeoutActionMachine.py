@@ -232,7 +232,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
 
             timeoutResults[timeoutTarget] = timeoutResult
 
-        frozenTimeoutResults = frozendict(timeoutResults)
+        frozenTimeoutResults: frozendict[AirStrikeTimeoutTarget, TwitchTimeoutResult] = frozendict(timeoutResults)
         successfulTimeoutTargets: FrozenList[AirStrikeTimeoutTarget] = FrozenList()
 
         for timeoutTarget, timeoutResult in timeoutResults.items():

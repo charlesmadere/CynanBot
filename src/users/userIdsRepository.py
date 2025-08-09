@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import traceback
+from typing import Final
 
 from lru import LRU
 
@@ -22,7 +23,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
-        cacheSize: int = 256
+        cacheSize: int = 512,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -35,12 +36,12 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         elif cacheSize < 1 or cacheSize > utils.getIntMaxSafeSize():
             raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timber: TimberInterface = timber
-        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
 
         self.__isDatabaseReady: bool = False
-        self.__cache: LRU[str, str | None] = LRU(cacheSize)
+        self.__cache: Final[LRU[str, str | None]] = LRU(cacheSize)
 
     async def clearCaches(self):
         self.__cache.clear()
