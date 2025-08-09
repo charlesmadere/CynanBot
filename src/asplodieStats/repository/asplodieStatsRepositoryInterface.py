@@ -12,7 +12,7 @@ class AsplodieStatsRepositoryInterface(Clearable, ABC):
         isSelfAsplodie: bool,
         durationAsplodiedSeconds: int,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AsplodieStats:
         pass
 
@@ -20,6 +20,6 @@ class AsplodieStatsRepositoryInterface(Clearable, ABC):
     async def get(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AsplodieStats:
         pass

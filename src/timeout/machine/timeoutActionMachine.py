@@ -47,6 +47,7 @@ from ..useCases.determineExponentialTimeoutDurationSecondsUseCase import \
     DetermineExponentialTimeoutDurationSecondsUseCase
 from ..useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
 from ..useCases.timeoutRollFailureUseCase import TimeoutRollFailureUseCase
+from ...asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from ...chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from ...chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
 from ...chatterInventory.models.chatterItemType import ChatterItemType
@@ -66,6 +67,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
     def __init__(
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
+        asplodieStatsRepository: AsplodieStatsRepositoryInterface,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         determineBananaTargetUseCase: DetermineBananaTargetUseCase,
         chatterInventoryHelper: ChatterInventoryHelperInterface,
@@ -85,6 +87,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(asplodieStatsRepository, AsplodieStatsRepositoryInterface):
+            raise TypeError(f'asplodieStatsRepository argument is malformed: \"{asplodieStatsRepository}\"')
         elif not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(chatterInventoryHelper, ChatterInventoryHelperInterface):
@@ -123,6 +127,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
+        self.__asplodieStatsRepository: Final[AsplodieStatsRepositoryInterface] = asplodieStatsRepository
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = chatterInventoryHelper
         self.__determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCase] = determineAirStrikeTargetsUseCase

@@ -10,7 +10,7 @@ class StubAsplodieStatsRepository(AsplodieStatsRepositoryInterface):
         isSelfAsplodie: bool,
         durationAsplodiedSeconds: int,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AsplodieStats:
         if not utils.isValidBool(isSelfAsplodie):
             raise TypeError(f'isSelfAsplodie argument is malformed: \"{isSelfAsplodie}\"')
@@ -23,7 +23,7 @@ class StubAsplodieStatsRepository(AsplodieStatsRepositoryInterface):
 
         return await self.get(
             chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def clearCaches(self):
@@ -33,7 +33,7 @@ class StubAsplodieStatsRepository(AsplodieStatsRepositoryInterface):
     async def get(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AsplodieStats:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
@@ -45,5 +45,5 @@ class StubAsplodieStatsRepository(AsplodieStatsRepositoryInterface):
             totalAsplodies = 0,
             totalDurationAsplodiedSeconds = 0,
             chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )

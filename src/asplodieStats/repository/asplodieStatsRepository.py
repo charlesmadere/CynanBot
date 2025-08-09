@@ -17,7 +17,7 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
-        cacheSize: int = 64
+        cacheSize: int = 64,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -39,7 +39,7 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
         isSelfAsplodie: bool,
         durationAsplodiedSeconds: int,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AsplodieStats:
         if not utils.isValidBool(isSelfAsplodie):
             raise TypeError(f'isSelfAsplodie argument is malformed: \"{isSelfAsplodie}\"')
@@ -54,7 +54,7 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
 
         oldAsplodieStats = await self.get(
             chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         newSelfAsplodies = oldAsplodieStats.selfAsplodies
@@ -68,7 +68,7 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
             totalAsplodies = newTotalAsplodies,
             totalDurationAsplodiedSeconds = newTotalDurationAsplodiedSeconds,
             chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         connection = await self.__getDatabaseConnection()
@@ -94,7 +94,7 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
     async def get(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AsplodieStats:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
@@ -124,7 +124,7 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
                 totalAsplodies = 0,
                 totalDurationAsplodiedSeconds = 0,
                 chatterUserId = chatterUserId,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
         else:
             result = AsplodieStats(
@@ -132,7 +132,7 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
                 totalAsplodies = record[1],
                 totalDurationAsplodiedSeconds = record[2],
                 chatterUserId = chatterUserId,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
 
         self.__cache[f'{twitchChannelId}:{chatterUserId}'] = result
