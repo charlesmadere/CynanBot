@@ -4,6 +4,7 @@ from ..absTimeoutAction import AbsTimeoutAction
 from ..absTimeoutEvent import AbsTimeoutEvent
 from ..basicTimeoutAction import BasicTimeoutAction
 from ..basicTimeoutTarget import BasicTimeoutTarget
+from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
 @dataclass(frozen = True)
@@ -11,6 +12,7 @@ class BasicTimeoutFailedTimeoutEvent(AbsTimeoutEvent):
     originatingAction: BasicTimeoutAction
     target: BasicTimeoutTarget
     eventId: str
+    timeoutResult: TwitchTimeoutResult
 
     def getEventId(self) -> str:
         return self.eventId

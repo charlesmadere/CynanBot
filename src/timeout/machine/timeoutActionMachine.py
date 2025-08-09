@@ -5,6 +5,7 @@ import traceback
 from queue import SimpleQueue
 from typing import Final
 
+from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .timeoutActionMachineInterface import TimeoutActionMachineInterface
@@ -56,6 +57,7 @@ from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveCha
 from ...twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from ...twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from ...twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
+from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
@@ -76,6 +78,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
         timeoutRollFailureUseCase: TimeoutRollFailureUseCase,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
+        twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         sleepTimeSeconds: float = 1,
         queueTimeoutSeconds: int = 3,
@@ -106,6 +109,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'timeoutRollFailureUseCase argument is malformed: \"{timeoutRollFailureUseCase}\"')
         elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
             raise TypeError(f'twitchTimeoutHelper argument is malformed: \"{twitchTimeoutHelper}\"')
+        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
+            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
@@ -130,6 +135,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
         self.__timeoutRollFailureUseCase: Final[TimeoutRollFailureUseCase] = timeoutRollFailureUseCase
         self.__twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = twitchTimeoutHelper
+        self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
@@ -221,6 +227,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
 
             timeoutResults[timeoutTarget] = timeoutResult
 
+        frozenTimeoutResults = frozendict(timeoutResults)
         successfulTimeoutTargets: FrozenList[AirStrikeTimeoutTarget] = FrozenList()
 
         for timeoutTarget, timeoutResult in timeoutResults.items():
@@ -252,6 +259,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             updatedInventory = updatedInventory,
             targets = successfulTimeoutTargets,
             eventId = await self.__timeoutIdGenerator.generateEventId(),
+            timeoutResults = frozenTimeoutResults,
         ))
 
     async def __handleBananaTimeoutAction(self, action: BananaTimeoutAction):
@@ -311,6 +319,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 originatingAction = action,
                 target = timeoutTarget,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
+                timeoutResult = timeoutResult,
             ))
             return
 
@@ -330,6 +339,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
             eventId = await self.__timeoutIdGenerator.generateEventId(),
+            timeoutResult = timeoutResult,
         ))
 
     async def __handleBasicTimeoutAction(self, action: BasicTimeoutAction):
@@ -378,6 +388,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 originatingAction = action,
                 target = timeoutTarget,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
+                timeoutResult = timeoutResult,
             ))
             return
 
@@ -386,6 +397,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             target = timeoutTarget,
             timeoutDuration = timeoutDuration,
             eventId = await self.__timeoutIdGenerator.generateEventId(),
+            timeoutResult = timeoutResult,
         ))
 
     async def __handleGrenadeTimeoutAction(self, action: GrenadeTimeoutAction):
@@ -445,6 +457,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 originatingAction = action,
                 target = timeoutTarget,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
+                timeoutResult = timeoutResult,
             ))
             return
 
@@ -464,6 +477,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             originatingAction = action,
             target = timeoutTarget,
             eventId = await self.__timeoutIdGenerator.generateEventId(),
+            timeoutResult = timeoutResult,
         ))
 
     async def __handleTimeoutAction(self, action: AbsTimeoutAction):
@@ -490,9 +504,13 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         action: AbsTimeoutAction,
         chatterUserId: str,
     ) -> str:
+        twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+            twitchChannelId = action.getTwitchChannelId(),
+        )
+
         return await self.__userIdsRepository.requireUserName(
             userId = chatterUserId,
-            twitchAccessToken = action.getUserTwitchAccessToken(),
+            twitchAccessToken = twitchAccessToken,
         )
 
     def setEventListener(self, listener: TimeoutEventListener | None):

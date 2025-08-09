@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from frozendict import frozendict
 from frozenlist import FrozenList
 
 from ..absTimeoutAction import AbsTimeoutAction
@@ -8,6 +9,7 @@ from ..airStrikeTimeoutAction import AirStrikeTimeoutAction
 from ..airStrikeTimeoutTarget import AirStrikeTimeoutTarget
 from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
+from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
 @dataclass(frozen = True)
@@ -15,6 +17,7 @@ class AirStrikeTimeoutEvent(AbsTimeoutEvent):
     originatingAction: AirStrikeTimeoutAction
     timeoutDuration: CalculatedTimeoutDuration
     updatedInventory: ChatterItemGiveResult | None
+    timeoutResults: frozendict[AirStrikeTimeoutTarget, TwitchTimeoutResult]
     targets: FrozenList[AirStrikeTimeoutTarget]
     eventId: str
 
