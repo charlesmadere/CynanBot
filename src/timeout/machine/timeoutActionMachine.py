@@ -9,7 +9,8 @@ from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .timeoutActionMachineInterface import TimeoutActionMachineInterface
-from ..exceptions import UnknownTimeoutActionTypeException
+from ..exceptions import BananaTimeoutDiceRollFailedException, UnknownTimeoutActionTypeException, \
+    UnknownTimeoutTargetException
 from ..guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from ..idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
 from ..listener.timeoutEventListener import TimeoutEventListener
@@ -22,6 +23,7 @@ from ..models.basicTimeoutAction import BasicTimeoutAction
 from ..models.basicTimeoutTarget import BasicTimeoutTarget
 from ..models.calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ..models.events.airStrikeTimeoutEvent import AirStrikeTimeoutEvent
+from ..models.events.bananaTimeoutDiceRollFailedEvent import BananaTimeoutDiceRollFailedEvent
 from ..models.events.bananaTimeoutEvent import BananaTimeoutEvent
 from ..models.events.bananaTimeoutFailedTimeoutEvent import BananaTimeoutFailedTimeoutEvent
 from ..models.events.basicTimeoutEvent import BasicTimeoutEvent
@@ -46,7 +48,6 @@ from ..useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
 from ..useCases.determineExponentialTimeoutDurationSecondsUseCase import \
     DetermineExponentialTimeoutDurationSecondsUseCase
 from ..useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
-from ..useCases.timeoutRollFailureUseCase import TimeoutRollFailureUseCase
 from ...asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from ...chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from ...chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
@@ -54,6 +55,7 @@ from ...chatterInventory.models.chatterItemType import ChatterItemType
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
+from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ...twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from ...twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
@@ -78,7 +80,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         timber: TimberInterface,
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
-        timeoutRollFailureUseCase: TimeoutRollFailureUseCase,
+        trollmojiHelper: TrollmojiHelperInterface,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -109,8 +111,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutIdGenerator, TimeoutIdGeneratorInterface):
             raise TypeError(f'timeoutIdGenerator argument is malformed: \"{timeoutIdGenerator}\"')
-        elif not isinstance(timeoutRollFailureUseCase, TimeoutRollFailureUseCase):
-            raise TypeError(f'timeoutRollFailureUseCase argument is malformed: \"{timeoutRollFailureUseCase}\"')
+        elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
+            raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
             raise TypeError(f'twitchTimeoutHelper argument is malformed: \"{twitchTimeoutHelper}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
@@ -138,7 +140,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
-        self.__timeoutRollFailureUseCase: Final[TimeoutRollFailureUseCase] = timeoutRollFailureUseCase
+        self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
         self.__twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = twitchTimeoutHelper
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
@@ -262,7 +264,9 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
             targets = successfulTimeoutTargets,
+            bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup(),
             eventId = await self.__timeoutIdGenerator.generateEventId(),
+            explodedEmote = await self.__trollmojiHelper.getExplodedEmoteOrBackup(),
             timeoutResults = frozenTimeoutResults,
         ))
 
@@ -290,11 +294,20 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
-        timeoutTarget = await self.__determineBananaTargetUseCase.invoke(
-            timeoutAction = action,
-        )
-
-        if timeoutTarget is None:
+        try:
+            timeoutTarget = await self.__determineBananaTargetUseCase.invoke(
+                timeoutAction = action,
+            )
+        except BananaTimeoutDiceRollFailedException as e:
+            await self.__submitEvent(BananaTimeoutDiceRollFailedEvent(
+                originatingAction = action,
+                target = e.timeoutTarget,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+                diceRoll = e.diceRoll,
+            ))
+            return
+        except UnknownTimeoutTargetException as e:
+            self.__timber.log('TimeoutActionMachine', f'Failed to determine banana timeout target ({action=}): {e}', e, traceback.format_exc())
             await self.__submitEvent(NoBananaTargetAvailableTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
@@ -343,6 +356,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
             eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup(),
             timeoutResult = timeoutResult,
         ))
 
@@ -401,6 +415,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             target = timeoutTarget,
             timeoutDuration = timeoutDuration,
             eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup(),
             timeoutResult = timeoutResult,
         ))
 
@@ -480,7 +495,9 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             updatedInventory = updatedInventory,
             originatingAction = action,
             target = timeoutTarget,
+            bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup(),
             eventId = await self.__timeoutIdGenerator.generateEventId(),
+            explodedEmote = await self.__trollmojiHelper.getExplodedEmoteOrBackup(),
             timeoutResult = timeoutResult,
         ))
 

@@ -14,6 +14,7 @@ class BasicTimeoutEvent(AbsTimeoutEvent):
     target: BasicTimeoutTarget
     timeoutDuration: CalculatedTimeoutDuration
     eventId: str
+    ripBozoEmote: str
     timeoutResult: TwitchTimeoutResult
 
     def getEventId(self) -> str:

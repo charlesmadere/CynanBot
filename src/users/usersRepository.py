@@ -8,7 +8,6 @@ import aiofiles.ospath
 from frozendict import frozendict
 from frozenlist import FrozenList
 
-from .aniv.anivUserSettingsJsonParserInterface import AnivUserSettingsJsonParserInterface
 from .chatSoundAlert.absChatSoundAlert import AbsChatSoundAlert
 from .chatSoundAlert.chatSoundAlertJsonParserInterface import ChatSoundAlertJsonParserInterface
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
@@ -32,6 +31,7 @@ from .tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
 from .user import User
 from .userJsonConstant import UserJsonConstant
 from .usersRepositoryInterface import UsersRepositoryInterface
+from ..aniv.mapper.anivJsonMapperInterface import AnivJsonMapperInterface
 from ..aniv.models.whichAnivUser import WhichAnivUser
 from ..language.jsonMapper.languageEntryJsonMapperInterface import LanguageEntryJsonMapperInterface
 from ..language.languageEntry import LanguageEntry
@@ -46,7 +46,7 @@ class UsersRepository(UsersRepositoryInterface):
 
     def __init__(
         self,
-        anivUserSettingsJsonParser: AnivUserSettingsJsonParserInterface,
+        anivJsonMapper: AnivJsonMapperInterface,
         chatSoundAlertJsonParser: ChatSoundAlertJsonParserInterface,
         crowdControlJsonParser: CrowdControlJsonParserInterface,
         cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface,
@@ -61,10 +61,10 @@ class UsersRepository(UsersRepositoryInterface):
         timeZoneRepository: TimeZoneRepositoryInterface,
         ttsBoosterPackParser: TtsBoosterPackParserInterface,
         ttsJsonMapper: TtsJsonMapperInterface,
-        usersFile: str = '../config/usersRepository.json'
+        usersFile: str = '../config/usersRepository.json',
     ):
-        if not isinstance(anivUserSettingsJsonParser, AnivUserSettingsJsonParserInterface):
-            raise TypeError(f'anivUserSettingsJsonParser argument is malformed: \"{anivUserSettingsJsonParser}\"')
+        if not isinstance(anivJsonMapper, AnivJsonMapperInterface):
+            raise TypeError(f'anivJsonMapper argument is malformed: \"{anivJsonMapper}\"')
         elif not isinstance(chatSoundAlertJsonParser, ChatSoundAlertJsonParserInterface):
             raise TypeError(f'chatSoundAlertJsonParser argument is malformed: \"{chatSoundAlertJsonParser}\"')
         elif not isinstance(crowdControlJsonParser, CrowdControlJsonParserInterface):
@@ -96,7 +96,7 @@ class UsersRepository(UsersRepositoryInterface):
         elif not utils.isValidStr(usersFile):
             raise TypeError(f'usersFile argument is malformed: \"{usersFile}\"')
 
-        self.__anivUserSettingsJsonParser: AnivUserSettingsJsonParserInterface = anivUserSettingsJsonParser
+        self.__anivJsonMapper: AnivJsonMapperInterface = anivJsonMapper
         self.__chatSoundAlertJsonParser: ChatSoundAlertJsonParserInterface = chatSoundAlertJsonParser
         self.__crowdControlJsonParser: CrowdControlJsonParserInterface = crowdControlJsonParser
         self.__cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = cutenessBoosterPackJsonParser
@@ -380,7 +380,7 @@ class UsersRepository(UsersRepositoryInterface):
 
         whichAnivUser = WhichAnivUser.ANEEV
         if utils.isValidStr(userJson.get(UserJsonConstant.WHICH_ANIV_USER.jsonKey)):
-            whichAnivUser = self.__anivUserSettingsJsonParser.requireWhichAnivUser(utils.getStrFromDict(userJson, UserJsonConstant.WHICH_ANIV_USER.jsonKey))
+            whichAnivUser = self.__anivJsonMapper.requireWhichAnivUser(utils.getStrFromDict(userJson, UserJsonConstant.WHICH_ANIV_USER.jsonKey))
 
         chatBackMessages: FrozenList[str] | None = None
         if isChatBackMessagesEnabled:

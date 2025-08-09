@@ -19,7 +19,9 @@ class AirStrikeTimeoutEvent(AbsTimeoutEvent):
     updatedInventory: ChatterItemGiveResult | None
     timeoutResults: frozendict[AirStrikeTimeoutTarget, TwitchTimeoutResult]
     targets: FrozenList[AirStrikeTimeoutTarget]
+    bombEmote: str
     eventId: str
+    explodedEmote: str
 
     def getEventId(self) -> str:
         return self.eventId

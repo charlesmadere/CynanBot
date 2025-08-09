@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True)
-class TimeoutRollFailureData:
+class TimeoutDiceRollFailureData:
     baseFailureProbability: float
     failureProbability: float
     maxBullyFailureProbability: float

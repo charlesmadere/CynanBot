@@ -1,3 +1,5 @@
+import pytest
+
 from src.aniv.mapper.anivJsonMapper import AnivJsonMapper
 from src.aniv.mapper.anivJsonMapperInterface import AnivJsonMapperInterface
 from src.aniv.models.whichAnivUser import WhichAnivUser
@@ -56,6 +58,69 @@ class TestAnivJsonMapper:
 
     def test_parseWhichAnivUser_withWhitespaceString(self):
         result = self.mapper.parseWhichAnivUser(' ')
+        assert result is None
+
+    def test_requireWhichAnivUser_withAcacStrings(self):
+        result = self.mapper.requireWhichAnivUser('acac')
+        assert result is WhichAnivUser.ACAC
+
+        result = self.mapper.requireWhichAnivUser('a_c_a_c')
+        assert result is WhichAnivUser.ACAC
+
+        result = self.mapper.requireWhichAnivUser('a-c-a-c')
+        assert result is WhichAnivUser.ACAC
+
+        result = self.mapper.requireWhichAnivUser('a c a c')
+        assert result is WhichAnivUser.ACAC
+
+    def test_requireWhichAnivUser_withAneevStrings(self):
+        result = self.mapper.requireWhichAnivUser('aneev')
+        assert result is WhichAnivUser.ANEEV
+
+        result = self.mapper.requireWhichAnivUser('a_n_e_e_v')
+        assert result is WhichAnivUser.ANEEV
+
+        result = self.mapper.requireWhichAnivUser('a-n-e-e-v')
+        assert result is WhichAnivUser.ANEEV
+
+        result = self.mapper.requireWhichAnivUser('a n e e v')
+        assert result is WhichAnivUser.ANEEV
+
+    def test_requireWhichAnivUser_withAnivStrings(self):
+        result = self.mapper.requireWhichAnivUser('aniv')
+        assert result is WhichAnivUser.ANIV
+
+        result = self.mapper.requireWhichAnivUser('a_n_i_v')
+        assert result is WhichAnivUser.ANIV
+
+        result = self.mapper.requireWhichAnivUser('a-n-i-v')
+        assert result is WhichAnivUser.ANIV
+
+        result = self.mapper.requireWhichAnivUser('a n i v')
+        assert result is WhichAnivUser.ANIV
+
+    def test_requireWhichAnivUser_withEmptyString(self):
+        result: WhichAnivUser | None = None
+
+        with pytest.raises(ValueError):
+            result = self.mapper.requireWhichAnivUser('')
+
+        assert result is None
+
+    def test_requireWhichAnivUser_withNoneString(self):
+        result: WhichAnivUser | None = None
+
+        with pytest.raises(ValueError):
+            result = self.mapper.requireWhichAnivUser(None)
+
+        assert result is None
+
+    def test_requireWhichAnivUser_withWhitespaceString(self):
+        result: WhichAnivUser | None = None
+
+        with pytest.raises(ValueError):
+            result = self.mapper.requireWhichAnivUser(' ')
+
         assert result is None
 
     def test_sanity(self):

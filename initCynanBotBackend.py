@@ -8,6 +8,8 @@ from src.aniv.helpers.mostRecentAnivMessageTimeoutHelper import MostRecentAnivMe
 from src.aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from src.aniv.helpers.whichAnivUserHelper import WhichAnivUserHelper
 from src.aniv.helpers.whichAnivUserHelperInterface import WhichAnivUserHelperInterface
+from src.aniv.mapper.anivJsonMapper import AnivJsonMapper
+from src.aniv.mapper.anivJsonMapperInterface import AnivJsonMapperInterface
 from src.aniv.presenters.anivCopyMessageTimeoutScorePresenter import AnivCopyMessageTimeoutScorePresenter
 from src.aniv.presenters.anivCopyMessageTimeoutScorePresenterInterface import \
     AnivCopyMessageTimeoutScorePresenterInterface
@@ -455,8 +457,6 @@ from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMa
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from src.users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
 from src.users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
-from src.users.aniv.anivUserSettingsJsonParser import AnivUserSettingsJsonParser
-from src.users.aniv.anivUserSettingsJsonParserInterface import AnivUserSettingsJsonParserInterface
 from src.users.chatSoundAlert.chatSoundAlertJsonParserInterface import ChatSoundAlertJsonParserInterface
 from src.users.chatSoundAlert.stub.stubChatSoundAlertJsonParser import StubChatSoundAlertJsonParser
 from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
@@ -583,8 +583,8 @@ match generalSettingsSnapshot.requireNetworkClientType():
 authRepository = AuthRepository(
     authJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/authRepository.json'
-    )
+        fileName = '../config/authRepository.json',
+    ),
 )
 
 twitchJsonMapper: TwitchJsonMapperInterface = TwitchJsonMapper(
@@ -673,7 +673,7 @@ twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = Twit
     userIdsRepository = userIdsRepository
 )
 
-anivUserSettingsJsonParser: AnivUserSettingsJsonParserInterface = AnivUserSettingsJsonParser()
+anivJsonMapper: AnivJsonMapperInterface = AnivJsonMapper()
 
 chatSoundAlertJsonParser: ChatSoundAlertJsonParserInterface = StubChatSoundAlertJsonParser()
 
@@ -704,7 +704,7 @@ ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
 ttsBoosterPackParser: TtsBoosterPackParserInterface = StubTtsBoosterPackParser()
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
-    anivUserSettingsJsonParser = anivUserSettingsJsonParser,
+    anivJsonMapper = anivJsonMapper,
     chatSoundAlertJsonParser = chatSoundAlertJsonParser,
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
@@ -718,7 +718,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
     timeZoneRepository = timeZoneRepository,
     ttsBoosterPackParser = ttsBoosterPackParser,
-    ttsJsonMapper = ttsJsonMapper
+    ttsJsonMapper = ttsJsonMapper,
 )
 
 twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHelper(

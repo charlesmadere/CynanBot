@@ -15,7 +15,9 @@ class GrenadeTimeoutEvent(AbsTimeoutEvent):
     updatedInventory: ChatterItemGiveResult | None
     originatingAction: GrenadeTimeoutAction
     target: GrenadeTimeoutTarget
+    bombEmote: str
     eventId: str
+    explodedEmote: str
     timeoutResult: TwitchTimeoutResult
 
     def getEventId(self) -> str:

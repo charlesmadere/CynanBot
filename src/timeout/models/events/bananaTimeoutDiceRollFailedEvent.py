@@ -4,20 +4,15 @@ from ..absTimeoutAction import AbsTimeoutAction
 from ..absTimeoutEvent import AbsTimeoutEvent
 from ..bananaTimeoutAction import BananaTimeoutAction
 from ..bananaTimeoutTarget import BananaTimeoutTarget
-from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
-from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
-from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
+from ..timeoutDiceRoll import TimeoutDiceRoll
 
 
 @dataclass(frozen = True)
-class BananaTimeoutEvent(AbsTimeoutEvent):
+class BananaTimeoutDiceRollFailedEvent(AbsTimeoutEvent):
     originatingAction: BananaTimeoutAction
     target: BananaTimeoutTarget
-    timeoutDuration: CalculatedTimeoutDuration
-    updatedInventory: ChatterItemGiveResult | None
     eventId: str
-    ripBozoEmote: str
-    timeoutResult: TwitchTimeoutResult
+    diceRoll: TimeoutDiceRoll
 
     def getEventId(self) -> str:
         return self.eventId
