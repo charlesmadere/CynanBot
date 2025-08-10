@@ -562,7 +562,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                     action = self.__actionQueue.get_nowait()
                     actions.append(action)
             except queue.Empty as e:
-                self.__timber.log('TimeoutActionMachine', f'Encountered queue.Empty when building up actions list (queue size: {self.__actionQueue.qsize()}) (actions size: {len(actions)}): {e}', e, traceback.format_exc())
+                self.__timber.log('TimeoutActionMachine', f'Encountered queue.Empty when building up actions list (queue size: {self.__actionQueue.qsize()}) ({len(actions)=}): {e}', e, traceback.format_exc())
 
             actions.freeze()
 
