@@ -707,12 +707,6 @@ from src.websocketConnection.settings.websocketConnectionServerSettingsInterface
 from src.websocketConnection.websocketConnectionServer import WebsocketConnectionServer
 from src.websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 
-# Uncomment this chunk to turn on extra debug logging
-# logging.basicConfig(
-#     filename = 'generalLogging.log',
-#     level = logging.DEBUG
-# )
-
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 

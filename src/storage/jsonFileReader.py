@@ -15,7 +15,7 @@ class JsonFileReader(JsonReaderInterface):
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
-        fileName: str
+        fileName: str,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')

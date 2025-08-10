@@ -489,12 +489,6 @@ from src.weather.weatherRepositoryInterface import WeatherRepositoryInterface
 from src.websocketConnection.stub.stubWebsocketConnectionServer import StubWebsocketConnectionServer
 from src.websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 
-# Uncomment this chunk to turn on extra debug logging
-# logging.basicConfig(
-#     filename = 'generalLogging.log',
-#     level = logging.DEBUG
-# )
-
 # should just inherit LC_ALL from the environment
 locale.setlocale(locale.LC_ALL, '')
 

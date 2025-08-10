@@ -131,7 +131,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self.__timber.log('TwitchTokensRepository', f'Checking if any Twitch tokens require validation...')
 
         now = datetime.now(self.__timeZoneRepository.getDefault())
-        twitchChannelIds = set(self.__twitchChannelIdToValidationTime.keys())
+        twitchChannelIds = frozenset(self.__twitchChannelIdToValidationTime.keys())
         twitchChannelIdsToValidate: set[str] = set()
 
         for twitchChannelId in twitchChannelIds:
@@ -154,7 +154,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
             await self.__validateAndRefreshAccessToken(
                 twitchChannelId = twitchChannelId,
-                tokensDetails = tokensDetails
+                tokensDetails = tokensDetails,
             )
 
         self.__timber.log('TwitchTokensRepository', f'Finished validation of {len(twitchChannelIdsToValidate)} Twitch token(s)')
@@ -185,6 +185,10 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self.__timber.log('TwitchTokensRepository', f'Reading in seed file... ({seedFileReader=})')
 
         for twitchChannel, tokensDetailsJson in jsonContents.items():
+            if not utils.isValidStr(twitchChannel) or not isinstance(tokensDetailsJson, dict):
+                self.__timber.log('TwitchTokensRepository', f'Encountered malformed data structure within seed file ({seedFileReader=}) ({twitchChannel=}) ({tokensDetailsJson=})')
+                continue
+
             tokensDetails: TwitchTokensDetails | None = None
 
             if utils.isValidStr(tokensDetailsJson.get('code')):
