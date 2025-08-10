@@ -268,7 +268,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             return
 
         # pluralizations
-        if any(word.endswith(s) for s in ('ss', 'sh', 'ch', 'x', 'z', 's', 'o')):
+        if any(word.endswith(s) for s in { 'ss', 'sh', 'ch', 'x', 'z', 's', 'o' }):
             yield word + 'es'
         if word[-1] in 'sz':
             yield word + word[-1] + 'es'
@@ -346,138 +346,138 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word in { 'ada', 'addy', 'dell', 'delia', 'lena' }:
             yield 'adaline'
             yield 'adeline'
-        if word in ('ad', 'ade'):
+        if word in { 'ad', 'ade' }:
             yield 'adam'
-        if word in ('addy', 'adele', 'dell', 'della', 'heidi'):
+        if word in { 'addy', 'adele', 'dell', 'della', 'heidi' }:
             yield 'adelaide'
-        if word in ('adele', 'addy', 'dell', 'delphia', 'philly'):
+        if word in { 'adele', 'addy', 'dell', 'delphia', 'philly' }:
             yield 'adelphia'
-        if word in ('aggy', 'inez', 'nessa'):
+        if word in { 'aggy', 'inez', 'nessa' }:
             yield 'agatha'
             yield 'agnes'
-        if word in ('allie', 'lena'):
+        if word in { 'allie', 'lena' }:
             yield 'aileen'
-        if word in ('al', 'alan', 'allan', 'alen', 'allen', 'lonson'):
+        if word in { 'al', 'alan', 'allan', 'alen', 'allen', 'lonson' }:
             yield 'alan'
             yield 'alanson'
             yield 'allen'
-        if word in ('allie', 'bert', 'bertie'):
+        if word in { 'allie', 'bert', 'bertie' }:
             yield 'alberta'
         if word in { 'alberta', 'bert', 'berta', 'bertie', 'del', 'delbert', 'elbert' }:
             yield 'albert'
             yield 'adelbert'
-        if word in ('al', 'rich', 'richie'):
+        if word in { 'al', 'rich', 'richie' }:
             yield 'aldrich'
-        if word in ('alex', 'al', 'eleck', 'sandy'):
+        if word in { 'alex', 'al', 'eleck', 'sandy' }:
             yield 'alexander'
-        if word in ('alex', 'alla', 'sandy'):
+        if word in { 'alex', 'alla', 'sandy' }:
             yield 'alexandra'
-        if word in ('al', 'fred'):
+        if word in { 'al', 'fred' }:
             yield 'alfred'
-        if word in ('alfy', 'freda', 'freddy', 'frieda'):
+        if word in { 'alfy', 'freda', 'freddy', 'frieda' }:
             yield 'alfreda'
-        if word in ('allie', 'elsie', 'lisa'):
+        if word in { 'allie', 'elsie', 'lisa' }:
             yield 'alice'
             yield 'alicia'
-        if word in ('allie', 'mandy'):
+        if word in { 'allie', 'mandy' }:
             yield 'almena'
-        if word in ('al', 'lon', 'lonzo'):
+        if word in { 'al', 'lon', 'lonzo' }:
             yield 'alonzo'
         if word == 'al':
             yield 'alvin'
-        if word in ('manda', 'mandy'):
+        if word in { 'manda', 'mandy' }:
             yield 'amanda'
         if word in { 'emily', 'mel', 'millie', 'amy' }:
             yield 'amelia'
-        if word in ('am', 'brose'):
+        if word in { 'am', 'brose' }:
             yield 'ambrose'
         if word == 'am':
             yield 'amos'
-        if word in ('ander', 'andersen', 'andy', 'sonny'):
+        if word in { 'ander', 'andersen', 'andy', 'sonny' }:
             yield 'anderson'
-        if word in ('andy', 'drew'):
+        if word in { 'andy', 'drew' }:
             yield 'andrew'
         if word in { 'annette', 'annie', 'antoinette', 'nan', 'nanny', 'nana', 'nancy' }:
             yield 'ann'
             yield 'anne'
-        if word in ('ann', 'tony', 'netta'):
+        if word in { 'ann', 'tony', 'netta' }:
             yield 'antoinette'
             yield 'antonia'
-        if word in ('ara', 'arry', 'belle', 'bella'):
+        if word in { 'ara', 'arry', 'belle', 'bella' }:
             yield 'arabella'
             yield 'arabelle'
         if word == 'archie':
             yield 'archibald'
         if word == 'arnie':
             yield 'arnold'
-        if word in ('art', 'artie'):
+        if word in { 'art', 'artie' }:
             yield 'arthur'
         if word in { 'august', 'austin', 'gus', 'gussie' }:
             yield 'augustine'
             yield 'augustus'
         if word in { 'bab', 'babs', 'barby', 'bobbie' }:
             yield 'barbara'
-        if word in ('barney', 'barnie', 'barns'):
+        if word in { 'barney', 'barnie', 'barns' }:
             yield 'barnabas'
-        if word in ('bart', 'bartel', 'bat', 'mees', 'meus'):
+        if word in { 'bart', 'bartel', 'bat', 'mees', 'meus' }:
             yield 'bartholomew'
-        if word in ('bea', 'trisha', 'trix', 'trixie'):
+        if word in { 'bea', 'trisha', 'trix', 'trixie' }:
             yield 'beatrice'
-        if word in ('ben', 'benjy', 'bennie', 'benny', 'jamie'):
+        if word in { 'ben', 'benjy', 'bennie', 'benny', 'jamie' }:
             yield 'benjamin'
-        if word in ('ben', 'bernie'):
+        if word in { 'ben', 'bernie' }:
             yield 'bernard'
-        if word in ('bert', 'bertie', 'birdie'):
+        if word in { 'bert', 'bertie', 'birdie' }:
             yield 'bertha'
-        if word in ('bert', 'bertie'):
+        if word in { 'bert', 'bertie' }:
             yield 'bertram'
-        if word in ('billie', 'billy'):
+        if word in { 'billie', 'billy' }:
             yield 'bill'
         if word == 'brad':
             yield 'bradford'
-        if word in ('cal', 'cale'):
+        if word in { 'cal', 'cale' }:
             yield 'caleb'
-        if word in ('cathleen', 'katherine', 'kathleen', 'kathy'):
+        if word in { 'cathleen', 'katherine', 'kathleen', 'kathy' }:
             yield 'catherine'
-        if word in ('caeser', 'ceasar', 'ceaser'):
+        if word in { 'caeser', 'ceasar', 'ceaser' }:
             yield 'caesar'
-        if word in ('carl', 'chad', 'charlie', 'charly', 'chuck', 'chucky'):
+        if word in { 'carl', 'chad', 'charlie', 'charly', 'chuck', 'chucky' }:
             yield 'charles'
-        if word in ('char', 'lottie', 'lotta', 'sherry'):
+        if word in { 'char', 'lottie', 'lotta', 'sherry' }:
             yield 'charlotte'
         if word == 'chet':
             yield 'chester'
-        if word in ('chris', 'christ', 'cris', 'kit', 'kris'):
+        if word in { 'chris', 'christ', 'cris', 'kit', 'kris' }:
             yield 'christian'
             yield 'christopher'
-        if word in ('claire', 'clare'):
+        if word in { 'claire', 'clare' }:
             yield 'clair'
             yield 'clarence'
         if word == 'claudie':
             yield 'claude'
         if word == 'clem':
             yield 'clement'
-        if word in ('clif', 'cliff', 'cliffy', 'ford'):
+        if word in { 'clif', 'cliff', 'cliffy', 'ford' }:
             yield 'clifford'
-        if word in ('con', 'connie', 'cornie', 'neel'):
+        if word in { 'con', 'connie', 'cornie', 'neel' }:
             yield 'cornelius'
         if word == 'cy':
             yield 'cyrus'
-        if word in ('dan', 'danny'):
+        if word in { 'dan', 'danny' }:
             yield 'daniel'
-        if word in ('dave', 'davey', 'day'):
+        if word in { 'dave', 'davey', 'day' }:
             yield 'david'
         if word == 'delanor':
             yield 'delano'
         if word == 'denny':
             yield 'dennis'
-        if word in ('dom', 'nick'):
+        if word in { 'dom', 'nick' }:
             yield 'dominic'
-        if word in ('don', 'donny'):
+        if word in { 'don', 'donny' }:
             yield 'donald'
         if word == 'doug':
             yield 'douglas'
-        if word in ('ed', 'eddie', 'eddy', 'ned', 'ted', 'teddy'):
+        if word in { 'ed', 'eddie', 'eddy', 'ned', 'ted', 'teddy' }:
             yield 'edward'
         if word in ('ed', 'eddie'):
             yield 'edwin'
@@ -489,138 +489,138 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'elisha'
         if word in { 'eliza', 'bess', 'bessie', 'beth', 'betsy', 'betty', 'lib', 'libby', 'liz', 'liza', 'lisa', 'liz', 'lizzie' }:
             yield 'elizabeth'
-        if word in ('eli', 'elliot', 'lee'):
+        if word in { 'eli', 'elliot', 'lee' }:
             yield 'elliot'
-        if word in ('manuel', 'manny', 'man'):
+        if word in { 'manuel', 'manny', 'man' }:
             yield 'emmanuel'
         if word == 'em':
             yield 'emory'
-        if word in ('eph', 'ephie', 'ephy'):
+        if word in { 'eph', 'ephie', 'ephy' }:
             yield 'ephraim'
         if word == 'gene':
             yield 'eugene'
-        if word in ('aron', 'aaron', 'aaryn', 'eryn'):
+        if word in { 'aron', 'aaron', 'aaryn', 'eryn' }:
             yield 'erin'
-        if word in ('ez', 'ezzy'):
+        if word in { 'ez', 'ezzy' }:
             yield 'ezra'
-        if word in ('lix', 'lixie'):
+        if word in { 'lix', 'lixie' }:
             yield 'felix'
         if word == 'fdr':
             yield 'franklin roosevelt'
             yield 'franklin delano roosevelt'
-        if word in ('fred', 'frankie', 'fran', 'frannie'):
+        if word in { 'fred', 'frankie', 'fran', 'frannie' }:
             yield 'ferdinand'
-        if word in ('fran', 'frances', 'frank', 'frankie'):
+        if word in { 'fran', 'frances', 'frank', 'frankie' }:
             yield 'francis'
             yield 'franklin'
-        if word in ('fred', 'freddy', 'fritz', 'rick', 'derick'):
+        if word in { 'fred', 'freddy', 'fritz', 'rick', 'derick' }:
             yield 'frederick'
         if word == 'gabe':
             yield 'gabriel'
-        if word in ('goerge', 'geordie', 'georgie'):
+        if word in { 'goerge', 'geordie', 'georgie' }:
             yield 'george'
         if word == 'gw':
             yield 'george washington'
-        if word in ('gerry', 'jerry'):
+        if word in { 'gerry', 'jerry' }:
             yield 'gerald'
-        if word in ('gil', 'bert', 'bertie'):
+        if word in { 'gil', 'bert', 'bertie' }:
             yield 'gilbert'
         if word == 'gordie':
             yield 'gordon'
-        if word in ('greg', 'gregg'):
+        if word in { 'greg', 'gregg' }:
             yield 'gregory'
-        if word in ('hal', 'harry'):
+        if word in { 'hal', 'harry' }:
             yield 'harold'
-        if word in ('ella', 'ellen', 'ellie', 'lena'):
+        if word in { 'ella', 'ellen', 'ellie', 'lena' }:
             yield 'helen'
             yield 'helene'
-        if word in ('hal', 'hank', 'harry'):
+        if word in { 'hal', 'hank', 'harry' }:
             yield 'henry'
-        if word in ('herb', 'bert', 'herbie', 'bertie'):
+        if word in { 'herb', 'bert', 'herbie', 'bertie' }:
             yield 'herbert'
-        if word in ('herm', 'hermie'):
+        if word in { 'herm', 'hermie' }:
             yield 'herman'
-        if word in ('hop', 'hopp'):
+        if word in { 'hop', 'hopp' }:
             yield 'hopkins'
         if word == 'race':
             yield 'horace'
-        if word in ('hugh', 'bert', 'hub'):
+        if word in { 'hugh', 'bert', 'hub' }:
             yield 'hubert'
-        if word in ('hughie', 'hew'):
+        if word in { 'hughie', 'hew' }:
             yield 'hugh'
-        if word in ('igg', 'iggy', 'nace', 'nate', 'natius'):
+        if word in { 'igg', 'iggy', 'nace', 'nate', 'natius' }:
             yield 'ignatius'
-        if word in ('ike', 'isac', 'zeke'):
+        if word in { 'ike', 'isac', 'zeke' }:
             yield 'isaac'
-        if word in ('sy', 'zay'):
+        if word in { 'sy', 'zay' }:
             yield 'isaiah'
-        if word in ('jakob', 'jake', 'jay', 'coby'):
+        if word in { 'jakob', 'jake', 'jay', 'coby' }:
             yield 'jacob'
-        if word in ('jim', 'jimmy', 'jamie'):
+        if word in { 'jim', 'jimmy', 'jamie' }:
             yield 'james'
         if word == 'jarvie':
             yield 'jarvis'
-        if word in ('jace', 'jay'):
+        if word in { 'jace', 'jay' }:
             yield 'jason'
-        if word in ('jed', 'jeddo', 'dyah'):
+        if word in { 'jed', 'jeddo', 'dyah' }:
             yield 'jedediah'
-        if word in ('jerry', 'jeremy'):
+        if word in { 'jerry', 'jeremy' }:
             yield 'jeremiah'
-        if word in ('jen', 'jenn', 'jenny'):
+        if word in { 'jen', 'jenn', 'jenny' }:
             yield 'jennifer'
-        if word in ('jess', 'jesse', 'jessika', 'jessy'):
+        if word in { 'jess', 'jesse', 'jessika', 'jessy' }:
             yield 'jessica'
         if word == 'jfk':
             yield 'john fitzgerald kennedy'
             yield 'john kennedy'
-        if word in ('jo', 'joe', 'joey', 'josef', 'joseph', 'josephine','joey', 'josey'):
+        if word in { 'jo', 'joe', 'joey', 'josef', 'joseph', 'josephine','joey', 'josey' }:
             yield 'joe'
             yield 'joel'
             yield 'joseph'
-        if word in ('jack', 'jock', 'jon', 'jhon', 'johnny', 'jhonny', 'jonny'):
+        if word in { 'jack', 'jock', 'jon', 'jhon', 'johnny', 'jhonny', 'jonny' }:
             yield 'john'
             yield 'johnathan'
-        if word in ('jos', 'joshua'):
+        if word in { 'jos', 'joshua' }:
             yield 'josh'
-        if word in ('josh', 'jos'):
+        if word in { 'josh', 'jos' }:
             yield 'joshua'
-        if word in ('si', 'siah'):
+        if word in { 'si', 'siah' }:
             yield 'josiah'
-        if word in ('jude', 'judy'):
+        if word in { 'jude', 'judy' }:
             yield 'judah'
-        if word in ('jule', 'jules'):
+        if word in { 'jule', 'jules' }:
             yield 'julian'
-        if word in ('ken', 'kenny', 'kendall', 'kendrick'):
+        if word in { 'ken', 'kenny', 'kendall', 'kendrick' }:
             yield 'kenneth'
-        if word in ('larry', 'lawrie'):
+        if word in { 'larry', 'lawrie' }:
             yield 'lawrence'
-        if word in ('leo', 'leon', 'len', 'lenny', 'lineau'):
+        if word in { 'leo', 'leon', 'len', 'lenny', 'lineau' }:
             yield 'leonard'
         if word in ('leo', 'polde'):
             yield 'leopold'
         if word == 'roy':
             yield 'leroy'
-        if word in ('lou', 'louie', 'lewis'):
+        if word in { 'lou', 'louie', 'lewis' }:
             yield 'louis'
             yield 'lewis'
-        if word in ('mal', 'ky', 'chi'):
+        if word in { 'mal', 'ky', 'chi' }:
             yield 'malachi'
-        if word in ('mannie', 'manny', 'manu'):
+        if word in { 'mannie', 'manny', 'manu' }:
             yield 'manuel'
         if word in { 'marta', 'marty', 'mat', 'mattie', 'patsy', 'patty' }:
             yield 'martha'
             yield 'martin'
-        if word in ('molly', 'polly', 'mae', 'mamie', 'mitzi'):
+        if word in { 'molly', 'polly', 'mae', 'mamie', 'mitzi' }:
             yield 'mary'
-        if word in ('matt', 'matty'):
+        if word in { 'matt', 'matty' }:
             yield 'matthew'
-        if word in ('linda', 'lindy', 'mel', 'mindy'):
+        if word in { 'linda', 'lindy', 'mel', 'mindy' }:
             yield 'melinda'
         if word in { 'lisa', 'lissa', 'mel', 'milly', 'missy' }:
             yield 'melissa'
-        if word in ('micheal', 'mike'):
+        if word in { 'micheal', 'mike' }:
             yield 'michael'
-        if word in ('milt', 'miltie'):
+        if word in { 'milt', 'miltie' }:
             yield 'milton'
         if word in { 'mose', 'moss' }:
             yield 'moses'
@@ -628,30 +628,30 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'nathaniel'
         if word in { 'claas', 'claes', 'nicolas', 'nick', 'nicky', 'klaus' }:
             yield 'nicholas'
-        if word in ('noa', 'noe'):
+        if word in { 'noa', 'noe' }:
             yield 'noah'
-        if word in ('olie', 'ollie', 'noll'):
+        if word in { 'olie', 'ollie', 'noll' }:
             yield 'oliver'
-        if word in ('ossy', 'ozzie', 'ozzy', 'waldo'):
+        if word in { 'ossy', 'ozzie', 'ozzy', 'waldo' }:
             yield 'oswald'
             yield 'oscar'
-        if word in ('paddy', 'pat', 'pate', 'patsy', 'peter'):
+        if word in { 'paddy', 'pat', 'pate', 'patsy', 'peter' }:
             yield 'patrick'
-        if word in ('paulie', 'pol'):
+        if word in { 'paulie', 'pol' }:
             yield 'paul'
         if word == 'perry':
             yield 'pelegrine'
-        if word in ('pate', 'pete', 'petey'):
+        if word in { 'pate', 'pete', 'petey' }:
             yield 'peter'
-        if word in ('phil', 'phili', 'philli'):
+        if word in { 'phil', 'phili', 'philli' }:
             yield 'phillip'
-        if word in ('scott', 'scotty', 'pres'):
+        if word in { 'scott', 'scotty', 'pres' }:
             yield 'prescott'
         if word == 'ralph':
             yield 'raphael'
         if word == 'rafe':
             yield 'ralph'
-        if word in ('ray', 'raymie' 'remy'):
+        if word in { 'ray', 'raymie' 'remy' }:
             yield 'raymond'
         if word in { 'reba', 'becca', 'becky', 'beck' }:
             yield 'rebecca'
@@ -666,9 +666,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'robert'
         if word in { 'ron', 'ronaldo', 'ronnie' }:
             yield 'ronald'
-        if word in ('sam', 'sammy'):
+        if word in { 'sam', 'sammy' }:
             yield 'samuel'
-        if word in ('sadie', 'sally', 'sara'):
+        if word in { 'sadie', 'sally', 'sara' }:
             yield 'sarah'
         if word == 'sol':
             yield 'saul'
@@ -690,26 +690,26 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'theodore'
         if word in { 'terry', 'tess', 'tessie', 'tessa', 'thirza', 'thursa', 'tracy' }:
             yield 'theresa'
-        if word in ('tim', 'timmy'):
+        if word in { 'tim', 'timmy' }:
             yield 'timothy'
-        if word in ('thom', 'tom', 'tommy', 'tony'):
+        if word in { 'thom', 'tom', 'tommy', 'tony' }:
             yield 'thomas'
         if word == 'toby':
             yield 'tobias'
-        if word in ('anthony', 'toni'):
+        if word in { 'anthony', 'toni' }:
             yield 'tony'
         if word == 'ulie':
             yield 'ulysses'
-        if word in ('nessa', 'essa', 'vanna'):
+        if word in { 'nessa', 'essa', 'vanna' }:
             yield 'vanessa'
         if word in { 'franky', 'frony', 'ron', 'ronna', 'ronnie', 'vonnie' }:
             yield 'veronica'
-        if word in ('vic', 'vicky', 'vickie'):
+        if word in { 'vic', 'vicky', 'vickie' }:
             yield 'victoria'
             yield 'vic'
-        if word in ('vin', 'vince', 'vinny'):
+        if word in { 'vin', 'vince', 'vinny' }:
             yield 'vincent'
-        if word in ('walt', 'wally'):
+        if word in { 'walt', 'wally' }:
             yield 'walter'
         if word in { 'will', 'willie', 'fred', 'willy' }:
             yield 'wilfred'
@@ -718,9 +718,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'will'
             yield 'william'
             yield 'bill'
-        if word in ('winnie', 'winny'):
+        if word in { 'winnie', 'winny' }:
             yield 'winifred'
-        if word in ('zach', 'zachy'):
+        if word in { 'zach', 'zachy' }:
             yield 'zachariah'
         if word == 'zeb':
             yield 'zebedee'
@@ -730,19 +730,19 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'ezekiel'
 
         # geographical features/streets
-        if word in ('aly', 'ally'):
+        if word in { 'aly', 'ally' }:
             yield 'alley'
-        if word in ('anx', 'annx'):
+        if word in { 'anx', 'annex', 'annx' }:
             yield 'anex'
         if word == 'arc':
             yield 'arcade'
-        if word in ('av', 'ave', 'avn'):
+        if word in { 'av', 'ave', 'avn' }:
             yield 'avenue'
         if word == 'bch':
             yield 'beach'
-        if word in ('blvd', 'boul'):
+        if word in { 'blvd', 'boul' }:
             yield 'boulevard'
-        if word in ('br', 'brnch'):
+        if word in { 'br', 'brnch' }:
             yield 'branch'
         if word == 'brg':
             yield 'bridge'
@@ -750,21 +750,20 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'brook'
         if word == 'byu':
             yield 'bayou'
-        if word in ('canyn', 'cnyn'):
+        if word in { 'canyn', 'cnyn' }:
             yield 'canyon'
         if word == 'cswy':
             yield 'causeway'
-        if word in ('cen', 'cntr', 'ctr'):
+        if word in { 'cen', 'cntr', 'ctr' }:
             yield 'center'
-        if word in ('cir', 'cir', 'circl', 'crcl'):
+        if word in { 'cir', 'cir', 'circl', 'crcl' }:
             yield 'circle'
         if word == 'clb':
             yield 'club'
         if word == 'cty':
             yield 'city'
-        if word in ('ct', 'crt'):
+        if word in { 'ct', 'cts', 'crt', 'crts' }:
             yield 'court'
-        if word in ('cts', 'crts'):
             yield 'courts'
         if word == 'cv':
             yield 'cove'
@@ -790,13 +789,13 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'grove'
         if word == 'hvn':
             yield 'haven'
-        if word in ('ht', 'hgt', 'hts'):
+        if word in { 'ht', 'hgt', 'hts' }:
             yield 'height'
-        if word in ('hiwy', 'hiway', 'hway', 'hwy'):
+        if word in { 'hiwy', 'hiway', 'hway', 'hwy' }:
             yield 'highway'
-        if word in ('is', 'isl', 'isle'):
+        if word in { 'is', 'isl', 'isle' }:
             yield 'island'
-        if word in ('ldg', 'ldge'):
+        if word in { 'ldg', 'ldge' }:
             yield 'lodge'
         if word == 'lk':
             yield 'lake'
@@ -855,14 +854,14 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'cabo verde'
         if word == 'car':
             yield 'central african republic'
-        if word in ('czechia republic', 'czech republic'):
+        if word in { 'czechia republic', 'czech republic' }:
             yield 'czechia'
         if word == 'dr':
             yield 'dominican republic'
         if word == 'drc':
             yield 'democratic republic of congo'
             yield 'democratic republic of the congo'
-        if word in ('en', 'eng'):
+        if word in { 'en', 'eng' }:
             yield 'english'
         if word == 'eu':
             yield 'europe'
@@ -876,11 +875,11 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'ivory coast':
             yield 'cote d ivoire'
             yield 'cote divoire'
-        if word in ('ja', 'jp', 'jpn'):
+        if word in { 'ja', 'jp', 'jpn', 'nihon', 'nippon' }:
             yield 'japan'
         if word == 'kr':
             yield 'korea'
-        if word in ('macedonia', 'n macedonia'):
+        if word in { 'macedonia', 'n macedonia' }:
             yield 'macedonia'
             yield 'north macedonia'
         if word == 'mx':
@@ -889,21 +888,21 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'burma'
         if word == 'new guinea':
             yield 'papua new guinea'
-        if word in ('ny', 'new york city', 'nyc'):
+        if word in { 'ny', 'new york city', 'nyc' }:
             yield 'new york'
         if word == 'pacific':
             yield 'pacific ocean'
-        if word in ('palestine state', 'palestinian', 'palestinian state', 'west bank'):
+        if word in { 'palestine state', 'palestinian', 'palestinian state', 'west bank', 'w bank' }:
             yield 'palestine'
         if word == 'pr':
             yield 'puerto rico'
-        if word in ('rep', 'repr'):
+        if word in { 'rep', 'repr' }:
             yield 'representative'
         if word == 'sen':
             yield 'senator'
         if word == 'swaziland':
             yield 'eswatini'
-        if word in ('timor', 'east timor'):
+        if word in { 'timor', 'east timor' }:
             yield 'timor leste'
         if word == 'turkiye':
             yield 'turkey'
@@ -988,21 +987,21 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'north'
         if word in { 's', 'south', 'southerly', 'southern' }:
             yield 'south'
-        if word in ('e', 'east', 'easterly', 'eastern'):
+        if word in { 'e', 'east', 'easterly', 'eastern' }:
             yield 'east'
-        if word in ('w', 'west', 'westerly', 'western'):
+        if word in { 'w', 'west', 'westerly', 'western' }:
             yield 'west'
-        if word in ('nw', 'northwest', 'northwestern'):
+        if word in { 'nw', 'northwest', 'northwestern' }:
             yield 'northwest'
-        if word in ('ne', 'northeast', 'northeastern'):
+        if word in { 'ne', 'northeast', 'northeastern' }:
             yield 'northeast'
-        if word in ('sw', 'southwest', 'southwestern'):
+        if word in { 'sw', 'southwest', 'southwestern' }:
             yield 'southwest'
-        if word in ('se', 'southeast', 'southeastern'):
+        if word in { 'se', 'southeast', 'southeastern' }:
             yield 'southeast'
-        if word in ('l', 'left', 'lft'):
+        if word in { 'l', 'left', 'lft' }:
             yield 'left'
-        if word in ('r', 'right', 'rite'):
+        if word in { 'r', 'right', 'rite' }:
             yield 'right'
 
         # corporation things
@@ -1081,10 +1080,10 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'graphics processing unit'
         if word == 'hd':
             yield 'high definition'
-        if word in ('hd', 'hdd'):
+        if word in { 'hd', 'hdd' }:
             yield 'hard disk drive'
             yield 'hard drive'
-        if word in ('http', 'https'):
+        if word in { 'http', 'https' }:
             yield 'hypertext transfer protocol'
             yield 'hypertext transfer protocol secure'
         if word == 'ie':
@@ -1093,7 +1092,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'integer'
         if word == 'ip':
             yield 'internet protocol'
-        if word in ('ms', 'msft'):
+        if word in { 'ms', 'msft' }:
             yield 'microsoft'
         if word == 'op':
             yield 'operand'
@@ -1106,7 +1105,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'pixels per inch'
         if word == 'pt':
             yield 'point'
-        if word in ('px', 'pxl'):
+        if word in { 'px', 'pxl' }:
             yield 'pixel'
             yield 'pixels'
         if word == 'ram':
@@ -1144,7 +1143,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'binary'
         if word == 'bps':
             yield 'bits per second'
-        if word in ('c', 'centigrade'):
+        if word in { 'c', 'centigrade' }:
             yield 'celsius'
         if word == 'cg':
             yield 'centigram'
@@ -1208,10 +1207,10 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'liters'
         if word == 'lat':
             yield 'latitude'
-        if word in ('lb', 'lbs'):
+        if word in { 'lb', 'lbs' }:
             yield 'pound'
             yield 'pounds'
-        if word in ('lon', 'long'):
+        if word in { 'lon', 'long' }:
             yield 'longitude'
         if word == 'm':
             yield 'meter'
@@ -1254,7 +1253,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'tb':
             yield 'terabyte'
             yield 'terabytes'
-        if word in ('tbs', 'tbsp'):
+        if word in { 'tbs', 'tbsp' }:
             yield 'tablespoon'
             yield 'tablespoons'
         if word == 'tsp':
@@ -1263,7 +1262,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'w':
             yield 'watt'
             yield 'wattage'
-        if word in ('yd', 'yds', 'yrd', 'yrds'):
+        if word in { 'yd', 'yds', 'yrd', 'yrds' }:
             yield 'yard'
 
         # british english vs american english spellings
@@ -1331,11 +1330,11 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'april'
         if word == 'jun':
             yield 'june'
-        if word in ('jul', 'jly'):
+        if word in { 'jul', 'jly' }:
             yield 'july'
         if word == 'aug':
             yield 'august'
-        if word in ('sep', 'sept'):
+        if word in { 'sep', 'sept' }:
             yield 'september'
         if word == 'nov':
             yield 'november'
@@ -1343,13 +1342,13 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'december'
 
         # commonly misspelled words
-        if word in ('absense', 'abcense', 'abcence'):
+        if word in { 'absense', 'abcense', 'abcence' }:
             yield 'absence'
         if word == 'accidently':
             yield 'accidentally'
-        if word in ('accomodate', 'acommodate', 'accommadate'):
+        if word in { 'accomodate', 'acommodate', 'accommadate' }:
             yield 'accommodate'
-        if word in ('acheive', 'acheeve'):
+        if word in { 'acheive', 'acheeve' }:
             yield 'achieve'
         if word == 'anice':
             yield 'anise'
@@ -1359,43 +1358,43 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'acquit'
         if word == 'basicly':
             yield 'basically'
-        if word in ('brocolli', 'broccolli'):
+        if word in { 'brocolli', 'broccolli' }:
             yield 'broccoli'
         if word == 'calender':
             yield 'calendar'
-        if word in ('cemetary', 'cematery', 'cematary'):
+        if word in { 'cemetary', 'cematery', 'cematary' }:
             yield 'cemetery'
-        if word in ('comittee', 'commitee'):
+        if word in { 'comittee', 'commitee' }:
             yield 'committee'
         if word == 'concensus':
             yield 'consensus'
-        if word in ('definate', 'definately'):
+        if word in { 'definate', 'definately' }:
             yield 'definite'
             yield 'definitely'
         if word in { 'enterpreneur', 'entrepeneur', 'entreperneur', 'entreprenur' }:
             yield 'entrepreneur'
-        if word in ('gage', 'guage'):
+        if word in { 'gage', 'guage' }:
             yield 'gauge'
-        if word in ('garauntee', 'gaurantee'):
+        if word in { 'garauntee', 'gaurantee' }:
             yield 'guarantee'
-        if word in ('itinary', 'itinery'):
+        if word in { 'itinary', 'itinery' }:
             yield 'itinerary'
         if word == 'layed':
             yield 'laid'
-        if word in ('manoover', 'menoover', 'meneuver'):
+        if word in { 'manoover', 'menoover', 'meneuver' }:
             yield 'maneuver'
         if word == 'mispell':
             yield 'misspell'
-        if word in ('ocassion', 'occassion'):
+        if word in { 'ocassion', 'occassion' }:
             yield 'occasion'
-        if word in ('plagarism', 'plagarize'):
+        if word in { 'plagarism', 'plagarize' }:
             yield 'plagiarism'
             yield 'plagiarize'
         if word == 'publically':
             yield 'publicly'
         if word == 'recieve':
             yield 'receive'
-        if word in ('separate', 'seprate', 'seperet'):
+        if word in { 'separate', 'seprate', 'seperet' }:
             yield 'separate'
         if word in { 'temperture', 'tempreture', 'temprature', 'temparature' }:
             yield 'temperature'
@@ -1403,11 +1402,11 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'tomorrow'
         if word == 'untill':
             yield 'until'
-        if word in ('vaccum', 'vaccuum', 'vaccuumm'):
+        if word in { 'vaccum', 'vaccuum', 'vaccuumm' }:
             yield 'vacuum'
         if word == 'withold':
             yield 'withhold'
-        if word in ('zuccini', 'zuchinni', 'zuccinni'):
+        if word in { 'zuccini', 'zuchinni', 'zuccinni' }:
             yield 'zucchini'
 
         # cutesy alternative spellings
@@ -1425,7 +1424,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'middle'
         if word in { 'ad', 'an', 'n', '&', '+' }:
             yield 'and'
-        if word in { 'pow', 'pwr' }:
+        if word in { 'pow', 'powr', 'pwr' }:
             yield 'power'
 
         # other
@@ -1538,14 +1537,14 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'science'
         if word == 'scifi':
             yield 'science fiction'
-        if word in ('temp', 'tmp'):
+        if word in { 'temp', 'tmp' }:
             yield 'temperature'
             yield 'temporary'
         if word == 'tv':
             yield 'television'
         if word == 'vs':
             yield 'versus'
-        if word in ('married', 'wedding'):
+        if word in { 'married', 'wed', 'wedd', 'wedding' }:
             yield 'marriage'
         if word == 'wr':
             yield 'world record'
