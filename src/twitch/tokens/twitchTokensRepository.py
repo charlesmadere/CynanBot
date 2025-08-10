@@ -405,7 +405,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         try:
             lastSlashIndex = seedFileReader.fileName.rindex('/')
-            directoryToScan = directoryToScan[:lastSlashIndex]
+            directoryToScan = seedFileReader.fileName[:lastSlashIndex]
         except (RuntimeError, ValueError):
             pass
 
