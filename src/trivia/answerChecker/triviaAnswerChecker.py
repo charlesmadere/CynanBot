@@ -251,7 +251,13 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         thresholdGrowthRate = await self.__triviaSettingsRepository.getLevenshteinThresholdGrowthRate()
 
         for w1 in self.__genVariantPossibilities(word1):
+            if not utils.isValidStr(w1):
+                continue
+
             for w2 in self.__genVariantPossibilities(word2):
+                if not utils.isValidStr(w2):
+                    continue
+
                 # calculate threshold based on shorter word length
                 threshold = math.floor(min(len(w1), len(w2)) / thresholdGrowthRate)
                 distance = polyleven.levenshtein(w1, w2, threshold + 1)
@@ -284,6 +290,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield word[:-2] + 'es'
         elif word.endswith('on') or word.endswith('um'):
             yield word[:-2] + 'a'
+        elif word.endswith('ism'):
+            yield word[:-3]
         if word[-1] != 's':
             yield word + 's'
 
@@ -479,7 +487,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'douglas'
         if word in { 'ed', 'eddie', 'eddy', 'ned', 'ted', 'teddy' }:
             yield 'edward'
-        if word in ('ed', 'eddie'):
+        if word in { 'ed', 'eddie' }:
             yield 'edwin'
         if word in { 'ellie', 'lee', 'lie' }:
             yield 'eli'
@@ -596,7 +604,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'lawrence'
         if word in { 'leo', 'leon', 'len', 'lenny', 'lineau' }:
             yield 'leonard'
-        if word in ('leo', 'polde'):
+        if word in { 'leo', 'polde' }:
             yield 'leopold'
         if word == 'roy':
             yield 'leroy'
@@ -643,7 +651,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'pelegrine'
         if word in { 'pate', 'pete', 'petey' }:
             yield 'peter'
-        if word in { 'phil', 'phili', 'philli' }:
+        if word in { 'filip', 'fillip', 'fillipe', 'phil', 'phili', 'philli', 'philip' }:
             yield 'phillip'
         if word in { 'scott', 'scotty', 'pres' }:
             yield 'prescott'
@@ -928,7 +936,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'democrat'
         if word == 'fbi':
             yield 'federal bureau of investigation'
-        if word in ('fedex', 'fed ex'):
+        if word in { 'fedex', 'fed ex' }:
             yield 'federal express'
         if word in { 'conservative', 'gop', 'grand old party', 'republican party', 'rnc', 'republican national convention' }:
             yield 'republican'
@@ -938,7 +946,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'secret intelligence service'
         if word == 'nsa':
             yield 'natural security agency'
-        if word in ('post', 'usps'):
+        if word in { 'post', 'usps' }:
             yield 'mail'
             yield 'post'
             yield 'post office'
@@ -981,7 +989,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'national basketball association'
         if word == 'nfl':
             yield 'national football league'
-        if word in ('nhl', 'wnhl'):
+        if word in { 'nhl', 'wnhl' }:
             yield 'national hockey league'
 
         # directions
@@ -1400,7 +1408,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'separate'
         if word in { 'temperture', 'tempreture', 'temprature', 'temparature' }:
             yield 'temperature'
-        if word in ('tommorow', 'tommorrow'):
+        if word in { 'tommorow', 'tommorrow' }:
             yield 'tomorrow'
         if word == 'untill':
             yield 'until'
@@ -1520,7 +1528,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'delivery'
             yield 'mail'
             yield 'package'
-        if word in ('phone', 'tel'):
+        if word in { 'cell', 'mobile', 'phone', 'tel' }:
             yield 'telephone'
         if word == 'pkmn':
             yield 'pokemon'

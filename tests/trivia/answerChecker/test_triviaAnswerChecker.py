@@ -1437,6 +1437,59 @@ class TestTriviaAnswerChecker:
         assert result is TriviaAnswerCheckResult.INCORRECT
 
     @pytest.mark.asyncio
+    async def test_checkAnswer_withQuestionAnswerQuestion_withAcademicismQuestion(self):
+        categoryText = 'Ism Question'
+        questionText = 'Education question kinda thing'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText,
+        )
+
+        originalCorrectAnswers: list[str] = [ 'academicism' ]
+        correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(originalCorrectAnswers)
+
+        expandedCompiledCorrectAnswers: set[str] = set()
+        for compiledCorrectAnswer in compiledCorrectAnswers:
+            expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
+
+        question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = allWords,
+            compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
+            correctAnswers = correctAnswers,
+            originalCorrectAnswers = originalCorrectAnswers,
+            category = categoryText,
+            categoryId = None,
+            question = questionText,
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.FUNTOON,
+        )
+
+        result = await self.triviaAnswerChecker.checkAnswer('a', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('academicisms', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('academicism', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('academic', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('academy', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('ism', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('olympics', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+    @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withBoarAndBearQuestion(self):
         categoryText = 'Testing Typo Handling'
         questionText = 'The pig animal, not the drink, or the kumo'
@@ -1486,9 +1539,11 @@ class TestTriviaAnswerChecker:
         assert isinstance(self.triviaAnswerChecker, TriviaAnswerChecker)
 
 
-    ##############################################
-    ## New trivia answer checking logic section ##
-    ##############################################
+    ##################################################
+    ##################################################
+    #### New trivia answer checking logic section ####
+    ##################################################
+    ##################################################
 
     @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withAllWords1(self):
