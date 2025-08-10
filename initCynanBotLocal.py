@@ -2006,8 +2006,8 @@ persistAllUsersChatAction = PersistAllUsersChatAction(
 )
 
 saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
+    anivUserIdsRepository = anivUserIdsRepository,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
-    whichAnivUserHelper = whichAnivUserHelper
 )
 
 soundAlertChatAction = SoundAlertChatAction(
