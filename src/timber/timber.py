@@ -24,7 +24,7 @@ class Timber(TimberInterface):
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         sleepTimeSeconds: float = 15,
-        timberRootDirectory: str = '../logs/timber'
+        timberRootDirectory: str = '../logs/timber',
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')

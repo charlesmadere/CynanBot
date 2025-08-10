@@ -724,14 +724,14 @@ eventLoop: AbstractEventLoop = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
 
 backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
-    eventLoop = eventLoop
+    eventLoop = eventLoop,
 )
 
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
 timber: TimberInterface = Timber(
     backgroundTaskHelper = backgroundTaskHelper,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 networkJsonMapper: NetworkJsonMapperInterface = NetworkJsonMapper()
