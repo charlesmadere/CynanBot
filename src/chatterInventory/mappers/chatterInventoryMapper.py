@@ -17,7 +17,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
     def __buildItemTypeRegExes(self) -> frozendict[ChatterItemType, Collection[Pattern]]:
         airStrike: FrozenList[Pattern] = FrozenList()
         airStrike.append(re.compile(r'^\s*air(?:\s+|_|-)?strikes?\s*$', re.IGNORECASE))
-        airStrike.append(re.compile(r'^\s*tnts?\s*$', re.IGNORECASE))
+        airStrike.append(re.compile(r'^\s*tnt\'?s?\s*$', re.IGNORECASE))
         airStrike.freeze()
 
         banana: FrozenList[Pattern] = FrozenList()

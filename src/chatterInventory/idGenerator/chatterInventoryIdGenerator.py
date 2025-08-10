@@ -20,3 +20,6 @@ class ChatterInventoryIdGenerator(ChatterInventoryIdGeneratorInterface):
 
     async def generateEventId(self) -> str:
         return await self.__generateId()
+
+    async def generateRequestId(self) -> str:
+        return await self.__generateId()

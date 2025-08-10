@@ -10,3 +10,7 @@ class ChatterInventoryIdGeneratorInterface(ABC):
     @abstractmethod
     async def generateEventId(self) -> str:
         pass
+
+    @abstractmethod
+    async def generateRequestId(self) -> str:
+        pass
