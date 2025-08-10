@@ -151,6 +151,13 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         if not isinstance(action, AirStrikeTimeoutAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
+        if not await self.__verifyStreamLiveStatus(action):
+            await self.__submitEvent(IncorrectLiveStatusTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
+
         if not action.ignoreInventory:
             inventory = await self.__chatterInventoryHelper.get(
                 chatterUserId = action.instigatorUserId,
@@ -163,13 +170,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                     eventId = await self.__timeoutIdGenerator.generateEventId(),
                 ))
                 return
-
-        if not await self.__verifyStreamLiveStatus(action):
-            await self.__submitEvent(IncorrectLiveStatusTimeoutEvent(
-                originatingAction = action,
-                eventId = await self.__timeoutIdGenerator.generateEventId(),
-            ))
-            return
 
         timeoutTargets = await self.__determineAirStrikeTargetsUseCase.invoke(
             timeoutAction = action,
@@ -255,6 +255,13 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         if not isinstance(action, BananaTimeoutAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
+        if not await self.__verifyStreamLiveStatus(action):
+            await self.__submitEvent(IncorrectLiveStatusTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
+
         if not action.ignoreInventory:
             inventory = await self.__chatterInventoryHelper.get(
                 chatterUserId = action.instigatorUserId,
@@ -267,13 +274,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                     eventId = await self.__timeoutIdGenerator.generateEventId(),
                 ))
                 return
-
-        if not await self.__verifyStreamLiveStatus(action):
-            await self.__submitEvent(IncorrectLiveStatusTimeoutEvent(
-                originatingAction = action,
-                eventId = await self.__timeoutIdGenerator.generateEventId(),
-            ))
-            return
 
         try:
             timeoutTarget = await self.__determineBananaTargetUseCase.invoke(
@@ -416,6 +416,13 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         if not isinstance(action, GrenadeTimeoutAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
+        if not await self.__verifyStreamLiveStatus(action):
+            await self.__submitEvent(IncorrectLiveStatusTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
+
         if not action.ignoreInventory:
             inventory = await self.__chatterInventoryHelper.get(
                 chatterUserId = action.instigatorUserId,
@@ -428,13 +435,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                     eventId = await self.__timeoutIdGenerator.generateEventId(),
                 ))
                 return
-
-        if not await self.__verifyStreamLiveStatus(action):
-            await self.__submitEvent(IncorrectLiveStatusTimeoutEvent(
-                originatingAction = action,
-                eventId = await self.__timeoutIdGenerator.generateEventId(),
-            ))
-            return
 
         timeoutTarget = await self.__determineGrenadeTargetUseCase.invoke(
             timeoutAction = action,
