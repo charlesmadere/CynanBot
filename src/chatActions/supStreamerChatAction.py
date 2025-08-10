@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta
 import random
+from datetime import datetime, timedelta
 
 from .absChatAction import AbsChatAction
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface

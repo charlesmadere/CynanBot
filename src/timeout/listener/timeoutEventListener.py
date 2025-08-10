@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ..models.absTimeoutEvent import AbsTimeoutEvent
+from ..models.events.absTimeoutEvent import AbsTimeoutEvent
 
 
 class TimeoutEventListener(ABC):

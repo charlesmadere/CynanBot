@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
-from ..absTimeoutAction import AbsTimeoutAction
-from ..absTimeoutEvent import AbsTimeoutEvent
+from .absTimeoutEvent import AbsTimeoutEvent
+from ..actions.absTimeoutAction import AbsTimeoutAction
+from ..actions.grenadeTimeoutAction import GrenadeTimeoutAction
 from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
-from ..grenadeTimeoutAction import GrenadeTimeoutAction
 from ..grenadeTimeoutTarget import GrenadeTimeoutTarget
 from ....asplodieStats.models.asplodieStats import AsplodieStats
 from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult

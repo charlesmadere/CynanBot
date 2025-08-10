@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from ..listener.timeoutEventListener import TimeoutEventListener
-from ..models.absTimeoutAction import AbsTimeoutAction
+from ..models.actions.absTimeoutAction import AbsTimeoutAction
 
 
 class TimeoutActionMachineInterface(ABC):

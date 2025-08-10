@@ -1,20 +1,20 @@
 from dataclasses import dataclass
 
 from .absTimeoutAction import AbsTimeoutAction
-from .absTimeoutDuration import AbsTimeoutDuration
-from .pointRedemptionTimeoutData import PointRedemptionTimeoutData
+from ..absTimeoutDuration import AbsTimeoutDuration
+from ..pointRedemptionTimeoutData import PointRedemptionTimeoutData
 from ..timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
-from ...users.userInterface import UserInterface
+from ....users.userInterface import UserInterface
 
 
 @dataclass(frozen = True)
-class BananaTimeoutAction(AbsTimeoutAction):
+class AirStrikeTimeoutAction(AbsTimeoutAction):
     timeoutDuration: AbsTimeoutDuration
     ignoreInventory: bool
-    isRandomChanceEnabled: bool
+    maxTimeoutTargets: int
+    minTimeoutTargets: int
     pointRedemption: PointRedemptionTimeoutData | None
     actionId: str
-    chatMessage: str | None
     instigatorUserId: str
     moderatorTwitchAccessToken: str
     moderatorUserId: str
@@ -44,6 +44,9 @@ class BananaTimeoutAction(AbsTimeoutAction):
 
     def getTimeoutDuration(self) -> AbsTimeoutDuration:
         return self.timeoutDuration
+
+    def getTwitchChannel(self) -> str:
+        return self.twitchChannel
 
     def getTwitchChannelId(self) -> str:
         return self.twitchChannelId

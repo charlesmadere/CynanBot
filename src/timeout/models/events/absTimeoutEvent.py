@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .absTimeoutAction import AbsTimeoutAction
+from ..actions.absTimeoutAction import AbsTimeoutAction
 
 
 class AbsTimeoutEvent(ABC):

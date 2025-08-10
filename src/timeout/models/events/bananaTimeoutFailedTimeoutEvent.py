@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from ..absTimeoutAction import AbsTimeoutAction
-from ..absTimeoutEvent import AbsTimeoutEvent
-from ..bananaTimeoutAction import BananaTimeoutAction
+from .absTimeoutEvent import AbsTimeoutEvent
+from ..actions.absTimeoutAction import AbsTimeoutAction
+from ..actions.bananaTimeoutAction import BananaTimeoutAction
 from ..bananaTimeoutTarget import BananaTimeoutTarget
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 

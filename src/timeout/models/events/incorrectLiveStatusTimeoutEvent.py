@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from ..absTimeoutAction import AbsTimeoutAction
-from ..absTimeoutEvent import AbsTimeoutEvent
+from .absTimeoutEvent import AbsTimeoutEvent
+from ..actions.absTimeoutAction import AbsTimeoutAction
 
 
 @dataclass(frozen = True)

@@ -3,7 +3,7 @@ from typing import Final
 
 from frozenlist import FrozenList
 
-from ..models.airStrikeTimeoutAction import AirStrikeTimeoutAction
+from ..models.actions.airStrikeTimeoutAction import AirStrikeTimeoutAction
 from ..models.airStrikeTimeoutTarget import AirStrikeTimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ...timber.timberInterface import TimberInterface

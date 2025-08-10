@@ -1,6 +1,6 @@
 import random
 
-from ..models.absTimeoutAction import AbsTimeoutAction
+from ..models.actions.absTimeoutAction import AbsTimeoutAction
 from ..models.calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ..models.exactTimeoutDuration import ExactTimeoutDuration
 from ..models.randomExponentialTimeoutDuration import RandomExponentialTimeoutDuration

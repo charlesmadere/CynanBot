@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
 from .absTimeoutAction import AbsTimeoutAction
-from .absTimeoutDuration import AbsTimeoutDuration
-from .pointRedemptionTimeoutData import PointRedemptionTimeoutData
+from ..absTimeoutDuration import AbsTimeoutDuration
+from ..pointRedemptionTimeoutData import PointRedemptionTimeoutData
 from ..timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
-from ...users.userInterface import UserInterface
+from ....users.userInterface import UserInterface
 
 
 @dataclass(frozen = True)

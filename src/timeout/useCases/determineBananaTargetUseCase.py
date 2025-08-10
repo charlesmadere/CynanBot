@@ -4,7 +4,7 @@ import traceback
 from typing import Final, Pattern
 
 from ..exceptions import UnknownTimeoutTargetException
-from ..models.bananaTimeoutAction import BananaTimeoutAction
+from ..models.actions.bananaTimeoutAction import BananaTimeoutAction
 from ..models.bananaTimeoutTarget import BananaTimeoutTarget
 from ..models.timeoutDiceRoll import TimeoutDiceRoll
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface

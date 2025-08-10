@@ -1,6 +1,6 @@
 from ..timeoutActionMachineInterface import TimeoutActionMachineInterface
 from ...listener.timeoutEventListener import TimeoutEventListener
-from ...models.absTimeoutAction import AbsTimeoutAction
+from ...models.actions.absTimeoutAction import AbsTimeoutAction
 
 
 class StubTimeoutActionMachine(TimeoutActionMachineInterface):

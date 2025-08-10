@@ -1,7 +1,7 @@
 from typing import Final
 
 from .absTimeoutEventHandler import AbsTimeoutEventHandler
-from ..models.absTimeoutEvent import AbsTimeoutEvent
+from ..models.events.absTimeoutEvent import AbsTimeoutEvent
 from ..models.events.airStrikeTimeoutEvent import AirStrikeTimeoutEvent
 from ..models.events.bananaTimeoutDiceRollFailedEvent import BananaTimeoutDiceRollFailedEvent
 from ..models.events.bananaTimeoutEvent import BananaTimeoutEvent

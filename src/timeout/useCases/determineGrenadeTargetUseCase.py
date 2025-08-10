@@ -1,7 +1,7 @@
 import random
 from typing import Final
 
-from ..models.grenadeTimeoutAction import GrenadeTimeoutAction
+from ..models.actions.grenadeTimeoutAction import GrenadeTimeoutAction
 from ..models.grenadeTimeoutTarget import GrenadeTimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ...timber.timberInterface import TimberInterface

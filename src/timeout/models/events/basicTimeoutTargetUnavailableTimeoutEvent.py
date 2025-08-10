@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from ..absTimeoutAction import AbsTimeoutAction
-from ..absTimeoutEvent import AbsTimeoutEvent
-from ..basicTimeoutAction import BasicTimeoutAction
+from .absTimeoutEvent import AbsTimeoutEvent
+from ..actions.absTimeoutAction import AbsTimeoutAction
+from ..actions.basicTimeoutAction import BasicTimeoutAction
 
 
 @dataclass(frozen = True)
