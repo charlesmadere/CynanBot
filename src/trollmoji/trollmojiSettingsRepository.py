@@ -1,3 +1,5 @@
+from typing import Final
+
 from .trollmojiDetails import TrollmojiDetails
 from .trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from ..misc import utils as utils
@@ -14,7 +16,7 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
         gottemEmoteBackup: str = 'RIPBOZO',
         hypeEmoteBackup: str = '🎉',
         thumbsDownEmoteBackup: str = '👎',
-        thumbsUpEmoteBackup: str = '👍'
+        thumbsUpEmoteBackup: str = '👍',
     ):
         if not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
@@ -31,13 +33,13 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
         elif not utils.isValidStr(thumbsUpEmoteBackup):
             raise TypeError(f'thumbsUpEmoteBackup argument is malformed: \"{thumbsUpEmoteBackup}\"')
 
-        self.__twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdRepository
-        self.__bombEmoteBackup: str = bombEmoteBackup
-        self.__explodedEmoteBackup: str = explodedEmoteBackup
-        self.__gottemEmoteBackup: str = gottemEmoteBackup
-        self.__hypeEmoteBackup: str = hypeEmoteBackup
-        self.__thumbsDownEmoteBackup: str = thumbsDownEmoteBackup
-        self.__thumbsUpEmoteBackup: str = thumbsUpEmoteBackup
+        self.__twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = twitchFriendsUserIdRepository
+        self.__bombEmoteBackup: Final[str] = bombEmoteBackup
+        self.__explodedEmoteBackup: Final[str] = explodedEmoteBackup
+        self.__gottemEmoteBackup: Final[str] = gottemEmoteBackup
+        self.__hypeEmoteBackup: Final[str] = hypeEmoteBackup
+        self.__thumbsDownEmoteBackup: Final[str] = thumbsDownEmoteBackup
+        self.__thumbsUpEmoteBackup: Final[str] = thumbsUpEmoteBackup
 
     async def clearCaches(self):
         # this method is intentionally empty
@@ -83,7 +85,7 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
 
         return TrollmojiDetails(
             emoteText = emoteText,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def __getSamusEmote(
@@ -99,7 +101,7 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
 
         return TrollmojiDetails(
             emoteText = emoteText,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def getShrugEmote(self) -> TrollmojiDetails | None:

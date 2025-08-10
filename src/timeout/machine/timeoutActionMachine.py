@@ -194,7 +194,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         timeoutResults: dict[AirStrikeTimeoutTarget, TwitchTimeoutResult] = dict()
 
         for timeoutTarget in timeoutTargets:
-            timeoutResult = await self.__twitchTimeoutHelper.timeout(
+            timeoutResults[timeoutTarget] = await self.__twitchTimeoutHelper.timeout(
                 durationSeconds = timeoutDuration.seconds,
                 reason = f'{ChatterItemType.AIR_STRIKE.humanName} timeout from {instigatorUserName} for {timeoutDuration.message}',
                 twitchAccessToken = action.moderatorTwitchAccessToken,
@@ -203,8 +203,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 userIdToTimeout = timeoutTarget.targetUserId,
                 user = action.user,
             )
-
-            timeoutResults[timeoutTarget] = timeoutResult
 
         frozenTimeoutResults: frozendict[AirStrikeTimeoutTarget, TwitchTimeoutResult] = frozendict(timeoutResults)
         successfulTimeoutTargets: FrozenList[AirStrikeTimeoutTarget] = FrozenList()
