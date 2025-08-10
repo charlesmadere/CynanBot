@@ -1524,13 +1524,6 @@ mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = Most
     timeZoneRepository = timeZoneRepository,
 )
 
-whichAnivUserHelper: WhichAnivUserHelperInterface = WhichAnivUserHelper(
-    timber = timber,
-    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
-    twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
-)
-
 mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = None
 if mostRecentAnivMessageRepository is not None:
     mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(

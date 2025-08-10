@@ -1717,13 +1717,6 @@ mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = Most
     timeZoneRepository = timeZoneRepository,
 )
 
-whichAnivUserHelper: WhichAnivUserHelperInterface = WhichAnivUserHelper(
-    timber = timber,
-    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
-    twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
-)
-
 mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface = MostRecentAnivMessageTimeoutHelper(
     anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
     anivSettings = anivSettings,
