@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Final
 
+from frozendict import frozendict
+
 from .mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from ..models.mostRecentAnivMessage import MostRecentAnivMessage
 from ..models.whichAnivUser import WhichAnivUser
@@ -24,7 +26,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
 
-        self.__cache: Final[dict[str, MostRecentAnivMessage | None]] = dict()
+        self.__cache: Final[dict[str, dict[WhichAnivUser, MostRecentAnivMessage | None]]] = dict()
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -33,11 +35,11 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
     async def get(
         self,
         twitchChannelId: str,
-    ) -> MostRecentAnivMessage | None:
+    ) -> frozendict[WhichAnivUser, MostRecentAnivMessage | None]:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        return self.__cache.get(twitchChannelId, None)
+        return frozendict(self.__cache.get(twitchChannelId, None))
 
     async def set(
         self,
@@ -55,12 +57,12 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         cleanedMessage = utils.cleanStr(message)
 
         if utils.isValidStr(cleanedMessage):
-            self.__cache[twitchChannelId] = MostRecentAnivMessage(
+            self.__cache[twitchChannelId][whichAnivUser] = MostRecentAnivMessage(
                 dateTime = datetime.now(self.__timeZoneRepository.getDefault()),
                 message = cleanedMessage,
                 whichAnivUser = whichAnivUser,
             )
-            self.__timber.log('MostRecentAnivMessageRepository', f'Updated most recent aniv message in \"{twitchChannelId}\"')
+            self.__timber.log('MostRecentAnivMessageRepository', f'Updated most recent aniv message ({twitchChannelId=}) ({whichAnivUser=})')
         else:
-            self.__cache.pop(twitchChannelId, None)
-            self.__timber.log('MostRecentAnivMessageRepository', f'Removed most recent aniv message in \"{twitchChannelId}\"')
+            self.__cache[twitchChannelId].pop(whichAnivUser, None)
+            self.__timber.log('MostRecentAnivMessageRepository', f'Removed most recent aniv message ({twitchChannelId=}) ({whichAnivUser=})')

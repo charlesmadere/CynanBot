@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from frozendict import frozendict
+
 from ..models.mostRecentAnivMessage import MostRecentAnivMessage
 from ..models.whichAnivUser import WhichAnivUser
 from ...misc.clearable import Clearable
@@ -11,7 +13,7 @@ class MostRecentAnivMessageRepositoryInterface(Clearable, ABC):
     async def get(
         self,
         twitchChannelId: str,
-    ) -> MostRecentAnivMessage | None:
+    ) -> frozendict[WhichAnivUser, MostRecentAnivMessage | None]:
         pass
 
     @abstractmethod

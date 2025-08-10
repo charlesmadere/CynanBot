@@ -8,11 +8,18 @@ from ..models.whichAnivUser import WhichAnivUser
 class AnivUserIdsRepositoryInterface(ABC):
 
     @abstractmethod
+    async def determineAnivUser(
+        self,
+        chatterUserId: str | None,
+    ) -> WhichAnivUser | None:
+        pass
+
+    @abstractmethod
     async def getAcacUserId(self) -> str | None:
         pass
 
     @abstractmethod
-    async def getAllUserIds(self) -> frozendict[WhichAnivUser, str | None]:
+    async def getAllUsers(self) -> frozendict[WhichAnivUser, str | None]:
         pass
 
     @abstractmethod

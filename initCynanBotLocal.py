@@ -8,8 +8,6 @@ from src.aniv.contentScanner.anivContentScanner import AnivContentScanner
 from src.aniv.contentScanner.anivContentScannerInterface import AnivContentScannerInterface
 from src.aniv.helpers.mostRecentAnivMessageTimeoutHelper import MostRecentAnivMessageTimeoutHelper
 from src.aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
-from src.aniv.helpers.whichAnivUserHelper import WhichAnivUserHelper
-from src.aniv.helpers.whichAnivUserHelperInterface import WhichAnivUserHelperInterface
 from src.aniv.mapper.anivJsonMapper import AnivJsonMapper
 from src.aniv.mapper.anivJsonMapperInterface import AnivJsonMapperInterface
 from src.aniv.presenters.anivCopyMessageTimeoutScorePresenter import AnivCopyMessageTimeoutScorePresenter
@@ -1629,7 +1627,7 @@ if mostRecentAnivMessageRepository is not None:
         twitchTimeoutHelper = twitchTimeoutHelper,
         twitchTokensRepository = twitchTokensRepository,
         twitchUtils = twitchUtils,
-        whichAnivUserHelper = whichAnivUserHelper
+        userIdsRepository = userIdsRepository,
     )
 
 

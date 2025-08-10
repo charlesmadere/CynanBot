@@ -1,7 +1,7 @@
 from typing import Final
 
 from .absChatAction import AbsChatAction
-from ..aniv.helpers.whichAnivUserHelperInterface import WhichAnivUserHelperInterface
+from ..aniv.repositories.anivUserIdsRepositoryInterface import AnivUserIdsRepositoryInterface
 from ..aniv.repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
@@ -13,16 +13,16 @@ class SaveMostRecentAnivMessageChatAction(AbsChatAction):
 
     def __init__(
         self,
+        anivUserIdsRepository: AnivUserIdsRepositoryInterface,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface,
-        whichAnivUserHelper: WhichAnivUserHelperInterface,
     ):
-        if not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
+        if not isinstance(anivUserIdsRepository, AnivUserIdsRepositoryInterface):
+            raise TypeError(f'anivUserIdsRepository argument is malformed: \"{anivUserIdsRepository}\"')
+        elif not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
             raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
-        elif not isinstance(whichAnivUserHelper, WhichAnivUserHelperInterface):
-            raise TypeError(f'whichAnivUserHelper argument is malformed: \"{whichAnivUserHelper}\"')
 
+        self.__anivUserIdsRepository: Final[AnivUserIdsRepositoryInterface] = anivUserIdsRepository
         self.__mostRecentAnivMessageRepository: Final[MostRecentAnivMessageRepositoryInterface] = mostRecentAnivMessageRepository
-        self.__whichAnivUserHelper: Final[WhichAnivUserHelperInterface] = whichAnivUserHelper
 
     async def handleChat(
         self,
@@ -30,12 +30,11 @@ class SaveMostRecentAnivMessageChatAction(AbsChatAction):
         message: TwitchMessage,
         user: UserInterface,
     ) -> bool:
-        anivUser = await self.__whichAnivUserHelper.getAnivUser(
-            twitchChannelId = await message.getTwitchChannelId(),
-            whichAnivUser = user.whichAnivUser,
+        whichAnivUser = await self.__anivUserIdsRepository.determineAnivUser(
+            chatterUserId = message.getAuthorId(),
         )
 
-        if anivUser is None or anivUser.userId != message.getAuthorId():
+        if whichAnivUser is None:
             return False
 
         cleanedMessage = utils.cleanStr(message.getContent())
@@ -43,7 +42,7 @@ class SaveMostRecentAnivMessageChatAction(AbsChatAction):
         await self.__mostRecentAnivMessageRepository.set(
             message = cleanedMessage,
             twitchChannelId = await message.getTwitchChannelId(),
-            whichAnivUser = anivUser.whichAnivUser,
+            whichAnivUser = whichAnivUser,
         )
 
         return True
