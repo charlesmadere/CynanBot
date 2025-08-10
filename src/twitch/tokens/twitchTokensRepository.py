@@ -7,9 +7,7 @@ from .twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..api.models.twitchTokensDetails import TwitchTokensDetails
 from ..api.models.twitchValidationResponse import TwitchValidationResponse
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..exceptions import (TwitchAccessTokenMissingException,
-                          TwitchPasswordChangedException,
-                          TwitchStatusCodeException)
+from ..exceptions import TwitchAccessTokenMissingException, TwitchPasswordChangedException, TwitchStatusCodeException
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
