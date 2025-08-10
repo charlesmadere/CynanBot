@@ -1,6 +1,5 @@
 import asyncio
 import queue
-import random
 import traceback
 from queue import SimpleQueue
 from typing import Final
@@ -21,7 +20,6 @@ from ..models.airStrikeTimeoutTarget import AirStrikeTimeoutTarget
 from ..models.bananaTimeoutAction import BananaTimeoutAction
 from ..models.basicTimeoutAction import BasicTimeoutAction
 from ..models.basicTimeoutTarget import BasicTimeoutTarget
-from ..models.calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ..models.events.airStrikeTimeoutEvent import AirStrikeTimeoutEvent
 from ..models.events.bananaTimeoutDiceRollFailedEvent import BananaTimeoutDiceRollFailedEvent
 from ..models.events.bananaTimeoutEvent import BananaTimeoutEvent
@@ -38,15 +36,11 @@ from ..models.events.noBananaInventoryAvailableTimeoutEvent import NoBananaInven
 from ..models.events.noBananaTargetAvailableTimeoutEvent import NoBananaTargetAvailableTimeoutEvent
 from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
-from ..models.exactTimeoutDuration import ExactTimeoutDuration
 from ..models.grenadeTimeoutAction import GrenadeTimeoutAction
-from ..models.randomExponentialTimeoutDuration import RandomExponentialTimeoutDuration
-from ..models.randomLinearTimeoutDuration import RandomLinearTimeoutDuration
 from ..timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
+from ..useCases.calculateTimeoutDurationUseCase import CalculateTimeoutDurationUseCase
 from ..useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
 from ..useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
-from ..useCases.determineExponentialTimeoutDurationSecondsUseCase import \
-    DetermineExponentialTimeoutDurationSecondsUseCase
 from ..useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
 from ...asplodieStats.models.asplodieStats import AsplodieStats
 from ...asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
@@ -72,10 +66,10 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         activeChattersRepository: ActiveChattersRepositoryInterface,
         asplodieStatsRepository: AsplodieStatsRepositoryInterface,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        determineBananaTargetUseCase: DetermineBananaTargetUseCase,
+        calculateTimeoutDurationUseCase: CalculateTimeoutDurationUseCase,
         chatterInventoryHelper: ChatterInventoryHelperInterface,
         determineAirStrikeTargetsUseCase: DetermineAirStrikeTargetsUseCase,
-        determineExponentialTimeoutDurationSecondsUseCase: DetermineExponentialTimeoutDurationSecondsUseCase,
+        determineBananaTargetUseCase: DetermineBananaTargetUseCase,
         determineGrenadeTargetUseCase: DetermineGrenadeTargetUseCase,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
@@ -94,14 +88,14 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'asplodieStatsRepository argument is malformed: \"{asplodieStatsRepository}\"')
         elif not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(calculateTimeoutDurationUseCase, CalculateTimeoutDurationUseCase):
+            raise TypeError(f'calculateTimeoutDurationUseCase argument is malformed: \"{calculateTimeoutDurationUseCase}\"')
         elif not isinstance(chatterInventoryHelper, ChatterInventoryHelperInterface):
             raise TypeError(f'chatterInventoryHelper argument is malformed: \"{chatterInventoryHelper}\"')
         elif not isinstance(determineAirStrikeTargetsUseCase, DetermineAirStrikeTargetsUseCase):
             raise TypeError(f'determineAirStrikeTargetsUseCase argument is malformed: \"{determineAirStrikeTargetsUseCase}\"')
         elif not isinstance(determineBananaTargetUseCase, DetermineBananaTargetUseCase):
             raise TypeError(f'determineBananaTargetUseCase argument is malformed: \"{determineBananaTargetUseCase}\"')
-        elif not isinstance(determineExponentialTimeoutDurationSecondsUseCase, DetermineExponentialTimeoutDurationSecondsUseCase):
-            raise TypeError(f'determineExponentialTimeoutDurationSecondsUseCase argument is malformed: \"{determineExponentialTimeoutDurationSecondsUseCase}\"')
         elif not isinstance(determineGrenadeTargetUseCase, DetermineGrenadeTargetUseCase):
             raise TypeError(f'determineGrenadeTargetUseCase argument is malformed: \"{determineGrenadeTargetUseCase}\"')
         elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
@@ -132,10 +126,10 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__asplodieStatsRepository: Final[AsplodieStatsRepositoryInterface] = asplodieStatsRepository
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCase] = calculateTimeoutDurationUseCase
         self.__chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = chatterInventoryHelper
         self.__determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCase] = determineAirStrikeTargetsUseCase
         self.__determineBananaTargetUseCase: Final[DetermineBananaTargetUseCase] = determineBananaTargetUseCase
-        self.__determineExponentialTimeoutDurationSecondsUseCase: Final[DetermineExponentialTimeoutDurationSecondsUseCase] = determineExponentialTimeoutDurationSecondsUseCase
         self.__determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCase] = determineGrenadeTargetUseCase
         self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
@@ -152,31 +146,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__actionQueue: Final[SimpleQueue[AbsTimeoutAction]] = SimpleQueue()
         self.__eventQueue: Final[SimpleQueue[AbsTimeoutEvent]] = SimpleQueue()
         self.__eventListener: TimeoutEventListener | None = None
-
-    async def __calculateTimeoutDuration(self, action: AbsTimeoutAction) -> CalculatedTimeoutDuration:
-        timeoutDuration = action.getTimeoutDuration()
-        durationSeconds: int
-
-        if isinstance(timeoutDuration, ExactTimeoutDuration):
-            durationSeconds = timeoutDuration.seconds
-
-        elif isinstance(timeoutDuration, RandomExponentialTimeoutDuration):
-            durationSeconds = await self.__determineExponentialTimeoutDurationSecondsUseCase.invoke(
-                timeoutDuration = timeoutDuration,
-            )
-
-        elif isinstance(timeoutDuration, RandomLinearTimeoutDuration):
-            durationSeconds = random.randint(timeoutDuration.minimumSeconds, timeoutDuration.maximumSeconds)
-
-        else:
-            raise ValueError(f'Encountered unknown AbsTimeoutDuration type: \"{timeoutDuration}\"')
-
-        message = utils.secondsToDurationMessage(durationSeconds)
-
-        return CalculatedTimeoutDuration(
-            seconds = durationSeconds,
-            message = message,
-        )
 
     async def __handleAirStrikeTimeoutAction(self, action: AirStrikeTimeoutAction):
         if not isinstance(action, AirStrikeTimeoutAction):
@@ -218,7 +187,10 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             chatterUserId = action.instigatorUserId,
         )
 
-        timeoutDuration = await self.__calculateTimeoutDuration(action)
+        timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
+            timeoutAction = action,
+        )
+
         timeoutResults: dict[AirStrikeTimeoutTarget, TwitchTimeoutResult] = dict()
 
         for timeoutTarget in timeoutTargets:
@@ -330,7 +302,9 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             chatterUserId = action.instigatorUserId,
         )
 
-        timeoutDuration = await self.__calculateTimeoutDuration(action)
+        timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
+            timeoutAction = action,
+        )
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
             durationSeconds = timeoutDuration.seconds,
@@ -408,7 +382,9 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             targetUserName = targetUserName,
         )
 
-        timeoutDuration = await self.__calculateTimeoutDuration(action)
+        timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
+            timeoutAction = action,
+        )
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
             durationSeconds = timeoutDuration.seconds,
@@ -478,7 +454,9 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             chatterUserId = action.instigatorUserId,
         )
 
-        timeoutDuration = await self.__calculateTimeoutDuration(action)
+        timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
+            timeoutAction = action,
+        )
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
             durationSeconds = timeoutDuration.seconds,
