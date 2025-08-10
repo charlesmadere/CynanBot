@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime
 from typing import Final
 
@@ -26,7 +27,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
 
-        self.__cache: Final[dict[str, dict[WhichAnivUser, MostRecentAnivMessage | None]]] = dict()
+        self.__cache: Final[dict[str, dict[WhichAnivUser, MostRecentAnivMessage | None]]] = defaultdict(lambda: dict())
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -39,7 +40,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        return frozendict(self.__cache.get(twitchChannelId, None))
+        return frozendict(self.__cache[twitchChannelId])
 
     async def set(
         self,
