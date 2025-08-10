@@ -3,6 +3,8 @@ import traceback
 from datetime import datetime, timedelta
 from typing import Any, Final
 
+import aiofiles.os
+
 from .twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..api.models.twitchTokensDetails import TwitchTokensDetails
 from ..api.models.twitchValidationResponse import TwitchValidationResponse
@@ -15,6 +17,7 @@ from ...network.exceptions import GenericNetworkException
 from ...storage.backingDatabase import BackingDatabase
 from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
+from ...storage.jsonFileReader import JsonFileReader
 from ...storage.jsonReaderInterface import JsonReaderInterface
 from ...timber.timberInterface import TimberInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
@@ -171,6 +174,8 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         if not await seedFileReader.fileExistsAsync():
             self.__timber.log('TwitchTokensRepository', f'Seed file does not exist ({seedFileReader=})')
+            # temporary, currently just using this for some environment debug purposes
+            await self.__notifyOfNoSeedFile(seedFileReader)
             return
 
         jsonContents: dict[str, dict[str, Any]] | Any | None = await seedFileReader.readJsonAsync()
@@ -385,6 +390,36 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         await connection.close()
         await self.__consumeSeedFile()
+
+    async def __notifyOfNoSeedFile(self, seedFileReader: JsonReaderInterface):
+        if not isinstance(seedFileReader, JsonFileReader):
+            self.__timber.log('TwitchTokensRepository', f'The given JsonReaderInterface is not of type JsonFileReader ({seedFileReader=})')
+            return
+        elif not utils.isValidStr(seedFileReader.fileName):
+            # bizarre edge case but let's just be extra safe
+            return
+
+        # For debugging purposes, let's print out the directory contents where the seed file is intended to be.
+
+        directoryToScan = '.'
+
+        try:
+            lastSlashIndex = seedFileReader.fileName.rindex('/')
+            directoryToScan = directoryToScan[:lastSlashIndex]
+        except (RuntimeError, ValueError):
+            pass
+
+        directoryContents = await aiofiles.os.scandir(
+            path = directoryToScan,
+            loop = self.__backgroundTaskHelper.eventLoop,
+        )
+
+        directoryEntries: list[str] = list()
+
+        for index, entry in enumerate(directoryContents):
+            directoryEntries.append(f'#{index=} ({entry=}) ({entry.name=}) ({entry.is_file()=}) ({entry.is_dir()=})')
+
+        self.__timber.log('TwitchTokensRepository', f'Seed file directory scan results ({directoryToScan=}) ({len(directoryEntries)} file(s)): {directoryEntries}')
 
     async def removeUser(
         self,

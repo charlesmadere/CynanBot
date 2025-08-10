@@ -14,7 +14,7 @@ class LinesFileReader(LinesReaderInterface):
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
-        fileName: str
+        fileName: str,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -49,7 +49,7 @@ class LinesFileReader(LinesReaderInterface):
             file = self.__fileName,
             mode = 'r',
             encoding = 'utf-8',
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ) as file:
             lines = await file.readlines()
 

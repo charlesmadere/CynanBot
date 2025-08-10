@@ -39,7 +39,7 @@ class JsonFileReader(JsonReaderInterface):
     async def fileExistsAsync(self) -> bool:
         return await aiofiles.ospath.exists(
             path = self.__fileName,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         )
 
     @property
@@ -67,7 +67,7 @@ class JsonFileReader(JsonReaderInterface):
             file = self.__fileName,
             mode = 'r',
             encoding = 'utf-8',
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ) as file:
             data = await file.read()
             jsonContents = json.loads(data)

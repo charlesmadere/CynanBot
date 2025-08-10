@@ -37,5 +37,5 @@ class JsonStaticReader(JsonReaderInterface):
     def toDictionary(self) -> dict[str, Any]:
         return {
             'isDeleted': self.__isDeleted,
-            'jsonContents': self.__jsonContents
+            'jsonContents': self.__jsonContents,
         }
