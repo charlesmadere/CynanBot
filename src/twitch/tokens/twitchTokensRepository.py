@@ -178,14 +178,15 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             await self.__notifyOfNoSeedFile(seedFileReader)
             return
 
+        self.__timber.log('TwitchTokensRepository', f'Reading in seed file... ({seedFileReader=})')
         jsonContents: dict[str, dict[str, Any]] | Any | None = await seedFileReader.readJsonAsync()
         await seedFileReader.deleteFileAsync()
 
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
-            self.__timber.log('TwitchTokensRepository', f'Seed file is empty ({seedFileReader=})')
+            self.__timber.log('TwitchTokensRepository', f'Seed file is empty ({seedFileReader=}) ({jsonContents=})')
+            # temporary, currently just using this for some environment debug purposes
+            await self.__notifyOfNoSeedFile(seedFileReader)
             return
-
-        self.__timber.log('TwitchTokensRepository', f'Reading in seed file... ({seedFileReader=})')
 
         for twitchChannel, tokensDetailsJson in jsonContents.items():
             if not utils.isValidStr(twitchChannel) or not isinstance(tokensDetailsJson, dict):
