@@ -140,7 +140,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             # Checks for a scenario where the user guessed an answer outside the range
             # of actual responses. For example, the user might have guessed F, but the
             # question only had up to D.
-            self.__timber.log('TriviaAnswerChecker', f'Multiple choice answer ordinal ({answerIndex}) is outside the range of actual answer ordinals ({triviaQuestion.responseCount=})')
+            self.__timber.log('TriviaAnswerChecker', f'Multiple choice answer ordinal is outside the range of actual answer ordinals: ({answer=}) ({answerIndex=}) ({triviaQuestion.responseCount=})')
             return TriviaAnswerCheckResult.INVALID_INPUT
 
         if answerIndex in triviaQuestion.indexesWithCorrectAnswers.keys():
