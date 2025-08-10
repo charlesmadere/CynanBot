@@ -172,17 +172,17 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self.__seedFileReader = None
 
         if not await seedFileReader.fileExistsAsync():
-            self.__timber.log('TwitchTokensRepository', f'Seed file (\"{seedFileReader}\") does not exist')
+            self.__timber.log('TwitchTokensRepository', f'Seed file does not exist ({seedFileReader=})')
             return
 
-        jsonContents: dict[str, dict[str, Any]] | None = await seedFileReader.readJsonAsync()
+        jsonContents: dict[str, dict[str, Any]] | Any | None = await seedFileReader.readJsonAsync()
         await seedFileReader.deleteFileAsync()
 
-        if jsonContents is None or len(jsonContents) == 0:
-            self.__timber.log('TwitchTokensRepository', f'Seed file (\"{seedFileReader}\") is empty')
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
+            self.__timber.log('TwitchTokensRepository', f'Seed file is empty ({seedFileReader=})')
             return
 
-        self.__timber.log('TwitchTokensRepository', f'Reading in seed file \"{seedFileReader}\"...')
+        self.__timber.log('TwitchTokensRepository', f'Reading in seed file... ({seedFileReader=})')
 
         for twitchChannel, tokensDetailsJson in jsonContents.items():
             tokensDetails: TwitchTokensDetails | None = None
@@ -209,7 +209,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
                     tokensDetails = tokensDetails,
                 )
 
-        self.__timber.log('TwitchTokensRepository', f'Finished reading in seed file \"{seedFileReader}\"')
+        self.__timber.log('TwitchTokensRepository', f'Finished reading in seed file ({seedFileReader=})')
 
     async def __createExpiredExpirationTime(self) -> datetime:
         nowDateTime = datetime.now(self.__timeZoneRepository.getDefault())
