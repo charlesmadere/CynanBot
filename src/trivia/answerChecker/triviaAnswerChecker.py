@@ -132,7 +132,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             return TriviaAnswerCheckResult.INVALID_INPUT
 
         if not utils.isValidInt(answerIndex):
-            # this should be impossible, but let's just check anyway
+            # this should be impossible at this point, but let's just check anyway
             self.__timber.log('TriviaAnswerChecker', f'Unable to convert multiple choice answer to ordinal: ({answer=}) ({answerIndex=})')
             return TriviaAnswerCheckResult.INVALID_INPUT
 
