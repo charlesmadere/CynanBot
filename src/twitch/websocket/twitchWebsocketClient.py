@@ -4,7 +4,7 @@ import queue
 import traceback
 from datetime import datetime, timedelta
 from queue import SimpleQueue
-from typing import Any, Collection, Coroutine, Final
+from typing import Any, Coroutine, Final
 
 import websockets
 from frozenlist import FrozenList
@@ -213,80 +213,19 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                 eventSubRequest = eventSubRequest,
             ))
 
-        subscriptionResults: Collection[TwitchEventSubResponse | Exception | Any | None] | Any | None = None
-
         try:
-            subscriptionResults = await asyncio.gather(*createEventSubSubscriptionCoroutines, return_exceptions = True)
+            await asyncio.gather(*createEventSubSubscriptionCoroutines, return_exceptions = False)
             self.__timber.log('TwitchWebsocketClient', f'Finished creating {len(subscriptionTypes)} EventSub subscription(s) ({user=}) ({sessionId=})')
         except Exception as e:
             self.__timber.log('TwitchWebsocketClient', f'Encountered unknown error when creating EventSub subscription(s) ({user=}) ({sessionId=}): {e}', e, traceback.format_exc())
 
-        await self.__inspectEventSubSubscriptionResultsAndMaybeResubscribe2(
+        await self.__inspectEventSubSubscriptionResultsAndMaybeResubscribe(
             requestedSubscriptionTypes = subscriptionTypes,
             userTwitchAccessToken = userTwitchAccessToken,
             user = user,
         )
 
     async def __inspectEventSubSubscriptionResultsAndMaybeResubscribe(
-        self,
-        subscriptionResults: Collection[TwitchEventSubResponse | Exception | Any | None] | Any | None,
-        requestedSubscriptionTypes: frozenset[TwitchWebsocketSubscriptionType],
-        user: TwitchWebsocketUser,
-    ):
-        # This method is rather long-winded but what it does is pretty important. We'd
-        # prefer using the Twitch CHANNEL_CHAT_MESSAGE EventSub subscription if possible,
-        # however, that subscription requires a few more permissions than CHANNEL_CHEER.
-        # So what this method intends to do is it will check the list of the successfully
-        # created EventSub subscriptions, and if CHANNEL_CHAT_MESSAGE was requested, but
-        # failed, and CHANNEL_CHEER was NOT requested, then we will create a CHANNEL_CHEER
-        # subscription.
-
-        if not await self.__twitchWebsocketSettingsRepository.isChatEventToCheerEventSubscriptionFallbackEnabled():
-            return
-        elif not isinstance(subscriptionResults, Collection):
-            return
-        elif len(requestedSubscriptionTypes) == 0:
-            return
-        elif TwitchWebsocketSubscriptionType.CHANNEL_BITS_USE in requestedSubscriptionTypes:
-            return
-        elif TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE in requestedSubscriptionTypes:
-            return
-        elif TwitchWebsocketSubscriptionType.CHANNEL_CHEER in requestedSubscriptionTypes:
-            return
-
-        results: list[TwitchEventSubResponse | Exception | Any | None] = list(subscriptionResults)
-
-        if len(results) == 0:
-            return
-
-        successfulSubscriptionTypes: set[TwitchWebsocketSubscriptionType] = set()
-
-        for result in results:
-            if not isinstance(result, TwitchEventSubResponse):
-                continue
-
-            for data in result.data:
-                successfulSubscriptionTypes.add(data.subscriptionType)
-
-        if TwitchWebsocketSubscriptionType.CHANNEL_BITS_USE in successfulSubscriptionTypes:
-            return
-        elif TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE in successfulSubscriptionTypes:
-            return
-        elif TwitchWebsocketSubscriptionType.CHANNEL_CHEER in successfulSubscriptionTypes:
-            return
-
-        # Sleep a little bit before making the following API call, just to ensure things are
-        # finished being initialized/configured on Twitch's end.
-        await asyncio.sleep(1)
-
-        self.__timber.log('TwitchWebsocketClient', f'It looks like we failed to create a chat message EventSub subscription, so let\'s fallback to creating a cheer EventSub subscription instead ({user=}) ({successfulSubscriptionTypes=})')
-
-        await self.__createEventSubSubscriptions(
-            subscriptionTypes = frozenset({ TwitchWebsocketSubscriptionType.CHANNEL_CHEER }),
-            user = user,
-        )
-
-    async def __inspectEventSubSubscriptionResultsAndMaybeResubscribe2(
         self,
         requestedSubscriptionTypes: frozenset[TwitchWebsocketSubscriptionType],
         userTwitchAccessToken: str,
