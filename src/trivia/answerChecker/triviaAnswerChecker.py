@@ -777,7 +777,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'field'
         if word == 'frd':
             yield 'ford'
-        if word in ('frt', 'ft'):
+        if word in { 'frt', 'ft' }:
             yield 'fort'
         if word == 'gdn':
             yield 'garden'
@@ -812,7 +812,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'motorway'
         if word == 'orch':
             yield 'orchard'
-        if word in ('pkwy', 'pkway', 'pky'):
+        if word in { 'pkwy', 'pkway', 'pky' }:
             yield 'parkway'
         if word == 'pl':
             yield 'place'
@@ -820,13 +820,13 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'post exchange'
         if word == 'rd':
             yield 'road'
-        if word in ('riv', 'rvr', 'rivr'):
+        if word in { 'riv', 'rvr', 'rivr' }:
             yield 'river'
         if word == 'rd':
             yield 'road'
         if word == 'sq':
             yield 'square'
-        if word in ('st', 'str', 'strt'):
+        if word in { 'st', 'str', 'strt' }:
             yield 'street'
         if word == 'stn':
             yield 'station'
@@ -834,7 +834,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'village'
         if word == 'vw':
             yield 'view'
-        if word in ('crssng', 'xing'):
+        if word in { 'crssng', 'xing' }:
             yield 'crossing'
 
         # countries, languages, and specific places
@@ -863,7 +863,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'democratic republic of the congo'
         if word in { 'en', 'eng' }:
             yield 'english'
-        if word == 'eu':
+        if word in { 'euro', 'eu' }:
             yield 'europe'
             yield 'european union'
         if word == 'gb':
@@ -912,11 +912,13 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'united kingdom'
         if word == 'un':
             yield 'united nations'
-        if word in { 'us', 'usa' }:
+        if word in { 'america', 'us', 'usa' }:
+            yield 'america'
             yield 'united states'
             yield 'united states america'
             yield 'united states of america'
-        if word in { 'russia', 'ussr' }:
+        if word in { 'russia', 'russian', 'soviet', 'soviets', 'ussr' }:
+            yield 'russia'
             yield 'soviet union'
 
         # government organizations
