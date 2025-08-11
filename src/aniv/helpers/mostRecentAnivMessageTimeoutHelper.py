@@ -116,7 +116,9 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if not user.isAnivMessageCopyTimeoutEnabled:
+        if not await self.__anivSettings.areCopyMessageTimeoutsEnabled():
+            return False
+        elif not user.isAnivMessageCopyTimeoutEnabled:
             return False
         elif chatterUserId == twitchChannelId:
             return False
@@ -182,8 +184,6 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
             await self.__anivCopyMessageTimeoutScoreRepository.incrementDodgeScore(
                 chatterUserId = chatterUserId,
-                chatterUserName = chatterUserName,
-                twitchChannel = user.handle,
                 twitchChannelId = twitchChannelId,
             )
 
@@ -211,18 +211,16 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         )
 
         if timeoutResult is not TwitchTimeoutResult.SUCCESS:
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, failed to timeout {chatterUserName}:{chatterUserId} for copying a message from aniv ({timeoutResult=})')
+            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, failed to timeout {chatterUserName}:{chatterUserId} for copying a message from aniv ({copiedAnivMessage=}) ({timeoutResult=})')
             return False
 
         timeoutScore = await self.__anivCopyMessageTimeoutScoreRepository.incrementTimeoutScore(
             timeoutDurationSeconds = timeoutData.durationSeconds,
             chatterUserId = chatterUserId,
-            chatterUserName = chatterUserName,
-            twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
         )
 
-        self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, {chatterUserName}:{chatterUserId} was timed out for copying a message from aniv')
+        self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, {chatterUserName}:{chatterUserId} was timed out for copying a message from aniv ({copiedAnivMessage=})')
 
         await self.__ripBozoInChat(
             timeoutScore = timeoutScore,
@@ -253,17 +251,10 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if not utils.isValidInt(maxDurationSeconds):
             maxDurationSeconds = await self.__anivSettings.getCopyMessageTimeoutMaxSeconds()
 
-        timeoutScale: float | None
-        durationSeconds: int
-
-        if await self.__anivSettings.isRandomTimeoutScalingEnabled():
-            minFloat = float(minDurationSeconds)
-            maxFloat = float(maxDurationSeconds)
-            timeoutScale = random.random()
-            durationSeconds = int(round(pow(timeoutScale, 9) * (maxFloat - minFloat) + minFloat))
-        else:
-            timeoutScale = None
-            durationSeconds = minDurationSeconds
+        timeoutScale = random.random()
+        minFloat = float(minDurationSeconds)
+        maxFloat = float(maxDurationSeconds)
+        durationSeconds = int(round(pow(timeoutScale, 9) * (maxFloat - minFloat) + minFloat))
 
         return AnivTimeoutData(
             randomNumber = randomNumber,

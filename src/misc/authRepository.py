@@ -1,4 +1,6 @@
-from typing import Any
+from typing import Any, Final
+
+from frozendict import frozendict
 
 from .authRepositorySnapshot import AuthRepositorySnapshot
 from .clearable import Clearable
@@ -16,14 +18,14 @@ class AuthRepository(
     GoogleCloudProjectCredentialsProviderInterface,
     OpenWeatherApiKeyProvider,
     TwitchCredentialsProviderInterface,
-    TwitchHandleProviderInterface
+    TwitchHandleProviderInterface,
 ):
 
     def __init__(self, authJsonReader: JsonReaderInterface):
         if not isinstance(authJsonReader, JsonReaderInterface):
             raise TypeError(f'authJsonReader argument is malformed: \"{authJsonReader}\"')
 
-        self.__authJsonReader: JsonReaderInterface = authJsonReader
+        self.__authJsonReader: Final[JsonReaderInterface] = authJsonReader
         self.__cache: AuthRepositorySnapshot | None = None
 
     async def clearCaches(self):
@@ -89,28 +91,28 @@ class AuthRepository(
         snapshot = await self.getAllAsync()
         return snapshot.requireTwitchHandle()
 
-    def __readJson(self) -> dict[str, Any]:
+    def __readJson(self) -> frozendict[str, Any]:
         if not self.__authJsonReader.fileExists():
-            raise FileNotFoundError(f'Auth Repository file not found: \"{self.__authJsonReader}\"')
+            raise FileNotFoundError(f'Auth Repository file not found ({self.__authJsonReader=})')
 
         jsonContents = self.__authJsonReader.readJson()
 
-        if jsonContents is None:
-            raise IOError(f'Error reading from Auth Repository file: \"{self.__authJsonReader}\"')
+        if not isinstance(jsonContents, dict):
+            raise IOError(f'Error reading from Auth Repository file ({self.__authJsonReader=})')
         elif len(jsonContents) == 0:
-            raise ValueError(f'JSON contents of Auth Repository file \"{self.__authJsonReader}\" is empty')
+            raise ValueError(f'JSON contents of Auth Repository file ({self.__authJsonReader=}) ({jsonContents=})')
 
-        return jsonContents
+        return frozendict(jsonContents)
 
-    async def __readJsonAsync(self) -> dict[str, Any]:
+    async def __readJsonAsync(self) -> frozendict[str, Any]:
         if not await self.__authJsonReader.fileExistsAsync():
-            raise FileNotFoundError(f'Auth Repository file not found: \"{self.__authJsonReader}\"')
+            raise FileNotFoundError(f'Auth Repository file not found ({self.__authJsonReader=})')
 
         jsonContents = await self.__authJsonReader.readJsonAsync()
 
-        if jsonContents is None:
-            raise IOError(f'Error reading from Auth Repository file: \"{self.__authJsonReader}\"')
+        if not isinstance(jsonContents, dict):
+            raise IOError(f'Error reading from Auth Repository file ({self.__authJsonReader=})')
         elif len(jsonContents) == 0:
-            raise ValueError(f'JSON contents of Auth Repository file \"{self.__authJsonReader}\" is empty')
+            raise ValueError(f'JSON contents of Auth Repository file is empty ({self.__authJsonReader=}) ({jsonContents=})')
 
-        return jsonContents
+        return frozendict(jsonContents)

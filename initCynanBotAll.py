@@ -6,6 +6,8 @@ from src.accessLevelChecking.accessLevelCheckingHelper import AccessLevelCheckin
 from src.accessLevelChecking.accessLevelCheckingHelperInterface import AccessLevelCheckingHelperInterface
 from src.aniv.contentScanner.anivContentScanner import AnivContentScanner
 from src.aniv.contentScanner.anivContentScannerInterface import AnivContentScannerInterface
+from src.aniv.helpers.anivCopyMessageTimeoutScoreHelper import AnivCopyMessageTimeoutScoreHelper
+from src.aniv.helpers.anivCopyMessageTimeoutScoreHelperInterface import AnivCopyMessageTimeoutScoreHelperInterface
 from src.aniv.helpers.mostRecentAnivMessageTimeoutHelper import MostRecentAnivMessageTimeoutHelper
 from src.aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from src.aniv.mapper.anivJsonMapper import AnivJsonMapper
@@ -1683,12 +1685,9 @@ triviaEventHandler: AbsTriviaEventHandler = TriviaEventHandler(
 ## aniv initialization section ##
 #################################
 
-anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface = AnivCopyMessageTimeoutScorePresenter()
-
 anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = AnivCopyMessageTimeoutScoreRepository(
     backingDatabase = backingDatabase,
     timeZoneRepository = timeZoneRepository,
-    userIdsRepository = userIdsRepository,
 )
 
 anivSettings: AnivSettingsInterface = AnivSettings(
@@ -1697,6 +1696,15 @@ anivSettings: AnivSettingsInterface = AnivSettings(
         fileName = '../config/anivSettings.json',
     ),
 )
+
+anivCopyMessageTimeoutScoreHelper: AnivCopyMessageTimeoutScoreHelperInterface = AnivCopyMessageTimeoutScoreHelper(
+    anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
+    anivSettings = anivSettings,
+    twitchTokensUtils = twitchTokensUtils,
+    userIdsRepository = userIdsRepository,
+)
+
+anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface = AnivCopyMessageTimeoutScorePresenter()
 
 anivUserIdsRepository: AnivUserIdsRepositoryInterface = AnivUserIdsRepository(
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
@@ -3147,8 +3155,8 @@ cynanBot = CynanBot(
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
     addOrRemoveUserDataHelper= addOrRemoveUserDataHelper,
     administratorProvider = administratorProvider,
+    anivCopyMessageTimeoutScoreHelper = anivCopyMessageTimeoutScoreHelper,
     anivCopyMessageTimeoutScorePresenter = anivCopyMessageTimeoutScorePresenter,
-    anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
     anivSettings = anivSettings,
     asplodieStatsPresenter = asplodieStatsPresenter,
     asplodieStatsRepository = asplodieStatsRepository,

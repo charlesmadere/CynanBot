@@ -15,6 +15,10 @@ class AnivSettings(AnivSettingsInterface):
 
         self.__settingsCache: dict[str, Any] | None = None
 
+    async def areCopyMessageTimeoutsEnabled(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'copyMessageTimeoutsEnabled', fallback = True)
+
     async def clearCaches(self):
         self.__settingsCache = None
 
@@ -33,10 +37,6 @@ class AnivSettings(AnivSettingsInterface):
     async def getCopyMessageTimeoutMaxSeconds(self) -> int:
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'copyMessageTimeoutMaxSeconds', fallback = 300)
-
-    async def isRandomTimeoutScalingEnabled(self) -> bool:
-        jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'randomTimeoutScalingEnabled', fallback = True)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__settingsCache is not None:

@@ -11,8 +11,6 @@ class AnivCopyMessageTimeoutScore:
     dodgeScore: int
     timeoutScore: int
     chatterUserId: str
-    chatterUserName: str
-    twitchChannel: str
     twitchChannelId: str
 
     @property

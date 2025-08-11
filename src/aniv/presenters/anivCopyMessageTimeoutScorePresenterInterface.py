@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ..models.anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
+from ..models.preparedAnivCopyMessageTimeoutScore import PreparedAnivCopyMessageTimeoutScore
 from ...language.languageEntry import LanguageEntry
 
 
@@ -14,10 +14,9 @@ class AnivCopyMessageTimeoutScorePresenterInterface(ABC):
         pass
 
     @abstractmethod
-    async def toString(
+    async def getScoreString(
         self,
-        score: AnivCopyMessageTimeoutScore | None,
         language: LanguageEntry,
-        chatterUserName: str,
+        preparedScore: PreparedAnivCopyMessageTimeoutScore,
     ) -> str:
         pass

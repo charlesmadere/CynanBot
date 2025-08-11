@@ -6,11 +6,10 @@ from twitchio.ext import commands
 from twitchio.ext.commands import Context
 from twitchio.ext.commands.errors import CommandNotFound
 
+from .aniv.helpers.anivCopyMessageTimeoutScoreHelperInterface import AnivCopyMessageTimeoutScoreHelperInterface
 from .aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from .aniv.presenters.anivCopyMessageTimeoutScorePresenterInterface import \
     AnivCopyMessageTimeoutScorePresenterInterface
-from .aniv.repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
-    AnivCopyMessageTimeoutScoreRepositoryInterface
 from .aniv.repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from .aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from .asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
@@ -271,7 +270,7 @@ class CynanBot(
     AddOrRemoveUserEventListener,
     ChannelJoinListener,
     TwitchChannelProvider,
-    TwitchConnectionReadinessProvider
+    TwitchConnectionReadinessProvider,
 ):
 
     def __init__(
@@ -290,8 +289,8 @@ class CynanBot(
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface | None,
         addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface,
         administratorProvider: AdministratorProviderInterface,
+        anivCopyMessageTimeoutScoreHelper: AnivCopyMessageTimeoutScoreHelperInterface | None,
         anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface | None,
-        anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface | None,
         anivSettings: AnivSettingsInterface | None,
         asplodieStatsPresenter: AsplodieStatsPresenter | None,
         asplodieStatsRepository: AsplodieStatsRepositoryInterface | None,
@@ -464,10 +463,10 @@ class CynanBot(
             raise TypeError(f'addOrRemoveUserDataHelper argument is malformed: \"{addOrRemoveUserDataHelper}\"')
         elif not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
+        elif anivCopyMessageTimeoutScoreHelper is not None and not isinstance(anivCopyMessageTimeoutScoreHelper, AnivCopyMessageTimeoutScoreHelperInterface):
+            raise TypeError(f'anivCopyMessageTimeoutScoreHelper argument is malformed: \"{anivCopyMessageTimeoutScoreHelper}\"')
         elif anivCopyMessageTimeoutScorePresenter is not None and not isinstance(anivCopyMessageTimeoutScorePresenter, AnivCopyMessageTimeoutScorePresenterInterface):
             raise TypeError(f'anivCopyMessageTimeoutScorePresenter argument is malformed: \"{anivCopyMessageTimeoutScorePresenter}\"')
-        elif anivCopyMessageTimeoutScoreRepository is not None and not isinstance(anivCopyMessageTimeoutScoreRepository, AnivCopyMessageTimeoutScoreRepositoryInterface):
-            raise TypeError(f'anivCopyMessageTimeoutScoreRepository argument is malformed: \"{anivCopyMessageTimeoutScoreRepository}\"')
         elif anivSettings is not None and not isinstance(anivSettings, AnivSettingsInterface):
             raise TypeError(f'anivSettings argument is malformed: \"{anivSettings}\"')
         elif asplodieStatsPresenter is not None and not isinstance(asplodieStatsPresenter, AsplodieStatsPresenter):
@@ -934,10 +933,10 @@ class CynanBot(
         else:
             self.__jishoCommand: AbsChatCommand = JishoChatCommand(generalSettingsRepository, jishoHelper, timber, twitchUtils, usersRepository)
 
-        if anivCopyMessageTimeoutScorePresenter is None or anivCopyMessageTimeoutScoreRepository is None:
+        if anivCopyMessageTimeoutScoreHelper is None or anivCopyMessageTimeoutScorePresenter is None or anivSettings is None:
             self.__anivTimeoutsCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__anivTimeoutsCommand: AbsChatCommand = AnivTimeoutsChatCommand(anivCopyMessageTimeoutScorePresenter, anivCopyMessageTimeoutScoreRepository, timber, twitchChannelEditorsRepository, twitchUtils, userIdsRepository, usersRepository)
+            self.__anivTimeoutsCommand: AbsChatCommand = AnivTimeoutsChatCommand(anivCopyMessageTimeoutScoreHelper, anivCopyMessageTimeoutScorePresenter, anivSettings, timber, twitchChannelEditorsRepository, twitchUtils, userIdsRepository, usersRepository)
 
         if pokepediaRepository is None:
             self.__pkMonCommand: AbsChatCommand = StubChatCommand()

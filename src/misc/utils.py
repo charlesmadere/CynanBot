@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Any, Final, Generator, Pattern, Sized, TypeVar, overload
 from urllib.parse import urlparse
 
+from frozendict import frozendict
 from frozenlist import FrozenList
 from typing_extensions import TypeGuard
 
@@ -321,7 +322,7 @@ def getShortMinSafeSize() -> int:
     return -32768
 
 def getStrFromDict(
-    d: dict[str, Any] | None,
+    d: dict[str, Any] | frozendict[str, Any] | None,
     key: str,
     fallback: str | None = None,
     clean: bool = False,

@@ -6,6 +6,10 @@ from ...misc.clearable import Clearable
 class AnivSettingsInterface(Clearable, ABC):
 
     @abstractmethod
+    async def areCopyMessageTimeoutsEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     async def getCopyMessageMaxAgeSeconds(self) -> int:
         pass
 
@@ -19,8 +23,4 @@ class AnivSettingsInterface(Clearable, ABC):
 
     @abstractmethod
     async def getCopyMessageTimeoutMaxSeconds(self) -> int:
-        pass
-
-    @abstractmethod
-    async def isRandomTimeoutScalingEnabled(self) -> bool:
         pass

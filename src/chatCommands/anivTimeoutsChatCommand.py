@@ -1,8 +1,10 @@
+from typing import Final
+
 from .absChatCommand import AbsChatCommand
+from ..aniv.helpers.anivCopyMessageTimeoutScoreHelperInterface import AnivCopyMessageTimeoutScoreHelperInterface
 from ..aniv.presenters.anivCopyMessageTimeoutScorePresenterInterface import \
     AnivCopyMessageTimeoutScorePresenterInterface
-from ..aniv.repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
-    AnivCopyMessageTimeoutScoreRepositoryInterface
+from ..aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
@@ -16,18 +18,21 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
 
     def __init__(
         self,
+        anivCopyMessageTimeoutScoreHelper: AnivCopyMessageTimeoutScoreHelperInterface,
         anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface,
-        anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface,
+        anivSettings: AnivSettingsInterface,
         timber: TimberInterface,
         twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface
+        usersRepository: UsersRepositoryInterface,
     ):
-        if not isinstance(anivCopyMessageTimeoutScorePresenter, AnivCopyMessageTimeoutScorePresenterInterface):
+        if not isinstance(anivCopyMessageTimeoutScoreHelper, AnivCopyMessageTimeoutScoreHelperInterface):
+            raise TypeError(f'anivCopyMessageTimeoutScoreHelper argument is malformed: \"{anivCopyMessageTimeoutScoreHelper}\"')
+        elif not isinstance(anivCopyMessageTimeoutScorePresenter, AnivCopyMessageTimeoutScorePresenterInterface):
             raise TypeError(f'anivCopyMessageTimeoutScorePresenter argument is malformed: \"{anivCopyMessageTimeoutScorePresenter}\"')
-        if not isinstance(anivCopyMessageTimeoutScoreRepository, AnivCopyMessageTimeoutScoreRepositoryInterface):
-            raise TypeError(f'anivCopyMessageTimeoutScoreRepository argument is malformed: \"{anivCopyMessageTimeoutScoreRepository}\"')
+        elif not isinstance(anivSettings, AnivSettingsInterface):
+            raise TypeError(f'anivSettings argument is malformed: \"{anivSettings}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChannelEditorsRepository, TwitchChannelEditorsRepositoryInterface):
@@ -39,15 +44,19 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface = anivCopyMessageTimeoutScorePresenter
-        self.__anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = anivCopyMessageTimeoutScoreRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface = twitchChannelEditorsRepository
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__anivCopyMessageTimeoutScoreHelper: Final[AnivCopyMessageTimeoutScoreHelperInterface] = anivCopyMessageTimeoutScoreHelper
+        self.__anivCopyMessageTimeoutScorePresenter: Final[AnivCopyMessageTimeoutScorePresenterInterface] = anivCopyMessageTimeoutScorePresenter
+        self.__anivSettings: Final[AnivSettingsInterface] = anivSettings
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchChannelEditorsRepository: Final[TwitchChannelEditorsRepositoryInterface] = twitchChannelEditorsRepository
+        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
+        if not await self.__anivSettings.areCopyMessageTimeoutsEnabled():
+            return
+
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.isAnivMessageCopyTimeoutEnabled:
@@ -68,42 +77,39 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
                 await self.__twitchUtils.safeSend(
                     messageable = ctx,
                     message = f'⚠ Unable to find aniv timeout score for \"{userName}\"',
-                    replyMessageId = await ctx.getMessageId()
+                    replyMessageId = await ctx.getMessageId(),
                 )
                 return
 
         if await self.__twitchChannelEditorsRepository.isEditor(
             chatterUserId = userId,
-            twitchChannelId =  await ctx.getTwitchChannelId()
+            twitchChannelId =  await ctx.getTwitchChannelId(),
         ):
             printOut = await self.__anivCopyMessageTimeoutScorePresenter.getChannelEditorsCantPlayString(
-                language = user.defaultLanguage
+                language = user.defaultLanguage,
             )
 
             await self.__twitchUtils.safeSend(
                 messageable = ctx,
                 message = printOut,
-                replyMessageId = await ctx.getMessageId()
+                replyMessageId = await ctx.getMessageId(),
             )
             return
 
-        score = await self.__anivCopyMessageTimeoutScoreRepository.getScore(
+        preparedScore = await self.__anivCopyMessageTimeoutScoreHelper.getScore(
             chatterUserId = userId,
-            chatterUserName = userName,
-            twitchChannel = user.handle,
-            twitchChannelId = await ctx.getTwitchChannelId()
+            twitchChannelId = await ctx.getTwitchChannelId(),
         )
 
-        printOut = await self.__anivCopyMessageTimeoutScorePresenter.toString(
-            score = score,
+        printOut = await self.__anivCopyMessageTimeoutScorePresenter.getScoreString(
             language = user.defaultLanguage,
-            chatterUserName = userName
+            preparedScore = preparedScore,
         )
 
         await self.__twitchUtils.safeSend(
             messageable = ctx,
             message = printOut,
-            replyMessageId = await ctx.getMessageId()
+            replyMessageId = await ctx.getMessageId(),
         )
 
         self.__timber.log('AnivTimeoutsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

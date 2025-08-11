@@ -1,15 +1,17 @@
-from typing import Any
+from typing import Any, Final
+
+from frozendict import frozendict
 
 from . import utils as utils
 
 
 class AuthRepositorySnapshot:
 
-    def __init__(self, jsonContents: dict[str, Any]):
-        if not isinstance(jsonContents, dict):
+    def __init__(self, jsonContents: frozendict[str, Any]):
+        if not isinstance(jsonContents, frozendict):
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
-        self.__jsonContents: dict[str, Any] = jsonContents
+        self.__jsonContents: Final[frozendict[str, Any]] = jsonContents
 
     def getDeepLAuthKey(self) -> str | None:
         return utils.getStrFromDict(self.__jsonContents, 'deepLAuthKey', fallback = '')
