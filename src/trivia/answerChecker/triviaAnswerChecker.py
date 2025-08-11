@@ -883,7 +883,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'ivory coast':
             yield 'cote d ivoire'
             yield 'cote divoire'
-        if word in { 'ja', 'jp', 'jpn', 'nihon', 'nippon' }:
+        if word in { 'ja', 'jap', 'japon', 'jp', 'jpn', 'nihon', 'nippon' }:
             yield 'japan'
         if word == 'kr':
             yield 'korea'
@@ -1360,12 +1360,16 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'accommodate'
         if word in { 'acheive', 'acheeve' }:
             yield 'achieve'
+        if word in { 'amatuer', 'amature' }:
+            yield 'amateur'
         if word == 'anice':
             yield 'anise'
         if word == 'aquire':
             yield 'acquire'
         if word == 'aquit':
             yield 'acquit'
+        if word == 'athiest':
+            yield 'atheist'
         if word == 'basicly':
             yield 'basically'
         if word in { 'brocolli', 'broccolli' }:
@@ -1374,6 +1378,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'calendar'
         if word in { 'cemetary', 'cematery', 'cematary' }:
             yield 'cemetery'
+        if word in { 'colum', 'columm' }:
+            yield 'column'
         if word in { 'comittee', 'commitee' }:
             yield 'committee'
         if word == 'concensus':
@@ -1387,6 +1393,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'gauge'
         if word in { 'garauntee', 'gaurantee' }:
             yield 'guarantee'
+        if word == 'heigth':
+            yield 'height'
         if word in { 'itinary', 'itinery' }:
             yield 'itinerary'
         if word == 'layed':
@@ -1414,6 +1422,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'until'
         if word in { 'vaccum', 'vaccuum', 'vaccuumm' }:
             yield 'vacuum'
+        if word == 'weigth':
+            yield 'weight'
         if word == 'withold':
             yield 'withhold'
         if word in { 'zuccini', 'zuchinni', 'zuccinni' }:
