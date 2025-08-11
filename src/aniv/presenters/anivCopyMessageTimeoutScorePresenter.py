@@ -69,7 +69,7 @@ class AnivCopyMessageTimeoutScorePresenter(AnivCopyMessageTimeoutScorePresenterI
             dodgePercent = round((float(preparedScore.dodgeScore) / float(totalDodgesAndTimeouts)) * float(100), 2)
             dodgePercentString = f'{dodgePercent}%'
 
-        return f'ⓘ @{preparedScore.chatterUserName}\'s aniv timeout scores — {dodgesString} and {timeoutsString} (that\'s a {dodgePercentString} dodge rate)'
+        return f'ⓘ aniv timeout scores for @{preparedScore.chatterUserName} — {dodgesString} and {timeoutsString} (that\'s a {dodgePercentString} dodge rate)'
 
     async def __getScoreStringSpanish(
         self,
