@@ -3,5 +3,5 @@
     "copyMessageTimeoutMaxSeconds": 300,
     "copyMessageTimeoutProbability": 0.69,
     "copyMessageTimeoutSeconds": 30,
-    "randomTimeoutScalingEnabled": true
+    "copyMessageTimeoutsEnabled": true
 }
