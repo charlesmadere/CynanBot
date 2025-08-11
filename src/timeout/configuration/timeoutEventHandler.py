@@ -7,6 +7,17 @@ from ..models.events.bananaTimeoutDiceRollFailedEvent import BananaTimeoutDiceRo
 from ..models.events.bananaTimeoutEvent import BananaTimeoutEvent
 from ..models.events.bananaTimeoutFailedTimeoutEvent import BananaTimeoutFailedTimeoutEvent
 from ..models.events.basicTimeoutEvent import BasicTimeoutEvent
+from ..models.events.basicTimeoutFailedTimeoutEvent import BasicTimeoutFailedTimeoutEvent
+from ..models.events.basicTimeoutTargetUnavailableTimeoutEvent import BasicTimeoutTargetUnavailableTimeoutEvent
+from ..models.events.grenadeTimeoutEvent import GrenadeTimeoutEvent
+from ..models.events.grenadeTimeoutFailedTimeoutEvent import GrenadeTimeoutFailedTimeoutEvent
+from ..models.events.incorrectLiveStatusTimeoutEvent import IncorrectLiveStatusTimeoutEvent
+from ..models.events.noAirStrikeInventoryAvailableTimeoutEvent import NoAirStrikeInventoryAvailableTimeoutEvent
+from ..models.events.noAirStrikeTargetsAvailableTimeoutEvent import NoAirStrikeTargetsAvailableTimeoutEvent
+from ..models.events.noBananaInventoryAvailableTimeoutEvent import NoBananaInventoryAvailableTimeoutEvent
+from ..models.events.noBananaTargetAvailableTimeoutEvent import NoBananaTargetAvailableTimeoutEvent
+from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
+from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
@@ -81,8 +92,74 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
                 twitchChannelProvider = twitchChannelProvider,
             )
 
-        # TODO
-        pass
+        elif isinstance(event, BasicTimeoutFailedTimeoutEvent):
+            await self.__handleBasicTimeoutFailedTimeoutEvent(
+                event = event,
+                twitchChannelProvider = twitchChannelProvider,
+            )
+
+        elif isinstance(event, BasicTimeoutTargetUnavailableTimeoutEvent):
+            await self.__handleBasicTimeoutTargetUnavailableTimeoutEvent(
+                event = event,
+                twitchChannelProvider = twitchChannelProvider,
+            )
+
+        elif isinstance(event, GrenadeTimeoutEvent):
+            await self.__handleGrenadeTimeoutEvent(
+                event = event,
+                twitchChannelProvider = twitchChannelProvider,
+            )
+
+        elif isinstance(event, GrenadeTimeoutFailedTimeoutEvent):
+            await self.__handleGrenadeTimeoutFailedTimeoutEvent(
+                event = event,
+                twitchChannelProvider = twitchChannelProvider,
+            )
+
+        elif isinstance(event, IncorrectLiveStatusTimeoutEvent):
+            await self.__handleIncorrectLiveStatusTimeoutEvent(
+                event = event,
+                twitchChannelProvider = twitchChannelProvider,
+            )
+
+        elif isinstance(event, NoAirStrikeInventoryAvailableTimeoutEvent):
+            await self.__handleNoAirStrikeInventoryAvailableTimeoutEvent(
+                event = event,
+                twitchChannelProvider = twitchChannelProvider,
+            )
+
+        elif isinstance(event, NoAirStrikeTargetsAvailableTimeoutEvent):
+            await self.__handleNoAirStrikeTargetsAvailableTimeoutEvent(
+                event = event,
+                twitchChannelProvider = twitchChannelProvider,
+            )
+
+        elif isinstance(event, NoBananaInventoryAvailableTimeoutEvent):
+            await self.__handleNoBananaInventoryAvailableTimeoutEvent(
+                event = event,
+                twitchChannelProvider = twitchChannelProvider,
+            )
+
+        elif isinstance(event, NoBananaTargetAvailableTimeoutEvent):
+            await self.__handleNoBananaTargetAvailableTimeoutEvent(
+                event = event,
+                twitchChannelProvider = twitchChannelProvider,
+            )
+
+        elif isinstance(event, NoGrenadeInventoryAvailableTimeoutEvent):
+            await self.__handleNoGrenadeInventoryAvailableTimeoutEvent(
+                event = event,
+                twitchChannelProvider = twitchChannelProvider,
+            )
+
+        elif isinstance(event, NoGrenadeTargetAvailableTimeoutEvent):
+            await self.__handleNoGrenadeTargetAvailableTimeoutEvent(
+                event = event,
+                twitchChannelProvider = twitchChannelProvider,
+            )
+
+        else:
+            self.__timber.log('TimeoutEventHandler', f'Received unhandled timeout event ({event=})')
 
     async def __handleAirStrikeTimeoutEvent(
         self,
@@ -127,6 +204,116 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     async def __handleBasicTimeoutEvent(
         self,
         event: BasicTimeoutEvent,
+        twitchChannelProvider: TwitchChannelProvider,
+    ):
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
+
+        # TODO
+        pass
+
+    async def __handleBasicTimeoutFailedTimeoutEvent(
+        self,
+        event: BasicTimeoutFailedTimeoutEvent,
+        twitchChannelProvider: TwitchChannelProvider,
+    ):
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
+
+        # TODO
+        pass
+
+    async def __handleBasicTimeoutTargetUnavailableTimeoutEvent(
+        self,
+        event: BasicTimeoutTargetUnavailableTimeoutEvent,
+        twitchChannelProvider: TwitchChannelProvider,
+    ):
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
+
+        # TODO
+        pass
+
+    async def __handleGrenadeTimeoutEvent(
+        self,
+        event: GrenadeTimeoutEvent,
+        twitchChannelProvider: TwitchChannelProvider,
+    ):
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
+
+        # TODO
+        pass
+
+    async def __handleGrenadeTimeoutFailedTimeoutEvent(
+        self,
+        event: GrenadeTimeoutFailedTimeoutEvent,
+        twitchChannelProvider: TwitchChannelProvider,
+    ):
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
+
+        # TODO
+        pass
+
+    async def __handleIncorrectLiveStatusTimeoutEvent(
+        self,
+        event: IncorrectLiveStatusTimeoutEvent,
+        twitchChannelProvider: TwitchChannelProvider,
+    ):
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
+
+        # TODO
+        pass
+
+    async def __handleNoAirStrikeInventoryAvailableTimeoutEvent(
+        self,
+        event: NoAirStrikeInventoryAvailableTimeoutEvent,
+        twitchChannelProvider: TwitchChannelProvider,
+    ):
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
+
+        # TODO
+        pass
+
+    async def __handleNoAirStrikeTargetsAvailableTimeoutEvent(
+        self,
+        event: NoAirStrikeTargetsAvailableTimeoutEvent,
+        twitchChannelProvider: TwitchChannelProvider,
+    ):
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
+
+        # TODO
+        pass
+
+    async def __handleNoBananaInventoryAvailableTimeoutEvent(
+        self,
+        event: NoBananaInventoryAvailableTimeoutEvent,
+        twitchChannelProvider: TwitchChannelProvider,
+    ):
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
+
+        # TODO
+        pass
+
+    async def __handleNoBananaTargetAvailableTimeoutEvent(
+        self,
+        event: NoBananaTargetAvailableTimeoutEvent,
+        twitchChannelProvider: TwitchChannelProvider,
+    ):
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
+
+        # TODO
+        pass
+
+    async def __handleNoGrenadeInventoryAvailableTimeoutEvent(
+        self,
+        event: NoGrenadeInventoryAvailableTimeoutEvent,
+        twitchChannelProvider: TwitchChannelProvider,
+    ):
+        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
+
+        # TODO
+        pass
+
+    async def __handleNoGrenadeTargetAvailableTimeoutEvent(
+        self,
+        event: NoGrenadeTargetAvailableTimeoutEvent,
         twitchChannelProvider: TwitchChannelProvider,
     ):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)

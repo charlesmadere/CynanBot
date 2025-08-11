@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absTriviaEventHandler import AbsTriviaEventHandler
 from ..events.absTriviaEvent import AbsTriviaEvent
 from ..events.clearedSuperTriviaQueueTriviaEvent import ClearedSuperTriviaQueueTriviaEvent
@@ -32,7 +34,7 @@ class TriviaEventHandler(AbsTriviaEventHandler):
         timber: TimberInterface,
         triviaUtils: TriviaUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -43,10 +45,10 @@ class TriviaEventHandler(AbsTriviaEventHandler):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
+        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
         self.__twitchConnectionReadinessProvider: TwitchConnectionReadinessProvider | None = None
