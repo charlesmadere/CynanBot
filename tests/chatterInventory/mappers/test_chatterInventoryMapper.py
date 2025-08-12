@@ -16,11 +16,13 @@ class TestChatterInventoryMapper:
     async def test_parseInventory1(self):
         airStrikes = round(random.uniform(0.01, 1.00) * 100)
         bananas = round(random.uniform(0.01, 1.00) * 100)
+        cassetteTapes = round(random.uniform(0.01, 1.00) * 100)
         grenades = round(random.uniform(0.01, 1.00) * 100)
 
         inventoryJson: dict[str, int] = {
             await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE): airStrikes,
             await self.mapper.serializeItemType(ChatterItemType.BANANA): bananas,
+            await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE): cassetteTapes,
             await self.mapper.serializeItemType(ChatterItemType.GRENADE): grenades,
         }
 
@@ -29,6 +31,7 @@ class TestChatterInventoryMapper:
 
         assert result[ChatterItemType.AIR_STRIKE] == airStrikes
         assert result[ChatterItemType.BANANA] == bananas
+        assert result[ChatterItemType.CASSETTE_TAPE] == cassetteTapes
         assert result[ChatterItemType.GRENADE] == grenades
 
     @pytest.mark.asyncio
@@ -44,6 +47,7 @@ class TestChatterInventoryMapper:
 
         assert result[ChatterItemType.AIR_STRIKE] == airStrikes
         assert result[ChatterItemType.BANANA] == 0
+        assert result[ChatterItemType.CASSETTE_TAPE] == 0
         assert result[ChatterItemType.GRENADE] == 0
 
     @pytest.mark.asyncio
@@ -59,6 +63,7 @@ class TestChatterInventoryMapper:
 
         assert result[ChatterItemType.AIR_STRIKE] == 0
         assert result[ChatterItemType.BANANA] == 0
+        assert result[ChatterItemType.CASSETTE_TAPE] == 0
         assert result[ChatterItemType.GRENADE] == grenades
 
     @pytest.mark.asyncio
@@ -81,20 +86,23 @@ class TestChatterInventoryMapper:
     async def test_parseInventory_withNegativeNumbers(self):
         airStrikes = round(random.uniform(-1.00, -0.01) * 100)
         bananas = round(random.uniform(-1.00, -0.01) * 100)
+        cassetteTapes = round(random.uniform(-1.00, -0.01) * 100)
         grenades = round(random.uniform(-1.00, -0.01) * 100)
 
         inventoryJson: dict[str, int] = {
             await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE): airStrikes,
             await self.mapper.serializeItemType(ChatterItemType.BANANA): bananas,
+            await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE): cassetteTapes,
             await self.mapper.serializeItemType(ChatterItemType.GRENADE): grenades,
         }
 
         result = await self.mapper.parseInventory(inventoryJson)
         assert len(result) == len(ChatterItemType)
 
-        # negative numbers should be normalized to 0
+        # negative numbers should always be normalized to 0
         assert result[ChatterItemType.AIR_STRIKE] == 0
         assert result[ChatterItemType.BANANA] == 0
+        assert result[ChatterItemType.CASSETTE_TAPE] == 0
         assert result[ChatterItemType.GRENADE] == 0
 
     @pytest.mark.asyncio
@@ -420,7 +428,7 @@ class TestChatterInventoryMapper:
         result = await self.mapper.serializeInventory(inventory)
         assert len(result) == len(ChatterItemType)
 
-        # negative numbers should be normalized to 0
+        # negative numbers should always be normalized to 0
         assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == 0
         assert result[await self.mapper.serializeItemType(ChatterItemType.BANANA)] == 0
         assert result[await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE)] == 0
