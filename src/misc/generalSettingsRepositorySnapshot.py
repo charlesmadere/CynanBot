@@ -74,13 +74,6 @@ class GeneralSettingsRepositorySnapshot:
     def isDebugLoggingEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'debugLoggingEnabled', True)
 
-    def isEventSubEnabled(self) -> bool:
-        return utils.getBoolFromDict(
-            d = self.__jsonContents,
-            key = 'eventSubEnabled',
-            fallback = False
-        )
-
     def isFuntoonApiEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'funtoonApiEnabled', True)
 

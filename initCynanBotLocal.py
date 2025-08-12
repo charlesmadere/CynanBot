@@ -451,6 +451,9 @@ from src.twitch.websocket.sessionIdHelper.twitchWebsocketSessionIdHelperInterfac
 from src.twitch.websocket.settings.twitchWebsocketSettingsRepository import TwitchWebsocketSettingsRepository
 from src.twitch.websocket.settings.twitchWebsocketSettingsRepositoryInterface import \
     TwitchWebsocketSettingsRepositoryInterface
+from src.twitch.websocket.subscriptionHelper.twitchWebsocketSubscriptionHelper import TwitchWebsocketSubscriptionHelper
+from src.twitch.websocket.subscriptionHelper.twitchWebsocketSubscriptionHelperInterface import \
+    TwitchWebsocketSubscriptionHelperInterface
 from src.twitch.websocket.twitchWebsocketAllowedUsersRepository import TwitchWebsocketAllowedUsersRepository
 from src.twitch.websocket.twitchWebsocketAllowedUsersRepositoryInterface import \
     TwitchWebsocketAllowedUsersRepositoryInterface
@@ -994,25 +997,28 @@ twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface = 
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
 )
 
-twitchWebsocketClient: TwitchWebsocketClientInterface | None = None
-if generalSettingsSnapshot.isEventSubEnabled():
-    twitchWebsocketClient = TwitchWebsocketClient(
-        backgroundTaskHelper = backgroundTaskHelper,
-        timber = timber,
-        timeZoneRepository = timeZoneRepository,
-        twitchApiService = twitchApiService,
-        twitchHandleProvider = authRepository,
-        twitchTokensRepository = twitchTokensRepository,
-        twitchWebsocketAllowedUsersRepository = twitchWebsocketAllowedUsersRepository,
-        twitchWebsocketConditionBuilder = twitchWebsocketConditionBuilder,
-        twitchWebsocketConnectionActionHelper = twitchWebsocketConnectionActionHelper,
-        twitchWebsocketEndpointHelper = twitchWebsocketEndpointHelper,
-        twitchWebsocketInstabilityHelper = twitchWebsocketInstabilityHelper,
-        twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
-        twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper,
-        twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
-        userIdsRepository = userIdsRepository
-    )
+twitchWebsocketSubscriptionHelper: TwitchWebsocketSubscriptionHelperInterface = TwitchWebsocketSubscriptionHelper(
+    timber = timber,
+    twitchApiService = twitchApiService,
+    twitchTokensRepository = twitchTokensRepository,
+    twitchWebsocketConditionBuilder = twitchWebsocketConditionBuilder,
+    twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper,
+    twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
+)
+
+twitchWebsocketClient: TwitchWebsocketClientInterface = TwitchWebsocketClient(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchWebsocketAllowedUsersRepository = twitchWebsocketAllowedUsersRepository,
+    twitchWebsocketConnectionActionHelper = twitchWebsocketConnectionActionHelper,
+    twitchWebsocketEndpointHelper = twitchWebsocketEndpointHelper,
+    twitchWebsocketInstabilityHelper = twitchWebsocketInstabilityHelper,
+    twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
+    twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper,
+    twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
+    twitchWebsocketSubscriptionHelper = twitchWebsocketSubscriptionHelper,
+)
 
 
 #################################

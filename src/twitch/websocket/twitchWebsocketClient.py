@@ -4,12 +4,11 @@ import queue
 import traceback
 from datetime import datetime, timedelta
 from queue import SimpleQueue
-from typing import Any, Coroutine, Final
+from typing import Any, Final
 
 import websockets
 from frozenlist import FrozenList
 
-from .conditionBuilder.twitchWebsocketConditionBuilderInterface import TwitchWebsocketConditionBuilderInterface
 from .connectionAction.twitchWebsocketConnectionAction import TwitchWebsocketConnectionAction
 from .connectionAction.twitchWebsocketConnectionActionHelperInterface import \
     TwitchWebsocketConnectionActionHelperInterface
@@ -18,28 +17,19 @@ from .instabilityHelper.twitchWebsocketInstabilityHelperInterface import TwitchW
 from .listener.twitchWebsocketDataBundleListener import TwitchWebsocketDataBundleListener
 from .sessionIdHelper.twitchWebsocketSessionIdHelperInterface import TwitchWebsocketSessionIdHelperInterface
 from .settings.twitchWebsocketSettingsRepositoryInterface import TwitchWebsocketSettingsRepositoryInterface
+from .subscriptionHelper.twitchWebsocketSubscriptionHelperInterface import TwitchWebsocketSubscriptionHelperInterface
 from .twitchWebsocketAllowedUsersRepositoryInterface import TwitchWebsocketAllowedUsersRepositoryInterface
 from .twitchWebsocketClientInterface import TwitchWebsocketClientInterface
 from .twitchWebsocketJsonLoggingLevel import TwitchWebsocketJsonLoggingLevel
 from .twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from .twitchWebsocketUser import TwitchWebsocketUser
-from ..api.models.twitchEventSubRequest import TwitchEventSubRequest
-from ..api.models.twitchEventSubResponse import TwitchEventSubResponse
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketMessageType import TwitchWebsocketMessageType
-from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
-from ..api.models.twitchWebsocketTransport import TwitchWebsocketTransport
-from ..api.models.twitchWebsocketTransportMethod import TwitchWebsocketTransportMethod
-from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..exceptions import TwitchAccessTokenMissingException
-from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...misc.lruCache import LruCache
 from ...timber.timberInterface import TimberInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class TwitchWebsocketClient(TwitchWebsocketClientInterface):
@@ -49,18 +39,14 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        twitchApiService: TwitchApiServiceInterface,
-        twitchHandleProvider: TwitchHandleProviderInterface,
-        twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface,
-        twitchWebsocketConditionBuilder: TwitchWebsocketConditionBuilderInterface,
         twitchWebsocketConnectionActionHelper: TwitchWebsocketConnectionActionHelperInterface,
         twitchWebsocketEndpointHelper: TwitchWebsocketEndpointHelperInterface,
         twitchWebsocketInstabilityHelper: TwitchWebsocketInstabilityHelperInterface,
         twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface,
         twitchWebsocketSessionIdHelper: TwitchWebsocketSessionIdHelperInterface,
         twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchWebsocketSubscriptionHelper: TwitchWebsocketSubscriptionHelperInterface,
         queueSleepTimeSeconds: float = 1,
         queueTimeoutSeconds: float = 3,
         websocketCreationDelayTimeSeconds: float = 0.5,
@@ -75,16 +61,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(twitchApiService, TwitchApiServiceInterface):
-            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
-        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
-            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchWebsocketAllowedUsersRepository, TwitchWebsocketAllowedUsersRepositoryInterface):
             raise TypeError(f'twitchWebsocketAllowedUsersRepository argument is malformed: \"{twitchWebsocketAllowedUsersRepository}\"')
-        elif not isinstance(twitchWebsocketConditionBuilder, TwitchWebsocketConditionBuilderInterface):
-            raise TypeError(f'twitchWebsocketConditionBuilder argument is malformed: \"{twitchWebsocketConditionBuilder}\"')
         elif not isinstance(twitchWebsocketConnectionActionHelper, TwitchWebsocketConnectionActionHelperInterface):
             raise TypeError(f'twitchWebsocketConnectionActionHelper argument is malformed: \"{twitchWebsocketConnectionActionHelper}\"')
         elif not isinstance(twitchWebsocketEndpointHelper, TwitchWebsocketEndpointHelperInterface):
@@ -97,8 +75,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'twitchWebsocketSessionIdHelper argument is malformed: \"{twitchWebsocketSessionIdHelper}\"')
         elif not isinstance(twitchWebsocketSettingsRepository, TwitchWebsocketSettingsRepositoryInterface):
             raise TypeError(f'twitchWebsocketSettingsRepository argument is malformed: \"{twitchWebsocketSettingsRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchWebsocketSubscriptionHelper, TwitchWebsocketSubscriptionHelperInterface):
+            raise TypeError(f'twitchWebsocketSubscriptionHelper argument is malformed: \"{twitchWebsocketSubscriptionHelper}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 15:
@@ -129,18 +107,14 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
-        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
-        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
-        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchWebsocketAllowedUsersRepository: Final[TwitchWebsocketAllowedUsersRepositoryInterface] = twitchWebsocketAllowedUsersRepository
-        self.__twitchWebsocketConditionBuilder: Final[TwitchWebsocketConditionBuilderInterface] = twitchWebsocketConditionBuilder
         self.__twitchWebsocketConnectionActionHelper: Final[TwitchWebsocketConnectionActionHelperInterface] = twitchWebsocketConnectionActionHelper
         self.__twitchWebsocketEndpointHelper: Final[TwitchWebsocketEndpointHelperInterface] = twitchWebsocketEndpointHelper
         self.__twitchWebsocketInstabilityHelper: Final[TwitchWebsocketInstabilityHelperInterface] = twitchWebsocketInstabilityHelper
         self.__twitchWebsocketJsonMapper: Final[TwitchWebsocketJsonMapperInterface] = twitchWebsocketJsonMapper
         self.__twitchWebsocketSessionIdHelper: Final[TwitchWebsocketSessionIdHelperInterface] = twitchWebsocketSessionIdHelper
         self.__twitchWebsocketSettingsRepository: Final[TwitchWebsocketSettingsRepositoryInterface] = twitchWebsocketSettingsRepository
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchWebsocketSubscriptionHelper: Final[TwitchWebsocketSubscriptionHelperInterface] = twitchWebsocketSubscriptionHelper
         self.__queueSleepTimeSeconds: Final[float] = queueSleepTimeSeconds
         self.__queueTimeoutSeconds: Final[float] = queueTimeoutSeconds
         self.__websocketCreationDelayTimeSeconds: Final[float] = websocketCreationDelayTimeSeconds
@@ -152,135 +126,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__messageIdCache: Final[LruCache] = LruCache(twitchWebsocketMessageIdCacheSize)
         self.__dataBundleQueue: Final[SimpleQueue[TwitchWebsocketDataBundle]] = SimpleQueue()
         self.__dataBundleListener: TwitchWebsocketDataBundleListener | None = None
-
-    async def __createEventSubSubscriptions(
-        self,
-        subscriptionTypes: frozenset[TwitchWebsocketSubscriptionType],
-        user: TwitchWebsocketUser,
-    ):
-        if not isinstance(subscriptionTypes, frozenset):
-            raise TypeError(f'subscriptionTypes argument is malformed: \"{subscriptionTypes}\"')
-        elif not isinstance(user, TwitchWebsocketUser):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-
-        if len(subscriptionTypes) == 0:
-            self.__timber.log('TwitchWebsocketClient', f'Skipping creation of EventSub subscriptions as the given set is empty ({user=}) ({subscriptionTypes=})')
-            return
-
-        sessionId = self.__twitchWebsocketSessionIdHelper[user]
-
-        if not utils.isValidStr(sessionId):
-            self.__timber.log('TwitchWebsocketClient', f'Skipping creation of {len(subscriptionTypes)} EventSub subscription(s) as this user doesn\'t have a valid session ID ({user=}) ({sessionId=})')
-            return
-
-        try:
-            userTwitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(user.userId)
-        except TwitchAccessTokenMissingException as e:
-            self.__timber.log('TwitchWebsocketClient', f'Skipping creation of {len(subscriptionTypes)} EventSub subscription(s) as we failed to fetch this user\'s Twitch access token ({user=}) ({sessionId=}): {e}', e, traceback.format_exc())
-            return
-
-        transport = TwitchWebsocketTransport(
-            connectedAt = None,
-            disconnectedAt = None,
-            callbackUrl = None,
-            conduitId = None,
-            secret = None,
-            sessionId = sessionId,
-            method = TwitchWebsocketTransportMethod.WEBSOCKET,
-        )
-
-        createEventSubSubscriptionCoroutines: list[Coroutine[TwitchEventSubResponse, Any, Any]] = list()
-
-        for subscriptionType in subscriptionTypes:
-            condition = await self.__twitchWebsocketConditionBuilder.build(
-                subscriptionType = subscriptionType,
-                user = user,
-            )
-
-            if condition is None:
-                continue
-
-            eventSubRequest = TwitchEventSubRequest(
-                twitchChannel = user.userName,
-                twitchChannelId = user.userId,
-                condition = condition,
-                subscriptionType = subscriptionType,
-                transport = transport,
-            )
-
-            createEventSubSubscriptionCoroutines.append(self.__twitchApiService.createEventSubSubscription(
-                twitchAccessToken = userTwitchAccessToken,
-                eventSubRequest = eventSubRequest,
-            ))
-
-        try:
-            await asyncio.gather(*createEventSubSubscriptionCoroutines, return_exceptions = False)
-            self.__timber.log('TwitchWebsocketClient', f'Finished creating {len(subscriptionTypes)} EventSub subscription(s) ({user=}) ({sessionId=})')
-        except Exception as e:
-            self.__timber.log('TwitchWebsocketClient', f'Encountered unknown error when creating EventSub subscription(s) ({user=}) ({sessionId=}): {e}', e, traceback.format_exc())
-
-        await self.__inspectEventSubSubscriptionResultsAndMaybeResubscribe(
-            requestedSubscriptionTypes = subscriptionTypes,
-            userTwitchAccessToken = userTwitchAccessToken,
-            user = user,
-        )
-
-    async def __inspectEventSubSubscriptionResultsAndMaybeResubscribe(
-        self,
-        requestedSubscriptionTypes: frozenset[TwitchWebsocketSubscriptionType],
-        userTwitchAccessToken: str,
-        user: TwitchWebsocketUser,
-    ):
-        # This method is rather long-winded but what it does is pretty important. We'd
-        # prefer using the Twitch CHANNEL_CHAT_MESSAGE EventSub subscription if possible,
-        # however, that subscription requires a few more permissions than CHANNEL_CHEER.
-        # So what this method intends to do is it will check the list of the successfully
-        # created EventSub subscriptions, and if CHANNEL_CHAT_MESSAGE was requested, but
-        # failed, and CHANNEL_CHEER was NOT requested, then we will create a CHANNEL_CHEER
-        # subscription.
-
-        if not await self.__twitchWebsocketSettingsRepository.isChatEventToCheerEventSubscriptionFallbackEnabled():
-            return
-        elif len(requestedSubscriptionTypes) == 0:
-            return
-        elif TwitchWebsocketSubscriptionType.CHANNEL_BITS_USE in requestedSubscriptionTypes:
-            return
-        elif TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE in requestedSubscriptionTypes:
-            return
-        elif TwitchWebsocketSubscriptionType.CHANNEL_CHEER in requestedSubscriptionTypes:
-            return
-
-        # Sleep a little bit before making the following API call, just to ensure things are
-        # finished being initialized/configured on Twitch's end.
-        await asyncio.sleep(1)
-
-        try:
-            eventSubSubscriptions = await self.__twitchApiService.fetchEventSubSubscriptions(
-                twitchAccessToken = userTwitchAccessToken,
-                userId = user.userId,
-            )
-        except Exception as e:
-            self.__timber.log('TwitchWebsocketClient', f'Failed to fetch EventSub subscriptions ({user=}): {e}', e, traceback.format_exc())
-            return
-
-        successfulSubscriptionTypes: set[TwitchWebsocketSubscriptionType] = set()
-
-        for result in eventSubSubscriptions.data:
-            successfulSubscriptionTypes.add(result.subscriptionType)
-
-        if TwitchWebsocketSubscriptionType.CHANNEL_BITS_USE in successfulSubscriptionTypes:
-            return
-        elif TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE in successfulSubscriptionTypes:
-            return
-        elif TwitchWebsocketSubscriptionType.CHANNEL_CHEER in successfulSubscriptionTypes:
-            return
-
-        self.__timber.log('TwitchWebsocketClient', f'It looks like we failed to create a chat message EventSub subscription, so let\'s fallback to creating a cheer EventSub subscription instead ({user=}) ({successfulSubscriptionTypes=})')
-
-        await self.__createEventSubSubscriptions(
-            subscriptionTypes = frozenset({ TwitchWebsocketSubscriptionType.CHANNEL_CHEER }),
-            user = user,
-        )
 
     async def __isValidDataBundle(self, dataBundle: TwitchWebsocketDataBundle) -> bool:
         if not isinstance(dataBundle, TwitchWebsocketDataBundle):
@@ -448,8 +293,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                             case TwitchWebsocketConnectionAction.CREATE_EVENT_SUB_SUBSCRIPTION:
                                 self.__timber.log('TwitchWebsocketClient', f'Twitch websocket connection is asking for EventSub subscription(s) to be created ({user=}) ({twitchWebsocketEndpoint=}) ({connectionAction=})')
 
-                                await self.__createEventSubSubscriptions(
-                                    subscriptionTypes = await self.__twitchWebsocketSettingsRepository.getSubscriptionTypes(),
+                                await self.__twitchWebsocketSubscriptionHelper.createEventSubSubscriptions(
                                     user = user,
                                 )
 

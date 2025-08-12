@@ -1217,9 +1217,7 @@ class CynanBot(
         if self.__websocketConnectionServer is not None:
             self.__websocketConnectionServer.start()
 
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
-        if generalSettings.isEventSubEnabled() and self.__twitchWebsocketClient is not None:
+        if self.__twitchWebsocketClient is not None:
             self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
                 channelPointRedemptionHandler = self.__twitchChannelPointRedemptionHandler,
                 chatHandler = self.__twitchChatHandler,
