@@ -422,6 +422,7 @@ class TestChatterInventoryMapper:
         inventory: dict[ChatterItemType, int] = {
             ChatterItemType.AIR_STRIKE: airStrikes,
             ChatterItemType.BANANA: bananas,
+            ChatterItemType.CASSETTE_TAPE: cassetteTapes,
             ChatterItemType.GRENADE: grenades,
         }
 
