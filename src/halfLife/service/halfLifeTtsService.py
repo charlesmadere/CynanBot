@@ -65,14 +65,13 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
 
         for text in utils.getCleanedSplits(message):
             normalizedText = self.__textNormalizerRegEx.sub('', text).casefold()
-
             if not utils.isValidStr(normalizedText):
                 continue
 
             soundFile = await self.__findSoundFile(
                 voices = voices,
                 directory = soundsDirectory,
-                text = normalizedText,
+                normalizedText = normalizedText,
             )
 
             if soundFile is not None:
@@ -85,7 +84,7 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
         self,
         voices: Collection[HalfLifeVoice],
         directory: str,
-        text: str,
+        normalizedText: str,
     ) -> HalfLifeSoundFile | None:
         # shuffle the voice order to introduce more random/organic/fun voice selections
         shuffledVoices: list[HalfLifeVoice] = list(voices)
@@ -94,14 +93,14 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
         for voice in shuffledVoices:
             path = await self.__scanDirectoryForFile(
                 directory = f'{directory}/{voice.keyName}',
-                text = text,
+                normalizedText = normalizedText,
             )
 
             if utils.isValidStr(path):
                 return HalfLifeSoundFile(
                     voice = voice,
                     path = path,
-                    text = text,
+                    text = normalizedText,
                 )
 
         return None
@@ -109,7 +108,7 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
     async def __scanDirectoryForFile(
         self,
         directory: str,
-        text: str,
+        normalizedText: str,
     ) -> str | None:
         if not await aiofiles.ospath.isdir(
             s = directory,
@@ -135,7 +134,7 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
             normalizedFileName = self.__textNormalizerRegEx.sub('', fileNameMatch.group(1))
             if not utils.isValidStr(normalizedFileName):
                 continue
-            elif normalizedFileName.casefold() == text:
+            elif normalizedFileName.casefold() == normalizedText:
                 matchingFiles.append(entry.name)
 
         if len(matchingFiles) == 0:
