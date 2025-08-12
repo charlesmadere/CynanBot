@@ -140,6 +140,43 @@ class TestChatterInventoryMapper:
         assert result is ChatterItemType.BANANA
 
     @pytest.mark.asyncio
+    async def test_parseItemType_withCassetteStrings(self):
+        result = await self.mapper.parseItemType('casete')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.parseItemType('cassete')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.parseItemType('casette')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.parseItemType('cassette')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.parseItemType('cassettes')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+    @pytest.mark.asyncio
+    async def test_parseItemType_withCassetteTapeStrings(self):
+        result = await self.mapper.parseItemType('cassette_tape')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.parseItemType('cassette-tape')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.parseItemType('cassette tape')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.parseItemType('cassette_tapes')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.parseItemType('cassette-tapes')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.parseItemType('cassette tapes')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+    @pytest.mark.asyncio
     async def test_parseItemType_withEmptyString(self):
         result = await self.mapper.parseItemType('')
         assert result is None
@@ -204,8 +241,45 @@ class TestChatterInventoryMapper:
         result = await self.mapper.requireItemType('banana')
         assert result is ChatterItemType.BANANA
 
-        result = await self.mapper.requireItemType('banana')
+        result = await self.mapper.requireItemType('bananas')
         assert result is ChatterItemType.BANANA
+
+    @pytest.mark.asyncio
+    async def test_requireItemType_withCassetteStrings(self):
+        result = await self.mapper.requireItemType('casete')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.requireItemType('cassete')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.requireItemType('casette')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.requireItemType('cassette')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.requireItemType('cassettes')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+    @pytest.mark.asyncio
+    async def test_parseItemType_withCassetteTapeStrings(self):
+        result = await self.mapper.requireItemType('cassette_tape')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.requireItemType('cassette-tape')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.requireItemType('cassette tape')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.requireItemType('cassette_tapes')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.requireItemType('cassette-tapes')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.requireItemType('cassette tapes')
+        assert result is ChatterItemType.CASSETTE_TAPE
 
     @pytest.mark.asyncio
     async def test_requireItemType_withEmptyString(self):
@@ -271,6 +345,7 @@ class TestChatterInventoryMapper:
 
         assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == airStrikes
         assert result[await self.mapper.serializeItemType(ChatterItemType.BANANA)] == 0
+        assert result[await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE)] == 0
         assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == 0
 
     @pytest.mark.asyncio
@@ -286,17 +361,20 @@ class TestChatterInventoryMapper:
 
         assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == 0
         assert result[await self.mapper.serializeItemType(ChatterItemType.BANANA)] == 0
+        assert result[await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE)] == 0
         assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == grenades
 
     @pytest.mark.asyncio
     async def test_serializeInventory3(self):
         airStrikes = round(random.uniform(0.01, 1.00) * 100)
         bananas = round(random.uniform(0.01, 1.00) * 100)
+        cassetteTapes = round(random.uniform(0.01, 1.00) * 100)
         grenades = round(random.uniform(0.01, 1.00) * 100)
 
         inventory: dict[ChatterItemType, int] = {
             ChatterItemType.AIR_STRIKE: airStrikes,
             ChatterItemType.BANANA: bananas,
+            ChatterItemType.CASSETTE_TAPE: cassetteTapes,
             ChatterItemType.GRENADE: grenades,
         }
 
@@ -305,6 +383,7 @@ class TestChatterInventoryMapper:
 
         assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == airStrikes
         assert result[await self.mapper.serializeItemType(ChatterItemType.BANANA)] == bananas
+        assert result[await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE)] == cassetteTapes
         assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == grenades
 
     @pytest.mark.asyncio
@@ -329,6 +408,7 @@ class TestChatterInventoryMapper:
     async def test_serializeInventory_withNegativeNumbers(self):
         airStrikes = round(random.uniform(-1.00, -0.01) * 100)
         bananas = round(random.uniform(-1.00, -0.01) * 100)
+        cassetteTapes = round(random.uniform(-1.00, -0.01) * 100)
         grenades = round(random.uniform(-1.00, -0.01) * 100)
 
         inventory: dict[ChatterItemType, int] = {
@@ -343,6 +423,7 @@ class TestChatterInventoryMapper:
         # negative numbers should be normalized to 0
         assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == 0
         assert result[await self.mapper.serializeItemType(ChatterItemType.BANANA)] == 0
+        assert result[await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE)] == 0
         assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == 0
 
     @pytest.mark.asyncio
@@ -363,6 +444,11 @@ class TestChatterInventoryMapper:
     async def test_serializeItemType_withBanana(self):
         result = await self.mapper.serializeItemType(ChatterItemType.BANANA)
         assert result == 'banana'
+
+    @pytest.mark.asyncio
+    async def test_serializeItemType_withCassetteTape(self):
+        result = await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE)
+        assert result == 'cassette_tape'
 
     @pytest.mark.asyncio
     async def test_serializeItemType_withGrenade(self):

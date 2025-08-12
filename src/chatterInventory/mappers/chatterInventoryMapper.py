@@ -24,6 +24,11 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         banana.append(re.compile(r'^\s*bananas?\s*$', re.IGNORECASE))
         banana.freeze()
 
+        cassetteTape: FrozenList[Pattern] = FrozenList()
+        cassetteTape.append(re.compile(r'^\s*cass?ett?es?\s*$', re.IGNORECASE))
+        cassetteTape.append(re.compile(r'^\s*cass?ett?es?(?:\s+|_|-)?tapes?\s*$', re.IGNORECASE))
+        cassetteTape.freeze()
+
         grenade: FrozenList[Pattern] = FrozenList()
         grenade.append(re.compile(r'^\s*grenades?\s*$', re.IGNORECASE))
         grenade.freeze()
@@ -31,6 +36,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         return frozendict({
             ChatterItemType.AIR_STRIKE: airStrike,
             ChatterItemType.BANANA: banana,
+            ChatterItemType.CASSETTE_TAPE: cassetteTape,
             ChatterItemType.GRENADE: grenade,
         })
 
@@ -92,7 +98,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
             itemTypeString = await self.serializeItemType(itemType)
             inventoryJson[itemTypeString] = max(0, inventory.get(itemType, 0))
 
-        return dict(inventoryJson)
+        return inventoryJson
 
     async def serializeItemType(
         self,
@@ -104,5 +110,6 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         match itemType:
             case ChatterItemType.AIR_STRIKE: return 'air_strike'
             case ChatterItemType.BANANA: return 'banana'
+            case ChatterItemType.CASSETTE_TAPE: return 'cassette_tape'
             case ChatterItemType.GRENADE: return 'grenade'
             case _: raise ValueError(f'Unknown ChatterItemType value: \"{itemType}\"')
