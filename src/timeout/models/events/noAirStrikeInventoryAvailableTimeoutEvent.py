@@ -9,6 +9,7 @@ from ..actions.airStrikeTimeoutAction import AirStrikeTimeoutAction
 class NoAirStrikeInventoryAvailableTimeoutEvent(AbsTimeoutEvent):
     originatingAction: AirStrikeTimeoutAction
     eventId: str
+    instigatorUserName: str
 
     def getEventId(self) -> str:
         return self.eventId

@@ -158,6 +158,11 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
+        instigatorUserName = await self.__requireUserName(
+            action = action,
+            chatterUserId = action.instigatorUserId,
+        )
+
         if not action.ignoreInventory:
             inventory = await self.__chatterInventoryHelper.get(
                 chatterUserId = action.instigatorUserId,
@@ -168,6 +173,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 await self.__submitEvent(NoAirStrikeInventoryAvailableTimeoutEvent(
                     originatingAction = action,
                     eventId = await self.__timeoutIdGenerator.generateEventId(),
+                    instigatorUserName = instigatorUserName,
                 ))
                 return
 
@@ -179,13 +185,9 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             await self.__submitEvent(NoAirStrikeTargetsAvailableTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
+                instigatorUserName = instigatorUserName,
             ))
             return
-
-        instigatorUserName = await self.__requireUserName(
-            action = action,
-            chatterUserId = action.instigatorUserId,
-        )
 
         timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
             timeoutAction = action,
@@ -226,6 +228,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             await self.__submitEvent(NoAirStrikeTargetsAvailableTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
+                instigatorUserName = instigatorUserName,
             ))
             return
 
@@ -244,11 +247,12 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             asplodieStats = frozenAsplodieStats,
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
+            timeoutResults = frozenTimeoutResults,
             targets = successfulTimeoutTargets,
             bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup(),
             eventId = await self.__timeoutIdGenerator.generateEventId(),
             explodedEmote = await self.__trollmojiHelper.getExplodedEmoteOrBackup(),
-            timeoutResults = frozenTimeoutResults,
+            instigatorUserName = instigatorUserName,
         ))
 
     async def __handleBananaTimeoutAction(self, action: BananaTimeoutAction):
@@ -262,6 +266,11 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
+        instigatorUserName = await self.__requireUserName(
+            action = action,
+            chatterUserId = action.instigatorUserId,
+        )
+
         if not action.ignoreInventory:
             inventory = await self.__chatterInventoryHelper.get(
                 chatterUserId = action.instigatorUserId,
@@ -272,6 +281,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 await self.__submitEvent(NoBananaInventoryAvailableTimeoutEvent(
                     originatingAction = action,
                     eventId = await self.__timeoutIdGenerator.generateEventId(),
+                    instigatorUserName = instigatorUserName,
                 ))
                 return
 
@@ -284,6 +294,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 originatingAction = action,
                 target = e.timeoutTarget,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
+                instigatorUserName = instigatorUserName,
                 diceRoll = e.diceRoll,
             ))
             return
@@ -292,13 +303,9 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             await self.__submitEvent(NoBananaTargetAvailableTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
+                instigatorUserName = instigatorUserName,
             ))
             return
-
-        instigatorUserName = await self.__requireUserName(
-            action = action,
-            chatterUserId = action.instigatorUserId,
-        )
 
         timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
             timeoutAction = action,
@@ -319,6 +326,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 originatingAction = action,
                 target = timeoutTarget,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
+                instigatorUserName = instigatorUserName,
                 timeoutResult = timeoutResult,
             ))
             return
@@ -347,6 +355,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
             eventId = await self.__timeoutIdGenerator.generateEventId(),
+            instigatorUserName = instigatorUserName,
             ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup(),
             timeoutResult = timeoutResult,
         ))
@@ -423,6 +432,11 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
+        instigatorUserName = await self.__requireUserName(
+            action = action,
+            chatterUserId = action.instigatorUserId,
+        )
+
         if not action.ignoreInventory:
             inventory = await self.__chatterInventoryHelper.get(
                 chatterUserId = action.instigatorUserId,
@@ -433,6 +447,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 await self.__submitEvent(NoGrenadeInventoryAvailableTimeoutEvent(
                     originatingAction = action,
                     eventId = await self.__timeoutIdGenerator.generateEventId(),
+                    instigatorUserName = instigatorUserName,
                 ))
                 return
 
@@ -444,13 +459,9 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             await self.__submitEvent(NoGrenadeTargetAvailableTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
+                instigatorUserName = instigatorUserName,
             ))
             return
-
-        instigatorUserName = await self.__requireUserName(
-            action = action,
-            chatterUserId = action.instigatorUserId,
-        )
 
         timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
             timeoutAction = action,
@@ -471,6 +482,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 originatingAction = action,
                 target = timeoutTarget,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
+                instigatorUserName = instigatorUserName,
                 timeoutResult = timeoutResult,
             ))
             return
@@ -501,6 +513,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup(),
             eventId = await self.__timeoutIdGenerator.generateEventId(),
             explodedEmote = await self.__trollmojiHelper.getExplodedEmoteOrBackup(),
+            instigatorUserName = instigatorUserName,
             timeoutResult = timeoutResult,
         ))
 

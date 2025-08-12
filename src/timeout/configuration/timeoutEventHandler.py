@@ -1,4 +1,9 @@
+import asyncio
+import locale
+import random
 from typing import Final
+
+from frozenlist import FrozenList
 
 from .absTimeoutEventHandler import AbsTimeoutEventHandler
 from ..models.events.absTimeoutEvent import AbsTimeoutEvent
@@ -18,7 +23,9 @@ from ..models.events.noBananaInventoryAvailableTimeoutEvent import NoBananaInven
 from ..models.events.noBananaTargetAvailableTimeoutEvent import NoBananaTargetAvailableTimeoutEvent
 from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
+from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
+from ...soundPlayerManager.soundAlert import SoundAlert
 from ...timber.timberInterface import TimberInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
@@ -29,10 +36,13 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
     ):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         if not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
@@ -40,6 +50,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
         self.__timber: Final[TimberInterface] = timber
         self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
@@ -168,8 +179,62 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
 
-        # TODO
-        pass
+        userNames: list[str] = list()
+
+        for target in event.targets:
+            userNames.append(f'@{target.targetUserName}')
+
+        userNames.sort(key = lambda userName: userName.casefold())
+        userNamesString = ', '.join(userNames)
+
+        peopleCountString = locale.format_string("%d", len(userNames), grouping = True)
+
+        peoplePluralityString: str
+        if len(event.targets) == 1:
+            peoplePluralityString = f'{peopleCountString} chatter was hit'
+        else:
+            peoplePluralityString = f'{peopleCountString} chatters hit'
+
+        message = f'{event.explodedEmote} {peoplePluralityString} by @{event.instigatorUserName} with a {event.timeoutDuration.secondsStr}s timeout! {userNamesString} {event.bombEmote}'
+
+        if event.user.areSoundAlertsEnabled:
+            self.__backgroundTaskHelper.createTask(self.__handleAirStrikeSoundAlerts(
+                targets = len(event.targets),
+            ))
+
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = message,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleAirStrikeSoundAlerts(self, targets: int):
+        if targets < 1:
+            return
+
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+        self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.LAUNCH_AIR_STRIKE))
+        await asyncio.sleep(2.0)
+
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+        self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.AIR_STRIKE))
+        await asyncio.sleep(0.5)
+
+        grenadeSoundAlerts: FrozenList[SoundAlert] = FrozenList([
+            SoundAlert.GRENADE_1,
+            SoundAlert.GRENADE_2,
+            SoundAlert.GRENADE_3,
+        ])
+        grenadeSoundAlerts.freeze()
+
+        for _ in range(targets):
+            grenadeSoundAlert = random.choice(grenadeSoundAlerts)
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(grenadeSoundAlert))
+            await asyncio.sleep(0.75)
+
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+        self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.SPLAT))
 
     async def __handleBananaTimeoutDiceRollFailedEvent(
         self,

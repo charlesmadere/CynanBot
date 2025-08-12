@@ -24,6 +24,7 @@ class AirStrikeTimeoutEvent(AbsTimeoutEvent):
     bombEmote: str
     eventId: str
     explodedEmote: str
+    instigatorUserName: str
 
     def getEventId(self) -> str:
         return self.eventId

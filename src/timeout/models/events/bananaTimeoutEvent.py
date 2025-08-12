@@ -18,6 +18,7 @@ class BananaTimeoutEvent(AbsTimeoutEvent):
     timeoutDuration: CalculatedTimeoutDuration
     updatedInventory: ChatterItemGiveResult | None
     eventId: str
+    instigatorUserName: str
     ripBozoEmote: str
     timeoutResult: TwitchTimeoutResult
 

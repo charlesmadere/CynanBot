@@ -20,6 +20,7 @@ class GrenadeTimeoutEvent(AbsTimeoutEvent):
     bombEmote: str
     eventId: str
     explodedEmote: str
+    instigatorUserName: str
     timeoutResult: TwitchTimeoutResult
 
     def getEventId(self) -> str:

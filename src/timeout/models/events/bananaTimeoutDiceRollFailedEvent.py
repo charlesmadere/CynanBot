@@ -12,6 +12,7 @@ class BananaTimeoutDiceRollFailedEvent(AbsTimeoutEvent):
     originatingAction: BananaTimeoutAction
     target: BananaTimeoutTarget
     eventId: str
+    instigatorUserName: str
     diceRoll: TimeoutDiceRoll
 
     def getEventId(self) -> str:

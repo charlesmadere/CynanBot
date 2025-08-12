@@ -9,6 +9,7 @@ from ..actions.grenadeTimeoutAction import GrenadeTimeoutAction
 class NoGrenadeTargetAvailableTimeoutEvent(AbsTimeoutEvent):
     originatingAction: GrenadeTimeoutAction
     eventId: str
+    instigatorUserName: str
 
     def getEventId(self) -> str:
         return self.eventId

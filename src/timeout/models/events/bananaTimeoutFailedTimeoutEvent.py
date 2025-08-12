@@ -12,6 +12,7 @@ class BananaTimeoutFailedTimeoutEvent(AbsTimeoutEvent):
     originatingAction: BananaTimeoutAction
     target: BananaTimeoutTarget
     eventId: str
+    instigatorUserName: str
     timeoutResult: TwitchTimeoutResult
 
     def getEventId(self) -> str:

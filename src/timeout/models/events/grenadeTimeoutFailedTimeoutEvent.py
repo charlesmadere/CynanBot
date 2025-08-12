@@ -12,6 +12,7 @@ class GrenadeTimeoutFailedTimeoutEvent(AbsTimeoutEvent):
     originatingAction: GrenadeTimeoutAction
     target: GrenadeTimeoutTarget
     eventId: str
+    instigatorUserName: str
     timeoutResult: TwitchTimeoutResult
 
     def getEventId(self) -> str:

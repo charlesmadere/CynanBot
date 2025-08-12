@@ -9,6 +9,7 @@ from ..actions.bananaTimeoutAction import BananaTimeoutAction
 class NoBananaInventoryAvailableTimeoutEvent(AbsTimeoutEvent):
     originatingAction: BananaTimeoutAction
     eventId: str
+    instigatorUserName: str
 
     def getEventId(self) -> str:
         return self.eventId
