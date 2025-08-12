@@ -23,9 +23,11 @@ from ..models.events.noBananaInventoryAvailableTimeoutEvent import NoBananaInven
 from ..models.events.noBananaTargetAvailableTimeoutEvent import NoBananaTargetAvailableTimeoutEvent
 from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
+from ...chatterInventory.models.chatterItemType import ChatterItemType
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.soundAlert import SoundAlert
+from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
@@ -38,13 +40,16 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
+        streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        if not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
+        elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
+        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
@@ -52,6 +57,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
+        self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
 
@@ -220,15 +226,8 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.AIR_STRIKE))
         await asyncio.sleep(0.5)
 
-        grenadeSoundAlerts: FrozenList[SoundAlert] = FrozenList([
-            SoundAlert.GRENADE_1,
-            SoundAlert.GRENADE_2,
-            SoundAlert.GRENADE_3,
-        ])
-        grenadeSoundAlerts.freeze()
-
         for _ in range(targets):
-            grenadeSoundAlert = random.choice(grenadeSoundAlerts)
+            grenadeSoundAlert = self.__chooseRandomGrenadeSoundAlert()
             soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
             self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(grenadeSoundAlert))
             await asyncio.sleep(0.75)
@@ -303,8 +302,27 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
 
-        # TODO
-        pass
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+        await soundPlayerManager.playSoundAlert(self.__chooseRandomGrenadeSoundAlert())
+
+        remainingInventoryString = ''
+
+        if event.updatedInventory is not None:
+            remainingGrenades = locale.format_string("%d", event.updatedInventory[ChatterItemType.GRENADE], grouping = True)
+
+            grenadesPlurality: str
+            if event.updatedInventory[ChatterItemType.GRENADE] == 1:
+                grenadesPlurality = 'grenade'
+            else:
+                grenadesPlurality = 'grenades'
+
+            remainingInventoryString = f'({remainingGrenades} {grenadesPlurality} remaining)'
+
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = f'{event.explodedEmote} @{event.target.targetUserName} {event.bombEmote} {remainingInventoryString}',
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleGrenadeTimeoutFailedTimeoutEvent(
         self,
@@ -383,8 +401,21 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
 
-        # TODO
-        pass
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = f'Sorry @{event.thumbsDownEmote}, you don\'t have any grenades available',
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    def __chooseRandomGrenadeSoundAlert(self) -> SoundAlert:
+        grenadeSoundAlerts: FrozenList[SoundAlert] = FrozenList([
+            SoundAlert.GRENADE_1,
+            SoundAlert.GRENADE_2,
+            SoundAlert.GRENADE_3,
+        ])
+
+        grenadeSoundAlerts.freeze()
+        return random.choice(grenadeSoundAlerts)
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):

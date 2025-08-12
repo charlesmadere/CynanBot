@@ -18,6 +18,12 @@ class ChatterItemGiveResult:
     def chatterUserId(self) -> str:
         return self.chatterInventory.chatterUserId
 
+    def __getitem__(self, key: ChatterItemType) -> int:
+        if not isinstance(key, ChatterItemType):
+            raise TypeError(f'itemType argument is malformed: \"{key}\"')
+
+        return self.chatterInventory[key]
+
     @property
     def inventory(self) -> frozendict[ChatterItemType, int]:
         return self.chatterInventory.inventory

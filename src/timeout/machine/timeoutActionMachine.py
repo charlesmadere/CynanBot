@@ -460,6 +460,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
                 instigatorUserName = instigatorUserName,
+                thumbsDownEmote = await self.__trollmojiHelper.getThumbsDownEmoteOrBackup(),
             ))
             return
 

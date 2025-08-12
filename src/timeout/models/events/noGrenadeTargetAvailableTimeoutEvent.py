@@ -10,6 +10,7 @@ class NoGrenadeTargetAvailableTimeoutEvent(AbsTimeoutEvent):
     originatingAction: GrenadeTimeoutAction
     eventId: str
     instigatorUserName: str
+    thumbsDownEmote: str
 
     def getEventId(self) -> str:
         return self.eventId
