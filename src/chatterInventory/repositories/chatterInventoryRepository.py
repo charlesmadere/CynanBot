@@ -95,7 +95,7 @@ class ChatterInventoryRepository(ChatterInventoryRepositoryInterface):
         return ChatterInventoryData(
             inventory = frozendict(inventory),
             chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
@@ -168,7 +168,7 @@ class ChatterInventoryRepository(ChatterInventoryRepositoryInterface):
         newInventory[itemType] = max(0, newInventory.get(itemType, 0) + changeAmount)
 
         inventoryJson = await self.__chatterInventoryMapper.serializeInventory(newInventory)
-        inventoryJsonString = json.dumps(inventoryJson, sort_keys = True)
+        inventoryJsonString = json.dumps(inventoryJson, sort_keys = True, allow_nan = False)
 
         await connection.execute(
             '''
