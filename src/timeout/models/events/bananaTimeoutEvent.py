@@ -5,6 +5,8 @@ from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.bananaTimeoutAction import BananaTimeoutAction
 from ..bananaTimeoutTarget import BananaTimeoutTarget
 from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
+from ..timeoutDiceRoll import TimeoutDiceRoll
+from ..timeoutDiceRollFailureData import TimeoutDiceRollFailureData
 from ....asplodieStats.models.asplodieStats import AsplodieStats
 from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
@@ -20,6 +22,8 @@ class BananaTimeoutEvent(AbsTimeoutEvent):
     eventId: str
     instigatorUserName: str
     ripBozoEmote: str
+    diceRoll: TimeoutDiceRoll | None
+    diceRollFailureData: TimeoutDiceRollFailureData | None
     timeoutResult: TwitchTimeoutResult
 
     def getEventId(self) -> str:

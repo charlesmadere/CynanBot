@@ -242,8 +242,11 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
 
-        # TODO
-        pass
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = f'{event.ripBozoEmote} Sorry @{event.instigatorUserName}, your timeout of @{event.target.targetUserName} failed {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, but needed greater than {event.diceRollFailureData.failureRoll}) {event.ripBozoEmote}',
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleBananaTimeoutEvent(
         self,
@@ -408,14 +411,22 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         )
 
     def __chooseRandomGrenadeSoundAlert(self) -> SoundAlert:
-        grenadeSoundAlerts: FrozenList[SoundAlert] = FrozenList([
+        soundAlerts: FrozenList[SoundAlert] = FrozenList([
             SoundAlert.GRENADE_1,
             SoundAlert.GRENADE_2,
             SoundAlert.GRENADE_3,
         ])
+        soundAlerts.freeze()
+        return random.choice(soundAlerts)
 
-        grenadeSoundAlerts.freeze()
-        return random.choice(grenadeSoundAlerts)
+    def __chooseRandomMegaGrenadeSoundAlert(self) -> SoundAlert:
+        soundAlerts: FrozenList[SoundAlert] = FrozenList([
+            SoundAlert.MEGA_GRENADE_1,
+            SoundAlert.MEGA_GRENADE_2,
+            SoundAlert.MEGA_GRENADE_3,
+        ])
+        soundAlerts.freeze()
+        return random.choice(soundAlerts)
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):

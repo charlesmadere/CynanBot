@@ -1,12 +1,15 @@
 import random
 import re
 import traceback
+from dataclasses import dataclass
 from typing import Final, Pattern
 
 from ..exceptions import UnknownTimeoutTargetException
+from ..guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from ..models.actions.bananaTimeoutAction import BananaTimeoutAction
 from ..models.bananaTimeoutTarget import BananaTimeoutTarget
 from ..models.timeoutDiceRoll import TimeoutDiceRoll
+from ..models.timeoutDiceRollFailureData import TimeoutDiceRollFailureData
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ..timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -22,9 +25,16 @@ from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 class DetermineBananaTargetUseCase:
 
+    @dataclass(frozen = True)
+    class ResultData:
+        timeoutTarget: BananaTimeoutTarget
+        diceRoll: TimeoutDiceRoll | None
+        diceRollFailureData: TimeoutDiceRollFailureData | None
+
     def __init__(
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
+        guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         timber: TimberInterface,
         timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface,
         timeoutActionSettings: TimeoutActionSettingsInterface,
@@ -36,6 +46,8 @@ class DetermineBananaTargetUseCase:
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
+            raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionHistoryRepository, TimeoutActionHistoryRepositoryInterface):
@@ -54,6 +66,7 @@ class DetermineBananaTargetUseCase:
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
+        self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionHistoryRepository: Final[TimeoutActionHistoryRepositoryInterface] = timeoutActionHistoryRepository
         self.__timeoutActionSettings: Final[TimeoutActionSettingsInterface] = timeoutActionSettings
@@ -124,10 +137,19 @@ class DetermineBananaTargetUseCase:
             roll = roll,
         )
 
+    async def __generateDiceRollFailureData(
+        self,
+        instigatorUserId: str,
+        targetUserId: str,
+        twitchChannelId: str,
+    ) -> TimeoutDiceRollFailureData:
+        # TODO
+        raise RuntimeError()
+
     async def invoke(
         self,
         timeoutAction: BananaTimeoutAction,
-    ) -> BananaTimeoutTarget:
+    ) -> ResultData:
         if not isinstance(timeoutAction, BananaTimeoutAction):
             raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
 
@@ -145,16 +167,30 @@ class DetermineBananaTargetUseCase:
             targetUserName = targetUserName,
         )
 
-        if not timeoutAction.isRandomChanceEnabled:
+        isGuaranteedTimeoutTarget = await self.__guaranteedTimeoutUsersRepository.isGuaranteed(
+            userId = targetUserId,
+        )
+
+        if not timeoutAction.isRandomChanceEnabled or isGuaranteedTimeoutTarget:
             await self.__activeChattersRepository.remove(
-                chatterUserId = timeoutTarget.targetUserId,
+                chatterUserId = targetUserId,
                 twitchChannelId = timeoutAction.twitchChannelId,
             )
 
-            return timeoutTarget
+            return DetermineBananaTargetUseCase.ResultData(
+                timeoutTarget = timeoutTarget,
+                diceRoll = None,
+                diceRollFailureData = None,
+            )
 
         # TODO
         diceRoll = await self.__generateDiceRoll()
+
+        diceRollFailureData = await self.__generateDiceRollFailureData(
+            instigatorUserId = timeoutAction.instigatorUserId,
+            targetUserId = targetUserId,
+            twitchChannelId = timeoutAction.twitchChannelId,
+        )
 
         # TODO
         raise RuntimeError()

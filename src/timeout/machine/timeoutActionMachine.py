@@ -286,7 +286,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 return
 
         try:
-            timeoutTarget = await self.__determineBananaTargetUseCase.invoke(
+            timeoutData = await self.__determineBananaTargetUseCase.invoke(
                 timeoutAction = action,
             )
         except BananaTimeoutDiceRollFailedException as e:
@@ -295,7 +295,9 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 target = e.timeoutTarget,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
                 instigatorUserName = instigatorUserName,
+                ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup(),
                 diceRoll = e.diceRoll,
+                diceRollFailureData = e.diceRollFailureData,
             ))
             return
         except UnknownTimeoutTargetException as e:
@@ -317,14 +319,14 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             twitchAccessToken = action.moderatorTwitchAccessToken,
             twitchChannelAccessToken = action.userTwitchAccessToken,
             twitchChannelId = action.twitchChannelId,
-            userIdToTimeout = timeoutTarget.targetUserId,
+            userIdToTimeout = timeoutData.timeoutTarget.targetUserId,
             user = action.user,
         )
 
         if timeoutResult is not TwitchTimeoutResult.SUCCESS:
             await self.__submitEvent(BananaTimeoutFailedTimeoutEvent(
                 originatingAction = action,
-                target = timeoutTarget,
+                target = timeoutData.timeoutTarget,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
                 instigatorUserName = instigatorUserName,
                 timeoutResult = timeoutResult,
@@ -332,9 +334,9 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             return
 
         asplodieStats = await self.__asplodieStatsRepository.addAsplodie(
-            isSelfAsplodie = timeoutTarget.targetUserId == action.instigatorUserId,
+            isSelfAsplodie = timeoutData.timeoutTarget.targetUserId == action.instigatorUserId,
             durationAsplodiedSeconds = timeoutDuration.seconds,
-            chatterUserId = timeoutTarget.targetUserId,
+            chatterUserId = timeoutData.timeoutTarget.targetUserId,
             twitchChannelId = action.twitchChannelId,
         )
 
@@ -351,12 +353,14 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         await self.__submitEvent(BananaTimeoutEvent(
             asplodieStats = asplodieStats,
             originatingAction = action,
-            target = timeoutTarget,
+            target = timeoutData.timeoutTarget,
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
             eventId = await self.__timeoutIdGenerator.generateEventId(),
             instigatorUserName = instigatorUserName,
             ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup(),
+            diceRoll = timeoutData.diceRoll,
+            diceRollFailureData = timeoutData.diceRollFailureData,
             timeoutResult = timeoutResult,
         ))
 
