@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ...misc import utils as utils
@@ -11,7 +11,7 @@ class TimeoutActionSettings(TimeoutActionSettingsInterface):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
 
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
 
         self.__cache: dict[str, Any] | None = None
 
@@ -58,18 +58,22 @@ class TimeoutActionSettings(TimeoutActionSettingsInterface):
         jsonContents = await self.__readJson()
         return utils.getFloatFromDict(jsonContents, 'reverseProbability', fallback = 0.05)
 
+    async def isBullyBasedIncreasedFailureRateEnabled(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'bullyBasedIncreasedFailureRateEnabled', fallback = True)
+
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
             return self.__cache
 
-        jsonContents: dict[str, Any] | None = None
+        jsonContents: dict[str, Any] | None
 
         if await self.__settingsJsonReader.fileExistsAsync():
             jsonContents = await self.__settingsJsonReader.readJsonAsync()
         else:
             jsonContents = dict()
 
-        if jsonContents is None:
+        if not isinstance(jsonContents, dict):
             raise IOError(f'Error reading from timeout action settings file: {self.__settingsJsonReader}')
 
         self.__cache = jsonContents

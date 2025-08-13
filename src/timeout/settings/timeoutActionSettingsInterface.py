@@ -44,3 +44,7 @@ class TimeoutActionSettingsInterface(Clearable, ABC):
     @abstractmethod
     async def getReverseProbability(self) -> float:
         pass
+
+    @abstractmethod
+    async def isBullyBasedIncreasedFailureRateEnabled(self) -> bool:
+        pass

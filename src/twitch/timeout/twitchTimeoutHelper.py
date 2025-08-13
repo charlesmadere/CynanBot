@@ -104,7 +104,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         elif not utils.isValidStr(userIdToTimeout):
             raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
 
-        moderatorInfo: TwitchModUser | None = None
+        moderatorInfo: TwitchModUser | None
 
         try:
             moderatorInfo = await self.__twitchApiService.fetchModerator(

@@ -1,17 +1,15 @@
 from dataclasses import dataclass
-from typing import Any
+
+from .absTimeoutTarget import AbsTimeoutTarget
 
 
 @dataclass(frozen = True)
-class BananaTimeoutTarget:
+class BananaTimeoutTarget(AbsTimeoutTarget):
     targetUserId: str
     targetUserName: str
 
-    def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, BananaTimeoutTarget):
-            return False
+    def getTargetUserId(self) -> str:
+        return self.targetUserId
 
-        return self.targetUserId == other.targetUserId
-
-    def __hash__(self) -> int:
-        return hash(self.targetUserId)
+    def getTargetUserName(self) -> str:
+        return self.targetUserName

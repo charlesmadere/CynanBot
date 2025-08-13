@@ -288,6 +288,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         try:
             timeoutData = await self.__determineBananaTargetUseCase.invoke(
                 timeoutAction = action,
+                instigatorUserName = instigatorUserName,
             )
         except BananaTimeoutDiceRollFailedException as e:
             await self.__submitEvent(BananaTimeoutDiceRollFailedEvent(

@@ -2,9 +2,10 @@ import random
 import re
 import traceback
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from typing import Final, Pattern
 
-from ..exceptions import UnknownTimeoutTargetException
+from ..exceptions import BananaTimeoutDiceRollFailedException, UnknownTimeoutTargetException
 from ..guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from ..models.actions.bananaTimeoutAction import BananaTimeoutAction
 from ..models.bananaTimeoutTarget import BananaTimeoutTarget
@@ -15,7 +16,6 @@ from ..timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryReposi
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
-from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ...twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
@@ -28,12 +28,12 @@ class DetermineBananaTargetUseCase:
     @dataclass(frozen = True)
     class ResultData:
         timeoutTarget: BananaTimeoutTarget
+        isReverse: bool
         diceRoll: TimeoutDiceRoll | None
         diceRollFailureData: TimeoutDiceRollFailureData | None
 
     def __init__(
         self,
-        activeChattersRepository: ActiveChattersRepositoryInterface,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         timber: TimberInterface,
         timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface,
@@ -44,9 +44,7 @@ class DetermineBananaTargetUseCase:
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
     ):
-        if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
-            raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
-        elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
+        if not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
             raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -65,7 +63,6 @@ class DetermineBananaTargetUseCase:
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionHistoryRepository: Final[TimeoutActionHistoryRepositoryInterface] = timeoutActionHistoryRepository
@@ -107,6 +104,38 @@ class DetermineBananaTargetUseCase:
 
         return targetUserName
 
+    async def __fetchBullyOccurrenceCount(
+        self,
+        timeoutAction: BananaTimeoutAction,
+        now: datetime,
+        targetUserId: str,
+    ) -> int:
+        if not await self.__timeoutActionSettings.isBullyBasedIncreasedFailureRateEnabled():
+            return 0
+
+        history = await self.__timeoutActionHistoryRepository.get(
+            chatterUserId = targetUserId,
+            twitchChannel = timeoutAction.twitchChannel,
+            twitchChannelId = timeoutAction.twitchChannelId,
+        )
+
+        if history.entries is None or len(history.entries) == 0:
+            return 0
+
+        bullyTimeToLiveDays = await self.__timeoutActionSettings.getBullyTimeToLiveDays()
+        bullyTimeBuffer = timedelta(days = bullyTimeToLiveDays)
+        bullyOccurrences = 0
+
+        for historyEntry in history.entries:
+            if historyEntry.timedOutByUserId != timeoutAction.instigatorUserId:
+                continue
+            elif historyEntry.timedOutAtDateTime + bullyTimeBuffer < now:
+                continue
+
+            bullyOccurrences += 1
+
+        return bullyOccurrences
+
     async def __fetchUserId(
         self,
         twitchChannelId: str,
@@ -139,19 +168,52 @@ class DetermineBananaTargetUseCase:
 
     async def __generateDiceRollFailureData(
         self,
-        instigatorUserId: str,
+        timeoutAction: BananaTimeoutAction,
+        now: datetime,
         targetUserId: str,
-        twitchChannelId: str,
+        diceRoll: TimeoutDiceRoll,
     ) -> TimeoutDiceRollFailureData:
-        # TODO
-        raise RuntimeError()
+        baseFailureProbability = await self.__timeoutActionSettings.getFailureProbability()
+        maxBullyFailureProbability = await self.__timeoutActionSettings.getMaxBullyFailureProbability()
+        maxBullyFailureOccurrences = await self.__timeoutActionSettings.getMaxBullyFailureOccurrences()
+        perBullyFailureProbabilityIncrease = (maxBullyFailureProbability - baseFailureProbability) / float(maxBullyFailureOccurrences)
+
+        bullyOccurrences = await self.__fetchBullyOccurrenceCount(
+            timeoutAction = timeoutAction,
+            now = now,
+            targetUserId = targetUserId,
+        )
+
+        failureProbability = baseFailureProbability + (perBullyFailureProbabilityIncrease * float(bullyOccurrences))
+        failureProbability = float(min(failureProbability, maxBullyFailureProbability))
+        failureRoll = int(round(failureProbability * float(diceRoll.dieSize)))
+        failureRoll = int(min(failureRoll, diceRoll.dieSize))
+
+        reverseProbability = await self.__timeoutActionSettings.getReverseProbability()
+        reverseRoll = int(round(reverseProbability * float(diceRoll.dieSize)))
+        reverseRoll = int(min(reverseRoll, diceRoll.dieSize))
+
+        return TimeoutDiceRollFailureData(
+            baseFailureProbability = baseFailureProbability,
+            failureProbability = failureProbability,
+            maxBullyFailureProbability = maxBullyFailureProbability,
+            perBullyFailureProbabilityIncrease = perBullyFailureProbabilityIncrease,
+            reverseProbability = reverseProbability,
+            bullyOccurrences = bullyOccurrences,
+            failureRoll = failureRoll,
+            maxBullyFailureOccurrences = maxBullyFailureOccurrences,
+            reverseRoll = reverseRoll,
+        )
 
     async def invoke(
         self,
         timeoutAction: BananaTimeoutAction,
+        instigatorUserName: str,
     ) -> ResultData:
         if not isinstance(timeoutAction, BananaTimeoutAction):
             raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
+        elif not utils.isValidStr(instigatorUserName):
+            raise TypeError(f'instigatorUserName argument is malformed: \"{instigatorUserName}\"')
 
         targetUserName = await self.__determineTargetUserName(
             timeoutAction = timeoutAction,
@@ -162,35 +224,55 @@ class DetermineBananaTargetUseCase:
             userName = targetUserName,
         )
 
-        timeoutTarget = BananaTimeoutTarget(
-            targetUserId = targetUserId,
-            targetUserName = targetUserName,
-        )
+        if targetUserId == timeoutAction.twitchChannelId:
+            targetUserId = timeoutAction.instigatorUserId
+
+        isTryingToTimeoutThemselves = targetUserId == timeoutAction.instigatorUserId
 
         isGuaranteedTimeoutTarget = await self.__guaranteedTimeoutUsersRepository.isGuaranteed(
             userId = targetUserId,
         )
 
-        if not timeoutAction.isRandomChanceEnabled or isGuaranteedTimeoutTarget:
-            await self.__activeChattersRepository.remove(
-                chatterUserId = targetUserId,
-                twitchChannelId = timeoutAction.twitchChannelId,
-            )
-
+        if isTryingToTimeoutThemselves or isGuaranteedTimeoutTarget or not timeoutAction.isRandomChanceEnabled:
             return DetermineBananaTargetUseCase.ResultData(
-                timeoutTarget = timeoutTarget,
+                timeoutTarget = BananaTimeoutTarget(
+                    targetUserId = targetUserId,
+                    targetUserName = targetUserName,
+                ),
+                isReverse = targetUserId == timeoutAction.twitchChannelId or isTryingToTimeoutThemselves,
                 diceRoll = None,
                 diceRollFailureData = None,
             )
 
-        # TODO
+        now = datetime.now(self.__timeZoneRepository.getDefault())
         diceRoll = await self.__generateDiceRoll()
 
         diceRollFailureData = await self.__generateDiceRollFailureData(
-            instigatorUserId = timeoutAction.instigatorUserId,
+            timeoutAction = timeoutAction,
+            now = now,
             targetUserId = targetUserId,
-            twitchChannelId = timeoutAction.twitchChannelId,
+            diceRoll = diceRoll,
         )
+
+        if diceRoll.roll < diceRollFailureData.reverseRoll:
+            return DetermineBananaTargetUseCase.ResultData(
+                timeoutTarget = BananaTimeoutTarget(
+                    targetUserId = timeoutAction.instigatorUserId,
+                    targetUserName = instigatorUserName,
+                ),
+                isReverse = True,
+                diceRoll = diceRoll,
+                diceRollFailureData = diceRollFailureData,
+            )
+        elif diceRoll.roll <= diceRollFailureData.failureRoll:
+            raise BananaTimeoutDiceRollFailedException(
+                timeoutTarget = BananaTimeoutTarget(
+                    targetUserId = targetUserId,
+                    targetUserName = targetUserName,
+                ),
+                diceRoll = diceRoll,
+                diceRollFailureData = diceRollFailureData,
+            )
 
         # TODO
         raise RuntimeError()
