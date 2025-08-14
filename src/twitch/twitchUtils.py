@@ -113,7 +113,7 @@ class TwitchUtils(TwitchUtilsInterface):
         messageable: TwitchMessageable,
         message: str | None,
         maxMessages: int = 3,
-        replyMessageId: str | None = None
+        replyMessageId: str | None = None,
     ):
         if not isinstance(messageable, TwitchMessageable):
             raise TypeError(f'messageable argument is malformed: \"{messageable}\"')
@@ -126,28 +126,29 @@ class TwitchUtils(TwitchUtilsInterface):
         elif replyMessageId is not None and not isinstance(replyMessageId, str):
             raise TypeError(f'replyMessageId argument is malformed: \"{replyMessageId}\"')
 
-        if not utils.isValidStr(message):
+        cleanedMessage = utils.cleanStr(message)
+        if not utils.isValidStr(cleanedMessage):
             return
 
-        if len(message) < self.maxMessageSize:
+        if len(cleanedMessage) < self.maxMessageSize:
             await self.__safeSend(
                 messageable = messageable,
-                message = message,
-                replyMessageId = replyMessageId
+                message = cleanedMessage,
+                replyMessageId = replyMessageId,
             )
             return
 
         messages = utils.splitLongStringIntoMessages(
             maxMessages = maxMessages,
             perMessageMaxSize = self.maxMessageSize,
-            message = message
+            message = cleanedMessage,
         )
 
         for m in messages:
             await self.__safeSend(
                 messageable = messageable,
                 message = m,
-                replyMessageId = replyMessageId
+                replyMessageId = replyMessageId,
             )
 
     async def __safeSend(

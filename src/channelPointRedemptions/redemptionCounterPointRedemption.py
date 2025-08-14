@@ -77,11 +77,11 @@ class RedemptionCounterPointRedemption(AbsChannelPointRedemption):
 
         suffixEmote = ''
         if utils.isValidStr(boosterPack.emote):
-            suffixEmote = f' {boosterPack.emote}'
+            suffixEmote = boosterPack.emote
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
-            message = f'{prefixEmote} @{twitchChannelPointsMessage.userName} has a new {result.counterName} count of {result.countStr}!{suffixEmote}'
+            message = f'{prefixEmote} @{twitchChannelPointsMessage.userName} has a new {result.counterName} count of {result.countStr}! {suffixEmote}'
         )
 
         self.__timber.log('RedemptionCounterPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')

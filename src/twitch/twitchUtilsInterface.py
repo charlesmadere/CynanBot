@@ -12,7 +12,7 @@ class TwitchUtilsInterface(TwitchConstantsInterface):
         messageable: TwitchMessageable,
         message: str | None,
         maxMessages: int = 3,
-        replyMessageId: str | None = None
+        replyMessageId: str | None = None,
     ):
         pass
 
