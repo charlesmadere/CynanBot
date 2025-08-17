@@ -15,7 +15,7 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
         self,
         halfLifeJsonParser: HalfLifeVoiceParserInterface,
         settingsJsonReader: JsonReaderInterface,
-        defaultVoiceVolumes: frozendict[HalfLifeVoice, int | None] | None = frozendict({
+        defaultVoiceVolumes: frozendict[HalfLifeVoice, int | None] = frozendict({
             HalfLifeVoice.BARNEY: 7,
             HalfLifeVoice.INTERCOM: 4,
             HalfLifeVoice.SCIENTIST: 4,
@@ -27,14 +27,14 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
             raise TypeError(f'halfLifeJsonParser argument is malformed: \"{halfLifeJsonParser}\"')
         elif not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
-        elif defaultVoiceVolumes is not None and not isinstance(defaultVoiceVolumes, frozendict):
+        elif not isinstance(defaultVoiceVolumes, frozendict):
             raise TypeError(f'defaultVoiceVolumes argument is malformed: \"{defaultVoiceVolumes}\"')
         elif not isinstance(defaultVoice, HalfLifeVoice):
             raise TypeError(f'defaultVoice argument is malformed: \"{defaultVoice}\"')
 
         self.__halfLifeJsonParser: Final[HalfLifeVoiceParserInterface] = halfLifeJsonParser
         self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
-        self.__defaultVoiceVolumes: Final[frozendict[HalfLifeVoice, int | None] | None] = defaultVoiceVolumes
+        self.__defaultVoiceVolumes: Final[frozendict[HalfLifeVoice, int | None]] = defaultVoiceVolumes
         self.__defaultVoice: Final[HalfLifeVoice] = defaultVoice
 
         self.__cache: dict[str, Any] | None = None
