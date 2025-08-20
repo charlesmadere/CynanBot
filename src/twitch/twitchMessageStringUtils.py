@@ -63,6 +63,6 @@ class TwitchMessageStringUtils(TwitchMessageStringUtilsInterface):
             raise TypeError(f'repl argument is malformed: \"{repl}\"')
 
         for cheerRegEx in self.__cheerRegExes:
-            message = cheerRegEx.sub(repl, message).strip()
+            message = cheerRegEx.sub(repl, message)
 
-        return self.__extraWhiteSpaceRegEx.sub(' ', message.strip()).strip()
+        return utils.cleanStr(message)

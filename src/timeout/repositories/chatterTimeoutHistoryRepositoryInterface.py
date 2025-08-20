@@ -11,6 +11,7 @@ class ChatterTimeoutHistoryRepositoryInterface(Clearable, ABC):
         self,
         durationSeconds: int,
         chatterUserId: str,
+        timedOutByUserId: str,
         twitchChannelId: str,
     ) -> ChatterTimeoutHistory:
         pass

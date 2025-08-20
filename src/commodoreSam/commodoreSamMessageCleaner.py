@@ -14,7 +14,7 @@ class CommodoreSamMessageCleaner(CommodoreSamMessageCleanerInterface):
     def __init__(
         self,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
-        twitchMessageStringUtils: TwitchMessageStringUtilsInterface
+        twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
     ):
         if not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
@@ -26,7 +26,6 @@ class CommodoreSamMessageCleaner(CommodoreSamMessageCleanerInterface):
 
         self.__commodoreSamInputArgumentRegExes: Collection[Pattern] = self.__buildCommodoreSamInputArgumentRegExes()
         self.__terminalExploitRegExes: Collection[Pattern] = self.__buildTerminalExploitRegExes()
-        self.__extraWhiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
     def __buildCommodoreSamInputArgumentRegExes(self) -> FrozenList[Pattern]:
         regExes: FrozenList[Pattern] = FrozenList()
@@ -75,7 +74,7 @@ class CommodoreSamMessageCleaner(CommodoreSamMessageCleanerInterface):
         if not utils.isValidStr(message):
             return None
 
-        message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()
+        message = utils.cleanStr(message)
 
         maximumMessageSize = await self.__ttsSettingsRepository.getMaximumMessageSize()
         if len(message) > maximumMessageSize:

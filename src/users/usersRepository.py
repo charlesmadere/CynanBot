@@ -596,7 +596,7 @@ class UsersRepository(UsersRepositoryInterface):
                     handle = handle,
                     userJson = userJson,
                     jsonConstant = jsonConstant,
-                    rawValue = value
+                    rawValue = value,
                 )
 
             case UserJsonConstant.BLUE_SKY_URL:
@@ -604,7 +604,7 @@ class UsersRepository(UsersRepositoryInterface):
                     handle = handle,
                     userJson = userJson,
                     jsonConstant = jsonConstant,
-                    rawValue = value
+                    rawValue = value,
                 )
 
             case UserJsonConstant.CHEER_ACTIONS_ENABLED:
@@ -612,7 +612,7 @@ class UsersRepository(UsersRepositoryInterface):
                     handle = handle,
                     userJson = userJson,
                     jsonConstant = jsonConstant,
-                    rawValue = value
+                    rawValue = value,
                 )
 
             case UserJsonConstant.CROWD_CONTROL_ENABLED:
@@ -620,7 +620,7 @@ class UsersRepository(UsersRepositoryInterface):
                     handle = handle,
                     userJson = userJson,
                     jsonConstant = jsonConstant,
-                    rawValue = value
+                    rawValue = value,
                 )
 
             case UserJsonConstant.DISCORD_URL:
@@ -628,7 +628,7 @@ class UsersRepository(UsersRepositoryInterface):
                     handle = handle,
                     userJson = userJson,
                     jsonConstant = jsonConstant,
-                    rawValue = value
+                    rawValue = value,
                 )
 
             case UserJsonConstant.RECURRING_ACTIONS_ENABLED:
@@ -636,7 +636,7 @@ class UsersRepository(UsersRepositoryInterface):
                     handle = handle,
                     userJson = userJson,
                     jsonConstant = jsonConstant,
-                    rawValue = value
+                    rawValue = value,
                 )
 
             case UserJsonConstant.SOUND_ALERTS_ENABLED:
@@ -644,7 +644,7 @@ class UsersRepository(UsersRepositoryInterface):
                     handle = handle,
                     userJson = userJson,
                     jsonConstant = jsonConstant,
-                    rawValue = value
+                    rawValue = value,
                 )
 
             case UserJsonConstant.TTS_ENABLED:
@@ -652,7 +652,7 @@ class UsersRepository(UsersRepositoryInterface):
                     handle = handle,
                     userJson = userJson,
                     jsonConstant = jsonConstant,
-                    rawValue = value
+                    rawValue = value,
                 )
 
             case _:
@@ -666,7 +666,7 @@ class UsersRepository(UsersRepositoryInterface):
         handle: str,
         userJson: dict[str, Any],
         jsonConstant: UserJsonConstant,
-        rawValue: Any | None
+        rawValue: Any | None,
     ):
         if not utils.isValidStr(handle):
             raise TypeError(f'handle argument is malformed: \"{handle}\"')

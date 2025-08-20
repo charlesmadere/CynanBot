@@ -246,6 +246,8 @@ class BeanStatsRepository(BeanStatsRepositoryInterface):
             case _:
                 raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.databaseType}\"')
 
+        await connection.close()
+
     async def __saveStatsToDatabase(self, stats: ChatterBeanStats):
         if not isinstance(stats, ChatterBeanStats):
             raise TypeError(f'stats argument is malformed: \"{stats}\"')

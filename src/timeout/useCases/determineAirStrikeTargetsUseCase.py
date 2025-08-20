@@ -1,8 +1,10 @@
 import random
+import traceback
 from typing import Final
 
 from frozenlist import FrozenList
 
+from ..exceptions import UnknownTimeoutTargetException
 from ..models.actions.airStrikeTimeoutAction import AirStrikeTimeoutAction
 from ..models.airStrikeTimeoutTarget import AirStrikeTimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
@@ -11,6 +13,7 @@ from ...twitch.activeChatters.activeChatter import ActiveChatter
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
+from ...users.exceptions import NoSuchUserException
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
@@ -54,10 +57,14 @@ class DetermineAirStrikeTargetsUseCase:
             twitchChannelId = twitchChannelId,
         )
 
-        return await self.__userIdsRepository.requireUserName(
-            userId = userId,
-            twitchAccessToken = twitchAccessToken,
-        )
+        try:
+            return await self.__userIdsRepository.requireUserName(
+                userId = userId,
+                twitchAccessToken = twitchAccessToken,
+            )
+        except NoSuchUserException as e:
+            self.__timber.log('DetermineAirStrikeTargetsUseCase', f'Failed to fetch timeout target\'s username ({twitchChannelId=}) ({userId=}): {e}', e, traceback.format_exc())
+            raise UnknownTimeoutTargetException(f'Failed to fetch timeout target\'s username ({twitchChannelId=}) ({userId=})')
 
     async def invoke(
         self,
@@ -72,12 +79,14 @@ class DetermineAirStrikeTargetsUseCase:
         randomReverseNumber = random.random()
 
         if randomReverseNumber <= additionalReverseProbability:
+            targetUserName = await self.__fetchUserName(
+                twitchChannelId = timeoutAction.twitchChannelId,
+                userId = timeoutAction.instigatorUserId,
+            )
+
             timeoutTargets.add(AirStrikeTimeoutTarget(
                 targetUserId = timeoutAction.instigatorUserId,
-                targetUserName = await self.__fetchUserName(
-                    twitchChannelId = timeoutAction.twitchChannelId,
-                    userId = timeoutAction.instigatorUserId,
-                ),
+                targetUserName = targetUserName,
             ))
 
         activeChatters = await self.__activeChattersRepository.get(

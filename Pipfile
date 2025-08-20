@@ -26,7 +26,7 @@ pytest-asyncio = "1.1.0"
 python-vlc = { version = "3.0.21203", markers = "sys_platform == 'win32'" }
 pytz = "2025.2"
 pywin32 = { version = "311", markers = "sys_platform == 'win32'" }
-requests = "2.32.4"
+requests = "2.32.5"
 roman = "5.1"
 twitchio = "2.10.0"
 typing_extensions = "4.14.1"
