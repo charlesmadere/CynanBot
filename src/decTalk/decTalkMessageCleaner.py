@@ -20,7 +20,7 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         timber: TimberInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
-        isUnrestricted: bool = False
+        isUnrestricted: bool = False,
     ):
         if not isinstance(emojiHelper, EmojiHelperInterface):
             raise TypeError(f'emojiHelper argument is malformed: \"{emojiHelper}\"')

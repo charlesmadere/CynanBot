@@ -178,6 +178,8 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
             case _:
                 raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.databaseType}\"')
 
+        await connection.close()
+
     async def __saveScoreToDatabase(self, score: AnivCopyMessageTimeoutScore):
         if not isinstance(score, AnivCopyMessageTimeoutScore):
             raise TypeError(f'score argument is malformed: \"{score}\"')

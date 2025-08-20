@@ -169,10 +169,10 @@ class DetermineBananaTargetUseCase:
     async def __generateDiceRollFailureData(
         self,
         timeoutAction: BananaTimeoutAction,
-        now: datetime,
         targetUserId: str,
         diceRoll: TimeoutDiceRoll,
     ) -> TimeoutDiceRollFailureData:
+        now = datetime.now(self.__timeZoneRepository.getDefault())
         baseFailureProbability = await self.__timeoutActionSettings.getFailureProbability()
         maxBullyFailureProbability = await self.__timeoutActionSettings.getMaxBullyFailureProbability()
         maxBullyFailureOccurrences = await self.__timeoutActionSettings.getMaxBullyFailureOccurrences()
@@ -244,12 +244,10 @@ class DetermineBananaTargetUseCase:
                 diceRollFailureData = None,
             )
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
         diceRoll = await self.__generateDiceRoll()
 
         diceRollFailureData = await self.__generateDiceRollFailureData(
             timeoutAction = timeoutAction,
-            now = now,
             targetUserId = targetUserId,
             diceRoll = diceRoll,
         )
@@ -273,6 +271,13 @@ class DetermineBananaTargetUseCase:
                 diceRoll = diceRoll,
                 diceRollFailureData = diceRollFailureData,
             )
-
-        # TODO
-        raise RuntimeError()
+        else:
+            return DetermineBananaTargetUseCase.ResultData(
+                timeoutTarget = BananaTimeoutTarget(
+                    targetUserId = targetUserId,
+                    targetUserName = targetUserName,
+                ),
+                isReverse = False,
+                diceRoll = diceRoll,
+                diceRollFailureData = diceRollFailureData,
+            )

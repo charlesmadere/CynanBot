@@ -6,5 +6,4 @@ from datetime import datetime
 class ChatterTimeoutHistoryEntry:
     dateTime: datetime
     durationSeconds: int
-    chatterUserId: str
-    twitchChannelId: str
+    timedOutByUserId: str

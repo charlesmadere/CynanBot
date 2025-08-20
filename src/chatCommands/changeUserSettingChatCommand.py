@@ -1,5 +1,6 @@
 import random
 import traceback
+from typing import Final
 
 from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
@@ -17,7 +18,7 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
         self,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -26,15 +27,16 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def __getRandomJsonConstant(self) -> UserJsonConstant:
         constants: list[UserJsonConstant] = [
             UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED,
+            UserJsonConstant.ECCO_ENABLED,
+            UserJsonConstant.RECURRING_ACTIONS_ENABLED,
             UserJsonConstant.TTS_ENABLED,
-            UserJsonConstant.RECURRING_ACTIONS_ENABLED
         ]
 
         return random.choice(constants)
