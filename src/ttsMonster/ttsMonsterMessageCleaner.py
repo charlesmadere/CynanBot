@@ -1,5 +1,4 @@
-import re
-from typing import Any, Pattern
+from typing import Any, Final
 
 from .ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
 from ..misc import utils as utils
@@ -19,8 +18,8 @@ class TtsMonsterMessageCleaner(TtsMonsterMessageCleanerInterface):
         elif not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
             raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
 
-        self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
-        self.__twitchMessageStringUtils: TwitchMessageStringUtilsInterface = twitchMessageStringUtils
+        self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
+        self.__twitchMessageStringUtils: Final[TwitchMessageStringUtilsInterface] = twitchMessageStringUtils
 
     async def clean(self, message: str | Any | None) -> str | None:
         if not utils.isValidStr(message):
