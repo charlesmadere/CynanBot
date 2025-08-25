@@ -12,6 +12,7 @@ class BasicTimeoutAction(AbsTimeoutAction):
     timeoutDuration: AbsTimeoutDuration
     pointRedemption: PointRedemptionTimeoutData | None
     actionId: str
+    chatMessage: str | None
     instigatorUserId: str
     moderatorTwitchAccessToken: str
     moderatorUserId: str

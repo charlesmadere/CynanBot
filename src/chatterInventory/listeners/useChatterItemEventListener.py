@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ..models.useChatterItemEvent import UseChatterItemEvent
+from ..models.events.useChatterItemEvent import UseChatterItemEvent
 
 
 class UseChatterItemEventListener(ABC):

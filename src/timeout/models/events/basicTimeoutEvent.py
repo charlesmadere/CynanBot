@@ -17,6 +17,10 @@ class BasicTimeoutEvent(AbsTimeoutEvent):
     ripBozoEmote: str
     timeoutResult: TwitchTimeoutResult
 
+    @property
+    def chatMessage(self) -> str | None:
+        return self.originatingAction.chatMessage
+
     def getEventId(self) -> str:
         return self.eventId
 
