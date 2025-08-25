@@ -487,11 +487,10 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'donald'
         if word == 'doug':
             yield 'douglas'
-        if word in { 'ed', 'eddie', 'eddy', 'ned', 'ted', 'teddy' }:
+        if word in { 'ed', 'edd', 'eddie', 'eddward', 'eddy', 'ned', 'ted', 'teddy' }:
             yield 'edward'
-        if word in { 'ed', 'eddie' }:
             yield 'edwin'
-        if word in { 'ellie', 'lee', 'lie' }:
+        if word in { 'elli', 'ellie', 'lee', 'lie' }:
             yield 'eli'
         if word in { 'eli', 'lige', 'lish' }:
             yield 'elijah'
@@ -535,7 +534,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'gerald'
         if word in { 'gil', 'bert', 'bertie' }:
             yield 'gilbert'
-        if word == 'gordie':
+        if word in { 'gordie', 'gordo' }:
             yield 'gordon'
         if word in { 'greg', 'gregg' }:
             yield 'gregory'
