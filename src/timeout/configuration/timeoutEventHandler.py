@@ -3,6 +3,7 @@ import locale
 import random
 from typing import Final
 
+from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .absTimeoutEventHandler import AbsTimeoutEventHandler
@@ -24,11 +25,15 @@ from ..models.events.noBananaTargetAvailableTimeoutEvent import NoBananaTargetAv
 from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
 from ...chatterInventory.models.chatterItemType import ChatterItemType
+from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.soundAlert import SoundAlert
+from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
+from ...tts.models.ttsEvent import TtsEvent
+from ...tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
 from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -178,11 +183,30 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         else:
             self.__timber.log('TimeoutEventHandler', f'Received unhandled timeout event ({event=})')
 
+    async def __getInventoryRemainingString(
+        self,
+        itemType: ChatterItemType,
+        inventory: frozendict[ChatterItemType, int],
+    ) -> str:
+        remainingCount = locale.format_string("%d", inventory[itemType], grouping = True)
+
+        itemPlurality: str
+        if inventory[itemType] == 1:
+            itemPlurality = itemType.humanName
+        else:
+            itemPlurality = itemType.pluralHumanName
+
+        return f'({remainingCount} {itemPlurality.lower()} remaining)'
+
     async def __handleAirStrikeTimeoutEvent(
         self,
         event: AirStrikeTimeoutEvent,
         twitchChannelProvider: TwitchChannelProvider,
     ):
+        if len(event.targets) < 1:
+            # this should absolutely never happen... but let's check for it just to be safe
+            return
+
         twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
 
         userNames: list[str] = list()
@@ -203,37 +227,35 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
 
         message = f'{event.explodedEmote} {peoplePluralityString} by @{event.instigatorUserName} with a {event.timeoutDuration.secondsStr}s timeout! {userNamesString} {event.bombEmote}'
 
-        if event.user.areSoundAlertsEnabled:
-            self.__backgroundTaskHelper.createTask(self.__handleAirStrikeSoundAlerts(
-                targets = len(event.targets),
-            ))
-
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
             message = message,
             replyMessageId = event.twitchChatMessageId,
         )
 
-    async def __handleAirStrikeSoundAlerts(self, targets: int):
-        if targets < 1:
+        if not event.user.areSoundAlertsEnabled:
             return
 
-        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
-        self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.LAUNCH_AIR_STRIKE))
-        await asyncio.sleep(2.0)
+        self.__backgroundTaskHelper.createTask(self.__handleAirStrikeSoundAlerts(
+            targets = len(event.targets),
+        ))
 
-        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
-        self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.AIR_STRIKE))
-        await asyncio.sleep(0.5)
+    async def __handleAirStrikeSoundAlerts(self, targets: int):
+        if targets < 1:
+            # this should absolutely never happen... but let's check for it just to be safe
+            return
+
+        baseSoundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+        await baseSoundPlayerManager.playSoundAlert(SoundAlert.LAUNCH_AIR_STRIKE)
+        await baseSoundPlayerManager.playSoundAlert(SoundAlert.AIR_STRIKE)
 
         for _ in range(targets):
             grenadeSoundAlert = self.__chooseRandomGrenadeSoundAlert()
-            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
-            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(grenadeSoundAlert))
+            temporarySoundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+            self.__backgroundTaskHelper.createTask(temporarySoundPlayerManager.playSoundAlert(grenadeSoundAlert))
             await asyncio.sleep(0.75)
 
-        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
-        self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.SPLAT))
+        await baseSoundPlayerManager.playSoundAlert(SoundAlert.SPLAT)
 
     async def __handleBananaTimeoutDiceRollFailedEvent(
         self,
@@ -255,17 +277,71 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
 
-        # TODO
-        pass
+        message: str
+        if event.diceRoll is not None and event.diceRollFailureData is not None:
+            if event.isReverse:
+                message = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserName} dropped a banana but they tripped themselves up! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} but got a {event.diceRoll.roll})'
+            else:
+                message = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.target.targetUserName}! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, needed greater than {event.diceRollFailureData.reverseRoll})'
+        elif event.isReverse:
+            message = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserName} dropped a banana but they tripped themselves up! {event.ripBozoEmote}'
+        else:
+            message = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.target.targetUserName}! {event.ripBozoEmote}'
+
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = message,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+        soundAlert: SoundAlert | None = None
+        if event.user.areSoundAlertsEnabled:
+            soundAlert = self.__chooseRandomGrenadeSoundAlert()
+
+        ttsEvent: TtsEvent | None = None
+        if event.user.isTtsEnabled:
+            ttsMessage: str
+
+            if event.isReverse:
+                ttsMessage = f'Oh no! {event.instigatorUserName} got hit with a reverse! Rip bozo!'
+            else:
+                ttsMessage = f'{event.instigatorUserName} timed out {event.target.targetUserName} for {event.timeoutDuration.message}! Rip bozo!'
+
+            providerOverridableStatus: TtsProviderOverridableStatus
+
+            if event.user.isChatterPreferredTtsEnabled:
+                providerOverridableStatus = TtsProviderOverridableStatus.CHATTER_OVERRIDABLE
+            else:
+                providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
+
+            ttsEvent = TtsEvent(
+                message = ttsMessage,
+                twitchChannel = event.twitchChannel,
+                twitchChannelId = event.twitchChannelId,
+                userId = event.originatingAction.instigatorUserId,
+                userName = event.instigatorUserName,
+                donation = None,
+                provider = event.user.defaultTtsProvider,
+                providerOverridableStatus = providerOverridableStatus,
+                raidInfo = None,
+            )
+
+        if soundAlert is None and ttsEvent is None:
+            return
+
+        self.__streamAlertsManager.submitAlert(StreamAlert(
+            soundAlert = soundAlert,
+            twitchChannel = event.twitchChannel,
+            twitchChannelId = event.twitchChannelId,
+            ttsEvent = ttsEvent,
+        ))
 
     async def __handleBananaTimeoutFailedTimeoutEvent(
         self,
         event: BananaTimeoutFailedTimeoutEvent,
         twitchChannelProvider: TwitchChannelProvider,
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
-
-        # TODO
+        # this method is intentionally empty
         pass
 
     async def __handleBasicTimeoutEvent(
@@ -275,17 +351,19 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
 
-        # TODO
-        pass
+        if utils.isValidStr(event.chatMessage):
+            await self.__twitchUtils.safeSend(
+                messageable = twitchChannel,
+                message = event.chatMessage,
+                replyMessageId = event.twitchChatMessageId,
+            )
 
     async def __handleBasicTimeoutFailedTimeoutEvent(
         self,
         event: BasicTimeoutFailedTimeoutEvent,
         twitchChannelProvider: TwitchChannelProvider,
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
-
-        # TODO
+        # this method is intentionally empty
         pass
 
     async def __handleBasicTimeoutTargetUnavailableTimeoutEvent(
@@ -293,9 +371,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         event: BasicTimeoutTargetUnavailableTimeoutEvent,
         twitchChannelProvider: TwitchChannelProvider,
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
-
-        # TODO
+        # this method is intentionally empty
         pass
 
     async def __handleGrenadeTimeoutEvent(
@@ -305,21 +381,16 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
 
-        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
-        await soundPlayerManager.playSoundAlert(self.__chooseRandomGrenadeSoundAlert())
+        if event.user.areSoundAlertsEnabled:
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+            await soundPlayerManager.playSoundAlert(self.__chooseRandomGrenadeSoundAlert())
 
         remainingInventoryString = ''
-
         if event.updatedInventory is not None:
-            remainingGrenades = locale.format_string("%d", event.updatedInventory[ChatterItemType.GRENADE], grouping = True)
-
-            grenadesPlurality: str
-            if event.updatedInventory[ChatterItemType.GRENADE] == 1:
-                grenadesPlurality = 'grenade'
-            else:
-                grenadesPlurality = 'grenades'
-
-            remainingInventoryString = f'({remainingGrenades} {grenadesPlurality} remaining)'
+            remainingInventoryString = await self.__getInventoryRemainingString(
+                itemType = ChatterItemType.GRENADE,
+                inventory = event.updatedInventory.inventory,
+            )
 
         await self.__twitchUtils.safeSend(
             messageable = twitchChannel,
@@ -332,9 +403,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         event: GrenadeTimeoutFailedTimeoutEvent,
         twitchChannelProvider: TwitchChannelProvider,
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
-
-        # TODO
+        # this method is intentionally empty
         pass
 
     async def __handleIncorrectLiveStatusTimeoutEvent(
@@ -342,9 +411,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         event: IncorrectLiveStatusTimeoutEvent,
         twitchChannelProvider: TwitchChannelProvider,
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
-
-        # TODO
+        # this method is intentionally empty
         pass
 
     async def __handleNoAirStrikeInventoryAvailableTimeoutEvent(
@@ -354,8 +421,11 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
 
-        # TODO
-        pass
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = f'Sorry, you have no air strikes!',
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleNoAirStrikeTargetsAvailableTimeoutEvent(
         self,
@@ -364,8 +434,11 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
 
-        # TODO
-        pass
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = f'Sorry, there are no air strike targets available!',
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleNoBananaInventoryAvailableTimeoutEvent(
         self,
@@ -374,8 +447,11 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
 
-        # TODO
-        pass
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = f'Sorry, you have no bananas!',
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleNoBananaTargetAvailableTimeoutEvent(
         self,
@@ -384,8 +460,11 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
 
-        # TODO
-        pass
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = f'Sorry, your banana target is not available!',
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleNoGrenadeInventoryAvailableTimeoutEvent(
         self,
@@ -394,8 +473,11 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
 
-        # TODO
-        pass
+        await self.__twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = f'Sorry, you have no grenades!',
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleNoGrenadeTargetAvailableTimeoutEvent(
         self,

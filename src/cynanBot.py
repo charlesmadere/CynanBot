@@ -1,5 +1,6 @@
 import traceback
 from asyncio import AbstractEventLoop
+from typing import Final
 
 from twitchio import Channel, Message, User
 from twitchio.ext import commands
@@ -175,7 +176,9 @@ from .streamElements.userKeyRepository.streamElementsUserKeyRepositoryInterface 
     StreamElementsUserKeyRepositoryInterface
 from .supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from .timber.timberInterface import TimberInterface
+from .timeout.configuration.absTimeoutEventHandler import AbsTimeoutEventHandler
 from .timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
+from .timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
 from .timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from .timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
 from .timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
@@ -367,7 +370,9 @@ class CynanBot(
         timber: TimberInterface,
         timeoutActionHelper: TimeoutActionHelperInterface | None,
         timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface | None,
+        timeoutActionMachine: TimeoutActionMachineInterface | None,
         timeoutActionSettings: TimeoutActionSettingsInterface | None,
+        timeoutEventHandler: AbsTimeoutEventHandler | None,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface | None,
         timeZoneRepository: TimeZoneRepositoryInterface,
         airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface | None,
@@ -617,8 +622,12 @@ class CynanBot(
             raise TypeError(f'timeoutActionHelper argument is malformed: \"{timeoutActionHelper}\"')
         elif timeoutActionHistoryRepository is not None and not isinstance(timeoutActionHistoryRepository, TimeoutActionHistoryRepositoryInterface):
             raise TypeError(f'timeoutActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
+        elif timeoutActionMachine is not None and not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
+            raise TypeError(f'timeoutActionMachine argument is malformed: \"{timeoutActionMachine}\"')
         elif timeoutActionSettings is not None and not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
             raise TypeError(f'timeoutActionSettings argument is malformed: \"{timeoutActionSettings}\"')
+        elif timeoutEventHandler is not None and not isinstance(timeoutEventHandler, AbsTimeoutEventHandler):
+            raise TypeError(f'timeoutEventHandler argument is malformed: \"{timeoutEventHandler}\"')
         elif timeoutImmuneUserIdsRepository is not None and not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
@@ -755,6 +764,8 @@ class CynanBot(
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__timeoutActionHelper: TimeoutActionHelperInterface | None = timeoutActionHelper
+        self.__timeoutActionMachine: Final[TimeoutActionMachineInterface | None] = timeoutActionMachine
+        self.__timeoutEventHandler: Final[AbsTimeoutEventHandler | None] = timeoutEventHandler
         self.__airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface | None = airStrikeCheerActionHelper
         self.__triviaEventHandler: AbsTriviaEventHandler | None = triviaEventHandler
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
@@ -1185,6 +1196,14 @@ class CynanBot(
         if self.__timeoutActionHelper is not None:
             self.__timeoutActionHelper.setTwitchChannelProvider(self)
             self.__timeoutActionHelper.start()
+
+        if self.__timeoutEventHandler is not None:
+            self.__timeoutEventHandler.setTwitchChannelProvider(self)
+            self.__timeoutEventHandler.setTwitchConnectionReadinessProvider(self)
+
+        if self.__timeoutActionMachine is not None:
+            self.__timeoutActionMachine.setEventListener(self.__timeoutEventHandler)
+            self.__timeoutActionMachine.start()
 
         if self.__airStrikeCheerActionHelper is not None:
             self.__airStrikeCheerActionHelper.setTwitchChannelProvider(self)

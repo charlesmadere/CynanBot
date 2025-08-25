@@ -35,6 +35,10 @@ class TestUserJsonConstants:
         result = UserJsonConstant.BLUE_SKY_URL.jsonKey
         assert result == 'blueSkyUrl'
 
+    def test_jsonKey_withChatterInventoryEnabled(self):
+        result = UserJsonConstant.CHATTER_INVENTORY_ENABLED.jsonKey
+        assert result == 'chatterInventoryEnabled'
+
     def test_jsonKey_withChatterPreferredTtsEnabled(self):
         result = UserJsonConstant.CHATTER_PREFERRED_TTS_ENABLED.jsonKey
         assert result == 'chatterPreferredTtsEnabled'

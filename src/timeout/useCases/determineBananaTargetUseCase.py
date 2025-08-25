@@ -2,7 +2,6 @@ import random
 import re
 import traceback
 from dataclasses import dataclass
-from datetime import datetime, timedelta
 from typing import Final, Pattern
 
 from ..exceptions import BananaTimeoutDiceRollFailedException, UnknownTimeoutTargetException
@@ -11,8 +10,8 @@ from ..models.actions.bananaTimeoutAction import BananaTimeoutAction
 from ..models.bananaTimeoutTarget import BananaTimeoutTarget
 from ..models.timeoutDiceRoll import TimeoutDiceRoll
 from ..models.timeoutDiceRollFailureData import TimeoutDiceRollFailureData
+from ..repositories.chatterTimeoutHistoryRepositoryInterface import ChatterTimeoutHistoryRepositoryInterface
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
-from ..timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -34,9 +33,9 @@ class DetermineBananaTargetUseCase:
 
     def __init__(
         self,
+        chatterTimeoutHistoryRepository: ChatterTimeoutHistoryRepositoryInterface,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         timber: TimberInterface,
-        timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface,
         timeoutActionSettings: TimeoutActionSettingsInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
@@ -44,12 +43,12 @@ class DetermineBananaTargetUseCase:
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
     ):
-        if not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
+        if not isinstance(chatterTimeoutHistoryRepository, ChatterTimeoutHistoryRepositoryInterface):
+            raise TypeError(f'chatterTimeoutHistoryRepository argument is malformed: \"{chatterTimeoutHistoryRepository}\"')
+        elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
             raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(timeoutActionHistoryRepository, TimeoutActionHistoryRepositoryInterface):
-            raise TypeError(f'timeoutActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
         elif not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
             raise TypeError(f'timeoutActionSettings argument is malformed: \"{timeoutActionSettings}\"')
         elif not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
@@ -63,9 +62,9 @@ class DetermineBananaTargetUseCase:
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
+        self.__chatterTimeoutHistoryRepository: Final[ChatterTimeoutHistoryRepositoryInterface] = chatterTimeoutHistoryRepository
         self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__timber: Final[TimberInterface] = timber
-        self.__timeoutActionHistoryRepository: Final[TimeoutActionHistoryRepositoryInterface] = timeoutActionHistoryRepository
         self.__timeoutActionSettings: Final[TimeoutActionSettingsInterface] = timeoutActionSettings
         self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
@@ -106,35 +105,18 @@ class DetermineBananaTargetUseCase:
 
     async def __fetchBullyOccurrenceCount(
         self,
-        timeoutAction: BananaTimeoutAction,
-        now: datetime,
         targetUserId: str,
+        twitchChannelId: str,
     ) -> int:
         if not await self.__timeoutActionSettings.isBullyBasedIncreasedFailureRateEnabled():
             return 0
 
-        history = await self.__timeoutActionHistoryRepository.get(
+        chatterTimeoutHistory = await self.__chatterTimeoutHistoryRepository.get(
             chatterUserId = targetUserId,
-            twitchChannel = timeoutAction.twitchChannel,
-            twitchChannelId = timeoutAction.twitchChannelId,
+            twitchChannelId = twitchChannelId,
         )
 
-        if history.entries is None or len(history.entries) == 0:
-            return 0
-
-        bullyTimeToLiveDays = await self.__timeoutActionSettings.getBullyTimeToLiveDays()
-        bullyTimeBuffer = timedelta(days = bullyTimeToLiveDays)
-        bullyOccurrences = 0
-
-        for historyEntry in history.entries:
-            if historyEntry.timedOutByUserId != timeoutAction.instigatorUserId:
-                continue
-            elif historyEntry.timedOutAtDateTime + bullyTimeBuffer < now:
-                continue
-
-            bullyOccurrences += 1
-
-        return bullyOccurrences
+        return len(chatterTimeoutHistory.entries)
 
     async def __fetchUserId(
         self,
@@ -172,16 +154,14 @@ class DetermineBananaTargetUseCase:
         targetUserId: str,
         diceRoll: TimeoutDiceRoll,
     ) -> TimeoutDiceRollFailureData:
-        now = datetime.now(self.__timeZoneRepository.getDefault())
         baseFailureProbability = await self.__timeoutActionSettings.getFailureProbability()
         maxBullyFailureProbability = await self.__timeoutActionSettings.getMaxBullyFailureProbability()
         maxBullyFailureOccurrences = await self.__timeoutActionSettings.getMaxBullyFailureOccurrences()
         perBullyFailureProbabilityIncrease = (maxBullyFailureProbability - baseFailureProbability) / float(maxBullyFailureOccurrences)
 
         bullyOccurrences = await self.__fetchBullyOccurrenceCount(
-            timeoutAction = timeoutAction,
-            now = now,
             targetUserId = targetUserId,
+            twitchChannelId = timeoutAction.twitchChannelId,
         )
 
         failureProbability = baseFailureProbability + (perBullyFailureProbabilityIncrease * float(bullyOccurrences))

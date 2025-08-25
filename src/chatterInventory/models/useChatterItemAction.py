@@ -6,13 +6,13 @@ from ...users.userInterface import UserInterface
 
 
 @dataclass(frozen = True)
-class UseChatterItemRequest:
+class UseChatterItemAction:
     ignoreInventory: bool
-    itemType: ChatterItemType | None
+    itemType: ChatterItemType
     pointRedemption: PointRedemptionItemRequestData | None
+    actionId: str
     chatMessage: str | None
     chatterUserId: str
-    requestId: str
     twitchChannelId: str
     twitchChatMessageId: str | None
     user: UserInterface

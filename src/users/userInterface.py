@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from datetime import tzinfo
 
@@ -344,6 +346,11 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def isChatLoggingEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def isChatterInventoryEnabled(self) -> bool:
         pass
 
     @property

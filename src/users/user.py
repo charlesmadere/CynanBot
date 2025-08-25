@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import tzinfo
 
 from frozendict import frozendict
@@ -41,6 +43,7 @@ class User(UserInterface):
         isChatBackMessagesEnabled: bool,
         isChatBandEnabled: bool,
         isChatLoggingEnabled: bool,
+        isChatterInventoryEnabled: bool,
         isChatterPreferredTtsEnabled: bool,
         isCrowdControlEnabled: bool,
         isCutenessEnabled: bool,
@@ -171,6 +174,8 @@ class User(UserInterface):
             raise TypeError(f'isChatBandEnabled argument is malformed: \"{isChatBandEnabled}\"')
         elif not utils.isValidBool(isChatLoggingEnabled):
             raise TypeError(f'isChatLoggingEnabled argument is malformed: \"{isChatLoggingEnabled}\"')
+        elif not utils.isValidBool(isChatterInventoryEnabled):
+            raise TypeError(f'isChatterInventoryEnabled argument is malformed: \"{isChatterInventoryEnabled}\"')
         elif not utils.isValidBool(isChatterPreferredTtsEnabled):
             raise TypeError(f'isChatterPreferredTtsEnabled argument is malformed: \"{isChatterPreferredTtsEnabled}\"')
         elif not utils.isValidBool(isCrowdControlEnabled):
@@ -374,6 +379,7 @@ class User(UserInterface):
         self.__isChatBackMessagesEnabled: bool = isChatBackMessagesEnabled
         self.__isChatBandEnabled: bool = isChatBandEnabled
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
+        self.__isChatterInventoryEnabled: bool = isChatterInventoryEnabled
         self.__isChatterPreferredTtsEnabled: bool = isChatterPreferredTtsEnabled
         self.__isCrowdControlEnabled: bool = isCrowdControlEnabled
         self.__isCutenessEnabled: bool = isCutenessEnabled
@@ -746,6 +752,10 @@ class User(UserInterface):
     @property
     def isChatLoggingEnabled(self) -> bool:
         return self.__isChatLoggingEnabled
+
+    @property
+    def isChatterInventoryEnabled(self) -> bool:
+        return self.__isChatterInventoryEnabled
 
     @property
     def isChatterPreferredTtsEnabled(self) -> bool:
