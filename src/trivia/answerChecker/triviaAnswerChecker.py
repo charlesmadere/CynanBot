@@ -475,6 +475,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'daniel'
         if word in { 'dave', 'davey', 'day' }:
             yield 'david'
+        if word in { 'debbie', 'debby', 'debora', 'devorah' }:
+            yield 'deborah'
         if word == 'delanor':
             yield 'delano'
         if word == 'denny':
