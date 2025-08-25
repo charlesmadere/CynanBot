@@ -26,3 +26,27 @@ class TestChatterItemType:
     def test_humanName_withGrenade(self):
         result = ChatterItemType.GRENADE.humanName
         assert result == 'Grenade'
+
+    def test_pluralHumanName_withAll(self):
+        results: set[str] = set()
+
+        for itemType in ChatterItemType:
+            results.add(itemType.pluralHumanName)
+
+        assert len(results) == len(ChatterItemType)
+
+    def test_pluralHumanName_withAirStrike(self):
+        result = ChatterItemType.AIR_STRIKE.pluralHumanName
+        assert result == 'Air Strikes'
+
+    def test_pluralHumanName_withBanana(self):
+        result = ChatterItemType.BANANA.pluralHumanName
+        assert result == 'Bananas'
+
+    def test_pluralHumanName_withCassetteTape(self):
+        result = ChatterItemType.CASSETTE_TAPE.pluralHumanName
+        assert result == 'Cassette Tapes'
+
+    def test_pluralHumanName_withGrenade(self):
+        result = ChatterItemType.GRENADE.pluralHumanName
+        assert result == 'Grenades'

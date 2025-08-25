@@ -9,6 +9,7 @@ class UserJsonConstant(Enum):
     ASPLODIE_STATS_ENABLED = auto()
     BEAN_STATS_ENABLED = auto()
     BLUE_SKY_URL = auto()
+    CHATTER_INVENTORY_ENABLED = auto()
     CHATTER_PREFERRED_TTS_ENABLED = auto()
     CHAT_SOUND_ALERTS_ENABLED = auto()
     CHEER_ACTIONS_ENABLED = auto()
@@ -45,6 +46,7 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.ASPLODIE_STATS_ENABLED: return 'asplodieStatsEnabled'
             case UserJsonConstant.BEAN_STATS_ENABLED: return 'beanStatsEnabled'
             case UserJsonConstant.BLUE_SKY_URL: return 'blueSkyUrl'
+            case UserJsonConstant.CHATTER_INVENTORY_ENABLED: return 'chatterInventoryEnabled'
             case UserJsonConstant.CHATTER_PREFERRED_TTS_ENABLED: return 'chatterPreferredTtsEnabled'
             case UserJsonConstant.CHAT_SOUND_ALERTS_ENABLED: return 'chatSoundAlertsEnabled'
             case UserJsonConstant.CHEER_ACTIONS_ENABLED: return 'cheerActionsEnabled'
