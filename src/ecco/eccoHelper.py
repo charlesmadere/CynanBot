@@ -20,7 +20,7 @@ class EccoHelper(EccoHelperInterface):
         self,
         eccoApiService: EccoApiServiceInterface,
         timber: TimberInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface
+        timeZoneRepository: TimeZoneRepositoryInterface,
     ):
         if not isinstance(eccoApiService, EccoApiServiceInterface):
             raise TypeError(f'eccoApiService argument is malformed: \"{eccoApiService}\"')
@@ -48,5 +48,5 @@ class EccoHelper(EccoHelperInterface):
         else:
             return EccoTimeRemaining(
                 timerDateTime = timerDateTime,
-                remainingSeconds = remainingSeconds
+                remainingSeconds = remainingSeconds,
             )

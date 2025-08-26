@@ -1,11 +1,6 @@
-from abc import ABC, abstractmethod
-
-from .eccoTimeRemainingType import EccoTimeRemainingType
+from abc import ABC
 
 
 class AbsEccoTimeRemaining(ABC):
 
-    @property
-    @abstractmethod
-    def timeRemainingType(self) -> EccoTimeRemainingType:
-        pass
+    pass

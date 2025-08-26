@@ -27,7 +27,7 @@ class EccoResponseParser(EccoResponseParserInterface):
         self,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        baseUrl: str = 'https://www.eccothedolphin.com'
+        baseUrl: str = 'https://www.eccothedolphin.com',
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -53,7 +53,7 @@ class EccoResponseParser(EccoResponseParserInterface):
             no_network = True,
             recover = True,
             remove_blank_text = True,
-            remove_comments = True
+            remove_comments = True,
         )
 
         self.__dateTimeAndTimeZoneRegEx: Final[Pattern] = re.compile(r'^(.+?)(?:\s+([a-z]{2,3}))?\s*$', re.IGNORECASE)
@@ -62,7 +62,7 @@ class EccoResponseParser(EccoResponseParserInterface):
 
     async def findTimerDateTimeValue(
         self,
-        scriptString: str | Any | None
+        scriptString: str | Any | None,
     ) -> datetime | None:
         if not utils.isValidStr(scriptString):
             return None
@@ -89,7 +89,7 @@ class EccoResponseParser(EccoResponseParserInterface):
 
     async def findTimerScriptSource(
         self,
-        htmlString: str | Any | None
+        htmlString: str | Any | None,
     ) -> str | None:
         if not utils.isValidStr(htmlString):
             return None
@@ -140,7 +140,7 @@ class EccoResponseParser(EccoResponseParserInterface):
 
         return EccoResponseParser.CleanedDateTimeInfo(
             dateTimeString = dateTimeString,
-            timeZone = timeZone
+            timeZone = timeZone,
         )
 
     async def __determineTimeZone(
