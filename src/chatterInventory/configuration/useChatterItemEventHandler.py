@@ -1,6 +1,8 @@
 from typing import Final
 
 from .absUseChatterItemEventHandler import AbsUseChatterItemEventHandler
+from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
+from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
 from ..models.events.notEnoughInventoryChatterItemEvent import NotEnoughInventoryChatterItemEvent
 from ..models.events.useAirStrikeChatterItemEvent import UseAirStrikeChatterItemEvent
 from ..models.events.useBananaChatterItemEvent import UseBananaChatterItemEvent
@@ -61,7 +63,19 @@ class UseChatterItemEventHandler(AbsUseChatterItemEventHandler):
 
         await twitchConnectionReadinessProvider.waitForReady()
 
-        if isinstance(event, NotEnoughInventoryChatterItemEvent):
+        if isinstance(event, DisabledFeatureChatterItemEvent):
+            await self.__handleDisabledFeatureChatterItemEvent(
+                event = event,
+                twitchChannelProvider = twitchChannelProvider,
+            )
+
+        elif isinstance(event, DisabledItemTypeChatterItemEvent):
+            await self.__handleDisabledItemTypeChatterItemEvent(
+                event = event,
+                twitchChannelProvider = twitchChannelProvider,
+            )
+
+        elif isinstance(event, NotEnoughInventoryChatterItemEvent):
             await self.__handleNotEnoughInventoryChatterItemEvent(
                 event = event,
                 twitchChannelProvider = twitchChannelProvider,
@@ -115,6 +129,22 @@ class UseChatterItemEventHandler(AbsUseChatterItemEventHandler):
     async def __handleCassetteTapeChatterItemEvent(
         self,
         event: UseCassetteTapeChatterItemEvent,
+        twitchChannelProvider: TwitchChannelProvider,
+    ):
+        # TODO
+        pass
+
+    async def __handleDisabledFeatureChatterItemEvent(
+        self,
+        event: DisabledFeatureChatterItemEvent,
+        twitchChannelProvider: TwitchChannelProvider,
+    ):
+        # TODO
+        pass
+
+    async def __handleDisabledItemTypeChatterItemEvent(
+        self,
+        event: DisabledItemTypeChatterItemEvent,
         twitchChannelProvider: TwitchChannelProvider,
     ):
         # TODO
