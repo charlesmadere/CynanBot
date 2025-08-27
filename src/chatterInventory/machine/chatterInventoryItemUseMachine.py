@@ -27,6 +27,7 @@ from ...timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGenerato
 from ...timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
 from ...timeout.models.absTimeoutDuration import AbsTimeoutDuration
 from ...timeout.models.actions.airStrikeTimeoutAction import AirStrikeTimeoutAction
+from ...timeout.models.actions.grenadeTimeoutAction import GrenadeTimeoutAction
 from ...timeout.models.randomLinearTimeoutDuration import RandomLinearTimeoutDuration
 from ...timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
@@ -162,6 +163,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
 
         # TODO
         # emit event
+        pass
 
     async def __handleBananaItemAction(
         self,
@@ -188,11 +190,34 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         chatterInventory: ChatterInventoryData | None,
         action: UseChatterItemAction,
     ):
+        itemDetails = await self.__chatterInventorySettings.getGrenadeItemDetails()
+
+        timeoutDuration: AbsTimeoutDuration = RandomLinearTimeoutDuration(
+            maximumSeconds = itemDetails.maxDurationSeconds,
+            minimumSeconds = itemDetails.minDurationSeconds,
+        )
+
         tokensAndDetails = await self.__fetchTokensAndDetails(
             twitchChannelId = action.twitchChannelId,
         )
 
+        self.__timeoutActionMachine.submitAction(GrenadeTimeoutAction(
+            timeoutDuration = timeoutDuration,
+            ignoreInventory = action.ignoreInventory,
+            pointRedemption = None,
+            actionId = await self.__timeoutIdGenerator.generateActionId(),
+            instigatorUserId = action.chatterUserId,
+            moderatorTwitchAccessToken = tokensAndDetails.moderatorTwitchAccessToken,
+            moderatorUserId = tokensAndDetails.moderatorUserId,
+            twitchChannelId = action.twitchChannelId,
+            twitchChatMessageId = action.twitchChatMessageId,
+            userTwitchAccessToken = tokensAndDetails.userTwitchAccessToken,
+            streamStatusRequirement = TimeoutStreamStatusRequirement.ANY,
+            user = action.user,
+        ))
+
         # TODO
+        # emit event
         pass
 
     async def __handleItemAction(self, action: UseChatterItemAction):
