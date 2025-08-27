@@ -2,6 +2,7 @@ from typing import Any, Final
 
 from .chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ..mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
+from ..models.airStrikeItemDetails import AirStrikeItemDetails
 from ..models.chatterItemType import ChatterItemType
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
@@ -34,6 +35,11 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
     async def clearCaches(self):
         self.__cache = None
+
+    async def getAirStrikeItemDetails(self) -> AirStrikeItemDetails | None:
+        jsonContents = await self.__readJson()
+        itemDetailsJson = jsonContents.get('airStrikeItemDetails', None)
+        return await self.__chatterInventoryMapper.parseAirStrikeItemDetails(itemDetailsJson)
 
     async def getEnabledItemTypes(self) -> frozenset[ChatterItemType]:
         jsonContents = await self.__readJson()

@@ -3,10 +3,18 @@ from typing import Any
 
 from frozendict import frozendict
 
+from ..models.airStrikeItemDetails import AirStrikeItemDetails
 from ..models.chatterItemType import ChatterItemType
 
 
 class ChatterInventoryMapperInterface(ABC):
+
+    @abstractmethod
+    async def parseAirStrikeItemDetails(
+        self,
+        itemDetailsJson: dict[str, Any] | Any | None,
+    ) -> AirStrikeItemDetails | None:
+        pass
 
     @abstractmethod
     async def parseInventory(

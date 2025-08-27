@@ -5,6 +5,7 @@ from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .chatterInventoryMapperInterface import ChatterInventoryMapperInterface
+from ..models.airStrikeItemDetails import AirStrikeItemDetails
 from ..models.chatterItemType import ChatterItemType
 from ...misc import utils as utils
 
@@ -39,6 +40,25 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
             ChatterItemType.CASSETTE_TAPE: cassetteTape,
             ChatterItemType.GRENADE: grenade,
         })
+
+    async def parseAirStrikeItemDetails(
+        self,
+        itemDetailsJson: dict[str, Any] | Any | None,
+    ) -> AirStrikeItemDetails | None:
+        if not isinstance(itemDetailsJson, dict) or len(itemDetailsJson) == 0:
+            return None
+
+        maxDurationSeconds = utils.getIntFromDict(itemDetailsJson, 'maxDurationSeconds')
+        minDurationSeconds = utils.getIntFromDict(itemDetailsJson, 'minDurationSeconds')
+        maxTargets = utils.getIntFromDict(itemDetailsJson, 'maxTargets')
+        minTargets = utils.getIntFromDict(itemDetailsJson, 'minTargets')
+
+        return AirStrikeItemDetails(
+            maxDurationSeconds = maxDurationSeconds,
+            minDurationSeconds = minDurationSeconds,
+            maxTargets = maxTargets,
+            minTargets = minTargets,
+        )
 
     async def parseInventory(
         self,
