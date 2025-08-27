@@ -2,8 +2,9 @@ from typing import Any, Final
 
 from .chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ..mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
-from ..models.airStrikeItemDetails import AirStrikeItemDetails
 from ..models.chatterItemType import ChatterItemType
+from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
+from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 
@@ -14,6 +15,16 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         self,
         chatterInventoryMapper: ChatterInventoryMapperInterface,
         settingsJsonReader: JsonReaderInterface,
+        defaultAirStrikeItemDetails: AirStrikeItemDetails = AirStrikeItemDetails(
+            maxDurationSeconds = 75,
+            minDurationSeconds = 50,
+            maxTargets = 13,
+            minTargets = 9,
+        ),
+        defaultGrenadeItemDetails: GrenadeItemDetails = GrenadeItemDetails(
+            maxDurationSeconds = 48,
+            minDurationSeconds = 32,
+        ),
         defaultEnabledItemTypes: frozenset[ChatterItemType] = frozenset({
             ChatterItemType.AIR_STRIKE,
             ChatterItemType.BANANA,
@@ -24,11 +35,17 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             raise TypeError(f'chatterInventoryMapper argument is malformed: \"{chatterInventoryMapper}\"')
         elif not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+        elif not isinstance(defaultAirStrikeItemDetails, AirStrikeItemDetails):
+            raise TypeError(f'defaultAirStrikeItemDetails argument is malformed: \"{defaultAirStrikeItemDetails}\"')
+        elif not isinstance(defaultGrenadeItemDetails, GrenadeItemDetails):
+            raise TypeError(f'grenadeItemDetails argument is malformed: \"{defaultGrenadeItemDetails}\"')
         elif not isinstance(defaultEnabledItemTypes, frozenset):
             raise TypeError(f'defaultEnabledItemTypes argument is malformed: \"{defaultEnabledItemTypes}\"')
 
         self.__chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = chatterInventoryMapper
         self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
+        self.__defaultAirStrikeItemDetails: Final[AirStrikeItemDetails] = defaultAirStrikeItemDetails
+        self.__defaultGrenadeItemDetails: Final[GrenadeItemDetails] = defaultGrenadeItemDetails
         self.__defaultEnabledItemTypes: Final[frozenset[ChatterItemType]] = defaultEnabledItemTypes
 
         self.__cache: dict[str, Any] | None = None
@@ -36,10 +53,15 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
     async def clearCaches(self):
         self.__cache = None
 
-    async def getAirStrikeItemDetails(self) -> AirStrikeItemDetails | None:
+    async def getAirStrikeItemDetails(self) -> AirStrikeItemDetails:
         jsonContents = await self.__readJson()
         itemDetailsJson = jsonContents.get('airStrikeItemDetails', None)
-        return await self.__chatterInventoryMapper.parseAirStrikeItemDetails(itemDetailsJson)
+        airStrikeItemDetails = await self.__chatterInventoryMapper.parseAirStrikeItemDetails(itemDetailsJson)
+
+        if airStrikeItemDetails is None:
+            return self.__defaultAirStrikeItemDetails
+        else:
+            return airStrikeItemDetails
 
     async def getEnabledItemTypes(self) -> frozenset[ChatterItemType]:
         jsonContents = await self.__readJson()
@@ -54,6 +76,16 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             enabledItemTypes.add(await self.__chatterInventoryMapper.requireItemType(enabledItemTypeString))
 
         return frozenset(enabledItemTypes)
+
+    async def getGrenadeItemDetails(self) -> GrenadeItemDetails:
+        jsonContents = await self.__readJson()
+        itemDetailsJson = jsonContents.get('grenadeItemDetails', None)
+        grenadeItemDetails = await self.__chatterInventoryMapper.parseGrenadeItemDetails(itemDetailsJson)
+
+        if grenadeItemDetails is None:
+            return self.__defaultGrenadeItemDetails
+        else:
+            return grenadeItemDetails
 
     async def isEnabled(self) -> bool:
         jsonContents = await self.__readJson()

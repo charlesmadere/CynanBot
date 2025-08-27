@@ -134,11 +134,6 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
     ):
         itemDetails = await self.__chatterInventorySettings.getAirStrikeItemDetails()
 
-        if itemDetails is None:
-            # TODO
-            # report event if item details are none
-            return
-
         timeoutDuration: AbsTimeoutDuration = RandomLinearTimeoutDuration(
             maximumSeconds = itemDetails.maxDurationSeconds,
             minimumSeconds = itemDetails.minDurationSeconds,
