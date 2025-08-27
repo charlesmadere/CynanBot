@@ -1,6 +1,7 @@
 from typing import Final
 
 from .absUseChatterItemEventHandler import AbsUseChatterItemEventHandler
+from ..models.events.notEnoughInventoryChatterItemEvent import NotEnoughInventoryChatterItemEvent
 from ..models.events.useAirStrikeChatterItemEvent import UseAirStrikeChatterItemEvent
 from ..models.events.useBananaChatterItemEvent import UseBananaChatterItemEvent
 from ..models.events.useCassetteTapeChatterItemEvent import UseCassetteTapeChatterItemEvent
@@ -60,7 +61,13 @@ class UseChatterItemEventHandler(AbsUseChatterItemEventHandler):
 
         await twitchConnectionReadinessProvider.waitForReady()
 
-        if isinstance(event, UseAirStrikeChatterItemEvent):
+        if isinstance(event, NotEnoughInventoryChatterItemEvent):
+            await self.__handleNotEnoughInventoryChatterItemEvent(
+                event = event,
+                twitchChannelProvider = twitchChannelProvider,
+            )
+
+        elif isinstance(event, UseAirStrikeChatterItemEvent):
             await self.__handleAirStrikeChatterItemEvent(
                 event = event,
                 twitchChannelProvider = twitchChannelProvider,
@@ -120,6 +127,14 @@ class UseChatterItemEventHandler(AbsUseChatterItemEventHandler):
     ):
         # We don't handle this item use here. Instead, we handle this within the
         # TimeoutEventHandler class. It's a bit of a weird flow but... whatever :P
+        pass
+
+    async def __handleNotEnoughInventoryChatterItemEvent(
+        self,
+        event: NotEnoughInventoryChatterItemEvent,
+        twitchChannelProvider: TwitchChannelProvider,
+    ):
+        # TODO
         pass
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
