@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
+from typing import Final
 
 from frozenlist import FrozenList
 
@@ -45,20 +46,20 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidInt(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
-        elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 10:
+        elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 16:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
         elif not isinstance(additionalBufferTime, timedelta):
             raise TypeError(f'additionalBufferTime argument is malformed: \"{additionalBufferTime}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
-        self.__twitchTimeoutRemodRepository: TwitchTimeoutRemodRepositoryInterface = twitchTimeoutRemodRepository
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
-        self.__additionalBufferTime: timedelta = additionalBufferTime
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
+        self.__twitchTimeoutRemodRepository: Final[TwitchTimeoutRemodRepositoryInterface] = twitchTimeoutRemodRepository
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__queueSleepTimeSeconds: Final[float] = queueSleepTimeSeconds
+        self.__additionalBufferTime: Final[timedelta] = additionalBufferTime
 
         self.__isStarted: bool = False
 
@@ -68,7 +69,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
 
         await self.__twitchTimeoutRemodRepository.delete(
             broadcasterUserId = remodAction.broadcasterUserId,
-            userId = remodAction.userId
+            userId = remodAction.userId,
         )
 
     async def __refresh(self):
