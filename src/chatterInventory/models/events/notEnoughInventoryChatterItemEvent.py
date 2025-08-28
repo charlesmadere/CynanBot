@@ -8,7 +8,7 @@ from ..useChatterItemAction import UseChatterItemAction
 
 @dataclass(frozen = True)
 class NotEnoughInventoryChatterItemEvent(UseChatterItemEvent):
-    chatterInventory: ChatterInventoryData | None
+    chatterInventory: ChatterInventoryData
     eventId: str
     originatingAction: UseChatterItemAction
 

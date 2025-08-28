@@ -13,6 +13,10 @@ class ChatterInventorySettingsInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getBananaItemDetails(self) -> BananaItemDetails:
+        pass
+
+    @abstractmethod
     async def getEnabledItemTypes(self) -> frozenset[ChatterItemType]:
         pass
 

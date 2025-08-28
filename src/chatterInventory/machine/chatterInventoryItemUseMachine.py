@@ -16,7 +16,11 @@ from ..models.chatterItemType import ChatterItemType
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
 from ..models.events.notEnoughInventoryChatterItemEvent import NotEnoughInventoryChatterItemEvent
+from ..models.events.useAirStrikeChatterItemEvent import UseAirStrikeChatterItemEvent
+from ..models.events.useBananaChatterItemEvent import UseBananaChatterItemEvent
+from ..models.events.useCassetteTapeChatterItemEvent import UseCassetteTapeChatterItemEvent
 from ..models.events.useChatterItemEvent import UseChatterItemEvent
+from ..models.events.useGrenadeChatterItemEvent import UseGrenadeChatterItemEvent
 from ..models.useChatterItemAction import UseChatterItemAction
 from ..repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
 from ..settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
@@ -27,7 +31,9 @@ from ...timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGenerato
 from ...timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
 from ...timeout.models.absTimeoutDuration import AbsTimeoutDuration
 from ...timeout.models.actions.airStrikeTimeoutAction import AirStrikeTimeoutAction
+from ...timeout.models.actions.bananaTimeoutAction import BananaTimeoutAction
 from ...timeout.models.actions.grenadeTimeoutAction import GrenadeTimeoutAction
+from ...timeout.models.exactTimeoutDuration import ExactTimeoutDuration
 from ...timeout.models.randomLinearTimeoutDuration import RandomLinearTimeoutDuration
 from ...timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
@@ -161,21 +167,49 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             user = action.user,
         ))
 
-        # TODO
-        # emit event
-        pass
+        await self.__submitEvent(UseAirStrikeChatterItemEvent(
+            itemDetails = itemDetails,
+            eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            originatingAction = action,
+        ))
 
     async def __handleBananaItemAction(
         self,
         chatterInventory: ChatterInventoryData | None,
         action: UseChatterItemAction,
     ):
+        itemDetails = await self.__chatterInventorySettings.getBananaItemDetails()
+
+        timeoutDuration: AbsTimeoutDuration = ExactTimeoutDuration(
+            seconds = itemDetails.durationSeconds,
+        )
+
         tokensAndDetails = await self.__fetchTokensAndDetails(
             twitchChannelId = action.twitchChannelId,
         )
 
-        # TODO
-        pass
+        self.__timeoutActionMachine.submitAction(BananaTimeoutAction(
+            timeoutDuration = timeoutDuration,
+            ignoreInventory = action.ignoreInventory,
+            isRandomChanceEnabled = itemDetails.randomChanceEnabled,
+            pointRedemption = None,
+            actionId = await self.__timeoutIdGenerator.generateActionId(),
+            chatMessage = action.chatMessage,
+            instigatorUserId = action.chatterUserId,
+            moderatorTwitchAccessToken = tokensAndDetails.moderatorTwitchAccessToken,
+            moderatorUserId = tokensAndDetails.moderatorUserId,
+            twitchChannelId = action.twitchChannelId,
+            twitchChatMessageId = action.twitchChatMessageId,
+            userTwitchAccessToken = tokensAndDetails.userTwitchAccessToken,
+            streamStatusRequirement = TimeoutStreamStatusRequirement.ANY,
+            user = action.user,
+        ))
+
+        await self.__submitEvent(UseBananaChatterItemEvent(
+            itemDetails = itemDetails,
+            eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            originatingAction = action,
+        ))
 
     async def __handleCassetteTapeItemAction(
         self,
@@ -184,6 +218,11 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
     ):
         # TODO
         pass
+
+        await self.__submitEvent(UseCassetteTapeChatterItemEvent(
+            eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            originatingAction = action,
+        ))
 
     async def __handleGrenadeItemAction(
         self,
@@ -216,9 +255,11 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             user = action.user,
         ))
 
-        # TODO
-        # emit event
-        pass
+        await self.__submitEvent(UseGrenadeChatterItemEvent(
+            itemDetails = itemDetails,
+            eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            originatingAction = action,
+        ))
 
     async def __handleItemAction(self, action: UseChatterItemAction):
         if not isinstance(action, UseChatterItemAction):

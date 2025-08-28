@@ -5,6 +5,7 @@ from frozendict import frozendict
 
 from ..models.chatterItemType import ChatterItemType
 from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
+from ..models.itemDetails.bananaItemDetails import BananaItemDetails
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 
 
@@ -15,6 +16,13 @@ class ChatterInventoryMapperInterface(ABC):
         self,
         itemDetailsJson: dict[str, Any] | Any | None,
     ) -> AirStrikeItemDetails | None:
+        pass
+
+    @abstractmethod
+    async def parseBananaItemDetails(
+        self,
+        itemDetailsJson: dict[str, Any] | Any | None,
+    ) -> BananaItemDetails | None:
         pass
 
     @abstractmethod
