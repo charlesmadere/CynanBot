@@ -2,11 +2,13 @@ from dataclasses import dataclass
 
 from .useChatterItemEvent import UseChatterItemEvent
 from ..chatterItemType import ChatterItemType
+from ..itemDetails.airStrikeItemDetails import AirStrikeItemDetails
 from ..useChatterItemAction import UseChatterItemAction
 
 
 @dataclass(frozen = True)
 class UseAirStrikeChatterItemEvent(UseChatterItemEvent):
+    itemDetails: AirStrikeItemDetails
     eventId: str
     originatingAction: UseChatterItemAction
 

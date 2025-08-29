@@ -6,11 +6,101 @@ from frozendict import frozendict
 from src.chatterInventory.mappers.chatterInventoryMapper import ChatterInventoryMapper
 from src.chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from src.chatterInventory.models.chatterItemType import ChatterItemType
+from src.chatterInventory.models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
+from src.chatterInventory.models.itemDetails.bananaItemDetails import BananaItemDetails
+from src.chatterInventory.models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 
 
 class TestChatterInventoryMapper:
 
     mapper: ChatterInventoryMapperInterface = ChatterInventoryMapper()
+
+    @pytest.mark.asyncio
+    async def test_parseAirStrikeItemDetails(self):
+        details = AirStrikeItemDetails(
+            maxDurationSeconds = 75,
+            minDurationSeconds = 55,
+            maxTargets = 13,
+            minTargets = 8,
+        )
+
+        result = await self.mapper.parseAirStrikeItemDetails({
+            'maxDurationSeconds': details.maxDurationSeconds,
+            'minDurationSeconds': details.minDurationSeconds,
+            'maxTargets': details.maxTargets,
+            'minTargets': details.minTargets,
+        })
+
+        assert isinstance(result, AirStrikeItemDetails)
+        assert result == details
+        assert result.maxDurationSeconds == details.maxDurationSeconds
+        assert result.minDurationSeconds == details.minDurationSeconds
+        assert result.maxTargets == details.maxTargets
+        assert result.minTargets == details.minTargets
+
+    @pytest.mark.asyncio
+    async def test_parseAirStrikeItemDetails_withEmptyDictionary(self):
+        result = await self.mapper.parseAirStrikeItemDetails(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseAirStrikeItemDetails_withNone(self):
+        result = await self.mapper.parseAirStrikeItemDetails(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBananaItemDetails(self):
+        details = BananaItemDetails(
+            randomChanceEnabled = True,
+            durationSeconds = 60,
+        )
+
+        result = await self.mapper.parseBananaItemDetails({
+            'randomChanceEnabled': details.randomChanceEnabled,
+            'durationSeconds': details.durationSeconds,
+        })
+
+        assert isinstance(result, BananaItemDetails)
+        assert result == details
+        assert result.randomChanceEnabled == details.randomChanceEnabled
+        assert result.durationSeconds == details.durationSeconds
+
+    @pytest.mark.asyncio
+    async def test_parseBananaItemDetails_withEmptyDictionary(self):
+        result = await self.mapper.parseBananaItemDetails(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBananaItemDetails_withNone(self):
+        result = await self.mapper.parseBananaItemDetails(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseGrenadeItemDetails(self):
+        details = GrenadeItemDetails(
+            maxDurationSeconds = 60,
+            minDurationSeconds = 30,
+        )
+
+        result = await self.mapper.parseGrenadeItemDetails({
+            'maxDurationSeconds': details.maxDurationSeconds,
+            'minDurationSeconds': details.minDurationSeconds,
+        })
+
+        assert isinstance(result, GrenadeItemDetails)
+        assert result == details
+        assert result.maxDurationSeconds == details.maxDurationSeconds
+        assert result.minDurationSeconds == details.minDurationSeconds
+
+    @pytest.mark.asyncio
+    async def test_parseGrenadeItemDetails_withEmptyDictionary(self):
+        result = await self.mapper.parseGrenadeItemDetails(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseGrenadeItemDetails_withNone(self):
+        result = await self.mapper.parseGrenadeItemDetails(None)
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_parseInventory1(self):

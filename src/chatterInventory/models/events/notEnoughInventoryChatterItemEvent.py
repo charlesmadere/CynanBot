@@ -1,14 +1,14 @@
 from dataclasses import dataclass
 
 from .useChatterItemEvent import UseChatterItemEvent
+from ..chatterInventoryData import ChatterInventoryData
 from ..chatterItemType import ChatterItemType
-from ..itemDetails.bananaItemDetails import BananaItemDetails
 from ..useChatterItemAction import UseChatterItemAction
 
 
 @dataclass(frozen = True)
-class UseBananaChatterItemEvent(UseChatterItemEvent):
-    itemDetails: BananaItemDetails
+class NotEnoughInventoryChatterItemEvent(UseChatterItemEvent):
+    chatterInventory: ChatterInventoryData
     eventId: str
     originatingAction: UseChatterItemAction
 
@@ -20,4 +20,4 @@ class UseBananaChatterItemEvent(UseChatterItemEvent):
 
     @property
     def itemType(self) -> ChatterItemType:
-        return ChatterItemType.BANANA
+        return self.originatingAction.itemType

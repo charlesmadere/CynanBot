@@ -4,9 +4,33 @@ from typing import Any
 from frozendict import frozendict
 
 from ..models.chatterItemType import ChatterItemType
+from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
+from ..models.itemDetails.bananaItemDetails import BananaItemDetails
+from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 
 
 class ChatterInventoryMapperInterface(ABC):
+
+    @abstractmethod
+    async def parseAirStrikeItemDetails(
+        self,
+        itemDetailsJson: dict[str, Any] | Any | None,
+    ) -> AirStrikeItemDetails | None:
+        pass
+
+    @abstractmethod
+    async def parseBananaItemDetails(
+        self,
+        itemDetailsJson: dict[str, Any] | Any | None,
+    ) -> BananaItemDetails | None:
+        pass
+
+    @abstractmethod
+    async def parseGrenadeItemDetails(
+        self,
+        itemDetailsJson: dict[str, Any] | Any | None,
+    ) -> GrenadeItemDetails | None:
+        pass
 
     @abstractmethod
     async def parseInventory(
