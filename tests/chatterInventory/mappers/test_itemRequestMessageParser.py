@@ -26,6 +26,18 @@ class TestItemRequestMessageParser:
 
     @pytest.mark.asyncio
     async def test_parse_withUseCommandAndAirStrikeItemType(self):
+        result = await self.parser.parse('!use air_strike')
+        assert result is not None
+        assert result.itemType is ChatterItemType.AIR_STRIKE
+        assert result.argument is None
+        assert result.originalChatMessage == '!use air_strike'
+
+        result = await self.parser.parse('!use air-strike')
+        assert result is not None
+        assert result.itemType is ChatterItemType.AIR_STRIKE
+        assert result.argument is None
+        assert result.originalChatMessage == '!use air-strike'
+
         result = await self.parser.parse('!use airstrike')
         assert result is not None
         assert result.itemType is ChatterItemType.AIR_STRIKE
