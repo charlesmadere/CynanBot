@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from ..models.chatterItemType import ChatterItemType
 from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
+from ..models.itemDetails.bananaItemDetails import BananaItemDetails
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 from ...misc.clearable import Clearable
 
