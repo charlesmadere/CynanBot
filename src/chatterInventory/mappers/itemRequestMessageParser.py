@@ -25,10 +25,10 @@ class ItemRequestMessageParser:
         self.__chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = chatterInventoryMapper
 
         # meant to match: !use grenade, !use airstrike, etc
-        self.__useCommandRegEx: Final[Pattern] = re.compile(r'^\s*(?:!\s*use\s+)?((?:\w|_|-)+)\s*(.*)$', re.IGNORECASE)
+        self.__useCommandRegEx: Final[Pattern] = re.compile(r'^\s*(?:!\s*use\s+)?((?:[\w_-])+)\s*(.*)$', re.IGNORECASE)
 
         # meant to match various item type style commands: !airstrike, !grenade, etc
-        self.__itemTypeCommandRegEx: Final[Pattern] = re.compile(r'^\s*(?:!\s*(\w|_|-)+)\s*(.*)$', re.IGNORECASE)
+        self.__itemTypeCommandRegEx: Final[Pattern] = re.compile(r'^\s*!\s*([\w_-]+)\s*(.*)$', re.IGNORECASE)
 
     async def parse(
         self,
@@ -38,15 +38,14 @@ class ItemRequestMessageParser:
             return None
 
         chatMessage = utils.cleanStr(chatMessage)
+
         match = self.__useCommandRegEx.fullmatch(chatMessage)
         result = await self.__parseMatch(match = match, chatMessage = chatMessage)
-
         if result is not None:
             return result
 
         match = self.__itemTypeCommandRegEx.fullmatch(chatMessage)
         result = await self.__parseMatch(match = match, chatMessage = chatMessage)
-
         if result is not None:
             return result
 

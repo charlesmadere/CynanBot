@@ -15,6 +15,20 @@ class TestItemRequestMessageParser:
     )
 
     @pytest.mark.asyncio
+    async def test_parse_withAirStrikeCommand(self):
+        result = await self.parser.parse('!air_strike')
+        assert result is not None
+        assert result.itemType is ChatterItemType.AIR_STRIKE
+        assert result.argument is None
+        assert result.originalChatMessage == '!air_strike'
+
+        result = await self.parser.parse('!air-strike')
+        assert result is not None
+        assert result.itemType is ChatterItemType.AIR_STRIKE
+        assert result.argument is None
+        assert result.originalChatMessage == '!air-strike'
+
+    @pytest.mark.asyncio
     async def test_parse_withEmptyString(self):
         result = await self.parser.parse('')
         assert result is None
