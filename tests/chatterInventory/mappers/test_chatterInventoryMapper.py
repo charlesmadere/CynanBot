@@ -288,6 +288,14 @@ class TestChatterInventoryMapper:
         assert result is ChatterItemType.GRENADE
 
     @pytest.mark.asyncio
+    async def test_parseItemType_withNade(self):
+        result = await self.mapper.parseItemType('nade')
+        assert result is ChatterItemType.GRENADE
+
+        result = await self.mapper.parseItemType('nades')
+        assert result is ChatterItemType.GRENADE
+
+    @pytest.mark.asyncio
     async def test_parseItemType_withNone(self):
         result = await self.mapper.parseItemType(None)
         assert result is None

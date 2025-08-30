@@ -34,6 +34,32 @@ class TestItemRequestMessageParser:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parse_withGrenadeCommand(self):
+        result = await self.parser.parse('!grenade')
+        assert result is not None
+        assert result.itemType is ChatterItemType.GRENADE
+        assert result.argument is None
+        assert result.originalChatMessage == '!grenade'
+
+        result = await self.parser.parse('!grenades')
+        assert result is not None
+        assert result.itemType is ChatterItemType.GRENADE
+        assert result.argument is None
+        assert result.originalChatMessage == '!grenades'
+
+        result = await self.parser.parse('!nade')
+        assert result is not None
+        assert result.itemType is ChatterItemType.GRENADE
+        assert result.argument is None
+        assert result.originalChatMessage == '!nade'
+
+        result = await self.parser.parse('!nades')
+        assert result is not None
+        assert result.itemType is ChatterItemType.GRENADE
+        assert result.argument is None
+        assert result.originalChatMessage == '!nades'
+
+    @pytest.mark.asyncio
     async def test_parse_withNone(self):
         result = await self.parser.parse(None)
         assert result is None

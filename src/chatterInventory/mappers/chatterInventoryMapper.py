@@ -34,6 +34,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
         grenade: FrozenList[Pattern] = FrozenList()
         grenade.append(re.compile(r'^\s*grenades?\s*$', re.IGNORECASE))
+        grenade.append(re.compile(r'^\s*nades?\s*$', re.IGNORECASE))
         grenade.freeze()
 
         return frozendict({
