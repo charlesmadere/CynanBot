@@ -141,6 +141,42 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
         texts.freeze()
         return texts
 
+    def send(
+        self,
+        text: str,
+        twitchChannelId: str,
+        delaySeconds: int | None = None,
+        replyMessageId: str | None = None,
+    ):
+        if not isinstance(text, str):
+            raise TypeError(f'text argument is malformed: \"{text}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif delaySeconds is not None and (not utils.isValidInt(delaySeconds) or delaySeconds < 1):
+            raise TypeError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
+        elif replyMessageId is not None and not isinstance(replyMessageId, str):
+            raise TypeError(f'replyMessageId argument is malformed: \"{replyMessageId}\"')
+
+        cleanedText = utils.cleanStr(text)
+
+        if not utils.isValidStr(cleanedText):
+            self.__timber.log('TwitchChatMessenger', f'Encountered blank chat message ({cleanedText=}) ({text=}) ({twitchChannelId=}) ({delaySeconds=}) ({replyMessageId=})')
+            return
+
+        sendAfter: datetime | None = None
+        if delaySeconds is not None and delaySeconds >= 1:
+            now = datetime.now(self.__timeZoneRepository.getDefault())
+            sendAfter = now + timedelta(seconds = delaySeconds)
+
+        chatMessage = ChatMessage(
+            text = cleanedText,
+            twitchChannelId = twitchChannelId,
+            sendAfter = sendAfter,
+            replyMessageId = replyMessageId,
+        )
+
+        self.__submitChatMessage(chatMessage)
+
     async def __sendChatMessage(
         self,
         chatMessage: ChatMessage,
@@ -249,42 +285,6 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
                     self.__timber.log('TwitchChatMessenger', f'Encountered unknown Exception when looping through chat messages (queue size: {self.__messageQueue.qsize()}) ({len(chatMessages)=}) ({index=}) ({chatMessage=}): {e}', e, traceback.format_exc())
 
             await asyncio.sleep(self.__sleepTimeSeconds)
-
-    def submit(
-        self,
-        text: str,
-        twitchChannelId: str,
-        delaySeconds: int | None = None,
-        replyMessageId: str | None = None,
-    ):
-        if not isinstance(text, str):
-            raise TypeError(f'text argument is malformed: \"{text}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif delaySeconds is not None and (not utils.isValidInt(delaySeconds) or delaySeconds < 1):
-            raise TypeError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
-        elif replyMessageId is not None and not isinstance(replyMessageId, str):
-            raise TypeError(f'replyMessageId argument is malformed: \"{replyMessageId}\"')
-
-        cleanedText = utils.cleanStr(text)
-
-        if not utils.isValidStr(cleanedText):
-            self.__timber.log('TwitchChatMessenger', f'Encountered blank chat message ({cleanedText=}) ({text=}) ({twitchChannelId=}) ({delaySeconds=}) ({replyMessageId=})')
-            return
-
-        sendAfter: datetime | None = None
-        if delaySeconds is not None and delaySeconds >= 1:
-            now = datetime.now(self.__timeZoneRepository.getDefault())
-            sendAfter = now + timedelta(seconds = delaySeconds)
-
-        chatMessage = ChatMessage(
-            text = cleanedText,
-            twitchChannelId = twitchChannelId,
-            sendAfter = sendAfter,
-            replyMessageId = replyMessageId,
-        )
-
-        self.__submitChatMessage(chatMessage)
 
     def __submitChatMessage(self, chatMessage: ChatMessage):
         if not isinstance(chatMessage, ChatMessage):
