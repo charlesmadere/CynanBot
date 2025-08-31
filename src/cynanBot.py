@@ -227,6 +227,7 @@ from .twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 from .twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from .twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from .twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
+from .twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from .twitch.configuration.absChannelJoinEvent import AbsChannelJoinEvent
 from .twitch.configuration.channelJoinListener import ChannelJoinListener
 from .twitch.configuration.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
@@ -404,6 +405,7 @@ class CynanBot(
         twitchApiService: TwitchApiServiceInterface,
         twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface,
         twitchChannelJoinHelper: TwitchChannelJoinHelperInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         twitchConfiguration: TwitchConfiguration,
         twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
@@ -690,6 +692,8 @@ class CynanBot(
             raise TypeError(f'twitchChannelEditorsRepository argument is malformed: \"{twitchChannelEditorsRepository}\"')
         elif not isinstance(twitchChannelJoinHelper, TwitchChannelJoinHelperInterface):
             raise TypeError(f'twitchChannelJoinHelper argument is malformed: \"{twitchChannelJoinHelper}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchConfiguration, TwitchConfiguration):
             raise TypeError(f'twitchConfiguration argument is malformed: \"{twitchConfiguration}\"')
         elif not isinstance(twitchEmotesHelper, TwitchEmotesHelperInterface):
@@ -772,6 +776,7 @@ class CynanBot(
         self.__triviaRepository: TriviaRepositoryInterface | None = triviaRepository
         self.__ttsChatterRepository: TtsChatterRepositoryInterface | None = ttsChatterRepository
         self.__twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = twitchChannelJoinHelper
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
@@ -964,7 +969,7 @@ class CynanBot(
         if starWarsQuotesRepository is None:
             self.__swQuoteCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__swQuoteCommand: AbsChatCommand = SwQuoteChatCommand(starWarsQuotesRepository, timber, twitchUtils, usersRepository)
+            self.__swQuoteCommand: AbsChatCommand = SwQuoteChatCommand(starWarsQuotesRepository, timber, twitchChatMessenger, usersRepository)
 
         if translationHelper is None:
             self.__translateCommand: AbsChatCommand = StubChatCommand()
@@ -979,12 +984,12 @@ class CynanBot(
         if streamAlertsManager is None or ttsJsonMapper is None:
             self.__ttsCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__ttsCommand: AbsChatCommand = TtsChatCommand(administratorProvider, streamAlertsManager, timber, ttsJsonMapper, twitchUtils, usersRepository)
+            self.__ttsCommand: AbsChatCommand = TtsChatCommand(administratorProvider, streamAlertsManager, timber, ttsJsonMapper, twitchChatMessenger, usersRepository)
 
         if locationsRepository is None or weatherReportPresenter is None or weatherRepository is None:
             self.__weatherCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__weatherCommand: AbsChatCommand = WeatherChatCommand(locationsRepository, timber, twitchUtils, usersRepository, weatherReportPresenter, weatherRepository)
+            self.__weatherCommand: AbsChatCommand = WeatherChatCommand(locationsRepository, timber, twitchChatMessenger, usersRepository, weatherReportPresenter, weatherRepository)
 
         if twitchCheerHandler is None:
             self.__testCheerCommand: AbsChatCommand = StubChatCommand()
@@ -1146,6 +1151,7 @@ class CynanBot(
         self.__sentMessageLogger.start()
         self.__chatLogger.start()
         self.__streamAlertsManager.start()
+        self.__twitchChatMessenger.start()
         self.__twitchUtils.start()
 
         if self.__chatActionsManager is not None:

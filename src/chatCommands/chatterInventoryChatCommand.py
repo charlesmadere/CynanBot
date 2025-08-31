@@ -6,8 +6,8 @@ from ..chatterInventory.helpers.chatterInventoryHelperInterface import ChatterIn
 from ..chatterInventory.models.chatterItemType import ChatterItemType
 from ..chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -18,7 +18,7 @@ class ChatterInventoryChatCommand(AbsChatCommand):
         chatterInventoryHelper: ChatterInventoryHelperInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(chatterInventoryHelper, ChatterInventoryHelperInterface):
@@ -27,21 +27,23 @@ class ChatterInventoryChatCommand(AbsChatCommand):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = chatterInventoryHelper
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__timber: Final[TimberInterface] = timber
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.isChatterInventoryEnabled:
+            return
+        elif not await self.__chatterInventorySettings.isEnabled():
             return
 
         inventory = await self.__chatterInventoryHelper.get(
@@ -65,9 +67,9 @@ class ChatterInventoryChatCommand(AbsChatCommand):
 
         inventoryString = ', '.join(inventoryStrings)
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = f'ⓘ Your inventory: {inventoryString}',
+        await self.__twitchChatMessenger.send(
+            text = f'ⓘ Your inventory: {inventoryString}',
+            twitchChannelId = await ctx.getTwitchChannelId(),
             replyMessageId = await ctx.getMessageId(),
         )
 

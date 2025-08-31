@@ -13,9 +13,9 @@ from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
+from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
-from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 
 class UseChatterItemEventHandler(AbsUseChatterItemEventHandler):
@@ -26,7 +26,7 @@ class UseChatterItemEventHandler(AbsUseChatterItemEventHandler):
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -36,14 +36,14 @@ class UseChatterItemEventHandler(AbsUseChatterItemEventHandler):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
         self.__twitchConnectionReadinessProvider: TwitchConnectionReadinessProvider | None = None
@@ -131,7 +131,8 @@ class UseChatterItemEventHandler(AbsUseChatterItemEventHandler):
         event: UseCassetteTapeChatterItemEvent,
         twitchChannelProvider: TwitchChannelProvider,
     ):
-        # TODO
+        # TODO Will handle this in the future when the cassette tape item logic is implemented
+        #  within the item machine class.
         pass
 
     async def __handleDisabledFeatureChatterItemEvent(
@@ -139,7 +140,8 @@ class UseChatterItemEventHandler(AbsUseChatterItemEventHandler):
         event: DisabledFeatureChatterItemEvent,
         twitchChannelProvider: TwitchChannelProvider,
     ):
-        # TODO
+        # For now, let's just not output a chat message for this.
+        # But maybe this should change in the future.
         pass
 
     async def __handleDisabledItemTypeChatterItemEvent(
@@ -147,7 +149,8 @@ class UseChatterItemEventHandler(AbsUseChatterItemEventHandler):
         event: DisabledItemTypeChatterItemEvent,
         twitchChannelProvider: TwitchChannelProvider,
     ):
-        # TODO
+        # For now, let's just not output a chat message for this.
+        # But maybe this should change in the future.
         pass
 
     async def __handleGrenadeChatterItemEvent(
@@ -164,8 +167,11 @@ class UseChatterItemEventHandler(AbsUseChatterItemEventHandler):
         event: NotEnoughInventoryChatterItemEvent,
         twitchChannelProvider: TwitchChannelProvider,
     ):
-        # TODO
-        pass
+        await self.__twitchChatMessenger.send(
+            text = f'⚠ Sorry, you don\'t have an {event.itemType.humanName}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):
