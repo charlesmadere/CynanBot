@@ -3,12 +3,11 @@ from typing import Final
 from .useChatterItemHelperInterface import UseChatterItemHelperInterface
 from ..idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
 from ..machine.chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
-from ..mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
+from ..mappers.itemRequestMessageParser import ItemRequestMessageParser
 from ..models.useChatterItemAction import UseChatterItemAction
 from ..models.useChatterItemRequest import UseChatterItemRequest
 from ..models.useChatterItemResult import UseChatterItemResult
 from ..settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
-from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
 
@@ -18,25 +17,25 @@ class UseChatterItemHelper(UseChatterItemHelperInterface):
         self,
         chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface,
         chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface,
-        chatterInventoryMapper: ChatterInventoryMapperInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
+        itemRequestMessageParser: ItemRequestMessageParser,
         timber: TimberInterface,
     ):
         if not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
             raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
         elif not isinstance(chatterInventoryItemUseMachine, ChatterInventoryItemUseMachineInterface):
             raise TypeError(f'chatterInventoryItemUseMachine argument is malformed: \"{chatterInventoryItemUseMachine}\"')
-        elif not isinstance(chatterInventoryMapper, ChatterInventoryMapperInterface):
-            raise TypeError(f'chatterInventoryMapper argument is malformed: \"{chatterInventoryMapper}\"')
         elif not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
+        elif not isinstance(itemRequestMessageParser, ItemRequestMessageParser):
+            raise TypeError(f'itemRequestMessageParser argument is malformed: \"{itemRequestMessageParser}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = chatterInventoryIdGenerator
         self.__chatterInventoryItemUseMachine: Final[ChatterInventoryItemUseMachineInterface] = chatterInventoryItemUseMachine
-        self.__chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = chatterInventoryMapper
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
+        self.__itemRequestMessageParser: Final[ItemRequestMessageParser] = itemRequestMessageParser
         self.__timber: Final[TimberInterface] = timber
 
     async def useItem(self, request: UseChatterItemRequest) -> UseChatterItemResult:
@@ -50,21 +49,16 @@ class UseChatterItemHelper(UseChatterItemHelperInterface):
         chatMessage = request.chatMessage
 
         if itemType is None:
-            messageSplits = utils.getCleanedSplits(chatMessage)
-
-            if len(messageSplits) == 0:
-                self.__timber.log('UseChatterItemHelper', f'The given request has no itemType or chatMessage to work with ({messageSplits=}) ({request=})')
-                return UseChatterItemResult.INVALID_REQUEST
-
-            itemType = await self.__chatterInventoryMapper.parseItemType(
-                itemType = messageSplits[0],
+            parseResult = await self.__itemRequestMessageParser.parse(
+                chatMessage = request.chatMessage,
             )
 
-            if itemType is None:
-                self.__timber.log('UseChatterItemHelper', f'Unable to parse valid ChatterItemType from the given chatMessage ({itemType=}) ({messageSplits=}) ({request=})')
+            if parseResult is None:
+                self.__timber.log('UseChatterItemHelper', f'Unable to parse the given item request ({parseResult=}) ({request=})')
                 return UseChatterItemResult.INVALID_REQUEST
 
-            chatMessage = ' '.join(messageSplits[1:])
+            itemType = parseResult.itemType
+            chatMessage = parseResult.argument
 
         if itemType not in await self.__chatterInventorySettings.getEnabledItemTypes():
             return UseChatterItemResult.ITEM_DISABLED

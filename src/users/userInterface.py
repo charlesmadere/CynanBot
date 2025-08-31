@@ -515,11 +515,6 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def isTtsMonsterApiUsageReportingEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
     def isVoicemailEnabled(self) -> bool:
         pass
 
