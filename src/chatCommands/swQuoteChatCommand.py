@@ -6,8 +6,8 @@ from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..starWars.starWarsQuotesRepositoryInterface import StarWarsQuotesRepositoryInterface
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -17,7 +17,7 @@ class SwQuoteChatCommand(AbsChatCommand):
         self,
         starWarsQuotesRepository: StarWarsQuotesRepositoryInterface,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         usersRepository: UsersRepositoryInterface,
         cooldown: timedelta = timedelta(seconds = 30),
     ):
@@ -25,8 +25,8 @@ class SwQuoteChatCommand(AbsChatCommand):
             raise TypeError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not isinstance(cooldown, timedelta):
@@ -34,7 +34,7 @@ class SwQuoteChatCommand(AbsChatCommand):
 
         self.__starWarsQuotesRepository: Final[StarWarsQuotesRepositoryInterface] = starWarsQuotesRepository
         self.__timber: Final[TimberInterface] = timber
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
         self.__lastMessageTimes: Final[TimedDict] = TimedDict(cooldown)
 
@@ -51,7 +51,10 @@ class SwQuoteChatCommand(AbsChatCommand):
 
         if len(splits) < 2:
             swQuote = await self.__starWarsQuotesRepository.fetchRandomQuote()
-            await self.__twitchUtils.safeSend(ctx, f'{swQuote} {randomSpaceEmoji}')
+            await self.__twitchChatMessenger.send(
+                text = f'{swQuote} {randomSpaceEmoji}',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+            )
             return
 
         query = ' '.join(splits[1:])
@@ -60,9 +63,18 @@ class SwQuoteChatCommand(AbsChatCommand):
             swQuote = await self.__starWarsQuotesRepository.searchQuote(query)
 
             if utils.isValidStr(swQuote):
-                await self.__twitchUtils.safeSend(ctx, f'{swQuote} {randomSpaceEmoji}')
+                await self.__twitchChatMessenger.send(
+                    text = f'{swQuote} {randomSpaceEmoji}',
+                    twitchChannelId = await ctx.getTwitchChannelId(),
+                )
             else:
-                await self.__twitchUtils.safeSend(ctx, f'⚠ No Star Wars quote found for the given query: \"{query}\"')
+                await self.__twitchChatMessenger.send(
+                    text = f'⚠ No Star Wars quote found for the given query: \"{query}\"',
+                    twitchChannelId = await ctx.getTwitchChannelId(),
+                )
         except ValueError:
             self.__timber.log('SwQuoteCommand', f'Error retrieving Star Wars quote with query: \"{query}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Star Wars quote with query: \"{query}\"')
+            await self.__twitchChatMessenger.send(
+                text = f'⚠ Error retrieving Star Wars quote with query: \"{query}\"',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+            )

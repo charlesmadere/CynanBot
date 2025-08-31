@@ -12,8 +12,8 @@ from ..tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from ..tts.models.ttsEvent import TtsEvent
 from ..tts.models.ttsProvider import TtsProvider
 from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.tts.ttsBoosterPack import TtsBoosterPack
 from ..users.userInterface import UserInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
@@ -27,7 +27,7 @@ class TtsChatCommand(AbsChatCommand):
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         ttsJsonMapper: TtsJsonMapperInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
@@ -38,8 +38,8 @@ class TtsChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
             raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -47,7 +47,7 @@ class TtsChatCommand(AbsChatCommand):
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__ttsJsonMapper: Final[TtsJsonMapperInterface] = ttsJsonMapper
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
         self.__ttsProviderRegEx: Final[Pattern] = re.compile(r'^--(\w+)$', re.IGNORECASE)
@@ -56,17 +56,17 @@ class TtsChatCommand(AbsChatCommand):
         cheerAmountStrings = await self.__getTtsCheerAmountStrings(user)
 
         if len(cheerAmountStrings) == 0:
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'ⓘ TTS cheers have not been set up for this channel',
+            await self.__twitchChatMessenger.send(
+                text = f'ⓘ TTS cheers have not been set up for this channel',
+                twitchChannelId = await ctx.getTwitchChannelId(),
                 replyMessageId = await ctx.getMessageId(),
             )
         else:
             cheerAmountString = ', '.join(cheerAmountStrings)
 
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'ⓘ TTS cheer information — {cheerAmountString}',
+            await self.__twitchChatMessenger.send(
+                text = f'ⓘ TTS cheer information — {cheerAmountString}',
+                twitchChannelId = await ctx.getTwitchChannelId(),
                 replyMessageId = await ctx.getMessageId(),
             )
 
@@ -136,9 +136,9 @@ class TtsChatCommand(AbsChatCommand):
                 ttsProviderStrings = await self.__getTtsProviderStrings()
                 ttsProviderString = ', '.join(ttsProviderStrings)
 
-                await self.__twitchUtils.safeSend(
-                    messageable = ctx,
-                    message = f'⚠ TTS provider argument is malformed! Available TTS provider(s): {ttsProviderString}. Example: !tts --{random.choice(ttsProviderStrings)} Hello, World!',
+                await self.__twitchChatMessenger.send(
+                    text = f'⚠ TTS provider argument is malformed! Available TTS provider(s): {ttsProviderString}. Example: !tts --{random.choice(ttsProviderStrings)} Hello, World!',
+                    twitchChannelId = await ctx.getTwitchChannelId(),
                     replyMessageId = await ctx.getMessageId()
                 )
 
@@ -161,9 +161,9 @@ class TtsChatCommand(AbsChatCommand):
             ),
         ))
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = f'ⓘ Submitted TTS message using {ttsProvider.humanName}…',
+        await self.__twitchChatMessenger.send(
+            text = f'ⓘ Submitted TTS message using {ttsProvider.humanName}…',
+            twitchChannelId = await ctx.getTwitchChannelId(),
             replyMessageId = await ctx.getMessageId(),
         )
 

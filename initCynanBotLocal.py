@@ -2398,6 +2398,7 @@ cynanBot = CynanBot(
     twitchApiService = twitchApiService,
     twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     twitchChannelJoinHelper = twitchChannelJoinHelper,
+    twitchChatMessenger = twitchChatMessenger,
     twitchConfiguration = twitchConfiguration,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
