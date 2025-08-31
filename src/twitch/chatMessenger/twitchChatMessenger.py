@@ -91,7 +91,10 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
 
     async def __getSelfTwitchAccessToken(self) -> str:
         selfTwitchUserId = await self.__getSelfTwitchUserId()
-        return await self.__twitchTokensRepository.requireAccessTokenById(selfTwitchUserId)
+
+        return await self.__twitchTokensRepository.requireAccessTokenById(
+            twitchChannelId = selfTwitchUserId,
+        )
 
     async def __getSelfTwitchUserId(self) -> str:
         selfTwitchUserId = self.__selfTwitchUserId
