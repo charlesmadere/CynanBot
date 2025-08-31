@@ -387,6 +387,8 @@ from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from src.twitch.channelEditors.twitchChannelEditorsRepository import TwitchChannelEditorsRepository
 from src.twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
+from src.twitch.chatMessenger.twitchChatMessenger import TwitchChatMessenger
+from src.twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
 from src.twitch.configuration.twitchChannelPointRedemptionHandler import TwitchChannelPointRedemptionHandler
 from src.twitch.configuration.twitchChatHandler import TwitchChatHandler
@@ -908,6 +910,18 @@ twitchUtils: TwitchUtilsInterface = TwitchUtils(
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
+)
+
+twitchChatMessenger: TwitchChatMessengerInterface = TwitchChatMessenger(
+    backgroundTaskHelper = backgroundTaskHelper,
+    sentMessageLogger = sentMessageLogger,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchApiService = twitchApiService,
+    twitchConstants = twitchUtils,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository,
 )
 
 timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = TimeoutImmuneUserIdsRepository(
