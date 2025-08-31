@@ -67,7 +67,7 @@ class ChatterInventoryChatCommand(AbsChatCommand):
 
         inventoryString = ', '.join(inventoryStrings)
 
-        await self.__twitchChatMessenger.send(
+        self.__twitchChatMessenger.send(
             text = f'ⓘ Your inventory: {inventoryString}',
             twitchChannelId = await ctx.getTwitchChannelId(),
             replyMessageId = await ctx.getMessageId(),

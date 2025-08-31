@@ -66,7 +66,7 @@ class UseChatterItemChatCommand(AbsChatCommand):
                 pass
 
             case UseChatterItemResult.INVALID_REQUEST:
-                await self.__twitchChatMessenger.send(
+                self.__twitchChatMessenger.send(
                     text = f'⚠ Invalid item use request! Please try again',
                     twitchChannelId = await ctx.getTwitchChannelId(),
                     replyMessageId = await ctx.getMessageId(),

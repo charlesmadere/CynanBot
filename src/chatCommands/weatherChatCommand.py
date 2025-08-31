@@ -61,7 +61,7 @@ class WeatherChatCommand(AbsChatCommand):
         locationId = user.locationId
 
         if not utils.isValidStr(locationId):
-            await self.__twitchChatMessenger.send(
+            self.__twitchChatMessenger.send(
                 text = f'⚠ No location ID is available',
                 twitchChannelId = await ctx.getTwitchChannelId(),
             )
@@ -71,7 +71,7 @@ class WeatherChatCommand(AbsChatCommand):
             location = await self.__locationsRepository.getLocation(locationId)
         except NoSuchLocationException as e:
             self.__timber.log('WeatherCommand', f'Unable to get location ID when fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({locationId=}): {e}', e, traceback.format_exc())
-            await self.__twitchChatMessenger.send(
+            self.__twitchChatMessenger.send(
                 text = f'⚠ Error fetching weather',
                 twitchChannelId = await ctx.getTwitchChannelId(),
                 replyMessageId = await ctx.getMessageId(),
@@ -82,14 +82,14 @@ class WeatherChatCommand(AbsChatCommand):
             weatherReport = await self.__weatherRepository.fetchWeather(location)
             weatherReportString = await self.__weatherReportPresenter.toString(weatherReport)
 
-            await self.__twitchChatMessenger.send(
+            self.__twitchChatMessenger.send(
                 text = weatherReportString,
                 twitchChannelId = await ctx.getTwitchChannelId(),
                 replyMessageId = await ctx.getMessageId(),
             )
         except Exception as e:
             self.__timber.log('WeatherCommand', f'Error fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({locationId=}): {e}', e, traceback.format_exc())
-            await self.__twitchChatMessenger.send(
+            self.__twitchChatMessenger.send(
                 text = '⚠ Error fetching weather',
                 twitchChannelId = await ctx.getTwitchChannelId(),
                 replyMessageId = await ctx.getMessageId(),

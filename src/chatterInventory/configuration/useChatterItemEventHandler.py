@@ -167,7 +167,7 @@ class UseChatterItemEventHandler(AbsUseChatterItemEventHandler):
         event: NotEnoughInventoryChatterItemEvent,
         twitchChannelProvider: TwitchChannelProvider,
     ):
-        await self.__twitchChatMessenger.send(
+        self.__twitchChatMessenger.send(
             text = f'⚠ Sorry, you don\'t have an {event.itemType.humanName}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,

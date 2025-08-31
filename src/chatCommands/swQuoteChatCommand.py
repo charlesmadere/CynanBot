@@ -51,7 +51,7 @@ class SwQuoteChatCommand(AbsChatCommand):
 
         if len(splits) < 2:
             swQuote = await self.__starWarsQuotesRepository.fetchRandomQuote()
-            await self.__twitchChatMessenger.send(
+            self.__twitchChatMessenger.send(
                 text = f'{swQuote} {randomSpaceEmoji}',
                 twitchChannelId = await ctx.getTwitchChannelId(),
             )
@@ -63,18 +63,18 @@ class SwQuoteChatCommand(AbsChatCommand):
             swQuote = await self.__starWarsQuotesRepository.searchQuote(query)
 
             if utils.isValidStr(swQuote):
-                await self.__twitchChatMessenger.send(
+                self.__twitchChatMessenger.send(
                     text = f'{swQuote} {randomSpaceEmoji}',
                     twitchChannelId = await ctx.getTwitchChannelId(),
                 )
             else:
-                await self.__twitchChatMessenger.send(
+                self.__twitchChatMessenger.send(
                     text = f'⚠ No Star Wars quote found for the given query: \"{query}\"',
                     twitchChannelId = await ctx.getTwitchChannelId(),
                 )
         except ValueError:
             self.__timber.log('SwQuoteCommand', f'Error retrieving Star Wars quote with query: \"{query}\"')
-            await self.__twitchChatMessenger.send(
+            self.__twitchChatMessenger.send(
                 text = f'⚠ Error retrieving Star Wars quote with query: \"{query}\"',
                 twitchChannelId = await ctx.getTwitchChannelId(),
             )

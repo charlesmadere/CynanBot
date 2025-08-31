@@ -56,7 +56,7 @@ class TtsChatCommand(AbsChatCommand):
         cheerAmountStrings = await self.__getTtsCheerAmountStrings(user)
 
         if len(cheerAmountStrings) == 0:
-            await self.__twitchChatMessenger.send(
+            self.__twitchChatMessenger.send(
                 text = f'ⓘ TTS cheers have not been set up for this channel',
                 twitchChannelId = await ctx.getTwitchChannelId(),
                 replyMessageId = await ctx.getMessageId(),
@@ -64,7 +64,7 @@ class TtsChatCommand(AbsChatCommand):
         else:
             cheerAmountString = ', '.join(cheerAmountStrings)
 
-            await self.__twitchChatMessenger.send(
+            self.__twitchChatMessenger.send(
                 text = f'ⓘ TTS cheer information — {cheerAmountString}',
                 twitchChannelId = await ctx.getTwitchChannelId(),
                 replyMessageId = await ctx.getMessageId(),
@@ -136,7 +136,7 @@ class TtsChatCommand(AbsChatCommand):
                 ttsProviderStrings = await self.__getTtsProviderStrings()
                 ttsProviderString = ', '.join(ttsProviderStrings)
 
-                await self.__twitchChatMessenger.send(
+                self.__twitchChatMessenger.send(
                     text = f'⚠ TTS provider argument is malformed! Available TTS provider(s): {ttsProviderString}. Example: !tts --{random.choice(ttsProviderStrings)} Hello, World!',
                     twitchChannelId = await ctx.getTwitchChannelId(),
                     replyMessageId = await ctx.getMessageId()
@@ -161,7 +161,7 @@ class TtsChatCommand(AbsChatCommand):
             ),
         ))
 
-        await self.__twitchChatMessenger.send(
+        self.__twitchChatMessenger.send(
             text = f'ⓘ Submitted TTS message using {ttsProvider.humanName}…',
             twitchChannelId = await ctx.getTwitchChannelId(),
             replyMessageId = await ctx.getMessageId(),
