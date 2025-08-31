@@ -43,6 +43,8 @@ class ChatterInventoryChatCommand(AbsChatCommand):
 
         if not user.isChatterInventoryEnabled:
             return
+        elif not await self.__chatterInventorySettings.isEnabled():
+            return
 
         inventory = await self.__chatterInventoryHelper.get(
             chatterUserId = ctx.getAuthorId(),
