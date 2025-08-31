@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import tzinfo
+from typing import Final
 
 from frozendict import frozendict
 from frozenlist import FrozenList
@@ -75,7 +76,6 @@ class User(UserInterface):
         isTriviaGameEnabled: bool,
         isTriviaScoreEnabled: bool,
         isTtsEnabled: bool,
-        isTtsMonsterApiUsageReportingEnabled: bool,
         isVoicemailEnabled: bool,
         isVulnerableChattersEnabled: bool,
         isWeatherEnabled: bool,
@@ -238,8 +238,6 @@ class User(UserInterface):
             raise TypeError(f'isTriviaScoreEnabled argument is malformed: \"{isTriviaScoreEnabled}\"')
         elif not utils.isValidBool(isTtsEnabled):
             raise TypeError(f'isTtsEnabled argument is malformed: \"{isTtsEnabled}\"')
-        elif not utils.isValidBool(isTtsMonsterApiUsageReportingEnabled):
-            raise TypeError(f'isTtsMonsterApiUsageReportingEnabled argument is malformed: \"{isTtsMonsterApiUsageReportingEnabled}\"')
         elif not utils.isValidBool(isVoicemailEnabled):
             raise TypeError(f'isVoicemailEnabled argument is malformed: \"{isVoicemailEnabled}\"')
         elif not utils.isValidBool(isVulnerableChattersEnabled):
@@ -379,15 +377,15 @@ class User(UserInterface):
         self.__isChatBackMessagesEnabled: bool = isChatBackMessagesEnabled
         self.__isChatBandEnabled: bool = isChatBandEnabled
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
-        self.__isChatterInventoryEnabled: bool = isChatterInventoryEnabled
+        self.__isChatterInventoryEnabled: Final[bool] = isChatterInventoryEnabled
         self.__isChatterPreferredTtsEnabled: bool = isChatterPreferredTtsEnabled
         self.__isCrowdControlEnabled: bool = isCrowdControlEnabled
         self.__isCutenessEnabled: bool = isCutenessEnabled
         self.__isDecTalkSongsEnabled: bool = isDecTalkSongsEnabled
-        self.__isEccoEnabled: bool = isEccoEnabled
-        self.__isEnabled: bool = isEnabled
-        self.__isGiveCutenessEnabled: bool = isGiveCutenessEnabled
-        self.__isJishoEnabled: bool = isJishoEnabled
+        self.__isEccoEnabled: Final[bool] = isEccoEnabled
+        self.__isEnabled: Final[bool] = isEnabled
+        self.__isGiveCutenessEnabled: Final[bool] = isGiveCutenessEnabled
+        self.__isJishoEnabled: Final[bool] = isJishoEnabled
         self.__isLoremIpsumEnabled: bool = isLoremIpsumEnabled
         self.__isNotifyOfPollResultsEnabled: bool = isNotifyOfPollResultsEnabled
         self.__isNotifyOfPollStartEnabled: bool = isNotifyOfPollStartEnabled
@@ -411,9 +409,8 @@ class User(UserInterface):
         self.__isTriviaGameEnabled: bool = isTriviaGameEnabled
         self.__isTriviaScoreEnabled: bool = isTriviaScoreEnabled
         self.__areTtsChattersEnabled: bool = areTtsChattersEnabled
-        self.__isTtsEnabled: bool = isTtsEnabled
-        self.__isTtsMonsterApiUsageReportingEnabled: bool = isTtsMonsterApiUsageReportingEnabled
-        self.__isVoicemailEnabled: bool = isVoicemailEnabled
+        self.__isTtsEnabled: Final[bool] = isTtsEnabled
+        self.__isVoicemailEnabled: Final[bool] = isVoicemailEnabled
         self.__isVulnerableChattersEnabled: bool = isVulnerableChattersEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
@@ -892,10 +889,6 @@ class User(UserInterface):
     @property
     def areTtsChattersEnabled(self) -> bool:
         return self.__areTtsChattersEnabled
-
-    @property
-    def isTtsMonsterApiUsageReportingEnabled(self) -> bool:
-        return self.__isTtsMonsterApiUsageReportingEnabled
 
     @property
     def isWeatherEnabled(self) -> bool:
