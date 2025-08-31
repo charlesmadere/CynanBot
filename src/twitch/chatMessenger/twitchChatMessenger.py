@@ -65,7 +65,7 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
         elif not utils.isValidInt(maxMessageSplits):
             raise TypeError(f'maxMessageSplits argument is malformed: \"{maxMessageSplits}\"')
-        elif maxMessageSplits < 0 or maxMessageSplits < 5:
+        elif maxMessageSplits < 0 or maxMessageSplits > 5:
             raise ValueError(f'maxMessageSplits argument is out of bounds: {maxMessageSplits}')
         elif not utils.isValidInt(queueTimeoutSeconds):
             raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
