@@ -948,10 +948,10 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = Timeou
 
 twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
     activeChattersRepository = activeChattersRepository,
+    globalTwitchConstants = globalTwitchConstants,
     timber = timber,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     twitchApiService = twitchApiService,
-    twitchConstants = twitchUtils,
     twitchHandleProvider = authRepository,
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     userIdsRepository = userIdsRepository,
