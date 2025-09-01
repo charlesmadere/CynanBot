@@ -12,8 +12,8 @@ from .twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..api.models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from ..api.models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
+from ..globalTwitchConstants import GlobalTwitchConstants
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..twitchConstantsInterface import TwitchConstantsInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
@@ -29,11 +29,11 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
+        globalTwitchConstants: GlobalTwitchConstants,
         sentMessageLogger: SentMessageLoggerInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
-        twitchConstants: TwitchConstantsInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -43,6 +43,8 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(globalTwitchConstants, GlobalTwitchConstants):
+            raise TypeError(f'globalTwitchConstants argument is malformed: \"{globalTwitchConstants}\"')
         elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
             raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif not isinstance(timber, TimberInterface):
@@ -51,8 +53,6 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
-        elif not isinstance(twitchConstants, TwitchConstantsInterface):
-            raise TypeError(f'twitchConstants argument is malformed: \"{twitchConstants}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -73,11 +73,11 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__globalTwitchConstants: Final[GlobalTwitchConstants] = globalTwitchConstants
         self.__sentMessageLogger: Final[SentMessageLoggerInterface] = sentMessageLogger
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
-        self.__twitchConstants: Final[TwitchConstantsInterface] = twitchConstants
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
@@ -127,12 +127,12 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
     ) -> FrozenList[str]:
         texts: FrozenList[str] = FrozenList()
 
-        if len(chatMessage.text) < self.__twitchConstants.maxMessageSize:
+        if len(chatMessage.text) < self.__globalTwitchConstants.maxMessageSize:
             texts.append(chatMessage.text)
         else:
             splits = utils.splitLongStringIntoMessages(
                 maxMessages = self.__maxMessageSplits,
-                perMessageMaxSize = self.__twitchConstants.maxMessageSize,
+                perMessageMaxSize = self.__globalTwitchConstants.maxMessageSize,
                 message = chatMessage.text,
             )
 
