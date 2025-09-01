@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
-from .configuration.twitchChannelProvider import TwitchChannelProvider
 from ..users.userInterface import UserInterface
 
 
@@ -29,8 +28,4 @@ class AbsTwitchFollowHandler(ABC):
         user: UserInterface,
         dataBundle: TwitchWebsocketDataBundle,
     ):
-        pass
-
-    @abstractmethod
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         pass

@@ -3117,7 +3117,7 @@ twitchCheerHandler: AbsTwitchCheerHandler = TwitchCheerHandler(
 
 twitchFollowHandler: AbsTwitchFollowHandler = TwitchFollowHandler(
     timber = timber,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
 )
 
 twitchHypeTrainHandler: AbsTwitchHypeTrainHandler | None = None
@@ -3126,7 +3126,7 @@ twitchPollHandler: AbsTwitchPollHandler = TwitchPollHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     twitchApiService = twitchApiService,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 twitchPredictionHandler: AbsTwitchPredictionHandler = TwitchPredictionHandler(
