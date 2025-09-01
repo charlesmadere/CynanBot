@@ -999,12 +999,12 @@ class CynanBot(
         if eccoHelper is None:
             self.__eccoCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__eccoCommand: AbsChatCommand = EccoChatCommand(eccoHelper, timber, twitchUtils, usersRepository)
+            self.__eccoCommand: AbsChatCommand = EccoChatCommand(eccoHelper, timber, twitchChatMessenger, usersRepository)
 
         if timeoutImmuneUserIdsRepository is None:
             self.__vulnerableChattersCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__vulnerableChattersCommand: AbsChatCommand = VulnerableChattersChatCommand(activeChattersRepository, timber, timeoutImmuneUserIdsRepository, twitchUtils, usersRepository)
+            self.__vulnerableChattersCommand: AbsChatCommand = VulnerableChattersChatCommand(activeChattersRepository, timber, timeoutImmuneUserIdsRepository, twitchChatMessenger, usersRepository)
 
         if voicemailHelper is None or voicemailsRepository is None or voicemailSettingsRepository is None:
             self.__playVoicemailCommand: AbsChatCommand = StubChatCommand()
@@ -1016,7 +1016,7 @@ class CynanBot(
         if wordOfTheDayPresenter is None or wordOfTheDayRepository is None:
             self.__wordCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__wordCommand: AbsChatCommand = WordChatCommand(languagesRepository, timber, twitchUtils, usersRepository, wordOfTheDayPresenter, wordOfTheDayRepository)
+            self.__wordCommand: AbsChatCommand = WordChatCommand(languagesRepository, timber, twitchChatMessenger, usersRepository, wordOfTheDayPresenter, wordOfTheDayRepository)
 
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireTwitchHandle()}')
 
