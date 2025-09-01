@@ -406,6 +406,7 @@ from src.twitch.followingStatus.twitchFollowingStatusRepository import TwitchFol
 from src.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
+from src.twitch.globalTwitchConstants import GlobalTwitchConstants
 from src.twitch.ircTagsParser.twitchIrcTagsParser import TwitchIrcTagsParser
 from src.twitch.ircTagsParser.twitchIrcTagsParserInterface import TwitchIrcTagsParserInterface
 from src.twitch.isLive.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
@@ -912,13 +913,15 @@ twitchUtils: TwitchUtilsInterface = TwitchUtils(
     userIdsRepository = userIdsRepository
 )
 
+globalTwitchConstants = GlobalTwitchConstants()
+
 twitchChatMessenger: TwitchChatMessengerInterface = TwitchChatMessenger(
     backgroundTaskHelper = backgroundTaskHelper,
+    globalTwitchConstants = globalTwitchConstants,
     sentMessageLogger = sentMessageLogger,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
-    twitchConstants = twitchUtils,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
@@ -934,8 +937,8 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = Timeou
     userIdsRepository = userIdsRepository,
     otherImmuneUserIdsLinesReader = LinesFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/otherImmuneUserIds.txt'
-    )
+        fileName = '../config/otherImmuneUserIds.txt',
+    ),
 )
 
 twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
