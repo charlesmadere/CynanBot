@@ -1388,12 +1388,11 @@ triviaGameBuilder: TriviaGameBuilderInterface = TriviaGameBuilder(
     triviaIdGenerator = triviaIdGenerator,
     usersRepository = usersRepository
 )
+
 bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface = BannedTriviaGameControllersRepository(
     administratorProvider = administratorProvider,
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
 )
 
 triviaGameControllersRepository: TriviaGameControllersRepositoryInterface = TriviaGameControllersRepository(

@@ -1,9 +1,6 @@
-import traceback
-
-from frozenlist import FrozenList
+from typing import Final
 
 from .addBannedTriviaGameControllerResult import AddBannedTriviaGameControllerResult
-from .bannedTriviaGameController import BannedTriviaGameController
 from .bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
 from .removeBannedTriviaGameControllerResult import RemoveBannedTriviaGameControllerResult
 from ...misc import utils as utils
@@ -12,8 +9,6 @@ from ...storage.backingDatabase import BackingDatabase
 from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
 from ...timber.timberInterface import TimberInterface
-from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositoryInterface):
@@ -23,8 +18,6 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
         administratorProvider: AdministratorProviderInterface,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
-        twitchTokensRepository: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
@@ -32,37 +25,23 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise TypeError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timber: TimberInterface = timber
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timber: Final[TimberInterface] = timber
 
         self.__isDatabaseReady: bool = False
-        self.__cache: FrozenList[BannedTriviaGameController] | None = None
+        self.__cache: frozenset[str] | None = None
 
     async def addBannedController(
         self,
-        userName: str
+        userId: str,
     ) -> AddBannedTriviaGameControllerResult:
-        if not utils.isValidStr(userName):
-            raise TypeError(f'userName argument is malformed: \"{userName}\"')
+        if not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        administratorId = await self.__administratorProvider.getAdministratorUserId()
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(administratorId)
-
-        try:
-            userId = await self.__userIdsRepository.fetchUserId(
-                userName = userName,
-                twitchAccessToken = twitchAccessToken
-            )
-        except Exception as e:
-            self.__timber.log('BannedTriviaGameControllersRepository', f'Retrieved no userId from UserIdsRepository when trying to add \"{userName}\" as a banned trivia game controller: {e}', e, traceback.format_exc())
+        if userId == await self.__administratorProvider.getAdministratorUserId():
+            self.__timber.log('BannedTriviaGameControllersRepository', f'Tried to add banned trivia game controller, but this user is the administrator ({userId=})')
             return AddBannedTriviaGameControllerResult.ERROR
 
         connection = await self.__getDatabaseConnection()
@@ -81,7 +60,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
 
         if utils.isValidInt(count) and count >= 1:
             await connection.close()
-            self.__timber.log('BannedTriviaGameControllersRepository', f'Tried to add banned trivia game controller, but this user has already been banned ({userId=}) ({userName=})')
+            self.__timber.log('BannedTriviaGameControllersRepository', f'Tried to add banned trivia game controller, but this user has already been banned ({userId=})')
             return AddBannedTriviaGameControllerResult.ALREADY_EXISTS
 
         self.__cache = None
@@ -96,44 +75,34 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
         )
 
         await connection.close()
-        self.__timber.log('BannedTriviaGameControllersRepository', f'Added banned trivia game controller ({userId=}) ({userName=})')
+        self.__timber.log('BannedTriviaGameControllersRepository', f'Added banned trivia game controller ({userId=})')
         return AddBannedTriviaGameControllerResult.ADDED
 
     async def clearCaches(self):
         self.__cache = None
         self.__timber.log('BannedTriviaGameControllersRepository', 'Caches cleared')
 
-    async def getBannedControllers(self) -> FrozenList[BannedTriviaGameController]:
-        cachedControllers = self.__cache
-        if cachedControllers is not None:
-            return cachedControllers
+    async def getBannedControllers(self) -> frozenset[str]:
+        cache = self.__cache
+        if cache is not None:
+            return cache
 
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
             '''
-                SELECT bannedtriviagamecontrollers.userid, userids.username FROM bannedtriviagamecontrollers
-                INNER JOIN userids ON bannedtriviagamecontrollers.userid = userids.userid
-                ORDER BY userids.username ASC
+                SELECT userid FROM bannedtriviagamecontrollers
             '''
         )
 
         await connection.close()
-
-        controllers: list[BannedTriviaGameController] = list()
+        controllers: set[str] = set()
 
         if records is not None and len(records) >= 1:
             for record in records:
-                controllers.append(BannedTriviaGameController(
-                    userId = record[0],
-                    userName = record[1]
-                ))
+                controllers.add(record[0])
 
-            controllers.sort(key = lambda controller: controller.userName.casefold())
-
-        frozenControllers: FrozenList[BannedTriviaGameController] = FrozenList(controllers)
-        frozenControllers.freeze()
+        frozenControllers: frozenset[str] = frozenset(controllers)
         self.__cache = frozenControllers
-
         return frozenControllers
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
@@ -173,16 +142,10 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
 
     async def removeBannedController(
         self,
-        userName: str
+        userId: str,
     ) -> RemoveBannedTriviaGameControllerResult:
-        if not utils.isValidStr(userName):
-            raise TypeError(f'userName argument is malformed: \"{userName}\"')
-
-        try:
-            userId = await self.__userIdsRepository.requireUserId(userName = userName)
-        except Exception as e:
-            self.__timber.log('BannedTriviaGameControllersRepository', f'Retrieved no userId from UserIdsRepository when trying to remove \"{userName}\" as a banned trivia game controller', e, traceback.format_exc())
-            return RemoveBannedTriviaGameControllerResult.ERROR
+        if not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         connection = await self.__backingDatabase.getConnection()
         record = await connection.fetchRow(
@@ -200,7 +163,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
 
         if not utils.isValidInt(count) or count < 1:
             await connection.close()
-            self.__timber.log('BannedTriviaGameControllersRepository', f'Tried to removed banned trivia game controller, but this user has not already been banned ({userId=}) ({userName=})')
+            self.__timber.log('BannedTriviaGameControllersRepository', f'Tried to removed banned trivia game controller, but this user has not already been banned ({userId=})')
             return RemoveBannedTriviaGameControllerResult.NOT_BANNED
 
         self.__cache = None
@@ -214,5 +177,5 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
         )
 
         await connection.close()
-        self.__timber.log('BannedTriviaGameControllersRepository', f'Removed banned trivia game controller ({userId=}) ({userName=})')
+        self.__timber.log('BannedTriviaGameControllersRepository', f'Removed banned trivia game controller ({userId=})')
         return RemoveBannedTriviaGameControllerResult.REMOVED

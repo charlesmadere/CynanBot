@@ -96,7 +96,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
 
         await self.setUser(
             userId = userDetails.userId,
-            userName = userDetails.login
+            userName = userDetails.login,
         )
 
         return userDetails.userId
@@ -238,7 +238,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
 
         userId = await self.fetchUserId(
             userName = userName,
-            twitchAccessToken = twitchAccessToken
+            twitchAccessToken = twitchAccessToken,
         )
 
         if not utils.isValidStr(userId):

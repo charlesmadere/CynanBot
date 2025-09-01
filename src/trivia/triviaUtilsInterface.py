@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Collection
 
-from .banned.bannedTriviaGameController import BannedTriviaGameController
 from .gameController.triviaGameController import TriviaGameController
 from .gameController.triviaGameGlobalController import TriviaGameGlobalController
 from .questions.absTriviaQuestion import AbsTriviaQuestion
@@ -125,8 +124,7 @@ class TriviaUtilsInterface(ABC):
     @abstractmethod
     async def getTriviaGameBannedControllers(
         self,
-        bannedControllers: Collection[BannedTriviaGameController] | None,
-        delimiter: str = ', '
+        bannedControllers: Collection[str],
     ) -> str:
         pass
 

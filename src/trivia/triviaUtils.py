@@ -3,7 +3,8 @@ import traceback
 from collections import defaultdict
 from typing import Collection
 
-from .banned.bannedTriviaGameController import BannedTriviaGameController
+from frozenlist import FrozenList
+
 from .banned.bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
 from .gameController.triviaGameController import TriviaGameController
 from .gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
@@ -43,7 +44,7 @@ class TriviaUtils(TriviaUtilsInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
-        celebratoryEmote: str = '🎉'
+        celebratoryEmote: str = '🎉',
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -515,22 +516,24 @@ class TriviaUtils(TriviaUtilsInterface):
 
     async def getTriviaGameBannedControllers(
         self,
-        bannedControllers: Collection[BannedTriviaGameController] | None,
-        delimiter: str = ', '
+        bannedControllers: Collection[str],
     ) -> str:
-        if bannedControllers is not None and not isinstance(bannedControllers, list):
+        if not isinstance(bannedControllers, Collection):
             raise TypeError(f'bannedControllers argument is malformed: \"{bannedControllers}\"')
-        elif not isinstance(delimiter, str):
-            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        if bannedControllers is None or len(bannedControllers) == 0:
+        frozenBannedControllers: FrozenList[str] = FrozenList(bannedControllers)
+        frozenBannedControllers.freeze()
+
+        if len(frozenBannedControllers) == 0:
             return f'ⓘ There are no banned trivia game controllers.'
 
-        bannedControllersNames: list[str] = list()
-        for bannedController in bannedControllers:
-            bannedControllersNames.append(bannedController.userName)
+        userNames: list[str] = list()
+        for bannedController in frozenBannedControllers:
+            userName = await self.__userIdsRepository.requireUserName(bannedController)
+            userNames.append(userName)
 
-        bannedControllersStr = delimiter.join(bannedControllersNames)
+        userNames.sort(key = lambda userName: userName.casefold())
+        bannedControllersStr = ', '.join(userNames)
         return f'ⓘ Banned trivia game controllers — {bannedControllersStr}'
 
     async def getTriviaGameControllers(
@@ -706,7 +709,7 @@ class TriviaUtils(TriviaUtilsInterface):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -722,24 +725,14 @@ class TriviaUtils(TriviaUtilsInterface):
             self.__timber.log('TriviaUtils', f'Encountered an invalid Twitch user \"{twitchChannel}\" when trying to check userId \"{userId}\" for privileged trivia permissions', e, traceback.format_exc())
             return False
 
-        bannedGameControllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
-        for bannedGameController in bannedGameControllers:
-            if userId == bannedGameController.userId:
-                return False
-
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchChannelId)
-
-        twitchUserId = await self.__userIdsRepository.fetchUserId(
-            userName = twitchUser.handle,
-            twitchAccessToken = twitchAccessToken
-        )
-
-        if utils.isValidStr(twitchUserId) and userId == twitchUserId:
+        if userId in await self.__bannedTriviaGameControllersRepository.getBannedControllers():
+            return False
+        elif userId == twitchChannelId:
             return True
 
         gameControllers = await self.__triviaGameControllersRepository.getControllers(
             twitchChannel = twitchUser.handle,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         for gameController in gameControllers:

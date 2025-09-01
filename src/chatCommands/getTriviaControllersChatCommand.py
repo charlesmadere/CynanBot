@@ -19,7 +19,7 @@ class GetTriviaControllersChatCommand(AbsChatCommand):
         triviaGameControllersRepository: TriviaGameControllersRepositoryInterface,
         triviaUtils: TriviaUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -60,13 +60,13 @@ class GetTriviaControllersChatCommand(AbsChatCommand):
 
         controllers = await self.__triviaGameControllersRepository.getControllers(
             twitchChannel = user.handle,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         await self.__twitchUtils.safeSend(
             messageable = ctx,
             message = await self.__triviaUtils.getTriviaGameControllers(controllers),
-            replyMessageId = await ctx.getMessageId()
+            replyMessageId = await ctx.getMessageId(),
         )
 
         self.__timber.log('GetTriviaControllersChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
