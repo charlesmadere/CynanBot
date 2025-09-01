@@ -243,7 +243,7 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
 
             if not successfullySent:
                 shouldRetry = sendAttempt == 0 and utils.isValidStr(chatMessage.replyMessageId)
-                self.__timber.log('TwitchChatMessenger', f'Failed to send chat message via ({chatMessage=}) ({text=}) ({len(text)=}) ({sendAttempt=}) ({response=}) ({sendAttempt=}) ({shouldRetry=})')
+                self.__timber.log('TwitchChatMessenger', f'Failed to send chat message via ({chatMessage=}) ({text=}) ({len(text)=}) ({sendAttempt=}) ({response=}) ({shouldRetry=})')
 
             sendAttempt += 1
 
