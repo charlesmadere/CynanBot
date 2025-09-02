@@ -1,7 +1,6 @@
 import math
 from typing import Final
 
-from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchCheerHandler import AbsTwitchCheerHandler
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ...chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -50,8 +49,6 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface | None] = triviaGameBuilder
         self.__triviaGameMachine: Final[TriviaGameMachineInterface | None] = triviaGameMachine
-
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __logCheer(self, cheerData: AbsTwitchCheerHandler.CheerData):
         self.__chatLogger.logCheer(
@@ -208,9 +205,3 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                 raidInfo = None,
             ),
         ))
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider

@@ -943,10 +943,10 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = Timeou
 
 twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
     activeChattersRepository = activeChattersRepository,
+    globalTwitchConstants = globalTwitchConstants,
     timber = timber,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     twitchApiService = twitchApiService,
-    twitchConstants = twitchUtils,
     twitchHandleProvider = authRepository,
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     userIdsRepository = userIdsRepository,
@@ -2229,7 +2229,7 @@ twitchCheerHandler: AbsTwitchCheerHandler = TwitchCheerHandler(
 
 twitchFollowHandler: AbsTwitchFollowHandler = TwitchFollowHandler(
     timber = timber,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
 )
 
 twitchHypeTrainHandler: AbsTwitchHypeTrainHandler | None = None
@@ -2238,22 +2238,22 @@ twitchPollHandler: AbsTwitchPollHandler = TwitchPollHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     twitchApiService = twitchApiService,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 twitchPredictionHandler: AbsTwitchPredictionHandler = TwitchPredictionHandler(
     activeChattersRepository = activeChattersRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
-    twitchUtils = twitchUtils,
+    twitchChatMessenger = twitchChatMessenger,
     twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
-    websocketConnectionServer = websocketConnectionServer
+    websocketConnectionServer = websocketConnectionServer,
 )
 
 twitchRaidHandler: AbsTwitchRaidHandler = TwitchRaidHandler(
     chatLogger = chatLogger,
     streamAlertsManager = streamAlertsManager,
-    timber = timber
+    timber = timber,
 )
 
 twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHandler(
@@ -2262,11 +2262,11 @@ twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHand
     timber = timber,
     triviaGameBuilder = None,
     triviaGameMachine = None,
+    twitchChatMessenger = twitchChatMessenger,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchHandleProvider = authRepository,
     twitchTokensUtils = twitchTokensUtils,
-    twitchUtils = twitchUtils,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
 

@@ -7,7 +7,6 @@ from .api.models.twitchOutcome import TwitchOutcome
 from .api.models.twitchPredictionStatus import TwitchPredictionStatus
 from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from .api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
-from .configuration.twitchChannelProvider import TwitchChannelProvider
 from ..users.userInterface import UserInterface
 
 
@@ -35,8 +34,4 @@ class AbsTwitchPredictionHandler(ABC):
         user: UserInterface,
         dataBundle: TwitchWebsocketDataBundle,
     ):
-        pass
-
-    @abstractmethod
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         pass

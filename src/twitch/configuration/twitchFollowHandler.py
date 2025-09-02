@@ -1,6 +1,5 @@
 from typing import Final
 
-from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchFollowHandler import AbsTwitchFollowHandler
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
@@ -23,8 +22,6 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
 
         self.__timber: Final[TimberInterface] = timber
         self.__twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface | None] = twitchFollowingStatusRepository
-
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def onNewFollow(self, followData: AbsTwitchFollowHandler.FollowData):
         if not isinstance(followData, AbsTwitchFollowHandler.FollowData):
@@ -85,9 +82,3 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
             twitchChannelId = followData.twitchChannelId,
             userId = followData.followerUserId,
         )
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider

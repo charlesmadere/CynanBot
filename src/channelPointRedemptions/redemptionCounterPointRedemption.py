@@ -8,6 +8,7 @@ from ..redemptionCounter.helpers.redemptionCounterHelperInterface import Redempt
 from ..redemptionCounter.settings.redemptionCounterSettingsInterface import RedemptionCounterSettingsInterface
 from ..timber.timberInterface import TimberInterface
 from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
 from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -21,7 +22,7 @@ class RedemptionCounterPointRedemption(AbsChannelPointRedemption):
         redemptionCounterSettings: RedemptionCounterSettingsInterface,
         timber: TimberInterface,
         trollmojiHelper: TrollmojiHelperInterface,
-        twitchUtils: TwitchUtilsInterface
+        twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(redemptionCounterHelper, RedemptionCounterHelperInterface):
             raise TypeError(f'redemptionCounterHelper argument is malformed: \"{redemptionCounterHelper}\"')
@@ -31,14 +32,14 @@ class RedemptionCounterPointRedemption(AbsChannelPointRedemption):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
         self.__redemptionCounterHelper: Final[RedemptionCounterHelperInterface] = redemptionCounterHelper
         self.__redemptionCounterSettings: Final[RedemptionCounterSettingsInterface] = redemptionCounterSettings
         self.__timber: Final[TimberInterface] = timber
         self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
     async def handlePointRedemption(
         self,
@@ -79,9 +80,9 @@ class RedemptionCounterPointRedemption(AbsChannelPointRedemption):
         if utils.isValidStr(boosterPack.emote):
             suffixEmote = boosterPack.emote
 
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = f'{prefixEmote} @{twitchChannelPointsMessage.userName} has a new {result.counterName} count of {result.countStr}! {suffixEmote}'
+        self.__twitchChatMessenger.send(
+            text = f'{prefixEmote} @{twitchChannelPointsMessage.userName} has a new {result.counterName} count of {result.countStr}! {suffixEmote}',
+            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
         )
 
         self.__timber.log('RedemptionCounterPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')

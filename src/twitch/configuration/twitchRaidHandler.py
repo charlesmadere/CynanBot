@@ -1,6 +1,5 @@
 from typing import Final
 
-from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchRaidHandler import AbsTwitchRaidHandler
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ...chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -34,8 +33,6 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
-
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __buildRaidMessage(self, raidData: AbsTwitchRaidHandler.RaidData) -> str:
         # Not sure if I'll keep this method, but I wanted to try out some things that may work a
@@ -159,9 +156,3 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
                 ),
             ),
         ))
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider

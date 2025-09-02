@@ -1,13 +1,12 @@
 from typing import Final
 
-from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchPollHandler import AbsTwitchPollHandler
 from ..api.models.twitchPollChoice import TwitchPollChoice
 from ..api.models.twitchPollStatus import TwitchPollStatus
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..twitchUtilsInterface import TwitchUtilsInterface
+from ..chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ...misc import utils as utils
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
@@ -24,7 +23,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
@@ -32,15 +31,13 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
-
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
     async def __notifyChatOfPollResults(self, pollData: AbsTwitchPollHandler.PollData):
         user = pollData.user
@@ -54,10 +51,6 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         elif pollStatus is not TwitchPollStatus.COMPLETED:
             return
         elif pollData.subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_POLL_END:
-            return
-
-        twitchChannelProvider = self.__twitchChannelProvider
-        if twitchChannelProvider is None:
             return
 
         largestVoteCount = utils.getIntMinSafeSize()
@@ -82,7 +75,6 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             # edge case to handle a situation with a large number of ties
             return
 
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         votesString = winningPollChoices[0].votesStr
 
         votesPlurality: str
@@ -92,10 +84,16 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             votesPlurality = 'votes'
 
         if len(winningPollChoices) == 1:
-            await self.__twitchUtils.safeSend(twitchChannel, f'🗳️ The winner of the poll is \"{winningPollChoices[0].title}\", with {votesString} {votesPlurality}!')
+            self.__twitchChatMessenger.send(
+                text = f'🗳️ The winner of the poll is \"{winningPollChoices[0].title}\", with {votesString} {votesPlurality}!',
+                twitchChannelId = pollData.twitchChannelId,
+            )
             return
         elif len(winningPollChoices) == 2:
-            await self.__twitchUtils.safeSend(twitchChannel, f'🗳️ The poll winners are \"{winningPollChoices[0].title}\" and \"{winningPollChoices[1].title}\", with {votesString} {votesPlurality}!')
+            self.__twitchChatMessenger.send(
+                text = f'🗳️ The poll winners are \"{winningPollChoices[0].title}\" and \"{winningPollChoices[1].title}\", with {votesString} {votesPlurality}!',
+                twitchChannelId = pollData.twitchChannelId,
+            )
             return
 
         winningTitlesString = ''
@@ -107,7 +105,10 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             else:
                 winningTitlesString = f'{winningTitlesString}, \"{winningPollChoice.title}\"'
 
-        await self.__twitchUtils.safeSend(twitchChannel, f'🗳️ The poll winners are {winningTitlesString}, with {votesString} {votesPlurality}!')
+        self.__twitchChatMessenger.send(
+            text = f'🗳️ The poll winners are {winningTitlesString}, with {votesString} {votesPlurality}!',
+            twitchChannelId = pollData.twitchChannelId,
+        )
 
     async def __notifyChatOfPollStart(self, pollData: AbsTwitchPollHandler.PollData):
         user = pollData.user
@@ -200,9 +201,3 @@ class TwitchPollHandler(AbsTwitchPollHandler):
                 raidInfo = None,
             ),
         ))
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider

@@ -1,7 +1,6 @@
 import math
 from typing import Final
 
-from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchChatHandler import AbsTwitchChatHandler
 from ..api.models.twitchChatMessage import TwitchChatMessage
 from ..api.models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
@@ -57,8 +56,6 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface | None] = triviaGameBuilder
         self.__triviaGameMachine: Final[TriviaGameMachineInterface | None] = triviaGameMachine
-
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __logCheer(self, chatData: AbsTwitchChatHandler.ChatData):
         if chatData.cheer is None or chatData.cheer.bits < 1:
@@ -241,9 +238,3 @@ class TwitchChatHandler(AbsTwitchChatHandler):
                 purgedMessage = f'{purgedMessage} {fragment.text}'
 
         return utils.cleanStr(purgedMessage)
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider

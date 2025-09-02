@@ -9,7 +9,7 @@ from ..activeChatters.activeChattersRepositoryInterface import ActiveChattersRep
 from ..api.models.twitchBanRequest import TwitchBanRequest
 from ..api.models.twitchModUser import TwitchModUser
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..twitchConstantsInterface import TwitchConstantsInterface
+from ..globalTwitchConstants import GlobalTwitchConstants
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -22,24 +22,24 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
     def __init__(
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
+        globalTwitchConstants: GlobalTwitchConstants,
         timber: TimberInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
-        twitchConstants: TwitchConstantsInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface,
         userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(globalTwitchConstants, GlobalTwitchConstants):
+            raise TypeError(f'globalTwitchConstants argument is malformed: \"{globalTwitchConstants}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
-        elif not isinstance(twitchConstants, TwitchConstantsInterface):
-            raise TypeError(f'twitchConstants argument is malformed: \"{twitchConstants}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTimeoutRemodHelper, TwitchTimeoutRemodHelperInterface):
@@ -48,10 +48,10 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
+        self.__globalTwitchConstants: Final[GlobalTwitchConstants] = globalTwitchConstants
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
-        self.__twitchConstants: Final[TwitchConstantsInterface] = twitchConstants
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTimeoutRemodHelper: Final[TwitchTimeoutRemodHelperInterface] = twitchTimeoutRemodHelper
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
@@ -153,7 +153,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
     ) -> TwitchTimeoutResult:
         if not utils.isValidInt(durationSeconds):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
-        elif durationSeconds < 1 or durationSeconds > self.__twitchConstants.maxTimeoutSeconds:
+        elif durationSeconds < 1 or durationSeconds > self.__globalTwitchConstants.maxTimeoutSeconds:
             raise ValueError(f'durationSeconds argument is out of bounds: \"{durationSeconds}\"')
         elif reason is not None and not isinstance(reason, str):
             raise TypeError(f'reason argument is malformed: \"{reason}\"')
@@ -251,7 +251,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
     ) -> bool:
         if not utils.isValidInt(durationSeconds):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
-        elif durationSeconds < 1 or durationSeconds > self.__twitchConstants.maxTimeoutSeconds:
+        elif durationSeconds < 1 or durationSeconds > self.__globalTwitchConstants.maxTimeoutSeconds:
             raise ValueError(f'durationSeconds argument is out of bounds: \"{durationSeconds}\"')
         elif not utils.isValidStr(cynanBotUserId):
             raise TypeError(f'cynanBotUserId argument is malformed: \"{cynanBotUserId}\"')

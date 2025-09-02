@@ -7,7 +7,6 @@ from .api.models.twitchPollChoice import TwitchPollChoice
 from .api.models.twitchPollStatus import TwitchPollStatus
 from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from .api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
-from .configuration.twitchChannelProvider import TwitchChannelProvider
 from ..users.userInterface import UserInterface
 
 
@@ -33,8 +32,4 @@ class AbsTwitchPollHandler(ABC):
         user: UserInterface,
         dataBundle: TwitchWebsocketDataBundle,
     ):
-        pass
-
-    @abstractmethod
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         pass
