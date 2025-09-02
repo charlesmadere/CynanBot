@@ -1161,23 +1161,8 @@ class CynanBot(
             self.__twitchChannelPointRedemptionHandler.setTwitchChannelProvider(self)
             self.__twitchChannelPointRedemptionHandler.start()
 
-        if self.__twitchChatHandler is not None:
-            self.__twitchChatHandler.setTwitchChannelProvider(self)
-
-        if self.__twitchCheerHandler is not None:
-            self.__twitchCheerHandler.setTwitchChannelProvider(self)
-
         if self.__twitchHypeTrainHandler is not None:
             self.__twitchHypeTrainHandler.setTwitchChannelProvider(self)
-
-        if self.__twitchPredictionHandler is not None:
-            self.__twitchPredictionHandler.setTwitchChannelProvider(self)
-
-        if self.__twitchRaidHandler is not None:
-            self.__twitchRaidHandler.setTwitchChannelProvider(self)
-
-        if self.__twitchSubscriptionHandler is not None:
-            self.__twitchSubscriptionHandler.setTwitchChannelProvider(self)
 
         if self.__beanChanceCheerActionHelper is not None:
             self.__beanChanceCheerActionHelper.setTwitchChannelProvider(self)

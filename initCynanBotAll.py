@@ -3044,14 +3044,14 @@ websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnect
 
 redemptionCounterRepository: RedemptionCounterRepositoryInterface = RedemptionCounterRepository(
     backingDatabase = backingDatabase,
-    timber = timber
+    timber = timber,
 )
 
 redemptionCounterSettings: RedemptionCounterSettingsInterface = RedemptionCounterSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/redemptionCounterSettings.json'
-    )
+        fileName = '../config/redemptionCounterSettings.json',
+    ),
 )
 
 redemptionCounterHelper: RedemptionCounterHelperInterface = RedemptionCounterHelper(
@@ -3059,15 +3059,15 @@ redemptionCounterHelper: RedemptionCounterHelperInterface = RedemptionCounterHel
     redemptionCounterSettings = redemptionCounterSettings,
     timber = timber,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
-redemptionCounterPointRedemption: RedemptionCounterPointRedemption | None = RedemptionCounterPointRedemption(
+redemptionCounterPointRedemption = RedemptionCounterPointRedemption(
     redemptionCounterHelper = redemptionCounterHelper,
     redemptionCounterSettings = redemptionCounterSettings,
     timber = timber,
     trollmojiHelper = trollmojiHelper,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 
@@ -3133,15 +3133,15 @@ twitchPredictionHandler: AbsTwitchPredictionHandler = TwitchPredictionHandler(
     activeChattersRepository = activeChattersRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
-    twitchUtils = twitchUtils,
+    twitchChatMessenger = twitchChatMessenger,
     twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
-    websocketConnectionServer = websocketConnectionServer
+    websocketConnectionServer = websocketConnectionServer,
 )
 
 twitchRaidHandler: AbsTwitchRaidHandler = TwitchRaidHandler(
     chatLogger = chatLogger,
     streamAlertsManager = streamAlertsManager,
-    timber = timber
+    timber = timber,
 )
 
 twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHandler(
@@ -3150,11 +3150,11 @@ twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHand
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
     triviaGameMachine = triviaGameMachine,
+    twitchChatMessenger = twitchChatMessenger,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchHandleProvider = authRepository,
     twitchTokensUtils = twitchTokensUtils,
-    twitchUtils = twitchUtils,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
 

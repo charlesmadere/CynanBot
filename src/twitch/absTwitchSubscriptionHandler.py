@@ -8,7 +8,6 @@ from .api.models.twitchSubGift import TwitchSubGift
 from .api.models.twitchSubscriberTier import TwitchSubscriberTier
 from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from .api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
-from .configuration.twitchChannelProvider import TwitchChannelProvider
 from ..users.userInterface import UserInterface
 
 
@@ -43,8 +42,4 @@ class AbsTwitchSubscriptionHandler(ABC):
         user: UserInterface,
         dataBundle: TwitchWebsocketDataBundle,
     ):
-        pass
-
-    @abstractmethod
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         pass

@@ -2245,15 +2245,15 @@ twitchPredictionHandler: AbsTwitchPredictionHandler = TwitchPredictionHandler(
     activeChattersRepository = activeChattersRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
-    twitchUtils = twitchUtils,
+    twitchChatMessenger = twitchChatMessenger,
     twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
-    websocketConnectionServer = websocketConnectionServer
+    websocketConnectionServer = websocketConnectionServer,
 )
 
 twitchRaidHandler: AbsTwitchRaidHandler = TwitchRaidHandler(
     chatLogger = chatLogger,
     streamAlertsManager = streamAlertsManager,
-    timber = timber
+    timber = timber,
 )
 
 twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHandler(
@@ -2262,11 +2262,11 @@ twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHand
     timber = timber,
     triviaGameBuilder = None,
     triviaGameMachine = None,
+    twitchChatMessenger = twitchChatMessenger,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchHandleProvider = authRepository,
     twitchTokensUtils = twitchTokensUtils,
-    twitchUtils = twitchUtils,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
 

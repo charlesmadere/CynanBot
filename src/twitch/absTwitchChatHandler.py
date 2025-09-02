@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from .api.models.twitchChatMessage import TwitchChatMessage
 from .api.models.twitchCheerMetadata import TwitchCheerMetadata
 from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
-from .configuration.twitchChannelProvider import TwitchChannelProvider
 from ..users.userInterface import UserInterface
 
 
@@ -32,8 +31,4 @@ class AbsTwitchChatHandler(ABC):
         user: UserInterface,
         dataBundle: TwitchWebsocketDataBundle,
     ):
-        pass
-
-    @abstractmethod
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         pass

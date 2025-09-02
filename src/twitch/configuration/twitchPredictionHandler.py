@@ -5,9 +5,8 @@ from ..activeChatters.activeChattersRepositoryInterface import ActiveChattersRep
 from ..api.models.twitchPredictionStatus import TwitchPredictionStatus
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
-from ..configuration.twitchChannelProvider import TwitchChannelProvider
+from ..chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
-from ..twitchUtilsInterface import TwitchUtilsInterface
 from ...misc import utils as utils
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
@@ -26,16 +25,18 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         activeChattersRepository: ActiveChattersRepositoryInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
         websocketConnectionServer: WebsocketConnectionServerInterface,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
-        if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
             raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
         elif not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
@@ -44,21 +45,16 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchPredictionWebsocketUtils: Final[TwitchPredictionWebsocketUtilsInterface | None] = twitchPredictionWebsocketUtils
         self.__websocketConnectionServer: Final[WebsocketConnectionServerInterface] = websocketConnectionServer
 
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
-
     async def __notifyChatOfPredictionResults(self, predictionData: AbsTwitchPredictionHandler.PredictionData):
-        twitchChannelProvider = self.__twitchChannelProvider
         outcomes = predictionData.outcomes
         winningOutcomeId = predictionData.winningOutcomeId
         user = predictionData.user
 
-        if twitchChannelProvider is None:
-            return
-        elif not user.isNotifyOfPredictionResultsEnabled:
+        if not user.isNotifyOfPredictionResultsEnabled:
             return
         elif not utils.isValidStr(winningOutcomeId):
             return
@@ -92,8 +88,10 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
 
             outcomeString = outcomeString + f' {predictorPluralization} {topPredictorsString}!'
 
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
-        await self.__twitchUtils.safeSend(twitchChannel, outcomeString)
+        self.__twitchChatMessenger.send(
+            text = outcomeString,
+            twitchChannelId = predictionData.twitchChannelId,
+        )
 
     async def __notifyChatOfPredictionStart(self, predictionData: AbsTwitchPredictionHandler.PredictionData):
         user = predictionData.user
@@ -201,7 +199,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
                 for topPredictor in topPredictors:
                     userIdsToUserNames[topPredictor.userId] = topPredictor.userLogin
 
-        for userId, userName in userIdsToUserNames.values():
+        for userId, userName in userIdsToUserNames.items():
             await self.__activeChattersRepository.add(
                 chatterUserId = userId,
                 chatterUserName = userName,
@@ -234,9 +232,3 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
                 raidInfo = None,
             ),
         ))
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider
