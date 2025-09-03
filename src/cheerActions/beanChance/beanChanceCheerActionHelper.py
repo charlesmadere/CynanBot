@@ -1,4 +1,5 @@
 import random
+from typing import Final
 
 from frozendict import frozendict
 
@@ -12,9 +13,7 @@ from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import S
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...timber.timberInterface import TimberInterface
 from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
-from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
-from ...twitch.configuration.twitchMessageable import TwitchMessageable
-from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
+from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ...users.userInterface import UserInterface
 
 
@@ -26,7 +25,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
         trollmojiHelper: TrollmojiHelperInterface,
-        twitchUtils: TwitchUtilsInterface
+        twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(beanStatsRepository, BeanStatsRepositoryInterface):
             raise TypeError(f'beanStatsRepository argument is malformed: \"{beanStatsRepository}\"')
@@ -36,16 +35,14 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
-        self.__beanStatsRepository: BeanStatsRepositoryInterface = beanStatsRepository
-        self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
-        self.__timber: TimberInterface = timber
-        self.__trollmojiHelper: TrollmojiHelperInterface = trollmojiHelper
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
+        self.__beanStatsRepository: Final[BeanStatsRepositoryInterface] = beanStatsRepository
+        self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
+        self.__timber: Final[TimberInterface] = timber
+        self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
     async def __beanStatsToString(self, beanStats: ChatterBeanStats) -> str:
         if not isinstance(beanStats, ChatterBeanStats):
@@ -91,13 +88,10 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
         action = actions.get(bits, None)
-        twitchChannelProvider = self.__twitchChannelProvider
 
         if not isinstance(action, BeanChanceCheerAction):
             return False
         elif not action.isEnabled:
-            return False
-        elif twitchChannelProvider is None:
             return False
         else:
             return await self.__rollBeanChance(
@@ -106,8 +100,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
                 cheerUserName = cheerUserName,
                 twitchChannelId = twitchChannelId,
                 twitchChatMessageId = twitchChatMessageId,
-                twitchChannelProvider = twitchChannelProvider,
-                user = user
+                user = user,
             )
 
     async def __handleFailRoll(
@@ -118,8 +111,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         cheerUserName: str,
         twitchChannelId: str,
         twitchChatMessageId: str | None,
-        twitchChannel: TwitchMessageable,
-        user: UserInterface
+        user: UserInterface,
     ):
         self.__timber.log('BeanChanceCheerActionHelper', f'Attempt to bean by {cheerUserName}:{cheerUserId} in {user.handle} but got a bad roll ({randomNumber=}) ({action=})')
 
@@ -133,10 +125,10 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         beanStatsMessage = await self.__beanStatsToString(newBeanStats)
         emote = await self.__trollmojiHelper.getThumbsDownEmoteOrBackup()
 
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = f'{emote} Sorry, no 🫘! (you rolled a 🎲 {randomNumber} 🎲, but you needed a roll greater than or equal to {action.randomChance}) {beanStatsMessage}',
-            replyMessageId = twitchChatMessageId
+        self.__twitchChatMessenger.send(
+            text = f'{emote} Sorry, no 🫘! (you rolled a 🎲 {randomNumber} 🎲, but you needed a roll greater than or equal to {action.randomChance}) {beanStatsMessage}',
+            twitchChannelId = twitchChannelId,
+            replyMessageId = twitchChatMessageId,
         )
 
     async def __handleSuccessRoll(
@@ -147,8 +139,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         cheerUserName: str,
         twitchChannelId: str,
         twitchChatMessageId: str | None,
-        twitchChannel: TwitchMessageable,
-        user: UserInterface
+        user: UserInterface,
     ):
         self.__timber.log('BeanChanceCheerActionHelper', f'Successful bean by {cheerUserName}:{cheerUserId} in {user.handle} ({randomNumber=}) ({action=})')
 
@@ -162,10 +153,10 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         beanStatsMessage = await self.__beanStatsToString(newBeanStats)
         emote = await self.__trollmojiHelper.getHypeEmoteOrBackup()
 
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = f'{emote} 🫘 {emote} 🫘 {emote} {beanStatsMessage}',
-            replyMessageId = twitchChatMessageId
+        self.__twitchChatMessenger.send(
+            text = f'{emote} 🫘 {emote} 🫘 {emote} {beanStatsMessage}',
+            twitchChannelId = twitchChannelId,
+            replyMessageId = twitchChatMessageId,
         )
 
         soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
@@ -178,10 +169,8 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
         cheerUserName: str,
         twitchChannelId: str,
         twitchChatMessageId: str | None,
-        twitchChannelProvider: TwitchChannelProvider,
         user: UserInterface
     ) -> bool:
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         randomNumber = int(round(random.random() * float(100)))
 
         if randomNumber < action.randomChance:
@@ -192,8 +181,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
                 cheerUserName = cheerUserName,
                 twitchChannelId = twitchChannelId,
                 twitchChatMessageId = twitchChatMessageId,
-                twitchChannel = twitchChannel,
-                user = user
+                user = user,
             )
 
             return False
@@ -205,14 +193,7 @@ class BeanChanceCheerActionHelper(BeanChanceCheerActionHelperInterface):
                 cheerUserName = cheerUserName,
                 twitchChannelId = twitchChannelId,
                 twitchChatMessageId = twitchChatMessageId,
-                twitchChannel = twitchChannel,
-                user = user
+                user = user,
             )
 
             return True
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider

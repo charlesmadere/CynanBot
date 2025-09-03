@@ -3,7 +3,6 @@ from typing import Collection
 
 from .soundAlert import SoundAlert
 from .soundPlayerPlaylist import SoundPlayerPlaylist
-from ..chatBand.chatBandInstrument import ChatBandInstrument
 
 
 class SoundPlayerManagerInterface(ABC):
@@ -11,14 +10,6 @@ class SoundPlayerManagerInterface(ABC):
     @property
     @abstractmethod
     def isLoadingOrPlaying(self) -> bool:
-        pass
-
-    @abstractmethod
-    async def playChatBandInstrument(
-        self,
-        instrument: ChatBandInstrument,
-        volume: int | None = None
-    ) -> bool:
         pass
 
     @abstractmethod

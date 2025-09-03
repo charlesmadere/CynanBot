@@ -19,15 +19,15 @@ from ...language.languageEntry import LanguageEntry
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
+from ...timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
 from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ...twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
-from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
+from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ...twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from ...twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
 
@@ -41,14 +41,15 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         anivUserIdsRepository: AnivUserIdsRepositoryInterface,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface,
         timber: TimberInterface,
+        timeoutActionMachine: TimeoutActionMachineInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         trollmojiHelper: TrollmojiHelperInterface,
         twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(anivCopyMessageTimeoutScoreRepository, AnivCopyMessageTimeoutScoreRepositoryInterface):
@@ -61,6 +62,8 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
+            raise TypeError(f'timeoutActionMachine argument is malformed: \"{timeoutActionMachine}\"')
         elif not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
@@ -69,14 +72,14 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif not isinstance(twitchChannelEditorsRepository, TwitchChannelEditorsRepositoryInterface):
             raise TypeError(f'twitchChannelEditorsRepository argument is malformed: \"{twitchChannelEditorsRepository}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
             raise TypeError(f'twitchTimeoutHelper argument is malformed: \"{twitchTimeoutHelper}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
@@ -85,17 +88,16 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         self.__anivUserIdsRepository: Final[AnivUserIdsRepositoryInterface] = anivUserIdsRepository
         self.__mostRecentAnivMessageRepository: Final[MostRecentAnivMessageRepositoryInterface] = mostRecentAnivMessageRepository
         self.__timber: Final[TimberInterface] = timber
+        self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
         self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
         self.__twitchChannelEditorsRepository: Final[TwitchChannelEditorsRepositoryInterface] = twitchChannelEditorsRepository
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = twitchTimeoutHelper
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
-
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def checkMessageAndMaybeTimeout(
         self,
@@ -124,13 +126,10 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             return False
 
         allAnivUsers = await self.__anivUserIdsRepository.getAllUsers()
-        allAnivUserIds = frozenset(allAnivUsers.values())
-
-        if chatterUserId in allAnivUserIds:
+        if chatterUserId in allAnivUsers.values():
             return False
 
         cleanedMessage = utils.cleanStr(chatterMessage)
-
         if not utils.isValidStr(cleanedMessage):
             return False
 
@@ -226,6 +225,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             timeoutScore = timeoutScore,
             timeoutData = timeoutData,
             chatterUserName = chatterUserName,
+            twitchChannelId = twitchChannelId,
             user = user,
         )
 
@@ -299,31 +299,20 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         timeoutScore: AnivCopyMessageTimeoutScore,
         timeoutData: AnivTimeoutData,
         chatterUserName: str,
+        twitchChannelId: str,
         user: UserInterface,
     ):
         if not user.isAnivMessageCopyTimeoutChatReportingEnabled:
             return
 
-        twitchChannelProvider = self.__twitchChannelProvider
-
-        if twitchChannelProvider is None:
-            return
-
         emote = await self.__trollmojiHelper.getGottemEmoteOrBackup()
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         timeoutScoreString = await self.__timeoutScoreToString(timeoutScore)
         msg = f'@{chatterUserName} {emote} {timeoutData.durationMessage} {emote} {timeoutScoreString}'
 
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = msg,
+        self.__twitchChatMessenger.send(
+            text = msg,
+            twitchChannelId = twitchChannelId,
         )
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider
 
     async def __timeoutScoreToString(self, timeoutScore: AnivCopyMessageTimeoutScore) -> str:
         statsString = f'{timeoutScore.dodgeScoreStr}D-{timeoutScore.timeoutScoreStr}T'

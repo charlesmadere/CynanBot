@@ -3,21 +3,12 @@ from typing import Collection
 from ..soundAlert import SoundAlert
 from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..soundPlayerPlaylist import SoundPlayerPlaylist
-from ...chatBand.chatBandInstrument import ChatBandInstrument
 
 
 class StubSoundPlayerManager(SoundPlayerManagerInterface):
 
     @property
     def isLoadingOrPlaying(self) -> bool:
-        # this method is intentionally empty
-        return False
-
-    async def playChatBandInstrument(
-        self,
-        instrument: ChatBandInstrument,
-        volume: int | None = None
-    ) -> bool:
         # this method is intentionally empty
         return False
 

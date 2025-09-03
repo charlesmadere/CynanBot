@@ -18,7 +18,6 @@ from ...misc.generalSettingsRepository import GeneralSettingsRepository
 from ...mostRecentChat.mostRecentChat import MostRecentChat
 from ...mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
-from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...twitch.configuration.twitchMessage import TwitchMessage
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
@@ -97,8 +96,6 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__ttsChatterChatAction: Final[AbsChatAction | None] = ttsChatterChatAction
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
         self.__voicemailChatAction: Final[VoicemailChatAction | None] = voicemailChatAction
-
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __handleAnivChatActions(
         self,
@@ -238,10 +235,3 @@ class ChatActionsManager(ChatActionsManagerInterface):
             user = user,
         ):
             return
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        if self.__voicemailChatAction is not None:
-            self.__voicemailChatAction.setTwitchChannelProvider(provider)

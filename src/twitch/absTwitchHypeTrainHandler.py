@@ -30,7 +30,3 @@ class AbsTwitchHypeTrainHandler(ABC):
         dataBundle: TwitchWebsocketDataBundle,
     ):
         pass
-
-    @abstractmethod
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        pass

@@ -7,7 +7,6 @@ from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..soundPlayerType import SoundPlayerType
 from ..stub.stubSoundPlayerManager import StubSoundPlayerManager
 from ..vlc.vlcSoundPlayerManager import VlcSoundPlayerManager
-from ...chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...misc.generalSettingsRepository import GeneralSettingsRepository
@@ -19,7 +18,6 @@ class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
@@ -27,8 +25,6 @@ class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif chatBandInstrumentSoundsRepository is not None and not isinstance(chatBandInstrumentSoundsRepository, ChatBandInstrumentSoundsRepositoryInterface):
-            raise TypeError(f'chatBandInstrumentSoundsRepository argument is malformed: \"{chatBandInstrumentSoundsRepository}\"')
         elif generalSettingsRepository is not None and not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
@@ -39,7 +35,6 @@ class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
-        self.__chatBandInstrumentSoundsRepository: Final[ChatBandInstrumentSoundsRepositoryInterface | None] = chatBandInstrumentSoundsRepository
         self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
         self.__soundPlayerSettingsRepository: Final[SoundPlayerSettingsRepositoryInterface] = soundPlayerSettingsRepository
         self.__timber: Final[TimberInterface] = timber
@@ -55,7 +50,6 @@ class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
             case SoundPlayerType.AUDIO_PLAYER:
                 return AudioPlayerSoundPlayerManager(
                     eventLoop = self.__backgroundTaskHelper.eventLoop,
-                    chatBandInstrumentSoundsRepository = self.__chatBandInstrumentSoundsRepository,
                     soundPlayerSettingsRepository = self.__soundPlayerSettingsRepository,
                     timber = self.__timber,
                     timeZoneRepository = self.__timeZoneRepository,
@@ -66,7 +60,6 @@ class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
 
             case SoundPlayerType.VLC:
                 return VlcSoundPlayerManager(
-                    chatBandInstrumentSoundsRepository = self.__chatBandInstrumentSoundsRepository,
                     soundPlayerSettingsRepository = self.__soundPlayerSettingsRepository,
                     timber = self.__timber,
                 )
