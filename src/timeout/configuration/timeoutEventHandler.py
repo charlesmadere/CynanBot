@@ -26,8 +26,8 @@ from ..models.events.noBananaInventoryAvailableTimeoutEvent import NoBananaInven
 from ..models.events.noBananaTargetAvailableTimeoutEvent import NoBananaTargetAvailableTimeoutEvent
 from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
+from ...aniv.models.anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
 from ...chatterInventory.models.chatterItemType import ChatterItemType
-from ...language.languageEntry import LanguageEntry
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
@@ -120,12 +120,12 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             )
 
         elif isinstance(event, CopyAnivMessageTimeoutEvent):
-            await self.__handleCopyAnyMessageTimeoutEvent(
+            await self.__handleCopyAnivMessageTimeoutEvent(
                 event = event,
             )
 
         elif isinstance(event, CopyAnivMessageTimeoutFailedTimeoutEvent):
-            await self.__handleCopyAnyMessageFailedTimeoutEvent(
+            await self.__handleCopyAnivMessageFailedTimeoutEvent(
                 event = event,
             )
 
@@ -353,23 +353,34 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         # this method is intentionally empty
         pass
 
-    async def __handleCopyAnyMessageTimeoutEvent(
+    async def __handleCopyAnivMessageTimeoutEvent(
         self,
         event: CopyAnivMessageTimeoutEvent,
     ):
+        def timeoutScoreToString(timeoutScore: AnivCopyMessageTimeoutScore) -> str:
+            statsString = f'{timeoutScore.dodgeScoreStr}D-{timeoutScore.timeoutScoreStr}T'
 
+            dodgePercentString: str
+            if timeoutScore.dodgeScore == 0:
+                dodgePercentString = f'0% dodge rate'
+            elif timeoutScore.timeoutScore == 0:
+                dodgePercentString = f'100% dodge rate'
+            else:
+                totalDodgesAndTimeouts = timeoutScore.dodgeScore + timeoutScore.timeoutScore
+                dodgePercent = round((float(timeoutScore.dodgeScore) / float(totalDodgesAndTimeouts)) * float(100), 2)
+                dodgePercentString = f'{dodgePercent}% dodge rate'
 
-        match event.user.defaultLanguage:
-            case LanguageEntry.SPANISH:
-                message = f'{event.timeoutDuration.secondsStr} de suspension por copiar un mensaje de {event.anivUserName}'
+            return f'({statsString}, {dodgePercentString})'
 
-            case _:
-                message = f'{event.timeoutDuration.message} timeout for copying an {event.anivUserName} message'
+        timeoutScoreString = timeoutScoreToString(event.copyMessageTimeoutScore)
+        msg = f'@{event.targetUserName} {event.ripBozoEmote} {event.timeoutDuration.message} {event.ripBozoEmote} {timeoutScoreString}'
 
-        # TODO
-        pass
+        self.__twitchChatMessenger.send(
+            text = msg,
+            twitchChannelId = event.twitchChannelId,
+        )
 
-    async def __handleCopyAnyMessageFailedTimeoutEvent(
+    async def __handleCopyAnivMessageFailedTimeoutEvent(
         self,
         event: CopyAnivMessageTimeoutFailedTimeoutEvent,
     ):
