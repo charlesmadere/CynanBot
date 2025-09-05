@@ -61,11 +61,10 @@ soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPla
 
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = SoundPlayerManagerProvider(
     backgroundTaskHelper = backgroundTaskHelper,
-    chatBandInstrumentSoundsRepository = chatBandInstrumentSoundsRepository,
     generalSettingsRepository = generalSettingsRepository,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 async def main():

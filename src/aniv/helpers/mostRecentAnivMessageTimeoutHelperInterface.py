@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from ...users.userInterface import UserInterface
 
 
@@ -15,8 +14,4 @@ class MostRecentAnivMessageTimeoutHelperInterface(ABC):
         twitchChannelId: str,
         user: UserInterface,
     ) -> bool:
-        pass
-
-    @abstractmethod
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         pass

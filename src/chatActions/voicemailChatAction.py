@@ -6,9 +6,8 @@ from .absChatAction import AbsChatAction
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..timber.timberInterface import TimberInterface
-from ..twitch.configuration.twitchChannelProvider import TwitchChannelProvider
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchMessage import TwitchMessage
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.userInterface import UserInterface
 from ..voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
 from ..voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
@@ -20,16 +19,16 @@ class VoicemailChatAction(AbsChatAction):
         self,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         voicemailHelper: VoicemailHelperInterface,
-        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
+        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(voicemailHelper, VoicemailHelperInterface):
             raise TypeError(f'voicemailHelper argument is malformed: \"{voicemailHelper}\"')
         elif not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
@@ -37,11 +36,9 @@ class VoicemailChatAction(AbsChatAction):
 
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__voicemailHelper: Final[VoicemailHelperInterface] = voicemailHelper
         self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
-
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def handleChat(
         self,
@@ -65,19 +62,12 @@ class VoicemailChatAction(AbsChatAction):
 
         voicemails = await self.__voicemailHelper.getAllForTargetUser(
             targetUserId = message.getAuthorId(),
-            twitchChannelId = await message.getTwitchChannelId()
+            twitchChannelId = await message.getTwitchChannelId(),
         )
 
         if len(voicemails) == 0:
             return False
 
-        twitchChannelProvider = self.__twitchChannelProvider
-
-        if twitchChannelProvider is None:
-            self.__timber.log('VoicemailChatAction', f'The TwitchChannelProvider instance has not yet been set! ({twitchChannelProvider=})')
-            return False
-
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
         voicemailsLenStr = locale.format_string("%d", len(voicemails), grouping = True)
 
         voicemailsPlurality: str
@@ -86,16 +76,10 @@ class VoicemailChatAction(AbsChatAction):
         else:
             voicemailsPlurality = 'voicemails'
 
-        await self.__twitchUtils.waitThenSend(
-            messageable = twitchChannel,
+        self.__twitchChatMessenger.send(
+            text = f'☎️ @{message.getAuthorName()} you\'ve got mail! Use the !playvoicemail command to play the message. You currently have {voicemailsLenStr} {voicemailsPlurality}.',
+            twitchChannelId = await message.getTwitchChannelId(),
             delaySeconds = 8,
-            message = f'☎️ @{message.getAuthorName()} you\'ve got mail! Use the !playvoicemail command to play the message. You currently have {voicemailsLenStr} {voicemailsPlurality}.'
         )
 
         return True
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider

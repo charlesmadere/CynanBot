@@ -49,6 +49,14 @@ from src.chatActions.ttsChatterChatAction import TtsChatterChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
+from src.chatterInventory.helpers.chatterInventoryHelper import ChatterInventoryHelper
+from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
+from src.chatterInventory.mappers.chatterInventoryMapper import ChatterInventoryMapper
+from src.chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
+from src.chatterInventory.repositories.chatterInventoryRepository import ChatterInventoryRepository
+from src.chatterInventory.repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
+from src.chatterInventory.settings.chatterInventorySettings import ChatterInventorySettings
+from src.chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from src.chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
 from src.chatterPreferredTts.helper.chatterPreferredTtsHelper import ChatterPreferredTtsHelper
 from src.chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
@@ -309,6 +317,14 @@ from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
 from src.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
 from src.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
+from src.timeout.idGenerator.timeoutIdGenerator import TimeoutIdGenerator
+from src.timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
+from src.timeout.machine.timeoutActionMachine import TimeoutActionMachine
+from src.timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
+from src.timeout.mappers.chatterTimeoutHistoryMapper import ChatterTimeoutHistoryMapper
+from src.timeout.mappers.chatterTimeoutHistoryMapperInterface import ChatterTimeoutHistoryMapperInterface
+from src.timeout.repositories.chatterTimeoutHistoryRepository import ChatterTimeoutHistoryRepository
+from src.timeout.repositories.chatterTimeoutHistoryRepositoryInterface import ChatterTimeoutHistoryRepositoryInterface
 from src.timeout.settings.timeoutActionSettings import TimeoutActionSettings
 from src.timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from src.timeout.timeoutActionHelper import TimeoutActionHelper
@@ -317,6 +333,10 @@ from src.timeout.timeoutActionHistoryRepository import TimeoutActionHistoryRepos
 from src.timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
 from src.timeout.timeoutActionJsonMapper import TimeoutActionJsonMapper
 from src.timeout.timeoutActionJsonMapperInterface import TimeoutActionJsonMapperInterface
+from src.timeout.useCases.calculateTimeoutDurationUseCase import CalculateTimeoutDurationUseCase
+from src.timeout.useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
+from src.timeout.useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
+from src.timeout.useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
 from src.trollmoji.trollmojiHelper import TrollmojiHelper
 from src.trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepository
@@ -529,42 +549,43 @@ timber: TimberInterface = Timber(
 )
 
 networkJsonMapper: NetworkJsonMapperInterface = NetworkJsonMapper()
+
 soundPlayerJsonMapper: SoundPlayerJsonMapperInterface = SoundPlayerJsonMapper()
+
 storageJsonMapper: StorageJsonMapperInterface = StorageJsonMapper()
 
 generalSettingsRepository = GeneralSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/generalSettingsRepository.json'
+        fileName = '../config/generalSettingsRepository.json',
     ),
     networkJsonMapper = networkJsonMapper,
     soundPlayerJsonMapper = soundPlayerJsonMapper,
-    storageJsonMapper = storageJsonMapper
+    storageJsonMapper = storageJsonMapper,
 )
 
 generalSettingsSnapshot = generalSettingsRepository.getAll()
 
 backingDatabase: BackingDatabase
 psqlCredentialsProvider: PsqlCredentialsProviderInterface | None = None
-
 match generalSettingsSnapshot.requireDatabaseType():
     case DatabaseType.POSTGRESQL:
         psqlCredentialsProvider = PsqlCredentialsProvider(
             credentialsJsonReader = JsonFileReader(
                 eventLoop = eventLoop,
-                fileName = '../config/psqlCredentials.json'
-            )
+                fileName = '../config/psqlCredentials.json',
+            ),
         )
 
         backingDatabase = PsqlBackingDatabase(
             eventLoop = eventLoop,
             psqlCredentialsProvider = psqlCredentialsProvider,
-            timber = timber
+            timber = timber,
         )
 
     case DatabaseType.SQLITE:
         backingDatabase = SqliteBackingDatabase(
-            eventLoop = eventLoop
+            eventLoop = eventLoop,
         )
 
     case _:
@@ -574,18 +595,18 @@ networkClientProvider: NetworkClientProvider
 match generalSettingsSnapshot.requireNetworkClientType():
     case NetworkClientType.AIOHTTP:
         aioHttpCookieJarProvider = AioHttpCookieJarProvider(
-            eventLoop = eventLoop
+            eventLoop = eventLoop,
         )
 
         networkClientProvider = AioHttpClientProvider(
             eventLoop = eventLoop,
             cookieJarProvider = aioHttpCookieJarProvider,
-            timber = timber
+            timber = timber,
         )
 
     case NetworkClientType.REQUESTS:
         networkClientProvider = RequestsClientProvider(
-            timber = timber
+            timber = timber,
         )
 
     case _:
@@ -941,42 +962,6 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = Timeou
     ),
 )
 
-twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
-    activeChattersRepository = activeChattersRepository,
-    globalTwitchConstants = globalTwitchConstants,
-    timber = timber,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    twitchApiService = twitchApiService,
-    twitchHandleProvider = authRepository,
-    twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
-    userIdsRepository = userIdsRepository,
-)
-
-googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-)
-
-googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-)
-
-googleJwtBuilder: GoogleJwtBuilderInterface = GoogleJwtBuilder(
-    googleCloudCredentialsProvider = authRepository,
-    googleJsonMapper = googleJsonMapper,
-    timeZoneRepository = timeZoneRepository,
-)
-
-googleApiService: GoogleApiServiceInterface = GoogleApiService(
-    googleApiAccessTokenStorage = googleApiAccessTokenStorage,
-    googleCloudProjectCredentialsProvider = authRepository,
-    googleJsonMapper = googleJsonMapper,
-    googleJwtBuilder = googleJwtBuilder,
-    networkClientProvider = networkClientProvider,
-    timber = timber
-)
-
 twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface = TwitchWebsocketAllowedUsersRepository(
     timber = timber,
     twitchTokensRepository = twitchTokensRepository,
@@ -1071,11 +1056,10 @@ soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = SoundPlayerR
 
 soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = SoundPlayerManagerProvider(
     backgroundTaskHelper = backgroundTaskHelper,
-    chatBandInstrumentSoundsRepository = None,
     generalSettingsRepository = generalSettingsRepository,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 
@@ -1167,6 +1151,11 @@ ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()
 
 ttsDirectoryProvider: TtsDirectoryProviderInterface = TtsDirectoryProvider()
 
+
+########################################
+## Glacial TTS initialization section ##
+########################################
+
 glacialTtsDataMapper: GlacialTtsDataMapperInterface = GlacialTtsDataMapper()
 
 glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface = GlacialTtsIdGenerator()
@@ -1182,8 +1171,13 @@ glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = GlacialTtsFileRetrie
     eventLoop = eventLoop,
     glacialTtsStorageRepository = glacialTtsStorageRepository,
     timber = timber,
-    ttsDirectoryProvider = ttsDirectoryProvider
+    ttsDirectoryProvider = ttsDirectoryProvider,
 )
+
+
+##############################################
+## Commodore SAM TTS initialization section ##
+##############################################
 
 commodoreSamSettingsRepository: CommodoreSamSettingsRepositoryInterface = CommodoreSamSettingsRepository(
     settingsJsonReader = JsonFileReader(
@@ -1220,6 +1214,11 @@ commodoreSamTtsManagerProvider: CommodoreSamTtsManagerProviderInterface = Commod
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
 )
+
+
+####################################
+## DECTalk initialization section ##
+####################################
 
 decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = DecTalkSettingsRepository(
     decTalkVoiceMapper = decTalkVoiceMapper,
@@ -1280,12 +1279,42 @@ unrestrictedDecTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface = Unre
     ttsSettingsRepository = ttsSettingsRepository,
 )
 
+
+###################################
+## Google initialization section ##
+###################################
+
+googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+googleJwtBuilder: GoogleJwtBuilderInterface = GoogleJwtBuilder(
+    googleCloudCredentialsProvider = authRepository,
+    googleJsonMapper = googleJsonMapper,
+    timeZoneRepository = timeZoneRepository,
+)
+
+googleApiService: GoogleApiServiceInterface = GoogleApiService(
+    googleApiAccessTokenStorage = googleApiAccessTokenStorage,
+    googleCloudProjectCredentialsProvider = authRepository,
+    googleJsonMapper = googleJsonMapper,
+    googleJwtBuilder = googleJwtBuilder,
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
+
 googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepository(
     googleJsonMapper = googleJsonMapper,
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/googleSettingsRepository.json'
-    )
+        fileName = '../config/googleSettingsRepository.json',
+    ),
 )
 
 googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
@@ -1322,6 +1351,11 @@ googleTtsManagerProvider: GoogleTtsManagerProviderInterface = GoogleTtsManagerPr
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
 )
+
+
+##########################################
+## Half-Life TTS initialization section ##
+##########################################
 
 halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettingsRepository(
     halfLifeJsonParser = halfLifeVoiceParser,
@@ -1361,6 +1395,11 @@ halfLifeTtsManagerProvider: HalfLifeTtsManagerProviderInterface = HalfLifeTtsMan
     timber = timber,
     ttsSettingsRepository = ttsSettingsRepository
 )
+
+
+##########################################
+## Microsoft TTS initialization section ##
+##########################################
 
 microsoftTtsSettingsRepository: MicrosoftTtsSettingsRepositoryInterface = MicrosoftTtsSettingsRepository(
     microsoftTtsJsonParser = microsoftTtsJsonParser,
@@ -1410,6 +1449,11 @@ microsoftTtsManagerProvider: MicrosoftTtsManagerProviderInterface = MicrosoftTts
     ttsSettingsRepository = ttsSettingsRepository
 )
 
+
+##############################################
+## Microsoft SAM TTS initialization section ##
+##############################################
+
 microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = MicrosoftSamSettingsRepository(
     microsoftSamJsonParser = microsoftSamJsonParser,
     settingsJsonReader = JsonFileReader(
@@ -1457,6 +1501,11 @@ microsoftSamTtsManagerProvider: MicrosoftSamTtsManagerProviderInterface = Micros
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
 )
+
+
+############################################
+## Stream Elements initialization section ##
+############################################
 
 streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiService(
     networkClientProvider = networkClientProvider,
@@ -1517,12 +1566,17 @@ streamElementsTtsManagerProvider: StreamElementsTtsManagerProviderInterface = St
     ttsSettingsRepository = ttsSettingsRepository
 )
 
+
+########################################
+## TTS Monster initialization section ##
+########################################
+
 ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/ttsMonsterSettingsRepository.json'
+        fileName = '../config/ttsMonsterSettingsRepository.json',
     ),
-    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
+    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper,
 )
 
 ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface = TtsMonsterTokensRepository(
@@ -1531,20 +1585,20 @@ ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface = TtsMonsterToke
     userIdsRepository = userIdsRepository,
     seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/ttsMonsterTokensRepositorySeedFile.json'
-    )
+        fileName = '../config/ttsMonsterTokensRepositorySeedFile.json',
+    ),
 )
 
 ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface = TtsMonsterPrivateApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
-    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
+    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper,
 )
 
 ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = TtsMonsterPrivateApiHelper(
     timber = timber,
     ttsMonsterPrivateApiService = ttsMonsterPrivateApiService,
-    ttsMonsterTokensRepository = ttsMonsterTokensRepository
+    ttsMonsterTokensRepository = ttsMonsterTokensRepository,
 )
 
 ttsMonsterMessageChunkParser: TtsMonsterMessageChunkParserInterface = TtsMonsterMessageChunkParser()
@@ -1555,12 +1609,12 @@ ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
     timber = timber,
     ttsMonsterMessageChunkParser = ttsMonsterMessageChunkParser,
     ttsMonsterPrivateApiHelper = ttsMonsterPrivateApiHelper,
-    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository
+    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
 )
 
 ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = TtsMonsterMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils
+    twitchMessageStringUtils = twitchMessageStringUtils,
 )
 
 ttsMonsterTtsManagerProvider: TtsMonsterTtsManagerProviderInterface = TtsMonsterTtsManagerProvider(
@@ -1571,8 +1625,13 @@ ttsMonsterTtsManagerProvider: TtsMonsterTtsManagerProviderInterface = TtsMonster
     ttsMonsterHelper = ttsMonsterHelper,
     ttsMonsterMessageCleaner = ttsMonsterMessageCleaner,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
 )
+
+
+###################################################
+## Composite TTS Provider initialization section ##
+###################################################
 
 compositeTtsManagerProvider: CompositeTtsManagerProviderInterface = CompositeTtsManagerProvider(
     backgroundTaskHelper = backgroundTaskHelper,
@@ -1591,14 +1650,188 @@ compositeTtsManagerProvider: CompositeTtsManagerProviderInterface = CompositeTts
 )
 
 
-#################################
-## aniv initialization section ##
-#################################
+##################################################
+## Stream Alerts Manager initialization section ##
+##################################################
+
+streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = StreamAlertsSettingsRepository(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/streamAlertsSettingsRepository.json',
+    ),
+)
+
+streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
+    backgroundTaskHelper = backgroundTaskHelper,
+    compositeTtsManagerProvider = compositeTtsManagerProvider,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
+    streamAlertsSettingsRepository = streamAlertsSettingsRepository,
+    timber = timber,
+)
+
+
+##########################################################
+## Chatter Inventory and Timeout initialization section ##
+##########################################################
+
+asplodieStatsPresenter: AsplodieStatsPresenter = AsplodieStatsPresenter()
+
+asplodieStatsRepository: AsplodieStatsRepositoryInterface = AsplodieStatsRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+)
+
+guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = GuaranteedTimeoutUsersRepository(
+    timber = timber,
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
+)
+
+timeoutActionJsonMapper: TimeoutActionJsonMapperInterface = TimeoutActionJsonMapper(
+    timber = timber,
+)
+
+timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = TimeoutActionHistoryRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeoutActionJsonMapper = timeoutActionJsonMapper,
+    timeZoneRepository = timeZoneRepository
+)
+
+twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
+    activeChattersRepository = activeChattersRepository,
+    globalTwitchConstants = globalTwitchConstants,
+    timber = timber,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    twitchApiService = twitchApiService,
+    twitchHandleProvider = authRepository,
+    twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
+    userIdsRepository = userIdsRepository,
+)
+
+timeoutActionSettings: TimeoutActionSettingsInterface = TimeoutActionSettings(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/timeoutActionSettings.json',
+    ),
+)
+
+timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
+    activeChattersRepository = activeChattersRepository,
+    asplodieStatsRepository = asplodieStatsRepository,
+    backgroundTaskHelper = backgroundTaskHelper,
+    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
+    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    timeoutActionHistoryRepository = timeoutActionHistoryRepository,
+    timeoutActionSettings = timeoutActionSettings,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    timeZoneRepository = timeZoneRepository,
+    trollmojiHelper = trollmojiHelper,
+    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchTimeoutHelper = twitchTimeoutHelper,
+    twitchUtils = twitchUtils,
+)
+
+chatterInventoryMapper: ChatterInventoryMapperInterface = ChatterInventoryMapper()
+
+chatterInventoryRepository: ChatterInventoryRepositoryInterface = ChatterInventoryRepository(
+    backingDatabase = backingDatabase,
+    chatterInventoryMapper = chatterInventoryMapper,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+chatterInventorySettings: ChatterInventorySettingsInterface = ChatterInventorySettings(
+    chatterInventoryMapper = chatterInventoryMapper,
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/chatterInventorySettings.json',
+    ),
+)
+
+chatterInventoryHelper: ChatterInventoryHelperInterface = ChatterInventoryHelper(
+    chatterInventoryRepository = chatterInventoryRepository,
+    chatterInventorySettings = chatterInventorySettings,
+    twitchTokensUtils = twitchTokensUtils,
+    userIdsRepository = userIdsRepository,
+)
+
+chatterTimeoutHistoryMapper: ChatterTimeoutHistoryMapperInterface = ChatterTimeoutHistoryMapper()
+
+chatterTimeoutHistoryRepository: ChatterTimeoutHistoryRepositoryInterface = ChatterTimeoutHistoryRepository(
+    backingDatabase = backingDatabase,
+    chatterTimeoutHistoryMapper = chatterTimeoutHistoryMapper,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+calculateTimeoutDurationUseCase = CalculateTimeoutDurationUseCase()
+
+determineAirStrikeTargetsUseCase = DetermineAirStrikeTargetsUseCase(
+    activeChattersRepository = activeChattersRepository,
+    timber = timber,
+    timeoutActionSettings = timeoutActionSettings,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    twitchTokensUtils = twitchTokensUtils,
+    userIdsRepository = userIdsRepository,
+)
+
+determineBananaTargetUseCase = DetermineBananaTargetUseCase(
+    chatterTimeoutHistoryRepository = chatterTimeoutHistoryRepository,
+    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
+    timber = timber,
+    timeoutActionSettings = timeoutActionSettings,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    timeZoneRepository = timeZoneRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils,
+    twitchTokensUtils = twitchTokensUtils,
+    userIdsRepository = userIdsRepository,
+)
+
+determineGrenadeTargetUseCase = DetermineGrenadeTargetUseCase(
+    activeChattersRepository = activeChattersRepository,
+    timber = timber,
+    timeoutActionSettings = timeoutActionSettings,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    twitchTokensUtils = twitchTokensUtils,
+    userIdsRepository = userIdsRepository,
+)
+
+timeoutIdGenerator: TimeoutIdGeneratorInterface = TimeoutIdGenerator()
 
 anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = AnivCopyMessageTimeoutScoreRepository(
     backingDatabase = backingDatabase,
     timeZoneRepository = timeZoneRepository,
 )
+
+timeoutActionMachine: TimeoutActionMachineInterface = TimeoutActionMachine(
+    activeChattersRepository = activeChattersRepository,
+    anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
+    asplodieStatsRepository = asplodieStatsRepository,
+    backgroundTaskHelper = backgroundTaskHelper,
+    calculateTimeoutDurationUseCase = calculateTimeoutDurationUseCase,
+    chatterInventoryHelper = chatterInventoryHelper,
+    chatterTimeoutHistoryRepository = chatterTimeoutHistoryRepository,
+    determineAirStrikeTargetsUseCase = determineAirStrikeTargetsUseCase,
+    determineBananaTargetUseCase = determineBananaTargetUseCase,
+    determineGrenadeTargetUseCase = determineGrenadeTargetUseCase,
+    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
+    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
+    timber = timber,
+    timeoutIdGenerator = timeoutIdGenerator,
+    trollmojiHelper = trollmojiHelper,
+    twitchTimeoutHelper = twitchTimeoutHelper,
+    twitchTokensUtils = twitchTokensUtils,
+    userIdsRepository = userIdsRepository,
+)
+
+
+#################################
+## aniv initialization section ##
+#################################
 
 anivSettings: AnivSettingsInterface = AnivSettings(
     settingsJsonReader = JsonFileReader(
@@ -1625,11 +1858,6 @@ anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
     timber = timber,
 )
 
-guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = GuaranteedTimeoutUsersRepository(
-    timber = timber,
-    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
-)
-
 mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = MostRecentAnivMessageRepository(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
@@ -1643,14 +1871,15 @@ if mostRecentAnivMessageRepository is not None:
         anivUserIdsRepository = anivUserIdsRepository,
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
         timber = timber,
+        timeoutActionMachine = timeoutActionMachine,
+        timeoutIdGenerator = timeoutIdGenerator,
         timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
         timeZoneRepository = timeZoneRepository,
         trollmojiHelper = trollmojiHelper,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+        twitchChatMessenger = twitchChatMessenger,
         twitchHandleProvider = authRepository,
-        twitchTimeoutHelper = twitchTimeoutHelper,
         twitchTokensRepository = twitchTokensRepository,
-        twitchUtils = twitchUtils,
         userIdsRepository = userIdsRepository,
     )
 
@@ -1730,26 +1959,6 @@ crowdControlActionHandler: CrowdControlActionHandler = BizhawkActionHandler(
 )
 
 
-##################################################
-## Stream Alerts Manager initialization section ##
-##################################################
-
-streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = StreamAlertsSettingsRepository(
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/streamAlertsSettingsRepository.json'
-    )
-)
-
-streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
-    backgroundTaskHelper = backgroundTaskHelper,
-    compositeTtsManagerProvider = compositeTtsManagerProvider,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    streamAlertsSettingsRepository = streamAlertsSettingsRepository,
-    timber = timber,
-)
-
-
 ########################################
 ## Translation initialization section ##
 ########################################
@@ -1783,19 +1992,7 @@ translationHelper: TranslationHelperInterface = TranslationHelper(
     deepLTranslationApi = deepLTranslationApi,
     googleTranslationApi = googleTranslationApi,
     languagesRepository = languagesRepository,
-    timber = timber
-)
-
-
-###########################################
-## Asplodie Stats initialization section ##
-###########################################
-
-asplodieStatsPresenter: AsplodieStatsPresenter = AsplodieStatsPresenter()
-
-asplodieStatsRepository: AsplodieStatsRepositoryInterface = AsplodieStatsRepository(
-    backingDatabase = backingDatabase,
-    timber = timber
+    timber = timber,
 )
 
 
@@ -1824,49 +2021,6 @@ recentGrenadeAttacksHelper: RecentGrenadeAttacksHelperInterface = RecentGrenadeA
     recentGrenadeAttacksSettingsRepository = recentGrenadeAttacksSettingsRepository,
     timeZoneRepository = timeZoneRepository,
     usersRepository = usersRepository
-)
-
-
-####################################
-## Timeout initialization section ##
-####################################
-
-timeoutActionJsonMapper: TimeoutActionJsonMapperInterface = TimeoutActionJsonMapper(
-    timber = timber
-)
-
-timeoutActionSettings: TimeoutActionSettingsInterface = TimeoutActionSettings(
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/timeoutActionSettings.json',
-    ),
-)
-
-timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = TimeoutActionHistoryRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    timeoutActionJsonMapper = timeoutActionJsonMapper,
-    timeZoneRepository = timeZoneRepository
-)
-
-timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
-    activeChattersRepository = activeChattersRepository,
-    asplodieStatsRepository = asplodieStatsRepository,
-    backgroundTaskHelper = backgroundTaskHelper,
-    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
-    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    streamAlertsManager = streamAlertsManager,
-    timber = timber,
-    timeoutActionHistoryRepository = timeoutActionHistoryRepository,
-    timeoutActionSettings = timeoutActionSettings,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    timeZoneRepository = timeZoneRepository,
-    trollmojiHelper = trollmojiHelper,
-    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchTimeoutHelper = twitchTimeoutHelper,
-    twitchUtils = twitchUtils,
 )
 
 
@@ -1902,9 +2056,9 @@ voicemailHelper: VoicemailHelperInterface = VoicemailHelper(
 voicemailChatAction = VoicemailChatAction(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
-    twitchUtils = twitchUtils,
+    twitchChatMessenger = twitchChatMessenger,
     voicemailHelper = voicemailHelper,
-    voicemailSettingsRepository = voicemailSettingsRepository
+    voicemailSettingsRepository = voicemailSettingsRepository,
 )
 
 voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheerActionHelper(
@@ -1955,7 +2109,7 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface = BeanChanceCh
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     trollmojiHelper = trollmojiHelper,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface = SoundAlertCheerActionHelper(
@@ -2368,7 +2522,7 @@ cynanBot = CynanBot(
     timber = timber,
     timeoutActionHelper = timeoutActionHelper,
     timeoutActionHistoryRepository = timeoutActionHistoryRepository,
-    timeoutActionMachine = None,
+    timeoutActionMachine = timeoutActionMachine,
     timeoutActionSettings = timeoutActionSettings,
     timeoutEventHandler = None,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,

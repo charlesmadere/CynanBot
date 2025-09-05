@@ -12,8 +12,6 @@ from ..soundAlert import SoundAlert
 from ..soundPlaybackFile import SoundPlaybackFile
 from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..soundPlayerPlaylist import SoundPlayerPlaylist
-from ...chatBand.chatBandInstrument import ChatBandInstrument
-from ...chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -22,14 +20,11 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
     def __init__(
         self,
-        chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
-        playbackLoopSleepTimeSeconds: float = 0.25
+        playbackLoopSleepTimeSeconds: float = 0.25,
     ):
-        if chatBandInstrumentSoundsRepository is not None and not isinstance(chatBandInstrumentSoundsRepository, ChatBandInstrumentSoundsRepositoryInterface):
-            raise TypeError(f'chatBandInstrumentSoundsRepository argument is malformed: \"{chatBandInstrumentSoundsRepository}\"')
-        elif not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
+        if not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -38,7 +33,6 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         elif playbackLoopSleepTimeSeconds < 0.25 or playbackLoopSleepTimeSeconds > 1:
             raise ValueError(f'playbackLoopSleepTimeSeconds argument is out of bounds: {playbackLoopSleepTimeSeconds}')
 
-        self.__chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface | None = chatBandInstrumentSoundsRepository
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
         self.__playbackLoopSleepTimeSeconds: float = playbackLoopSleepTimeSeconds
@@ -53,51 +47,6 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         mediaPlayer = self.__mediaPlayer
         return mediaPlayer is not None and mediaPlayer.isPlaying
-
-    async def playChatBandInstrument(
-        self,
-        instrument: ChatBandInstrument,
-        volume: int | None = None
-    ) -> bool:
-        if not isinstance(instrument, ChatBandInstrument):
-            raise TypeError(f'instrument argument is malformed: \"{instrument}\"')
-        elif volume is not None and not utils.isValidInt(volume):
-            raise TypeError(f'volume argument is malformed: \"{volume}\"')
-
-        chatBandInstrumentSoundsRepository = self.__chatBandInstrumentSoundsRepository
-
-        if chatBandInstrumentSoundsRepository is None:
-            self.__timber.log('VlcSoundPlayerManager', f'The ChatBandInstrumentSoundsRepository is not available in order to play the given chat band instrument ({instrument=})')
-            return False
-        elif not await self.__soundPlayerSettingsRepository.isEnabled():
-            return False
-        elif self.isLoadingOrPlaying:
-            self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
-            return False
-
-        filePath = await chatBandInstrumentSoundsRepository.getRandomSound(instrument)
-
-        if not utils.isValidStr(filePath):
-            self.__timber.log('VlcSoundPlayerManager', f'No file path available for chat band instrument ({instrument=}) ({filePath=})')
-            return False
-
-        playlistFiles: FrozenList[SoundPlaybackFile] = FrozenList()
-
-        playlistFiles.append(SoundPlaybackFile(
-            volume = None,
-            filePath = filePath
-        ))
-
-        playlistFiles.freeze()
-
-        playlist = SoundPlayerPlaylist(
-            playlistFiles = playlistFiles,
-            volume = volume
-        )
-
-        return await self.playPlaylist(
-            playlist = playlist
-        )
 
     async def playPlaylist(
         self,
