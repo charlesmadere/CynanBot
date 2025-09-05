@@ -368,7 +368,7 @@ class TestChatterInventoryMapper:
         assert result is ChatterItemType.CASSETTE_TAPE
 
     @pytest.mark.asyncio
-    async def test_parseItemType_withCassetteTapeStrings(self):
+    async def test_requireItemType_withCassetteTapeStrings(self):
         result = await self.mapper.requireItemType('cassette_tape')
         assert result is ChatterItemType.CASSETTE_TAPE
 
