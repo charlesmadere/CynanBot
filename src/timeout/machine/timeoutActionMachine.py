@@ -17,6 +17,7 @@ from ..models.actions.absTimeoutAction import AbsTimeoutAction
 from ..models.actions.airStrikeTimeoutAction import AirStrikeTimeoutAction
 from ..models.actions.bananaTimeoutAction import BananaTimeoutAction
 from ..models.actions.basicTimeoutAction import BasicTimeoutAction
+from ..models.actions.copyAnivMessageTimeoutAction import CopyAnivMessageTimeoutAction
 from ..models.actions.grenadeTimeoutAction import GrenadeTimeoutAction
 from ..models.airStrikeTimeoutTarget import AirStrikeTimeoutTarget
 from ..models.basicTimeoutTarget import BasicTimeoutTarget
@@ -28,6 +29,8 @@ from ..models.events.bananaTimeoutFailedTimeoutEvent import BananaTimeoutFailedT
 from ..models.events.basicTimeoutEvent import BasicTimeoutEvent
 from ..models.events.basicTimeoutFailedTimeoutEvent import BasicTimeoutFailedTimeoutEvent
 from ..models.events.basicTimeoutTargetUnavailableTimeoutEvent import BasicTimeoutTargetUnavailableTimeoutEvent
+from ..models.events.copyAnivMessageTimeoutEvent import CopyAnivMessageTimeoutEvent
+from ..models.events.copyAnivMessageTimeoutFailedTimeoutEvent import CopyAnivMessageTimeoutFailedTimeoutEvent
 from ..models.events.grenadeTimeoutEvent import GrenadeTimeoutEvent
 from ..models.events.grenadeTimeoutFailedTimeoutEvent import GrenadeTimeoutFailedTimeoutEvent
 from ..models.events.incorrectLiveStatusTimeoutEvent import IncorrectLiveStatusTimeoutEvent
@@ -43,6 +46,8 @@ from ..useCases.calculateTimeoutDurationUseCase import CalculateTimeoutDurationU
 from ..useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
 from ..useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
 from ..useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
+from ...aniv.repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
+    AnivCopyMessageTimeoutScoreRepositoryInterface
 from ...asplodieStats.models.asplodieStats import AsplodieStats
 from ...asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from ...chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
@@ -65,6 +70,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
     def __init__(
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
+        anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface,
         asplodieStatsRepository: AsplodieStatsRepositoryInterface,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         calculateTimeoutDurationUseCase: CalculateTimeoutDurationUseCase,
@@ -86,6 +92,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(anivCopyMessageTimeoutScoreRepository, AnivCopyMessageTimeoutScoreRepositoryInterface):
+            raise TypeError(f'anivCopyMessageTimeoutScoreRepository argument is malformed: \"{anivCopyMessageTimeoutScoreRepository}\"')
         elif not isinstance(asplodieStatsRepository, AsplodieStatsRepositoryInterface):
             raise TypeError(f'asplodieStatsRepository argument is malformed: \"{asplodieStatsRepository}\"')
         elif not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
@@ -128,6 +136,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
+        self.__anivCopyMessageTimeoutScoreRepository: Final[AnivCopyMessageTimeoutScoreRepositoryInterface] = anivCopyMessageTimeoutScoreRepository
         self.__asplodieStatsRepository: Final[AsplodieStatsRepositoryInterface] = asplodieStatsRepository
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCase] = calculateTimeoutDurationUseCase
@@ -440,6 +449,68 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             timeoutResult = timeoutResult,
         ))
 
+    async def __handleCopyAnivMessageTimeoutAction(self, action: CopyAnivMessageTimeoutAction):
+        if not isinstance(action, CopyAnivMessageTimeoutAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
+
+        if not await self.__verifyStreamLiveStatus(action):
+            await self.__submitEvent(IncorrectLiveStatusTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
+
+        anivUserName = await self.__requireUserName(
+            action = action,
+            chatterUserId = action.anivUserId,
+        )
+
+        targetUserName = await self.__requireUserName(
+            action = action,
+            chatterUserId = action.targetUserId,
+        )
+
+        timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
+            timeoutAction = action,
+        )
+
+        timeoutResult = await self.__twitchTimeoutHelper.timeout(
+            durationSeconds = timeoutDuration.seconds,
+            reason = f'{anivUserName} timeout for {timeoutDuration.message}',
+            twitchAccessToken = action.moderatorTwitchAccessToken,
+            twitchChannelAccessToken = action.userTwitchAccessToken,
+            twitchChannelId = action.twitchChannelId,
+            userIdToTimeout = action.targetUserId,
+            user = action.user,
+        )
+
+        if timeoutResult is not TwitchTimeoutResult.SUCCESS:
+            await self.__submitEvent(CopyAnivMessageTimeoutFailedTimeoutEvent(
+                originatingAction = action,
+                anivUserName = anivUserName,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+                targetUserName = targetUserName,
+                timeoutResult = timeoutResult,
+            ))
+            return
+
+        copyMessageTimeoutScore = await self.__anivCopyMessageTimeoutScoreRepository.incrementTimeoutScore(
+            timeoutDurationSeconds = timeoutDuration.seconds,
+            chatterUserId = action.targetUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        await self.__submitEvent(CopyAnivMessageTimeoutEvent(
+            copyMessageTimeoutScore = copyMessageTimeoutScore,
+            originatingAction = action,
+            timeoutDuration = timeoutDuration,
+            anivUserName = anivUserName,
+            eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup(),
+            targetUserName = targetUserName,
+            timeoutResult = timeoutResult,
+        ))
+
     async def __handleGrenadeTimeoutAction(self, action: GrenadeTimeoutAction):
         if not isinstance(action, GrenadeTimeoutAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
@@ -549,6 +620,9 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
 
         elif isinstance(action, BasicTimeoutAction):
             await self.__handleBasicTimeoutAction(action)
+
+        elif isinstance(action, CopyAnivMessageTimeoutAction):
+            await self.__handleCopyAnivMessageTimeoutAction(action)
 
         elif isinstance(action, GrenadeTimeoutAction):
             await self.__handleGrenadeTimeoutAction(action)

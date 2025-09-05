@@ -19,13 +19,16 @@ from ...language.languageEntry import LanguageEntry
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
+from ...timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
 from ...timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
+from ...timeout.models.absTimeoutDuration import AbsTimeoutDuration
+from ...timeout.models.actions.copyAnivMessageTimeoutAction import CopyAnivMessageTimeoutAction
+from ...timeout.models.randomExponentialTimeoutDuration import RandomExponentialTimeoutDuration
+from ...timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ...twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
-from ...twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
-from ...twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
@@ -42,13 +45,13 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface,
         timber: TimberInterface,
         timeoutActionMachine: TimeoutActionMachineInterface,
+        timeoutIdGenerator: TimeoutIdGeneratorInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         trollmojiHelper: TrollmojiHelperInterface,
         twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
-        twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
     ):
@@ -64,6 +67,8 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
             raise TypeError(f'timeoutActionMachine argument is malformed: \"{timeoutActionMachine}\"')
+        elif not isinstance(timeoutIdGenerator, TimeoutIdGeneratorInterface):
+            raise TypeError(f'timeoutIdGenerator argument is malformed: \"{timeoutIdGenerator}\"')
         elif not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
@@ -76,8 +81,6 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
-            raise TypeError(f'twitchTimeoutHelper argument is malformed: \"{twitchTimeoutHelper}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -89,13 +92,13 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         self.__mostRecentAnivMessageRepository: Final[MostRecentAnivMessageRepositoryInterface] = mostRecentAnivMessageRepository
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
+        self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
         self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
         self.__twitchChannelEditorsRepository: Final[TwitchChannelEditorsRepositoryInterface] = twitchChannelEditorsRepository
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
-        self.__twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = twitchTimeoutHelper
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
@@ -133,105 +136,94 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if not utils.isValidStr(cleanedMessage):
             return False
 
-        anivMessages = await self.__mostRecentAnivMessageRepository.get(
+        copiedAnivMessage = await self.__findMatchingCopiedAnivMessage(
+            cleanedMessage = cleanedMessage,
             twitchChannelId = twitchChannelId,
-        )
-
-        if len(anivMessages) == 0:
-            return False
-
-        validAnivMessages = await self.__trimToValidAnivMessagesOnly(
-            anivMessages = anivMessages,
             user = user,
         )
 
-        if len(validAnivMessages) == 0:
+        if copiedAnivMessage is None:
             return False
 
-        copiedAnivMessage: MostRecentAnivMessage | None = None
-
-        for validAnivMessage in validAnivMessages:
-            if validAnivMessage.message == cleanedMessage:
-                copiedAnivMessage = validAnivMessage
-                break
-
-        if copiedAnivMessage is None:
+        anivUserId = allAnivUsers.get(copiedAnivMessage.whichAnivUser, None)
+        if not utils.isValidStr(anivUserId):
+            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, failed to fetch user ID for {copiedAnivMessage.whichAnivUser} when potentially trying to time out {chatterUserName}:{chatterUserId} for copying a message ({copiedAnivMessage=})')
             return False
 
         if await self.__isImmuneChatter(
             chatterUserId = chatterUserId,
             twitchChannelId = twitchChannelId,
         ):
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, not proceeding with potentially timing out {chatterUserId}:{chatterUserId}, as they are an immune editor ({copiedAnivMessage=})')
+            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, not proceeding with potentially timing out {chatterUserName}:{chatterUserId}, as they are an immune chatter ({copiedAnivMessage=})')
             return False
 
-        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
-        if not utils.isValidStr(twitchAccessToken):
+        userTwitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+            twitchChannelId = twitchChannelId,
+        )
+
+        if not utils.isValidStr(userTwitchAccessToken):
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, failed to fetch Twitch access token when potentially trying to time out {chatterUserName}:{chatterUserId} for copying a message ({copiedAnivMessage=})')
             return False
-
-        twitchChannelAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchChannelId)
-        if not utils.isValidStr(twitchChannelAccessToken):
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, failed to fetch Twitch channel access token when potentially trying to time out {chatterUserName}:{chatterUserId} for copying a message ({copiedAnivMessage=})')
-            return False
-
-        timeoutData = await self.__determineTimeoutData(user)
-
-        if timeoutData is None:
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, {chatterUserName}:{chatterUserId} got away with copying a message ({copiedAnivMessage=})')
-
+        elif not await self.__isTimeout(user):
             await self.__anivCopyMessageTimeoutScoreRepository.incrementDodgeScore(
                 chatterUserId = chatterUserId,
                 twitchChannelId = twitchChannelId,
             )
-
             return False
 
-        anivUserName = await self.__userIdsRepository.requireUserName(
-            userId = allAnivUsers[copiedAnivMessage.whichAnivUser],
-            twitchAccessToken = twitchAccessToken,
+        moderatorUserId = await self.__userIdsRepository.requireUserId(
+            userName = await self.__twitchHandleProvider.getTwitchHandle(),
+            twitchAccessToken = userTwitchAccessToken,
         )
 
-        reason = await self.__determineTimeoutReason(
-            timeoutData = timeoutData,
-            anivUserName = anivUserName,
+        moderatorTwitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
+            twitchChannelId = moderatorUserId,
+        )
+
+        timeoutDuration = await self.__determineTimeoutDuration(
             user = user,
         )
 
-        timeoutResult = await self.__twitchTimeoutHelper.timeout(
-            durationSeconds = timeoutData.durationSeconds,
-            reason = reason,
-            twitchAccessToken = twitchAccessToken,
-            twitchChannelAccessToken = twitchChannelAccessToken,
+        self.__timeoutActionMachine.submitAction(CopyAnivMessageTimeoutAction(
+            timeoutDuration = timeoutDuration,
+            actionId = await self.__timeoutIdGenerator.generateActionId(),
+            anivUserId = anivUserId,
+            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
+            moderatorUserId = moderatorUserId,
+            targetUserId = chatterUserId,
             twitchChannelId = twitchChannelId,
-            userIdToTimeout = chatterUserId,
+            userTwitchAccessToken = userTwitchAccessToken,
+            streamStatusRequirement = TimeoutStreamStatusRequirement.ANY,
             user = user,
-        )
-
-        if timeoutResult is not TwitchTimeoutResult.SUCCESS:
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, failed to timeout {chatterUserName}:{chatterUserId} for copying a message from aniv ({copiedAnivMessage=}) ({timeoutResult=})')
-            return False
-
-        timeoutScore = await self.__anivCopyMessageTimeoutScoreRepository.incrementTimeoutScore(
-            timeoutDurationSeconds = timeoutData.durationSeconds,
-            chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId,
-        )
-
-        self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, {chatterUserName}:{chatterUserId} was timed out for copying a message from aniv ({copiedAnivMessage=})')
-
-        await self.__ripBozoInChat(
-            timeoutScore = timeoutScore,
-            timeoutData = timeoutData,
-            chatterUserName = chatterUserName,
-            twitchChannelId = twitchChannelId,
-            user = user,
-        )
+            whichAnivUser = copiedAnivMessage.whichAnivUser,
+        ))
 
         return True
 
-    async def __determineTimeoutData(self, user: UserInterface) -> AnivTimeoutData | None:
+    async def __determineTimeoutDuration(
+        self,
+        user: UserInterface,
+    ) -> AbsTimeoutDuration:
+        timeoutScale = random.random()
+
+        minimumSeconds = user.anivMessageCopyTimeoutMinSeconds
+        if not utils.isValidInt(minimumSeconds):
+            minimumSeconds = await self.__anivSettings.getCopyMessageTimeoutSeconds()
+
+        maximumSeconds = user.anivMessageCopyTimeoutMaxSeconds
+        if not utils.isValidInt(maximumSeconds):
+            maximumSeconds = await self.__anivSettings.getCopyMessageTimeoutMaxSeconds()
+
+        return RandomExponentialTimeoutDuration(
+            scale = timeoutScale,
+            maximumSeconds = maximumSeconds,
+            minimumSeconds = minimumSeconds,
+        )
+
+    async def __isTimeout(
+        self,
+        user: UserInterface,
+    ) -> bool:
         if not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
@@ -240,29 +232,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             timeoutProbability = await self.__anivSettings.getCopyMessageTimeoutProbability()
 
         randomNumber = random.random()
-        if randomNumber > timeoutProbability:
-            return None
-
-        minDurationSeconds = user.anivMessageCopyTimeoutMinSeconds
-        if not utils.isValidInt(minDurationSeconds):
-            minDurationSeconds = await self.__anivSettings.getCopyMessageTimeoutSeconds()
-
-        maxDurationSeconds = user.anivMessageCopyTimeoutMaxSeconds
-        if not utils.isValidInt(maxDurationSeconds):
-            maxDurationSeconds = await self.__anivSettings.getCopyMessageTimeoutMaxSeconds()
-
-        timeoutScale = random.random()
-        minFloat = float(minDurationSeconds)
-        maxFloat = float(maxDurationSeconds)
-        durationSeconds = int(round(pow(timeoutScale, 9) * (maxFloat - minFloat) + minFloat))
-
-        return AnivTimeoutData(
-            randomNumber = randomNumber,
-            timeoutScale = timeoutScale,
-            timeoutProbability = timeoutProbability,
-            durationSeconds = durationSeconds,
-            durationMessage = utils.secondsToDurationMessage(durationSeconds),
-        )
+        return randomNumber > timeoutProbability
 
     async def __determineTimeoutReason(
         self,
@@ -276,6 +246,33 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
             case _:
                 return f'{timeoutData.durationMessage} timeout for copying an {anivUserName} message'
+
+    async def __findMatchingCopiedAnivMessage(
+        self,
+        cleanedMessage: str,
+        twitchChannelId: str,
+        user: UserInterface,
+    ) -> MostRecentAnivMessage | None:
+        anivMessages = await self.__mostRecentAnivMessageRepository.get(
+            twitchChannelId = twitchChannelId,
+        )
+
+        if len(anivMessages) == 0:
+            return None
+
+        validAnivMessages = await self.__trimToValidAnivMessagesOnly(
+            anivMessages = anivMessages,
+            user = user,
+        )
+
+        if len(validAnivMessages) == 0:
+            return None
+
+        for validAnivMessage in validAnivMessages:
+            if validAnivMessage.message == cleanedMessage:
+                return validAnivMessage
+
+        return None
 
     async def __isImmuneChatter(
         self,

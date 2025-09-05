@@ -1174,7 +1174,6 @@ class CynanBot(
             self.__timeoutActionHelper.start()
 
         if self.__timeoutEventHandler is not None:
-            self.__timeoutEventHandler.setTwitchChannelProvider(self)
             self.__timeoutEventHandler.setTwitchConnectionReadinessProvider(self)
 
         if self.__timeoutActionMachine is not None:

@@ -1679,8 +1679,14 @@ determineGrenadeTargetUseCase = DetermineGrenadeTargetUseCase(
 
 timeoutIdGenerator: TimeoutIdGeneratorInterface = TimeoutIdGenerator()
 
+anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = AnivCopyMessageTimeoutScoreRepository(
+    backingDatabase = backingDatabase,
+    timeZoneRepository = timeZoneRepository,
+)
+
 timeoutActionMachine: TimeoutActionMachineInterface = TimeoutActionMachine(
     activeChattersRepository = activeChattersRepository,
+    anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
     asplodieStatsRepository = asplodieStatsRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     calculateTimeoutDurationUseCase = calculateTimeoutDurationUseCase,
@@ -1703,11 +1709,6 @@ timeoutActionMachine: TimeoutActionMachineInterface = TimeoutActionMachine(
 #################################
 ## aniv initialization section ##
 #################################
-
-anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = AnivCopyMessageTimeoutScoreRepository(
-    backingDatabase = backingDatabase,
-    timeZoneRepository = timeZoneRepository,
-)
 
 anivSettings: AnivSettingsInterface = AnivSettings(
     settingsJsonReader = JsonFileReader(
@@ -1748,13 +1749,13 @@ if mostRecentAnivMessageRepository is not None:
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
         timber = timber,
         timeoutActionMachine = timeoutActionMachine,
+        timeoutIdGenerator = timeoutIdGenerator,
         timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
         timeZoneRepository = timeZoneRepository,
         trollmojiHelper = trollmojiHelper,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
         twitchChatMessenger = twitchChatMessenger,
         twitchHandleProvider = authRepository,
-        twitchTimeoutHelper = twitchTimeoutHelper,
         twitchTokensRepository = twitchTokensRepository,
         userIdsRepository = userIdsRepository,
     )
