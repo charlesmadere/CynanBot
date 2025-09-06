@@ -2853,18 +2853,11 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerAction
 )
 
 airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheerActionHelper(
-    activeChattersRepository = activeChattersRepository,
-    backgroundTaskHelper = backgroundTaskHelper,
-    recentGrenadeAttacksHelper = recentGrenadeAttacksHelper,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
-    timeoutActionHelper = timeoutActionHelper,
+    timeoutActionMachine = timeoutActionMachine,
     timeoutActionSettings = timeoutActionSettings,
     timeoutCheerActionMapper = timeoutCheerActionMapper,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    trollmojiHelper = trollmojiHelper,
-    twitchMessageStringUtils = twitchMessageStringUtils,
-    twitchUtils = twitchUtils,
+    timeoutIdGenerator = timeoutIdGenerator,
 )
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
