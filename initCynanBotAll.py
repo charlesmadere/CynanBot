@@ -382,6 +382,8 @@ from src.supStreamer.supStreamerRepository import SupStreamerRepository
 from src.supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
+from src.timeout.configuration.absTimeoutEventHandler import AbsTimeoutEventHandler
+from src.timeout.configuration.timeoutEventHandler import TimeoutEventHandler
 from src.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
 from src.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from src.timeout.idGenerator.timeoutIdGenerator import TimeoutIdGenerator
@@ -2477,6 +2479,14 @@ timeoutActionMachine: TimeoutActionMachineInterface = TimeoutActionMachine(
     userIdsRepository = userIdsRepository,
 )
 
+timeoutEventHandler: AbsTimeoutEventHandler = TimeoutEventHandler(
+    backgroundTaskHelper = backgroundTaskHelper,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
+)
+
 
 #################################
 ## aniv initialization section ##
@@ -2522,9 +2532,7 @@ mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface 
     timeoutIdGenerator = timeoutIdGenerator,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     timeZoneRepository = timeZoneRepository,
-    trollmojiHelper = trollmojiHelper,
     twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-    twitchChatMessenger = twitchChatMessenger,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
@@ -3398,9 +3406,9 @@ cynanBot = CynanBot(
     timber = timber,
     timeoutActionHelper = timeoutActionHelper,
     timeoutActionHistoryRepository = timeoutActionHistoryRepository,
-    timeoutActionMachine = None,
+    timeoutActionMachine = timeoutActionMachine,
     timeoutActionSettings = timeoutActionSettings,
-    timeoutEventHandler = None,
+    timeoutEventHandler = timeoutEventHandler,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     timeZoneRepository = timeZoneRepository,
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
