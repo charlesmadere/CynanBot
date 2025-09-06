@@ -1900,15 +1900,8 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface = BeanChanceCh
 timeoutCheerActionMapper: TimeoutCheerActionMapper = TimeoutCheerActionMapper()
 
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerActionHelper(
-    activeChattersRepository = activeChattersRepository,
-    recentGrenadeAttacksHelper = recentGrenadeAttacksHelper,
-    timber = timber,
-    timeoutActionHelper = timeoutActionHelper,
-    timeoutActionSettings = timeoutActionSettings,
-    timeoutCheerActionMapper = timeoutCheerActionMapper,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
-    userIdsRepository = userIdsRepository,
+    timeoutActionMachine = timeoutActionMachine,
+    timeoutIdGenerator = timeoutIdGenerator,
 )
 
 airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheerActionHelper(
