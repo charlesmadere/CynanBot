@@ -1180,9 +1180,6 @@ class CynanBot(
             self.__timeoutActionMachine.setEventListener(self.__timeoutEventHandler)
             self.__timeoutActionMachine.start()
 
-        if self.__airStrikeCheerActionHelper is not None:
-            self.__airStrikeCheerActionHelper.setTwitchChannelProvider(self)
-
         if self.__twitchTimeoutRemodHelper is not None:
             self.__twitchTimeoutRemodHelper.start()
 
