@@ -26,7 +26,6 @@ from ..models.events.noBananaInventoryAvailableTimeoutEvent import NoBananaInven
 from ..models.events.noBananaTargetAvailableTimeoutEvent import NoBananaTargetAvailableTimeoutEvent
 from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
-from ...aniv.models.anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
 from ...chatterInventory.models.chatterItemType import ChatterItemType
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -357,26 +356,22 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         self,
         event: CopyAnivMessageTimeoutEvent,
     ):
-        def timeoutScoreToString(timeoutScore: AnivCopyMessageTimeoutScore) -> str:
-            statsString = f'{timeoutScore.dodgeScoreStr}D-{timeoutScore.timeoutScoreStr}T'
+        statsString = f'{event.copyMessageTimeoutScore.dodgeScoreStr}D-{event.copyMessageTimeoutScore.timeoutScoreStr}T'
 
-            dodgePercentString: str
-            if timeoutScore.dodgeScore == 0:
-                dodgePercentString = f'0% dodge rate'
-            elif timeoutScore.timeoutScore == 0:
-                dodgePercentString = f'100% dodge rate'
-            else:
-                totalDodgesAndTimeouts = timeoutScore.dodgeScore + timeoutScore.timeoutScore
-                dodgePercent = round((float(timeoutScore.dodgeScore) / float(totalDodgesAndTimeouts)) * float(100), 2)
-                dodgePercentString = f'{dodgePercent}% dodge rate'
+        dodgePercentString: str
+        if event.copyMessageTimeoutScore.dodgeScore == 0:
+            dodgePercentString = f'0% dodge rate'
+        elif event.copyMessageTimeoutScore.timeoutScore == 0:
+            dodgePercentString = f'100% dodge rate'
+        else:
+            totalDodgesAndTimeouts = event.copyMessageTimeoutScore.dodgeScore + event.copyMessageTimeoutScore.timeoutScore
+            dodgePercent = round((float(event.copyMessageTimeoutScore.dodgeScore) / float(totalDodgesAndTimeouts)) * float(100), 2)
+            dodgePercentString = f'{dodgePercent}% dodge rate'
 
-            return f'({statsString}, {dodgePercentString})'
-
-        timeoutScoreString = timeoutScoreToString(event.copyMessageTimeoutScore)
-        msg = f'@{event.targetUserName} {event.ripBozoEmote} {event.timeoutDuration.message} {event.ripBozoEmote} {timeoutScoreString}'
+        timeoutScoreString = f'({statsString}, {dodgePercentString})'
 
         self.__twitchChatMessenger.send(
-            text = msg,
+            text = f'@{event.targetUserName} {event.ripBozoEmote} {event.timeoutDuration.message} {event.ripBozoEmote} {timeoutScoreString}',
             twitchChannelId = event.twitchChannelId,
         )
 

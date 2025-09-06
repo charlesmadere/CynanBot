@@ -6,7 +6,6 @@ from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
-from ..models.anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
 from ..models.anivTimeoutData import AnivTimeoutData
 from ..models.mostRecentAnivMessage import MostRecentAnivMessage
 from ..repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
@@ -164,7 +163,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if not utils.isValidStr(userTwitchAccessToken):
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, failed to fetch Twitch access token when potentially trying to time out {chatterUserName}:{chatterUserId} for copying a message ({copiedAnivMessage=})')
             return False
-        elif not await self.__isTimeout(user):
+        elif not await self.__isTimeoutRoll(user):
             await self.__anivCopyMessageTimeoutScoreRepository.incrementDodgeScore(
                 chatterUserId = chatterUserId,
                 twitchChannelId = twitchChannelId,
@@ -220,7 +219,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             minimumSeconds = minimumSeconds,
         )
 
-    async def __isTimeout(
+    async def __isTimeoutRoll(
         self,
         user: UserInterface,
     ) -> bool:
@@ -290,41 +289,6 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             return True
         else:
             return False
-
-    async def __ripBozoInChat(
-        self,
-        timeoutScore: AnivCopyMessageTimeoutScore,
-        timeoutData: AnivTimeoutData,
-        chatterUserName: str,
-        twitchChannelId: str,
-        user: UserInterface,
-    ):
-        if not user.isAnivMessageCopyTimeoutChatReportingEnabled:
-            return
-
-        emote = await self.__trollmojiHelper.getGottemEmoteOrBackup()
-        timeoutScoreString = await self.__timeoutScoreToString(timeoutScore)
-        msg = f'@{chatterUserName} {emote} {timeoutData.durationMessage} {emote} {timeoutScoreString}'
-
-        self.__twitchChatMessenger.send(
-            text = msg,
-            twitchChannelId = twitchChannelId,
-        )
-
-    async def __timeoutScoreToString(self, timeoutScore: AnivCopyMessageTimeoutScore) -> str:
-        statsString = f'{timeoutScore.dodgeScoreStr}D-{timeoutScore.timeoutScoreStr}T'
-
-        dodgePercentString: str
-        if timeoutScore.dodgeScore == 0:
-            dodgePercentString = f'0% dodge rate'
-        elif timeoutScore.timeoutScore == 0:
-            dodgePercentString = f'100% dodge rate'
-        else:
-            totalDodgesAndTimeouts = timeoutScore.dodgeScore + timeoutScore.timeoutScore
-            dodgePercent = round((float(timeoutScore.dodgeScore) / float(totalDodgesAndTimeouts)) * float(100), 2)
-            dodgePercentString = f'{dodgePercent}% dodge rate'
-
-        return f'({statsString}, {dodgePercentString})'
 
     async def __trimToValidAnivMessagesOnly(
         self,
