@@ -16,10 +16,9 @@ class CalculateTimeoutDurationUseCase:
     ) -> int:
         maxFloat = float(timeoutDuration.maximumSeconds)
         minFloat = float(timeoutDuration.minimumSeconds)
-        timeoutScale = timeoutDuration.scale
         randomScale = random.random()
 
-        timeoutDurationSeconds = pow(randomScale, timeoutScale) * (maxFloat - minFloat) + minFloat
+        timeoutDurationSeconds = pow(randomScale, timeoutDuration.scale) * (maxFloat - minFloat) + minFloat
         return int(round(timeoutDurationSeconds))
 
     async def invoke(

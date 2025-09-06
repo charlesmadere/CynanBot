@@ -53,7 +53,6 @@ from ...asplodieStats.repository.asplodieStatsRepositoryInterface import Asplodi
 from ...chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from ...chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
 from ...chatterInventory.models.chatterItemType import ChatterItemType
-from ...language.languageEntry import LanguageEntry
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
@@ -475,14 +474,9 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             timeoutAction = action,
         )
 
-        if action.user.defaultLanguage is LanguageEntry.SPANISH:
-            timeoutReason = f'{timeoutDuration.secondsStr} de suspension por copiar un mensaje de {anivUserName}'
-        else:
-            timeoutReason = f'{timeoutDuration.message} timeout for copying an {anivUserName} message'
-
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
             durationSeconds = timeoutDuration.seconds,
-            reason = timeoutReason,
+            reason = f'⚠ {timeoutDuration.message} timeout for copying {anivUserName}',
             twitchAccessToken = action.moderatorTwitchAccessToken,
             twitchChannelAccessToken = action.userTwitchAccessToken,
             twitchChannelId = action.twitchChannelId,
