@@ -927,7 +927,8 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
             try:
                 while not self.__actionQueue.empty():
-                    actions.append(self.__actionQueue.get_nowait())
+                    action = self.__actionQueue.get_nowait()
+                    actions.append(action)
             except queue.Empty as e:
                 self.__timber.log('TriviaGameMachine', f'Encountered queue.Empty when building up actions list (queue size: {self.__actionQueue.qsize()}) ({len(actions)=}) ({actions=}): {e}', e)
 
