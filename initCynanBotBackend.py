@@ -600,6 +600,7 @@ match generalSettingsSnapshot.requireNetworkClientType():
 
     case _:
         raise RuntimeError(f'Unknown/misconfigured NetworkClientType: \"{generalSettingsSnapshot.requireNetworkClientType()}\"')
+
 authRepository = AuthRepository(
     authJsonReader = JsonFileReader(
         eventLoop = eventLoop,
