@@ -356,6 +356,9 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         self,
         event: CopyAnivMessageTimeoutEvent,
     ):
+        if not event.user.isAnivMessageCopyTimeoutChatReportingEnabled:
+            return
+
         statsString = f'{event.copyMessageTimeoutScore.dodgeScoreStr}D-{event.copyMessageTimeoutScore.timeoutScoreStr}T'
 
         dodgePercentString: str
