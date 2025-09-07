@@ -156,7 +156,7 @@ class TriviaEventHandler(AbsTriviaEventHandler):
             numberOfGamesRemoved = event.numberOfGamesRemoved,
         )
 
-        await self.__twitchChatMessenger.send(
+        self.__twitchChatMessenger.send(
             text = text,
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId
@@ -353,7 +353,7 @@ class TriviaEventHandler(AbsTriviaEventHandler):
         )
 
         if utils.isValidStr(toxicTriviaPunishmentPrompt):
-            await self.__twitchChatMessenger.send(
+            self.__twitchChatMessenger.send(
                 text = toxicTriviaPunishmentPrompt,
                 twitchChannelId = event.twitchChannelId,
                 replyMessageId = event.twitchChatMessageId,
@@ -376,7 +376,7 @@ class TriviaEventHandler(AbsTriviaEventHandler):
     ):
         twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
-        await self.__twitchChatMessenger.send(
+        self.__twitchChatMessenger.send(
             text = await self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
                 question = event.triviaQuestion,
                 emote = event.emote,
