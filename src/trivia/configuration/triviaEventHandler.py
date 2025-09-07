@@ -21,9 +21,8 @@ from ..events.wrongUserCheckAnswerTriviaEvent import WrongUserCheckAnswerTriviaE
 from ..triviaUtilsInterface import TriviaUtilsInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
-from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
+from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ...twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
-from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ...users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -33,24 +32,23 @@ class TriviaEventHandler(AbsTriviaEventHandler):
         self,
         timber: TimberInterface,
         triviaUtils: TriviaUtilsInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__timber: Final[TimberInterface] = timber
         self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
         self.__twitchConnectionReadinessProvider: TwitchConnectionReadinessProvider | None = None
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
@@ -59,11 +57,10 @@ class TriviaEventHandler(AbsTriviaEventHandler):
 
         self.__timber.log('TriviaEventHandler', f'Received new trivia event ({event=})')
 
-        twitchChannelProvider = self.__twitchChannelProvider
         twitchConnectionReadinessProvider = self.__twitchConnectionReadinessProvider
 
-        if twitchChannelProvider is None or twitchConnectionReadinessProvider is None:
-            self.__timber.log('TriviaEventHandler', f'Received new trivia event, but it won\'t be handled, as the twitchChannelProvider and/or twitchConnectionReadinessProvider instances have not been set ({event=}) ({twitchChannelProvider=}) ({twitchConnectionReadinessProvider=})')
+        if twitchConnectionReadinessProvider is None:
+            self.__timber.log('TriviaEventHandler', f'Received new trivia event, but it won\'t be handled, as the twitchChannelProvider and/or twitchConnectionReadinessProvider instances have not been set ({event=}) ({twitchConnectionReadinessProvider=})')
             return
 
         await twitchConnectionReadinessProvider.waitForReady()
@@ -71,97 +68,81 @@ class TriviaEventHandler(AbsTriviaEventHandler):
         if isinstance(event, ClearedSuperTriviaQueueTriviaEvent):
             await self.__handleClearedSuperTriviaQueueTriviaEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         elif isinstance(event, CorrectAnswerTriviaEvent):
             await self.__handleCorrectAnswerTriviaEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         elif isinstance(event, CorrectSuperAnswerTriviaEvent):
             await self.__handleCorrectSuperAnswerTriviaEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         elif isinstance(event, FailedToFetchQuestionTriviaEvent):
             await self.__handleFailedToFetchQuestionTriviaEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         elif isinstance(event, FailedToFetchQuestionSuperTriviaEvent):
             await self.__handleFailedToFetchQuestionSuperTriviaEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         elif isinstance(event, GameAlreadyInProgressTriviaEvent):
             await self.__handleGameAlreadyInProgressTriviaEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         elif isinstance(event, GameNotReadyCheckAnswerTriviaEvent):
             await self.__handleGameNotReadyCheckAnswerTriviaEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         elif isinstance(event, IncorrectAnswerTriviaEvent):
             await self.__handleIncorrectAnswerTriviaEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         elif isinstance(event, IncorrectSuperAnswerTriviaEvent):
             await self.__handleIncorrectSuperAnswerTriviaEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         elif isinstance(event, InvalidAnswerInputTriviaEvent):
             await self.__handleInvalidAnswerInputTriviaEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         elif isinstance(event, NewQueuedSuperTriviaGameEvent):
             await self.__handleNewQueuedSuperTriviaGameEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         elif isinstance(event, NewTriviaGameEvent):
             await self.__handleNewTriviaGameEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         elif isinstance(event, NewSuperTriviaGameEvent):
             await self.__handleNewSuperTriviaGameEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         elif isinstance(event, OutOfTimeTriviaEvent):
             await self.__handleOutOfTimeTriviaEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         elif isinstance(event, OutOfTimeSuperTriviaEvent):
             await self.__handleOutOfTimeSuperTriviaEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         elif isinstance(event, WrongUserCheckAnswerTriviaEvent):
             await self.__handleWrongUserCheckAnswerTriviaEvent(
                 event = event,
-                twitchChannelProvider = twitchChannelProvider
             )
 
         else:
@@ -170,29 +151,24 @@ class TriviaEventHandler(AbsTriviaEventHandler):
     async def __handleClearedSuperTriviaQueueTriviaEvent(
         self,
         event: ClearedSuperTriviaQueueTriviaEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
-
-        message = await self.__triviaUtils.getClearedSuperTriviaQueueMessage(
-            numberOfGamesRemoved = event.numberOfGamesRemoved
+        text = await self.__triviaUtils.getClearedSuperTriviaQueueMessage(
+            numberOfGamesRemoved = event.numberOfGamesRemoved,
         )
 
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = message,
+        await self.__twitchChatMessenger.send(
+            text = text,
+            twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId
         )
 
     async def __handleCorrectAnswerTriviaEvent(
         self,
         event: CorrectAnswerTriviaEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
         twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
-        message = await self.__triviaUtils.getCorrectAnswerReveal(
+        text = await self.__triviaUtils.getCorrectAnswerReveal(
             question = event.triviaQuestion,
             newCuteness = event.cutenessResult,
             celebratoryEmote = event.celebratoryTwitchEmote,
@@ -202,32 +178,33 @@ class TriviaEventHandler(AbsTriviaEventHandler):
             specialTriviaStatus = event.specialTriviaStatus
         )
 
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = message,
-            replyMessageId = event.twitchChatMessageId
+        self.__twitchChatMessenger.send(
+            text = text,
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
         )
 
     async def __handleFailedToFetchQuestionTriviaEvent(
         self,
         event: FailedToFetchQuestionTriviaEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
-        await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Unable to fetch trivia question')
+        self.__twitchChatMessenger.send(
+            text = f'⚠ Unable to fetch trivia question',
+            twitchChannelId = event.twitchChannelId,
+        )
 
     async def __handleFailedToFetchQuestionSuperTriviaEvent(
         self,
         event: FailedToFetchQuestionSuperTriviaEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
-        await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Unable to fetch super trivia question')
+        self.__twitchChatMessenger.send(
+            text = f'⚠ Unable to fetch super trivia question',
+            twitchChannelId = event.twitchChannelId,
+        )
 
     async def __handleGameAlreadyInProgressTriviaEvent(
         self,
         event: GameAlreadyInProgressTriviaEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
         # this is intentionally empty and currently has no intended use case
         pass
@@ -235,7 +212,6 @@ class TriviaEventHandler(AbsTriviaEventHandler):
     async def __handleGameNotReadyCheckAnswerTriviaEvent(
         self,
         event: GameNotReadyCheckAnswerTriviaEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
         # this is intentionally empty and currently has no intended use case
         pass
@@ -243,43 +219,41 @@ class TriviaEventHandler(AbsTriviaEventHandler):
     async def __handleOutOfTimeTriviaEvent(
         self,
         event: OutOfTimeTriviaEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
-
-        await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getOutOfTimeAnswerReveal(
+        text = await self.__triviaUtils.getOutOfTimeAnswerReveal(
             question = event.triviaQuestion,
             emote = event.emote,
             outOfTimeEmote = event.outOfTimeEmote,
             userNameThatRedeemed = event.userName,
             specialTriviaStatus = event.specialTriviaStatus
-        ))
+        )
+
+        self.__twitchChatMessenger.send(
+            text = text,
+            twitchChannelId = event.twitchChannelId,
+        )
 
     async def __handleIncorrectAnswerTriviaEvent(
         self,
         event: IncorrectAnswerTriviaEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
-
-        message = await self.__triviaUtils.getIncorrectAnswerReveal(
+        text = await self.__triviaUtils.getIncorrectAnswerReveal(
             question = event.triviaQuestion,
             emote = event.emote,
             userNameThatRedeemed = event.userName,
             wrongAnswerEmote = event.wrongAnswerEmote,
-            specialTriviaStatus = event.specialTriviaStatus
+            specialTriviaStatus = event.specialTriviaStatus,
         )
 
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = message,
-            replyMessageId = event.twitchChatMessageId
+        self.__twitchChatMessenger.send(
+            text = text,
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
         )
 
     async def __handleIncorrectSuperAnswerTriviaEvent(
         self,
         event: IncorrectSuperAnswerTriviaEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
         # this is intentionally empty and currently has no intended use case
         pass
@@ -287,27 +261,23 @@ class TriviaEventHandler(AbsTriviaEventHandler):
     async def __handleInvalidAnswerInputTriviaEvent(
         self,
         event: InvalidAnswerInputTriviaEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
-
-        message = await self.__triviaUtils.getInvalidAnswerInputPrompt(
+        text = await self.__triviaUtils.getInvalidAnswerInputPrompt(
             question = event.triviaQuestion,
             emote = event.emote,
             userNameThatRedeemed = event.userName,
-            specialTriviaStatus = event.specialTriviaStatus
+            specialTriviaStatus = event.specialTriviaStatus,
         )
 
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = message,
-            replyMessageId = event.twitchChatMessageId
+        self.__twitchChatMessenger.send(
+            text = text,
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
         )
 
     async def __handleNewQueuedSuperTriviaGameEvent(
         self,
         event: NewQueuedSuperTriviaGameEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
         # this is intentionally empty and currently has no intended use case
         pass
@@ -315,47 +285,51 @@ class TriviaEventHandler(AbsTriviaEventHandler):
     async def __handleNewTriviaGameEvent(
         self,
         event: NewTriviaGameEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
         twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
-        await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getTriviaGameQuestionPrompt(
+        text = await self.__triviaUtils.getTriviaGameQuestionPrompt(
             triviaQuestion = event.triviaQuestion,
             delaySeconds = event.secondsToLive,
             points = event.pointsForWinning,
             emote = event.emote,
             userNameThatRedeemed = event.userName,
             twitchUser = twitchUser,
-            specialTriviaStatus = event.specialTriviaStatus
-        ))
+            specialTriviaStatus = event.specialTriviaStatus,
+        )
+
+        self.__twitchChatMessenger.send(
+            text = text,
+            twitchChannelId = event.twitchChannelId,
+        )
 
     async def __handleNewSuperTriviaGameEvent(
         self,
         event: NewSuperTriviaGameEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
         twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
-        await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaGameQuestionPrompt(
+        text = await self.__triviaUtils.getSuperTriviaGameQuestionPrompt(
             triviaQuestion = event.triviaQuestion,
             delaySeconds = event.secondsToLive,
             points = event.pointsForWinning,
             emote = event.emote,
             twitchUser = twitchUser,
-            specialTriviaStatus = event.specialTriviaStatus
-        ))
+            specialTriviaStatus = event.specialTriviaStatus,
+        )
+
+        self.__twitchChatMessenger.send(
+            text = text,
+            twitchChannelId = event.twitchChannelId,
+        )
 
     async def __handleCorrectSuperAnswerTriviaEvent(
         self,
         event: CorrectSuperAnswerTriviaEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
         twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
-        message = await self.__triviaUtils.getSuperTriviaCorrectAnswerReveal(
+        text = await self.__triviaUtils.getSuperTriviaCorrectAnswerReveal(
             question = event.triviaQuestion,
             newCuteness = event.cutenessResult,
             points = event.pointsForWinning,
@@ -363,75 +337,83 @@ class TriviaEventHandler(AbsTriviaEventHandler):
             emote = event.emote,
             userName = event.userName,
             twitchUser = twitchUser,
-            specialTriviaStatus = event.specialTriviaStatus
+            specialTriviaStatus = event.specialTriviaStatus,
         )
 
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = message,
-            replyMessageId = event.twitchChatMessageId
+        self.__twitchChatMessenger.send(
+            text = text,
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
         )
 
         toxicTriviaPunishmentPrompt = await self.__triviaUtils.getToxicTriviaPunishmentMessage(
             toxicTriviaPunishmentResult = event.toxicTriviaPunishmentResult,
             emote = event.emote,
-            twitchUser = twitchUser
+            twitchUser = twitchUser,
         )
 
         if utils.isValidStr(toxicTriviaPunishmentPrompt):
-            await self.__twitchUtils.safeSend(twitchChannel, toxicTriviaPunishmentPrompt)
+            await self.__twitchChatMessenger.send(
+                text = toxicTriviaPunishmentPrompt,
+                twitchChannelId = event.twitchChannelId,
+                replyMessageId = event.twitchChatMessageId,
+            )
 
         launchpadPrompt = await self.__triviaUtils.getSuperTriviaLaunchpadPrompt(
-            remainingQueueSize = event.remainingQueueSize
+            remainingQueueSize = event.remainingQueueSize,
         )
 
         if utils.isValidStr(launchpadPrompt):
-            await self.__twitchUtils.safeSend(twitchChannel, launchpadPrompt)
+            self.__twitchChatMessenger.send(
+                text = launchpadPrompt,
+                twitchChannelId = event.twitchChannelId,
+                replyMessageId = event.twitchChatMessageId,
+            )
 
     async def __handleOutOfTimeSuperTriviaEvent(
         self,
         event: OutOfTimeSuperTriviaEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(event.twitchChannel)
         twitchUser = await self.__usersRepository.getUserAsync(event.twitchChannel)
 
-        await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
-            question = event.triviaQuestion,
-            emote = event.emote,
-            outOfTimeEmote = event.outOfTimeEmote,
-            specialTriviaStatus = event.specialTriviaStatus
-        ))
+        await self.__twitchChatMessenger.send(
+            text = await self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
+                question = event.triviaQuestion,
+                emote = event.emote,
+                outOfTimeEmote = event.outOfTimeEmote,
+                specialTriviaStatus = event.specialTriviaStatus,
+            ),
+            twitchChannelId = event.twitchChannelId,
+        )
 
         toxicTriviaPunishmentPrompt = await self.__triviaUtils.getToxicTriviaPunishmentMessage(
             toxicTriviaPunishmentResult = event.toxicTriviaPunishmentResult,
             emote = event.emote,
-            twitchUser = twitchUser
+            twitchUser = twitchUser,
         )
 
         if utils.isValidStr(toxicTriviaPunishmentPrompt):
-            await self.__twitchUtils.safeSend(twitchChannel, toxicTriviaPunishmentPrompt)
+            self.__twitchChatMessenger.send(
+                text = toxicTriviaPunishmentPrompt,
+                twitchChannelId = event.twitchChannelId,
+            )
 
         launchpadPrompt = await self.__triviaUtils.getSuperTriviaLaunchpadPrompt(
-            remainingQueueSize = event.remainingQueueSize
+            remainingQueueSize = event.remainingQueueSize,
         )
 
         if utils.isValidStr(launchpadPrompt):
-            await self.__twitchUtils.safeSend(twitchChannel, launchpadPrompt)
+            self.__twitchChatMessenger.send(
+                text = launchpadPrompt,
+                twitchChannelId = event.twitchChannelId,
+            )
 
     async def __handleWrongUserCheckAnswerTriviaEvent(
         self,
         event: WrongUserCheckAnswerTriviaEvent,
-        twitchChannelProvider: TwitchChannelProvider
     ):
         # this is intentionally empty and currently has no intended use case
         pass
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider
 
     def setTwitchConnectionReadinessProvider(self, provider: TwitchConnectionReadinessProvider | None):
         if provider is not None and not isinstance(provider, TwitchConnectionReadinessProvider):

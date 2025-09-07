@@ -1184,7 +1184,6 @@ class CynanBot(
             self.__twitchTimeoutRemodHelper.start()
 
         if self.__triviaEventHandler is not None:
-            self.__triviaEventHandler.setTwitchChannelProvider(self)
             self.__triviaEventHandler.setTwitchConnectionReadinessProvider(self)
 
         if self.__triviaGameMachine is not None:

@@ -2304,7 +2304,7 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
 triviaEventHandler: AbsTriviaEventHandler = TriviaEventHandler(
     timber = timber,
     triviaUtils = triviaUtils,
-    twitchUtils = twitchUtils,
+    twitchChatMessenger = twitchChatMessenger,
     usersRepository = usersRepository,
 )
 
