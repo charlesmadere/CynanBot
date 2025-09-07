@@ -10,8 +10,8 @@ from ..trivia.questions.triviaSource import TriviaSource
 from ..trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -25,7 +25,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
         triviaGameMachine: TriviaGameMachineInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         triviaUtils: TriviaUtilsInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
@@ -40,8 +40,8 @@ class SuperTriviaChatCommand(AbsChatCommand):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -51,7 +51,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
         self.__triviaGameMachine: Final[TriviaGameMachineInterface] = triviaGameMachine
         self.__triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = triviaSettingsRepository
         self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
@@ -83,9 +83,9 @@ class SuperTriviaChatCommand(AbsChatCommand):
                 numberOfGames = int(numberOfGamesStr)
             except Exception as e:
                 self.__timber.log('SuperTriviaChatCommand', f'Unable to convert the numberOfGamesStr argument into an int (given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}) ({numberOfGamesStr=}): {e}', e, traceback.format_exc())
-                await self.__twitchUtils.safeSend(
-                    messageable = ctx,
-                    message = f'⚠ Error converting the given count into an int. Example: !supertrivia 2',
+                self.__twitchChatMessenger.send(
+                    text = f'⚠ Error converting the given count into an int. Example: !supertrivia 2',
+                    twitchChannelId = await ctx.getTwitchChannelId(),
                     replyMessageId = await ctx.getMessageId(),
                 )
                 return
@@ -94,9 +94,9 @@ class SuperTriviaChatCommand(AbsChatCommand):
 
             if numberOfGames < 1 or numberOfGames > maxNumberOfGames:
                 self.__timber.log('SuperTriviaChatCommand', f'The numberOfGames argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} is out of bounds ({numberOfGames=}) ({numberOfGamesStr=})')
-                await self.__twitchUtils.safeSend(
-                    messageable = ctx,
-                    message = f'⚠ The given count is an unexpected number, please try again. Example: !supertrivia 2',
+                self.__twitchChatMessenger.send(
+                    text = f'⚠ The given count is an unexpected number, please try again. Example: !supertrivia 2',
+                    twitchChannelId = await ctx.getTwitchChannelId(),
                     replyMessageId = await ctx.getMessageId(),
                 )
                 return
@@ -125,7 +125,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
             return
 
         self.__triviaGameMachine.submitAction(startNewSuperTriviaGameAction)
-        self.__timber.log('SuperTriviaChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('SuperTriviaChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({numberOfGames=}) ({triviaSource=})')
 
     async def __stopForPrank(
         self,

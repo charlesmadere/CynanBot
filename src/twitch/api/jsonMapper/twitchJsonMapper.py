@@ -2363,7 +2363,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         dictionary: dict[str, Any] = {
             'broadcaster_id': chatRequest.broadcasterId,
             'message': chatRequest.message,
-            'sender_id': chatRequest.senderId
+            'sender_id': chatRequest.senderId,
         }
 
         if utils.isValidStr(chatRequest.replyParentMessageId):
