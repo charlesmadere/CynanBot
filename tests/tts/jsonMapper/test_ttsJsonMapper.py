@@ -25,6 +25,7 @@ class TestTtsJsonMapper:
         for ttsProvider in TtsProvider:
             serialized = await self.jsonMapper.asyncSerializeProvider(ttsProvider)
             parsed = await self.jsonMapper.asyncParseProvider(serialized)
+            assert parsed is not None
             assert parsed is ttsProvider
             parsedProviders.add(parsed)
 
