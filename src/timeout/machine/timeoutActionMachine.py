@@ -445,7 +445,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             target = timeoutTarget,
             timeoutDuration = timeoutDuration,
             eventId = await self.__timeoutIdGenerator.generateEventId(),
-            ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup(),
             timeoutResult = timeoutResult,
         ))
 
