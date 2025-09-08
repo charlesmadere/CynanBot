@@ -1,4 +1,3 @@
-import traceback
 from typing import Final
 
 from .absChatAction import AbsChatAction
@@ -8,11 +7,13 @@ from ..aniv.repositories.anivUserIdsRepositoryInterface import AnivUserIdsReposi
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..timber.timberInterface import TimberInterface
-from ..twitch.api.models.twitchBanRequest import TwitchBanRequest
-from ..twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
+from ..timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
+from ..timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
+from ..timeout.models.absTimeoutDuration import AbsTimeoutDuration
+from ..timeout.models.actions.basicTimeoutAction import BasicTimeoutAction
+from ..timeout.models.exactTimeoutDuration import ExactTimeoutDuration
+from ..timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ..twitch.configuration.twitchMessage import TwitchMessage
-from ..twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
@@ -26,10 +27,9 @@ class AnivCheckChatAction(AbsChatAction):
         anivContentScanner: AnivContentScannerInterface,
         anivUserIdsRepository: AnivUserIdsRepositoryInterface,
         timber: TimberInterface,
-        twitchApiService: TwitchApiServiceInterface,
-        twitchChatMessenger: TwitchChatMessengerInterface,
+        timeoutActionMachine: TimeoutActionMachineInterface,
+        timeoutIdGenerator: TimeoutIdGeneratorInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
-        twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         timeoutDurationSeconds: int = 30,
@@ -40,14 +40,12 @@ class AnivCheckChatAction(AbsChatAction):
             raise TypeError(f'anivUserIdsRepository argument is malformed: \"{anivUserIdsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchApiService, TwitchApiServiceInterface):
-            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
-        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
-            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
+        elif not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
+            raise TypeError(f'timeoutActionMachine argument is malformed: \"{timeoutActionMachine}\"')
+        elif not isinstance(timeoutIdGenerator, TimeoutIdGeneratorInterface):
+            raise TypeError(f'timeoutIdGenerator argument is malformed: \"{timeoutIdGenerator}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
-            raise TypeError(f'twitchTimeoutHelper argument is malformed: \"{twitchTimeoutHelper}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -60,10 +58,9 @@ class AnivCheckChatAction(AbsChatAction):
         self.__anivContentScanner: Final[AnivContentScannerInterface] = anivContentScanner
         self.__anivUserIdsRepository: Final[AnivUserIdsRepositoryInterface] = anivUserIdsRepository
         self.__timber: Final[TimberInterface] = timber
-        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
-        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
+        self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
-        self.__twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = twitchTimeoutHelper
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__timeoutDurationSeconds: Final[int] = timeoutDurationSeconds
@@ -91,38 +88,45 @@ class AnivCheckChatAction(AbsChatAction):
             return False
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
+        moderatorTwitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
 
-        if not utils.isValidStr(twitchAccessToken):
-            self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} ({whichAnivUser=}) for posting bad content (\"{message.getContent()}\") ({contentCode=}), but was unable to fetch a valid Twitch access token ({twitchAccessToken=}) for the bot user ({twitchHandle=})')
+        if not utils.isValidStr(moderatorTwitchAccessToken):
+            self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} ({whichAnivUser=}) for posting bad content (\"{message.getContent()}\") ({contentCode=}), but was unable to fetch a valid Twitch access token ({moderatorTwitchAccessToken=}) for the bot user ({twitchHandle=})')
             return False
 
-        twitchId = await self.__userIdsRepository.requireUserId(
-            userName = twitchHandle,
-            twitchAccessToken = twitchAccessToken,
-        )
-
-        banRequest = TwitchBanRequest(
-            duration = self.__timeoutDurationSeconds,
-            broadcasterUserId = await message.getTwitchChannelId(),
-            moderatorUserId = twitchId,
-            reason = f'Timed out for content code {contentCode}',
-            userIdToBan = message.getAuthorId(),
-        )
-
-        try:
-            await self.__twitchApiService.banUser(
-                twitchAccessToken = twitchAccessToken,
-                banRequest = banRequest,
-            )
-        except Exception as e:
-            self.__timber.log('AnivCheckChatAction', f'Failed to timeout {message.getAuthorName()} ({whichAnivUser=}) for posting bad content (\"{message.getContent()}\") ({contentCode=})', e, traceback.format_exc())
-            return False
-
-        self.__twitchChatMessenger.send(
-            text = f'ⓘ Timed out {message.getAuthorName()} for {self.__timeoutDurationSeconds} second(s) — {contentCode}',
+        userTwitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
             twitchChannelId = await message.getTwitchChannelId(),
         )
+
+        if not utils.isValidStr(userTwitchAccessToken):
+            self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} ({whichAnivUser=}) for posting bad content (\"{message.getContent()}\") ({contentCode=}), but was unable to fetch a valid Twitch access token ({userTwitchAccessToken=}) for this Twitch channel ({user=})')
+            return False
+
+        moderatorUserId = await self.__userIdsRepository.requireUserId(
+            userName = twitchHandle,
+            twitchAccessToken = moderatorTwitchAccessToken,
+        )
+
+        timeoutDuration: AbsTimeoutDuration = ExactTimeoutDuration(
+            seconds = self.__timeoutDurationSeconds,
+        )
+
+        self.__timeoutActionMachine.submitAction(BasicTimeoutAction(
+            timeoutDuration = timeoutDuration,
+            pointRedemption = None,
+            actionId = await self.__timeoutIdGenerator.generateActionId(),
+            chatMessage = f'ⓘ Briefly timed out @{message.getAuthorName()} — {contentCode}',
+            instigatorUserId = moderatorUserId,
+            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
+            moderatorUserId = moderatorUserId,
+            reason = f'Timed out for content code {contentCode}',
+            targetUserId = message.getAuthorId(),
+            twitchChannelId = await message.getTwitchChannelId(),
+            twitchChatMessageId = None,
+            userTwitchAccessToken = userTwitchAccessToken,
+            streamStatusRequirement = TimeoutStreamStatusRequirement.ANY,
+            user = user,
+        ))
 
         self.__timber.log('AnivCheckChatAction', f'Timed out {message.getAuthorName()} ({whichAnivUser=}) for {self.__timeoutDurationSeconds} second(s) due to posting bad content (\"{message.getContent()}\") ({contentCode=})')
 

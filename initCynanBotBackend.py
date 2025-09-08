@@ -1970,10 +1970,9 @@ anivCheckChatAction = AnivCheckChatAction(
     anivContentScanner = anivContentScanner,
     anivUserIdsRepository = anivUserIdsRepository,
     timber = timber,
-    twitchApiService = twitchApiService,
-    twitchChatMessenger = twitchChatMessenger,
+    timeoutActionMachine = timeoutActionMachine,
+    timeoutIdGenerator = timeoutIdGenerator,
     twitchHandleProvider = authRepository,
-    twitchTimeoutHelper = twitchTimeoutHelper,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
 )
