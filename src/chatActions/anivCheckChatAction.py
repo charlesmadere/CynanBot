@@ -10,11 +10,11 @@ from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..timber.timberInterface import TimberInterface
 from ..twitch.api.models.twitchBanRequest import TwitchBanRequest
 from ..twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
 
@@ -27,10 +27,10 @@ class AnivCheckChatAction(AbsChatAction):
         anivUserIdsRepository: AnivUserIdsRepositoryInterface,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         timeoutDurationSeconds: int = 30,
     ):
@@ -42,14 +42,14 @@ class AnivCheckChatAction(AbsChatAction):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
             raise TypeError(f'twitchTimeoutHelper argument is malformed: \"{twitchTimeoutHelper}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidInt(timeoutDurationSeconds):
@@ -61,10 +61,10 @@ class AnivCheckChatAction(AbsChatAction):
         self.__anivUserIdsRepository: Final[AnivUserIdsRepositoryInterface] = anivUserIdsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = twitchTimeoutHelper
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__timeoutDurationSeconds: Final[int] = timeoutDurationSeconds
 
@@ -106,7 +106,7 @@ class AnivCheckChatAction(AbsChatAction):
             duration = self.__timeoutDurationSeconds,
             broadcasterUserId = await message.getTwitchChannelId(),
             moderatorUserId = twitchId,
-            reason = f'{message.getAuthorName()} posted bad content ({contentCode})',
+            reason = f'Timed out for content code {contentCode}',
             userIdToBan = message.getAuthorId(),
         )
 
@@ -119,9 +119,9 @@ class AnivCheckChatAction(AbsChatAction):
             self.__timber.log('AnivCheckChatAction', f'Failed to timeout {message.getAuthorName()} ({whichAnivUser=}) for posting bad content (\"{message.getContent()}\") ({contentCode=})', e, traceback.format_exc())
             return False
 
-        await self.__twitchUtils.safeSend(
-            messageable = message.getChannel(),
-            message = f'ⓘ Timed out {message.getAuthorName()} for {self.__timeoutDurationSeconds} second(s) — {contentCode}',
+        self.__twitchChatMessenger.send(
+            text = f'ⓘ Timed out {message.getAuthorName()} for {self.__timeoutDurationSeconds} second(s) — {contentCode}',
+            twitchChannelId = await message.getTwitchChannelId(),
         )
 
         self.__timber.log('AnivCheckChatAction', f'Timed out {message.getAuthorName()} ({whichAnivUser=}) for {self.__timeoutDurationSeconds} second(s) due to posting bad content (\"{message.getContent()}\") ({contentCode=})')

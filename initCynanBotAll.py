@@ -2925,10 +2925,10 @@ anivCheckChatAction = AnivCheckChatAction(
     anivUserIdsRepository = anivUserIdsRepository,
     timber = timber,
     twitchApiService = twitchApiService,
+    twitchChatMessenger = twitchChatMessenger,
     twitchHandleProvider = authRepository,
     twitchTimeoutHelper = twitchTimeoutHelper,
     twitchTokensRepository = twitchTokensRepository,
-    twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository,
 )
 
