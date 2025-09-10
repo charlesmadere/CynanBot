@@ -155,7 +155,6 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             ignoreInventory = action.ignoreInventory,
             maxTimeoutTargets = itemDetails.maxTargets,
             minTimeoutTargets = itemDetails.minTargets,
-            pointRedemption = None,
             actionId = await self.__timeoutIdGenerator.generateActionId(),
             instigatorUserId = action.chatterUserId,
             moderatorTwitchAccessToken = tokensAndDetails.moderatorTwitchAccessToken,
@@ -192,7 +191,6 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             timeoutDuration = timeoutDuration,
             ignoreInventory = action.ignoreInventory,
             isRandomChanceEnabled = itemDetails.randomChanceEnabled,
-            pointRedemption = None,
             actionId = await self.__timeoutIdGenerator.generateActionId(),
             chatMessage = action.chatMessage,
             instigatorUserId = action.chatterUserId,
@@ -243,7 +241,6 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         self.__timeoutActionMachine.submitAction(GrenadeTimeoutAction(
             timeoutDuration = timeoutDuration,
             ignoreInventory = action.ignoreInventory,
-            pointRedemption = None,
             actionId = await self.__timeoutIdGenerator.generateActionId(),
             instigatorUserId = action.chatterUserId,
             moderatorTwitchAccessToken = tokensAndDetails.moderatorTwitchAccessToken,

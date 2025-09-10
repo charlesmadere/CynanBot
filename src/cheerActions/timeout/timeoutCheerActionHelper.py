@@ -90,7 +90,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
                 timeoutDuration = timeoutDuration,
                 ignoreInventory = True,
                 isRandomChanceEnabled = True,
-                pointRedemption = None,
                 actionId = actionId,
                 chatMessage = message,
                 instigatorUserId = cheerUserId,
@@ -106,7 +105,6 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
             timeoutAction = GrenadeTimeoutAction(
                 timeoutDuration = timeoutDuration,
                 ignoreInventory = True,
-                pointRedemption = None,
                 actionId = actionId,
                 instigatorUserId = cheerUserId,
                 moderatorTwitchAccessToken = moderatorTwitchAccessToken,

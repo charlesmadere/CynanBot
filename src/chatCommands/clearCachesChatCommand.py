@@ -28,10 +28,6 @@ from ..misc.authRepository import AuthRepository
 from ..misc.clearable import Clearable
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
-from ..recentGrenadeAttacks.repository.recentGrenadeAttacksRepositoryInterface import \
-    RecentGrenadeAttacksRepositoryInterface
-from ..recentGrenadeAttacks.settings.recentGrenadeAttacksSettingsRepositoryInterface import \
-    RecentGrenadeAttacksSettingsRepositoryInterface
 from ..soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
     SoundPlayerRandomizerHelperInterface
 from ..soundPlayerManager.settings.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
@@ -45,7 +41,6 @@ from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryIn
 from ..timber.timberInterface import TimberInterface
 from ..timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from ..timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
-from ..timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
 from ..trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
 from ..trivia.gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
@@ -112,8 +107,6 @@ class ClearCachesChatCommand(AbsChatCommand):
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
         openTriviaDatabaseSessionTokenRepository: OpenTriviaDatabaseSessionTokenRepositoryInterface | None,
         psqlCredentialsProvider: PsqlCredentialsProviderInterface | None,
-        recentGrenadeAttacksRepository: RecentGrenadeAttacksRepositoryInterface | None,
-        recentGrenadeAttacksSettingsRepository: RecentGrenadeAttacksSettingsRepositoryInterface | None,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface | None,
         streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface | None,
@@ -121,7 +114,6 @@ class ClearCachesChatCommand(AbsChatCommand):
         streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface | None,
         supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
-        timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface | None,
         timeoutActionSettings: TimeoutActionSettingsInterface | None,
         triviaGameControllersRepository: TriviaGameControllersRepositoryInterface | None,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface | None,
@@ -201,10 +193,6 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'openTriviaDatabaseSessionTokenRepository argument is malformed: \"{openTriviaDatabaseSessionTokenRepository}\"')
         elif psqlCredentialsProvider is not None and not isinstance(psqlCredentialsProvider, PsqlCredentialsProviderInterface):
             raise TypeError(f'psqlCredentialsProvider argument is malformed: \"{psqlCredentialsProvider}\"')
-        elif recentGrenadeAttacksRepository is not None and not isinstance(recentGrenadeAttacksRepository, RecentGrenadeAttacksRepositoryInterface):
-            raise TypeError(f'recentGrenadeAttacksRepository argument is malformed: \"{recentGrenadeAttacksRepository}\"')
-        elif recentGrenadeAttacksSettingsRepository is not None and not isinstance(recentGrenadeAttacksSettingsRepository, RecentGrenadeAttacksSettingsRepositoryInterface):
-            raise TypeError(f'recentGrenadeAttacksSettingsRepository argument is malformed: \"{recentGrenadeAttacksSettingsRepository}\"')
         elif soundPlayerRandomizerHelper is not None and not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
             raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
@@ -219,8 +207,6 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'supStreamerRepository argument is malformed: \"{supStreamerRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif timeoutActionHistoryRepository is not None and not isinstance(timeoutActionHistoryRepository, TimeoutActionHistoryRepositoryInterface):
-            raise TypeError(f'timeoutActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
         elif timeoutActionSettings is not None and not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
             raise TypeError(f'timeoutActionSettings argument is malformed: \"{timeoutActionSettings}\"')
         elif triviaGameControllersRepository is not None and not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
@@ -302,15 +288,12 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(mostRecentChatsRepository)
         self.__clearables.append(openTriviaDatabaseSessionTokenRepository)
         self.__clearables.append(psqlCredentialsProvider)
-        self.__clearables.append(recentGrenadeAttacksRepository)
-        self.__clearables.append(recentGrenadeAttacksSettingsRepository)
         self.__clearables.append(soundPlayerRandomizerHelper)
         self.__clearables.append(soundPlayerSettingsRepository)
         self.__clearables.append(streamAlertsSettingsRepository)
         self.__clearables.append(streamElementsSettingsRepository)
         self.__clearables.append(streamElementsUserKeyRepository)
         self.__clearables.append(supStreamerRepository)
-        self.__clearables.append(timeoutActionHistoryRepository)
         self.__clearables.append(timeoutActionSettings)
         self.__clearables.append(triviaGameControllersRepository)
         self.__clearables.append(triviaGameGlobalControllersRepository)

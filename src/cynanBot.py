@@ -38,7 +38,6 @@ from .chatCommands.addVoicemailCheerActionCommand import AddVoicemailCheerAction
 from .chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
 from .chatCommands.answerChatCommand import AnswerChatCommand
 from .chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
-from .chatCommands.availableGrenadesChatCommand import AvailableGrenadesChatCommand
 from .chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
 from .chatCommands.beanInstructionsChatCommand import BeanInstructionsChatCommand
 from .chatCommands.beanStatsChatCommand import BeanStatsChatCommand
@@ -153,11 +152,6 @@ from .misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from .misc.generalSettingsRepository import GeneralSettingsRepository
 from .mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
 from .pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
-from .recentGrenadeAttacks.helper.recentGrenadeAttacksHelperInterface import RecentGrenadeAttacksHelperInterface
-from .recentGrenadeAttacks.repository.recentGrenadeAttacksRepositoryInterface import \
-    RecentGrenadeAttacksRepositoryInterface
-from .recentGrenadeAttacks.settings.recentGrenadeAttacksSettingsRepositoryInterface import \
-    RecentGrenadeAttacksSettingsRepositoryInterface
 from .recurringActions.configuration.absRecurringActionsEventHandler import AbsRecurringActionsEventHandler
 from .recurringActions.recurringActionsHelperInterface import RecurringActionsHelperInterface
 from .recurringActions.recurringActionsMachineInterface import RecurringActionsMachineInterface
@@ -180,7 +174,6 @@ from .timeout.configuration.absTimeoutEventHandler import AbsTimeoutEventHandler
 from .timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from .timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
 from .timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
-from .timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
 from .trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from .trivia.banned.bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
@@ -349,9 +342,6 @@ class CynanBot(
         openTriviaDatabaseSessionTokenRepository: OpenTriviaDatabaseSessionTokenRepositoryInterface | None,
         pokepediaRepository: PokepediaRepositoryInterface | None,
         psqlCredentialsProvider: PsqlCredentialsProviderInterface | None,
-        recentGrenadeAttacksHelper: RecentGrenadeAttacksHelperInterface | None,
-        recentGrenadeAttacksRepository: RecentGrenadeAttacksRepositoryInterface | None,
-        recentGrenadeAttacksSettingsRepository: RecentGrenadeAttacksSettingsRepositoryInterface | None,
         recurringActionsEventHandler: AbsRecurringActionsEventHandler | None,
         recurringActionsHelper: RecurringActionsHelperInterface | None,
         recurringActionsMachine: RecurringActionsMachineInterface | None,
@@ -369,7 +359,6 @@ class CynanBot(
         streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface | None,
         supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
-        timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface | None,
         timeoutActionMachine: TimeoutActionMachineInterface | None,
         timeoutActionSettings: TimeoutActionSettingsInterface | None,
         timeoutEventHandler: AbsTimeoutEventHandler | None,
@@ -580,12 +569,6 @@ class CynanBot(
             raise TypeError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif psqlCredentialsProvider is not None and not isinstance(psqlCredentialsProvider, PsqlCredentialsProviderInterface):
             raise TypeError(f'psqlCredentialsProvider argument is malformed: \"{psqlCredentialsProvider}\"')
-        elif recentGrenadeAttacksHelper is not None and not isinstance(recentGrenadeAttacksHelper, RecentGrenadeAttacksHelperInterface):
-            raise TypeError(f'recentGrenadeAttacksHelper argument is malformed: \"{recentGrenadeAttacksHelper}\"')
-        elif recentGrenadeAttacksRepository is not None and not isinstance(recentGrenadeAttacksRepository, RecentGrenadeAttacksRepositoryInterface):
-            raise TypeError(f'recentGrenadeAttacksRepository argument is malformed: \"{recentGrenadeAttacksRepository}\"')
-        elif recentGrenadeAttacksSettingsRepository is not None and not isinstance(recentGrenadeAttacksSettingsRepository, RecentGrenadeAttacksSettingsRepositoryInterface):
-            raise TypeError(f'recentGrenadeAttacksSettingsRepository argument is malformed: \"{recentGrenadeAttacksSettingsRepository}\"')
         elif recurringActionsEventHandler is not None and not isinstance(recurringActionsEventHandler, AbsRecurringActionsEventHandler):
             raise TypeError(f'recurringActionsEventHandler argument is malformed: \"{recurringActionsEventHandler}\"')
         elif recurringActionsHelper is not None and not isinstance(recurringActionsHelper, RecurringActionsHelperInterface):
@@ -620,8 +603,6 @@ class CynanBot(
             raise TypeError(f'supStreamerRepository argument is malformed: \"{supStreamerRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif timeoutActionHistoryRepository is not None and not isinstance(timeoutActionHistoryRepository, TimeoutActionHistoryRepositoryInterface):
-            raise TypeError(f'timeoutActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
         elif timeoutActionMachine is not None and not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
             raise TypeError(f'timeoutActionMachine argument is malformed: \"{timeoutActionMachine}\"')
         elif timeoutActionSettings is not None and not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
@@ -787,7 +768,7 @@ class CynanBot(
 
         self.__addUserCommand: AbsChatCommand = AddUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
         self.__blueSkyCommand: AbsChatCommand = BlueSkyChatCommand(timber, twitchChatMessenger, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettings, asplodieStatsRepository, authRepository, bannedTriviaGameControllersRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, guaranteedTimeoutUsersRepository, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, recentGrenadeAttacksRepository, recentGrenadeAttacksSettingsRepository, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionHistoryRepository, timeoutActionSettings, triviaGameControllersRepository, triviaGameGlobalControllersRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsChatterRepository, ttsChatterSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchUtils, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, voicemailsRepository, voicemailSettingsRepository, weatherRepository, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettings, asplodieStatsRepository, authRepository, bannedTriviaGameControllersRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, guaranteedTimeoutUsersRepository, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionSettings, triviaGameControllersRepository, triviaGameGlobalControllersRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsChatterRepository, ttsChatterSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchUtils, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, voicemailsRepository, voicemailSettingsRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsChatCommand = CynanSourceChatCommand(timber, twitchUtils, usersRepository)
@@ -955,11 +936,6 @@ class CynanBot(
         else:
             self.__pkMonCommand: AbsChatCommand = PkMonChatCommand(pokepediaRepository, timber, twitchUtils, usersRepository)
             self.__pkMoveCommand: AbsChatCommand = PkMoveChatCommand(pokepediaRepository, timber, twitchUtils, usersRepository)
-
-        if recentGrenadeAttacksHelper is None or recentGrenadeAttacksRepository is None or recentGrenadeAttacksSettingsRepository is None:
-            self.__availableGrenadesCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__availableGrenadesCommand: AbsChatCommand = AvailableGrenadesChatCommand(recentGrenadeAttacksHelper, timber, twitchUtils, userIdsRepository, usersRepository)
 
         if starWarsQuotesRepository is None:
             self.__swQuoteCommand: AbsChatCommand = StubChatCommand()
@@ -1314,11 +1290,6 @@ class CynanBot(
     async def command_asplodiestats(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__asplodieStatsCommand.handleChatCommand(context)
-
-    @commands.command(name = 'availablegrenades', aliases = [ 'grenades' ])
-    async def command_availablegrenades(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__availableGrenadesCommand.handleChatCommand(context)
 
     @commands.command(name = 'bantriviaquestion', aliases = [ 'bantrivia' ])
     async def command_bantriviaquestion(self, ctx: Context):

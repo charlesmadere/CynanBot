@@ -5,7 +5,6 @@ from frozendict import frozendict
 from .airStrikeCheerAction import AirStrikeCheerAction
 from .airStrikeCheerActionHelperInterface import AirStrikeCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
-from ..timeout.timeoutCheerActionMapper import TimeoutCheerActionMapper
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
@@ -25,7 +24,6 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
         timber: TimberInterface,
         timeoutActionMachine: TimeoutActionMachineInterface,
         timeoutActionSettings: TimeoutActionSettingsInterface,
-        timeoutCheerActionMapper: TimeoutCheerActionMapper,
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
     ):
         if not isinstance(timber, TimberInterface):
@@ -34,15 +32,12 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
             raise TypeError(f'timeoutActionMachine argument is malformed: \"{timeoutActionMachine}\"')
         elif not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
             raise TypeError(f'timeoutActionSettings argument is malformed: \"{timeoutActionSettings}\"')
-        elif not isinstance(timeoutCheerActionMapper, TimeoutCheerActionMapper):
-            raise TypeError(f'timeoutCheerActionMapper argument is malformed: \"{timeoutCheerActionMapper}\"')
         elif not isinstance(timeoutIdGenerator, TimeoutIdGeneratorInterface):
             raise TypeError(f'timeoutIdGenerator argument is malformed: \"{timeoutIdGenerator}\"')
 
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
         self.__timeoutActionSettings: Final[TimeoutActionSettingsInterface] = timeoutActionSettings
-        self.__timeoutCheerActionMapper: Final[TimeoutCheerActionMapper] = timeoutCheerActionMapper
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
 
     async def handleAirStrikeCheerAction(
@@ -99,7 +94,6 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
             ignoreInventory = True,
             maxTimeoutTargets = action.maxTimeoutChatters,
             minTimeoutTargets = action.minTimeoutChatters,
-            pointRedemption = None,
             actionId = await self.__timeoutIdGenerator.generateActionId(),
             instigatorUserId = cheerUserId,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,

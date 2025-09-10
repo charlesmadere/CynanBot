@@ -109,7 +109,6 @@ from src.cheerActions.soundAlert.soundAlertCheerActionHelper import SoundAlertCh
 from src.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from src.cheerActions.timeout.timeoutCheerActionHelper import TimeoutCheerActionHelper
 from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
-from src.cheerActions.timeout.timeoutCheerActionMapper import TimeoutCheerActionMapper
 from src.cheerActions.voicemail.voicemailCheerActionHelper import VoicemailCheerActionHelper
 from src.cheerActions.voicemail.voicemailCheerActionHelperInterface import VoicemailCheerActionHelperInterface
 from src.commodoreSam.apiService.commodoreSamApiService import CommodoreSamApiService
@@ -301,17 +300,6 @@ from src.pkmn.pokepediaJsonMapper import PokepediaJsonMapper
 from src.pkmn.pokepediaJsonMapperInterface import PokepediaJsonMapperInterface
 from src.pkmn.pokepediaRepository import PokepediaRepository
 from src.pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
-from src.recentGrenadeAttacks.helper.recentGrenadeAttacksHelper import RecentGrenadeAttacksHelper
-from src.recentGrenadeAttacks.helper.recentGrenadeAttacksHelperInterface import RecentGrenadeAttacksHelperInterface
-from src.recentGrenadeAttacks.mapper.recentGrenadeAttacksMapper import RecentGrenadeAttacksMapper
-from src.recentGrenadeAttacks.mapper.recentGrenadeAttacksMapperInterface import RecentGrenadeAttacksMapperInterface
-from src.recentGrenadeAttacks.repository.recentGrenadeAttacksRepository import RecentGrenadeAttacksRepository
-from src.recentGrenadeAttacks.repository.recentGrenadeAttacksRepositoryInterface import \
-    RecentGrenadeAttacksRepositoryInterface
-from src.recentGrenadeAttacks.settings.recentGrenadeAttacksSettingsRepository import \
-    RecentGrenadeAttacksSettingsRepository
-from src.recentGrenadeAttacks.settings.recentGrenadeAttacksSettingsRepositoryInterface import \
-    RecentGrenadeAttacksSettingsRepositoryInterface
 from src.recurringActions.configuration.absRecurringActionsEventHandler import AbsRecurringActionsEventHandler
 from src.recurringActions.configuration.recurringActionsEventHandler import RecurringActionsEventHandler
 from src.recurringActions.jsonParser.recurringActionsJsonParser import RecurringActionsJsonParser
@@ -402,10 +390,6 @@ from src.timeout.repositories.chatterTimeoutHistoryRepository import ChatterTime
 from src.timeout.repositories.chatterTimeoutHistoryRepositoryInterface import ChatterTimeoutHistoryRepositoryInterface
 from src.timeout.settings.timeoutActionSettings import TimeoutActionSettings
 from src.timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
-from src.timeout.timeoutActionHistoryRepository import TimeoutActionHistoryRepository
-from src.timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
-from src.timeout.timeoutActionJsonMapper import TimeoutActionJsonMapper
-from src.timeout.timeoutActionJsonMapperInterface import TimeoutActionJsonMapperInterface
 from src.timeout.useCases.calculateTimeoutDurationUseCase import CalculateTimeoutDurationUseCase
 from src.timeout.useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
 from src.timeout.useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
@@ -2329,29 +2313,11 @@ guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = Gu
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
 )
 
-timeoutActionJsonMapper: TimeoutActionJsonMapperInterface = TimeoutActionJsonMapper(
-    timber = timber,
-)
-
-timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = TimeoutActionHistoryRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    timeoutActionJsonMapper = timeoutActionJsonMapper,
-    timeZoneRepository = timeZoneRepository
-)
-
 isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepository(
     administratorProvider = administratorProvider,
     timber = timber,
     twitchApiService = twitchApiService,
     twitchTokensRepository = twitchTokensRepository,
-)
-
-timeoutActionSettings: TimeoutActionSettingsInterface = TimeoutActionSettings(
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/timeoutActionSettings.json',
-    ),
 )
 
 twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
@@ -2363,6 +2329,13 @@ twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
     twitchHandleProvider = authRepository,
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     userIdsRepository = userIdsRepository,
+)
+
+timeoutActionSettings: TimeoutActionSettingsInterface = TimeoutActionSettings(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/timeoutActionSettings.json',
+    ),
 )
 
 
@@ -2419,8 +2392,6 @@ determineBananaTargetUseCase = DetermineBananaTargetUseCase(
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    timeZoneRepository = timeZoneRepository,
     twitchMessageStringUtils = twitchMessageStringUtils,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
@@ -2658,34 +2629,6 @@ translationHelper: TranslationHelperInterface = TranslationHelper(
 )
 
 
-###################################################
-## Recent Grenade Attacks initialization section ##
-###################################################
-
-recentGrenadeAttacksMapper: RecentGrenadeAttacksMapperInterface = RecentGrenadeAttacksMapper()
-
-recentGrenadeAttacksRepository: RecentGrenadeAttacksRepositoryInterface = RecentGrenadeAttacksRepository(
-    backingDatabase = backingDatabase,
-    recentGrenadeAttacksMapper = recentGrenadeAttacksMapper,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository
-)
-
-recentGrenadeAttacksSettingsRepository: RecentGrenadeAttacksSettingsRepositoryInterface = RecentGrenadeAttacksSettingsRepository(
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/recentGrenadeAttacksSettings.json'
-    )
-)
-
-recentGrenadeAttacksHelper: RecentGrenadeAttacksHelperInterface = RecentGrenadeAttacksHelper(
-    recentGrenadeAttacksRepository = recentGrenadeAttacksRepository,
-    recentGrenadeAttacksSettingsRepository = recentGrenadeAttacksSettingsRepository,
-    timeZoneRepository = timeZoneRepository,
-    usersRepository = usersRepository
-)
-
-
 ##########################################
 ## Crowd Control initialization section ##
 ##########################################
@@ -2857,8 +2800,6 @@ soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface = SoundAlertCh
     timber = timber
 )
 
-timeoutCheerActionMapper: TimeoutCheerActionMapper = TimeoutCheerActionMapper()
-
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerActionHelper(
     timeoutActionMachine = timeoutActionMachine,
     timeoutIdGenerator = timeoutIdGenerator,
@@ -2868,7 +2809,6 @@ airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheer
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
     timeoutActionSettings = timeoutActionSettings,
-    timeoutCheerActionMapper = timeoutCheerActionMapper,
     timeoutIdGenerator = timeoutIdGenerator,
 )
 
@@ -3368,9 +3308,6 @@ cynanBot = CynanBot(
     openTriviaDatabaseSessionTokenRepository = openTriviaDatabaseSessionTokenRepository,
     pokepediaRepository = pokepediaRepository,
     psqlCredentialsProvider = psqlCredentialsProvider,
-    recentGrenadeAttacksHelper = recentGrenadeAttacksHelper,
-    recentGrenadeAttacksRepository = recentGrenadeAttacksRepository,
-    recentGrenadeAttacksSettingsRepository = recentGrenadeAttacksSettingsRepository,
     recurringActionsEventHandler = recurringActionsEventHandler,
     recurringActionsHelper = recurringActionsHelper,
     recurringActionsMachine = recurringActionsMachine,
@@ -3388,7 +3325,6 @@ cynanBot = CynanBot(
     streamElementsUserKeyRepository = streamElementsUserKeyRepository,
     supStreamerRepository = supStreamerRepository,
     timber = timber,
-    timeoutActionHistoryRepository = timeoutActionHistoryRepository,
     timeoutActionMachine = timeoutActionMachine,
     timeoutActionSettings = timeoutActionSettings,
     timeoutEventHandler = timeoutEventHandler,

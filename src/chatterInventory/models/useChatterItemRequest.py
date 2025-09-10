@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
 from .chatterItemType import ChatterItemType
-from .pointRedemptionItemRequestData import PointRedemptionItemRequestData
 from ...users.userInterface import UserInterface
 
 
@@ -9,7 +8,6 @@ from ...users.userInterface import UserInterface
 class UseChatterItemRequest:
     ignoreInventory: bool
     itemType: ChatterItemType | None
-    pointRedemption: PointRedemptionItemRequestData | None
     chatMessage: str | None
     chatterUserId: str
     requestId: str

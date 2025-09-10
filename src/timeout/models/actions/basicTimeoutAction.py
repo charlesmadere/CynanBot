@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from .absTimeoutAction import AbsTimeoutAction
 from ..absTimeoutDuration import AbsTimeoutDuration
-from ..pointRedemptionTimeoutData import PointRedemptionTimeoutData
 from ..timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ....users.userInterface import UserInterface
 
@@ -10,7 +9,6 @@ from ....users.userInterface import UserInterface
 @dataclass(frozen = True)
 class BasicTimeoutAction(AbsTimeoutAction):
     timeoutDuration: AbsTimeoutDuration
-    pointRedemption: PointRedemptionTimeoutData | None
     actionId: str
     chatMessage: str | None
     instigatorUserId: str
@@ -35,9 +33,6 @@ class BasicTimeoutAction(AbsTimeoutAction):
 
     def getModeratorUserId(self) -> str:
         return self.moderatorUserId
-
-    def getPointRedemptionData(self) -> PointRedemptionTimeoutData | None:
-        return self.pointRedemption
 
     def getStreamStatusRequirement(self) -> TimeoutStreamStatusRequirement | None:
         return self.streamStatusRequirement
