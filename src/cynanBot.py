@@ -829,7 +829,7 @@ class CynanBot(
             self.__enableCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__getCheerActionsCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__addAirStrikeCheerActionCommand: AbsChatCommand = AddAirStrikeCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
+            self.__addAirStrikeCheerActionCommand: AbsChatCommand = AddAirStrikeCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchChatMessenger, usersRepository)
             self.__addCrowdControlCheerActionCommand: AbsChatCommand = AddCrowdControlCheerActionChatCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addGameShuffleCheerActionCommand: AbsChatCommand = AddGameShuffleCheerActionChatCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = AddSoundAlertCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
