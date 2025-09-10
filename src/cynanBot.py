@@ -180,7 +180,6 @@ from .timeout.configuration.absTimeoutEventHandler import AbsTimeoutEventHandler
 from .timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from .timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
 from .timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
-from .timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
 from .timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
 from .trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
@@ -370,7 +369,6 @@ class CynanBot(
         streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface | None,
         supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
-        timeoutActionHelper: TimeoutActionHelperInterface | None,
         timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface | None,
         timeoutActionMachine: TimeoutActionMachineInterface | None,
         timeoutActionSettings: TimeoutActionSettingsInterface | None,
@@ -622,8 +620,6 @@ class CynanBot(
             raise TypeError(f'supStreamerRepository argument is malformed: \"{supStreamerRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif timeoutActionHelper is not None and not isinstance(timeoutActionHelper, TimeoutActionHelperInterface):
-            raise TypeError(f'timeoutActionHelper argument is malformed: \"{timeoutActionHelper}\"')
         elif timeoutActionHistoryRepository is not None and not isinstance(timeoutActionHistoryRepository, TimeoutActionHistoryRepositoryInterface):
             raise TypeError(f'timeoutActionHistoryRepository argument is malformed: \"{timeoutActionHistoryRepository}\"')
         elif timeoutActionMachine is not None and not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
@@ -768,10 +764,9 @@ class CynanBot(
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
-        self.__timeoutActionHelper: TimeoutActionHelperInterface | None = timeoutActionHelper
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface | None] = timeoutActionMachine
         self.__timeoutEventHandler: Final[AbsTimeoutEventHandler | None] = timeoutEventHandler
-        self.__triviaEventHandler: AbsTriviaEventHandler | None = triviaEventHandler
+        self.__triviaEventHandler: Final[AbsTriviaEventHandler | None] = triviaEventHandler
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
         self.__triviaRepository: TriviaRepositoryInterface | None = triviaRepository
         self.__ttsChatterRepository: TtsChatterRepositoryInterface | None = ttsChatterRepository
@@ -1168,10 +1163,6 @@ class CynanBot(
             self.__crowdControlMachine.setActionHandler(self.__crowdControlActionHandler)
             self.__crowdControlMachine.setMessageListener(self.__crowdControlMessageHandler)
             self.__crowdControlMachine.start()
-
-        if self.__timeoutActionHelper is not None:
-            self.__timeoutActionHelper.setTwitchChannelProvider(self)
-            self.__timeoutActionHelper.start()
 
         if self.__timeoutEventHandler is not None:
             self.__timeoutEventHandler.setTwitchConnectionReadinessProvider(self)

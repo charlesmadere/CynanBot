@@ -35,7 +35,6 @@ from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGame
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.decTalkSongPointRedemption import DecTalkSongPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
-from src.channelPointRedemptions.timeoutPointRedemption import TimeoutPointRedemption
 from src.channelPointRedemptions.ttsChatterPointRedemption import TtsChatterPointRedemption
 from src.channelPointRedemptions.voicemailPointRedemption import VoicemailPointRedemption
 from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
@@ -329,8 +328,6 @@ from src.timeout.repositories.chatterTimeoutHistoryRepository import ChatterTime
 from src.timeout.repositories.chatterTimeoutHistoryRepositoryInterface import ChatterTimeoutHistoryRepositoryInterface
 from src.timeout.settings.timeoutActionSettings import TimeoutActionSettings
 from src.timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
-from src.timeout.timeoutActionHelper import TimeoutActionHelper
-from src.timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
 from src.timeout.timeoutActionHistoryRepository import TimeoutActionHistoryRepository
 from src.timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
 from src.timeout.timeoutActionJsonMapper import TimeoutActionJsonMapper
@@ -1717,26 +1714,6 @@ timeoutActionSettings: TimeoutActionSettingsInterface = TimeoutActionSettings(
     ),
 )
 
-timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
-    activeChattersRepository = activeChattersRepository,
-    asplodieStatsRepository = asplodieStatsRepository,
-    backgroundTaskHelper = backgroundTaskHelper,
-    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
-    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    streamAlertsManager = streamAlertsManager,
-    timber = timber,
-    timeoutActionHistoryRepository = timeoutActionHistoryRepository,
-    timeoutActionSettings = timeoutActionSettings,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    timeZoneRepository = timeZoneRepository,
-    trollmojiHelper = trollmojiHelper,
-    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchTimeoutHelper = twitchTimeoutHelper,
-    twitchUtils = twitchUtils,
-)
-
 chatterInventoryMapper: ChatterInventoryMapperInterface = ChatterInventoryMapper()
 
 chatterInventoryRepository: ChatterInventoryRepositoryInterface = ChatterInventoryRepository(
@@ -2293,21 +2270,6 @@ if soundPlayerManagerProvider is not None and soundPlayerRandomizerHelper is not
         streamAlertsManager = streamAlertsManager
     )
 
-timeoutPointRedemption: TimeoutPointRedemption | None = None
-
-if timeoutActionHelper is not None:
-    timeoutPointRedemption = TimeoutPointRedemption(
-        activeChattersRepository = activeChattersRepository,
-        timber = timber,
-        timeoutActionHelper = timeoutActionHelper,
-        timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-        twitchHandleProvider = authRepository,
-        twitchMessageStringUtils = twitchMessageStringUtils,
-        twitchTokensRepository = twitchTokensRepository,
-        twitchUtils = twitchUtils,
-        userIdsRepository = userIdsRepository
-    )
-
 
 ########################################################
 ## Websocket Connection Server initialization section ##
@@ -2348,7 +2310,6 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = Tw
     redemptionCounterPointRedemption = None,
     soundAlertPointRedemption = soundAlertPointRedemption,
     superTriviaGamePointRedemption = None,
-    timeoutPointRedemption = timeoutPointRedemption,
     triviaGamePointRedemption = None,
     ttsChatterPointRedemption = ttsChatterPointRedemption,
     timber = timber,
@@ -2514,7 +2475,6 @@ cynanBot = CynanBot(
     streamElementsUserKeyRepository = streamElementsUserKeyRepository,
     supStreamerRepository = supStreamerRepository,
     timber = timber,
-    timeoutActionHelper = timeoutActionHelper,
     timeoutActionHistoryRepository = timeoutActionHistoryRepository,
     timeoutActionMachine = timeoutActionMachine,
     timeoutActionSettings = timeoutActionSettings,

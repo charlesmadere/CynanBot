@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 from .api.models.twitchHypeTrainType import TwitchHypeTrainType
 from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
-from .configuration.twitchChannelProvider import TwitchChannelProvider
 from ..users.userInterface import UserInterface
 
 

@@ -42,7 +42,6 @@ from src.channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointR
 from src.channelPointRedemptions.redemptionCounterPointRedemption import RedemptionCounterPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from src.channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
-from src.channelPointRedemptions.timeoutPointRedemption import TimeoutPointRedemption
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from src.channelPointRedemptions.ttsChatterPointRedemption import TtsChatterPointRedemption
 from src.channelPointRedemptions.voicemailPointRedemption import VoicemailPointRedemption
@@ -396,8 +395,6 @@ from src.timeout.repositories.chatterTimeoutHistoryRepository import ChatterTime
 from src.timeout.repositories.chatterTimeoutHistoryRepositoryInterface import ChatterTimeoutHistoryRepositoryInterface
 from src.timeout.settings.timeoutActionSettings import TimeoutActionSettings
 from src.timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
-from src.timeout.timeoutActionHelper import TimeoutActionHelper
-from src.timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
 from src.timeout.timeoutActionHistoryRepository import TimeoutActionHistoryRepository
 from src.timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
 from src.timeout.timeoutActionJsonMapper import TimeoutActionJsonMapper
@@ -2361,26 +2358,6 @@ twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
     userIdsRepository = userIdsRepository,
 )
 
-timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
-    activeChattersRepository = activeChattersRepository,
-    asplodieStatsRepository = asplodieStatsRepository,
-    backgroundTaskHelper = backgroundTaskHelper,
-    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
-    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    streamAlertsManager = streamAlertsManager,
-    timber = timber,
-    timeoutActionHistoryRepository = timeoutActionHistoryRepository,
-    timeoutActionSettings = timeoutActionSettings,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    timeZoneRepository = timeZoneRepository,
-    trollmojiHelper = trollmojiHelper,
-    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchTimeoutHelper = twitchTimeoutHelper,
-    twitchUtils = twitchUtils,
-)
-
 
 ##############################################
 ## Chatter Inventory initialization section ##
@@ -3104,18 +3081,6 @@ superTriviaGamePointRedemption: SuperTriviaGamePointRedemption | None = SuperTri
     triviaGameMachine = triviaGameMachine
 )
 
-timeoutPointRedemption: TimeoutPointRedemption | None = TimeoutPointRedemption(
-    activeChattersRepository = activeChattersRepository,
-    timber = timber,
-    timeoutActionHelper = timeoutActionHelper,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    twitchHandleProvider = authRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
-    twitchTokensRepository = twitchTokensRepository,
-    twitchUtils = twitchUtils,
-    userIdsRepository = userIdsRepository
-)
-
 triviaGamePointRedemption: TriviaGamePointRedemption | None = TriviaGamePointRedemption(
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
@@ -3223,7 +3188,6 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = Tw
     redemptionCounterPointRedemption = redemptionCounterPointRedemption,
     soundAlertPointRedemption = soundAlertPointRedemption,
     superTriviaGamePointRedemption = superTriviaGamePointRedemption,
-    timeoutPointRedemption = timeoutPointRedemption,
     triviaGamePointRedemption = triviaGamePointRedemption,
     ttsChatterPointRedemption = ttsChatterPointRedemption,
     timber = timber,
@@ -3389,7 +3353,6 @@ cynanBot = CynanBot(
     streamElementsUserKeyRepository = streamElementsUserKeyRepository,
     supStreamerRepository = supStreamerRepository,
     timber = timber,
-    timeoutActionHelper = timeoutActionHelper,
     timeoutActionHistoryRepository = timeoutActionHistoryRepository,
     timeoutActionMachine = timeoutActionMachine,
     timeoutActionSettings = timeoutActionSettings,
