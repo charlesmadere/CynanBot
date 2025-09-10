@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from .absTimeoutAction import AbsTimeoutAction
 from ..absTimeoutDuration import AbsTimeoutDuration
-from ..pointRedemptionTimeoutData import PointRedemptionTimeoutData
 from ..timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ....users.userInterface import UserInterface
 
@@ -13,7 +12,6 @@ class AirStrikeTimeoutAction(AbsTimeoutAction):
     ignoreInventory: bool
     maxTimeoutTargets: int
     minTimeoutTargets: int
-    pointRedemption: PointRedemptionTimeoutData | None
     actionId: str
     instigatorUserId: str
     moderatorTwitchAccessToken: str
@@ -36,17 +34,11 @@ class AirStrikeTimeoutAction(AbsTimeoutAction):
     def getModeratorUserId(self) -> str:
         return self.moderatorUserId
 
-    def getPointRedemptionData(self) -> PointRedemptionTimeoutData | None:
-        return self.pointRedemption
-
     def getStreamStatusRequirement(self) -> TimeoutStreamStatusRequirement | None:
         return self.streamStatusRequirement
 
     def getTimeoutDuration(self) -> AbsTimeoutDuration:
         return self.timeoutDuration
-
-    def getTwitchChannel(self) -> str:
-        return self.twitchChannel
 
     def getTwitchChannelId(self) -> str:
         return self.twitchChannelId

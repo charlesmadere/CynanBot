@@ -11,7 +11,6 @@ from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 
 class RedemptionCounterPointRedemption(AbsChannelPointRedemption):
@@ -63,7 +62,7 @@ class RedemptionCounterPointRedemption(AbsChannelPointRedemption):
                 incrementAmount = boosterPack.incrementAmount,
                 chatterUserId = twitchChannelPointsMessage.userId,
                 counterName = boosterPack.counterName,
-                twitchChannelId = twitchChannelPointsMessage.twitchChannelId
+                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
             )
         except RedemptionCounterIsDisabledException as e:
             self.__timber.log('RedemptionCounterPointRedemption', f'Redemption Counter feature is currently disabled ({twitchChannelPointsMessage=}): {e}', e, traceback.format_exc())

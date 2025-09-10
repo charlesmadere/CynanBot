@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from .absTimeoutAction import AbsTimeoutAction
 from ..absTimeoutDuration import AbsTimeoutDuration
-from ..pointRedemptionTimeoutData import PointRedemptionTimeoutData
 from ..timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ....users.userInterface import UserInterface
 
@@ -12,7 +11,6 @@ class BananaTimeoutAction(AbsTimeoutAction):
     timeoutDuration: AbsTimeoutDuration
     ignoreInventory: bool
     isRandomChanceEnabled: bool
-    pointRedemption: PointRedemptionTimeoutData | None
     actionId: str
     chatMessage: str | None
     instigatorUserId: str
@@ -35,9 +33,6 @@ class BananaTimeoutAction(AbsTimeoutAction):
 
     def getModeratorUserId(self) -> str:
         return self.moderatorUserId
-
-    def getPointRedemptionData(self) -> PointRedemptionTimeoutData | None:
-        return self.pointRedemption
 
     def getStreamStatusRequirement(self) -> TimeoutStreamStatusRequirement | None:
         return self.streamStatusRequirement

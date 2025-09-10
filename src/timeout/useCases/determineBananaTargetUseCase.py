@@ -12,10 +12,8 @@ from ..models.timeoutDiceRoll import TimeoutDiceRoll
 from ..models.timeoutDiceRollFailureData import TimeoutDiceRollFailureData
 from ..repositories.chatterTimeoutHistoryRepositoryInterface import ChatterTimeoutHistoryRepositoryInterface
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
-from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
-from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ...twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 from ...users.exceptions import NoSuchUserException
@@ -37,8 +35,6 @@ class DetermineBananaTargetUseCase:
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         timber: TimberInterface,
         timeoutActionSettings: TimeoutActionSettingsInterface,
-        timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -51,10 +47,6 @@ class DetermineBananaTargetUseCase:
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
             raise TypeError(f'timeoutActionSettings argument is malformed: \"{timeoutActionSettings}\"')
-        elif not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
-            raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
-        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
-            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
             raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
@@ -66,8 +58,6 @@ class DetermineBananaTargetUseCase:
         self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionSettings: Final[TimeoutActionSettingsInterface] = timeoutActionSettings
-        self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
-        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchMessageStringUtils: Final[TwitchMessageStringUtilsInterface] = twitchMessageStringUtils
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
@@ -79,26 +69,19 @@ class DetermineBananaTargetUseCase:
         timeoutAction: BananaTimeoutAction,
     ) -> str:
         messageContainingTarget: str | None = timeoutAction.chatMessage
-
-        if not utils.isValidStr(messageContainingTarget) and timeoutAction.pointRedemption is not None:
-            messageContainingTarget = timeoutAction.pointRedemption.message
-
         if not utils.isValidStr(messageContainingTarget):
             raise UnknownTimeoutTargetException(f'Given empty/blank/malformed timeout target message ({timeoutAction=}) ({messageContainingTarget=})')
 
         messageContainingTarget = await self.__twitchMessageStringUtils.removeCheerStrings(messageContainingTarget)
-
         if not utils.isValidStr(messageContainingTarget):
             raise UnknownTimeoutTargetException(f'Given empty/blank/malformed timeout target message ({timeoutAction=}) ({messageContainingTarget=})')
 
         targetMatch = self.__timeoutTargetRegEx.match(messageContainingTarget)
-
         if targetMatch is None:
             raise UnknownTimeoutTargetException(f'Given empty/blank/malformed timeout target message ({timeoutAction=}) ({messageContainingTarget=}) ({targetMatch=})')
 
         targetUserName: str | None = targetMatch.group(1)
-
-        if not utils.isValidStr(targetUserName):
+        if not utils.isValidStr(targetUserName) or not utils.strContainsAlphanumericCharacters(targetUserName):
             raise UnknownTimeoutTargetException(f'Given empty/blank/malformed timeout target message ({timeoutAction=}) ({messageContainingTarget=}) ({targetMatch=}) ({targetUserName=})')
 
         return targetUserName
@@ -136,7 +119,7 @@ class DetermineBananaTargetUseCase:
                 twitchAccessToken = twitchAccessToken,
             )
         except NoSuchUserException as e:
-            self.__timber.log('DetermineBananaTargetUseCase', f'Failed to fetch user ID to use as a timeout target ({twitchChannelId=}) ({userName=}): {e}', e, traceback.format_exc())
+            self.__timber.log('DetermineBananaTargetUseCase', f'Failed to fetch user ID to use as a timeout target ({twitchChannelId=}) ({userName=})', e, traceback.format_exc())
             raise UnknownTimeoutTargetException(f'Failed to fetch user ID to use as a timeout target ({twitchChannelId=}) ({userName=})')
 
     async def __generateDiceRoll(self) -> TimeoutDiceRoll:

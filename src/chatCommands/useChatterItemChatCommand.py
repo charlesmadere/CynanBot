@@ -51,7 +51,6 @@ class UseChatterItemChatCommand(AbsChatCommand):
         result = await self.__useChatterItemHelper.useItem(UseChatterItemRequest(
             ignoreInventory = False,
             itemType = None,
-            pointRedemption = None,
             chatMessage = ctx.getMessageContent(),
             chatterUserId = ctx.getAuthorId(),
             requestId = await self.__chatterInventoryIdGenerator.generateRequestId(),

@@ -5,11 +5,11 @@ from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
 from ..voicemail.models.addVoicemailResult import AddVoicemailResult
@@ -28,23 +28,23 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
         timber: TimberInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         voicemailHelper: VoicemailHelperInterface,
-        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
+        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(voicemailHelper, VoicemailHelperInterface):
@@ -54,9 +54,9 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__timber: Final[TimberInterface] = timber
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface] = twitchFollowingStatusRepository
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__voicemailHelper: Final[VoicemailHelperInterface] = voicemailHelper
         self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
@@ -64,7 +64,7 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
     async def __determineTargetedUser(
         self,
         message: str | None,
-        twitchAccessToken: str
+        twitchAccessToken: str,
     ) -> TargetedUserData | None:
         if not utils.isValidStr(message):
             return None
@@ -98,7 +98,7 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> bool:
         twitchUser = twitchChannelPointsMessage.twitchUser
         if not twitchUser.isVoicemailEnabled:
@@ -107,12 +107,12 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
             return False
 
         twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
-            twitchChannelId = await twitchChannel.getTwitchChannelId()
+            twitchChannelId = await twitchChannel.getTwitchChannelId(),
         )
 
         targetedUserData = await self.__determineTargetedUser(
             message = twitchChannelPointsMessage.redemptionMessage,
-            twitchAccessToken = twitchAccessToken
+            twitchAccessToken = twitchAccessToken,
         )
 
         if targetedUserData is None:
@@ -123,13 +123,13 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
 
         if requiresNotActiveInChat and await self.__activeChattersRepository.isActiveIn(
             chatterUserId = targetedUserData.userId,
-            twitchChannelId = await twitchChannel.getTwitchChannelId()
+            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
         ):
             self.__timber.log('VoicemailPointRedemption', f'Received voicemail cheer action but the targeted user is active in chat ({twitchChannel=}) ({twitchChannelPointsMessage=}) ({targetedUserData=})')
 
-            await self.__twitchUtils.safeSend(
-                messageable = twitchChannel,
-                message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, you can only send voicemails to users who aren\t active in chat.'
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, you can only send voicemails to users who aren\t active in chat.',
+                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
             )
 
             return True
@@ -138,14 +138,14 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
 
         if requiresFollowing and not await self.__twitchFollowingStatusRepository.isFollowing(
             twitchAccessToken = twitchAccessToken,
-            twitchChannelId = await twitchChannel.getTwitchChannelId(),
-            userId = targetedUserData.userId
+            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            userId = targetedUserData.userId,
         ):
             self.__timber.log('VoicemailPointRedemption', f'Received channel point redemption but the targeted user is not following the channel ({twitchChannel=}) ({twitchChannelPointsMessage=}) ({targetedUserData=})')
 
-            await self.__twitchUtils.safeSend(
-                messageable = twitchChannel,
-                message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, you can only send voicemails to users who are following the channel.',
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, you can only send voicemails to users who are following the channel.',
+                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
             )
 
             return True
@@ -154,48 +154,51 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
             message = targetedUserData.cleanedMessage,
             originatingUserId = twitchChannelPointsMessage.userId,
             targetUserId = targetedUserData.userId,
-            twitchChannelId = await twitchChannel.getTwitchChannelId()
+            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
         )
 
         match addVoicemailResult:
+            case AddVoicemailResult.FEATURE_DISABLED:
+                pass
+
             case AddVoicemailResult.MAXIMUM_FOR_TARGET_USER:
-                await self.__twitchUtils.safeSend(
-                    messageable = twitchChannel,
-                    message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, unfortunately @{targetedUserData.userName} has a full voicemail inbox'
+                self.__twitchChatMessenger.send(
+                    text = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, unfortunately @{targetedUserData.userName} has a full voicemail inbox',
+                    twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
                 )
 
             case AddVoicemailResult.MESSAGE_MALFORMED:
                 self.__timber.log('VoicemailPointRedemption', f'Tried setting a malformed voicemail message ({twitchChannel=}) ({twitchChannelPointsMessage=}) ({targetedUserData=}) ({addVoicemailResult=})')
 
-                await self.__twitchUtils.safeSend(
-                    messageable = twitchChannel,
-                    message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, an unknown error occurred when setting your voicemail message for @{targetedUserData.userName}'
+                self.__twitchChatMessenger.send(
+                    text = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, an unknown error occurred when setting your voicemail message for @{targetedUserData.userName}',
+                    twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
                 )
 
             case AddVoicemailResult.OK:
-                await self.__twitchUtils.safeSend(
-                    messageable = twitchChannel,
-                    message = f'☎️ @{twitchChannelPointsMessage.userName} your voicemail message for @{targetedUserData.userName} has been sent!'
+                self.__twitchChatMessenger.send(
+                    text = f'☎️ @{twitchChannelPointsMessage.userName} your voicemail message for @{targetedUserData.userName} has been sent!',
+                    twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
                 )
 
             case AddVoicemailResult.TARGET_USER_IS_ORIGINATING_USER:
-                await self.__twitchUtils.safeSend(
-                    messageable = twitchChannel,
-                    message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, you can\'t send yourself a voicemail'
+                self.__twitchChatMessenger.send(
+                    text = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, you can\'t send yourself a voicemail',
+                    twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
                 )
 
             case AddVoicemailResult.TARGET_USER_IS_TWITCH_CHANNEL_USER:
-                await self.__twitchUtils.safeSend(
-                    messageable = twitchChannel,
-                    message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, you can\'t send the streamer a voicemail'
+                self.__twitchChatMessenger.send(
+                    text = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, you can\'t send the streamer a voicemail',
+                    twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
                 )
 
             case _:
                 self.__timber.log('VoicemailPointRedemption', f'Encountered unknown AddVoicemailResult ({twitchChannel=}) ({twitchChannelPointsMessage=}) ({targetedUserData=}) ({addVoicemailResult=})')
 
-                await self.__twitchUtils.safeSend(
-                    messageable = twitchChannel,
-                    message = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, an unknown error occurred when setting your voicemail message for @{targetedUserData.userName}'
+                self.__twitchChatMessenger.send(
+                    text = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, an unknown error occurred when setting your voicemail message for @{targetedUserData.userName}',
+                    twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
                 )
 
         self.__timber.log('VoicemailPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')

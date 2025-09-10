@@ -66,7 +66,6 @@ class UseChatterItemHelper(UseChatterItemHelperInterface):
         self.__chatterInventoryItemUseMachine.submitAction(UseChatterItemAction(
             ignoreInventory = request.ignoreInventory,
             itemType = itemType,
-            pointRedemption = request.pointRedemption,
             actionId = await self.__chatterInventoryIdGenerator.generateActionId(),
             chatMessage = chatMessage,
             chatterUserId = request.chatterUserId,

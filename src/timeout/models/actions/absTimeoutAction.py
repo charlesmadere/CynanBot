@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 from ..absTimeoutDuration import AbsTimeoutDuration
-from ..pointRedemptionTimeoutData import PointRedemptionTimeoutData
 from ..timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ....users.userInterface import UserInterface
 
@@ -22,10 +21,6 @@ class AbsTimeoutAction(ABC):
 
     @abstractmethod
     def getModeratorUserId(self) -> str:
-        pass
-
-    @abstractmethod
-    def getPointRedemptionData(self) -> PointRedemptionTimeoutData | None:
         pass
 
     @abstractmethod

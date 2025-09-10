@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from .absTimeoutAction import AbsTimeoutAction
 from ..absTimeoutDuration import AbsTimeoutDuration
-from ..pointRedemptionTimeoutData import PointRedemptionTimeoutData
 from ..timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ....aniv.models.whichAnivUser import WhichAnivUser
 from ....users.userInterface import UserInterface
@@ -33,9 +32,6 @@ class CopyAnivMessageTimeoutAction(AbsTimeoutAction):
 
     def getModeratorUserId(self) -> str:
         return self.moderatorUserId
-
-    def getPointRedemptionData(self) -> PointRedemptionTimeoutData | None:
-        return None
 
     def getStreamStatusRequirement(self) -> TimeoutStreamStatusRequirement | None:
         return self.streamStatusRequirement

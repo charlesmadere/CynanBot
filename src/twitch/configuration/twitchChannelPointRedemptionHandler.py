@@ -23,7 +23,6 @@ from ...channelPointRedemptions.redemptionCounterPointRedemption import Redempti
 from ...channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from ...channelPointRedemptions.stub.stubChannelPointRedemption import StubPointRedemption
 from ...channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
-from ...channelPointRedemptions.timeoutPointRedemption import TimeoutPointRedemption
 from ...channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from ...channelPointRedemptions.ttsChatterPointRedemption import TtsChatterPointRedemption
 from ...channelPointRedemptions.voicemailPointRedemption import VoicemailPointRedemption
@@ -50,7 +49,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         redemptionCounterPointRedemption: RedemptionCounterPointRedemption | None,
         soundAlertPointRedemption: SoundAlertPointRedemption | None,
         superTriviaGamePointRedemption: SuperTriviaGamePointRedemption | None,
-        timeoutPointRedemption: TimeoutPointRedemption | None,
         triviaGamePointRedemption: TriviaGamePointRedemption | None,
         ttsChatterPointRedemption: TtsChatterPointRedemption | None,
         timber: TimberInterface,
@@ -83,8 +81,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'soundAlertPointRedemption argument is malformed: \"{soundAlertPointRedemption}\"')
         elif superTriviaGamePointRedemption is not None and not isinstance(superTriviaGamePointRedemption, SuperTriviaGamePointRedemption):
             raise TypeError(f'superTriviaGamePointRedemption argument is malformed: \"{superTriviaGamePointRedemption}\"')
-        elif timeoutPointRedemption is not None and not isinstance(timeoutPointRedemption, TimeoutPointRedemption):
-            raise TypeError(f'timeoutPointRedemption argument is malformed: \"{timeoutPointRedemption}\"')
         elif triviaGamePointRedemption is not None and not isinstance(triviaGamePointRedemption, TriviaGamePointRedemption):
             raise TypeError(f'triviaGamePointRedemption argument is malformed: \"{triviaGamePointRedemption}\"')
         elif ttsChatterPointRedemption is not None and not isinstance(ttsChatterPointRedemption, TtsChatterPointRedemption):
@@ -168,11 +164,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
             self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = superTriviaGamePointRedemption
-
-        if timeoutPointRedemption is None:
-            self.__timeoutPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
-        else:
-            self.__timeoutPointRedemption: AbsChannelPointRedemption = timeoutPointRedemption
 
         if triviaGamePointRedemption is None:
             self.__triviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
@@ -277,12 +268,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
                 twitchChannelPointsMessage = channelPointsMessage,
             ):
                 return
-
-        if await self.__timeoutPointRedemption.handlePointRedemption(
-            twitchChannel = twitchChannel,
-            twitchChannelPointsMessage = channelPointsMessage,
-        ):
-            return
 
         if user.isTriviaGameEnabled and channelPointsMessage.rewardId == user.triviaGameRewardId:
             if await self.__triviaGamePointRedemption.handlePointRedemption(

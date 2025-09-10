@@ -37,7 +37,6 @@ from src.channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePoin
 from src.channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
 from src.channelPointRedemptions.redemptionCounterPointRedemption import RedemptionCounterPointRedemption
 from src.channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
-from src.channelPointRedemptions.timeoutPointRedemption import TimeoutPointRedemption
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
 from src.chatActions.chatBackMessagesChatAction import ChatBackMessagesChatAction
@@ -74,7 +73,6 @@ from src.cheerActions.settings.cheerActionSettingsRepository import CheerActionS
 from src.cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from src.cheerActions.timeout.timeoutCheerActionHelper import TimeoutCheerActionHelper
 from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
-from src.cheerActions.timeout.timeoutCheerActionMapper import TimeoutCheerActionMapper
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
 from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
@@ -167,17 +165,6 @@ from src.pkmn.pokepediaJsonMapper import PokepediaJsonMapper
 from src.pkmn.pokepediaJsonMapperInterface import PokepediaJsonMapperInterface
 from src.pkmn.pokepediaRepository import PokepediaRepository
 from src.pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
-from src.recentGrenadeAttacks.helper.recentGrenadeAttacksHelper import RecentGrenadeAttacksHelper
-from src.recentGrenadeAttacks.helper.recentGrenadeAttacksHelperInterface import RecentGrenadeAttacksHelperInterface
-from src.recentGrenadeAttacks.mapper.recentGrenadeAttacksMapper import RecentGrenadeAttacksMapper
-from src.recentGrenadeAttacks.mapper.recentGrenadeAttacksMapperInterface import RecentGrenadeAttacksMapperInterface
-from src.recentGrenadeAttacks.repository.recentGrenadeAttacksRepository import RecentGrenadeAttacksRepository
-from src.recentGrenadeAttacks.repository.recentGrenadeAttacksRepositoryInterface import \
-    RecentGrenadeAttacksRepositoryInterface
-from src.recentGrenadeAttacks.settings.recentGrenadeAttacksSettingsRepository import \
-    RecentGrenadeAttacksSettingsRepository
-from src.recentGrenadeAttacks.settings.recentGrenadeAttacksSettingsRepositoryInterface import \
-    RecentGrenadeAttacksSettingsRepositoryInterface
 from src.recurringActions.configuration.absRecurringActionsEventHandler import AbsRecurringActionsEventHandler
 from src.recurringActions.configuration.recurringActionsEventHandler import RecurringActionsEventHandler
 from src.recurringActions.jsonParser.recurringActionsJsonParser import RecurringActionsJsonParser
@@ -238,12 +225,6 @@ from src.timeout.repositories.chatterTimeoutHistoryRepository import ChatterTime
 from src.timeout.repositories.chatterTimeoutHistoryRepositoryInterface import ChatterTimeoutHistoryRepositoryInterface
 from src.timeout.settings.timeoutActionSettings import TimeoutActionSettings
 from src.timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
-from src.timeout.timeoutActionHelper import TimeoutActionHelper
-from src.timeout.timeoutActionHelperInterface import TimeoutActionHelperInterface
-from src.timeout.timeoutActionHistoryRepository import TimeoutActionHistoryRepository
-from src.timeout.timeoutActionHistoryRepositoryInterface import TimeoutActionHistoryRepositoryInterface
-from src.timeout.timeoutActionJsonMapper import TimeoutActionJsonMapper
-from src.timeout.timeoutActionJsonMapperInterface import TimeoutActionJsonMapperInterface
 from src.timeout.useCases.calculateTimeoutDurationUseCase import CalculateTimeoutDurationUseCase
 from src.timeout.useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
 from src.timeout.useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
@@ -1566,17 +1547,6 @@ guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = Gu
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
 )
 
-timeoutActionJsonMapper: TimeoutActionJsonMapperInterface = TimeoutActionJsonMapper(
-    timber = timber,
-)
-
-timeoutActionHistoryRepository: TimeoutActionHistoryRepositoryInterface = TimeoutActionHistoryRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    timeoutActionJsonMapper = timeoutActionJsonMapper,
-    timeZoneRepository = timeZoneRepository
-)
-
 twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
     activeChattersRepository = activeChattersRepository,
     globalTwitchConstants = globalTwitchConstants,
@@ -1595,25 +1565,10 @@ timeoutActionSettings: TimeoutActionSettingsInterface = TimeoutActionSettings(
     ),
 )
 
-timeoutActionHelper: TimeoutActionHelperInterface = TimeoutActionHelper(
-    activeChattersRepository = activeChattersRepository,
-    asplodieStatsRepository = asplodieStatsRepository,
-    backgroundTaskHelper = backgroundTaskHelper,
-    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
-    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    streamAlertsManager = streamAlertsManager,
-    timber = timber,
-    timeoutActionHistoryRepository = timeoutActionHistoryRepository,
-    timeoutActionSettings = timeoutActionSettings,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    timeZoneRepository = timeZoneRepository,
-    trollmojiHelper = trollmojiHelper,
-    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchTimeoutHelper = twitchTimeoutHelper,
-    twitchUtils = twitchUtils,
-)
+
+##############################################
+## Chatter Inventory initialization section ##
+##############################################
 
 chatterInventoryMapper: ChatterInventoryMapperInterface = ChatterInventoryMapper()
 
@@ -1664,8 +1619,6 @@ determineBananaTargetUseCase = DetermineBananaTargetUseCase(
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    timeZoneRepository = timeZoneRepository,
     twitchMessageStringUtils = twitchMessageStringUtils,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
@@ -1841,34 +1794,6 @@ beanStatsRepository: BeanStatsRepositoryInterface = BeanStatsRepository(
 )
 
 
-###################################################
-## Recent Grenade Attacks initialization section ##
-###################################################
-
-recentGrenadeAttacksMapper: RecentGrenadeAttacksMapperInterface = RecentGrenadeAttacksMapper()
-
-recentGrenadeAttacksRepository: RecentGrenadeAttacksRepositoryInterface = RecentGrenadeAttacksRepository(
-    backingDatabase = backingDatabase,
-    recentGrenadeAttacksMapper = recentGrenadeAttacksMapper,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository
-)
-
-recentGrenadeAttacksSettingsRepository: RecentGrenadeAttacksSettingsRepositoryInterface = RecentGrenadeAttacksSettingsRepository(
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/recentGrenadeAttacksSettings.json'
-    )
-)
-
-recentGrenadeAttacksHelper: RecentGrenadeAttacksHelperInterface = RecentGrenadeAttacksHelper(
-    recentGrenadeAttacksRepository = recentGrenadeAttacksRepository,
-    recentGrenadeAttacksSettingsRepository = recentGrenadeAttacksSettingsRepository,
-    timeZoneRepository = timeZoneRepository,
-    usersRepository = usersRepository
-)
-
-
 ##########################################
 ## Cheer Actions initialization section ##
 ##########################################
@@ -1897,8 +1822,6 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface = BeanChanceCh
     twitchChatMessenger = twitchChatMessenger,
 )
 
-timeoutCheerActionMapper: TimeoutCheerActionMapper = TimeoutCheerActionMapper()
-
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerActionHelper(
     timeoutActionMachine = timeoutActionMachine,
     timeoutIdGenerator = timeoutIdGenerator,
@@ -1908,7 +1831,6 @@ airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheer
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
     timeoutActionSettings = timeoutActionSettings,
-    timeoutCheerActionMapper = timeoutCheerActionMapper,
     timeoutIdGenerator = timeoutIdGenerator,
 )
 
@@ -2081,22 +2003,8 @@ pkmnShinyPointRedemption: PkmnShinyPointRedemption | None = PkmnShinyPointRedemp
     twitchUtils = twitchUtils
 )
 
-timeoutPointRedemption: TimeoutPointRedemption | None = None
-
-if timeoutActionHelper is not None:
-    timeoutPointRedemption = TimeoutPointRedemption(
-        activeChattersRepository = activeChattersRepository,
-        timber = timber,
-        timeoutActionHelper = timeoutActionHelper,
-        timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-        twitchHandleProvider = authRepository,
-        twitchMessageStringUtils = twitchMessageStringUtils,
-        twitchTokensRepository = twitchTokensRepository,
-        twitchUtils = twitchUtils,
-        userIdsRepository = userIdsRepository
-    )
-
 superTriviaGamePointRedemption: SuperTriviaGamePointRedemption | None = None
+
 triviaGamePointRedemption: TriviaGamePointRedemption | None = None
 
 if cutenessRepository is not None and triviaGameBuilder is not None and triviaGameMachine is not None and triviaScoreRepository is not None and triviaUtils is not None:
@@ -2192,7 +2100,6 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = Tw
     redemptionCounterPointRedemption = redemptionCounterPointRedemption,
     soundAlertPointRedemption = None,
     superTriviaGamePointRedemption = superTriviaGamePointRedemption,
-    timeoutPointRedemption = timeoutPointRedemption,
     triviaGamePointRedemption = triviaGamePointRedemption,
     ttsChatterPointRedemption = None,
     timber = timber,
@@ -2338,9 +2245,6 @@ cynanBot = CynanBot(
     openTriviaDatabaseSessionTokenRepository = openTriviaDatabaseSessionTokenRepository,
     pokepediaRepository = pokepediaRepository,
     psqlCredentialsProvider = psqlCredentialsProvider,
-    recentGrenadeAttacksHelper = recentGrenadeAttacksHelper,
-    recentGrenadeAttacksRepository = recentGrenadeAttacksRepository,
-    recentGrenadeAttacksSettingsRepository = recentGrenadeAttacksSettingsRepository,
     recurringActionsEventHandler = recurringActionsEventHandler,
     recurringActionsHelper = recurringActionsHelper,
     recurringActionsMachine = recurringActionsMachine,
@@ -2358,8 +2262,6 @@ cynanBot = CynanBot(
     streamElementsUserKeyRepository = None,
     supStreamerRepository = None,
     timber = timber,
-    timeoutActionHelper = timeoutActionHelper,
-    timeoutActionHistoryRepository = timeoutActionHistoryRepository,
     timeoutActionMachine = timeoutActionMachine,
     timeoutActionSettings = timeoutActionSettings,
     timeoutEventHandler = timeoutEventHandler,
