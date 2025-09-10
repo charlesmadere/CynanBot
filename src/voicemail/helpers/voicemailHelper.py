@@ -63,6 +63,9 @@ class VoicemailHelper(VoicemailHelperInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
+        if not await self.__voicemailSettingsRepository.isEnabled():
+            return AddVoicemailResult.FEATURE_DISABLED
+
         cleanedMessage = utils.cleanStr(message)
 
         if not utils.isValidStr(cleanedMessage):
@@ -74,7 +77,7 @@ class VoicemailHelper(VoicemailHelperInterface):
 
         allTargetUserVoicemails = await self.__voicemailsRepository.getAllForTargetUser(
             targetUserId = targetUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         maximumPerTargetUser = await self.__voicemailSettingsRepository.getMaximumPerTargetUser()
@@ -84,7 +87,7 @@ class VoicemailHelper(VoicemailHelperInterface):
 
         allOriginatingUserVoicemails = await self.__voicemailsRepository.getAllForOriginatingUser(
             originatingUserId = originatingUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         maximumPerOriginatingUser = await self.__voicemailSettingsRepository.getMaximumPerOriginatingUser()
@@ -120,7 +123,7 @@ class VoicemailHelper(VoicemailHelperInterface):
 
             await self.__voicemailsRepository.removeVoicemail(
                 twitchChannelId = twitchChannelId,
-                voicemailId = voicemailToDelete.voicemailId
+                voicemailId = voicemailToDelete.voicemailId,
             )
 
         self.__timber.log('VoicemailHelper', f'Deleted {numberToDelete} overflowing voicemail(s) ({originatingUserId=}) ({targetUserId=}) ({twitchChannelId=})')
@@ -135,12 +138,16 @@ class VoicemailHelper(VoicemailHelperInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
+        allPreparedVoicemails: FrozenList[PreparedVoicemailData] = FrozenList()
+
+        if not await self.__voicemailSettingsRepository.isEnabled():
+            allPreparedVoicemails.freeze()
+            return allPreparedVoicemails
+
         allForOriginatingUser = await self.__voicemailsRepository.getAllForOriginatingUser(
             originatingUserId = originatingUserId,
             twitchChannelId = twitchChannelId,
         )
-
-        allPreparedVoicemails: FrozenList[PreparedVoicemailData] = FrozenList()
 
         for voicemail in allForOriginatingUser:
             preparedVoicemail = await self.__prepareVoicemailData(
@@ -164,12 +171,16 @@ class VoicemailHelper(VoicemailHelperInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
+        allPreparedVoicemails: FrozenList[PreparedVoicemailData] = FrozenList()
+
+        if not await self.__voicemailSettingsRepository.isEnabled():
+            allPreparedVoicemails.freeze()
+            return allPreparedVoicemails
+
         allForTargetUser = await self.__voicemailsRepository.getAllForTargetUser(
             targetUserId = targetUserId,
             twitchChannelId = twitchChannelId,
         )
-
-        allPreparedVoicemails: FrozenList[PreparedVoicemailData] = FrozenList()
 
         for voicemail in allForTargetUser:
             preparedVoicemail = await self.__prepareVoicemailData(
@@ -186,7 +197,7 @@ class VoicemailHelper(VoicemailHelperInterface):
     async def popForTargetUser(
         self,
         targetUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> PreparedVoicemailData | None:
         if not utils.isValidStr(targetUserId):
             raise TypeError(f'targetUserId argument is malformed: \"{targetUserId}\"')
@@ -223,7 +234,7 @@ class VoicemailHelper(VoicemailHelperInterface):
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
         maximumVoicemailAgeDays = timedelta(
-            days = await self.__voicemailSettingsRepository.getMaximumVoicemailAgeDays()
+            days = await self.__voicemailSettingsRepository.getMaximumVoicemailAgeDays(),
         )
 
         if now - maximumVoicemailAgeDays > voicemail.createdDateTime:

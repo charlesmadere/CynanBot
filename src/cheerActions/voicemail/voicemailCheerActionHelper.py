@@ -6,13 +6,13 @@ from frozendict import frozendict
 from .voicemailCheerAction import VoicemailCheerAction
 from .voicemailCheerActionHelperInterface import VoicemailCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
+from ...chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
-from ...twitch.configuration.twitchChannelProvider import TwitchChannelProvider
+from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ...twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ...twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
-from ...twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
 from ...voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
@@ -32,9 +32,10 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
         timber: TimberInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
-        twitchUtils: TwitchUtilsInterface,
+        useChatterItemHelper: UseChatterItemHelperInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         voicemailHelper: VoicemailHelperInterface,
         voicemailSettingsRepository: VoicemailSettingsRepositoryInterface,
@@ -43,12 +44,14 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
             raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(useChatterItemHelper, UseChatterItemHelperInterface):
+            raise TypeError(f'useChatterItemHelper argument is malformed: \"{useChatterItemHelper}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(voicemailHelper, VoicemailHelperInterface):
@@ -58,14 +61,13 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__timber: Final[TimberInterface] = timber
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface] = twitchFollowingStatusRepository
         self.__twitchMessageStringUtils: Final[TwitchMessageStringUtilsInterface] = twitchMessageStringUtils
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__useChatterItemHelper: Final[UseChatterItemHelperInterface] = useChatterItemHelper
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__voicemailHelper: Final[VoicemailHelperInterface] = voicemailHelper
         self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
-
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __determineTargetedUser(
         self,
@@ -113,6 +115,7 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
         user: UserInterface,
     ) -> bool:
         action = actions.get(bits, None)
+
         if not isinstance(action, VoicemailCheerAction) or not action.isEnabled:
             return False
 
@@ -164,10 +167,14 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
             message = targetedUserData.cleanedMessage,
             originatingUserId = cheerUserId,
             targetUserId = targetedUserData.userId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         match addVoicemailResult:
+            case AddVoicemailResult.FEATURE_DISABLED:
+                # this case is intentionally empty
+                pass
+
             case AddVoicemailResult.MAXIMUM_FOR_TARGET_USER:
                 await self.__sendMessage(
                     message = f'⚠ Sorry @{cheerUserName}, unfortunately @{targetedUserData.userName} has a full voicemail inbox',
@@ -227,24 +234,10 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
         message: str,
         twitchChatMessageId: str | None,
         user: UserInterface,
-        action: VoicemailCheerAction
+        action: VoicemailCheerAction,
     ):
-        twitchChannelProvider = self.__twitchChannelProvider
-
-        if twitchChannelProvider is None:
-            self.__timber.log('VoicemailCheerActionHelper', f'Received voicemail cheer action but can\'t respond in chat as the TwitchChannelProvider has not been set ({message=}) ({user=}) ({action=}) ({twitchChannelProvider=})')
-            return
-
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
-
-        await self.__twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = message,
-            replyMessageId = twitchChatMessageId
+        self.__twitchChatMessenger.send(
+            text = message,
+            twitchChannelId = action.twitchChannelId,
+            replyMessageId = twitchChatMessageId,
         )
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider

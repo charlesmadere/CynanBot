@@ -62,8 +62,15 @@ from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.helpers.chatterInventoryHelper import ChatterInventoryHelper
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
+from src.chatterInventory.helpers.useChatterItemHelper import UseChatterItemHelper
+from src.chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
+from src.chatterInventory.idGenerator.chatterInventoryIdGenerator import ChatterInventoryIdGenerator
+from src.chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
+from src.chatterInventory.machine.chatterInventoryItemUseMachine import ChatterInventoryItemUseMachine
+from src.chatterInventory.machine.chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
 from src.chatterInventory.mappers.chatterInventoryMapper import ChatterInventoryMapper
 from src.chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
+from src.chatterInventory.mappers.itemRequestMessageParser import ItemRequestMessageParser
 from src.chatterInventory.repositories.chatterInventoryRepository import ChatterInventoryRepository
 from src.chatterInventory.repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
 from src.chatterInventory.settings.chatterInventorySettings import ChatterInventorySettings
@@ -2464,6 +2471,33 @@ timeoutEventHandler: AbsTimeoutEventHandler = TimeoutEventHandler(
     twitchChatMessenger = twitchChatMessenger,
 )
 
+chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface = ChatterInventoryIdGenerator()
+
+chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface = ChatterInventoryItemUseMachine(
+    backgroundTaskHelper = backgroundTaskHelper,
+    chatterInventoryIdGenerator = chatterInventoryIdGenerator,
+    chatterInventoryRepository = chatterInventoryRepository,
+    chatterInventorySettings = chatterInventorySettings,
+    timber = timber,
+    timeoutActionMachine = timeoutActionMachine,
+    timeoutIdGenerator = timeoutIdGenerator,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository,
+)
+
+itemRequestMessageParser = ItemRequestMessageParser(
+    chatterInventoryMapper = chatterInventoryMapper,
+)
+
+useChatterItemHelper: UseChatterItemHelperInterface = UseChatterItemHelper(
+    chatterInventoryIdGenerator = chatterInventoryIdGenerator,
+    chatterInventoryItemUseMachine = chatterInventoryItemUseMachine,
+    chatterInventorySettings = chatterInventorySettings,
+    itemRequestMessageParser = itemRequestMessageParser,
+    timber = timber,
+)
+
 
 #################################
 ## aniv initialization section ##
@@ -2767,23 +2801,24 @@ voicemailChatAction = VoicemailChatAction(
 voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheerActionHelper(
     activeChattersRepository = activeChattersRepository,
     timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchMessageStringUtils = twitchMessageStringUtils,
-    twitchUtils = twitchUtils,
+    useChatterItemHelper = useChatterItemHelper,
     userIdsRepository = userIdsRepository,
     voicemailHelper = voicemailHelper,
-    voicemailSettingsRepository = voicemailSettingsRepository
+    voicemailSettingsRepository = voicemailSettingsRepository,
 )
 
 voicemailPointRedemption = VoicemailPointRedemption(
     activeChattersRepository = activeChattersRepository,
     timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchTokensRepository = twitchTokensRepository,
-    twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository,
     voicemailHelper = voicemailHelper,
-    voicemailSettingsRepository = voicemailSettingsRepository
+    voicemailSettingsRepository = voicemailSettingsRepository,
 )
 
 
