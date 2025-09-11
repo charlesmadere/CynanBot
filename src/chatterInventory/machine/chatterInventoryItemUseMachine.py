@@ -18,6 +18,9 @@ from ..models.events.absChatterItemEvent import AbsChatterItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
 from ..models.events.notEnoughInventoryChatterItemEvent import NotEnoughInventoryChatterItemEvent
+from ..models.events.tradeChatterItemEvent import TradeChatterItemEvent
+from ..models.events.tradeChatterItemTypeDisabledItemEvent import TradeChatterItemTypeDisabledItemEvent
+from ..models.events.tradeChatterNotEnoughInventoryItemEvent import TradeChatterNotEnoughInventoryItemEvent
 from ..models.events.useAirStrikeChatterItemEvent import UseAirStrikeChatterItemEvent
 from ..models.events.useBananaChatterItemEvent import UseBananaChatterItemEvent
 from ..models.events.useCassetteTapeChatterItemEvent import UseCassetteTapeChatterItemEvent
@@ -265,13 +268,79 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
         if isinstance(action, TradeChatterItemAction):
-            pass
+            await self.__handleTradeItemAction(action)
 
         elif isinstance(action, UseChatterItemAction):
-            pass
+            await self.__handleUseItemAction(action)
 
         else:
-            raise RuntimeError()
+            raise ValueError(f'Encountered unknown AbsChatterItemAction: \"{action}\"')
+
+    async def __handleTradeItemAction(self, action: TradeChatterItemAction):
+        if not isinstance(action, TradeChatterItemAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
+
+        if action.itemType not in await self.__chatterInventorySettings.getEnabledItemTypes():
+            await self.__submitEvent(TradeChatterItemTypeDisabledItemEvent(
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                originatingAction = action,
+            ))
+            return
+
+        fromChatterUserName = await self.__userIdsRepository.requireUserName(
+            userId = action.fromChatterUserId,
+            twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+                twitchChannelId = action.twitchChannelId,
+            ),
+        )
+
+        toChatterUserName = await self.__userIdsRepository.requireUserName(
+            userId = action.toChatterUserId,
+            twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+                twitchChannelId = action.twitchChannelId,
+            ),
+        )
+
+        fromChatterCurrentInventory = await self.__chatterInventoryRepository.get(
+            chatterUserId = action.fromChatterUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        tradeAmount = int(max(min(action.tradeAmount, fromChatterCurrentInventory[action.itemType]), 0))
+
+        if tradeAmount < 1:
+            await self.__submitEvent(TradeChatterNotEnoughInventoryItemEvent(
+                tradeAmount = tradeAmount,
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                fromChatterUserName = fromChatterUserName,
+                toChatterUserName = toChatterUserName,
+                originatingAction = action,
+            ))
+            return
+
+        toChatterInventory = await self.__chatterInventoryRepository.update(
+            itemType = action.itemType,
+            changeAmount = tradeAmount,
+            chatterUserId = action.toChatterUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        fromChatterInventory = await self.__chatterInventoryRepository.update(
+            itemType = action.itemType,
+            changeAmount = tradeAmount * -1,
+            chatterUserId = action.fromChatterUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        await self.__submitEvent(TradeChatterItemEvent(
+            fromChatterInventory = fromChatterInventory,
+            toChatterInventory = toChatterInventory,
+            tradeAmount = tradeAmount,
+            eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            fromChatterUserName = fromChatterUserName,
+            toChatterUserName = toChatterUserName,
+            originatingAction = action,
+        ))
 
     async def __handleUseItemAction(self, action: UseChatterItemAction):
         if not isinstance(action, UseChatterItemAction):

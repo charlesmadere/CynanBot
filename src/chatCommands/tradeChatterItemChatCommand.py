@@ -139,7 +139,7 @@ class TradeChatterItemChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId(),
         )
 
-        self.__timber.log('GiveChatterItemChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('TradeChatterItemChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
     async def __parseArguments(
         self,
@@ -163,14 +163,14 @@ class TradeChatterItemChatCommand(AbsChatCommand):
                 ),
             )
         except Exception:
-            self.__timber.log('GiveChatterItemChatCommand', f'Failed to fetch user ID for the given chatter username ({chatterUserName=}) ({splits=})')
+            self.__timber.log('TradeChatterItemChatCommand', f'Failed to fetch user ID for the given chatter username ({chatterUserName=}) ({splits=})')
             return None
 
         itemTypeString = splits[2]
         itemType = await self.__chatterInventoryMapper.parseItemType(itemTypeString)
 
         if itemType is None:
-            self.__timber.log('GiveChatterItemChatCommand', f'Failed to parse itemTypeString into a ChatterItemType ({itemTypeString=}) ({splits=})')
+            self.__timber.log('TradeChatterItemChatCommand', f'Failed to parse itemTypeString into a ChatterItemType ({itemTypeString=}) ({splits=})')
             return None
 
         giveAmount = 1
@@ -181,11 +181,11 @@ class TradeChatterItemChatCommand(AbsChatCommand):
             try:
                 giveAmount = int(giveAmountString)
             except Exception as e:
-                self.__timber.log('GiveChatterItemChatCommand', f'Failed to parse giveAmountString into an int ({giveAmountString=}) ({splits=})', e, traceback.format_exc())
+                self.__timber.log('TradeChatterItemChatCommand', f'Failed to parse giveAmountString into an int ({giveAmountString=}) ({splits=})', e, traceback.format_exc())
                 return None
 
-            if giveAmount < utils.getShortMinSafeSize() or giveAmount > utils.getShortMaxSafeSize():
-                self.__timber.log('GiveChatterItemChatCommand', f'The giveAmount value is out of bounds ({giveAmount=}) ({giveAmountString=}) ({splits=})')
+            if giveAmount < 1 or giveAmount > utils.getShortMaxSafeSize():
+                self.__timber.log('TradeChatterItemChatCommand', f'The giveAmount value is out of bounds ({giveAmount=}) ({giveAmountString=}) ({splits=})')
                 return None
 
         return TradeChatterItemChatCommand.Arguments(

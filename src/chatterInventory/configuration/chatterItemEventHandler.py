@@ -5,6 +5,7 @@ from ..models.events.absChatterItemEvent import AbsChatterItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
 from ..models.events.notEnoughInventoryChatterItemEvent import NotEnoughInventoryChatterItemEvent
+from ..models.events.tradeChatterItemEvent import TradeChatterItemEvent
 from ..models.events.useAirStrikeChatterItemEvent import UseAirStrikeChatterItemEvent
 from ..models.events.useBananaChatterItemEvent import UseBananaChatterItemEvent
 from ..models.events.useCassetteTapeChatterItemEvent import UseCassetteTapeChatterItemEvent
@@ -67,6 +68,11 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
 
         elif isinstance(event, NotEnoughInventoryChatterItemEvent):
             await self.__handleNotEnoughInventoryChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, TradeChatterItemEvent):
+            await self.__handleTradeChatterItemEvent(
                 event = event,
             )
 
@@ -150,6 +156,13 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
+
+    async def __handleTradeChatterItemEvent(
+        self,
+        event: TradeChatterItemEvent,
+    ):
+        # TODO
+        pass
 
     def setTwitchConnectionReadinessProvider(self, provider: TwitchConnectionReadinessProvider | None):
         if provider is not None and not isinstance(provider, TwitchConnectionReadinessProvider):
