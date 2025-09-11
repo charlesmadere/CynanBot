@@ -1,11 +1,11 @@
 from ..chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
-from ...listeners.useChatterItemEventListener import UseChatterItemEventListener
-from ...models.useChatterItemAction import UseChatterItemAction
+from ...listeners.chatterItemEventListener import ChatterItemEventListener
+from ...models.absChatterItemAction import AbsChatterItemAction
 
 
 class StubChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
 
-    def setEventListener(self, listener: UseChatterItemEventListener | None):
+    def setEventListener(self, listener: ChatterItemEventListener | None):
         # this method is intentionally empty
         pass
 
@@ -13,6 +13,6 @@ class StubChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface
         # this method is intentionally empty
         pass
 
-    def submitAction(self, action: UseChatterItemAction):
+    def submitAction(self, action: AbsChatterItemAction):
         # this method is intentionally empty
         pass

@@ -20,7 +20,7 @@ from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class GiveChatterItemChatCommand(AbsChatCommand):
+class TradeChatterItemChatCommand(AbsChatCommand):
 
     @dataclass(frozen = True)
     class Arguments:
@@ -92,7 +92,7 @@ class GiveChatterItemChatCommand(AbsChatCommand):
         administratorId = await self.__administratorProvider.getAdministratorUserId()
 
         if ctx.getAuthorId() != twitchChannelId and ctx.getAuthorId() != administratorId and ctx.getAuthorId() not in editorIds:
-            self.__timber.log('GiveChatterItemChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
+            self.__timber.log('TradeChatterItemChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         arguments = await self.__parseArguments(
@@ -104,7 +104,7 @@ class GiveChatterItemChatCommand(AbsChatCommand):
             randomItemType = await self.__chooseRandomEnabledItemType()
 
             self.__twitchChatMessenger.send(
-                text = f'⚠ Invalid arguments! Example use: !giveitem @{ctx.getAuthorName()} {randomItemType}',
+                text = f'⚠ Invalid arguments! Example use: !give @{ctx.getAuthorName()} {randomItemType}',
                 twitchChannelId = twitchChannelId,
                 replyMessageId = await ctx.getMessageId(),
             )
@@ -188,7 +188,7 @@ class GiveChatterItemChatCommand(AbsChatCommand):
                 self.__timber.log('GiveChatterItemChatCommand', f'The giveAmount value is out of bounds ({giveAmount=}) ({giveAmountString=}) ({splits=})')
                 return None
 
-        return GiveChatterItemChatCommand.Arguments(
+        return TradeChatterItemChatCommand.Arguments(
             itemType = itemType,
             giveAmount = giveAmount,
             chatterUserId = chatterUserId,

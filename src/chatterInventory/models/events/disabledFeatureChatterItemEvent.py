@@ -1,12 +1,11 @@
 from dataclasses import dataclass
 
-from .useChatterItemEvent import UseChatterItemEvent
-from ..chatterItemType import ChatterItemType
+from .absChatterItemEvent import AbsChatterItemEvent
 from ..useChatterItemAction import UseChatterItemAction
 
 
 @dataclass(frozen = True)
-class DisabledFeatureChatterItemEvent(UseChatterItemEvent):
+class DisabledFeatureChatterItemEvent(AbsChatterItemEvent):
     eventId: str
     originatingAction: UseChatterItemAction
 
@@ -15,7 +14,3 @@ class DisabledFeatureChatterItemEvent(UseChatterItemEvent):
 
     def getOriginatingAction(self) -> UseChatterItemAction:
         return self.originatingAction
-
-    @property
-    def itemType(self) -> ChatterItemType:
-        return self.originatingAction.itemType

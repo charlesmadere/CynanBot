@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
 
-from ..listeners.useChatterItemEventListener import UseChatterItemEventListener
-from ..models.useChatterItemAction import UseChatterItemAction
+from ..listeners.chatterItemEventListener import ChatterItemEventListener
+from ..models.absChatterItemAction import AbsChatterItemAction
 
 
 class ChatterInventoryItemUseMachineInterface(ABC):
 
     @abstractmethod
-    def setEventListener(self, listener: UseChatterItemEventListener | None):
+    def setEventListener(self, listener: ChatterItemEventListener | None):
         pass
 
     @abstractmethod
@@ -15,5 +15,5 @@ class ChatterInventoryItemUseMachineInterface(ABC):
         pass
 
     @abstractmethod
-    def submitAction(self, action: UseChatterItemAction):
+    def submitAction(self, action: AbsChatterItemAction):
         pass
