@@ -45,6 +45,10 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.parseSoundAlert('grenade_3')
         assert result is SoundAlert.GRENADE_3
 
+    def test_parseSoundAlert_withHypeTrainString(self):
+        result = self.jsonMapper.parseSoundAlert('hype_train')
+        assert result is SoundAlert.HYPE_TRAIN
+
     def test_parseSoundAlert_withJackpotString(self):
         result = self.jsonMapper.parseSoundAlert('jackpot')
         assert result is SoundAlert.JACKPOT
@@ -181,6 +185,10 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.requireSoundAlert('follow')
         assert result is SoundAlert.FOLLOW
 
+    def test_requireSoundAlert_withHypeTrain(self):
+        result = self.jsonMapper.requireSoundAlert('hype_train')
+        assert result is SoundAlert.HYPE_TRAIN
+
     def test_requireSoundAlert_withNone(self):
         result: SoundAlert | None = None
 
@@ -253,6 +261,10 @@ class TestSoundAlertJsonMapper:
     def test_serializeSoundAlert_withGrenade_3(self):
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.GRENADE_3)
         assert result == 'grenade_3'
+
+    def test_serializeSoundAlert_withHypeTrain(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.HYPE_TRAIN)
+        assert result == 'hype_train'
 
     def test_serializeSoundAlert_withJackpot(self):
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.JACKPOT)

@@ -20,7 +20,7 @@ from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class TradeChatterItemChatCommand(AbsChatCommand):
+class FreeGiveChatterItemChatCommand(AbsChatCommand):
 
     @dataclass(frozen = True)
     class Arguments:
@@ -92,7 +92,7 @@ class TradeChatterItemChatCommand(AbsChatCommand):
         administratorId = await self.__administratorProvider.getAdministratorUserId()
 
         if ctx.getAuthorId() != twitchChannelId and ctx.getAuthorId() != administratorId and ctx.getAuthorId() not in editorIds:
-            self.__timber.log('TradeChatterItemChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
+            self.__timber.log('FreeGiveChatterItemChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
         arguments = await self.__parseArguments(
@@ -104,7 +104,7 @@ class TradeChatterItemChatCommand(AbsChatCommand):
             randomItemType = await self.__chooseRandomEnabledItemType()
 
             self.__twitchChatMessenger.send(
-                text = f'⚠ Invalid arguments! Example use: !give @{ctx.getAuthorName()} {randomItemType}',
+                text = f'⚠ Invalid arguments! Example use: !freegive @{ctx.getAuthorName()} {randomItemType}',
                 twitchChannelId = twitchChannelId,
                 replyMessageId = await ctx.getMessageId(),
             )
@@ -139,7 +139,7 @@ class TradeChatterItemChatCommand(AbsChatCommand):
             replyMessageId = await ctx.getMessageId(),
         )
 
-        self.__timber.log('TradeChatterItemChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('FreeGiveChatterItemChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
     async def __parseArguments(
         self,
@@ -163,14 +163,14 @@ class TradeChatterItemChatCommand(AbsChatCommand):
                 ),
             )
         except Exception:
-            self.__timber.log('TradeChatterItemChatCommand', f'Failed to fetch user ID for the given chatter username ({chatterUserName=}) ({splits=})')
+            self.__timber.log('FreeGiveChatterItemChatCommand', f'Failed to fetch user ID for the given chatter username ({chatterUserName=}) ({splits=})')
             return None
 
         itemTypeString = splits[2]
         itemType = await self.__chatterInventoryMapper.parseItemType(itemTypeString)
 
         if itemType is None:
-            self.__timber.log('TradeChatterItemChatCommand', f'Failed to parse itemTypeString into a ChatterItemType ({itemTypeString=}) ({splits=})')
+            self.__timber.log('FreeGiveChatterItemChatCommand', f'Failed to parse itemTypeString into a ChatterItemType ({itemTypeString=}) ({splits=})')
             return None
 
         giveAmount = 1
@@ -181,14 +181,14 @@ class TradeChatterItemChatCommand(AbsChatCommand):
             try:
                 giveAmount = int(giveAmountString)
             except Exception as e:
-                self.__timber.log('TradeChatterItemChatCommand', f'Failed to parse giveAmountString into an int ({giveAmountString=}) ({splits=})', e, traceback.format_exc())
+                self.__timber.log('FreeGiveChatterItemChatCommand', f'Failed to parse giveAmountString into an int ({giveAmountString=}) ({splits=})', e, traceback.format_exc())
                 return None
 
-            if giveAmount < 1 or giveAmount > utils.getShortMaxSafeSize():
-                self.__timber.log('TradeChatterItemChatCommand', f'The giveAmount value is out of bounds ({giveAmount=}) ({giveAmountString=}) ({splits=})')
+            if giveAmount < utils.getShortMinSafeSize() or giveAmount > utils.getShortMaxSafeSize():
+                self.__timber.log('FreeGiveChatterItemChatCommand', f'The giveAmount value is out of bounds ({giveAmount=}) ({giveAmountString=}) ({splits=})')
                 return None
 
-        return TradeChatterItemChatCommand.Arguments(
+        return FreeGiveChatterItemChatCommand.Arguments(
             itemType = itemType,
             giveAmount = giveAmount,
             chatterUserId = chatterUserId,

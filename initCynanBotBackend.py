@@ -394,6 +394,7 @@ from src.twitch.configuration.twitchChatHandler import TwitchChatHandler
 from src.twitch.configuration.twitchCheerHandler import TwitchCheerHandler
 from src.twitch.configuration.twitchConfiguration import TwitchConfiguration
 from src.twitch.configuration.twitchFollowHandler import TwitchFollowHandler
+from src.twitch.configuration.twitchHypeTrainHandler import TwitchHypeTrainHandler
 from src.twitch.configuration.twitchIo.twitchIoConfiguration import TwitchIoConfiguration
 from src.twitch.configuration.twitchPollHandler import TwitchPollHandler
 from src.twitch.configuration.twitchPredictionHandler import TwitchPredictionHandler
@@ -2131,12 +2132,15 @@ twitchFollowHandler: AbsTwitchFollowHandler = TwitchFollowHandler(
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
 )
 
-twitchHypeTrainHandler: AbsTwitchHypeTrainHandler | None = None
+twitchHypeTrainHandler: AbsTwitchHypeTrainHandler = TwitchHypeTrainHandler(
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
+)
 
 twitchPollHandler: AbsTwitchPollHandler = TwitchPollHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
-    twitchApiService = twitchApiService,
     twitchChatMessenger = twitchChatMessenger,
 )
 

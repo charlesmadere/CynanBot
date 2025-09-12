@@ -42,6 +42,7 @@ from ...timeout.models.exactTimeoutDuration import ExactTimeoutDuration
 from ...timeout.models.randomLinearTimeoutDuration import RandomLinearTimeoutDuration
 from ...timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
@@ -65,6 +66,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
+        twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         sleepTimeSeconds: float = 0.5,
         queueTimeoutSeconds: int = 3,
@@ -87,6 +89,8 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
+            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
@@ -107,6 +111,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
@@ -267,11 +272,22 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         if not isinstance(action, AbsChatterItemAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
+        if not await self.__chatterInventorySettings.isEnabled():
+            await self.__submitEvent(DisabledFeatureChatterItemEvent(
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                originatingAction = action,
+            ))
+            return
+
         if isinstance(action, TradeChatterItemAction):
-            await self.__handleTradeItemAction(action)
+            await self.__handleTradeItemAction(
+                action = action,
+            )
 
         elif isinstance(action, UseChatterItemAction):
-            await self.__handleUseItemAction(action)
+            await self.__handleUseItemAction(
+                action = action,
+            )
 
         else:
             raise ValueError(f'Encountered unknown AbsChatterItemAction: \"{action}\"')
@@ -289,14 +305,14 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
 
         fromChatterUserName = await self.__userIdsRepository.requireUserName(
             userId = action.fromChatterUserId,
-            twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+            twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
                 twitchChannelId = action.twitchChannelId,
             ),
         )
 
         toChatterUserName = await self.__userIdsRepository.requireUserName(
             userId = action.toChatterUserId,
-            twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+            twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
                 twitchChannelId = action.twitchChannelId,
             ),
         )
@@ -346,13 +362,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         if not isinstance(action, UseChatterItemAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
-        if not await self.__chatterInventorySettings.isEnabled():
-            await self.__submitEvent(DisabledFeatureChatterItemEvent(
-                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
-                originatingAction = action,
-            ))
-            return
-        elif action.itemType not in await self.__chatterInventorySettings.getEnabledItemTypes():
+        if action.itemType not in await self.__chatterInventorySettings.getEnabledItemTypes():
             await self.__submitEvent(DisabledItemTypeChatterItemEvent(
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
                 originatingAction = action,

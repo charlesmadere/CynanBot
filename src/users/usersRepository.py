@@ -190,6 +190,8 @@ class UsersRepository(UsersRepositoryInterface):
         isGiveCutenessEnabled = utils.getBoolFromDict(userJson, 'giveCutenessEnabled', False)
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
         isLoremIpsumEnabled = utils.getBoolFromDict(userJson, 'loremIpsumEnabled', True)
+        isNotifyOfHypeTrainProgressEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.NOTIFY_OF_HYPE_TRAIN_PROGRESS_ENABLED.jsonKey, True)
+        isNotifyOfHypeTrainStartEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.NOTIFY_OF_HYPE_TRAIN_START_ENABLED.jsonKey, True)
         isNotifyOfPollResultsEnabled = utils.getBoolFromDict(userJson, 'notifyOfPollResultsEnabled', True)
         isNotifyOfPollStartEnabled = utils.getBoolFromDict(userJson, 'notifyOfPollStartEnabled', True)
         isNotifyOfPredictionResultsEnabled = utils.getBoolFromDict(userJson, 'notifyOfPredictionResultsEnabled', True)
@@ -424,6 +426,8 @@ class UsersRepository(UsersRepositoryInterface):
             isGiveCutenessEnabled = isGiveCutenessEnabled,
             isJishoEnabled = isJishoEnabled,
             isLoremIpsumEnabled = isLoremIpsumEnabled,
+            isNotifyOfHypeTrainProgressEnabled = isNotifyOfHypeTrainProgressEnabled,
+            isNotifyOfHypeTrainStartEnabled = isNotifyOfHypeTrainStartEnabled,
             isNotifyOfPollResultsEnabled = isNotifyOfPollResultsEnabled,
             isNotifyOfPollStartEnabled = isNotifyOfPollStartEnabled,
             isNotifyOfPredictionResultsEnabled = isNotifyOfPredictionResultsEnabled,

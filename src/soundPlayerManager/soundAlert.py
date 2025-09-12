@@ -11,6 +11,7 @@ class SoundAlert(Enum):
     GRENADE_1 = auto()
     GRENADE_2 = auto()
     GRENADE_3 = auto()
+    HYPE_TRAIN = auto()
     JACKPOT = auto()
     LAUNCH_AIR_STRIKE = auto()
     MEGA_GRENADE_1 = auto()

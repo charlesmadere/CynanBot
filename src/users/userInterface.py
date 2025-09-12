@@ -400,6 +400,16 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def isNotifyOfHypeTrainProgressEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def isNotifyOfHypeTrainStartEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isNotifyOfPollResultsEnabled(self) -> bool:
         pass
 

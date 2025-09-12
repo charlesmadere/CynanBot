@@ -23,6 +23,8 @@ class UserJsonConstant(Enum):
     LOCATION_ID = auto()
     MASTODON_URL = auto()
     MAXIMUM_GRENADES_WITHIN_COOLDOWN = auto()
+    NOTIFY_OF_HYPE_TRAIN_PROGRESS_ENABLED = auto()
+    NOTIFY_OF_HYPE_TRAIN_START_ENABLED = auto()
     NOTIFY_OF_RAID_ENABLED = auto()
     PRANKS_ENABLED = auto()
     RECURRING_ACTIONS_ENABLED = auto()
@@ -59,6 +61,8 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.LOCATION_ID: return 'locationId'
             case UserJsonConstant.MASTODON_URL: return 'mastodonUrl'
             case UserJsonConstant.MAXIMUM_GRENADES_WITHIN_COOLDOWN: return 'maximumGrenadesWithinCooldown'
+            case UserJsonConstant.NOTIFY_OF_HYPE_TRAIN_PROGRESS_ENABLED: return 'notifyOfHypeTrainProgressEnabled'
+            case UserJsonConstant.NOTIFY_OF_HYPE_TRAIN_START_ENABLED: return 'notifyOfHypeTrainStartEnabled'
             case UserJsonConstant.NOTIFY_OF_RAID_ENABLED: return 'notifyOfRaidEnabled'
             case UserJsonConstant.PRANKS_ENABLED: return 'pranksEnabled'
             case UserJsonConstant.RECURRING_ACTIONS_ENABLED: return 'recurringActionsEnabled'

@@ -5,7 +5,6 @@ from ..api.models.twitchPollChoice import TwitchPollChoice
 from ..api.models.twitchPollStatus import TwitchPollStatus
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
-from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ...misc import utils as utils
 from ...streamAlertsManager.streamAlert import StreamAlert
@@ -22,21 +21,17 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         self,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
-        twitchApiService: TwitchApiServiceInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchApiService, TwitchApiServiceInterface):
-            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
-        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
     async def __notifyChatOfPollResults(self, pollData: AbsTwitchPollHandler.PollData):
