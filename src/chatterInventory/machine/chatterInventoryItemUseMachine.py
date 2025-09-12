@@ -10,17 +10,22 @@ from frozenlist import FrozenList
 from .chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
 from ..exceptions import UnknownChatterItemTypeException
 from ..idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
-from ..listeners.useChatterItemEventListener import UseChatterItemEventListener
+from ..listeners.chatterItemEventListener import ChatterItemEventListener
+from ..models.absChatterItemAction import AbsChatterItemAction
 from ..models.chatterInventoryData import ChatterInventoryData
 from ..models.chatterItemType import ChatterItemType
+from ..models.events.absChatterItemEvent import AbsChatterItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
 from ..models.events.notEnoughInventoryChatterItemEvent import NotEnoughInventoryChatterItemEvent
+from ..models.events.tradeChatterItemEvent import TradeChatterItemEvent
+from ..models.events.tradeChatterItemTypeDisabledItemEvent import TradeChatterItemTypeDisabledItemEvent
+from ..models.events.tradeChatterNotEnoughInventoryItemEvent import TradeChatterNotEnoughInventoryItemEvent
 from ..models.events.useAirStrikeChatterItemEvent import UseAirStrikeChatterItemEvent
 from ..models.events.useBananaChatterItemEvent import UseBananaChatterItemEvent
 from ..models.events.useCassetteTapeChatterItemEvent import UseCassetteTapeChatterItemEvent
-from ..models.events.useChatterItemEvent import UseChatterItemEvent
 from ..models.events.useGrenadeChatterItemEvent import UseGrenadeChatterItemEvent
+from ..models.tradeChatterItemAction import TradeChatterItemAction
 from ..models.useChatterItemAction import UseChatterItemAction
 from ..repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
 from ..settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
@@ -37,6 +42,7 @@ from ...timeout.models.exactTimeoutDuration import ExactTimeoutDuration
 from ...timeout.models.randomLinearTimeoutDuration import RandomLinearTimeoutDuration
 from ...timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
@@ -60,6 +66,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
+        twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         sleepTimeSeconds: float = 0.5,
         queueTimeoutSeconds: int = 3,
@@ -82,6 +89,8 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
+            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
@@ -102,14 +111,15 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
         self.__isStarted: bool = False
-        self.__actionQueue: Final[SimpleQueue[UseChatterItemAction]] = SimpleQueue()
-        self.__eventQueue: Final[SimpleQueue[UseChatterItemEvent]] = SimpleQueue()
-        self.__eventListener: UseChatterItemEventListener | None = None
+        self.__actionQueue: Final[SimpleQueue[AbsChatterItemAction]] = SimpleQueue()
+        self.__eventQueue: Final[SimpleQueue[AbsChatterItemEvent]] = SimpleQueue()
+        self.__eventListener: ChatterItemEventListener | None = None
 
     async def __fetchTokensAndDetails(
         self,
@@ -258,8 +268,8 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             originatingAction = action,
         ))
 
-    async def __handleItemAction(self, action: UseChatterItemAction):
-        if not isinstance(action, UseChatterItemAction):
+    async def __handleItemAction(self, action: AbsChatterItemAction):
+        if not isinstance(action, AbsChatterItemAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
         if not await self.__chatterInventorySettings.isEnabled():
@@ -268,7 +278,91 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
                 originatingAction = action,
             ))
             return
-        elif action.itemType not in await self.__chatterInventorySettings.getEnabledItemTypes():
+
+        if isinstance(action, TradeChatterItemAction):
+            await self.__handleTradeItemAction(
+                action = action,
+            )
+
+        elif isinstance(action, UseChatterItemAction):
+            await self.__handleUseItemAction(
+                action = action,
+            )
+
+        else:
+            raise ValueError(f'Encountered unknown AbsChatterItemAction: \"{action}\"')
+
+    async def __handleTradeItemAction(self, action: TradeChatterItemAction):
+        if not isinstance(action, TradeChatterItemAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
+
+        if action.itemType not in await self.__chatterInventorySettings.getEnabledItemTypes():
+            await self.__submitEvent(TradeChatterItemTypeDisabledItemEvent(
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                originatingAction = action,
+            ))
+            return
+
+        fromChatterUserName = await self.__userIdsRepository.requireUserName(
+            userId = action.fromChatterUserId,
+            twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+                twitchChannelId = action.twitchChannelId,
+            ),
+        )
+
+        toChatterUserName = await self.__userIdsRepository.requireUserName(
+            userId = action.toChatterUserId,
+            twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+                twitchChannelId = action.twitchChannelId,
+            ),
+        )
+
+        fromChatterCurrentInventory = await self.__chatterInventoryRepository.get(
+            chatterUserId = action.fromChatterUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        tradeAmount = int(max(min(action.tradeAmount, fromChatterCurrentInventory[action.itemType]), 0))
+
+        if tradeAmount < 1:
+            await self.__submitEvent(TradeChatterNotEnoughInventoryItemEvent(
+                tradeAmount = tradeAmount,
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                fromChatterUserName = fromChatterUserName,
+                toChatterUserName = toChatterUserName,
+                originatingAction = action,
+            ))
+            return
+
+        toChatterInventory = await self.__chatterInventoryRepository.update(
+            itemType = action.itemType,
+            changeAmount = tradeAmount,
+            chatterUserId = action.toChatterUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        fromChatterInventory = await self.__chatterInventoryRepository.update(
+            itemType = action.itemType,
+            changeAmount = tradeAmount * -1,
+            chatterUserId = action.fromChatterUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        await self.__submitEvent(TradeChatterItemEvent(
+            fromChatterInventory = fromChatterInventory,
+            toChatterInventory = toChatterInventory,
+            tradeAmount = tradeAmount,
+            eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            fromChatterUserName = fromChatterUserName,
+            toChatterUserName = toChatterUserName,
+            originatingAction = action,
+        ))
+
+    async def __handleUseItemAction(self, action: UseChatterItemAction):
+        if not isinstance(action, UseChatterItemAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
+
+        if action.itemType not in await self.__chatterInventorySettings.getEnabledItemTypes():
             await self.__submitEvent(DisabledItemTypeChatterItemEvent(
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
                 originatingAction = action,
@@ -319,8 +413,8 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             case _:
                 raise UnknownChatterItemTypeException(f'Encountered unknown ChatterItemType: \"{action}\"')
 
-    def setEventListener(self, listener: UseChatterItemEventListener | None):
-        if listener is not None and not isinstance(listener, UseChatterItemEventListener):
+    def setEventListener(self, listener: ChatterItemEventListener | None):
+        if listener is not None and not isinstance(listener, ChatterItemEventListener):
             raise TypeError(f'listener argument is malformed: \"{listener}\"')
 
         self.__eventListener = listener
@@ -337,7 +431,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
 
     async def __startActionLoop(self):
         while True:
-            actions: FrozenList[UseChatterItemAction] = FrozenList()
+            actions: FrozenList[AbsChatterItemAction] = FrozenList()
 
             try:
                 while not self.__actionQueue.empty():
@@ -361,7 +455,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             eventListener = self.__eventListener
 
             if eventListener is not None:
-                events: FrozenList[UseChatterItemEvent] = FrozenList()
+                events: FrozenList[AbsChatterItemEvent] = FrozenList()
 
                 try:
                     while not self.__eventQueue.empty():
@@ -374,14 +468,14 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
 
                 for index, event in enumerate(events):
                     try:
-                        await eventListener.onNewUseChatterItemEvent(event)
+                        await eventListener.onNewChatterItemEvent(event)
                     except Exception as e:
                         self.__timber.log('ChatterInventoryItemUseMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({index=}) ({event=}): {e}', e, traceback.format_exc())
 
             await asyncio.sleep(self.__sleepTimeSeconds)
 
-    def submitAction(self, action: UseChatterItemAction):
-        if not isinstance(action, UseChatterItemAction):
+    def submitAction(self, action: AbsChatterItemAction):
+        if not isinstance(action, AbsChatterItemAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
         try:
@@ -389,8 +483,8 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         except queue.Full as e:
             self.__timber.log('ChatterInventoryItemUseMachine', f'Encountered queue.Full when submitting a new action ({action}) into the action queue (queue size: {self.__actionQueue.qsize()}): {e}', e, traceback.format_exc())
 
-    async def __submitEvent(self, event: UseChatterItemEvent):
-        if not isinstance(event, UseChatterItemEvent):
+    async def __submitEvent(self, event: AbsChatterItemEvent):
+        if not isinstance(event, AbsChatterItemEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
         try:

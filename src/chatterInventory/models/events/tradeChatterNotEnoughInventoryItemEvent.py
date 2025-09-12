@@ -2,12 +2,16 @@ from dataclasses import dataclass
 
 from .absChatterItemEvent import AbsChatterItemEvent
 from ..absChatterItemAction import AbsChatterItemAction
+from ..tradeChatterItemAction import TradeChatterItemAction
 
 
 @dataclass(frozen = True)
-class DisabledFeatureChatterItemEvent(AbsChatterItemEvent):
+class TradeChatterNotEnoughInventoryItemEvent(AbsChatterItemEvent):
+    tradeAmount: int
     eventId: str
-    originatingAction: AbsChatterItemAction
+    fromChatterUserName: str
+    toChatterUserName: str
+    originatingAction: TradeChatterItemAction
 
     def getEventId(self) -> str:
         return self.eventId

@@ -6,6 +6,7 @@ from .timeoutCheerAction import TimeoutCheerAction
 from .timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .timeoutCheerActionTargetType import TimeoutCheerActionTargetType
 from ..absCheerAction import AbsCheerAction
+from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ...misc import utils as utils
 from ...timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
 from ...timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
@@ -83,6 +84,8 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
         actionId = await self.__timeoutIdGenerator.generateActionId()
 
+        streamStatusRequirement = await self.__mapStreamStatusRequirement(action.streamStatusRequirement)
+
         timeoutAction: AbsTimeoutAction
 
         if action.targetType is TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY:
@@ -98,7 +101,7 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
                 twitchChannelId = twitchChannelId,
                 twitchChatMessageId = twitchChatMessageId,
                 userTwitchAccessToken = userTwitchAccessToken,
-                streamStatusRequirement = TimeoutStreamStatusRequirement.ANY,
+                streamStatusRequirement = streamStatusRequirement,
                 user = user,
             )
         else:
@@ -112,9 +115,26 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
                 twitchChannelId = twitchChannelId,
                 twitchChatMessageId = twitchChatMessageId,
                 userTwitchAccessToken = userTwitchAccessToken,
-                streamStatusRequirement = TimeoutStreamStatusRequirement.ANY,
+                streamStatusRequirement = streamStatusRequirement,
                 user = user,
             )
 
         self.__timeoutActionMachine.submitAction(timeoutAction)
         return True
+
+    async def __mapStreamStatusRequirement(
+        self,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+    ) -> TimeoutStreamStatusRequirement:
+        match streamStatusRequirement:
+            case CheerActionStreamStatusRequirement.ANY:
+                return TimeoutStreamStatusRequirement.ANY
+
+            case CheerActionStreamStatusRequirement.ONLINE:
+                return TimeoutStreamStatusRequirement.ONLINE
+
+            case CheerActionStreamStatusRequirement.OFFLINE:
+                return TimeoutStreamStatusRequirement.OFFLINE
+
+            case _:
+                raise ValueError(f'Encountered unknown CheerActionStreamStatusRequirement value: \"{streamStatusRequirement}\"')

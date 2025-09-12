@@ -1,13 +1,12 @@
 from dataclasses import dataclass
 
-from .useChatterItemEvent import UseChatterItemEvent
-from ..chatterItemType import ChatterItemType
+from .absChatterItemEvent import AbsChatterItemEvent
 from ..itemDetails.grenadeItemDetails import GrenadeItemDetails
 from ..useChatterItemAction import UseChatterItemAction
 
 
 @dataclass(frozen = True)
-class UseGrenadeChatterItemEvent(UseChatterItemEvent):
+class UseGrenadeChatterItemEvent(AbsChatterItemEvent):
     itemDetails: GrenadeItemDetails
     eventId: str
     originatingAction: UseChatterItemAction
@@ -17,7 +16,3 @@ class UseGrenadeChatterItemEvent(UseChatterItemEvent):
 
     def getOriginatingAction(self) -> UseChatterItemAction:
         return self.originatingAction
-
-    @property
-    def itemType(self) -> ChatterItemType:
-        return ChatterItemType.GRENADE

@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from .api.models.twitchHypeTrainType import TwitchHypeTrainType
 from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from .api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..users.userInterface import UserInterface
 
 
@@ -13,8 +14,10 @@ class AbsTwitchHypeTrainHandler(ABC):
         isSharedTrain: bool
         level: int
         total: int
+        hypeTrainId: str
         twitchChannelId: str
         hypeTrainType: TwitchHypeTrainType
+        subscriptionType: TwitchWebsocketSubscriptionType
         user: UserInterface
 
     @abstractmethod

@@ -54,6 +54,8 @@ class User(UserInterface):
         isGiveCutenessEnabled: bool,
         isJishoEnabled: bool,
         isLoremIpsumEnabled: bool,
+        isNotifyOfHypeTrainProgressEnabled: bool,
+        isNotifyOfHypeTrainStartEnabled: bool,
         isNotifyOfPollResultsEnabled: bool,
         isNotifyOfPollStartEnabled: bool,
         isNotifyOfPredictionResultsEnabled: bool,
@@ -194,6 +196,10 @@ class User(UserInterface):
             raise TypeError(f'isJishoEnabled argument is malformed: \"{isJishoEnabled}\"')
         elif not utils.isValidBool(isLoremIpsumEnabled):
             raise TypeError(f'isLoremIpsumEnabled argument is malformed: \"{isLoremIpsumEnabled}\"')
+        elif not utils.isValidBool(isNotifyOfHypeTrainProgressEnabled):
+            raise TypeError(f'isNotifyOfHypeTrainProgressEnabled argument is malformed: \"{isNotifyOfHypeTrainProgressEnabled}\"')
+        elif not utils.isValidBool(isNotifyOfHypeTrainStartEnabled):
+            raise TypeError(f'isNotifyOfHypeTrainStartEnabled argument is malformed: \"{isNotifyOfHypeTrainStartEnabled}\"')
         elif not utils.isValidBool(isNotifyOfPollResultsEnabled):
             raise TypeError(f'isNotifyOfPollResultsEnabled argument is malformed: \"{isNotifyOfPollResultsEnabled}\"')
         elif not utils.isValidBool(isNotifyOfPollStartEnabled):
@@ -387,6 +393,8 @@ class User(UserInterface):
         self.__isGiveCutenessEnabled: Final[bool] = isGiveCutenessEnabled
         self.__isJishoEnabled: Final[bool] = isJishoEnabled
         self.__isLoremIpsumEnabled: bool = isLoremIpsumEnabled
+        self.__isNotifyOfHypeTrainProgressEnabled: Final[bool] = isNotifyOfHypeTrainProgressEnabled
+        self.__isNotifyOfHypeTrainStartEnabled: Final[bool] = isNotifyOfHypeTrainStartEnabled
         self.__isNotifyOfPollResultsEnabled: bool = isNotifyOfPollResultsEnabled
         self.__isNotifyOfPollStartEnabled: bool = isNotifyOfPollStartEnabled
         self.__isNotifyOfPredictionResultsEnabled: bool = isNotifyOfPredictionResultsEnabled
@@ -789,6 +797,14 @@ class User(UserInterface):
     @property
     def isLoremIpsumEnabled(self) -> bool:
         return self.__isLoremIpsumEnabled
+
+    @property
+    def isNotifyOfHypeTrainProgressEnabled(self) -> bool:
+        return self.__isNotifyOfHypeTrainProgressEnabled
+
+    @property
+    def isNotifyOfHypeTrainStartEnabled(self) -> bool:
+        return self.__isNotifyOfHypeTrainStartEnabled
 
     @property
     def isNotifyOfPollResultsEnabled(self) -> bool:

@@ -1,13 +1,12 @@
 from dataclasses import dataclass
 
-from .useChatterItemEvent import UseChatterItemEvent
+from .absChatterItemEvent import AbsChatterItemEvent
 from ..chatterInventoryData import ChatterInventoryData
-from ..chatterItemType import ChatterItemType
 from ..useChatterItemAction import UseChatterItemAction
 
 
 @dataclass(frozen = True)
-class NotEnoughInventoryChatterItemEvent(UseChatterItemEvent):
+class NotEnoughInventoryChatterItemEvent(AbsChatterItemEvent):
     chatterInventory: ChatterInventoryData
     eventId: str
     originatingAction: UseChatterItemAction
@@ -17,7 +16,3 @@ class NotEnoughInventoryChatterItemEvent(UseChatterItemEvent):
 
     def getOriginatingAction(self) -> UseChatterItemAction:
         return self.originatingAction
-
-    @property
-    def itemType(self) -> ChatterItemType:
-        return self.originatingAction.itemType

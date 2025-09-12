@@ -89,6 +89,13 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     fallback = 'Grenade 3.mp3'
                 )
 
+            case SoundAlert.HYPE_TRAIN:
+                return utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'hypeTrainFilePath',
+                    fallback = 'Hype Train.mp3'
+                )
+
             case SoundAlert.JACKPOT:
                 return utils.getStrFromDict(
                     d = jsonContents,

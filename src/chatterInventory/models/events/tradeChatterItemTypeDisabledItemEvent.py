@@ -2,12 +2,13 @@ from dataclasses import dataclass
 
 from .absChatterItemEvent import AbsChatterItemEvent
 from ..absChatterItemAction import AbsChatterItemAction
+from ..tradeChatterItemAction import TradeChatterItemAction
 
 
 @dataclass(frozen = True)
-class DisabledFeatureChatterItemEvent(AbsChatterItemEvent):
+class TradeChatterItemTypeDisabledItemEvent(AbsChatterItemEvent):
     eventId: str
-    originatingAction: AbsChatterItemAction
+    originatingAction: TradeChatterItemAction
 
     def getEventId(self) -> str:
         return self.eventId
