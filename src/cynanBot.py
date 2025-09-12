@@ -981,8 +981,8 @@ class CynanBot(
             self.__playVoicemailCommand: AbsChatCommand = StubChatCommand()
             self.__voicemailsCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__playVoicemailCommand: AbsChatCommand = PlayVoicemailChatCommand(compositeTtsManagerProvider, streamAlertsManager, timber, timeZoneRepository, twitchUtils, usersRepository, voicemailHelper, voicemailSettingsRepository)
-            self.__voicemailsCommand: AbsChatCommand = VoicemailsChatCommand(timber, timeZoneRepository, twitchTokensUtils, twitchUtils, userIdsRepository, usersRepository, voicemailHelper, voicemailSettingsRepository)
+            self.__playVoicemailCommand: AbsChatCommand = PlayVoicemailChatCommand(compositeTtsManagerProvider, streamAlertsManager, timber, timeZoneRepository, twitchChatMessenger, usersRepository, voicemailHelper, voicemailSettingsRepository)
+            self.__voicemailsCommand: AbsChatCommand = VoicemailsChatCommand(timber, timeZoneRepository, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository, voicemailHelper, voicemailSettingsRepository)
 
         if wordOfTheDayPresenter is None or wordOfTheDayRepository is None:
             self.__wordCommand: AbsChatCommand = StubChatCommand()

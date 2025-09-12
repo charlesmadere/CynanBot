@@ -10,9 +10,9 @@ from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.simpleDateTime import SimpleDateTime
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.exceptions import NoSuchUserException
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
@@ -33,8 +33,8 @@ class VoicemailsChatCommand(AbsChatCommand):
         self,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
         voicemailHelper: VoicemailHelperInterface,
@@ -44,10 +44,10 @@ class VoicemailsChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -59,8 +59,8 @@ class VoicemailsChatCommand(AbsChatCommand):
 
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
         self.__voicemailHelper: Final[VoicemailHelperInterface] = voicemailHelper
@@ -86,20 +86,20 @@ class VoicemailsChatCommand(AbsChatCommand):
         except NoSuchUserException as e:
             self.__timber.log('VoicemailsChatCommand', f'Failed to find user ID information for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({messageContent=})', e, traceback.format_exc())
 
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'⚠ Failed to find voicemail info for the given user',
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Failed to find voicemail info for the given user',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
             )
 
             return
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = await self.__toString(
+        self.__twitchChatMessenger.send(
+            text = await self.__toString(
                 ctx = ctx,
                 voicemailLookupData = voicemailLookupData
             ),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             replyMessageId = await ctx.getMessageId()
         )
 

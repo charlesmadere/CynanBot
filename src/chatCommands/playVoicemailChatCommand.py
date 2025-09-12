@@ -10,8 +10,8 @@ from ..timber.timberInterface import TimberInterface
 from ..tts.models.ttsEvent import TtsEvent
 from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 from ..voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
 from ..voicemail.models.preparedVoicemailData import PreparedVoicemailData
@@ -26,7 +26,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         usersRepository: UsersRepositoryInterface,
         voicemailHelper: VoicemailHelperInterface,
         voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
@@ -39,8 +39,8 @@ class PlayVoicemailChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not isinstance(voicemailHelper, VoicemailHelperInterface):
@@ -52,7 +52,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
         self.__voicemailHelper: Final[VoicemailHelperInterface] = voicemailHelper
         self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
@@ -106,10 +106,10 @@ class PlayVoicemailChatCommand(AbsChatCommand):
 
             await compositeTtsManager.playTtsEvent(ttsEvent)
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = await self.__toString(voicemail),
-            replyMessageId = await ctx.getMessageId()
+        self.__twitchChatMessenger.send(
+            text = await self.__toString(voicemail),
+            twitchChannelId = await ctx.getTwitchChannelId(),
+            replyMessageId = await ctx.getMessageId(),
         )
 
         self.__timber.log('PlayVoicemailChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
