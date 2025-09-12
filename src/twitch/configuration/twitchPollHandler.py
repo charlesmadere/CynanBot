@@ -113,7 +113,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         elif pollData.subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
             return
 
-        # TODO
+        # intentionally empty for now
         pass
 
     async def onNewPoll(self, pollData: AbsTwitchPollHandler.PollData):

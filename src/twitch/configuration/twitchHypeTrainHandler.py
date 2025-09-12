@@ -108,7 +108,7 @@ class TwitchHypeTrainHandler(AbsTwitchHypeTrainHandler):
         elif hypeTrainData.subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_BEGIN:
             return
 
-        # TODO
+        # intentionally empty for now
         pass
 
     async def onNewHypeTrain(self, hypeTrainData: AbsTwitchHypeTrainHandler.HypeTrainData):

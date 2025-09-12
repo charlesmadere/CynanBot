@@ -101,7 +101,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         elif predictionData.subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
             return
 
-        # TODO
+        # intentionally empty for now
         pass
 
     async def __notifyWebsocketOfPredictionEvent(self, predictionData: AbsTwitchPredictionHandler.PredictionData):
