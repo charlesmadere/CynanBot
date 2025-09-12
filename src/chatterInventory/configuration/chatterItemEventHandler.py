@@ -1,3 +1,4 @@
+import locale
 from typing import Final
 
 from .absChatterItemEventHandler import AbsChatterItemEventHandler
@@ -161,8 +162,17 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
         self,
         event: TradeChatterItemEvent,
     ):
-        # TODO
-        pass
+        fromChatterQuantity = event.fromChatterInventory[event.getItemType()]
+        fromChatterQuantityString = locale.format_string("%d", fromChatterQuantity, grouping = True)
+
+        toChatterQuantity = event.toChatterInventory[event.getItemType()]
+        toChatterQuantityString = locale.format_string("%d", toChatterQuantity, grouping = True)
+
+        self.__twitchChatMessenger.send(
+            text = f'ⓘ New {event.getItemType().humanName} counts — @{event.fromChatterInventory} {fromChatterQuantityString}, @{event.toChatterUserName} {toChatterQuantityString}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     def setTwitchConnectionReadinessProvider(self, provider: TwitchConnectionReadinessProvider | None):
         if provider is not None and not isinstance(provider, TwitchConnectionReadinessProvider):
