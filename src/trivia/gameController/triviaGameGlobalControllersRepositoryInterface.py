@@ -13,7 +13,7 @@ class TriviaGameGlobalControllersRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def addController(
         self,
-        userName: str
+        userName: str,
     ) -> AddTriviaGameControllerResult:
         pass
 
@@ -24,6 +24,6 @@ class TriviaGameGlobalControllersRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def removeController(
         self,
-        userName: str
+        userName: str,
     ) -> RemoveTriviaGameControllerResult:
         pass

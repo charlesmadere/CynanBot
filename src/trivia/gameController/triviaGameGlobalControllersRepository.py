@@ -49,7 +49,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
 
     async def addController(
         self,
-        userName: str
+        userName: str,
     ) -> AddTriviaGameControllerResult:
         if not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')

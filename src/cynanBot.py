@@ -884,8 +884,8 @@ class CynanBot(
             self.__removeGlobalTriviaControllerChatCommand: AbsChatCommand = StubChatCommand()
             self.__unbanTriviaQuestionChatCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__addGlobalTriviaControllerCommand: AbsChatCommand = AddGlobalTriviaControllerChatCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, authRepository, twitchUtils, usersRepository)
-            self.__addTriviaControllerCommand: AbsChatCommand = AddTriviaControllerChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, authRepository, twitchUtils, usersRepository)
+            self.__addGlobalTriviaControllerCommand: AbsChatCommand = AddGlobalTriviaControllerChatCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchChatMessenger, authRepository, usersRepository)
+            self.__addTriviaControllerCommand: AbsChatCommand = AddTriviaControllerChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchChatMessenger, authRepository, usersRepository)
             self.__addTriviaAnswerCommand: AbsChatCommand = AddTriviaAnswerChatCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__answerCommand: AbsChatCommand = AnswerChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
             self.__banTriviaQuestionCommand: AbsChatCommand = BanTriviaQuestionChatCommand(generalSettingsRepository, timber, timeZoneRepository, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
