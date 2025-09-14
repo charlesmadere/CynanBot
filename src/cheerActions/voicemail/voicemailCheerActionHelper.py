@@ -83,7 +83,7 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
             return None
 
         targetedUserName = utils.removePreceedingAt(splits[0])
-        if not utils.isValidStr(targetedUserName):
+        if not utils.isValidStr(targetedUserName) or not utils.strContainsAlphanumericCharacters(targetedUserName):
             self.__timber.log('VoicemailCheerActionHelper', f'Received voicemail cheer action without a valid targeted user name ({message=}) ({cleanedMessage=}) ({splits=}) ({targetedUserName=})')
             return None
 
