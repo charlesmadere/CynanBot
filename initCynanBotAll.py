@@ -2335,6 +2335,55 @@ timeoutActionSettings: TimeoutActionSettingsInterface = TimeoutActionSettings(
 )
 
 
+######################################
+## Voicemail initialization section ##
+######################################
+
+voicemailSettingsRepository: VoicemailSettingsRepositoryInterface = VoicemailSettingsRepository(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/voicemailSettingsRepository.json'
+    )
+)
+
+voicemailIdGenerator: VoicemailIdGeneratorInterface = VoicemailIdGenerator()
+
+voicemailsRepository: VoicemailsRepositoryInterface = VoicemailsRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    voicemailIdGenerator = voicemailIdGenerator
+)
+
+voicemailHelper: VoicemailHelperInterface = VoicemailHelper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchTokensUtils = twitchTokensUtils,
+    userIdsRepository = userIdsRepository,
+    voicemailsRepository = voicemailsRepository,
+    voicemailSettingsRepository = voicemailSettingsRepository
+)
+
+voicemailChatAction = VoicemailChatAction(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchChatMessenger = twitchChatMessenger,
+    voicemailHelper = voicemailHelper,
+    voicemailSettingsRepository = voicemailSettingsRepository,
+)
+
+voicemailPointRedemption = VoicemailPointRedemption(
+    activeChattersRepository = activeChattersRepository,
+    timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository,
+    voicemailHelper = voicemailHelper,
+    voicemailSettingsRepository = voicemailSettingsRepository,
+)
+
+
 ##############################################
 ## Chatter Inventory initialization section ##
 ##############################################
@@ -2452,6 +2501,7 @@ chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface = Chatte
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
+    voicemailHelper = voicemailHelper,
 )
 
 itemRequestMessageParser = ItemRequestMessageParser(
@@ -2701,67 +2751,6 @@ crowdControlActionHandler: CrowdControlActionHandler = BizhawkActionHandler(
 )
 
 
-######################################
-## Voicemail initialization section ##
-######################################
-
-voicemailSettingsRepository: VoicemailSettingsRepositoryInterface = VoicemailSettingsRepository(
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/voicemailSettingsRepository.json'
-    )
-)
-
-voicemailIdGenerator: VoicemailIdGeneratorInterface = VoicemailIdGenerator()
-
-voicemailsRepository: VoicemailsRepositoryInterface = VoicemailsRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    voicemailIdGenerator = voicemailIdGenerator
-)
-
-voicemailHelper: VoicemailHelperInterface = VoicemailHelper(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
-    voicemailsRepository = voicemailsRepository,
-    voicemailSettingsRepository = voicemailSettingsRepository
-)
-
-voicemailChatAction = VoicemailChatAction(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    twitchChatMessenger = twitchChatMessenger,
-    voicemailHelper = voicemailHelper,
-    voicemailSettingsRepository = voicemailSettingsRepository,
-)
-
-voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheerActionHelper(
-    activeChattersRepository = activeChattersRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
-    useChatterItemHelper = useChatterItemHelper,
-    userIdsRepository = userIdsRepository,
-    voicemailHelper = voicemailHelper,
-    voicemailSettingsRepository = voicemailSettingsRepository,
-)
-
-voicemailPointRedemption = VoicemailPointRedemption(
-    activeChattersRepository = activeChattersRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
-    voicemailHelper = voicemailHelper,
-    voicemailSettingsRepository = voicemailSettingsRepository,
-)
-
-
 ##########################################
 ## Cheer Actions initialization section ##
 ##########################################
@@ -2782,6 +2771,13 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
     timber = timber
 )
 
+airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheerActionHelper(
+    timber = timber,
+    timeoutActionMachine = timeoutActionMachine,
+    timeoutActionSettings = timeoutActionSettings,
+    timeoutIdGenerator = timeoutIdGenerator,
+)
+
 beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface = BeanChanceCheerActionHelper(
     beanStatsRepository = beanStatsRepository,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
@@ -2791,10 +2787,11 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface = BeanChanceCh
 )
 
 soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface = SoundAlertCheerActionHelper(
+    backgroundTaskHelper = backgroundTaskHelper,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-    timber = timber
+    timber = timber,
 )
 
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerActionHelper(
@@ -2802,11 +2799,16 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerAction
     timeoutIdGenerator = timeoutIdGenerator,
 )
 
-airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheerActionHelper(
+voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheerActionHelper(
+    activeChattersRepository = activeChattersRepository,
     timber = timber,
-    timeoutActionMachine = timeoutActionMachine,
-    timeoutActionSettings = timeoutActionSettings,
-    timeoutIdGenerator = timeoutIdGenerator,
+    twitchChatMessenger = twitchChatMessenger,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils,
+    useChatterItemHelper = useChatterItemHelper,
+    userIdsRepository = userIdsRepository,
+    voicemailHelper = voicemailHelper,
+    voicemailSettingsRepository = voicemailSettingsRepository,
 )
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(

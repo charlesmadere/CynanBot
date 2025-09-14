@@ -45,6 +45,7 @@ from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensReposit
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ...voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
 
 
 class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
@@ -68,6 +69,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
+        voicemailHelper: VoicemailHelperInterface,
         sleepTimeSeconds: float = 0.5,
         queueTimeoutSeconds: int = 3,
     ):
@@ -93,6 +95,8 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(voicemailHelper, VoicemailHelperInterface):
+            raise TypeError(f'voicemailHelper argument is malformed: \"{voicemailHelper}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 0.25 or sleepTimeSeconds > 3:
@@ -113,6 +117,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__voicemailHelper: Final[VoicemailHelperInterface] = voicemailHelper
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
@@ -277,9 +282,8 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
                 originatingAction = action,
             ))
-            return
 
-        if isinstance(action, TradeChatterItemAction):
+        elif isinstance(action, TradeChatterItemAction):
             await self.__handleTradeItemAction(
                 action = action,
             )
