@@ -29,6 +29,7 @@ from ..models.tradeChatterItemAction import TradeChatterItemAction
 from ..models.useChatterItemAction import UseChatterItemAction
 from ..repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
 from ..settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
+from ..useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
@@ -45,7 +46,6 @@ from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensReposit
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ...voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
 
 
 class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
@@ -59,6 +59,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
+        cassetteTapeItemUseCase: CassetteTapeItemUseCase,
         chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface,
         chatterInventoryRepository: ChatterInventoryRepositoryInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
@@ -69,12 +70,13 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        voicemailHelper: VoicemailHelperInterface,
         sleepTimeSeconds: float = 0.5,
         queueTimeoutSeconds: int = 3,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(cassetteTapeItemUseCase, CassetteTapeItemUseCase):
+            raise TypeError(f'cassetteTapeItemUseCase argument is malformed: \"{cassetteTapeItemUseCase}\"')
         elif not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
             raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
         elif not isinstance(chatterInventoryRepository, ChatterInventoryRepositoryInterface):
@@ -95,8 +97,6 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(voicemailHelper, VoicemailHelperInterface):
-            raise TypeError(f'voicemailHelper argument is malformed: \"{voicemailHelper}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 0.25 or sleepTimeSeconds > 3:
@@ -107,6 +107,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__cassetteTapeItemUseCase: Final[CassetteTapeItemUseCase] = cassetteTapeItemUseCase
         self.__chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = chatterInventoryIdGenerator
         self.__chatterInventoryRepository: Final[ChatterInventoryRepositoryInterface] = chatterInventoryRepository
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
@@ -117,7 +118,6 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
-        self.__voicemailHelper: Final[VoicemailHelperInterface] = voicemailHelper
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
@@ -229,6 +229,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         chatterInventory: ChatterInventoryData | None,
         action: UseChatterItemAction,
     ):
+        result = await self.__cassetteTapeItemUseCase.invoke(action)
         # TODO
         pass
 

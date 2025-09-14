@@ -63,6 +63,7 @@ from src.chatterInventory.repositories.chatterInventoryRepository import Chatter
 from src.chatterInventory.repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
 from src.chatterInventory.settings.chatterInventorySettings import ChatterInventorySettings
 from src.chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
+from src.chatterInventory.useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
 from src.chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
 from src.chatterPreferredTts.helper.chatterPreferredTtsHelper import ChatterPreferredTtsHelper
 from src.chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
@@ -1848,10 +1849,18 @@ timeoutEventHandler: AbsTimeoutEventHandler = TimeoutEventHandler(
     twitchChatMessenger = twitchChatMessenger,
 )
 
+cassetteTapeItemUseCase = CassetteTapeItemUseCase(
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    voicemailHelper = voicemailHelper,
+    voicemailSettingsRepository = voicemailSettingsRepository,
+)
+
 chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface = ChatterInventoryIdGenerator()
 
 chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface = ChatterInventoryItemUseMachine(
     backgroundTaskHelper = backgroundTaskHelper,
+    cassetteTapeItemUseCase = cassetteTapeItemUseCase,
     chatterInventoryIdGenerator = chatterInventoryIdGenerator,
     chatterInventoryRepository = chatterInventoryRepository,
     chatterInventorySettings = chatterInventorySettings,
@@ -1862,7 +1871,6 @@ chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface = Chatte
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
-    voicemailHelper = voicemailHelper,
 )
 
 itemRequestMessageParser = ItemRequestMessageParser(

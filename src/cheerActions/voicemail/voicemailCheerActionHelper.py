@@ -7,6 +7,10 @@ from .voicemailCheerAction import VoicemailCheerAction
 from .voicemailCheerActionHelperInterface import VoicemailCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
 from ...chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
+from ...chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
+from ...chatterInventory.models.chatterItemType import ChatterItemType
+from ...chatterInventory.models.useChatterItemRequest import UseChatterItemRequest
+from ...chatterInventory.models.useChatterItemResult import UseChatterItemResult
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
@@ -31,6 +35,7 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
     def __init__(
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
+        chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
@@ -42,6 +47,8 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
+            raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
@@ -60,6 +67,7 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
             raise TypeError(f'voicemailSettingsRepository argument is malformed: \"{voicemailSettingsRepository}\"')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
+        self.__chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = chatterInventoryIdGenerator
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface] = twitchFollowingStatusRepository
@@ -118,6 +126,19 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
 
         if not isinstance(action, VoicemailCheerAction) or not action.isEnabled:
             return False
+
+        result = await self.__useChatterItemHelper.useItem(UseChatterItemRequest(
+            ignoreInventory = True,
+            itemType = ChatterItemType.CASSETTE_TAPE,
+            chatMessage = await self.__twitchMessageStringUtils.removeCheerStrings(message),
+            chatterUserId = cheerUserId,
+            requestId = await self.__chatterInventoryIdGenerator.generateRequestId(),
+            twitchChannelId = twitchChannelId,
+            twitchChatMessageId = twitchChatMessageId,
+            user = user,
+        ))
+
+        return result is UseChatterItemResult.OK
 
         targetedUserData = await self.__determineTargetedUser(
             message = message,
