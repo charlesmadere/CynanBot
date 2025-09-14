@@ -44,9 +44,8 @@ class GetBannedTriviaControllersChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        administrator = await self.__administratorProvider.getAdministratorUserId()
 
-        if ctx.getAuthorId() != administrator:
+        if ctx.getAuthorId() != await self.__administratorProvider.getAdministratorUserId():
             self.__timber.log('GetBannedTriviaControllersChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 

@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Collection
 
-from .gameController.triviaGameController import TriviaGameController
-from .gameController.triviaGameGlobalController import TriviaGameGlobalController
 from .questions.absTriviaQuestion import AbsTriviaQuestion
 from .score.triviaScoreResult import TriviaScoreResult
 from .specialStatus.shinyTriviaResult import ShinyTriviaResult
@@ -131,16 +129,14 @@ class TriviaUtilsInterface(ABC):
     @abstractmethod
     async def getTriviaGameControllers(
         self,
-        gameControllers: Collection[TriviaGameController] | None,
-        delimiter: str = ', '
+        gameControllers: Collection[str],
     ) -> str:
         pass
 
     @abstractmethod
     async def getTriviaGameGlobalControllers(
         self,
-        gameControllers: Collection[TriviaGameGlobalController] | None,
-        delimiter: str = ', '
+        gameControllers: Collection[str],
     ) -> str:
         pass
 
@@ -154,7 +150,7 @@ class TriviaUtilsInterface(ABC):
         userNameThatRedeemed: str,
         twitchUser: UserInterface,
         specialTriviaStatus: SpecialTriviaStatus | None = None,
-        delimiter: str = ' '
+        delimiter: str = ' ',
     ) -> str:
         pass
 

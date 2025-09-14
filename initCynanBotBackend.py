@@ -1227,16 +1227,11 @@ bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInte
 triviaGameControllersRepository: TriviaGameControllersRepositoryInterface = TriviaGameControllersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
 )
 
 triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface = TriviaGameGlobalControllersRepository(
-    administratorProvider = administratorProvider,
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
 )
 
 triviaDifficultyParser: TriviaDifficultyParserInterface = TriviaDifficultyParser()

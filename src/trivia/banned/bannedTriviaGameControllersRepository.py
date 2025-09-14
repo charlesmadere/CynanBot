@@ -44,27 +44,14 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
             self.__timber.log('BannedTriviaGameControllersRepository', f'Tried to add banned trivia game controller, but this user is the administrator ({userId=})')
             return AddBannedTriviaGameControllerResult.ERROR
 
-        connection = await self.__getDatabaseConnection()
-        record = await connection.fetchRow(
-            '''
-                SELECT COUNT(1) FROM bannedtriviagamecontrollers
-                WHERE userid = $1
-                LIMIT 1
-            ''',
-            userId
-        )
+        bannedControllers = await self.getBannedControllers()
 
-        count: int | None = None
-        if record is not None and len(record) >= 1:
-            count = record[0]
-
-        if utils.isValidInt(count) and count >= 1:
-            await connection.close()
-            self.__timber.log('BannedTriviaGameControllersRepository', f'Tried to add banned trivia game controller, but this user has already been banned ({userId=})')
+        if userId in bannedControllers:
             return AddBannedTriviaGameControllerResult.ALREADY_EXISTS
 
         self.__cache = None
 
+        connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
                 INSERT INTO bannedtriviagamecontrollers (userid)
@@ -83,9 +70,10 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
         self.__timber.log('BannedTriviaGameControllersRepository', 'Caches cleared')
 
     async def getBannedControllers(self) -> frozenset[str]:
-        cache = self.__cache
-        if cache is not None:
-            return cache
+        bannedControllers = self.__cache
+
+        if bannedControllers is not None:
+            return bannedControllers
 
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
@@ -147,27 +135,14 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        connection = await self.__backingDatabase.getConnection()
-        record = await connection.fetchRow(
-            '''
-                SELECT COUNT(1) FROM bannedtriviagamecontrollers
-                WHERE userid = $1
-                LIMIT 1
-            ''',
-            userId
-        )
+        bannedControllers = await self.getBannedControllers()
 
-        count: int | None = None
-        if record is not None and len(record) >= 1:
-            count = record[0]
-
-        if not utils.isValidInt(count) or count < 1:
-            await connection.close()
-            self.__timber.log('BannedTriviaGameControllersRepository', f'Tried to removed banned trivia game controller, but this user has not already been banned ({userId=})')
+        if userId not in bannedControllers:
             return RemoveBannedTriviaGameControllerResult.NOT_BANNED
 
         self.__cache = None
 
+        connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
                 DELETE FROM bannedtriviagamecontrollers
@@ -177,5 +152,5 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
         )
 
         await connection.close()
-        self.__timber.log('BannedTriviaGameControllersRepository', f'Removed banned trivia game controller ({userId=})')
+        self.__timber.log('BannedTriviaGameControllersRepository', f'Removed user from banned trivia game controllers ({userId=})')
         return RemoveBannedTriviaGameControllerResult.REMOVED

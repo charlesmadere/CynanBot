@@ -6,9 +6,7 @@ from typing import Collection
 from frozenlist import FrozenList
 
 from .banned.bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
-from .gameController.triviaGameController import TriviaGameController
 from .gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
-from .gameController.triviaGameGlobalController import TriviaGameGlobalController
 from .gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
 from .questions.absTriviaQuestion import AbsTriviaQuestion
@@ -525,7 +523,7 @@ class TriviaUtils(TriviaUtilsInterface):
         frozenBannedControllers.freeze()
 
         if len(frozenBannedControllers) == 0:
-            return f'ⓘ There are no banned trivia game controllers.'
+            return f'ⓘ There are no banned trivia game controllers'
 
         userNames: list[str] = list()
         for bannedController in frozenBannedControllers:
@@ -538,42 +536,46 @@ class TriviaUtils(TriviaUtilsInterface):
 
     async def getTriviaGameControllers(
         self,
-        gameControllers: Collection[TriviaGameController] | None,
-        delimiter: str = ', '
+        gameControllers: Collection[str],
     ) -> str:
-        if gameControllers is not None and not isinstance(gameControllers, Collection):
+        if not isinstance(gameControllers, Collection):
             raise TypeError(f'gameControllers argument is malformed: \"{gameControllers}\"')
-        elif not isinstance(delimiter, str):
-            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        if gameControllers is None or len(gameControllers) == 0:
-            return f'ⓘ Your channel has no trivia game controllers.'
+        frozenGameControllers: FrozenList[str] = FrozenList(gameControllers)
+        frozenGameControllers.freeze()
 
-        gameControllersNames: list[str] = list()
-        for gameController in gameControllers:
-            gameControllersNames.append(gameController.userName)
+        if len(frozenGameControllers) == 0:
+            return f'ⓘ Your channel has no trivia game controllers'
 
-        gameControllersStr = delimiter.join(gameControllersNames)
+        userNames: list[str] = list()
+        for gameController in frozenGameControllers:
+            userName = await self.__userIdsRepository.requireUserName(gameController)
+            userNames.append(userName)
+
+        userNames.sort(key = lambda userName: userName.casefold())
+        gameControllersStr = ', '.join(userNames)
         return f'ⓘ Your trivia game controllers — {gameControllersStr}'
 
     async def getTriviaGameGlobalControllers(
         self,
-        gameControllers: Collection[TriviaGameGlobalController] | None,
-        delimiter: str = ', '
+        gameControllers: Collection[str],
     ) -> str:
-        if gameControllers is not None and not isinstance(gameControllers, Collection):
+        if not isinstance(gameControllers, Collection):
             raise TypeError(f'gameControllers argument is malformed: \"{gameControllers}\"')
-        elif not isinstance(delimiter, str):
-            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        if gameControllers is None or len(gameControllers) == 0:
-            return f'ⓘ There are no global trivia game controllers.'
+        frozenGameControllers: FrozenList[str] = FrozenList(gameControllers)
+        frozenGameControllers.freeze()
 
-        gameControllersNames: list[str] = list()
-        for gameController in gameControllers:
-            gameControllersNames.append(gameController.userName)
+        if len(frozenGameControllers) == 0:
+            return f'ⓘ There are no global trivia game controllers'
 
-        gameControllersStr = delimiter.join(gameControllersNames)
+        userNames: list[str] = list()
+        for gameController in frozenGameControllers:
+            userName = await self.__userIdsRepository.requireUserName(gameController)
+            userNames.append(userName)
+
+        userNames.sort(key = lambda userName: userName.casefold())
+        gameControllersStr = ', '.join(userNames)
         return f'ⓘ Global trivia game controllers — {gameControllersStr}'
 
     async def getTriviaGameQuestionPrompt(
@@ -585,7 +587,7 @@ class TriviaUtils(TriviaUtilsInterface):
         userNameThatRedeemed: str,
         twitchUser: UserInterface,
         specialTriviaStatus: SpecialTriviaStatus | None = None,
-        delimiter: str = ' '
+        delimiter: str = ' ',
     ) -> str:
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
@@ -729,20 +731,10 @@ class TriviaUtils(TriviaUtilsInterface):
             return False
         elif userId == twitchChannelId:
             return True
-
-        gameControllers = await self.__triviaGameControllersRepository.getControllers(
-            twitchChannel = twitchUser.handle,
-            twitchChannelId = twitchChannelId,
-        )
-
-        for gameController in gameControllers:
-            if userId == gameController.userId:
-                return True
-
-        globalGameControllers = await self.__triviaGameGlobalControllersRepository.getControllers()
-        for globalGameController in globalGameControllers:
-            if userId == globalGameController.userId:
-                return True
-
-        administratorUserId = await self.__administratorProvider.getAdministratorUserId()
-        return userId == administratorUserId
+        elif userId in await self.__triviaGameControllersRepository.getControllers(twitchChannelId):
+            return True
+        elif userId in await self.__triviaGameGlobalControllersRepository.getControllers():
+            return True
+        else:
+            administratorUserId = await self.__administratorProvider.getAdministratorUserId()
+            return userId == administratorUserId

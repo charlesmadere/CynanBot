@@ -1,3 +1,5 @@
+from typing import Final
+
 from .banTriviaQuestionResult import BanTriviaQuestionResult
 from .bannedTriviaIdsRepositoryInterface import \
     BannedTriviaIdsRepositoryInterface
@@ -15,15 +17,15 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
     def __init__(
         self,
         backingDatabase: BackingDatabase,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timber: TimberInterface = timber
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timber: Final[TimberInterface] = timber
 
         self.__isDatabaseReady: bool = False
 

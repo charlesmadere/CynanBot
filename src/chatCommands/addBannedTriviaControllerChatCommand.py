@@ -1,4 +1,3 @@
-import traceback
 from typing import Final
 
 from .absChatCommand import AbsChatCommand
@@ -11,7 +10,7 @@ from ..trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..users.exceptions import NoSuchUserException
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
@@ -27,7 +26,7 @@ class AddBannedTriviaControllerChatCommand(AbsChatCommand):
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
-        twitchTokensRepository: TwitchTokensRepositoryInterface,
+        twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
     ):
@@ -41,8 +40,8 @@ class AddBannedTriviaControllerChatCommand(AbsChatCommand):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
+            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -53,7 +52,7 @@ class AddBannedTriviaControllerChatCommand(AbsChatCommand):
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
-        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
@@ -67,7 +66,7 @@ class AddBannedTriviaControllerChatCommand(AbsChatCommand):
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('AddBannedTriviaControllerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()}, but no arguments were supplied')
+            self.__timber.log('AddBannedTriviaControllerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()}, but no arguments were supplied ({splits=})')
 
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to add banned trivia controller as no username argument was given. Example: !addbannedtriviacontroller {twitchHandle}',
@@ -77,7 +76,7 @@ class AddBannedTriviaControllerChatCommand(AbsChatCommand):
             return
 
         userName: str | None = utils.removePreceedingAt(splits[1])
-        if not utils.isValidStr(userName):
+        if not utils.isValidStr(userName) or not utils.strContainsAlphanumericCharacters(userName):
             self.__timber.log('AddBannedTriviaControllerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the username argument is malformed ({userName=})')
 
             self.__twitchChatMessenger.send(
@@ -87,17 +86,15 @@ class AddBannedTriviaControllerChatCommand(AbsChatCommand):
             )
             return
 
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-            twitchChannelId = await ctx.getTwitchChannelId(),
-        )
-
         try:
             userId = await self.__userIdsRepository.requireUserId(
                 userName = userName,
-                twitchAccessToken = twitchAccessToken,
+                twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+                    twitchChannelId = await ctx.getTwitchChannelId(),
+                ),
             )
-        except NoSuchUserException as e:
-            self.__timber.log('AddBannedTriviaControllerChatCommand', f'Failed to fetch user ID for the given username argument by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({userName=})', e, traceback.format_exc())
+        except NoSuchUserException:
+            self.__timber.log('AddBannedTriviaControllerChatCommand', f'Failed to fetch user ID for the given username argument by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({userName=})')
 
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to add banned trivia controller as no user ID could be found for the given username',
@@ -106,7 +103,9 @@ class AddBannedTriviaControllerChatCommand(AbsChatCommand):
             )
             return
 
-        result = await self.__bannedTriviaGameControllersRepository.addBannedController(userId)
+        result = await self.__bannedTriviaGameControllersRepository.addBannedController(
+            userId = userId,
+        )
 
         match result:
             case AddBannedTriviaGameControllerResult.ADDED:
@@ -129,15 +128,5 @@ class AddBannedTriviaControllerChatCommand(AbsChatCommand):
                     twitchChannelId = await ctx.getTwitchChannelId(),
                     replyMessageId = await ctx.getMessageId(),
                 )
-
-            case _:
-                self.__twitchChatMessenger.send(
-                    text = f'⚠ An unknown error occurred when trying to add @{userName} as a banned trivia game controller!',
-                    twitchChannelId = await ctx.getTwitchChannelId(),
-                    replyMessageId = await ctx.getMessageId(),
-                )
-
-                self.__timber.log('AddBannedTriviaControllerChatCommand', f'Encountered unknown AddBannedTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
-                raise ValueError(f'Encountered unknown AddBannedTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
         self.__timber.log('AddBannedTriviaControllerChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
