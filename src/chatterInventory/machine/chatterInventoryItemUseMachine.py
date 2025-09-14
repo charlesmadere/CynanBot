@@ -8,7 +8,7 @@ from typing import Final
 from frozenlist import FrozenList
 
 from .chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
-from ..exceptions import UnknownChatterItemTypeException
+from ..exceptions import CassetteTapeFeatureIsDisabledException, UnknownChatterItemTypeException
 from ..idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
 from ..listeners.chatterItemEventListener import ChatterItemEventListener
 from ..models.absChatterItemAction import AbsChatterItemAction
@@ -229,7 +229,17 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         chatterInventory: ChatterInventoryData | None,
         action: UseChatterItemAction,
     ):
-        result = await self.__cassetteTapeItemUseCase.invoke(action)
+        try:
+            result = await self.__cassetteTapeItemUseCase.invoke(
+                action = action,
+            )
+        except CassetteTapeFeatureIsDisabledException:
+            await self.__submitEvent(DisabledFeatureChatterItemEvent(
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                originatingAction = action,
+            ))
+            return
+
         # TODO
         pass
 
