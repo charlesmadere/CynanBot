@@ -136,11 +136,10 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
         ):
             self.__timber.log('VoicemailCheerActionHelper', f'Received voicemail cheer action but the targeted user is active in chat ({bits=}) ({twitchChannelId=}) ({cheerUserId=}) ({cheerUserName=}) ({message=}) ({action=}) ({targetedUserData=})')
 
-            await self.__sendMessage(
-                message = f'⚠ Sorry @{cheerUserName}, you can only send voicemails to users who aren\t active in chat.',
-                twitchChatMessageId = twitchChatMessageId,
-                user = user,
-                action = action,
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Sorry @{cheerUserName}, you can only send voicemails to users who aren\t active in chat.',
+                twitchChannelId = twitchChannelId,
+                replyMessageId = twitchChatMessageId,
             )
 
             return True
@@ -154,11 +153,10 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
         ):
             self.__timber.log('VoicemailCheerActionHelper', f'Received voicemail cheer action but the targeted user is not following the channel ({bits=}) ({twitchChannelId=}) ({cheerUserId=}) ({cheerUserName=}) ({message=}) ({action=}) ({targetedUserData=})')
 
-            await self.__sendMessage(
-                message = f'⚠ Sorry @{cheerUserName}, you can only send voicemails to users who are following the channel.',
-                twitchChatMessageId = twitchChatMessageId,
-                user = user,
-                action = action
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Sorry @{cheerUserName}, you can only send voicemails to users who are following the channel.',
+                twitchChannelId = twitchChannelId,
+                replyMessageId = twitchChatMessageId,
             )
 
             return True
@@ -176,68 +174,40 @@ class VoicemailCheerActionHelper(VoicemailCheerActionHelperInterface):
                 pass
 
             case AddVoicemailResult.MAXIMUM_FOR_TARGET_USER:
-                await self.__sendMessage(
-                    message = f'⚠ Sorry @{cheerUserName}, unfortunately @{targetedUserData.userName} has a full voicemail inbox',
-                    twitchChatMessageId = twitchChatMessageId,
-                    user = user,
-                    action = action
+                self.__twitchChatMessenger.send(
+                    text = f'⚠ Sorry @{cheerUserName}, unfortunately @{targetedUserData.userName} has a full voicemail inbox',
+                    twitchChannelId = twitchChannelId,
+                    replyMessageId = twitchChatMessageId,
                 )
 
             case AddVoicemailResult.MESSAGE_MALFORMED:
                 self.__timber.log('VoicemailCheerActionHelper', f'Tried setting a malformed voicemail message ({bits=}) ({twitchChannelId=}) ({cheerUserId=}) ({cheerUserName=}) ({message=}) ({action=}) ({targetedUserData=}) ({addVoicemailResult=})')
 
-                await self.__sendMessage(
-                    message = f'⚠ Sorry @{cheerUserName}, an unknown error occurred when setting your voicemail message for @{targetedUserData.userName}.',
-                    twitchChatMessageId = twitchChatMessageId,
-                    user = user,
-                    action = action
+                self.__twitchChatMessenger.send(
+                    text = f'⚠ Sorry @{cheerUserName}, an unknown error occurred when setting your voicemail message for @{targetedUserData.userName}.',
+                    twitchChannelId = twitchChannelId,
+                    replyMessageId = twitchChatMessageId,
                 )
 
             case AddVoicemailResult.OK:
-                await self.__sendMessage(
-                    message = f'☎️ @{cheerUserName} your voicemail message for @{targetedUserData.userName} has been sent!',
-                    twitchChatMessageId = twitchChatMessageId,
-                    user = user,
-                    action = action
+                self.__twitchChatMessenger.send(
+                    text = f'☎️ @{cheerUserName} your voicemail message for @{targetedUserData.userName} has been sent!',
+                    twitchChannelId = twitchChannelId,
+                    replyMessageId = twitchChatMessageId,
                 )
 
             case AddVoicemailResult.TARGET_USER_IS_ORIGINATING_USER:
-                await self.__sendMessage(
-                    message = f'⚠ Sorry @{cheerUserName}, you can\'t send yourself a voicemail',
-                    twitchChatMessageId = twitchChatMessageId,
-                    user = user,
-                    action = action
+                self.__twitchChatMessenger.send(
+                    text = f'⚠ Sorry @{cheerUserName}, you can\'t send yourself a voicemail',
+                    twitchChannelId = twitchChannelId,
+                    replyMessageId = twitchChatMessageId,
                 )
 
             case AddVoicemailResult.TARGET_USER_IS_TWITCH_CHANNEL_USER:
-                await self.__sendMessage(
-                    message = f'⚠ Sorry @{cheerUserName}, you can\'t send the streamer a voicemail',
-                    twitchChatMessageId = twitchChatMessageId,
-                    user = user,
-                    action = action
-                )
-
-            case _:
-                self.__timber.log('VoicemailCheerActionHelper', f'Encountered unknown AddVoicemailResult ({bits=}) ({twitchChannelId=}) ({cheerUserId=}) ({cheerUserName=}) ({message=}) ({action=}) ({targetedUserData=}) ({addVoicemailResult=})')
-
-                await self.__sendMessage(
-                    message = f'⚠ Sorry @{cheerUserName}, an unknown error occurred when setting your voicemail message for @{targetedUserData.userName}.',
-                    twitchChatMessageId = twitchChatMessageId,
-                    user = user,
-                    action = action
+                self.__twitchChatMessenger.send(
+                    text = f'⚠ Sorry @{cheerUserName}, you can\'t send the streamer a voicemail',
+                    twitchChannelId = twitchChannelId,
+                    replyMessageId = twitchChatMessageId,
                 )
 
         return True
-
-    async def __sendMessage(
-        self,
-        message: str,
-        twitchChatMessageId: str | None,
-        user: UserInterface,
-        action: VoicemailCheerAction,
-    ):
-        self.__twitchChatMessenger.send(
-            text = message,
-            twitchChannelId = action.twitchChannelId,
-            replyMessageId = twitchChatMessageId,
-        )
