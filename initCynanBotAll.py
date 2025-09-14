@@ -2809,6 +2809,7 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerAction
 
 voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheerActionHelper(
     activeChattersRepository = activeChattersRepository,
+    chatterInventoryIdGenerator = chatterInventoryIdGenerator,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
