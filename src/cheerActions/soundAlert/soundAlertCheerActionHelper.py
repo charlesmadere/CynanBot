@@ -1,9 +1,12 @@
+from typing import Final
+
 from frozendict import frozendict
 
 from .soundAlertCheerAction import SoundAlertCheerAction
 from .soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
 from ...misc import utils as utils
+from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
     SoundPlayerRandomizerHelperInterface
@@ -16,12 +19,15 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
-        if not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
@@ -30,10 +36,11 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
-        self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
-        self.__soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = soundPlayerRandomizerHelper
-        self.__timber: TimberInterface = timber
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
+        self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
+        self.__soundPlayerRandomizerHelper: Final[SoundPlayerRandomizerHelperInterface] = soundPlayerRandomizerHelper
+        self.__timber: Final[TimberInterface] = timber
 
     async def handleSoundAlertCheerAction(
         self,
@@ -78,36 +85,34 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
 
         if not isinstance(action, SoundAlertCheerAction) or not action.isEnabled:
             return False
+        elif not await self.__isLiveOnTwitchRepository.isLive(twitchChannelId):
+            self.__timber.log('SoundAlertCheerActionHelper', f'Received a sound alert CheerAction but the streamer is not currently live ({user.handle=}) ({action=})')
+            return False
 
-        return await self.__playSoundAlert(
+        self.__backgroundTaskHelper.createTask(self.__playSoundAlert(
             action = action,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
-            twitchChannelId = twitchChannelId,
-            user = user
-        )
+            user = user,
+        ))
+
+        return True
 
     async def __playSoundAlert(
         self,
         action: SoundAlertCheerAction,
         cheerUserId: str,
         cheerUserName: str,
-        twitchChannelId: str,
-        user: UserInterface
+        user: UserInterface,
     ):
-        if not await self.__isLiveOnTwitchRepository.isLive(twitchChannelId):
-            self.__timber.log('SoundAlertCheerActionHelper', f'Received a sound alert CheerAction but the streamer is not currently live ({user.handle=}) ({action=})')
-            return False
-
         soundAlertPath = await self.__soundPlayerRandomizerHelper.chooseRandomFromDirectorySoundAlert(
-            directoryPath = action.directory
+            directoryPath = action.directory,
         )
 
         if not utils.isValidStr(soundAlertPath):
-            return False
+            return
 
-        self.__timber.log('SoundAlertCheertActionHelper', f'Playing sound alert CheerAction from {cheerUserName}:{cheerUserId} ({soundAlertPath=}) ({user.handle=}) ({action=})')
+        self.__timber.log('SoundAlertCheerActionHelper', f'Playing sound alert CheerAction from {cheerUserName}:{cheerUserId} ({soundAlertPath=}) ({user.handle=}) ({action=})')
+
         soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
         await soundPlayerManager.playSoundFile(soundAlertPath)
-
-        return True
