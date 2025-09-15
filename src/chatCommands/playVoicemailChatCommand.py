@@ -29,7 +29,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         twitchChatMessenger: TwitchChatMessengerInterface,
         usersRepository: UsersRepositoryInterface,
         voicemailHelper: VoicemailHelperInterface,
-        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
+        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface,
     ):
         if not isinstance(compositeTtsManagerProvider, CompositeTtsManagerProviderInterface):
             raise TypeError(f'compositeTtsManagerProvider argument is malformed: \"{compositeTtsManagerProvider}\"')
@@ -67,7 +67,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
 
         voicemail = await self.__voicemailHelper.popForTargetUser(
             targetUserId = ctx.getAuthorId(),
-            twitchChannelId = await ctx.getTwitchChannelId()
+            twitchChannelId = await ctx.getTwitchChannelId(),
         )
 
         if voicemail is None:
@@ -89,7 +89,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
             donation = None,
             provider = user.defaultTtsProvider,
             providerOverridableStatus = providerOverridableStatus,
-            raidInfo = None
+            raidInfo = None,
         )
 
         if await self.__voicemailSettingsRepository.useMessageQueueing():
@@ -97,11 +97,11 @@ class PlayVoicemailChatCommand(AbsChatCommand):
                 soundAlert = None,
                 twitchChannel = user.handle,
                 twitchChannelId = await ctx.getTwitchChannelId(),
-                ttsEvent = ttsEvent
+                ttsEvent = ttsEvent,
             ))
         else:
             compositeTtsManager = self.__compositeTtsManagerProvider.constructNewInstance(
-                useSharedSoundPlayerManager = False
+                useSharedSoundPlayerManager = False,
             )
 
             await compositeTtsManager.playTtsEvent(ttsEvent)
