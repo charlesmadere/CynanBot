@@ -447,12 +447,9 @@ class TestChatterInventoryMapper:
         }
 
         result = await self.mapper.serializeInventory(inventory)
-        assert len(result) == len(ChatterItemType)
+        assert len(result) == 1
 
         assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == airStrikes
-        assert result[await self.mapper.serializeItemType(ChatterItemType.BANANA)] == 0
-        assert result[await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE)] == 0
-        assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == 0
 
     @pytest.mark.asyncio
     async def test_serializeInventory2(self):
@@ -463,11 +460,8 @@ class TestChatterInventoryMapper:
         }
 
         result = await self.mapper.serializeInventory(inventory)
-        assert len(result) == len(ChatterItemType)
+        assert len(result) == 1
 
-        assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == 0
-        assert result[await self.mapper.serializeItemType(ChatterItemType.BANANA)] == 0
-        assert result[await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE)] == 0
         assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == grenades
 
     @pytest.mark.asyncio
@@ -495,20 +489,12 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_serializeInventory_withEmptyDictionary(self):
         result = await self.mapper.serializeInventory(dict())
-        assert len(result) == len(ChatterItemType)
-
-        for itemType in ChatterItemType:
-            itemTypeString = await self.mapper.serializeItemType(itemType)
-            assert result[itemTypeString] == 0
+        assert len(result) == 0
 
     @pytest.mark.asyncio
     async def test_serializeInventory_withEmptyFrozenDictionary(self):
         result = await self.mapper.serializeInventory(frozendict())
-        assert len(result) == len(ChatterItemType)
-
-        for itemType in ChatterItemType:
-            itemTypeString = await self.mapper.serializeItemType(itemType)
-            assert result[itemTypeString] == 0
+        assert len(result) == 0
 
     @pytest.mark.asyncio
     async def test_serializeInventory_withNegativeNumbers(self):
@@ -525,13 +511,9 @@ class TestChatterInventoryMapper:
         }
 
         result = await self.mapper.serializeInventory(inventory)
-        assert len(result) == len(ChatterItemType)
 
         # negative numbers should always be normalized to 0
-        assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == 0
-        assert result[await self.mapper.serializeItemType(ChatterItemType.BANANA)] == 0
-        assert result[await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE)] == 0
-        assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == 0
+        assert len(result) == 0
 
     @pytest.mark.asyncio
     async def test_serializeItemType_withAll(self):

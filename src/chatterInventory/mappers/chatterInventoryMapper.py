@@ -149,7 +149,10 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
         for itemType in ChatterItemType:
             itemTypeString = await self.serializeItemType(itemType)
-            inventoryJson[itemTypeString] = max(0, inventory.get(itemType, 0))
+            itemTypeAmount = max(0, inventory.get(itemType, 0))
+
+            if itemTypeAmount >= 1:
+                inventoryJson[itemTypeString] = itemTypeAmount
 
         return inventoryJson
 
