@@ -240,6 +240,13 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         chatterInventory: ChatterInventoryData | None,
         action: UseChatterItemAction,
     ):
+        chatterUserName = await self.__userIdsRepository.requireUserName(
+            userId = action.chatterUserId,
+            twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+                twitchChannelId = action.twitchChannelId,
+            ),
+        )
+
         try:
             result = await self.__cassetteTapeItemUseCase.invoke(
                 action = action,
@@ -252,12 +259,14 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             return
         except CassetteTapeMessageHasNoTargetException:
             await self.__submitEvent(CassetteTapeMessageHasNoTargetChatterItemEvent(
+                chatterUserName = chatterUserName,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
                 originatingAction = action,
             ))
             return
         except CassetteTapeTargetIsNotFollowingException as e:
             await self.__submitEvent(CassetteTapeTargetIsNotFollowingChatterItemEvent(
+                chatterUserName = chatterUserName,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
                 targetUserId = e.targetUserId,
                 targetUserName = e.targetUserName,
@@ -269,18 +278,21 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             return
         except VoicemailMessageIsEmptyException:
             await self.__submitEvent(VoicemailMessageIsEmptyChatterItemEvent(
+                chatterUserName = chatterUserName,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
                 originatingAction = action,
             ))
             return
         except VoicemailTargetIsOriginatingUserException:
             await self.__submitEvent(VoicemailTargetIsOriginatingUserChatterItemEvent(
+                chatterUserName = chatterUserName,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
                 originatingAction = action,
             ))
             return
         except VoicemailTargetIsStreamerException:
             await self.__submitEvent(VoicemailTargetIsStreamerChatterItemEvent(
+                chatterUserName = chatterUserName,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
                 originatingAction = action,
             ))

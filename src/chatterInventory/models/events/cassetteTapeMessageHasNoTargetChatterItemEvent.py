@@ -6,6 +6,7 @@ from ..useChatterItemAction import UseChatterItemAction
 
 @dataclass(frozen = True)
 class CassetteTapeMessageHasNoTargetChatterItemEvent(AbsChatterItemEvent):
+    chatterUserName: str
     eventId: str
     originatingAction: UseChatterItemAction
 

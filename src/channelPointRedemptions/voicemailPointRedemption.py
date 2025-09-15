@@ -193,13 +193,5 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
                     twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
                 )
 
-            case _:
-                self.__timber.log('VoicemailPointRedemption', f'Encountered unknown AddVoicemailResult ({twitchChannel=}) ({twitchChannelPointsMessage=}) ({targetedUserData=}) ({addVoicemailResult=})')
-
-                self.__twitchChatMessenger.send(
-                    text = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, an unknown error occurred when setting your voicemail message for @{targetedUserData.userName}',
-                    twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
-                )
-
         self.__timber.log('VoicemailPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
         return True

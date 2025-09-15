@@ -2,7 +2,10 @@ import locale
 from typing import Final
 
 from .absChatterItemEventHandler import AbsChatterItemEventHandler
+from ..models.chatterItemType import ChatterItemType
 from ..models.events.absChatterItemEvent import AbsChatterItemEvent
+from ..models.events.cassetteTapeMessageHasNoTargetChatterItemEvent import \
+    CassetteTapeMessageHasNoTargetChatterItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
 from ..models.events.notEnoughInventoryChatterItemEvent import NotEnoughInventoryChatterItemEvent
@@ -11,6 +14,10 @@ from ..models.events.useAirStrikeChatterItemEvent import UseAirStrikeChatterItem
 from ..models.events.useBananaChatterItemEvent import UseBananaChatterItemEvent
 from ..models.events.useCassetteTapeChatterItemEvent import UseCassetteTapeChatterItemEvent
 from ..models.events.useGrenadeChatterItemEvent import UseGrenadeChatterItemEvent
+from ..models.events.voicemailMessageIsEmptyChatterItemEvent import VoicemailMessageIsEmptyChatterItemEvent
+from ..models.events.voicemailTargetIsOriginatingUserChatterItemEvent import \
+    VoicemailTargetIsOriginatingUserChatterItemEvent
+from ..models.events.voicemailTargetIsStreamerChatterItemEvent import VoicemailTargetIsStreamerChatterItemEvent
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
@@ -57,7 +64,12 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
 
         await twitchConnectionReadinessProvider.waitForReady()
 
-        if isinstance(event, DisabledFeatureChatterItemEvent):
+        if isinstance(event, CassetteTapeMessageHasNoTargetChatterItemEvent):
+            await self.__handleCassetteTapeMessageHasNoTargetChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, DisabledFeatureChatterItemEvent):
             await self.__handleDisabledFeatureChatterItemEvent(
                 event = event,
             )
@@ -97,6 +109,21 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
                 event = event,
             )
 
+        elif isinstance(event, VoicemailMessageIsEmptyChatterItemEvent):
+            await self.__handleVoicemailMessageIsEmptyChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, VoicemailTargetIsOriginatingUserChatterItemEvent):
+            await self.__handleVoicemailTargetIsOriginatingUserChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, VoicemailTargetIsStreamerChatterItemEvent):
+            await self.__handleVoicemailTargetIsStreamerChatterItemEvent(
+                event = event,
+            )
+
         else:
             self.__timber.log('ChatterItemEventHandler', f'Received unhandled chatter item event ({event=})')
 
@@ -120,9 +147,32 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
         self,
         event: UseCassetteTapeChatterItemEvent,
     ):
-        # TODO Will handle this in the future when the cassette tape item logic is implemented
-        #  within the item machine class.
-        pass
+        inventoryString = ''
+
+        if event.updatedInventory is not None:
+            amount = event.updatedInventory[ChatterItemType.CASSETTE_TAPE]
+            amountString = locale.format_string("%d", amount, grouping = True)
+
+            if amount == 1:
+                inventoryString = f'({amountString} {ChatterItemType.CASSETTE_TAPE.humanName})'
+            else:
+                inventoryString = f'({amountString} {ChatterItemType.CASSETTE_TAPE.pluralHumanName})'
+
+        self.__twitchChatMessenger.send(
+            text = f'☎️ Your voicemail message for @{event.targetUserName} has been sent! {inventoryString}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleCassetteTapeMessageHasNoTargetChatterItemEvent(
+        self,
+        event: CassetteTapeMessageHasNoTargetChatterItemEvent,
+    ):
+        self.__twitchChatMessenger.send(
+            text = f'⚠ Sorry, the first word in the voicemail message must be a username (including the @ character is OK)',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleDisabledFeatureChatterItemEvent(
         self,
@@ -170,6 +220,36 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ New {event.getItemType().humanName} counts — @{event.fromChatterInventory} {fromChatterQuantityString}, @{event.toChatterUserName} {toChatterQuantityString}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleVoicemailMessageIsEmptyChatterItemEvent(
+        self,
+        event: VoicemailMessageIsEmptyChatterItemEvent,
+    ):
+        self.__twitchChatMessenger.send(
+            text = f'⚠ Sorry, you can\'t send an empty voicemail',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleVoicemailTargetIsOriginatingUserChatterItemEvent(
+        self,
+        event: VoicemailTargetIsOriginatingUserChatterItemEvent,
+    ):
+        self.__twitchChatMessenger.send(
+            text = f'⚠ Sorry, you can\'t send yourself a voicemail',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleVoicemailTargetIsStreamerChatterItemEvent(
+        self,
+        event: VoicemailTargetIsStreamerChatterItemEvent,
+    ):
+        self.__twitchChatMessenger.send(
+            text = f'⚠ Sorry, you can\'t send the streamer a voicemail',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )

@@ -6,6 +6,7 @@ from ..useChatterItemAction import UseChatterItemAction
 
 @dataclass(frozen = True)
 class CassetteTapeTargetIsNotFollowingChatterItemEvent(AbsChatterItemEvent):
+    chatterUserName: str
     eventId: str
     targetUserId: str
     targetUserName: str

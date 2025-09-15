@@ -6,6 +6,7 @@ from ..useChatterItemAction import UseChatterItemAction
 
 @dataclass(frozen = True)
 class VoicemailTargetIsOriginatingUserChatterItemEvent(AbsChatterItemEvent):
+    chatterUserName: str
     eventId: str
     originatingAction: UseChatterItemAction
 
