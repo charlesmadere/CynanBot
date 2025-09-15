@@ -1851,7 +1851,9 @@ timeoutEventHandler: AbsTimeoutEventHandler = TimeoutEventHandler(
 
 cassetteTapeItemUseCase = CassetteTapeItemUseCase(
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils,
     twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository,
     voicemailHelper = voicemailHelper,
     voicemailSettingsRepository = voicemailSettingsRepository,
 )
