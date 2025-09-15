@@ -2,7 +2,7 @@ import os
 import random
 import re
 from asyncio import AbstractEventLoop
-from typing import Pattern
+from typing import Final, Pattern
 
 import aiofiles.os
 import aiofiles.ospath
@@ -23,7 +23,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         eventLoop: AbstractEventLoop,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
-        pointRedemptionSoundAlerts: frozenset[SoundAlert] | None = frozenset({
+        pointRedemptionSoundAlerts: frozenset[SoundAlert] = frozenset({
             SoundAlert.POINT_REDEMPTION_01,
             SoundAlert.POINT_REDEMPTION_02,
             SoundAlert.POINT_REDEMPTION_03,
@@ -48,13 +48,13 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif pointRedemptionSoundAlerts is not None and not isinstance(pointRedemptionSoundAlerts, frozenset):
+        elif not isinstance(pointRedemptionSoundAlerts, frozenset):
             raise TypeError(f'pointRedemptionSoundAlerts argument is malformed: \"{pointRedemptionSoundAlerts}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__pointRedemptionSoundAlerts: frozenset[SoundAlert] | None = pointRedemptionSoundAlerts
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__soundPlayerSettingsRepository: Final[SoundPlayerSettingsRepositoryInterface] = soundPlayerSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__pointRedemptionSoundAlerts: Final[frozenset[SoundAlert]] = pointRedemptionSoundAlerts
 
         self.__scanResultCache: dict[str, SoundPlayerRandomizerDirectoryScanResult | None] = dict()
         self.__soundAlertCache: frozendict[SoundAlert, str | None] | None = None
@@ -112,32 +112,26 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
     async def __loadSoundAlertsCache(self) -> frozendict[SoundAlert, str | None]:
         cache: dict[SoundAlert, str | None] = dict()
 
-        if self.__pointRedemptionSoundAlerts is not None and len(self.__pointRedemptionSoundAlerts) >= 1:
-            for soundAlert in self.__pointRedemptionSoundAlerts:
-                filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(soundAlert)
+        for soundAlert in self.__pointRedemptionSoundAlerts:
+            filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(soundAlert)
 
-                if not utils.isValidStr(filePath):
-                    continue
+            if not utils.isValidStr(filePath):
+                continue
 
-                filePath = os.path.normpath(filePath)
+            filePath = os.path.normpath(filePath)
 
-                if not await aiofiles.ospath.exists(
-                    path = filePath,
-                    loop = self.__eventLoop
-                ):
-                    continue
-                elif await aiofiles.ospath.isdir(
-                    s = filePath,
-                    loop = self.__eventLoop
-                ):
-                    continue
-                elif not await aiofiles.ospath.isfile(
-                    path = filePath,
-                    loop = self.__eventLoop
-                ):
-                    continue
+            if not await aiofiles.ospath.exists(
+                path = filePath,
+                loop = self.__eventLoop,
+            ):
+                continue
+            elif not await aiofiles.ospath.isfile(
+                path = filePath,
+                loop = self.__eventLoop,
+            ):
+                continue
 
-                cache[soundAlert] = filePath
+            cache[soundAlert] = filePath
 
         self.__timber.log('SoundPlayerRandomizerHelper', f'Finished loading in {len(cache)} sound alert(s)')
         return frozendict(cache)
@@ -177,7 +171,7 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
 
             return SoundPlayerRandomizerDirectoryScanResult(
                 soundFiles = list(),
-                shinySoundFiles = list()
+                shinySoundFiles = list(),
             )
 
         soundFilesSet: set[str] = set()

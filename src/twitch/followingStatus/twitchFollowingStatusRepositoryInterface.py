@@ -12,7 +12,7 @@ class TwitchFollowingStatusRepositoryInterface(Clearable, ABC):
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> TwitchFollowingStatus | None:
         pass
 
@@ -21,7 +21,7 @@ class TwitchFollowingStatusRepositoryInterface(Clearable, ABC):
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> bool:
         pass
 
@@ -30,6 +30,6 @@ class TwitchFollowingStatusRepositoryInterface(Clearable, ABC):
         self,
         followedAt: datetime | None,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ):
         pass

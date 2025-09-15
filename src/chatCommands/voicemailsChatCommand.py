@@ -38,7 +38,7 @@ class VoicemailsChatCommand(AbsChatCommand):
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
         voicemailHelper: VoicemailHelperInterface,
-        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface
+        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -81,7 +81,7 @@ class VoicemailsChatCommand(AbsChatCommand):
                 messageContent = messageContent,
                 chatterUserId = ctx.getAuthorId(),
                 chatterUserName = ctx.getAuthorName(),
-                twitchChannelId = await ctx.getTwitchChannelId()
+                twitchChannelId = await ctx.getTwitchChannelId(),
             )
         except NoSuchUserException as e:
             self.__timber.log('VoicemailsChatCommand', f'Failed to find user ID information for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({messageContent=})', e, traceback.format_exc())
@@ -110,7 +110,7 @@ class VoicemailsChatCommand(AbsChatCommand):
         messageContent: str | None,
         chatterUserId: str,
         chatterUserName: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> VoicemailLookupData:
         splits = utils.getCleanedSplits(messageContent)
         lookupUserName: str
@@ -143,7 +143,7 @@ class VoicemailsChatCommand(AbsChatCommand):
     async def __toString(
         self,
         ctx: TwitchContext,
-        voicemailLookupData: VoicemailLookupData
+        voicemailLookupData: VoicemailLookupData,
     ) -> str:
         voicemailsSize = len(voicemailLookupData.voicemails)
         voicemailsSizeStr = locale.format_string("%d", voicemailsSize, grouping = True)

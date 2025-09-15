@@ -3,6 +3,7 @@ from __future__ import annotations
 import traceback
 from collections import defaultdict
 from datetime import datetime
+from typing import Final
 
 from lru import LRU
 
@@ -27,7 +28,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        cacheSize: int = 32
+        cacheSize: int = 32,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -42,13 +43,13 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         elif cacheSize < 1 or cacheSize > utils.getIntMaxSafeSize():
             raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timber: TimberInterface = timber
-        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
         self.__isDatabaseReady: bool = False
-        self.__caches: dict[str, LRU[str, TwitchFollowingStatus | None]] = defaultdict(lambda: LRU(cacheSize))
+        self.__caches: Final[dict[str, LRU[str, TwitchFollowingStatus | None]]] = defaultdict(lambda: LRU(cacheSize))
 
     async def clearCaches(self):
         self.__caches.clear()
@@ -58,7 +59,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> TwitchFollowingStatus | None:
         if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
@@ -75,7 +76,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         followingStatus = await self.__fetchFromDatabase(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
         if followingStatus is not None:
@@ -85,7 +86,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         followingStatus = await self.__fetchFromTwitchApi(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
         if followingStatus is None:
@@ -95,7 +96,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         await self.persistFollowingStatus(
             followedAt = followingStatus.followedAt,
             twitchChannelId = followingStatus.twitchChannelId,
-            userId = followingStatus.userId
+            userId = followingStatus.userId,
         )
 
         self.__caches[twitchChannelId][userId] = followingStatus
@@ -105,7 +106,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> TwitchFollowingStatus | None:
         connection = await self.__getDatabaseConnection()
         record = await connection.execute(
@@ -125,7 +126,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
 
         userName = await self.__userIdsRepository.requireUserName(
             userId = userId,
-            twitchAccessToken = twitchAccessToken
+            twitchAccessToken = twitchAccessToken,
         )
 
         return TwitchFollowingStatus(
@@ -133,23 +134,23 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
             twitchChannel = record[1],
             twitchChannelId = twitchChannelId,
             userId = userId,
-            userName = userName
+            userName = userName,
         )
 
     async def __fetchFromTwitchApi(
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> TwitchFollowingStatus | None:
         twitchChannel = await self.__userIdsRepository.requireUserName(
             userId = twitchChannelId,
-            twitchAccessToken = twitchAccessToken
+            twitchAccessToken = twitchAccessToken,
         )
 
         userName = await self.__userIdsRepository.requireUserName(
             userId = userId,
-            twitchAccessToken = twitchAccessToken
+            twitchAccessToken = twitchAccessToken,
         )
 
         twitchFollower: TwitchFollower | None = None
@@ -158,7 +159,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
             twitchFollower = await self.__twitchApiService.fetchFollower(
                 broadcasterId = twitchChannelId,
                 twitchAccessToken = twitchAccessToken,
-                userId = userId
+                userId = userId,
             )
         except GenericNetworkException as e:
             self.__timber.log('TwitchFollowingStatusRepository', f'Failed to fetch Twitch follower from Twitch API ({twitchAccessToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({userId=}): {e}', e, traceback.format_exc())
@@ -171,7 +172,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
                 twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId,
                 userId = userId,
-                userName = userName
+                userName = userName,
             )
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
@@ -219,7 +220,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> bool:
         if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
@@ -231,7 +232,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         followingStatus = await self.fetchFollowingStatus(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
         return followingStatus is not None
@@ -240,7 +241,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         self,
         followedAt: datetime | None,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ):
         if followedAt is not None and not isinstance(followedAt, datetime):
             raise TypeError(f'followedAt argument is malformed: \"{followedAt}\"')

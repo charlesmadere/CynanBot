@@ -116,7 +116,7 @@ class VoicemailHelper(VoicemailHelperInterface):
         targetUserId: str,
         twitchChannelId: str,
     ):
-        numberToDelete = len(overflowingVoicemails) - maximumVoicemailCount
+        numberToDelete = int(max(len(overflowingVoicemails) - maximumVoicemailCount, 0))
 
         for index in range(numberToDelete):
             voicemailToDelete = overflowingVoicemails[index]

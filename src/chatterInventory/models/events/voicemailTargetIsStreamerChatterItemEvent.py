@@ -1,18 +1,13 @@
 from dataclasses import dataclass
 
 from .absChatterItemEvent import AbsChatterItemEvent
-from ..chatterInventoryData import ChatterInventoryData
 from ..useChatterItemAction import UseChatterItemAction
-from ....voicemail.models.addVoicemailResult import AddVoicemailResult
 
 
 @dataclass(frozen = True)
-class UseCassetteTapeChatterItemEvent(AbsChatterItemEvent):
-    addVoicemailResult: AddVoicemailResult
-    updatedInventory: ChatterInventoryData | None
+class VoicemailTargetIsStreamerChatterItemEvent(AbsChatterItemEvent):
+    chatterUserName: str
     eventId: str
-    targetUserId: str
-    targetUserName: str
     originatingAction: UseChatterItemAction
 
     def getEventId(self) -> str:
