@@ -94,3 +94,36 @@ class VoicemailMessageIsEmptyException(Exception):
     @property
     def originatingAction(self) -> UseChatterItemAction:
         return self.__originatingAction
+
+
+class VoicemailTargetInboxIsFullException(Exception):
+
+    def __init__(
+        self,
+        targetUserId: str,
+        targetUserName: str,
+    ):
+        super().__init__(targetUserId, targetUserName)
+
+        self.__targetUserId: Final[str] = targetUserId
+        self.__targetUserName: Final[str] = targetUserName
+
+    @property
+    def targetUserId(self) -> str:
+        return self.__targetUserId
+
+    @property
+    def targetUserName(self) -> str:
+        return self.__targetUserName
+
+
+class VoicemailTargetIsOriginatingUserException(Exception):
+
+    def __init__(self):
+        super().__init__()
+
+
+class VoicemailTargetIsStreamerException(Exception):
+
+    def __init__(self):
+        super().__init__()

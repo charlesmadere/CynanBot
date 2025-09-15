@@ -8,13 +8,20 @@ from typing import Final
 from frozenlist import FrozenList
 
 from .chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
-from ..exceptions import CassetteTapeFeatureIsDisabledException, UnknownChatterItemTypeException
+from ..exceptions import CassetteTapeFeatureIsDisabledException, CassetteTapeMessageHasNoTargetException, \
+    CassetteTapeTargetIsNotFollowingException, UnknownChatterItemTypeException, \
+    UserTwitchAccessTokenIsMissing, VoicemailMessageIsEmptyException, VoicemailTargetIsOriginatingUserException, \
+    VoicemailTargetIsStreamerException
 from ..idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
 from ..listeners.chatterItemEventListener import ChatterItemEventListener
 from ..models.absChatterItemAction import AbsChatterItemAction
 from ..models.chatterInventoryData import ChatterInventoryData
 from ..models.chatterItemType import ChatterItemType
 from ..models.events.absChatterItemEvent import AbsChatterItemEvent
+from ..models.events.cassetteTapeMessageHasNoTargetChatterItemEvent import \
+    CassetteTapeMessageHasNoTargetChatterItemEvent
+from ..models.events.cassetteTapeTargetIsNotFollowingChatterItemEvent import \
+    CassetteTapeTargetIsNotFollowingChatterItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
 from ..models.events.notEnoughInventoryChatterItemEvent import NotEnoughInventoryChatterItemEvent
@@ -25,6 +32,10 @@ from ..models.events.useAirStrikeChatterItemEvent import UseAirStrikeChatterItem
 from ..models.events.useBananaChatterItemEvent import UseBananaChatterItemEvent
 from ..models.events.useCassetteTapeChatterItemEvent import UseCassetteTapeChatterItemEvent
 from ..models.events.useGrenadeChatterItemEvent import UseGrenadeChatterItemEvent
+from ..models.events.voicemailMessageIsEmptyChatterItemEvent import VoicemailMessageIsEmptyChatterItemEvent
+from ..models.events.voicemailTargetIsOriginatingUserChatterItemEvent import \
+    VoicemailTargetIsOriginatingUserChatterItemEvent
+from ..models.events.voicemailTargetIsStreamerChatterItemEvent import VoicemailTargetIsStreamerChatterItemEvent
 from ..models.tradeChatterItemAction import TradeChatterItemAction
 from ..models.useChatterItemAction import UseChatterItemAction
 from ..repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
@@ -235,16 +246,62 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             )
         except CassetteTapeFeatureIsDisabledException:
             await self.__submitEvent(DisabledFeatureChatterItemEvent(
+                originatingAction = action,
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            ))
+            return
+        except CassetteTapeMessageHasNoTargetException:
+            await self.__submitEvent(CassetteTapeMessageHasNoTargetChatterItemEvent(
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                originatingAction = action,
+            ))
+            return
+        except CassetteTapeTargetIsNotFollowingException as e:
+            await self.__submitEvent(CassetteTapeTargetIsNotFollowingChatterItemEvent(
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                targetUserId = e.targetUserId,
+                targetUserName = e.targetUserName,
+                originatingAction = action,
+            ))
+            return
+        except UserTwitchAccessTokenIsMissing as e:
+            self.__timber.log('ChatterInventoryItemUseMachine', f'No Twitch access token is available for this user ({action=})', e, traceback.format_exc())
+            return
+        except VoicemailMessageIsEmptyException:
+            await self.__submitEvent(VoicemailMessageIsEmptyChatterItemEvent(
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                originatingAction = action,
+            ))
+            return
+        except VoicemailTargetIsOriginatingUserException:
+            await self.__submitEvent(VoicemailTargetIsOriginatingUserChatterItemEvent(
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                originatingAction = action,
+            ))
+            return
+        except VoicemailTargetIsStreamerException:
+            await self.__submitEvent(VoicemailTargetIsStreamerChatterItemEvent(
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
                 originatingAction = action,
             ))
             return
 
-        # TODO
-        pass
+        updatedInventory: ChatterInventoryData | None = None
+
+        if not action.ignoreInventory:
+            updatedInventory = await self.__chatterInventoryRepository.update(
+                itemType = ChatterItemType.CASSETTE_TAPE,
+                changeAmount = -1,
+                chatterUserId = action.chatterUserId,
+                twitchChannelId = action.twitchChannelId,
+            )
 
         await self.__submitEvent(UseCassetteTapeChatterItemEvent(
+            addVoicemailResult = result.addVoicemailResult,
+            updatedInventory = updatedInventory,
             eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            targetUserId = result.targetUserId,
+            targetUserName = result.targetUserName,
             originatingAction = action,
         ))
 
@@ -337,6 +394,10 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             twitchChannelId = action.twitchChannelId,
         )
 
+        # There is a lot of room for exploitation without this fairly obtuse line.
+        # We really, really don't want to allow for anyone to sneak in trade amounts
+        # that cause item duplications, cause people to be ripped off, or for people
+        # to end up with negative inventory amounts.
         tradeAmount = int(max(min(action.tradeAmount, fromChatterCurrentInventory[action.itemType]), 0))
 
         if tradeAmount < 1:

@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from typing import Final, Pattern
 
 from ..exceptions import CassetteTapeMessageHasNoTargetException, CassetteTapeFeatureIsDisabledException, \
-    CassetteTapeTargetIsNotFollowingException, UserTwitchAccessTokenIsMissing, VoicemailMessageIsEmptyException
+    CassetteTapeTargetIsNotFollowingException, UserTwitchAccessTokenIsMissing, VoicemailMessageIsEmptyException, \
+    VoicemailTargetInboxIsFullException, VoicemailTargetIsOriginatingUserException, VoicemailTargetIsStreamerException
 from ..models.cassetteTapeUseCaseResult import CassetteTapeUseCaseResult
 from ..models.useChatterItemAction import UseChatterItemAction
 from ...misc import utils as utils
@@ -14,6 +15,7 @@ from ...twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtils
 from ...users.exceptions import NoSuchUserException
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
+from ...voicemail.models.addVoicemailResult import AddVoicemailResult
 from ...voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
 
 
@@ -96,8 +98,34 @@ class CassetteTapeItemUseCase:
             twitchChannelId = action.twitchChannelId,
         )
 
-        # TODO
-        raise RuntimeError()
+        match addVoicemailResult:
+            case AddVoicemailResult.FEATURE_DISABLED:
+                raise CassetteTapeFeatureIsDisabledException()
+
+            case AddVoicemailResult.MAXIMUM_FOR_TARGET_USER:
+                raise VoicemailTargetInboxIsFullException(
+                    targetUserId = parsedVoicemailRequest.targetUserId,
+                    targetUserName = parsedVoicemailRequest.targetUserName,
+                )
+
+            case AddVoicemailResult.MESSAGE_MALFORMED:
+                raise VoicemailMessageIsEmptyException(
+                    message = parsedVoicemailRequest.cleanedMessage,
+                    originatingAction = action,
+                )
+
+            case AddVoicemailResult.OK:
+                return CassetteTapeUseCaseResult(
+                    addVoicemailResult = addVoicemailResult,
+                    targetUserId = parsedVoicemailRequest.targetUserId,
+                    targetUserName = parsedVoicemailRequest.targetUserName,
+                )
+
+            case AddVoicemailResult.TARGET_USER_IS_ORIGINATING_USER:
+                raise VoicemailTargetIsOriginatingUserException()
+
+            case AddVoicemailResult.TARGET_USER_IS_TWITCH_CHANNEL_USER:
+                raise VoicemailTargetIsStreamerException()
 
     async def __parseVoicemailRequest(
         self,

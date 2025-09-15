@@ -6,8 +6,8 @@ from ..absChatterItemAction import AbsChatterItemAction
 
 @dataclass(frozen = True)
 class DisabledFeatureChatterItemEvent(AbsChatterItemEvent):
-    eventId: str
     originatingAction: AbsChatterItemAction
+    eventId: str
 
     def getEventId(self) -> str:
         return self.eventId
