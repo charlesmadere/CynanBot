@@ -305,6 +305,22 @@ def getLongMinSafeSize() -> int:
     # SQLite's minimum INTEGER size (8 bytes, signed).
     return -9223372036854775808
 
+def getRandomAnimalEmoji() -> str:
+    animalEmoji: list[str] = [
+        '🐝', '🐛', '🐊', '🐒', '🐓',
+        '🐔', '🐕', '🐘', '🐙', '🐚',
+        '🐜', '🐞', '🐠', '🐦', '🐧',
+        '🐨', '🐩', '🐫', '🐬', '🐭',
+        '🐯', '🐰', '🐱', '🐳', '🐴',
+        '🐶', '🐷', '🐸', '🐺', '🐻',
+        '🐼', '🕊️', '🦁', '🦂', '🦃',
+        '🦄', '🦅', '🦆', '🦇', '🦈',
+        '🦉', '🦊', '🦋', '🦌', '🦍',
+        '🦎', '🦏', '🦒', '🦔', '🦛',
+    ]
+
+    return random.choice(animalEmoji)
+
 def getRandomSadEmoji() -> str:
     sadEmoji: list[str] = [ '😭', '😢', '😿', '🤣', '😥', '🥲' ]
     return random.choice(sadEmoji)

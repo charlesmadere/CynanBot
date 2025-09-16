@@ -1,5 +1,6 @@
 import locale
 from datetime import datetime
+from typing import Final
 
 from .absChatCommand import AbsChatCommand
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -16,8 +17,8 @@ from ..trivia.history.triviaQuestionOccurrences import TriviaQuestionOccurrences
 from ..trivia.history.triviaQuestionOccurrencesRepositoryInterface import TriviaQuestionOccurrencesRepositoryInterface
 from ..trivia.questions.triviaQuestionReference import TriviaQuestionReference
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -33,8 +34,8 @@ class TriviaInfoChatCommand(AbsChatCommand):
         triviaHistoryRepository: TriviaHistoryRepositoryInterface,
         triviaQuestionOccurrencesRepository: TriviaQuestionOccurrencesRepositoryInterface,
         triviaUtils: TriviaUtilsInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface
+        twitchChatMessenger: TwitchChatMessengerInterface,
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
             raise TypeError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
@@ -52,28 +53,28 @@ class TriviaInfoChatCommand(AbsChatCommand):
             raise TypeError(f'triviaQuestionOccurrencesRepository argument is malformed: \"{triviaQuestionOccurrencesRepository}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = additionalTriviaAnswersRepository
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__triviaEmoteGenerator: TriviaEmoteGeneratorInterface = triviaEmoteGenerator
-        self.__triviaHistoryRepository: TriviaHistoryRepositoryInterface = triviaHistoryRepository
-        self.__triviaQuestionOccurrencesRepository: TriviaQuestionOccurrencesRepositoryInterface = triviaQuestionOccurrencesRepository
-        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__additionalTriviaAnswersRepository: Final[AdditionalTriviaAnswersRepositoryInterface] = additionalTriviaAnswersRepository
+        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__triviaEmoteGenerator: Final[TriviaEmoteGeneratorInterface] = triviaEmoteGenerator
+        self.__triviaHistoryRepository: Final[TriviaHistoryRepositoryInterface] = triviaHistoryRepository
+        self.__triviaQuestionOccurrencesRepository: Final[TriviaQuestionOccurrencesRepositoryInterface] = triviaQuestionOccurrencesRepository
+        self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def __buildTriviaInfoMessage(
         self,
         additionalTriviaAnswers: AdditionalTriviaAnswers | None,
         normalizedEmote: str,
         occurrences: TriviaQuestionOccurrences,
-        reference: TriviaQuestionReference
+        reference: TriviaQuestionReference,
     ) -> str:
         dateAndTimeString = SimpleDateTime(reference.dateTime).getDateAndTimeStr()
         relativeTimeString = await self.__getRelativeTimeString(reference.dateTime)
@@ -108,7 +109,6 @@ class TriviaInfoChatCommand(AbsChatCommand):
         elif not user.isTriviaGameEnabled and not user.isSuperTriviaGameEnabled:
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
             userId = ctx.getAuthorId()
         ):
@@ -117,10 +117,10 @@ class TriviaInfoChatCommand(AbsChatCommand):
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             self.__timber.log('TriviaInfoChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no arguments were supplied')
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'⚠ Unable to get trivia question info as an invalid emote argument was given. Example: !triviainfo {self.__triviaEmoteGenerator.getRandomEmote()}',
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Unable to get trivia question info as an invalid emote argument was given. Example: !triviainfo {self.__triviaEmoteGenerator.getRandomEmote()}',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
             )
             return
 
@@ -129,50 +129,50 @@ class TriviaInfoChatCommand(AbsChatCommand):
 
         if not utils.isValidStr(normalizedEmote):
             self.__timber.log('TriviaInfoChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but an invalid emote argument was given: \"{emote}\"')
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'⚠ Unable to get trivia question info as an invalid emote argument was given. Example: !triviainfo {self.__triviaEmoteGenerator.getRandomEmote()}',
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Unable to get trivia question info as an invalid emote argument was given. Example: !triviainfo {self.__triviaEmoteGenerator.getRandomEmote()}',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
             )
             return
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
             emote = normalizedEmote,
             twitchChannel = user.handle,
-            twitchChannelId = await ctx.getTwitchChannelId()
+            twitchChannelId = await ctx.getTwitchChannelId(),
         )
 
         if reference is None:
             self.__timber.log('TriviaInfoChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no trivia question reference was found ({emote}=) ({normalizedEmote=})')
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")',
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
             )
             return
 
         additionalTriviaAnswers = await self.__additionalTriviaAnswersRepository.getAdditionalTriviaAnswers(
             triviaId = reference.triviaId,
             triviaQuestionType = reference.triviaType,
-            triviaSource = reference.triviaSource
+            triviaSource = reference.triviaSource,
         )
 
         occurrences = await self.__triviaQuestionOccurrencesRepository.getOccurrences(
             triviaId = reference.triviaId,
-            triviaSource = reference.triviaSource
+            triviaSource = reference.triviaSource,
         )
 
         triviaInfoMessage = await self.__buildTriviaInfoMessage(
             additionalTriviaAnswers = additionalTriviaAnswers,
             normalizedEmote = normalizedEmote,
             occurrences = occurrences,
-            reference = reference
+            reference = reference,
         )
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = triviaInfoMessage,
-            replyMessageId = await ctx.getMessageId()
+        self.__twitchChatMessenger.send(
+            text = triviaInfoMessage,
+            twitchChannelId = await ctx.getTwitchChannelId(),
+            replyMessageId = await ctx.getMessageId(),
         )
 
         self.__timber.log('TriviaInfoChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

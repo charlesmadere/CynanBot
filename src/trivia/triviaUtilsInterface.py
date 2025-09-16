@@ -167,7 +167,6 @@ class TriviaUtilsInterface(ABC):
     @abstractmethod
     async def isPrivilegedTriviaUser(
         self,
-        twitchChannel: str,
         twitchChannelId: str,
         userId: str
     ) -> bool:

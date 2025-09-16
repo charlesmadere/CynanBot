@@ -1262,7 +1262,6 @@ triviaUtils: TriviaUtilsInterface = TriviaUtils(
     triviaQuestionPresenter = triviaQuestionPresenter,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository
 )
 
 bongoJsonParser: BongoJsonParserInterface = BongoJsonParser(
@@ -1770,9 +1769,9 @@ recurringActionsWizard: RecurringActionsWizardInterface = RecurringActionsWizard
 recurringActionsEventHandler: AbsRecurringActionsEventHandler = RecurringActionsEventHandler(
     cutenessPresenter = cutenessPresenter,
     timber = timber,
-    twitchUtils = twitchUtils,
+    twitchChatMessenger = twitchChatMessenger,
     weatherReportPresenter = weatherReportPresenter,
-    wordOfTheDayPresenter = wordOfTheDayPresenter
+    wordOfTheDayPresenter = wordOfTheDayPresenter,
 )
 
 

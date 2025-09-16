@@ -53,7 +53,6 @@ class GiveCutenessChatCommand(AbsChatCommand):
         if not user.isCutenessEnabled or not user.isGiveCutenessEnabled:
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
             userId = ctx.getAuthorId()
         ):

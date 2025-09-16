@@ -18,6 +18,7 @@ from ..models.absChatterItemAction import AbsChatterItemAction
 from ..models.chatterInventoryData import ChatterInventoryData
 from ..models.chatterItemType import ChatterItemType
 from ..models.events.absChatterItemEvent import AbsChatterItemEvent
+from ..models.events.animalPetChatterItemEvent import AnimalPetChatterItemEvent
 from ..models.events.cassetteTapeMessageHasNoTargetChatterItemEvent import \
     CassetteTapeMessageHasNoTargetChatterItemEvent
 from ..models.events.cassetteTapeTargetIsNotFollowingChatterItemEvent import \
@@ -32,6 +33,7 @@ from ..models.events.useAirStrikeChatterItemEvent import UseAirStrikeChatterItem
 from ..models.events.useBananaChatterItemEvent import UseBananaChatterItemEvent
 from ..models.events.useCassetteTapeChatterItemEvent import UseCassetteTapeChatterItemEvent
 from ..models.events.useGrenadeChatterItemEvent import UseGrenadeChatterItemEvent
+from ..models.events.useTm36ChatterItemEvent import UseTm36ChatterItemEvent
 from ..models.events.voicemailMessageIsEmptyChatterItemEvent import VoicemailMessageIsEmptyChatterItemEvent
 from ..models.events.voicemailTargetIsOriginatingUserChatterItemEvent import \
     VoicemailTargetIsOriginatingUserChatterItemEvent
@@ -50,6 +52,7 @@ from ...timeout.models.absTimeoutDuration import AbsTimeoutDuration
 from ...timeout.models.actions.airStrikeTimeoutAction import AirStrikeTimeoutAction
 from ...timeout.models.actions.bananaTimeoutAction import BananaTimeoutAction
 from ...timeout.models.actions.grenadeTimeoutAction import GrenadeTimeoutAction
+from ...timeout.models.actions.tm36TimeoutAction import Tm36TimeoutAction
 from ...timeout.models.exactTimeoutDuration import ExactTimeoutDuration
 from ...timeout.models.randomLinearTimeoutDuration import RandomLinearTimeoutDuration
 from ...timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
@@ -194,6 +197,30 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
 
         await self.__submitEvent(UseAirStrikeChatterItemEvent(
             itemDetails = itemDetails,
+            eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            originatingAction = action,
+        ))
+
+    async def __handleAnimalPetItemAction(
+        self,
+        chatterInventory: ChatterInventoryData | None,
+        action: UseChatterItemAction,
+    ):
+        itemDetails = await self.__chatterInventorySettings.getAnimalPetItemDetails()
+
+        updatedInventory: ChatterInventoryData | None = None
+
+        if not action.ignoreInventory:
+            updatedInventory = await self.__chatterInventoryRepository.update(
+                itemType = ChatterItemType.ANIMAL_PET,
+                changeAmount = -1,
+                chatterUserId = action.chatterUserId,
+                twitchChannelId = action.twitchChannelId,
+            )
+
+        await self.__submitEvent(AnimalPetChatterItemEvent(
+            itemDetails = itemDetails,
+            updatedInventory = updatedInventory,
             eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
             originatingAction = action,
         ))
@@ -376,6 +403,42 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         else:
             raise ValueError(f'Encountered unknown AbsChatterItemAction: \"{action}\"')
 
+    async def __handleTm36ItemAction(
+        self,
+        chatterInventory: ChatterInventoryData | None,
+        action: UseChatterItemAction,
+    ):
+        itemDetails = await self.__chatterInventorySettings.getTm36ItemDetails()
+
+        timeoutDuration: AbsTimeoutDuration = RandomLinearTimeoutDuration(
+            maximumSeconds = itemDetails.maxDurationSeconds,
+            minimumSeconds = itemDetails.minDurationSeconds,
+        )
+
+        tokensAndDetails = await self.__fetchTokensAndDetails(
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        self.__timeoutActionMachine.submitAction(Tm36TimeoutAction(
+            timeoutDuration = timeoutDuration,
+            ignoreInventory = action.ignoreInventory,
+            actionId = await self.__timeoutIdGenerator.generateActionId(),
+            moderatorTwitchAccessToken = tokensAndDetails.moderatorTwitchAccessToken,
+            moderatorUserId = tokensAndDetails.moderatorUserId,
+            targetUserId = action.chatterUserId,
+            twitchChannelId = action.twitchChannelId,
+            twitchChatMessageId = action.twitchChatMessageId,
+            userTwitchAccessToken = tokensAndDetails.userTwitchAccessToken,
+            streamStatusRequirement = TimeoutStreamStatusRequirement.ANY,
+            user = action.user,
+        ))
+
+        await self.__submitEvent(UseTm36ChatterItemEvent(
+            eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            itemDetails = itemDetails,
+            originatingAction = action,
+        ))
+
     async def __handleTradeItemAction(self, action: TradeChatterItemAction):
         if not isinstance(action, TradeChatterItemAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
@@ -480,6 +543,12 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
                     action = action,
                 )
 
+            case ChatterItemType.ANIMAL_PET:
+                await self.__handleAnimalPetItemAction(
+                    chatterInventory = chatterInventory,
+                    action = action,
+                )
+
             case ChatterItemType.BANANA:
                 await self.__handleBananaItemAction(
                     chatterInventory = chatterInventory,
@@ -494,6 +563,12 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
 
             case ChatterItemType.GRENADE:
                 await self.__handleGrenadeItemAction(
+                    chatterInventory = chatterInventory,
+                    action = action,
+                )
+
+            case ChatterItemType.TM_36:
+                await self.__handleTm36ItemAction(
                     chatterInventory = chatterInventory,
                     action = action,
                 )

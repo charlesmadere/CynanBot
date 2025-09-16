@@ -243,6 +243,13 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     fallback = 'Point Redemption 16.mp3'
                 )
 
+            case SoundAlert.PREDICTION:
+                return utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'predictionFilePath',
+                    fallback = 'Prediction.mp3',
+                )
+
             case SoundAlert.RAID:
                 return utils.getStrFromDict(
                     d = jsonContents,

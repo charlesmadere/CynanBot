@@ -4,8 +4,10 @@ from .chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ..mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from ..models.chatterItemType import ChatterItemType
 from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
+from ..models.itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from ..models.itemDetails.bananaItemDetails import BananaItemDetails
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
+from ..models.itemDetails.tm36ItemDetails import Tm36ItemDetails
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 
@@ -22,6 +24,9 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             maxTargets = 13,
             minTargets = 9,
         ),
+        defaultAnimalPetItemDetails: AnimalPetItemDetails = AnimalPetItemDetails(
+            soundDirectory = 'sounds/animalPets',
+        ),
         defaultBananaItemDetails: BananaItemDetails = BananaItemDetails(
             randomChanceEnabled = True,
             durationSeconds = 60,
@@ -30,11 +35,17 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             maxDurationSeconds = 48,
             minDurationSeconds = 32,
         ),
+        defaultTm36ItemDetails: Tm36ItemDetails = Tm36ItemDetails(
+            maxDurationSeconds = 300, # 5 minutes
+            minDurationSeconds = 1800, # 30 minutes
+        ),
         defaultEnabledItemTypes: frozenset[ChatterItemType] = frozenset({
             ChatterItemType.AIR_STRIKE,
+            ChatterItemType.ANIMAL_PET,
             ChatterItemType.BANANA,
             ChatterItemType.CASSETTE_TAPE,
             ChatterItemType.GRENADE,
+            ChatterItemType.TM_36,
         }),
     ):
         if not isinstance(chatterInventoryMapper, ChatterInventoryMapperInterface):
@@ -43,18 +54,24 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
         elif not isinstance(defaultAirStrikeItemDetails, AirStrikeItemDetails):
             raise TypeError(f'defaultAirStrikeItemDetails argument is malformed: \"{defaultAirStrikeItemDetails}\"')
+        elif not isinstance(defaultAnimalPetItemDetails, AnimalPetItemDetails):
+            raise TypeError(f'defaultAnimalPetItemDetails argument is malformed: \"{defaultAnimalPetItemDetails}\"')
         elif not isinstance(defaultBananaItemDetails, BananaItemDetails):
             raise TypeError(f'defaultBananaItemDetails argument is malformed: \"{defaultBananaItemDetails}\"')
         elif not isinstance(defaultGrenadeItemDetails, GrenadeItemDetails):
             raise TypeError(f'grenadeItemDetails argument is malformed: \"{defaultGrenadeItemDetails}\"')
+        elif not isinstance(defaultTm36ItemDetails, Tm36ItemDetails):
+            raise TypeError(f'defaultTm36ItemDetails argument is malformed: \"{defaultTm36ItemDetails}\"')
         elif not isinstance(defaultEnabledItemTypes, frozenset):
             raise TypeError(f'defaultEnabledItemTypes argument is malformed: \"{defaultEnabledItemTypes}\"')
 
         self.__chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = chatterInventoryMapper
         self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
         self.__defaultAirStrikeItemDetails: Final[AirStrikeItemDetails] = defaultAirStrikeItemDetails
+        self.__defaultAnimalPetItemDetails: Final[AnimalPetItemDetails] = defaultAnimalPetItemDetails
         self.__defaultBananaItemDetails: Final[BananaItemDetails] = defaultBananaItemDetails
         self.__defaultGrenadeItemDetails: Final[GrenadeItemDetails] = defaultGrenadeItemDetails
+        self.__defaultTm36ItemDetails: Final[Tm36ItemDetails] = defaultTm36ItemDetails
         self.__defaultEnabledItemTypes: Final[frozenset[ChatterItemType]] = defaultEnabledItemTypes
 
         self.__cache: dict[str, Any] | None = None
@@ -69,6 +86,16 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
         if itemDetails is None:
             return self.__defaultAirStrikeItemDetails
+        else:
+            return itemDetails
+
+    async def getAnimalPetItemDetails(self) -> AnimalPetItemDetails:
+        jsonContents = await self.__readJson()
+        itemDetailsJson = jsonContents.get('animalPetItemDetails', None)
+        itemDetails = await self.__chatterInventoryMapper.parseAnimalPetItemDetails(itemDetailsJson)
+
+        if itemDetails is None:
+            return self.__defaultAnimalPetItemDetails
         else:
             return itemDetails
 
@@ -103,6 +130,16 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
         if itemDetails is None:
             return self.__defaultGrenadeItemDetails
+        else:
+            return itemDetails
+
+    async def getTm36ItemDetails(self) -> Tm36ItemDetails:
+        jsonContents = await self.__readJson()
+        itemDetailsJson = jsonContents.get('tm36ItemDetails', None)
+        itemDetails = await self.__chatterInventoryMapper.parseTm36ItemDetails(itemDetailsJson)
+
+        if itemDetails is None:
+            return self.__defaultTm36ItemDetails
         else:
             return itemDetails
 
