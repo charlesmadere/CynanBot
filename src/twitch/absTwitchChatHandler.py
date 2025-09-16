@@ -14,6 +14,7 @@ class AbsTwitchChatHandler(ABC):
         chatterUserId: str
         chatterUserLogin: str
         chatterUserName: str
+        sourceMessageId: str | None
         twitchChannelId: str
         twitchChatMessageId: str | None
         message: TwitchChatMessage
