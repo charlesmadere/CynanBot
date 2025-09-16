@@ -1,3 +1,5 @@
+from typing import Final
+
 from ..absCheerAction import AbsCheerAction
 from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ..cheerActionType import CheerActionType
@@ -24,7 +26,7 @@ class SoundAlertCheerAction(AbsCheerAction):
         if not utils.isValidStr(directory):
             raise TypeError(f'directory argument is malformed: \"{directory}\"')
 
-        self.__directory: str = directory
+        self.__directory: Final[str] = directory
 
     @property
     def actionType(self) -> CheerActionType:
