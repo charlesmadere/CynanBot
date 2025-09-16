@@ -2029,7 +2029,6 @@ triviaUtils: TriviaUtilsInterface = TriviaUtils(
     triviaQuestionPresenter = triviaQuestionPresenter,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository
 )
 
 bongoJsonParser: BongoJsonParserInterface = BongoJsonParser(
