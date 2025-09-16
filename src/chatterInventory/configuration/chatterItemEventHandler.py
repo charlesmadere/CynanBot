@@ -27,7 +27,6 @@ from ...soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface
     SoundPlayerRandomizerHelperInterface
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
-from ...timeout.models.events.tm36TimeoutFailedTimeoutEvent import Tm36TimeoutFailedTimeoutEvent
 from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ...twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
 
@@ -101,11 +100,6 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
 
         elif isinstance(event, NotEnoughInventoryChatterItemEvent):
             await self.__handleNotEnoughInventoryChatterItemEvent(
-                event = event,
-            )
-
-        elif isinstance(event, Tm36TimeoutFailedTimeoutEvent):
-            await self.__handleTm36TimeoutFailedTimeoutEvent(
                 event = event,
             )
 
