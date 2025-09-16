@@ -1,5 +1,4 @@
 import locale
-import traceback
 from collections import defaultdict
 from typing import Collection
 
@@ -23,10 +22,8 @@ from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..users.exceptions import NoSuchUserException
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
 class TriviaUtils(TriviaUtilsInterface):
@@ -41,7 +38,6 @@ class TriviaUtils(TriviaUtilsInterface):
         triviaQuestionPresenter: TriviaQuestionPresenterInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
         celebratoryEmote: str = '🎉',
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
@@ -60,8 +56,6 @@ class TriviaUtils(TriviaUtilsInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not utils.isValidStr(celebratoryEmote):
             raise TypeError(f'celebratoryEmote argument is malformed: \"{celebratoryEmote}\"')
 
@@ -73,7 +67,6 @@ class TriviaUtils(TriviaUtilsInterface):
         self.__triviaQuestionPresenter: TriviaQuestionPresenterInterface = triviaQuestionPresenter
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__celebratoryEmote: str = celebratoryEmote
 
     async def getClearedSuperTriviaQueueMessage(self, numberOfGamesRemoved: int) -> str:
@@ -709,23 +702,13 @@ class TriviaUtils(TriviaUtilsInterface):
 
     async def isPrivilegedTriviaUser(
         self,
-        twitchChannel: str,
         twitchChannelId: str,
         userId: str,
     ) -> bool:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(twitchChannelId):
+        if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-
-        try:
-            twitchUser = await self.__usersRepository.getUserAsync(twitchChannel)
-        except NoSuchUserException as e:
-            # this exception should be impossible here, but let's just be safe
-            self.__timber.log('TriviaUtils', f'Encountered an invalid Twitch user \"{twitchChannel}\" when trying to check userId \"{userId}\" for privileged trivia permissions', e, traceback.format_exc())
-            return False
 
         if userId in await self.__bannedTriviaGameControllersRepository.getBannedControllers():
             return False

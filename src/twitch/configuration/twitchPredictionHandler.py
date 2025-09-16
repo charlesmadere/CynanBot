@@ -8,6 +8,7 @@ from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscrip
 from ..chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from ...misc import utils as utils
+from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
@@ -217,7 +218,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             return
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
-            soundAlert = None,
+            soundAlert = SoundAlert.PREDICTION,
             twitchChannel = user.handle,
             twitchChannelId = predictionData.twitchChannelId,
             ttsEvent = TtsEvent(

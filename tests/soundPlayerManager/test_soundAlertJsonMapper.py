@@ -137,6 +137,10 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.parseSoundAlert('point_redemption_16')
         assert result is SoundAlert.POINT_REDEMPTION_16
 
+    def test_parseSoundAlert_withPredictionString(self):
+        result = self.jsonMapper.parseSoundAlert('prediction')
+        assert result is SoundAlert.PREDICTION
+
     def test_parseSoundAlert_withRaidString(self):
         result = self.jsonMapper.parseSoundAlert('raid')
         assert result is SoundAlert.RAID
@@ -196,6 +200,10 @@ class TestSoundAlertJsonMapper:
             result = self.jsonMapper.requireSoundAlert(None)
 
         assert result is None
+
+    def test_requireSoundAlert_withPrediction(self):
+        result = self.jsonMapper.requireSoundAlert('prediction')
+        assert result is SoundAlert.PREDICTION
 
     def test_requireSoundAlert_withRaid(self):
         result = self.jsonMapper.requireSoundAlert('raid')

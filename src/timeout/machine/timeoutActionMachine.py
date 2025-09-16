@@ -19,6 +19,7 @@ from ..models.actions.bananaTimeoutAction import BananaTimeoutAction
 from ..models.actions.basicTimeoutAction import BasicTimeoutAction
 from ..models.actions.copyAnivMessageTimeoutAction import CopyAnivMessageTimeoutAction
 from ..models.actions.grenadeTimeoutAction import GrenadeTimeoutAction
+from ..models.actions.tm36TimeoutAction import Tm36TimeoutAction
 from ..models.airStrikeTimeoutTarget import AirStrikeTimeoutTarget
 from ..models.basicTimeoutTarget import BasicTimeoutTarget
 from ..models.events.absTimeoutEvent import AbsTimeoutEvent
@@ -40,6 +41,9 @@ from ..models.events.noBananaInventoryAvailableTimeoutEvent import NoBananaInven
 from ..models.events.noBananaTargetAvailableTimeoutEvent import NoBananaTargetAvailableTimeoutEvent
 from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
+from ..models.events.noTm36InventoryAvailableTimeoutEvent import NoTm36InventoryAvailableTimeoutEvent
+from ..models.events.tm36TimeoutEvent import Tm36TimeoutEvent
+from ..models.events.tm36TimeoutFailedTimeoutEvent import Tm36TimeoutFailedTimeoutEvent
 from ..models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ..repositories.chatterTimeoutHistoryRepositoryInterface import ChatterTimeoutHistoryRepositoryInterface
 from ..useCases.calculateTimeoutDurationUseCase import CalculateTimeoutDurationUseCase
@@ -475,7 +479,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
             durationSeconds = timeoutDuration.seconds,
-            reason = f'⚠ {timeoutDuration.message} timeout for copying {anivUserName}',
+            reason = f'{timeoutDuration.message} timeout for copying {anivUserName}',
             twitchAccessToken = action.moderatorTwitchAccessToken,
             twitchChannelAccessToken = action.userTwitchAccessToken,
             twitchChannelId = action.twitchChannelId,
@@ -626,8 +630,85 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         elif isinstance(action, GrenadeTimeoutAction):
             await self.__handleGrenadeTimeoutAction(action)
 
+        elif isinstance(action, Tm36TimeoutAction):
+            await self.__handleTm36TimeoutAction(action)
+
         else:
             raise UnknownTimeoutActionTypeException(f'Encountered unknown AbsTimeoutAction: \"{action}\"')
+
+    async def __handleTm36TimeoutAction(self, action: Tm36TimeoutAction):
+        if not isinstance(action, Tm36TimeoutAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
+
+        if not await self.__verifyStreamLiveStatus(action):
+            await self.__submitEvent(IncorrectLiveStatusTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
+
+        targetUserName = await self.__requireUserName(
+            action = action,
+            chatterUserId = action.targetUserId,
+        )
+
+        if not action.ignoreInventory:
+            inventory = await self.__chatterInventoryHelper.get(
+                chatterUserId = action.targetUserId,
+                twitchChannelId = action.twitchChannelId,
+            )
+
+            if inventory[ChatterItemType.TM_36] < 1:
+                await self.__submitEvent(NoTm36InventoryAvailableTimeoutEvent(
+                    eventId = await self.__timeoutIdGenerator.generateEventId(),
+                    targetUserName = targetUserName,
+                    originatingAction = action,
+                ))
+                return
+
+        timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
+            timeoutAction = action,
+        )
+
+        timeoutResult = await self.__twitchTimeoutHelper.timeout(
+            durationSeconds = timeoutDuration.seconds,
+            reason = f'{ChatterItemType.TM_36.humanName} timeout for {timeoutDuration.message}',
+            twitchAccessToken = action.moderatorTwitchAccessToken,
+            twitchChannelAccessToken = action.userTwitchAccessToken,
+            twitchChannelId = action.twitchChannelId,
+            userIdToTimeout = action.targetUserId,
+            user = action.user,
+        )
+
+        if timeoutResult is not TwitchTimeoutResult.SUCCESS:
+            await self.__submitEvent(Tm36TimeoutFailedTimeoutEvent(
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+                targetUserName = targetUserName,
+                originatingAction = action,
+                timeoutResult = timeoutResult,
+            ))
+            return
+
+        updatedInventory: ChatterItemGiveResult | None = None
+
+        if not action.ignoreInventory:
+            updatedInventory = await self.__chatterInventoryHelper.give(
+                itemType = ChatterItemType.TM_36,
+                giveAmount = -1,
+                chatterUserId = action.targetUserId,
+                twitchChannelId = action.twitchChannelId,
+            )
+
+        await self.__submitEvent(Tm36TimeoutEvent(
+            timeoutDuration = timeoutDuration,
+            updatedInventory = updatedInventory,
+            originatingAction = action,
+            bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup(),
+            eventId = await self.__timeoutIdGenerator.generateEventId(),
+            explodedEmote = await self.__trollmojiHelper.getExplodedEmoteOrBackup(),
+            targetUserName = targetUserName,
+            timeoutResult = timeoutResult,
+        ))
 
     async def __requireUserName(
         self,

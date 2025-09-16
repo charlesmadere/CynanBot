@@ -58,16 +58,13 @@ class SuperTriviaChatCommand(AbsChatCommand):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
+        # For the time being, this command is intentionally not checking for mod status, as it has
+        # been determined that super trivia game controllers shouldn't necessarily have to be mod.
         if not generalSettings.isTriviaGameEnabled() or not generalSettings.isSuperTriviaGameEnabled():
             return
         elif not user.isTriviaGameEnabled or not user.isSuperTriviaGameEnabled:
             return
-
-        # For the time being, this command is intentionally not checking for mod status, as it has
-        # been determined that super trivia game controllers shouldn't necessarily have to be mod.
-
-        if not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannel = user.handle,
+        elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannelId = await ctx.getTwitchChannelId(),
             userId = ctx.getAuthorId(),
         ):

@@ -4,6 +4,7 @@ from typing import Final
 from .absChatterItemEventHandler import AbsChatterItemEventHandler
 from ..models.chatterItemType import ChatterItemType
 from ..models.events.absChatterItemEvent import AbsChatterItemEvent
+from ..models.events.animalPetChatterItemEvent import AnimalPetChatterItemEvent
 from ..models.events.cassetteTapeMessageHasNoTargetChatterItemEvent import \
     CassetteTapeMessageHasNoTargetChatterItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
@@ -14,13 +15,19 @@ from ..models.events.useAirStrikeChatterItemEvent import UseAirStrikeChatterItem
 from ..models.events.useBananaChatterItemEvent import UseBananaChatterItemEvent
 from ..models.events.useCassetteTapeChatterItemEvent import UseCassetteTapeChatterItemEvent
 from ..models.events.useGrenadeChatterItemEvent import UseGrenadeChatterItemEvent
+from ..models.events.useTm36ChatterItemEvent import UseTm36ChatterItemEvent
 from ..models.events.voicemailMessageIsEmptyChatterItemEvent import VoicemailMessageIsEmptyChatterItemEvent
 from ..models.events.voicemailTargetIsOriginatingUserChatterItemEvent import \
     VoicemailTargetIsOriginatingUserChatterItemEvent
 from ..models.events.voicemailTargetIsStreamerChatterItemEvent import VoicemailTargetIsStreamerChatterItemEvent
+from ...misc import utils as utils
+from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
+from ...soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
+    SoundPlayerRandomizerHelperInterface
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
+from ...timeout.models.events.tm36TimeoutFailedTimeoutEvent import Tm36TimeoutFailedTimeoutEvent
 from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ...twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
 
@@ -29,13 +36,19 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
+        soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
-        if not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
+        elif not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
+            raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -43,7 +56,9 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
+        self.__soundPlayerRandomizerHelper: Final[SoundPlayerRandomizerHelperInterface] = soundPlayerRandomizerHelper
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
@@ -54,17 +69,22 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
         if not isinstance(event, AbsChatterItemEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
-        self.__timber.log('AbsChatterItemEventHandler', f'Received new chatter item event ({event=})')
+        self.__timber.log('ChatterItemEventHandler', f'Received new chatter item event ({event=})')
 
         twitchConnectionReadinessProvider = self.__twitchConnectionReadinessProvider
 
         if twitchConnectionReadinessProvider is None:
-            self.__timber.log('AbsChatterItemEventHandler', f'Received new chatter item event event, but it won\'t be handled, as the twitchChannelProvider and/or twitchConnectionReadinessProvider instances have not been set ({event=}) ({twitchConnectionReadinessProvider=})')
+            self.__timber.log('ChatterItemEventHandler', f'Received new chatter item event event, but it won\'t be handled, as the twitchChannelProvider and/or twitchConnectionReadinessProvider instances have not been set ({event=}) ({twitchConnectionReadinessProvider=})')
             return
 
         await twitchConnectionReadinessProvider.waitForReady()
 
-        if isinstance(event, CassetteTapeMessageHasNoTargetChatterItemEvent):
+        if isinstance(event, AnimalPetChatterItemEvent):
+            await self.__handleAnimalPetChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, CassetteTapeMessageHasNoTargetChatterItemEvent):
             await self.__handleCassetteTapeMessageHasNoTargetChatterItemEvent(
                 event = event,
             )
@@ -81,6 +101,11 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
 
         elif isinstance(event, NotEnoughInventoryChatterItemEvent):
             await self.__handleNotEnoughInventoryChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, Tm36TimeoutFailedTimeoutEvent):
+            await self.__handleTm36TimeoutFailedTimeoutEvent(
                 event = event,
             )
 
@@ -109,6 +134,11 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
                 event = event,
             )
 
+        elif isinstance(event, UseTm36ChatterItemEvent):
+            await self.__handleTm36ChatterItemEvent(
+                event = event,
+            )
+
         elif isinstance(event, VoicemailMessageIsEmptyChatterItemEvent):
             await self.__handleVoicemailMessageIsEmptyChatterItemEvent(
                 event = event,
@@ -134,6 +164,27 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
         # We don't handle this item use here. Instead, we handle this within the
         # TimeoutEventHandler class. It's a bit of a weird flow but... whatever :P
         pass
+
+    async def __handleAnimalPetChatterItemEvent(
+        self,
+        event: AnimalPetChatterItemEvent,
+    ):
+        if event.user.areSoundAlertsEnabled:
+            soundAlert = await self.__soundPlayerRandomizerHelper.chooseRandomFromDirectorySoundAlert(
+                directoryPath = event.itemDetails.soundDirectory,
+            )
+
+            if utils.isValidStr(soundAlert):
+                soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+                self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundFile(soundAlert))
+
+        animal = utils.getRandomAnimalEmoji()
+
+        self.__twitchChatMessenger.send(
+            text = f'You pet a {animal}! It seems to have enjoyed that!',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleBananaChatterItemEvent(
         self,
@@ -207,6 +258,14 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
+
+    async def __handleTm36ChatterItemEvent(
+        self,
+        event: UseTm36ChatterItemEvent,
+    ):
+        # We don't handle this item use here. Instead, we handle this within the
+        # TimeoutEventHandler class. It's a bit of a weird flow but... whatever :P
+        pass
 
     async def __handleTradeChatterItemEvent(
         self,

@@ -6,7 +6,6 @@ from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
-from ..models.anivTimeoutData import AnivTimeoutData
 from ..models.mostRecentAnivMessage import MostRecentAnivMessage
 from ..repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
     AnivCopyMessageTimeoutScoreRepositoryInterface
@@ -14,7 +13,6 @@ from ..repositories.anivUserIdsRepositoryInterface import AnivUserIdsRepositoryI
 from ..repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from ..settings.anivSettingsInterface import AnivSettingsInterface
 from ...aniv.models.whichAnivUser import WhichAnivUser
-from ...language.languageEntry import LanguageEntry
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -220,19 +218,6 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         randomNumber = random.random()
         return randomNumber > timeoutProbability
-
-    async def __determineTimeoutReason(
-        self,
-        timeoutData: AnivTimeoutData,
-        anivUserName: str,
-        user: UserInterface,
-    ) -> str:
-        match user.defaultLanguage:
-            case LanguageEntry.SPANISH:
-                return f'{timeoutData.durationSecondsStr} de suspension por copiar un mensaje de {anivUserName}'
-
-            case _:
-                return f'{timeoutData.durationMessage} timeout for copying an {anivUserName} message'
 
     async def __findMatchingCopiedAnivMessage(
         self,

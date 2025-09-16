@@ -7,8 +7,10 @@ from src.chatterInventory.mappers.chatterInventoryMapper import ChatterInventory
 from src.chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from src.chatterInventory.models.chatterItemType import ChatterItemType
 from src.chatterInventory.models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
+from src.chatterInventory.models.itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from src.chatterInventory.models.itemDetails.bananaItemDetails import BananaItemDetails
 from src.chatterInventory.models.itemDetails.grenadeItemDetails import GrenadeItemDetails
+from src.chatterInventory.models.itemDetails.tm36ItemDetails import Tm36ItemDetails
 
 
 class TestChatterInventoryMapper:
@@ -46,6 +48,30 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_parseAirStrikeItemDetails_withNone(self):
         result = await self.mapper.parseAirStrikeItemDetails(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseAnimalPetItemDetails(self):
+        details = AnimalPetItemDetails(
+            soundDirectory = 'sounds/animalPets',
+        )
+
+        result = await self.mapper.parseAnimalPetItemDetails({
+            'soundDirectory': details.soundDirectory,
+        })
+
+        assert isinstance(result, AnimalPetItemDetails)
+        assert result == details
+        assert result.soundDirectory == details.soundDirectory
+
+    @pytest.mark.asyncio
+    async def test_parseAnimalPetItemDetails_withEmptyDictionary(self):
+        result = await self.mapper.parseAnimalPetItemDetails(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseAnimalPetItemDetails_withNone(self):
+        result = await self.mapper.parseAnimalPetItemDetails(None)
         assert result is None
 
     @pytest.mark.asyncio
@@ -105,24 +131,30 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_parseInventory1(self):
         airStrikes = round(random.uniform(0.01, 1.00) * 100)
+        animalPets = round(random.uniform(0.01, 1.00) * 100)
         bananas = round(random.uniform(0.01, 1.00) * 100)
         cassetteTapes = round(random.uniform(0.01, 1.00) * 100)
         grenades = round(random.uniform(0.01, 1.00) * 100)
+        tm36s = round(random.uniform(0.01, 1.00) * 100)
 
         inventoryJson: dict[str, int] = {
             await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE): airStrikes,
+            await self.mapper.serializeItemType(ChatterItemType.ANIMAL_PET): animalPets,
             await self.mapper.serializeItemType(ChatterItemType.BANANA): bananas,
             await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE): cassetteTapes,
             await self.mapper.serializeItemType(ChatterItemType.GRENADE): grenades,
+            await self.mapper.serializeItemType(ChatterItemType.TM_36): tm36s,
         }
 
         result = await self.mapper.parseInventory(inventoryJson)
         assert len(result) == len(ChatterItemType)
 
         assert result[ChatterItemType.AIR_STRIKE] == airStrikes
+        assert result[ChatterItemType.ANIMAL_PET] == animalPets
         assert result[ChatterItemType.BANANA] == bananas
         assert result[ChatterItemType.CASSETTE_TAPE] == cassetteTapes
         assert result[ChatterItemType.GRENADE] == grenades
+        assert result[ChatterItemType.TM_36] == tm36s
 
     @pytest.mark.asyncio
     async def test_parseInventory2(self):
@@ -175,12 +207,14 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_parseInventory_withNegativeNumbers(self):
         airStrikes = round(random.uniform(-1.00, -0.01) * 100)
+        animalPets = round(random.uniform(-1.00, -0.01) * 100)
         bananas = round(random.uniform(-1.00, -0.01) * 100)
         cassetteTapes = round(random.uniform(-1.00, -0.01) * 100)
         grenades = round(random.uniform(-1.00, -0.01) * 100)
 
         inventoryJson: dict[str, int] = {
             await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE): airStrikes,
+            await self.mapper.serializeItemType(ChatterItemType.ANIMAL_PET): animalPets,
             await self.mapper.serializeItemType(ChatterItemType.BANANA): bananas,
             await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE): cassetteTapes,
             await self.mapper.serializeItemType(ChatterItemType.GRENADE): grenades,
@@ -191,6 +225,7 @@ class TestChatterInventoryMapper:
 
         # negative numbers should always be normalized to 0
         assert result[ChatterItemType.AIR_STRIKE] == 0
+        assert result[ChatterItemType.ANIMAL_PET] == 0
         assert result[ChatterItemType.BANANA] == 0
         assert result[ChatterItemType.CASSETTE_TAPE] == 0
         assert result[ChatterItemType.GRENADE] == 0
@@ -228,6 +263,32 @@ class TestChatterInventoryMapper:
 
         result = await self.mapper.parseItemType('airstrikes')
         assert result is ChatterItemType.AIR_STRIKE
+
+    @pytest.mark.asyncio
+    async def test_parseItemType_withAnimalPet(self):
+        result = await self.mapper.parseItemType('animal_pet')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.parseItemType('animal_pets')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.parseItemType('animal pet')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.parseItemType('animal pets')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.parseItemType('animal-pet')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.parseItemType('animal-pets')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.parseItemType('animalpet')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.parseItemType('animalpets')
+        assert result is ChatterItemType.ANIMAL_PET
 
     @pytest.mark.asyncio
     async def test_parseItemType_withBanana(self):
@@ -301,6 +362,28 @@ class TestChatterInventoryMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseItemType_withPet(self):
+        result = await self.mapper.parseItemType('pet')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.parseItemType('pets')
+        assert result is ChatterItemType.ANIMAL_PET
+
+    @pytest.mark.asyncio
+    async def test_parseItemType_withTm36(self):
+        result = await self.mapper.parseItemType('tm_36')
+        assert result is ChatterItemType.TM_36
+
+        result = await self.mapper.parseItemType('tm-36')
+        assert result is ChatterItemType.TM_36
+
+        result = await self.mapper.parseItemType('tm 36')
+        assert result is ChatterItemType.TM_36
+
+        result = await self.mapper.parseItemType('tm36')
+        assert result is ChatterItemType.TM_36
+
+    @pytest.mark.asyncio
     async def test_parseItemType_withTnt(self):
         result = await self.mapper.parseItemType('tnt')
         assert result is ChatterItemType.AIR_STRIKE
@@ -314,6 +397,33 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_parseItemType_withWhitespaceString(self):
         result = await self.mapper.parseItemType(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseTm36ItemDetails(self):
+        details = Tm36ItemDetails(
+            maxDurationSeconds = 600,
+            minDurationSeconds = 300,
+        )
+
+        result = await self.mapper.parseTm36ItemDetails({
+            'maxDurationSeconds': details.maxDurationSeconds,
+            'minDurationSeconds': details.minDurationSeconds,
+        })
+
+        assert isinstance(result, Tm36ItemDetails)
+        assert result == details
+        assert result.maxDurationSeconds == details.maxDurationSeconds
+        assert result.minDurationSeconds == details.minDurationSeconds
+
+    @pytest.mark.asyncio
+    async def test_parseTm36ItemDetails_withEmptyDictionary(self):
+        result = await self.mapper.parseTm36ItemDetails(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseTm36ItemDetails_withNone(self):
+        result = await self.mapper.parseTm36ItemDetails(None)
         assert result is None
 
     @pytest.mark.asyncio
@@ -341,6 +451,32 @@ class TestChatterInventoryMapper:
 
         result = await self.mapper.requireItemType('airstrikes')
         assert result is ChatterItemType.AIR_STRIKE
+
+    @pytest.mark.asyncio
+    async def test_requireItemType_withAnimalPet(self):
+        result = await self.mapper.requireItemType('animal_pet')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.requireItemType('animal_pets')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.requireItemType('animal pet')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.requireItemType('animal pets')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.requireItemType('animal-pet')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.requireItemType('animal-pets')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.requireItemType('animalpet')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.requireItemType('animalpets')
+        assert result is ChatterItemType.ANIMAL_PET
 
     @pytest.mark.asyncio
     async def test_requireItemType_withBanana(self):
@@ -414,6 +550,28 @@ class TestChatterInventoryMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_requireItemType_withPet(self):
+        result = await self.mapper.requireItemType('pet')
+        assert result is ChatterItemType.ANIMAL_PET
+
+        result = await self.mapper.requireItemType('pets')
+        assert result is ChatterItemType.ANIMAL_PET
+
+    @pytest.mark.asyncio
+    async def test_requireItemType_withTm36(self):
+        result = await self.mapper.requireItemType('tm_36')
+        assert result is ChatterItemType.TM_36
+
+        result = await self.mapper.requireItemType('tm-36')
+        assert result is ChatterItemType.TM_36
+
+        result = await self.mapper.requireItemType('tm 36')
+        assert result is ChatterItemType.TM_36
+
+        result = await self.mapper.requireItemType('tm36')
+        assert result is ChatterItemType.TM_36
+
+    @pytest.mark.asyncio
     async def test_requireItemType_withTnt(self):
         result = await self.mapper.requireItemType('tnt')
         assert result is ChatterItemType.AIR_STRIKE
@@ -467,24 +625,30 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_serializeInventory3(self):
         airStrikes = round(random.uniform(0.01, 1.00) * 100)
+        animalPets = round(random.uniform(0.01, 1.00) * 100)
         bananas = round(random.uniform(0.01, 1.00) * 100)
         cassetteTapes = round(random.uniform(0.01, 1.00) * 100)
         grenades = round(random.uniform(0.01, 1.00) * 100)
+        tm36s = round(random.uniform(0.01, 1.00) * 100)
 
         inventory: dict[ChatterItemType, int] = {
             ChatterItemType.AIR_STRIKE: airStrikes,
+            ChatterItemType.ANIMAL_PET: animalPets,
             ChatterItemType.BANANA: bananas,
             ChatterItemType.CASSETTE_TAPE: cassetteTapes,
             ChatterItemType.GRENADE: grenades,
+            ChatterItemType.TM_36: tm36s,
         }
 
         result = await self.mapper.serializeInventory(inventory)
         assert len(result) == len(ChatterItemType)
 
         assert result[await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)] == airStrikes
+        assert result[await self.mapper.serializeItemType(ChatterItemType.ANIMAL_PET)] == animalPets
         assert result[await self.mapper.serializeItemType(ChatterItemType.BANANA)] == bananas
         assert result[await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE)] == cassetteTapes
         assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == grenades
+        assert result[await self.mapper.serializeItemType(ChatterItemType.TM_36)] == tm36s
 
     @pytest.mark.asyncio
     async def test_serializeInventory_withEmptyDictionary(self):
@@ -499,12 +663,14 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_serializeInventory_withNegativeNumbers(self):
         airStrikes = round(random.uniform(-1.00, -0.01) * 100)
+        animalPets = round(random.uniform(-1.00, -0.01) * 100)
         bananas = round(random.uniform(-1.00, -0.01) * 100)
         cassetteTapes = round(random.uniform(-1.00, -0.01) * 100)
         grenades = round(random.uniform(-1.00, -0.01) * 100)
 
         inventory: dict[ChatterItemType, int] = {
             ChatterItemType.AIR_STRIKE: airStrikes,
+            ChatterItemType.ANIMAL_PET: animalPets,
             ChatterItemType.BANANA: bananas,
             ChatterItemType.CASSETTE_TAPE: cassetteTapes,
             ChatterItemType.GRENADE: grenades,
@@ -528,6 +694,11 @@ class TestChatterInventoryMapper:
     async def test_serializeItemType_withAirStrike(self):
         result = await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE)
         assert result == 'air_strike'
+
+    @pytest.mark.asyncio
+    async def test_serializeItemType_withAnimalPet(self):
+        result = await self.mapper.serializeItemType(ChatterItemType.ANIMAL_PET)
+        assert result == 'animal_pet'
 
     @pytest.mark.asyncio
     async def test_serializeItemType_withBanana(self):

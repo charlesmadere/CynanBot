@@ -26,6 +26,8 @@ from ..models.events.noBananaInventoryAvailableTimeoutEvent import NoBananaInven
 from ..models.events.noBananaTargetAvailableTimeoutEvent import NoBananaTargetAvailableTimeoutEvent
 from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
+from ..models.events.tm36TimeoutEvent import Tm36TimeoutEvent
+from ..models.events.tm36TimeoutFailedTimeoutEvent import Tm36TimeoutFailedTimeoutEvent
 from ...chatterInventory.models.chatterItemType import ChatterItemType
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -170,6 +172,16 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
 
         elif isinstance(event, NoGrenadeTargetAvailableTimeoutEvent):
             await self.__handleNoGrenadeTargetAvailableTimeoutEvent(
+                event = event,
+            )
+
+        elif isinstance(event, Tm36TimeoutEvent):
+            await self.__handleTm36TimeoutEvent(
+                event = event,
+            )
+
+        elif isinstance(event, Tm36TimeoutFailedTimeoutEvent):
+            await self.__handleTm36TimeoutFailedTimeoutEvent(
                 event = event,
             )
 
@@ -391,7 +403,9 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         if event.user.areSoundAlertsEnabled:
             soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
-            await soundPlayerManager.playSoundAlert(self.__chooseRandomGrenadeSoundAlert())
+            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(
+                alert = self.__chooseRandomGrenadeSoundAlert(),
+            ))
 
         remainingInventoryString = ''
         if event.updatedInventory is not None:
@@ -497,6 +511,35 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         ])
         soundAlerts.freeze()
         return random.choice(soundAlerts)
+
+    async def __handleTm36TimeoutEvent(
+        self,
+        event: Tm36TimeoutEvent,
+    ):
+        if event.user.areSoundAlertsEnabled:
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(
+                alert = self.__chooseRandomMegaGrenadeSoundAlert(),
+            ))
+
+        remainingInventoryString = ''
+        if event.updatedInventory is not None:
+            remainingInventoryString = await self.__getInventoryRemainingString(
+                itemType = ChatterItemType.TM_36,
+                inventory = event.updatedInventory.inventory,
+            )
+
+        self.__twitchChatMessenger.send(
+            text = f'{event.explodedEmote} @{event.targetUserName} used {ChatterItemType.TM_36.humanName}, its self destruct! {event.bombEmote} {remainingInventoryString}',
+            twitchChannelId = event.twitchChannelId,
+        )
+
+    async def __handleTm36TimeoutFailedTimeoutEvent(
+        self,
+        event: Tm36TimeoutFailedTimeoutEvent,
+    ):
+        # this method is intentionally empty
+        pass
 
     def setTwitchConnectionReadinessProvider(self, provider: TwitchConnectionReadinessProvider | None):
         if provider is not None and not isinstance(provider, TwitchConnectionReadinessProvider):

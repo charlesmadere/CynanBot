@@ -78,7 +78,6 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
         elif not user.isTriviaGameEnabled and not user.isSuperTriviaGameEnabled:
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
             userId = ctx.getAuthorId()
         ):

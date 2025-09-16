@@ -7,8 +7,10 @@ from frozenlist import FrozenList
 from .chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from ..models.chatterItemType import ChatterItemType
 from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
+from ..models.itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from ..models.itemDetails.bananaItemDetails import BananaItemDetails
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
+from ..models.itemDetails.tm36ItemDetails import Tm36ItemDetails
 from ...misc import utils as utils
 
 
@@ -22,6 +24,12 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         airStrike.append(re.compile(r'^\s*air(?:\s+|_|-)?strikes?\s*$', re.IGNORECASE))
         airStrike.append(re.compile(r'^\s*tnt\'?s?\s*$', re.IGNORECASE))
         airStrike.freeze()
+
+        animalPet: FrozenList[Pattern] = FrozenList()
+        animalPet.append(re.compile(r'^\s*animal(?:\s+|_|-)?pets?\s*$', re.IGNORECASE))
+        animalPet.append(re.compile(r'^\s*pet(?:\s+|_|-)?animals?\s*$', re.IGNORECASE))
+        animalPet.append(re.compile(r'^\s*pets?\s*$', re.IGNORECASE))
+        animalPet.freeze()
 
         banana: FrozenList[Pattern] = FrozenList()
         banana.append(re.compile(r'^\s*bananas?\s*$', re.IGNORECASE))
@@ -37,11 +45,17 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         grenade.append(re.compile(r'^\s*nades?\s*$', re.IGNORECASE))
         grenade.freeze()
 
+        tm36: FrozenList[Pattern] = FrozenList()
+        tm36.append(re.compile(r'^\s*tm(?:\s+|_|-)?36s?\s*$', re.IGNORECASE))
+        tm36.freeze()
+
         return frozendict({
             ChatterItemType.AIR_STRIKE: airStrike,
+            ChatterItemType.ANIMAL_PET: animalPet,
             ChatterItemType.BANANA: banana,
             ChatterItemType.CASSETTE_TAPE: cassetteTape,
             ChatterItemType.GRENADE: grenade,
+            ChatterItemType.TM_36: tm36,
         })
 
     async def parseAirStrikeItemDetails(
@@ -61,6 +75,19 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
             minDurationSeconds = minDurationSeconds,
             maxTargets = maxTargets,
             minTargets = minTargets,
+        )
+
+    async def parseAnimalPetItemDetails(
+        self,
+        itemDetailsJson: dict[str, Any] | Any | None,
+    ) -> AnimalPetItemDetails | None:
+        if not isinstance(itemDetailsJson, dict) or len(itemDetailsJson) == 0:
+            return None
+
+        soundDirectory = utils.getStrFromDict(itemDetailsJson, 'soundDirectory')
+
+        return AnimalPetItemDetails(
+            soundDirectory = soundDirectory,
         )
 
     async def parseBananaItemDetails(
@@ -127,6 +154,21 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
         return None
 
+    async def parseTm36ItemDetails(
+        self,
+        itemDetailsJson: dict[str, Any] | Any | None,
+    ) -> Tm36ItemDetails | None:
+        if not isinstance(itemDetailsJson, dict) or len(itemDetailsJson) == 0:
+            return None
+
+        maxDurationSeconds = utils.getIntFromDict(itemDetailsJson, 'maxDurationSeconds')
+        minDurationSeconds = utils.getIntFromDict(itemDetailsJson, 'minDurationSeconds')
+
+        return Tm36ItemDetails(
+            maxDurationSeconds = maxDurationSeconds,
+            minDurationSeconds = minDurationSeconds,
+        )
+
     async def requireItemType(
         self,
         itemType: str | Any | None
@@ -165,7 +207,9 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
         match itemType:
             case ChatterItemType.AIR_STRIKE: return 'air_strike'
+            case ChatterItemType.ANIMAL_PET: return 'animal_pet'
             case ChatterItemType.BANANA: return 'banana'
             case ChatterItemType.CASSETTE_TAPE: return 'cassette_tape'
             case ChatterItemType.GRENADE: return 'grenade'
+            case ChatterItemType.TM_36: return 'tm36'
             case _: raise ValueError(f'Unknown ChatterItemType value: \"{itemType}\"')
