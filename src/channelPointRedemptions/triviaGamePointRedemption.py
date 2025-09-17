@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..timber.timberInterface import TimberInterface
 from ..trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
@@ -21,20 +23,20 @@ class TriviaGamePointRedemption(AbsChannelPointRedemption):
         elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
-        self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaGameBuilder: Final[TriviaGameBuilderInterface] = triviaGameBuilder
+        self.__triviaGameMachine: Final[TriviaGameMachineInterface] = triviaGameMachine
 
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> bool:
         startNewTriviaGameAction = await self.__triviaGameBuilder.createNewTriviaGame(
-            twitchChannel = twitchChannel.getTwitchChannelName(),
-            twitchChannelId = await twitchChannel.getTwitchChannelId(),
+            twitchChannel = twitchChannelPointsMessage.twitchUser.handle,
+            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
             userId = twitchChannelPointsMessage.userId,
-            userName = twitchChannelPointsMessage.userName
+            userName = twitchChannelPointsMessage.userName,
         )
 
         if startNewTriviaGameAction is None:

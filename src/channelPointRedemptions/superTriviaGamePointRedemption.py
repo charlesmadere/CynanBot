@@ -30,7 +30,7 @@ class SuperTriviaGamePointRedemption(AbsChannelPointRedemption):
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> bool:
         startNewSuperTriviaGameAction = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = twitchChannelPointsMessage.twitchUser.handle,

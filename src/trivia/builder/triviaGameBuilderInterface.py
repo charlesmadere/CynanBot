@@ -13,7 +13,7 @@ class TriviaGameBuilderInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ) -> StartNewTriviaGameAction | None:
         pass
 
@@ -23,6 +23,6 @@ class TriviaGameBuilderInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
         numberOfGames: int = 1,
-        requiredTriviaSource: TriviaSource | None = None
+        requiredTriviaSource: TriviaSource | None = None,
     ) -> StartNewSuperTriviaGameAction | None:
         pass
