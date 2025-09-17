@@ -2305,6 +2305,7 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = Tw
     redemptionCounterPointRedemption = None,
     soundAlertPointRedemption = soundAlertPointRedemption,
     superTriviaGamePointRedemption = None,
+    superTriviaLotrGamePointRedemption = None,
     triviaGamePointRedemption = None,
     ttsChatterPointRedemption = ttsChatterPointRedemption,
     timber = timber,

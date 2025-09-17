@@ -37,6 +37,7 @@ from src.channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePoin
 from src.channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
 from src.channelPointRedemptions.redemptionCounterPointRedemption import RedemptionCounterPointRedemption
 from src.channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
+from src.channelPointRedemptions.superTriviaLotrGamePointRedemption import SuperTriviaLotrGamePointRedemption
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
 from src.chatActions.chatBackMessagesChatAction import ChatBackMessagesChatAction
@@ -2000,19 +2001,27 @@ pkmnShinyPointRedemption: PkmnShinyPointRedemption | None = PkmnShinyPointRedemp
 
 superTriviaGamePointRedemption: SuperTriviaGamePointRedemption | None = None
 
+superTriviaLotrGamePointRedemption: SuperTriviaLotrGamePointRedemption | None = None
+
 triviaGamePointRedemption: TriviaGamePointRedemption | None = None
 
 if cutenessRepository is not None and triviaGameBuilder is not None and triviaGameMachine is not None and triviaScoreRepository is not None and triviaUtils is not None:
     superTriviaGamePointRedemption = SuperTriviaGamePointRedemption(
         timber = timber,
         triviaGameBuilder = triviaGameBuilder,
-        triviaGameMachine = triviaGameMachine
+        triviaGameMachine = triviaGameMachine,
+    )
+
+    superTriviaLotrGamePointRedemption = SuperTriviaLotrGamePointRedemption(
+        timber = timber,
+        triviaGameBuilder = triviaGameBuilder,
+        triviaGameMachine = triviaGameMachine,
     )
 
     triviaGamePointRedemption = TriviaGamePointRedemption(
         timber = timber,
         triviaGameBuilder = triviaGameBuilder,
-        triviaGameMachine = triviaGameMachine
+        triviaGameMachine = triviaGameMachine,
     )
 
 
@@ -2095,6 +2104,7 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = Tw
     redemptionCounterPointRedemption = redemptionCounterPointRedemption,
     soundAlertPointRedemption = None,
     superTriviaGamePointRedemption = superTriviaGamePointRedemption,
+    superTriviaLotrGamePointRedemption = superTriviaLotrGamePointRedemption,
     triviaGamePointRedemption = triviaGamePointRedemption,
     ttsChatterPointRedemption = None,
     timber = timber,
