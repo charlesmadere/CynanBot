@@ -95,6 +95,7 @@ class User(UserInterface):
         superTriviaCheerTriggerMaximum: int | None,
         superTriviaGamePoints: int | None,
         superTriviaGameRewardId: str | None,
+        superTriviaLotrGameRewardId: str | None,
         superTriviaGameShinyMultiplier: int | None,
         superTriviaGameToxicMultiplier: int | None,
         superTriviaGameToxicPunishmentMultiplier: int | None,
@@ -278,6 +279,8 @@ class User(UserInterface):
             raise TypeError(f'superTriviaCheerTriggerMaximum argument is malformed: \"{superTriviaCheerTriggerMaximum}\"')
         elif superTriviaGameRewardId is not None and not isinstance(superTriviaGameRewardId, str):
             raise TypeError(f'superTriviaGameRewardId argument is malformed: \"{superTriviaGameRewardId}\"')
+        elif superTriviaLotrGameRewardId is not None and not isinstance(superTriviaLotrGameRewardId, str):
+            raise TypeError(f'superTriviaLotrGameRewardId argument is malformed: \"{superTriviaLotrGameRewardId}\"')
         elif superTriviaGameShinyMultiplier is not None and not utils.isValidInt(superTriviaGameShinyMultiplier):
             raise TypeError(f'superTriviaGameShinyMultiplier argument is malformed: \"{superTriviaGameShinyMultiplier}\"')
         elif superTriviaGameToxicPunishmentMultiplier is not None and not utils.isValidInt(superTriviaGameToxicPunishmentMultiplier):
@@ -435,6 +438,7 @@ class User(UserInterface):
         self.__superTriviaCheerTriggerMaximum: int | None = superTriviaCheerTriggerMaximum
         self.__superTriviaGamePoints: int | None = superTriviaGamePoints
         self.__superTriviaGameRewardId: str | None = superTriviaGameRewardId
+        self.__superTriviaLotrGameRewardId: str | None = superTriviaLotrGameRewardId
         self.__superTriviaGameShinyMultiplier: int | None = superTriviaGameShinyMultiplier
         self.__superTriviaGameToxicMultiplier: int | None = superTriviaGameToxicMultiplier
         self.__superTriviaGameToxicPunishmentMultiplier: int | None = superTriviaGameToxicPunishmentMultiplier
@@ -645,6 +649,10 @@ class User(UserInterface):
     @property
     def superTriviaGameRewardId(self) -> str | None:
         return self.__superTriviaGameRewardId
+
+    @property
+    def superTriviaLotrGameRewardId(self) -> str | None:
+        return self.__superTriviaLotrGameRewardId
 
     @property
     def superTriviaGameShinyMultiplier(self) -> int | None:

@@ -225,6 +225,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def superTriviaLotrGameRewardId(self) -> str | None:
+        pass
+
+    @property
+    @abstractmethod
     def superTriviaGameShinyMultiplier(self) -> int | None:
         pass
 
