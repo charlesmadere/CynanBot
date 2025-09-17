@@ -26,7 +26,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         triviaUtils: TriviaUtilsInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -111,17 +111,17 @@ class SuperTriviaChatCommand(AbsChatCommand):
         ):
             return
 
-        startNewSuperTriviaGameAction = await self.__triviaGameBuilder.createNewSuperTriviaGame(
+        action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
             numberOfGames = numberOfGames,
             requiredTriviaSource = triviaSource,
         )
 
-        if startNewSuperTriviaGameAction is None:
+        if action is None:
             return
 
-        self.__triviaGameMachine.submitAction(startNewSuperTriviaGameAction)
+        self.__triviaGameMachine.submitAction(action)
         self.__timber.log('SuperTriviaChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({numberOfGames=}) ({triviaSource=})')
 
     async def __stopForPrank(
