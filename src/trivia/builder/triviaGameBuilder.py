@@ -18,7 +18,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         self,
         triviaGameBuilderSettings: TriviaGameBuilderSettingsInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
-        usersRepository: UsersRepositoryInterface
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(triviaGameBuilderSettings, TriviaGameBuilderSettingsInterface):
             raise TypeError(f'triviaGameBuilderSettings argument is malformed: \"{triviaGameBuilderSettings}\"')
@@ -36,7 +36,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ) -> StartNewTriviaGameAction | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -74,7 +74,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
-            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED
+            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED,
         )
 
         return StartNewTriviaGameAction(
@@ -87,7 +87,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
             twitchChannelId = twitchChannelId,
             userId = userId,
             userName = userName,
-            triviaFetchOptions = triviaFetchOptions
+            triviaFetchOptions = triviaFetchOptions,
         )
 
     async def createNewSuperTriviaGame(
@@ -95,7 +95,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         twitchChannel: str,
         twitchChannelId: str,
         numberOfGames: int = 1,
-        requiredTriviaSource: TriviaSource | None = None
+        requiredTriviaSource: TriviaSource | None = None,
     ) -> StartNewSuperTriviaGameAction | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -151,7 +151,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
             twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED,
-            requiredTriviaSource = requiredTriviaSource
+            requiredTriviaSource = requiredTriviaSource,
         )
 
         return StartNewSuperTriviaGameAction(
@@ -169,5 +169,5 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
             actionId = actionId,
             twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
-            triviaFetchOptions = triviaFetchOptions
+            triviaFetchOptions = triviaFetchOptions,
         )

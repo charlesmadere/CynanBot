@@ -42,6 +42,7 @@ from src.channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointR
 from src.channelPointRedemptions.redemptionCounterPointRedemption import RedemptionCounterPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from src.channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
+from src.channelPointRedemptions.superTriviaLotrGamePointRedemption import SuperTriviaLotrGamePointRedemption
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from src.channelPointRedemptions.ttsChatterPointRedemption import TtsChatterPointRedemption
 from src.channelPointRedemptions.voicemailPointRedemption import VoicemailPointRedemption
@@ -3065,6 +3066,12 @@ superTriviaGamePointRedemption: SuperTriviaGamePointRedemption | None = SuperTri
     triviaGameMachine = triviaGameMachine
 )
 
+superTriviaLotrGamePointRedemption: SuperTriviaLotrGamePointRedemption | None = SuperTriviaLotrGamePointRedemption(
+    timber = timber,
+    triviaGameBuilder = triviaGameBuilder,
+    triviaGameMachine = triviaGameMachine,
+)
+
 triviaGamePointRedemption: TriviaGamePointRedemption | None = TriviaGamePointRedemption(
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
@@ -3172,6 +3179,7 @@ twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = Tw
     redemptionCounterPointRedemption = redemptionCounterPointRedemption,
     soundAlertPointRedemption = soundAlertPointRedemption,
     superTriviaGamePointRedemption = superTriviaGamePointRedemption,
+    superTriviaLotrGamePointRedemption = superTriviaLotrGamePointRedemption,
     triviaGamePointRedemption = triviaGamePointRedemption,
     ttsChatterPointRedemption = ttsChatterPointRedemption,
     timber = timber,

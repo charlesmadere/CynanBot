@@ -30,16 +30,16 @@ class SuperTriviaGamePointRedemption(AbsChannelPointRedemption):
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> bool:
-        startNewSuperTriviaGameAction = await self.__triviaGameBuilder.createNewSuperTriviaGame(
+        action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = twitchChannelPointsMessage.twitchUser.handle,
             twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
         )
 
-        if startNewSuperTriviaGameAction is None:
+        if action is None:
             return False
 
-        self.__triviaGameMachine.submitAction(startNewSuperTriviaGameAction)
-        self.__timber.log('TriviaGameRedemption', f'Redeemed super trivia game for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchChannel.getTwitchChannelName()}')
+        self.__triviaGameMachine.submitAction(action)
+        self.__timber.log('SuperTriviaGameRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchChannel.getTwitchChannelName()}')
         return True

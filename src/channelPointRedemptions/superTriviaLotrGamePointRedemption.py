@@ -3,12 +3,13 @@ from typing import Final
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..timber.timberInterface import TimberInterface
 from ..trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
+from ..trivia.questions.triviaSource import TriviaSource
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
 
 
-class TriviaGamePointRedemption(AbsChannelPointRedemption):
+class SuperTriviaLotrGamePointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
@@ -32,16 +33,15 @@ class TriviaGamePointRedemption(AbsChannelPointRedemption):
         twitchChannel: TwitchChannel,
         twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> bool:
-        action = await self.__triviaGameBuilder.createNewTriviaGame(
+        action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = twitchChannelPointsMessage.twitchUser.handle,
             twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
-            userId = twitchChannelPointsMessage.userId,
-            userName = twitchChannelPointsMessage.userName,
+            requiredTriviaSource = TriviaSource.LORD_OF_THE_RINGS,
         )
 
         if action is None:
             return False
 
         self.__triviaGameMachine.submitAction(action)
-        self.__timber.log('TriviaGameRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchChannel.getTwitchChannelName()}')
+        self.__timber.log('SuperTriviaLotrGameRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchChannel.getTwitchChannelName()}')
         return True

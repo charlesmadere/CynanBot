@@ -297,6 +297,7 @@ class UsersRepository(UsersRepositoryInterface):
         superTriviaCheerTriggerMaximum: int | None = None
         superTriviaGamePoints: int | None = None
         superTriviaGameRewardId: str | None = None
+        superTriviaLotrGameRewardId: str | None = None
         superTriviaGameShinyMultiplier: int | None = None
         superTriviaGameToxicMultiplier: int | None = None
         superTriviaGameToxicPunishmentMultiplier: int | None = None
@@ -323,6 +324,7 @@ class UsersRepository(UsersRepositoryInterface):
             superTriviaCheerTriggerMaximum = utils.getIntFromDict(userJson, 'superTriviaCheerTriggerMaximum', 2)
             superTriviaGamePoints = userJson.get('superTriviaGamePoints')
             superTriviaGameRewardId = userJson.get('superTriviaGameRewardId')
+            superTriviaLotrGameRewardId = userJson.get('superTriviaLotrGameRewardId')
             superTriviaGameShinyMultiplier = userJson.get('superTriviaGameShinyMultiplier')
             superTriviaGameToxicMultiplier = userJson.get('superTriviaGameToxicMultiplier')
             superTriviaGameToxicPunishmentMultiplier = userJson.get('superTriviaGameToxicPunishmentMultiplier')
@@ -468,6 +470,7 @@ class UsersRepository(UsersRepositoryInterface):
             superTriviaCheerTriggerMaximum = superTriviaCheerTriggerMaximum,
             superTriviaGamePoints = superTriviaGamePoints,
             superTriviaGameRewardId = superTriviaGameRewardId,
+            superTriviaLotrGameRewardId = superTriviaLotrGameRewardId,
             superTriviaGameShinyMultiplier = superTriviaGameShinyMultiplier,
             superTriviaGameToxicMultiplier = superTriviaGameToxicMultiplier,
             superTriviaGameToxicPunishmentMultiplier = superTriviaGameToxicPunishmentMultiplier,
