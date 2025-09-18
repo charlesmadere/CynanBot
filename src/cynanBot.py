@@ -102,6 +102,10 @@ from .chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCo
 from .chatCommands.weatherChatCommand import WeatherChatCommand
 from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
+from .chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
+from .chatterInventory.machine.chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
+from .chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
+from .chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from .chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
 from .chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from .chatterPreferredTts.helper.chatterPreferredTtsUserMessageHelperInterface import \
@@ -300,6 +304,10 @@ class CynanBot(
         beanStatsRepository: BeanStatsRepositoryInterface | None,
         bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface | None,
         chatActionsManager: ChatActionsManagerInterface | None,
+        chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface | None,
+        chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface | None,
+        chatterInventoryMapper: ChatterInventoryMapperInterface | None,
+        chatterInventorySettings: ChatterInventorySettingsInterface | None,
         chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface | None,
         chatterPreferredTtsPresenter: ChatterPreferredTtsPresenter | None,
         chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface | None,
@@ -487,6 +495,14 @@ class CynanBot(
             raise TypeError(f'bizhawkSettingsRepository argument is malformed: \"{bizhawkSettingsRepository}\"')
         elif chatActionsManager is not None and not isinstance(chatActionsManager, ChatActionsManagerInterface):
             raise TypeError(f'chatActionsManager argument is malformed: \"{chatActionsManager}\"')
+        elif chatterInventoryIdGenerator is not None and not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
+            raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
+        elif chatterInventoryItemUseMachine is not None and not isinstance(chatterInventoryItemUseMachine, ChatterInventoryItemUseMachineInterface):
+            raise TypeError(f'chatterInventoryItemUseMachine argument is malformed: \"{chatterInventoryItemUseMachine}\"')
+        elif chatterInventoryMapper is not None and not isinstance(chatterInventoryMapper, ChatterInventoryMapperInterface):
+            raise TypeError(f'chatterInventoryMapper argument is malformed: \"{chatterInventoryMapper}\"')
+        elif chatterInventorySettings is not None and not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
+            raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
         elif not isinstance(chatLogger, ChatLoggerInterface):
             raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
         elif chatterPreferredTtsHelper is not None and not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):

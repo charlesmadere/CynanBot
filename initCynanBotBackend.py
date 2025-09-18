@@ -50,14 +50,8 @@ from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWiz
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
-from src.chatterInventory.helpers.chatterInventoryHelper import ChatterInventoryHelper
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
-from src.chatterInventory.mappers.chatterInventoryMapper import ChatterInventoryMapper
-from src.chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
-from src.chatterInventory.repositories.chatterInventoryRepository import ChatterInventoryRepository
-from src.chatterInventory.repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
-from src.chatterInventory.settings.chatterInventorySettings import ChatterInventorySettings
-from src.chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
+from src.chatterInventory.helpers.stub.stubChatterInventoryHelper import StubChatterInventoryHelper
 from src.cheerActions.airStrike.airStrikeCheerActionHelper import AirStrikeCheerActionHelper
 from src.cheerActions.airStrike.airStrikeCheerActionHelperInterface import AirStrikeCheerActionHelperInterface
 from src.cheerActions.beanChance.beanChanceCheerActionHelper import BeanChanceCheerActionHelper
@@ -1566,26 +1560,7 @@ timeoutActionSettings: TimeoutActionSettingsInterface = TimeoutActionSettings(
 ## Chatter Inventory initialization section ##
 ##############################################
 
-chatterInventoryMapper: ChatterInventoryMapperInterface = ChatterInventoryMapper()
-
-chatterInventoryRepository: ChatterInventoryRepositoryInterface = ChatterInventoryRepository(
-    backingDatabase = backingDatabase,
-    chatterInventoryMapper = chatterInventoryMapper,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-)
-
-chatterInventorySettings: ChatterInventorySettingsInterface = ChatterInventorySettings(
-    chatterInventoryMapper = chatterInventoryMapper,
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/chatterInventorySettings.json',
-    ),
-)
-
-chatterInventoryHelper: ChatterInventoryHelperInterface = ChatterInventoryHelper(
-    chatterInventoryRepository = chatterInventoryRepository,
-    chatterInventorySettings = chatterInventorySettings,
+chatterInventoryHelper: ChatterInventoryHelperInterface = StubChatterInventoryHelper(
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
 )
@@ -2212,6 +2187,10 @@ cynanBot = CynanBot(
     bizhawkSettingsRepository = None,
     chatActionsManager = chatActionsManager,
     chatLogger = chatLogger,
+    chatterInventoryIdGenerator = None,
+    chatterInventoryItemUseMachine = None,
+    chatterInventoryMapper = None,
+    chatterInventorySettings = None,
     chatterPreferredTtsHelper = None,
     chatterPreferredTtsPresenter = None,
     chatterPreferredTtsRepository = None,
