@@ -709,7 +709,14 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 user = action.user,
             )
 
-            if splashTimeoutResult is not TwitchTimeoutResult.SUCCESS:
+            if splashTimeoutResult is TwitchTimeoutResult.SUCCESS:
+                await self.__asplodieStatsRepository.addAsplodie(
+                    isSelfAsplodie = False,
+                    durationAsplodiedSeconds = timeoutDuration.seconds,
+                    chatterUserId = splashTimeoutTarget.targetUserId,
+                    twitchChannelId = action.twitchChannelId,
+                )
+            else:
                 splashTimeoutTarget = None
 
         updatedInventory: ChatterItemGiveResult | None = None
