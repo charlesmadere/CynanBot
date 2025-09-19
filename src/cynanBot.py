@@ -56,6 +56,7 @@ from .chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCo
 from .chatCommands.discordChatCommand import DiscordChatCommand
 from .chatCommands.eccoChatCommand import EccoChatCommand
 from .chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
+from .chatCommands.freeGiveChatterItemChatCommand import FreeGiveChatterItemChatCommand
 from .chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
 from .chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredTtsChatCommand
 from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
@@ -63,6 +64,7 @@ from .chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaC
 from .chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
 from .chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from .chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
+from .chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
 from .chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from .chatCommands.jishoChatCommand import JishoChatCommand
 from .chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
@@ -97,11 +99,14 @@ from .chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from .chatCommands.ttsChatCommand import TtsChatCommand
 from .chatCommands.twitchUserInfoChatCommand import TwitchUserInfoChatCommand
 from .chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
+from .chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
 from .chatCommands.voicemailsChatCommand import VoicemailsChatCommand
 from .chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
 from .chatCommands.weatherChatCommand import WeatherChatCommand
 from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
+from .chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
+from .chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from .chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
 from .chatterInventory.machine.chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
 from .chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
@@ -304,6 +309,8 @@ class CynanBot(
         beanStatsRepository: BeanStatsRepositoryInterface | None,
         bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface | None,
         chatActionsManager: ChatActionsManagerInterface | None,
+        chatLogger: ChatLoggerInterface,
+        chatterInventoryHelper: ChatterInventoryHelperInterface | None,
         chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface | None,
         chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface | None,
         chatterInventoryMapper: ChatterInventoryMapperInterface | None,
@@ -313,7 +320,6 @@ class CynanBot(
         chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface | None,
         chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface | None,
         chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface | None,
-        chatLogger: ChatLoggerInterface,
         cheerActionHelper: CheerActionHelperInterface | None,
         cheerActionJsonMapper: CheerActionJsonMapperInterface | None,
         cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface | None,
@@ -415,6 +421,7 @@ class CynanBot(
         twitchUtils: TwitchUtilsInterface,
         twitchWebsocketClient: TwitchWebsocketClientInterface | None,
         twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface | None,
+        useChatterItemHelper: UseChatterItemHelperInterface | None,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
         voicemailHelper: VoicemailHelperInterface | None,
@@ -495,6 +502,10 @@ class CynanBot(
             raise TypeError(f'bizhawkSettingsRepository argument is malformed: \"{bizhawkSettingsRepository}\"')
         elif chatActionsManager is not None and not isinstance(chatActionsManager, ChatActionsManagerInterface):
             raise TypeError(f'chatActionsManager argument is malformed: \"{chatActionsManager}\"')
+        elif not isinstance(chatLogger, ChatLoggerInterface):
+            raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
+        elif chatterInventoryHelper is not None and not isinstance(chatterInventoryHelper, ChatterInventoryHelperInterface):
+            raise TypeError(f'chatterInventoryHelper argument is malformed: \"{chatterInventoryHelper}\"')
         elif chatterInventoryIdGenerator is not None and not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
             raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
         elif chatterInventoryItemUseMachine is not None and not isinstance(chatterInventoryItemUseMachine, ChatterInventoryItemUseMachineInterface):
@@ -503,8 +514,6 @@ class CynanBot(
             raise TypeError(f'chatterInventoryMapper argument is malformed: \"{chatterInventoryMapper}\"')
         elif chatterInventorySettings is not None and not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
-        elif not isinstance(chatLogger, ChatLoggerInterface):
-            raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
         elif chatterPreferredTtsHelper is not None and not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
         elif chatterPreferredTtsPresenter is not None and not isinstance(chatterPreferredTtsPresenter, ChatterPreferredTtsPresenter):
@@ -715,6 +724,8 @@ class CynanBot(
             raise TypeError(f'twitchWebsocketClient argument is malformed: \"{twitchWebsocketClient}\"')
         elif twitchWebsocketSettingsRepository is not None and not isinstance(twitchWebsocketSettingsRepository, TwitchWebsocketSettingsRepositoryInterface):
             raise TypeError(f'twitchWebsocketSettingsRepository argument is malformed: \"{twitchWebsocketSettingsRepository}\"')
+        elif useChatterItemHelper is not None and not isinstance(useChatterItemHelper, UseChatterItemHelperInterface):
+            raise TypeError(f'useChatterItemHelper argument is malformed: \"{useChatterItemHelper}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -807,6 +818,15 @@ class CynanBot(
             self.__beanStatsCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__beanStatsCommand: AbsChatCommand = BeanStatsChatCommand(beanStatsPresenter, beanStatsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
+
+        if chatterInventoryHelper is None or chatterInventoryIdGenerator is None or chatterInventoryItemUseMachine is None or chatterInventoryMapper is None or chatterInventorySettings is None or useChatterItemHelper is None:
+            self.__freeGiveChatterItemCommand: AbsChatCommand = StubChatCommand()
+            self.__giveChatterItemCommand: AbsChatCommand = StubChatCommand()
+            self.__useChatterItemCommand: AbsChatCommand = StubChatCommand()
+        else:
+            self.__freeGiveChatterItemCommand: AbsChatCommand = FreeGiveChatterItemChatCommand(administratorProvider, chatterInventoryHelper, chatterInventoryMapper, chatterInventorySettings, timber, twitchChannelEditorsRepository, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository)
+            self.__giveChatterItemCommand: AbsChatCommand = GiveChatterItemChatCommand(chatterInventoryIdGenerator, chatterInventoryItemUseMachine, chatterInventoryMapper, chatterInventorySettings, timber, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository)
+            self.__useChatterItemCommand: AbsChatCommand = UseChatterItemChatCommand(chatterInventoryIdGenerator, timber, twitchChatMessenger, useChatterItemHelper, usersRepository)
 
         if cheerActionJsonMapper is None or cheerActionsRepository is None or cheerActionsWizard is None:
             self.__addAirStrikeCheerActionCommand: AbsChatCommand = StubChatCommand()
@@ -1401,6 +1421,11 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__enableCheerActionCommand.handleChatCommand(context)
 
+    @commands.command(name = 'freegiveitem', aliases = [ 'freeitemgive', 'freegivechatteritem' ])
+    async def command_freegivechatteritem(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__freeGiveChatterItemCommand.handleChatCommand(context)
+
     @commands.command(name = 'getbannedtriviacontrollers', aliases = [ 'bannedtriviacontrollers' ])
     async def command_getbannedtriviacontrollers(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1440,6 +1465,11 @@ class CynanBot(
     async def command_givecuteness(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__giveCutenessCommand.handleChatCommand(context)
+
+    @commands.command(name = 'giveitem', aliases = [ 'givechatteritem', 'itemgive' ])
+    async def command_givechatteritem(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__giveChatterItemCommand.handleChatCommand(context)
 
     @commands.command(name = 'jisho')
     async def command_jisho(self, ctx: Context):
@@ -1605,6 +1635,11 @@ class CynanBot(
     async def command_unbantriviaquestion(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__unbanTriviaQuestionChatCommand.handleChatCommand(context)
+
+    @commands.command(name = 'useitem', aliases = [ 'use', 'usechatteritem' ])
+    async def command_usechatteritem(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__useChatterItemCommand.handleChatCommand(context)
 
     @commands.command(name = 'voicemails', aliases = [ 'voicemail' ])
     async def command_voicemails(self, ctx: Context):
