@@ -3,7 +3,7 @@ aiohttp==3.12.15
 aiosqlite==0.21.0
 asyncpg==0.30.0
 charset-normalizer==3.4.3
-cryptography==45.0.7
+cryptography==46.0.1
 emoji==2.14.1
 frozendict==2.4.6
 frozenlist==1.7.0
@@ -20,4 +20,4 @@ roman==5.1
 twitchio==2.10.0
 typing_extensions==4.15.0
 websockets==15.0.1
-xmltodict==1.0.0
+xmltodict==1.0.2
