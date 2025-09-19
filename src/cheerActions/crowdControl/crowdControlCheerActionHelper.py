@@ -88,7 +88,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                         chatterUserName = chatterUserName,
                         twitchChannel = twitchChannel,
                         twitchChannelId = twitchChannelId,
-                        twitchChatMessageId = twitchChatMessageId
+                        twitchChatMessageId = twitchChatMessageId,
                     ))
 
                     for _ in range(gigaShuffleCount - 1):
@@ -101,7 +101,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                             chatterUserName = chatterUserName,
                             twitchChannel = twitchChannel,
                             twitchChannelId = twitchChannelId,
-                            twitchChatMessageId = twitchChatMessageId
+                            twitchChatMessageId = twitchChatMessageId,
                         ))
 
         if len(actions) == 0:
@@ -114,7 +114,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                 chatterUserName = chatterUserName,
                 twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId,
-                twitchChatMessageId = twitchChatMessageId
+                twitchChatMessageId = twitchChatMessageId,
             ))
 
         actions.freeze()
@@ -174,7 +174,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                 message = message,
                 twitchChannelId = twitchChannelId,
                 twitchChatMessageId = twitchChatMessageId,
-                user = user
+                user = user,
             )
         elif isinstance(action, CrowdControlGameShuffleCheerAction):
             return await self.__inputGameShuffleIntoCrowdControl(
@@ -183,7 +183,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                 chatterUserName = cheerUserName,
                 twitchChannelId = twitchChannelId,
                 twitchChatMessageId = twitchChatMessageId,
-                user = user
+                user = user,
             )
         else:
             return False
@@ -217,7 +217,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             chatterUserName = chatterUserName,
             twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
-            twitchChatMessageId = twitchChatMessageId
+            twitchChatMessageId = twitchChatMessageId,
         ))
 
         return True
@@ -237,7 +237,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             chatterUserName = chatterUserName,
             twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
-            twitchChatMessageId = twitchChatMessageId
+            twitchChatMessageId = twitchChatMessageId,
         )
 
         for gameShuffleAction in gameShuffleActions:

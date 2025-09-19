@@ -70,7 +70,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
     async def __handleAction(
         self,
         action: CrowdControlAction,
-        actionHandler: CrowdControlActionHandler
+        actionHandler: CrowdControlActionHandler,
     ) -> CrowdControlActionHandleResult:
         if not isinstance(action, CrowdControlAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
@@ -92,19 +92,19 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             return CrowdControlActionHandleResult.RETRY
 
         if await self.__crowdControlSettingsRepository.areSoundsEnabled():
-            await self.__playSoundAlert(action)
+            self.__backgroundTaskHelper.createTask(self.__playSoundAlert(action))
 
         handleResult: CrowdControlActionHandleResult
 
         if isinstance(action, ButtonPressCrowdControlAction):
             handleResult = await self.__handleButtonPressAction(
                 action = action,
-                actionHandler = actionHandler
+                actionHandler = actionHandler,
             )
         elif isinstance(action, GameShuffleCrowdControlAction):
             handleResult = await self.__handleGameShuffleAction(
                 action = action,
-                actionHandler = actionHandler
+                actionHandler = actionHandler,
             )
         else:
             raise TypeError(f'Encountered unknown CrowdControlAction type: ({action=})')
@@ -117,7 +117,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
     async def __handleButtonPressAction(
         self,
         action: ButtonPressCrowdControlAction,
-        actionHandler: CrowdControlActionHandler
+        actionHandler: CrowdControlActionHandler,
     ) -> CrowdControlActionHandleResult:
         if not isinstance(action, ButtonPressCrowdControlAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
@@ -142,7 +142,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
     async def __handleGameShuffleAction(
         self,
         action: GameShuffleCrowdControlAction,
-        actionHandler: CrowdControlActionHandler
+        actionHandler: CrowdControlActionHandler,
     ) -> CrowdControlActionHandleResult:
         if not isinstance(action, GameShuffleCrowdControlAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
@@ -204,7 +204,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
 
         await soundPlayerManager.playSoundAlert(
             alert = alert,
-            volume = await self.__crowdControlSettingsRepository.getMediaPlayerVolume()
+            volume = await self.__crowdControlSettingsRepository.getMediaPlayerVolume(),
         )
 
     def resume(self) -> bool:
@@ -254,7 +254,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
                 if action is not None:
                     result = await self.__handleAction(
                         action = action,
-                        actionHandler = actionHandler
+                        actionHandler = actionHandler,
                     )
 
                     match result:

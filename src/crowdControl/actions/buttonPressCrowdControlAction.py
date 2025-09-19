@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Final
 
 from .crowdControlAction import CrowdControlAction
 from .crowdControlActionType import CrowdControlActionType
@@ -16,7 +17,7 @@ class ButtonPressCrowdControlAction(CrowdControlAction):
         chatterUserName: str,
         twitchChannel: str,
         twitchChannelId: str,
-        twitchChatMessageId: str | None
+        twitchChatMessageId: str | None,
     ):
         super().__init__(
             dateTime = dateTime,
@@ -25,13 +26,13 @@ class ButtonPressCrowdControlAction(CrowdControlAction):
             chatterUserName = chatterUserName,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            twitchChatMessageId = twitchChatMessageId
+            twitchChatMessageId = twitchChatMessageId,
         )
 
         if not isinstance(button, CrowdControlButton):
             raise TypeError(f'button argument is malformed: \"{button}\"')
 
-        self.__button: CrowdControlButton = button
+        self.__button: Final[CrowdControlButton] = button
 
     @property
     def actionType(self) -> CrowdControlActionType:

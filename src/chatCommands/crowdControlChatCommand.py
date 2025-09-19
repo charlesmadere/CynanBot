@@ -12,8 +12,8 @@ from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -27,8 +27,8 @@ class CrowdControlChatCommand(AbsChatCommand):
         crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface
+        twitchChatMessenger: TwitchChatMessengerInterface,
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -42,8 +42,8 @@ class CrowdControlChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -53,7 +53,7 @@ class CrowdControlChatCommand(AbsChatCommand):
         self.__crowdControlUserInputUtils: Final[CrowdControlUserInputUtilsInterface] = crowdControlUserInputUtils
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
@@ -90,7 +90,7 @@ class CrowdControlChatCommand(AbsChatCommand):
                 chatterUserName = ctx.getAuthorName(),
                 twitchChannel = user.handle,
                 twitchChannelId = twitchChannelId,
-                twitchChatMessageId = await ctx.getMessageId()
+                twitchChatMessageId = await ctx.getMessageId(),
             )
         else:
             crowdControlAction = ButtonPressCrowdControlAction(
@@ -101,15 +101,15 @@ class CrowdControlChatCommand(AbsChatCommand):
                 chatterUserName = ctx.getAuthorName(),
                 twitchChannel = user.handle,
                 twitchChannelId = twitchChannelId,
-                twitchChatMessageId = await ctx.getMessageId()
+                twitchChatMessageId = await ctx.getMessageId(),
             )
 
         self.__crowdControlMachine.submitAction(crowdControlAction)
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = f'ⓘ Handled crowd control action (button={button}) (actionType={crowdControlAction.actionType})',
-            replyMessageId = await ctx.getMessageId()
+        self.__twitchChatMessenger.send(
+            text = f'ⓘ Handled crowd control action ({button=}) ({crowdControlAction.actionType=})',
+            twitchChannelId = twitchChannelId,
+            replyMessageId = await ctx.getMessageId(),
         )
 
         self.__timber.log('CrowdControlChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({button=})')

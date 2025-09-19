@@ -1,5 +1,6 @@
 import locale
 from datetime import datetime
+from typing import Final
 
 from .crowdControlAction import CrowdControlAction
 from .crowdControlActionType import CrowdControlActionType
@@ -18,7 +19,7 @@ class GameShuffleCrowdControlAction(CrowdControlAction):
         chatterUserName: str,
         twitchChannel: str,
         twitchChannelId: str,
-        twitchChatMessageId: str | None
+        twitchChatMessageId: str | None,
     ):
         super().__init__(
             dateTime = dateTime,
@@ -27,7 +28,7 @@ class GameShuffleCrowdControlAction(CrowdControlAction):
             chatterUserName = chatterUserName,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            twitchChatMessageId = twitchChatMessageId
+            twitchChatMessageId = twitchChatMessageId,
         )
 
         if not utils.isValidBool(entryWithinGigaShuffle):
@@ -35,8 +36,8 @@ class GameShuffleCrowdControlAction(CrowdControlAction):
         elif startOfGigaShuffleSize is not None and not utils.isValidInt(startOfGigaShuffleSize):
             raise TypeError(f'startOfGigaShuffleSize argument is malformed: \"{startOfGigaShuffleSize}\"')
 
-        self.__entryWithinGigaShuffle: bool = entryWithinGigaShuffle
-        self.__startOfGigaShuffleSize: int | None = startOfGigaShuffleSize
+        self.__entryWithinGigaShuffle: Final[bool] = entryWithinGigaShuffle
+        self.__startOfGigaShuffleSize: Final[int | None] = startOfGigaShuffleSize
 
     @property
     def actionType(self) -> CrowdControlActionType:
