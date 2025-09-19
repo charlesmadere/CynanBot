@@ -534,6 +534,14 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             twitchChannelId = event.twitchChannelId,
         )
 
+        if event.splashTimeoutTarget is None:
+            return
+
+        self.__twitchChatMessenger.send(
+            text = f'{event.explodedEmote} @{event.splashTimeoutTarget.targetUserName} was also hit with splash damage! {event.bombEmote}',
+            twitchChannelId = event.twitchChannelId,
+        )
+
     async def __handleTm36TimeoutFailedTimeoutEvent(
         self,
         event: Tm36TimeoutFailedTimeoutEvent,

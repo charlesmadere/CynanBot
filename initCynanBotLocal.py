@@ -328,6 +328,7 @@ from src.timeout.useCases.calculateTimeoutDurationUseCase import CalculateTimeou
 from src.timeout.useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
 from src.timeout.useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
 from src.timeout.useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
+from src.timeout.useCases.determineTm36SplashTargetUseCase import DetermineTm36SplashTargetUseCase
 from src.trollmoji.trollmojiHelper import TrollmojiHelper
 from src.trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepository
@@ -1813,6 +1814,15 @@ determineGrenadeTargetUseCase = DetermineGrenadeTargetUseCase(
     userIdsRepository = userIdsRepository,
 )
 
+determineTm36SplashTargetUseCase = DetermineTm36SplashTargetUseCase(
+    activeChattersRepository = activeChattersRepository,
+    timber = timber,
+    timeoutActionSettings = timeoutActionSettings,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    twitchTokensUtils = twitchTokensUtils,
+    userIdsRepository = userIdsRepository,
+)
+
 timeoutIdGenerator: TimeoutIdGeneratorInterface = TimeoutIdGenerator()
 
 anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = AnivCopyMessageTimeoutScoreRepository(
@@ -1831,6 +1841,7 @@ timeoutActionMachine: TimeoutActionMachineInterface = TimeoutActionMachine(
     determineAirStrikeTargetsUseCase = determineAirStrikeTargetsUseCase,
     determineBananaTargetUseCase = determineBananaTargetUseCase,
     determineGrenadeTargetUseCase = determineGrenadeTargetUseCase,
+    determineTm36SplashTargetUseCase = determineTm36SplashTargetUseCase,
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     timber = timber,
@@ -2102,16 +2113,9 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerAction
 )
 
 voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheerActionHelper(
-    activeChattersRepository = activeChattersRepository,
     chatterInventoryIdGenerator = chatterInventoryIdGenerator,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchMessageStringUtils = twitchMessageStringUtils,
     useChatterItemHelper = useChatterItemHelper,
-    userIdsRepository = userIdsRepository,
-    voicemailHelper = voicemailHelper,
-    voicemailSettingsRepository = voicemailSettingsRepository,
 )
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
