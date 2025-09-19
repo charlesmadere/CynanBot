@@ -19,7 +19,3 @@ class StubCrowdControlActionHandler(CrowdControlActionHandler):
     ) -> CrowdControlActionHandleResult:
         # this method is intentionally empty
         return CrowdControlActionHandleResult.ABANDON
-
-    def start(self):
-        # this method is intentionally empty
-        pass

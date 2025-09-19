@@ -13,5 +13,9 @@ class CrowdControlMessage:
         return self.originatingAction.twitchChannel
 
     @property
+    def twitchChannelId(self) -> str:
+        return self.originatingAction.twitchChannelId
+
+    @property
     def twitchChatMessageId(self) -> str | None:
         return self.originatingAction.twitchChatMessageId

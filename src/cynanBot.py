@@ -763,9 +763,9 @@ class CynanBot(
         self.__beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = beanChanceCheerActionHelper
         self.__chatActionsManager: ChatActionsManagerInterface | None = chatActionsManager
         self.__chatLogger: ChatLoggerInterface = chatLogger
-        self.__crowdControlActionHandler: CrowdControlActionHandler | None = crowdControlActionHandler
-        self.__crowdControlMachine: CrowdControlMachineInterface | None = crowdControlMachine
-        self.__crowdControlMessageHandler: CrowdControlMessageHandler | None = crowdControlMessageHandler
+        self.__crowdControlActionHandler: Final[CrowdControlActionHandler | None] = crowdControlActionHandler
+        self.__crowdControlMachine: Final[CrowdControlMachineInterface | None] = crowdControlMachine
+        self.__crowdControlMessageHandler: Final[CrowdControlMessageHandler | None] = crowdControlMessageHandler
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
         self.__recurringActionsEventHandler: AbsRecurringActionsEventHandler | None = recurringActionsEventHandler
@@ -1167,9 +1167,6 @@ class CynanBot(
         if self.__twitchChannelPointRedemptionHandler is not None:
             self.__twitchChannelPointRedemptionHandler.setTwitchChannelProvider(self)
             self.__twitchChannelPointRedemptionHandler.start()
-
-        if self.__crowdControlActionHandler is not None:
-            self.__crowdControlActionHandler.start()
 
         if self.__crowdControlMessageHandler is not None:
             self.__crowdControlMessageHandler.setTwitchChannelProvider(self)
