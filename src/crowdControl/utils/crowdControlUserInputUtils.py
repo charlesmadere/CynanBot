@@ -1,5 +1,4 @@
-import re
-from typing import Final, Pattern
+from typing import Final
 
 from frozendict import frozendict
 
@@ -34,10 +33,8 @@ class CrowdControlUserInputUtils(CrowdControlUserInputUtilsInterface):
             CrowdControlButton.SELECT: frozenset({ 'select', 'sel' }),
             CrowdControlButton.START: frozenset({ 'start', 'pause' }),
             CrowdControlButton.TRIGGER_LEFT: frozenset({ 'left trigger', 'left_trigger', 'l trigger', 'l_trigger', 'trigger_left', 'trigger left' }),
-            CrowdControlButton.TRIGGER_RIGHT: frozenset({ 'right trigger', 'right_trigger', 'r trigger', 'r_trigger', 'trigger_right', 'trigger right' })
+            CrowdControlButton.TRIGGER_RIGHT: frozenset({ 'right trigger', 'right_trigger', 'r trigger', 'r_trigger', 'trigger_right', 'trigger right' }),
         })
-
-        self.__extraWhitespaceRegEx: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
 
     async def parseButtonFromUserInput(
         self,
@@ -48,7 +45,6 @@ class CrowdControlUserInputUtils(CrowdControlUserInputUtilsInterface):
 
         userInput = utils.cleanStr(userInput.lower())
         userInput = await self.__twitchMessageStringUtils.removeCheerStrings(userInput)
-        userInput = utils.cleanStr(userInput)
 
         for button, userInputs in self.__buttonToUserInputs.items():
             if userInput in userInputs:

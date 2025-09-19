@@ -37,7 +37,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
     async def __buildRaidMessage(self, raidData: AbsTwitchRaidHandler.RaidData) -> str:
         # Not sure if I'll keep this method, but I wanted to try out some things that may work a
         # bit better with Google MultiSpeaker TTS. And so, some of this is hardcoded a bit more
-        # than I would really want if I ever make this a more longterm feature.
+        # than I would really want if I ever make this a more long term feature.
 
         viewers = raidData.viewers
         fromUserName = raidData.raidUserName

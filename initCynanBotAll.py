@@ -2709,7 +2709,7 @@ crowdControlMessagePresenter: CrowdControlMessagePresenterInterface = CrowdContr
 
 crowdControlMessageHandler = CrowdControlMessageHandler(
     crowdControlMessagePresenter = crowdControlMessagePresenter,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface = CrowdControlSettingsRepository(
@@ -2765,10 +2765,8 @@ bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface = BizhawkSettingsR
 )
 
 crowdControlActionHandler: CrowdControlActionHandler = BizhawkActionHandler(
-    backgroundTaskHelper = backgroundTaskHelper,
     bizhawkSettingsRepository = bizhawkSettingsRepository,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
 )
 
 

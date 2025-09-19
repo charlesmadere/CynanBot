@@ -1,6 +1,6 @@
 import re
 import uuid
-from typing import Pattern
+from typing import Final, Pattern
 
 from .crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
 
@@ -8,7 +8,7 @@ from .crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
 class CrowdControlIdGenerator(CrowdControlIdGeneratorInterface):
 
     def __init__(self):
-        self.__idRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
+        self.__idRegEx: Final[Pattern] = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
     async def generateActionId(self) -> str:
         return await self.__generateId()

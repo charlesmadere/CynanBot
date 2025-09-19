@@ -76,7 +76,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
                 chatterUserName = twitchChannelPointsMessage.userName,
                 twitchChannel = twitchUser.handle,
                 twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
-                twitchChatMessageId = None
+                twitchChatMessageId = None,
             ))
 
             self.__timber.log('CrowdControlPointRedemption', f'Created new game shuffle crowd control action from channel point redemption ({twitchChannelPointsMessage=}) ({boosterPack=})')
@@ -86,11 +86,11 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
 
         if boosterPack.inputType is CrowdControlInputType.USER_INPUT_BUTTON:
             button = await self.__crowdControlUserInputUtils.parseButtonFromUserInput(
-                userInput = twitchChannelPointsMessage.redemptionMessage
+                userInput = twitchChannelPointsMessage.redemptionMessage,
             )
         else:
             button = await self.__crowdControlInputTypeMapper.toButton(
-                inputType = boosterPack.inputType
+                inputType = boosterPack.inputType,
             )
 
         if button is None:
@@ -105,7 +105,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
             chatterUserName = twitchChannelPointsMessage.userName,
             twitchChannel = twitchUser.handle,
             twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
-            twitchChatMessageId = None
+            twitchChatMessageId = None,
         ))
 
         self.__timber.log('CrowdControlPointRedemption', f'Created new button press crowd control action from channel point redemption ({twitchChannelPointsMessage=}) ({boosterPack=}) ({button=})')

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any
+from typing import Any, Final
 
 from .crowdControlActionType import CrowdControlActionType
 from ...misc import utils as utils
@@ -16,7 +16,7 @@ class CrowdControlAction(ABC):
         chatterUserName: str,
         twitchChannel: str,
         twitchChannelId: str,
-        twitchChatMessageId: str | None
+        twitchChatMessageId: str | None,
     ):
         if not isinstance(dateTime, datetime):
             raise TypeError(f'dateTime argument is malformed: \"{dateTime}\"')
@@ -33,13 +33,13 @@ class CrowdControlAction(ABC):
         elif twitchChatMessageId is not None and not isinstance(twitchChatMessageId, str):
             raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
 
-        self.__dateTime: datetime = dateTime
-        self.__actionId: str = actionId
-        self.__chatterUserId: str = chatterUserId
-        self.__chatterUserName: str = chatterUserName
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
-        self.__twitchChatMessageId: str | None = twitchChatMessageId
+        self.__dateTime: Final[datetime] = dateTime
+        self.__actionId: Final[str] = actionId
+        self.__chatterUserId: Final[str] = chatterUserId
+        self.__chatterUserName: Final[str] = chatterUserName
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
+        self.__twitchChatMessageId: Final[str | None] = twitchChatMessageId
 
         self.__handleAttempts: int = 0
 
@@ -84,7 +84,7 @@ class CrowdControlAction(ABC):
             'handleAttempts': self.__handleAttempts,
             'twitchChannel': self.__twitchChannel,
             'twitchChannelId': self.__twitchChannelId,
-            'twitchChatMessageId': self.__twitchChatMessageId
+            'twitchChatMessageId': self.__twitchChatMessageId,
         }
 
     @property
