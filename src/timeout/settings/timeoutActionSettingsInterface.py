@@ -46,5 +46,9 @@ class TimeoutActionSettingsInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getTm36SplashDamageProbability(self) -> float:
+        pass
+
+    @abstractmethod
     async def isBullyBasedIncreasedFailureRateEnabled(self) -> bool:
         pass

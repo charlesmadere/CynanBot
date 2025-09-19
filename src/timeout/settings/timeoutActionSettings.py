@@ -58,6 +58,10 @@ class TimeoutActionSettings(TimeoutActionSettingsInterface):
         jsonContents = await self.__readJson()
         return utils.getFloatFromDict(jsonContents, 'reverseProbability', fallback = 0.05)
 
+    async def getTm36SplashDamageProbability(self) -> float:
+        jsonContents = await self.__readJson()
+        return utils.getFloatFromDict(jsonContents, 'tm36SplashDamageProbability', fallback = 0.20)
+
     async def isBullyBasedIncreasedFailureRateEnabled(self) -> bool:
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'bullyBasedIncreasedFailureRateEnabled', fallback = True)

@@ -50,6 +50,7 @@ from ..useCases.calculateTimeoutDurationUseCase import CalculateTimeoutDurationU
 from ..useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
 from ..useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
 from ..useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
+from ..useCases.determineTm36SplashTargetUseCase import DetermineTm36SplashTargetUseCase
 from ...aniv.repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
     AnivCopyMessageTimeoutScoreRepositoryInterface
 from ...asplodieStats.models.asplodieStats import AsplodieStats
@@ -83,6 +84,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         determineAirStrikeTargetsUseCase: DetermineAirStrikeTargetsUseCase,
         determineBananaTargetUseCase: DetermineBananaTargetUseCase,
         determineGrenadeTargetUseCase: DetermineGrenadeTargetUseCase,
+        determineTm36SplashTargetUseCase: DetermineTm36SplashTargetUseCase,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         timber: TimberInterface,
@@ -114,6 +116,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'determineBananaTargetUseCase argument is malformed: \"{determineBananaTargetUseCase}\"')
         elif not isinstance(determineGrenadeTargetUseCase, DetermineGrenadeTargetUseCase):
             raise TypeError(f'determineGrenadeTargetUseCase argument is malformed: \"{determineGrenadeTargetUseCase}\"')
+        elif not isinstance(determineTm36SplashTargetUseCase, DetermineTm36SplashTargetUseCase):
+            raise TypeError(f'determineTm36SplashTargetUseCase argument is malformed: \"{determineTm36SplashTargetUseCase}\"')
         elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
             raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
@@ -149,6 +153,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCase] = determineAirStrikeTargetsUseCase
         self.__determineBananaTargetUseCase: Final[DetermineBananaTargetUseCase] = determineBananaTargetUseCase
         self.__determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCase] = determineGrenadeTargetUseCase
+        self.__determineTm36SplashTargetUseCase: Final[DetermineTm36SplashTargetUseCase] = determineTm36SplashTargetUseCase
         self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
         self.__timber: Final[TimberInterface] = timber
@@ -689,6 +694,24 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
+        splashTimeoutTarget = await self.__determineTm36SplashTargetUseCase.invoke(
+            timeoutAction = action,
+        )
+
+        if splashTimeoutTarget is not None:
+            splashTimeoutResult = await self.__twitchTimeoutHelper.timeout(
+                durationSeconds = timeoutDuration.seconds,
+                reason = f'Hit by {ChatterItemType.TM_36.humanName} splash damage timeout from {targetUserName}',
+                twitchAccessToken = action.moderatorTwitchAccessToken,
+                twitchChannelAccessToken = action.userTwitchAccessToken,
+                twitchChannelId = action.twitchChannelId,
+                userIdToTimeout = action.targetUserId,
+                user = action.user,
+            )
+
+            if splashTimeoutResult is not TwitchTimeoutResult.SUCCESS:
+                splashTimeoutTarget = None
+
         updatedInventory: ChatterItemGiveResult | None = None
 
         if not action.ignoreInventory:
@@ -707,6 +730,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             eventId = await self.__timeoutIdGenerator.generateEventId(),
             explodedEmote = await self.__trollmojiHelper.getExplodedEmoteOrBackup(),
             targetUserName = targetUserName,
+            splashTimeoutTarget = splashTimeoutTarget,
             timeoutResult = timeoutResult,
         ))
 
