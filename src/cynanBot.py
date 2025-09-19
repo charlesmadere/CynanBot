@@ -42,6 +42,7 @@ from .chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatComm
 from .chatCommands.beanInstructionsChatCommand import BeanInstructionsChatCommand
 from .chatCommands.beanStatsChatCommand import BeanStatsChatCommand
 from .chatCommands.blueSkyChatCommand import BlueSkyChatCommand
+from .chatCommands.chatterInventoryChatCommand import ChatterInventoryChatCommand
 from .chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from .chatCommands.clearSuperTriviaQueueChatCommand import ClearSuperTriviaQueueChatCommand
 from .chatCommands.commandsChatCommand import CommandsChatCommand
@@ -820,10 +821,12 @@ class CynanBot(
             self.__beanStatsCommand: AbsChatCommand = BeanStatsChatCommand(beanStatsPresenter, beanStatsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 
         if chatterInventoryHelper is None or chatterInventoryIdGenerator is None or chatterInventoryItemUseMachine is None or chatterInventoryMapper is None or chatterInventorySettings is None or useChatterItemHelper is None:
+            self.__chatterInventoryCommand: AbsChatCommand = StubChatCommand()
             self.__freeGiveChatterItemCommand: AbsChatCommand = StubChatCommand()
             self.__giveChatterItemCommand: AbsChatCommand = StubChatCommand()
             self.__useChatterItemCommand: AbsChatCommand = StubChatCommand()
         else:
+            self.__chatterInventoryCommand: AbsChatCommand = ChatterInventoryChatCommand(chatterInventoryHelper, chatterInventorySettings, timber, twitchChatMessenger, usersRepository)
             self.__freeGiveChatterItemCommand: AbsChatCommand = FreeGiveChatterItemChatCommand(administratorProvider, chatterInventoryHelper, chatterInventoryMapper, chatterInventorySettings, timber, twitchChannelEditorsRepository, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository)
             self.__giveChatterItemCommand: AbsChatCommand = GiveChatterItemChatCommand(chatterInventoryIdGenerator, chatterInventoryItemUseMachine, chatterInventoryMapper, chatterInventorySettings, timber, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository)
             self.__useChatterItemCommand: AbsChatCommand = UseChatterItemChatCommand(chatterInventoryIdGenerator, timber, twitchChatMessenger, useChatterItemHelper, usersRepository)
@@ -1470,6 +1473,11 @@ class CynanBot(
     async def command_givechatteritem(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__giveChatterItemCommand.handleChatCommand(context)
+
+    @commands.command(name = 'inventory', aliases = [ 'inv' ])
+    async def command_chatterinventory(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__chatterInventoryCommand.handleChatCommand(context)
 
     @commands.command(name = 'jisho')
     async def command_jisho(self, ctx: Context):
