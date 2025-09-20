@@ -46,6 +46,7 @@ from .chatCommands.chatterInventoryChatCommand import ChatterInventoryChatComman
 from .chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from .chatCommands.clearSuperTriviaQueueChatCommand import ClearSuperTriviaQueueChatCommand
 from .chatCommands.commandsChatCommand import CommandsChatCommand
+from .chatCommands.confirmChatCommand import ConfirmChatCommand
 from .chatCommands.crowdControlChatCommand import CrowdControlChatCommand
 from .chatCommands.cutenessChampionsChatCommand import CutenessChampionsChatCommand
 from .chatCommands.cutenessChatCommand import CutenessChatCommand
@@ -127,7 +128,6 @@ from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperIn
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from .cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
-from .commands import AbsCommand, ConfirmCommand, PbsCommand, StubCommand
 from .commodoreSam.settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSettingsRepositoryInterface
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .crowdControl.automator.crowdControlAutomatorInterface import CrowdControlAutomatorInterface
@@ -798,12 +798,10 @@ class CynanBot(
         self.__blueSkyCommand: AbsChatCommand = BlueSkyChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettings, asplodieStatsRepository, authRepository, bannedTriviaGameControllersRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, guaranteedTimeoutUsersRepository, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionSettings, triviaGameControllersRepository, triviaGameGlobalControllersRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsChatterRepository, ttsChatterSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchUtils, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, voicemailsRepository, voicemailSettingsRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(timber, twitchUtils, usersRepository)
-        self.__confirmCommand: AbsCommand = ConfirmCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchUtils, usersRepository)
+        self.__confirmCommand: AbsChatCommand = ConfirmChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, usersRepository)
         self.__cynanSourceCommand: AbsChatCommand = CynanSourceChatCommand(timber, twitchUtils, usersRepository)
         self.__discordCommand: AbsChatCommand = DiscordChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__loremIpsumCommand: AbsChatCommand = LoremIpsumChatCommand(administratorProvider, timber, twitchChatMessenger, usersRepository)
-        self.__mastodonCommand: AbsCommand = StubCommand()
-        self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
         self.__removeUserCommand: AbsChatCommand = RemoveUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
         self.__setTwitchCodeCommand: AbsChatCommand = SetTwitchCodeChatCommand(administratorProvider, timber, twitchTokensRepository, twitchUtils, usersRepository)
         self.__skipTtsCommand: AbsChatCommand = SkipTtsChatCommand(administratorProvider, compositeTtsManagerProvider, timber, twitchChannelEditorsRepository)
@@ -1168,9 +1166,6 @@ class CynanBot(
             self.__twitchChannelPointRedemptionHandler.setTwitchChannelProvider(self)
             self.__twitchChannelPointRedemptionHandler.start()
 
-        if self.__crowdControlMessageHandler is not None:
-            self.__crowdControlMessageHandler.setTwitchChannelProvider(self)
-
         if self.__crowdControlMachine is not None:
             self.__crowdControlMachine.setActionHandler(self.__crowdControlActionHandler)
             self.__crowdControlMachine.setMessageListener(self.__crowdControlMessageHandler)
@@ -1364,7 +1359,7 @@ class CynanBot(
     @commands.command(name = 'confirm')
     async def command_confirm(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__confirmCommand.handleCommand(context)
+        await self.__confirmCommand.handleChatCommand(context)
 
     @commands.command(name = 'crowdcontrol')
     async def command_crowdcontrol(self, ctx: Context):
@@ -1486,11 +1481,6 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__loremIpsumCommand.handleChatCommand(context)
 
-    @commands.command(name = 'mastodon')
-    async def command_mastodon(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__mastodonCommand.handleCommand(context)
-
     @commands.command(name = 'mycuteness', aliases = [ 'mycutenesshistory' ])
     async def command_mycuteness(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1505,11 +1495,6 @@ class CynanBot(
     async def command_playvoicemail(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__playVoicemailCommand.handleChatCommand(context)
-
-    @commands.command(name = 'pbs')
-    async def command_pbs(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__pbsCommand.handleCommand(context)
 
     @commands.command(name = 'pkmove', aliases = [ 'pkmov' ])
     async def command_pkmove(self, ctx: Context):
