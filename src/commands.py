@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
-from datetime import timedelta
 
 from .misc.administratorProviderInterface import AdministratorProviderInterface
-from .misc.timedDict import TimedDict
 from .timber.timberInterface import TimberInterface
 from .twitch.configuration.twitchContext import TwitchContext
 from .twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -71,41 +69,6 @@ class ConfirmCommand(AbsCommand):
 
         await self.__addOrRemoveUserDataHelper.notifyAddOrRemoveUserEventListenerAndClearData()
         self.__timber.log('CommandsCommand', f'Handled !confirm command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
-
-
-class PbsCommand(AbsCommand):
-
-    def __init__(
-        self,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface,
-        cooldown: timedelta = timedelta(minutes = 1)
-    ):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-
-        if not user.hasSpeedrunProfile:
-            return
-        elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
-            return
-
-        await self.__twitchUtils.safeSend(ctx, f'{user.handle}\'s speedrun profile: {user.speedrunProfile}')
-        self.__timber.log('PbsCommand', f'Handled !pbs command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
 
 class StubCommand(AbsCommand):

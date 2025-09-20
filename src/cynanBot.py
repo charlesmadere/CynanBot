@@ -127,7 +127,7 @@ from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperIn
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from .cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
-from .commands import AbsCommand, ConfirmCommand, PbsCommand, StubCommand
+from .commands import AbsCommand, ConfirmCommand, StubCommand
 from .commodoreSam.settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSettingsRepositoryInterface
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .crowdControl.automator.crowdControlAutomatorInterface import CrowdControlAutomatorInterface
@@ -803,7 +803,6 @@ class CynanBot(
         self.__discordCommand: AbsChatCommand = DiscordChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__loremIpsumCommand: AbsChatCommand = LoremIpsumChatCommand(administratorProvider, timber, twitchChatMessenger, usersRepository)
         self.__mastodonCommand: AbsCommand = StubCommand()
-        self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
         self.__removeUserCommand: AbsChatCommand = RemoveUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
         self.__setTwitchCodeCommand: AbsChatCommand = SetTwitchCodeChatCommand(administratorProvider, timber, twitchTokensRepository, twitchUtils, usersRepository)
         self.__skipTtsCommand: AbsChatCommand = SkipTtsChatCommand(administratorProvider, compositeTtsManagerProvider, timber, twitchChannelEditorsRepository)
@@ -1505,11 +1504,6 @@ class CynanBot(
     async def command_playvoicemail(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__playVoicemailCommand.handleChatCommand(context)
-
-    @commands.command(name = 'pbs')
-    async def command_pbs(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__pbsCommand.handleCommand(context)
 
     @commands.command(name = 'pkmove', aliases = [ 'pkmov' ])
     async def command_pkmove(self, ctx: Context):
