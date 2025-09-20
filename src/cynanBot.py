@@ -1166,9 +1166,6 @@ class CynanBot(
             self.__twitchChannelPointRedemptionHandler.setTwitchChannelProvider(self)
             self.__twitchChannelPointRedemptionHandler.start()
 
-        if self.__crowdControlMessageHandler is not None:
-            self.__crowdControlMessageHandler.setTwitchChannelProvider(self)
-
         if self.__crowdControlMachine is not None:
             self.__crowdControlMachine.setActionHandler(self.__crowdControlActionHandler)
             self.__crowdControlMachine.setMessageListener(self.__crowdControlMessageHandler)
