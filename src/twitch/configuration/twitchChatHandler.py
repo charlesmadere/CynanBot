@@ -74,9 +74,9 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             raise TypeError(f'chatData argument is malformed: \"{chatData}\"')
 
         if utils.isValidStr(chatData.sourceMessageId):
-            # This is a chat message that originated from a chat/stream. As such, let's not even
-            # bother to process it or work with it at all. In the future, we may have a reason to
-            # change this. But for now, it's better to just ignore these messages completely.
+            # This is a chat message that originated from a shared chat/stream. As such, let's not
+            # even bother to process it or work with it at all. In the future, we may have a reason
+            # to change this. But for now, it's better to just ignore these messages completely.
             return
 
         if chatData.user.isChatLoggingEnabled:
