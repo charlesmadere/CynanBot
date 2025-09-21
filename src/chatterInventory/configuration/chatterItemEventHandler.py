@@ -9,6 +9,8 @@ from ..models.events.cassetteTapeMessageHasNoTargetChatterItemEvent import \
     CassetteTapeMessageHasNoTargetChatterItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
+from ..models.events.gashaponResultsChatterItemEvent import GashaponResultsChatterItemEvent
+from ..models.events.noGashaponResultsChatterItemEvent import NoGashaponResultsChatterItemEvent
 from ..models.events.notEnoughInventoryChatterItemEvent import NotEnoughInventoryChatterItemEvent
 from ..models.events.tradeChatterItemEvent import TradeChatterItemEvent
 from ..models.events.useAirStrikeChatterItemEvent import UseAirStrikeChatterItemEvent
@@ -95,6 +97,16 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
 
         elif isinstance(event, DisabledItemTypeChatterItemEvent):
             await self.__handleDisabledItemTypeChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, GashaponResultsChatterItemEvent):
+            await self.__handleGashaponResultsChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, NoGashaponResultsChatterItemEvent):
+            await self.__handleNoGashaponResultsChatterItemEvent(
                 event = event,
             )
 
@@ -235,12 +247,26 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
         # But maybe this should change in the future.
         pass
 
+    async def __handleGashaponResultsChatterItemEvent(
+        self,
+        event: GashaponResultsChatterItemEvent,
+    ):
+        # TODO
+        pass
+
     async def __handleGrenadeChatterItemEvent(
         self,
         event: UseGrenadeChatterItemEvent,
     ):
         # We don't handle this item use here. Instead, we handle this within the
         # TimeoutEventHandler class. It's a bit of a weird flow but... whatever :P
+        pass
+
+    async def __handleNoGashaponResultsChatterItemEvent(
+        self,
+        event: NoGashaponResultsChatterItemEvent,
+    ):
+        # TODO
         pass
 
     async def __handleNotEnoughInventoryChatterItemEvent(
