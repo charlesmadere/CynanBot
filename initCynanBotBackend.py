@@ -1883,7 +1883,7 @@ anivCheckChatAction = AnivCheckChatAction(
 
 chatBackMessagesChatAction = ChatBackMessagesChatAction(
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 chatLoggerChatAction = ChatLoggerChatAction(
