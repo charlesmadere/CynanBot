@@ -344,6 +344,16 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             originatingAction = action,
         ))
 
+    async def __handleGashaponItemAction(
+        self,
+        chatterInventory: ChatterInventoryData | None,
+        action: UseChatterItemAction,
+    ):
+        itemDetails = await self.__chatterInventorySettings.getGashaponItemDetails()
+
+        # TODO
+        pass
+
     async def __handleGrenadeItemAction(
         self,
         chatterInventory: ChatterInventoryData | None,
@@ -557,6 +567,12 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
 
             case ChatterItemType.CASSETTE_TAPE:
                 await self.__handleCassetteTapeItemAction(
+                    chatterInventory = chatterInventory,
+                    action = action,
+                )
+
+            case ChatterItemType.GASHAPON:
+                await self.__handleGashaponItemAction(
                     chatterInventory = chatterInventory,
                     action = action,
                 )

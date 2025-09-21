@@ -7,6 +7,7 @@ class ChatterItemType(Enum):
     ANIMAL_PET = auto()
     BANANA = auto()
     CASSETTE_TAPE = auto()
+    GASHAPON = auto()
     GRENADE = auto()
     TM_36 = auto()
 
@@ -17,6 +18,7 @@ class ChatterItemType(Enum):
             case ChatterItemType.ANIMAL_PET: return 'Pet Animal'
             case ChatterItemType.BANANA: return 'Banana'
             case ChatterItemType.CASSETTE_TAPE: return 'Cassette Tape'
+            case ChatterItemType.GASHAPON: return 'Gashapon/ガシャポン'
             case ChatterItemType.GRENADE: return 'Grenade'
             case ChatterItemType.TM_36: return 'TM 36'
             case _: raise ValueError(f'Unknown ChatterItemType value: \"{self}\"')
@@ -28,6 +30,7 @@ class ChatterItemType(Enum):
             case ChatterItemType.ANIMAL_PET: return 'Animal Pets'
             case ChatterItemType.BANANA: return 'Bananas'
             case ChatterItemType.CASSETTE_TAPE: return 'Cassette Tapes'
+            case ChatterItemType.GASHAPON: return 'Gashapons/ガシャポン'
             case ChatterItemType.GRENADE: return 'Grenades'
             case ChatterItemType.TM_36: return 'TM 36\'s'
             case _: raise ValueError(f'Unknown ChatterItemType value: \"{self}\"')

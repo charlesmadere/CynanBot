@@ -9,6 +9,7 @@ from ..models.chatterItemType import ChatterItemType
 from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
 from ..models.itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from ..models.itemDetails.bananaItemDetails import BananaItemDetails
+from ..models.itemDetails.gashaponItemDetails import GashaponItemDetails
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 from ..models.itemDetails.tm36ItemDetails import Tm36ItemDetails
 from ...misc import utils as utils
@@ -40,6 +41,13 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         cassetteTape.append(re.compile(r'^\s*cass?ett?es?(?:\s+|_|-)?tapes?\s*$', re.IGNORECASE))
         cassetteTape.freeze()
 
+        gashapon: FrozenList[Pattern] = FrozenList()
+        gashapon.append(re.compile(r'^\s*gacha(?:pon)?s?\s*$', re.IGNORECASE))
+        gashapon.append(re.compile(r'^\s*gasha(?:pon)?s?\s*$', re.IGNORECASE))
+        gashapon.append(re.compile(r'^\s*ガシャポン\s*$', re.IGNORECASE))
+        gashapon.append(re.compile(r'^\s*ガチャポン\s*$', re.IGNORECASE))
+        gashapon.freeze()
+
         grenade: FrozenList[Pattern] = FrozenList()
         grenade.append(re.compile(r'^\s*grenades?\s*$', re.IGNORECASE))
         grenade.append(re.compile(r'^\s*nades?\s*$', re.IGNORECASE))
@@ -54,6 +62,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
             ChatterItemType.ANIMAL_PET: animalPet,
             ChatterItemType.BANANA: banana,
             ChatterItemType.CASSETTE_TAPE: cassetteTape,
+            ChatterItemType.GASHAPON: gashapon,
             ChatterItemType.GRENADE: grenade,
             ChatterItemType.TM_36: tm36,
         })
@@ -103,6 +112,37 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         return BananaItemDetails(
             randomChanceEnabled = randomChanceEnabled,
             durationSeconds = durationSeconds,
+        )
+
+    async def parseGashaponItemDetails(
+        self,
+        itemDetailsJson: dict[str, Any] | Any | None,
+    ) -> GashaponItemDetails | None:
+        if not isinstance(itemDetailsJson, dict) or len(itemDetailsJson) == 0:
+            return None
+
+        pullRatesJson: dict[str, float | int] | Any | None = itemDetailsJson.get('pullRates', None)
+        if not isinstance(pullRatesJson, dict) or len(pullRatesJson) == 0:
+            return None
+
+        pullRates: dict[ChatterItemType, float] = dict()
+
+        for itemTypeString, pullRate in pullRatesJson.items():
+            itemType = await self.requireItemType(itemTypeString)
+
+            if not utils.isValidNum(pullRate):
+                pullRate = 0.0
+            elif pullRate > 1.0:
+                pullRate = 1.0
+
+            pullRates[itemType] = float(pullRate)
+
+        for itemType in ChatterItemType:
+            if itemType not in pullRates:
+                pullRates[itemType] = 0.0
+
+        return GashaponItemDetails(
+            pullRates = pullRates,
         )
 
     async def parseGrenadeItemDetails(
@@ -210,6 +250,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
             case ChatterItemType.ANIMAL_PET: return 'animal_pet'
             case ChatterItemType.BANANA: return 'banana'
             case ChatterItemType.CASSETTE_TAPE: return 'cassette_tape'
+            case ChatterItemType.GASHAPON: return 'gashapon'
             case ChatterItemType.GRENADE: return 'grenade'
             case ChatterItemType.TM_36: return 'tm36'
             case _: raise ValueError(f'Unknown ChatterItemType value: \"{itemType}\"')

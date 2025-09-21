@@ -23,9 +23,17 @@ class TestChatterItemType:
         result = ChatterItemType.CASSETTE_TAPE.humanName
         assert result == 'Cassette Tape'
 
+    def test_humanName_withGashapon(self):
+        result = ChatterItemType.GASHAPON.humanName
+        assert result == 'Gashapon/ガシャポン'
+
     def test_humanName_withGrenade(self):
         result = ChatterItemType.GRENADE.humanName
         assert result == 'Grenade'
+
+    def test_humanName_withTm36(self):
+        result = ChatterItemType.TM_36.humanName
+        assert result == 'TM 36'
 
     def test_pluralHumanName_withAll(self):
         results: set[str] = set()
@@ -47,6 +55,14 @@ class TestChatterItemType:
         result = ChatterItemType.CASSETTE_TAPE.pluralHumanName
         assert result == 'Cassette Tapes'
 
+    def test_pluralHumanName_withGashapon(self):
+        result = ChatterItemType.GASHAPON.pluralHumanName
+        assert result == 'Gashapons/ガシャポン'
+
     def test_pluralHumanName_withGrenade(self):
         result = ChatterItemType.GRENADE.pluralHumanName
         assert result == 'Grenades'
+
+    def test_pluralHumanName_withTm36(self):
+        result = ChatterItemType.TM_36.pluralHumanName
+        assert result == 'TM 36\'s'

@@ -6,6 +6,7 @@ from ..models.chatterItemType import ChatterItemType
 from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
 from ..models.itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from ..models.itemDetails.bananaItemDetails import BananaItemDetails
+from ..models.itemDetails.gashaponItemDetails import GashaponItemDetails
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 from ..models.itemDetails.tm36ItemDetails import Tm36ItemDetails
 from ...misc import utils as utils
@@ -31,6 +32,17 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             randomChanceEnabled = True,
             durationSeconds = 60,
         ),
+        defaultGashaponItemDetails: GashaponItemDetails = GashaponItemDetails(
+            pullRates = {
+                ChatterItemType.AIR_STRIKE: 0.0,
+                ChatterItemType.ANIMAL_PET: 0.0,
+                ChatterItemType.BANANA: 0.0,
+                ChatterItemType.CASSETTE_TAPE: 0.0,
+                ChatterItemType.GASHAPON: 0.0,
+                ChatterItemType.GRENADE: 0.0,
+                ChatterItemType.TM_36: 0.0,
+            },
+        ),
         defaultGrenadeItemDetails: GrenadeItemDetails = GrenadeItemDetails(
             maxDurationSeconds = 48,
             minDurationSeconds = 32,
@@ -44,6 +56,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             ChatterItemType.ANIMAL_PET,
             ChatterItemType.BANANA,
             ChatterItemType.CASSETTE_TAPE,
+            ChatterItemType.GASHAPON,
             ChatterItemType.GRENADE,
             ChatterItemType.TM_36,
         }),
@@ -58,6 +71,8 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             raise TypeError(f'defaultAnimalPetItemDetails argument is malformed: \"{defaultAnimalPetItemDetails}\"')
         elif not isinstance(defaultBananaItemDetails, BananaItemDetails):
             raise TypeError(f'defaultBananaItemDetails argument is malformed: \"{defaultBananaItemDetails}\"')
+        elif not isinstance(defaultGashaponItemDetails, GashaponItemDetails):
+            raise TypeError(f'defaultGashaponItemDetails argument is malformed: \"{defaultGashaponItemDetails}\"')
         elif not isinstance(defaultGrenadeItemDetails, GrenadeItemDetails):
             raise TypeError(f'grenadeItemDetails argument is malformed: \"{defaultGrenadeItemDetails}\"')
         elif not isinstance(defaultTm36ItemDetails, Tm36ItemDetails):
@@ -70,6 +85,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         self.__defaultAirStrikeItemDetails: Final[AirStrikeItemDetails] = defaultAirStrikeItemDetails
         self.__defaultAnimalPetItemDetails: Final[AnimalPetItemDetails] = defaultAnimalPetItemDetails
         self.__defaultBananaItemDetails: Final[BananaItemDetails] = defaultBananaItemDetails
+        self.__defaultGashaponItemDetails: Final[GashaponItemDetails] = defaultGashaponItemDetails
         self.__defaultGrenadeItemDetails: Final[GrenadeItemDetails] = defaultGrenadeItemDetails
         self.__defaultTm36ItemDetails: Final[Tm36ItemDetails] = defaultTm36ItemDetails
         self.__defaultEnabledItemTypes: Final[frozenset[ChatterItemType]] = defaultEnabledItemTypes
@@ -122,6 +138,16 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             enabledItemTypes.add(await self.__chatterInventoryMapper.requireItemType(enabledItemTypeString))
 
         return frozenset(enabledItemTypes)
+
+    async def getGashaponItemDetails(self) -> GashaponItemDetails:
+        jsonContents = await self.__readJson()
+        itemDetailsJson = jsonContents.get('gashaponItemDetails', None)
+        itemDetails = await self.__chatterInventoryMapper.parseGashaponItemDetails(itemDetailsJson)
+
+        if itemDetails is None:
+            return self.__defaultGashaponItemDetails
+        else:
+            return itemDetails
 
     async def getGrenadeItemDetails(self) -> GrenadeItemDetails:
         jsonContents = await self.__readJson()

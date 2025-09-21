@@ -4,6 +4,7 @@ from ..models.chatterItemType import ChatterItemType
 from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
 from ..models.itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from ..models.itemDetails.bananaItemDetails import BananaItemDetails
+from ..models.itemDetails.gashaponItemDetails import GashaponItemDetails
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 from ..models.itemDetails.tm36ItemDetails import Tm36ItemDetails
 from ...misc.clearable import Clearable
@@ -25,6 +26,10 @@ class ChatterInventorySettingsInterface(Clearable, ABC):
 
     @abstractmethod
     async def getEnabledItemTypes(self) -> frozenset[ChatterItemType]:
+        pass
+
+    @abstractmethod
+    async def getGashaponItemDetails(self) -> GashaponItemDetails:
         pass
 
     @abstractmethod
