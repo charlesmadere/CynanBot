@@ -44,7 +44,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
                 ChatterItemType.GRENADE: 0.0,
                 ChatterItemType.TM_36: 0.0,
             }),
-            iterations = 1,
+            iterations = 3,
         ),
         defaultGrenadeItemDetails: GrenadeItemDetails = GrenadeItemDetails(
             maxDurationSeconds = 48,

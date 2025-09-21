@@ -363,6 +363,10 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
 
         for _ in range(itemDetails.iterations):
             for itemType in enabledItemTypes:
+                if itemType is ChatterItemType.GASHAPON:
+                    # for now, let's not allow a gashapon to award another gashapon
+                    continue
+
                 randomNumber = random.random()
 
                 if randomNumber < itemDetails.pullRates[itemType]:
