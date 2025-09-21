@@ -396,12 +396,15 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         )
 
         for itemType in enabledItemTypes:
-            await self.__chatterInventoryRepository.update(
-                itemType = itemType,
-                changeAmount = awardedItems[itemType],
-                chatterUserId = action.chatterUserId,
-                twitchChannelId = action.twitchChannelId,
-            )
+            changeAmount = awardedItems.get(itemType, 0)
+
+            if changeAmount != 0:
+                await self.__chatterInventoryRepository.update(
+                    itemType = itemType,
+                    changeAmount = awardedItems[itemType],
+                    chatterUserId = action.chatterUserId,
+                    twitchChannelId = action.twitchChannelId,
+                )
 
         updatedInventory = await self.__chatterInventoryRepository.get(
             chatterUserId = action.chatterUserId,
