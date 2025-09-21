@@ -251,8 +251,28 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
         self,
         event: GashaponResultsChatterItemEvent,
     ):
-        # TODO
-        pass
+        # TODO play sound alert
+
+        awardedItemsStrings: list[str] = list()
+
+        for itemType, amount in event.awardedItems.items():
+            if amount == 0:
+                continue
+
+            amountString = locale.format_string("%d", amount, grouping = True)
+
+            if amount == 1:
+                awardedItemsStrings.append(f'{amountString} {itemType.humanName}')
+            else:
+                awardedItemsStrings.append(f'{amountString} {itemType.pluralHumanName}')
+
+        awardedItemsString = ', '.join(awardedItemsStrings)
+
+        self.__twitchChatMessenger.send(
+            text = f'📮 ガチャ! You received {awardedItemsString}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleGrenadeChatterItemEvent(
         self,

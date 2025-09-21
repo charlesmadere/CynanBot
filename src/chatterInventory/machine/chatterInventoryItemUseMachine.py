@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from queue import SimpleQueue
 from typing import Final
 
+from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
@@ -413,6 +414,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
 
         await self.__submitEvent(GashaponResultsChatterItemEvent(
             updatedInventory = updatedInventory,
+            awardedItems = frozendict(awardedItems),
             eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
             originatingAction = action,
         ))
