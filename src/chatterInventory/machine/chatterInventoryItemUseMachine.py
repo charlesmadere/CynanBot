@@ -387,6 +387,13 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             ))
             return
 
+        await self.__chatterInventoryRepository.update(
+            itemType = ChatterItemType.GASHAPON,
+            changeAmount = -1,
+            chatterUserId = action.chatterUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
         for itemType in enabledItemTypes:
             await self.__chatterInventoryRepository.update(
                 itemType = itemType,
