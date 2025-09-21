@@ -44,6 +44,8 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         gashapon: FrozenList[Pattern] = FrozenList()
         gashapon.append(re.compile(r'^\s*gacha(?:pon)?s?\s*$', re.IGNORECASE))
         gashapon.append(re.compile(r'^\s*gasha(?:pon)?s?\s*$', re.IGNORECASE))
+        gashapon.append(re.compile(r'^\s*lootbox\s*$', re.IGNORECASE))
+        gashapon.append(re.compile(r'^\s*lootcrate\s*$', re.IGNORECASE))
         gashapon.append(re.compile(r'^\s*ガシャポン\s*$', re.IGNORECASE))
         gashapon.append(re.compile(r'^\s*ガチャポン\s*$', re.IGNORECASE))
         gashapon.freeze()

@@ -390,6 +390,16 @@ class TestChatterInventoryMapper:
         assert result is ChatterItemType.GRENADE
 
     @pytest.mark.asyncio
+    async def test_parseItemType_withLootbox(self):
+        result = await self.mapper.parseItemType('lootbox')
+        assert result is ChatterItemType.GASHAPON
+
+    @pytest.mark.asyncio
+    async def test_parseItemType_withLootcrate(self):
+        result = await self.mapper.parseItemType('lootcrate')
+        assert result is ChatterItemType.GASHAPON
+
+    @pytest.mark.asyncio
     async def test_parseItemType_withNade(self):
         result = await self.mapper.parseItemType('nade')
         assert result is ChatterItemType.GRENADE
@@ -606,6 +616,16 @@ class TestChatterInventoryMapper:
 
         result = await self.mapper.requireItemType('grenades')
         assert result is ChatterItemType.GRENADE
+
+    @pytest.mark.asyncio
+    async def test_requireItemType_withLootbox(self):
+        result = await self.mapper.requireItemType('lootbox')
+        assert result is ChatterItemType.GASHAPON
+
+    @pytest.mark.asyncio
+    async def test_requireItemType_withLootcrate(self):
+        result = await self.mapper.requireItemType('lootcrate')
+        assert result is ChatterItemType.GASHAPON
 
     @pytest.mark.asyncio
     async def test_requireItemType_withNade(self):
