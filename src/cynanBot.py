@@ -1633,6 +1633,7 @@ class CynanBot(
             'airstrike', 'air-strike', 'air_strike', 'tnt',
             'animalpet', 'animal-pet', 'animal_pet', 'pet', 'petanimal', 'pet-animal', 'pet_animal',
             'banana',
+            'gacha', 'gachapon', 'gasha', 'gashapon', 'lootbox', 'lootcrate',
             'grenade',
             'tm36', 'tm-36', 'tm_36',
         ])

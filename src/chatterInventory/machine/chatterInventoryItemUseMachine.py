@@ -1,5 +1,6 @@
 import asyncio
 import queue
+import random
 import traceback
 from dataclasses import dataclass
 from queue import SimpleQueue
@@ -25,6 +26,8 @@ from ..models.events.cassetteTapeTargetIsNotFollowingChatterItemEvent import \
     CassetteTapeTargetIsNotFollowingChatterItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
+from ..models.events.gashaponResultsChatterItemEvent import GashaponResultsChatterItemEvent
+from ..models.events.noGashaponResultsChatterItemEvent import NoGashaponResultsChatterItemEvent
 from ..models.events.notEnoughInventoryChatterItemEvent import NotEnoughInventoryChatterItemEvent
 from ..models.events.tradeChatterItemEvent import TradeChatterItemEvent
 from ..models.events.tradeChatterItemTypeDisabledItemEvent import TradeChatterItemTypeDisabledItemEvent
@@ -344,6 +347,73 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             originatingAction = action,
         ))
 
+    async def __handleGashaponItemAction(
+        self,
+        chatterInventory: ChatterInventoryData | None,
+        action: UseChatterItemAction,
+    ):
+        if action.ignoreInventory:
+            # this item type just doesn't make any sense in the context of a disabled/ignored inventory
+            await self.__submitEvent(DisabledItemTypeChatterItemEvent(
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                originatingAction = action,
+            ))
+            return
+
+        itemDetails = await self.__chatterInventorySettings.getGashaponItemDetails()
+        awardedItems: dict[ChatterItemType, int] = dict()
+
+        for itemType in ChatterItemType:
+            awardedItems[itemType] = 0
+
+        enabledItemTypes = await self.__chatterInventorySettings.getEnabledItemTypes()
+        itemsWereAwarded = False
+
+        for _ in range(itemDetails.iterations):
+            for itemType in enabledItemTypes:
+                if itemType is ChatterItemType.GASHAPON:
+                    # for now, let's not allow a gashapon to award another gashapon
+                    continue
+
+                randomNumber = random.random()
+
+                if randomNumber < itemDetails.pullRates[itemType]:
+                    awardedItems[itemType] += 1
+                    itemsWereAwarded = True
+
+        if not itemsWereAwarded:
+            await self.__submitEvent(NoGashaponResultsChatterItemEvent(
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                originatingAction = action,
+            ))
+            return
+
+        await self.__chatterInventoryRepository.update(
+            itemType = ChatterItemType.GASHAPON,
+            changeAmount = -1,
+            chatterUserId = action.chatterUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        for itemType in enabledItemTypes:
+            await self.__chatterInventoryRepository.update(
+                itemType = itemType,
+                changeAmount = awardedItems[itemType],
+                chatterUserId = action.chatterUserId,
+                twitchChannelId = action.twitchChannelId,
+            )
+
+        updatedInventory = await self.__chatterInventoryRepository.get(
+            chatterUserId = action.chatterUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        await self.__submitEvent(GashaponResultsChatterItemEvent(
+            updatedInventory = updatedInventory,
+            eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            originatingAction = action,
+        ))
+
     async def __handleGrenadeItemAction(
         self,
         chatterInventory: ChatterInventoryData | None,
@@ -557,6 +627,12 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
 
             case ChatterItemType.CASSETTE_TAPE:
                 await self.__handleCassetteTapeItemAction(
+                    chatterInventory = chatterInventory,
+                    action = action,
+                )
+
+            case ChatterItemType.GASHAPON:
+                await self.__handleGashaponItemAction(
                     chatterInventory = chatterInventory,
                     action = action,
                 )
