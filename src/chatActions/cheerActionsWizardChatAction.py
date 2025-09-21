@@ -32,8 +32,8 @@ from ..cheerActions.wizards.voicemail.voicemailWizard import VoicemailWizard
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchMessage import TwitchMessage
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.userInterface import UserInterface
 
 
@@ -45,7 +45,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
         cheerActionsRepository: CheerActionsRepositoryInterface,
         cheerActionsWizard: CheerActionsWizardInterface,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface
+        twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(cheerActionJsonMapper, CheerActionJsonMapperInterface):
             raise TypeError(f'cheerActionJsonMapper argument is malformed: \"{cheerActionJsonMapper}\"')
@@ -55,14 +55,14 @@ class CheerActionsWizardChatAction(AbsChatAction):
             raise TypeError(f'cheerActionsWizard argument is malformed: \"{cheerActionsWizard}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
         self.__cheerActionJsonMapper: Final[CheerActionJsonMapperInterface] = cheerActionJsonMapper
         self.__cheerActionsRepository: Final[CheerActionsRepositoryInterface] = cheerActionsRepository
         self.__cheerActionsWizard: Final[CheerActionsWizardInterface] = cheerActionsWizard
         self.__timber: Final[TimberInterface] = timber
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
     async def __configureAirStrikeWizard(
         self,
@@ -762,11 +762,11 @@ class CheerActionsWizardChatAction(AbsChatAction):
             return False
 
     async def __send(self, message: TwitchMessage, chat: str):
-        channel = message.getChannel()
+        twitchChannelId = await message.getTwitchChannelId()
         replyMessageId = await message.getMessageId()
 
-        await self.__twitchUtils.safeSend(
-            messageable = channel,
-            message = chat,
-            replyMessageId = replyMessageId
+        self.__twitchChatMessenger.send(
+            text = chat,
+            twitchChannelId = twitchChannelId,
+            replyMessageId = replyMessageId,
         )

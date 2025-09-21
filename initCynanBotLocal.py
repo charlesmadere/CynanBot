@@ -2150,7 +2150,7 @@ cheerActionsWizardChatAction = CheerActionsWizardChatAction(
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 persistAllUsersChatAction = PersistAllUsersChatAction(
