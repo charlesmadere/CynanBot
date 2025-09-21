@@ -353,7 +353,8 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         action: UseChatterItemAction,
     ):
         if action.ignoreInventory:
-            await self.__submitEvent(NoGashaponResultsChatterItemEvent(
+            # this item type just doesn't make any sense in the context of a disabled/ignored inventory
+            await self.__submitEvent(DisabledItemTypeChatterItemEvent(
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
                 originatingAction = action,
             ))
