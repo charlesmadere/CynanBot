@@ -2897,7 +2897,7 @@ anivCheckChatAction = AnivCheckChatAction(
 
 chatBackMessagesChatAction = ChatBackMessagesChatAction(
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 chatLoggerChatAction = ChatLoggerChatAction(
@@ -2913,7 +2913,7 @@ cheerActionsWizardChatAction = CheerActionsWizardChatAction(
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 persistAllUsersChatAction = PersistAllUsersChatAction(
@@ -2925,7 +2925,7 @@ recurringActionsWizardChatAction = RecurringActionsWizardChatAction(
     recurringActionsRepository = recurringActionsRepository,
     recurringActionsWizard = recurringActionsWizard,
     timber = timber,
-    twitchUtils = twitchUtils,
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(

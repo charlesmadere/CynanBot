@@ -1,12 +1,13 @@
 from datetime import timedelta
+from typing import Final
 
 from .absChatAction import AbsChatAction
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchMessage import TwitchMessage
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.userInterface import UserInterface
 
 
@@ -15,21 +16,21 @@ class ChatBackMessagesChatAction(AbsChatAction):
     def __init__(
         self,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        cooldown: timedelta = timedelta(minutes = 20)
+        twitchChatMessenger: TwitchChatMessengerInterface,
+        cooldown: timedelta = timedelta(minutes = 30),
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__cooldown: timedelta = cooldown
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__cooldown: Final[timedelta] = cooldown
 
-        self.__lastMessageTimes: dict[str, TimedDict] = dict()
+        self.__lastMessageTimes: Final[dict[str, TimedDict]] = dict()
 
     async def handleChat(
         self,
@@ -51,7 +52,11 @@ class ChatBackMessagesChatAction(AbsChatAction):
                 self.__lastMessageTimes[msg] = TimedDict(self.__cooldown)
 
             if (message.getContent() == msg or msg in splits) and self.__lastMessageTimes[msg].isReadyAndUpdate(user.handle):
-                await self.__twitchUtils.safeSend(message.getChannel(), msg)
+                self.__twitchChatMessenger.send(
+                    text = msg,
+                    twitchChannelId = await message.getTwitchChannelId(),
+                )
+
                 self.__timber.log('ChatBackMessagesChatAction', f'Handled {msg} message for {message.getAuthorName()}:{message.getAuthorId()} in {user.handle}')
                 return True
 
