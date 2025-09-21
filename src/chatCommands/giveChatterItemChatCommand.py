@@ -96,6 +96,15 @@ class GiveChatterItemChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId(),
             )
             return
+        elif ctx.getAuthorId() == arguments.chatterUserId:
+            randomItemType = await self.__chooseRandomEnabledItemType()
+
+            self.__twitchChatMessenger.send(
+                text = f'⚠ You can\'t give yourself an item! Example use: !give @{ctx.getAuthorName()} {randomItemType}',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
+            )
+            return
 
         self.__chatterInventoryItemUseMachine.submitAction(TradeChatterItemAction(
             itemType = arguments.itemType,
