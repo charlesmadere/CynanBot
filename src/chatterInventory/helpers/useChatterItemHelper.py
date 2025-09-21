@@ -42,7 +42,7 @@ class UseChatterItemHelper(UseChatterItemHelperInterface):
         if not isinstance(request, UseChatterItemRequest):
             raise TypeError(f'request argument is malformed: \"{request}\"')
 
-        if not await self.__chatterInventorySettings.isEnabled():
+        if not request.user.isChatterInventoryEnabled or not await self.__chatterInventorySettings.isEnabled():
             return UseChatterItemResult.FEATURE_DISABLED
 
         itemType = request.itemType
