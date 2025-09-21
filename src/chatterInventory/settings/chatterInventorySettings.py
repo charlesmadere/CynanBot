@@ -1,5 +1,7 @@
 from typing import Any, Final
 
+from frozendict import frozendict
+
 from .chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ..mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from ..models.chatterItemType import ChatterItemType
@@ -33,7 +35,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             durationSeconds = 60,
         ),
         defaultGashaponItemDetails: GashaponItemDetails = GashaponItemDetails(
-            pullRates = {
+            pullRates = frozendict({
                 ChatterItemType.AIR_STRIKE: 0.0,
                 ChatterItemType.ANIMAL_PET: 0.0,
                 ChatterItemType.BANANA: 0.0,
@@ -41,7 +43,8 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
                 ChatterItemType.GASHAPON: 0.0,
                 ChatterItemType.GRENADE: 0.0,
                 ChatterItemType.TM_36: 0.0,
-            },
+            }),
+            iterations = 1,
         ),
         defaultGrenadeItemDetails: GrenadeItemDetails = GrenadeItemDetails(
             maxDurationSeconds = 48,
@@ -145,9 +148,18 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         itemDetails = await self.__chatterInventoryMapper.parseGashaponItemDetails(itemDetailsJson)
 
         if itemDetails is None:
-            return self.__defaultGashaponItemDetails
-        else:
-            return itemDetails
+            itemDetails = self.__defaultGashaponItemDetails
+
+        hydratedPullRates: dict[ChatterItemType, float] = dict(itemDetails.pullRates)
+
+        for itemType in ChatterItemType:
+            if itemType not in hydratedPullRates:
+                hydratedPullRates[itemType] = 0.0
+
+        return GashaponItemDetails(
+            pullRates = frozendict(hydratedPullRates),
+            iterations = itemDetails.iterations,
+        )
 
     async def getGrenadeItemDetails(self) -> GrenadeItemDetails:
         jsonContents = await self.__readJson()

@@ -127,15 +127,16 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         if not isinstance(pullRatesJson, dict) or len(pullRatesJson) == 0:
             return None
 
+        iterations = utils.getIntFromDict(itemDetailsJson, 'iterations', fallback = 1)
         pullRates: dict[ChatterItemType, float] = dict()
 
         for itemTypeString, pullRate in pullRatesJson.items():
             itemType = await self.requireItemType(itemTypeString)
 
-            if not utils.isValidNum(pullRate):
+            if utils.isValidNum(pullRate):
+                pullRate = max(min(pullRate, 1.0), 0.0)
+            else:
                 pullRate = 0.0
-            elif pullRate > 1.0:
-                pullRate = 1.0
 
             pullRates[itemType] = float(pullRate)
 
@@ -144,7 +145,8 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
                 pullRates[itemType] = 0.0
 
         return GashaponItemDetails(
-            pullRates = pullRates,
+            pullRates = frozendict(pullRates),
+            iterations = iterations,
         )
 
     async def parseGrenadeItemDetails(
