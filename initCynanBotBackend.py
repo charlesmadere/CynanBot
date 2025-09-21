@@ -1911,7 +1911,7 @@ recurringActionsWizardChatAction = RecurringActionsWizardChatAction(
     recurringActionsRepository = recurringActionsRepository,
     recurringActionsWizard = recurringActionsWizard,
     timber = timber,
-    twitchUtils = twitchUtils,
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None = None
