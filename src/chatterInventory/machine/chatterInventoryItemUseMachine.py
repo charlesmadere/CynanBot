@@ -352,6 +352,13 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         chatterInventory: ChatterInventoryData | None,
         action: UseChatterItemAction,
     ):
+        if action.ignoreInventory:
+            await self.__submitEvent(NoGashaponResultsChatterItemEvent(
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                originatingAction = action,
+            ))
+            return
+
         itemDetails = await self.__chatterInventorySettings.getGashaponItemDetails()
         awardedItems: dict[ChatterItemType, int] = dict()
 
