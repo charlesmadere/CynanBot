@@ -27,6 +27,7 @@ from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
     SoundPlayerRandomizerHelperInterface
+from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
@@ -251,7 +252,9 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
         self,
         event: GashaponResultsChatterItemEvent,
     ):
-        # TODO play sound alert
+        if event.user.areSoundAlertsEnabled:
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.GASHAPON))
 
         awardedItemsStrings: list[str] = list()
 
@@ -269,7 +272,7 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
         awardedItemsString = ', '.join(awardedItemsStrings)
 
         self.__twitchChatMessenger.send(
-            text = f'📮 ガチャ! You received {awardedItemsString}',
+            text = f'📮 ガチャ! {event.hypeEmote} You received {awardedItemsString}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -286,8 +289,11 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
         self,
         event: NoGashaponResultsChatterItemEvent,
     ):
-        # TODO
-        pass
+        self.__twitchChatMessenger.send(
+            text = f'📮 ガチャ! But… you got nothing… {event.ripBozoEmote}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleNotEnoughInventoryChatterItemEvent(
         self,

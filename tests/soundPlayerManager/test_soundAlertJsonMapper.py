@@ -33,6 +33,10 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.parseSoundAlert('follow')
         assert result is SoundAlert.FOLLOW
 
+    def test_parseSoundAlert_withGashaponString(self):
+        result = self.jsonMapper.parseSoundAlert('gashapon')
+        assert result is SoundAlert.GASHAPON
+
     def test_parseSoundAlert_withGrenade_1String(self):
         result = self.jsonMapper.parseSoundAlert('grenade_1')
         assert result is SoundAlert.GRENADE_1
@@ -188,6 +192,10 @@ class TestSoundAlertJsonMapper:
     def test_requireSoundAlert_withFollow(self):
         result = self.jsonMapper.requireSoundAlert('follow')
         assert result is SoundAlert.FOLLOW
+
+    def test_requireSoundAlert_withGashapon(self):
+        result = self.jsonMapper.requireSoundAlert('gashapon')
+        assert result is SoundAlert.GASHAPON
 
     def test_requireSoundAlert_withHypeTrain(self):
         result = self.jsonMapper.requireSoundAlert('hype_train')

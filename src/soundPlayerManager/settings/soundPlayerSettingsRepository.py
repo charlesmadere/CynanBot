@@ -68,6 +68,13 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     fallback = 'Follow.mp3'
                 )
 
+            case SoundAlert.GASHAPON:
+                return utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'gashaponFilePath',
+                    fallback = 'Gashapon.mp3',
+                )
+
             case SoundAlert.GRENADE_1:
                 return utils.getStrFromDict(
                     d = jsonContents,

@@ -13,6 +13,7 @@ class GashaponResultsChatterItemEvent(AbsChatterItemEvent):
     updatedInventory: ChatterInventoryData
     awardedItems: frozendict[ChatterItemType, int]
     eventId: str
+    hypeEmote: str
     originatingAction: UseChatterItemAction
 
     def getEventId(self) -> str:
