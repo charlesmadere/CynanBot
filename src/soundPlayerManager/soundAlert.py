@@ -8,6 +8,7 @@ class SoundAlert(Enum):
     CHEER = auto()
     CLICK_NAVIGATION = auto()
     FOLLOW = auto()
+    GASHAPON = auto()
     GRENADE_1 = auto()
     GRENADE_2 = auto()
     GRENADE_3 = auto()
