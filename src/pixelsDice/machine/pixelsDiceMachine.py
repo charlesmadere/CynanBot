@@ -4,14 +4,19 @@ import traceback
 from queue import SimpleQueue
 from typing import Final
 
-from bleak import BleakClient, BleakScanner, BLEDevice
+from bleak import BleakClient, BleakGATTCharacteristic, BleakScanner, BLEDevice
 from frozenlist import FrozenList
 
 from .pixelsDiceMachineInterface import PixelsDiceMachineInterface
 from ..listeners.pixelsDiceEventListener import PixelsDiceEventListener
+from ..mappers.pixelsDiceStateMapperInterface import PixelsDiceStateMapperInterface
 from ..models.diceBluetoothInfo import DiceBluetoothInfo
 from ..models.events.absPixelsDiceEvent import AbsPixelsDiceEvent
+from ..models.events.pixelsDiceBatteryEvent import PixelsDiceBatteryEvent
 from ..models.events.pixelsDiceClientDisconnectedEvent import PixelsDiceClientDisconnectedEvent
+from ..models.events.pixelsDiceRollEvent import PixelsDiceRollEvent
+from ..models.states.pixelsDiceBatteryState import PixelsDiceBatteryState
+from ..models.states.pixelsDiceRollState import PixelsDiceRollState
 from ..pixelsDiceSettingsInterface import PixelsDiceSettingsInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -23,14 +28,18 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
+        pixelsDiceStateMapper: PixelsDiceStateMapperInterface,
         pixelsDiceSettings: PixelsDiceSettingsInterface,
         timber: TimberInterface,
         connectionLoopSleepTimeSeconds: float = 10,
         eventLoopSleepTimeSeconds: float = 0.5,
         queueTimeoutSeconds: int = 3,
+        notifyCharacteristicUuid: str = '6e400001-b5a3-f393-e0a9-e50e24dcca9e',
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(pixelsDiceStateMapper, PixelsDiceStateMapperInterface):
+            raise TypeError(f'pixelsDiceStateMapper argument is malformed: \"{pixelsDiceStateMapper}\"')
         elif not isinstance(pixelsDiceSettings, PixelsDiceSettingsInterface):
             raise TypeError(f'pixelsDiceSettings argument is malformed: \"{pixelsDiceSettings}\"')
         elif not isinstance(timber, TimberInterface):
@@ -47,13 +56,17 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
             raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
+        elif not utils.isValidStr(notifyCharacteristicUuid):
+            raise TypeError(f'notifyCharacteristicUuid argument is malformed: \"{notifyCharacteristicUuid}\"')
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__pixelsDiceStateMapper: Final[PixelsDiceStateMapperInterface] = pixelsDiceStateMapper
         self.__pixelsDiceSettings: Final[PixelsDiceSettingsInterface] = pixelsDiceSettings
         self.__timber: Final[TimberInterface] = timber
         self.__connectionLoopSleepTimeSeconds: Final[float] = connectionLoopSleepTimeSeconds
         self.__eventLoopSleepTimeSeconds: Final[float] = eventLoopSleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
+        self.__notifyCharacteristicUuid: Final[str] = notifyCharacteristicUuid
 
         self.__eventQueue: Final[SimpleQueue[AbsPixelsDiceEvent]] = SimpleQueue()
 
@@ -69,7 +82,9 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
             return None
 
         try:
-            devices = await BleakScanner.discover()
+            devices = await BleakScanner.discover(
+                service_uuids = [ self.__notifyCharacteristicUuid ],
+            )
         except Exception as e:
             self.__timber.log('PixelsDiceMachine', f'Failed to scan for devices', e, traceback.format_exc())
             return None
@@ -101,26 +116,73 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
         client = BleakClient(
             address_or_ble_device = diceDevice,
             disconnected_callback = self.__onBleakClientDisconnected,
+            services = [ self.__notifyCharacteristicUuid ],
         )
 
         try:
             await client.connect()
         except Exception as e:
             self.__timber.log('PixelsDiceMachine', f'Failed to establish a connection ({connectedDice=}) ({client=})', e, traceback.format_exc())
-        finally:
+
+        notifyCharacteristic = client.services.get_characteristic(self.__notifyCharacteristicUuid)
+
+        if not isinstance(notifyCharacteristic, BleakGATTCharacteristic):
+            self.__timber.log('PixelsDiceMachine', f'Failed to retrieve notify characteristic ({notifyCharacteristic=}) ({connectedDice=}) ({client=})')
             await client.disconnect()
+            return None
+
+        await client.start_notify(
+            char_specifier = notifyCharacteristic,
+            callback = self.__onBleakClientNotify,
+        )
 
         return connectedDice
 
     def __onBleakClientDisconnected(self, client: BleakClient):
+        self.__backgroundTaskHelper.createTask(self.__onBleakClientDisconnectedAsync(
+            client = client,
+        ))
+
+    async def __onBleakClientDisconnectedAsync(self, client: BleakClient):
         previouslyConnectedDice = self.__connectedDice
         self.__connectedDice = None
 
         self.__timber.log('PixelsDiceMachine', f'Pixels Dice disconnected ({client=}) ({previouslyConnectedDice=})')
 
-        self.__submitEvent(PixelsDiceClientDisconnectedEvent(
+        await self.__submitEvent(PixelsDiceClientDisconnectedEvent(
             previouslyConnectedDice = previouslyConnectedDice,
         ))
+
+    async def __onBleakClientNotify(
+        self,
+        characteristic: BleakGATTCharacteristic,
+        data: bytearray,
+    ):
+        connectedDice = self.__connectedDice
+
+        if connectedDice is None:
+            return
+
+        state = await self.__pixelsDiceStateMapper.map(
+            data = data,
+        )
+
+        if isinstance(state, PixelsDiceBatteryState):
+            await self.__submitEvent(PixelsDiceBatteryEvent(
+                isCharging = state.isCharging,
+                connectedDice = connectedDice,
+                battery = state.battery,
+            ))
+
+        elif isinstance(state, PixelsDiceRollState):
+            await self.__submitEvent(PixelsDiceRollEvent(
+                connectedDice = connectedDice,
+                roll = state.roll,
+            ))
+
+        else:
+            # empty for now, but in the future, we might want to observe other states
+            pass
 
     def setEventListener(self, listener: PixelsDiceEventListener | None):
         if listener is not None and not isinstance(listener, PixelsDiceEventListener):
@@ -172,7 +234,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
 
             await asyncio.sleep(self.__eventLoopSleepTimeSeconds)
 
-    def __submitEvent(self, event: AbsPixelsDiceEvent):
+    async def __submitEvent(self, event: AbsPixelsDiceEvent):
         if not isinstance(event, AbsPixelsDiceEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
@@ -183,4 +245,5 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
 
     async def test(self):
         connectedDice = await self.__connectToDice()
+        self.__connectedDice = connectedDice
         print(f'{connectedDice=}')

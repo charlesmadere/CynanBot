@@ -387,6 +387,12 @@ T_Sized = TypeVar("T_Sized", bound=Sized)
 def hasItems(l: T_Sized | None) -> TypeGuard[T_Sized]:
     return l is not None and len(l) >= 1
 
+def intToBool(i: int) -> bool:
+    if not isValidInt(i):
+        raise TypeError(f'i argument is malformed: \"{i}\"')
+
+    return i != 0
+
 def isValidBool(b: bool | Any | None) -> TypeGuard[bool]:
     return b is not None and isinstance(b, bool)
 
