@@ -1880,6 +1880,7 @@ chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface = Chatte
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
     timeoutIdGenerator = timeoutIdGenerator,
+    trollmojiHelper = trollmojiHelper,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,
