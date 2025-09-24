@@ -3,9 +3,11 @@ from asyncio import AbstractEventLoop
 
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from src.pixelsDice.listeners.pixelsDiceEventListener import PixelsDiceEventListener
 from src.pixelsDice.machine.pixelsDiceMachine import PixelsDiceMachine
 from src.pixelsDice.mappers.pixelsDiceStateMapper import PixelsDiceStateMapper
 from src.pixelsDice.mappers.pixelsDiceStateMapperInterface import PixelsDiceStateMapperInterface
+from src.pixelsDice.models.events.absPixelsDiceEvent import AbsPixelsDiceEvent
 from src.pixelsDice.pixelsDiceSettings import PixelsDiceSettings
 from src.pixelsDice.pixelsDiceSettingsInterface import PixelsDiceSettingsInterface
 from src.storage.jsonStaticReader import JsonStaticReader
@@ -38,11 +40,18 @@ pixelsDiceMachine = PixelsDiceMachine(
     timber = timber,
 )
 
+class PixelsDiceEventHandler(PixelsDiceEventListener):
+
+    async def onNewPixelsDiceEvent(self, event: AbsPixelsDiceEvent):
+        print(event)
+
+pixelsDiceMachine.setEventListener(PixelsDiceEventHandler())
+
 async def main():
     pass
 
     try:
-        await pixelsDiceMachine.test()
+        pixelsDiceMachine.start()
         await asyncio.sleep(30)
     except Exception as e:
         print(f'exception: {e}')

@@ -5,4 +5,5 @@ from .absPixelsDiceState import AbsPixelsDiceState
 
 @dataclass(frozen = True)
 class PixelsDiceRollState(AbsPixelsDiceState):
+    rawData: bytearray
     roll: int

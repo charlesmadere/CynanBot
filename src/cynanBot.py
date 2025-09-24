@@ -161,6 +161,8 @@ from .misc.authRepository import AuthRepository
 from .misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from .misc.generalSettingsRepository import GeneralSettingsRepository
 from .mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
+from .pixelsDice.listeners.pixelsDiceEventListener import PixelsDiceEventListener
+from .pixelsDice.machine.pixelsDiceMachineInterface import PixelsDiceMachineInterface
 from .pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
 from .recurringActions.configuration.absRecurringActionsEventHandler import AbsRecurringActionsEventHandler
 from .recurringActions.recurringActionsHelperInterface import RecurringActionsHelperInterface
@@ -355,6 +357,8 @@ class CynanBot(
         mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
         openTriviaDatabaseSessionTokenRepository: OpenTriviaDatabaseSessionTokenRepositoryInterface | None,
+        pixelsDiceEventListener: PixelsDiceEventListener | None,
+        pixelsDiceMachine: PixelsDiceMachineInterface | None,
         pokepediaRepository: PokepediaRepositoryInterface | None,
         psqlCredentialsProvider: PsqlCredentialsProviderInterface | None,
         recurringActionsEventHandler: AbsRecurringActionsEventHandler | None,
@@ -591,6 +595,10 @@ class CynanBot(
             raise TypeError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
         elif openTriviaDatabaseSessionTokenRepository is not None and not isinstance(openTriviaDatabaseSessionTokenRepository, OpenTriviaDatabaseSessionTokenRepositoryInterface):
             raise TypeError(f'openTriviaDatabaseSessionTokenRepository argument is malformed: \"{openTriviaDatabaseSessionTokenRepository}\"')
+        elif pixelsDiceEventListener is not None and not isinstance(pixelsDiceEventListener, PixelsDiceEventListener):
+            raise TypeError(f'pixelsDiceEventListener argument is malformed: \"{pixelsDiceEventListener}\"')
+        elif pixelsDiceMachine is not None and not isinstance(pixelsDiceMachine, PixelsDiceMachineInterface):
+            raise TypeError(f'pixelsDiceMachine argument is malformed:\"{pixelsDiceMachine}\"')
         elif pokepediaRepository is not None and not isinstance(pokepediaRepository, PokepediaRepositoryInterface):
             raise TypeError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif psqlCredentialsProvider is not None and not isinstance(psqlCredentialsProvider, PsqlCredentialsProviderInterface):
@@ -768,6 +776,8 @@ class CynanBot(
         self.__crowdControlMessageHandler: Final[CrowdControlMessageHandler | None] = crowdControlMessageHandler
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
+        self.__pixelsDiceEventListener: Final[PixelsDiceEventListener | None] = pixelsDiceEventListener
+        self.__pixelsDiceMachine: Final[PixelsDiceMachineInterface | None] = pixelsDiceMachine
         self.__recurringActionsEventHandler: AbsRecurringActionsEventHandler | None = recurringActionsEventHandler
         self.__recurringActionsMachine: RecurringActionsMachineInterface | None = recurringActionsMachine
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
@@ -1197,6 +1207,10 @@ class CynanBot(
         if self.__recurringActionsMachine is not None:
             self.__recurringActionsMachine.setEventListener(self.__recurringActionsEventHandler)
             self.__recurringActionsMachine.startMachine()
+
+        if self.__pixelsDiceMachine is not None:
+            self.__pixelsDiceMachine.setEventListener(self.__pixelsDiceEventListener)
+            self.__pixelsDiceMachine.start()
 
         if self.__websocketConnectionServer is not None:
             self.__websocketConnectionServer.start()

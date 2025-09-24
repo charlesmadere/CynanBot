@@ -298,6 +298,14 @@ from src.openWeather.apiService.openWeatherApiService import OpenWeatherApiServi
 from src.openWeather.apiService.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
 from src.openWeather.jsonMapper.openWeatherJsonMapper import OpenWeatherJsonMapper
 from src.openWeather.jsonMapper.openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
+from src.pixelsDice.configuration.pixelsDiceEventHandler import PixelsDiceEventHandler
+from src.pixelsDice.listeners.pixelsDiceEventListener import PixelsDiceEventListener
+from src.pixelsDice.machine.pixelsDiceMachine import PixelsDiceMachine
+from src.pixelsDice.machine.pixelsDiceMachineInterface import PixelsDiceMachineInterface
+from src.pixelsDice.mappers.pixelsDiceStateMapper import PixelsDiceStateMapper
+from src.pixelsDice.mappers.pixelsDiceStateMapperInterface import PixelsDiceStateMapperInterface
+from src.pixelsDice.pixelsDiceSettings import PixelsDiceSettings
+from src.pixelsDice.pixelsDiceSettingsInterface import PixelsDiceSettingsInterface
 from src.pkmn.pokepediaJsonMapper import PokepediaJsonMapper
 from src.pkmn.pokepediaJsonMapperInterface import PokepediaJsonMapperInterface
 from src.pkmn.pokepediaRepository import PokepediaRepository
@@ -3165,6 +3173,33 @@ redemptionCounterPointRedemption = RedemptionCounterPointRedemption(
 )
 
 
+########################################
+## Pixels Dice initialization section ##
+########################################
+
+pixelsDiceEventHandler: PixelsDiceEventListener = PixelsDiceEventHandler(
+    administratorProvider = administratorProvider,
+    timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
+)
+
+pixelsDiceSettings: PixelsDiceSettingsInterface = PixelsDiceSettings(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/pixelsDiceSettings.json',
+    ),
+)
+
+pixelsDiceStateMapper: PixelsDiceStateMapperInterface = PixelsDiceStateMapper()
+
+pixelsDiceMachine: PixelsDiceMachineInterface = PixelsDiceMachine(
+    backgroundTaskHelper = backgroundTaskHelper,
+    pixelsDiceStateMapper = pixelsDiceStateMapper,
+    pixelsDiceSettings = pixelsDiceSettings,
+    timber = timber,
+)
+
+
 ##########################################
 ## Twitch events initialization section ##
 ##########################################
@@ -3334,6 +3369,8 @@ cynanBot = CynanBot(
     mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
     openTriviaDatabaseSessionTokenRepository = openTriviaDatabaseSessionTokenRepository,
+    pixelsDiceEventListener = pixelsDiceEventHandler,
+    pixelsDiceMachine = pixelsDiceMachine,
     pokepediaRepository = pokepediaRepository,
     psqlCredentialsProvider = psqlCredentialsProvider,
     recurringActionsEventHandler = recurringActionsEventHandler,

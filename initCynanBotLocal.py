@@ -257,6 +257,14 @@ from src.network.networkClientType import NetworkClientType
 from src.network.networkJsonMapper import NetworkJsonMapper
 from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
 from src.network.requests.requestsClientProvider import RequestsClientProvider
+from src.pixelsDice.configuration.pixelsDiceEventHandler import PixelsDiceEventHandler
+from src.pixelsDice.listeners.pixelsDiceEventListener import PixelsDiceEventListener
+from src.pixelsDice.machine.pixelsDiceMachine import PixelsDiceMachine
+from src.pixelsDice.machine.pixelsDiceMachineInterface import PixelsDiceMachineInterface
+from src.pixelsDice.mappers.pixelsDiceStateMapper import PixelsDiceStateMapper
+from src.pixelsDice.mappers.pixelsDiceStateMapperInterface import PixelsDiceStateMapperInterface
+from src.pixelsDice.pixelsDiceSettings import PixelsDiceSettings
+from src.pixelsDice.pixelsDiceSettingsInterface import PixelsDiceSettingsInterface
 from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.soundPlayerManager.jsonMapper.soundAlertJsonMapper import SoundAlertJsonMapper
@@ -2291,6 +2299,33 @@ websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnect
 )
 
 
+########################################
+## Pixels Dice initialization section ##
+########################################
+
+pixelsDiceEventHandler: PixelsDiceEventListener = PixelsDiceEventHandler(
+    administratorProvider = administratorProvider,
+    timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
+)
+
+pixelsDiceSettings: PixelsDiceSettingsInterface = PixelsDiceSettings(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/pixelsDiceSettings.json',
+    ),
+)
+
+pixelsDiceStateMapper: PixelsDiceStateMapperInterface = PixelsDiceStateMapper()
+
+pixelsDiceMachine: PixelsDiceMachineInterface = PixelsDiceMachine(
+    backgroundTaskHelper = backgroundTaskHelper,
+    pixelsDiceStateMapper = pixelsDiceStateMapper,
+    pixelsDiceSettings = pixelsDiceSettings,
+    timber = timber,
+)
+
+
 ##########################################
 ## Twitch events initialization section ##
 ##########################################
@@ -2460,6 +2495,8 @@ cynanBot = CynanBot(
     mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
     openTriviaDatabaseSessionTokenRepository = None,
+    pixelsDiceEventListener = pixelsDiceEventHandler,
+    pixelsDiceMachine = pixelsDiceMachine,
     pokepediaRepository = None,
     psqlCredentialsProvider = psqlCredentialsProvider,
     recurringActionsEventHandler = None,

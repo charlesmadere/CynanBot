@@ -450,6 +450,22 @@ class TestUtils:
         assert value is None
         assert exception is not None
 
+    def test_intToBool_withNegativeOne(self):
+        result = utils.intToBool(-1)
+        assert result is True
+
+    def test_intToBool_with0(self):
+        result = utils.intToBool(0)
+        assert result is False
+
+    def test_intToBool_with1(self):
+        result = utils.intToBool(1)
+        assert result is True
+
+    def test_intToBool_with2(self):
+        result = utils.intToBool(2)
+        assert result is True
+
     def test_isValidBool_withFalse(self):
         result = utils.isValidBool(False)
         assert result is True

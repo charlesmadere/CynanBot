@@ -5,7 +5,5 @@ from ..diceBluetoothInfo import DiceBluetoothInfo
 
 
 @dataclass(frozen = True)
-class PixelsDiceBatteryEvent(AbsPixelsDiceEvent):
-    isCharging: bool
+class PixelsDiceClientConnectedEvent(AbsPixelsDiceEvent):
     connectedDice: DiceBluetoothInfo
-    battery: int

@@ -2,7 +2,7 @@ import asyncio
 import queue
 import traceback
 from queue import SimpleQueue
-from typing import Final
+from typing import Any, Final
 
 from bleak import BleakClient, BleakGATTCharacteristic, BleakScanner, BLEDevice
 from frozenlist import FrozenList
@@ -12,10 +12,9 @@ from ..listeners.pixelsDiceEventListener import PixelsDiceEventListener
 from ..mappers.pixelsDiceStateMapperInterface import PixelsDiceStateMapperInterface
 from ..models.diceBluetoothInfo import DiceBluetoothInfo
 from ..models.events.absPixelsDiceEvent import AbsPixelsDiceEvent
-from ..models.events.pixelsDiceBatteryEvent import PixelsDiceBatteryEvent
+from ..models.events.pixelsDiceClientConnectedEvent import PixelsDiceClientConnectedEvent
 from ..models.events.pixelsDiceClientDisconnectedEvent import PixelsDiceClientDisconnectedEvent
 from ..models.events.pixelsDiceRollEvent import PixelsDiceRollEvent
-from ..models.states.pixelsDiceBatteryState import PixelsDiceBatteryState
 from ..models.states.pixelsDiceRollState import PixelsDiceRollState
 from ..pixelsDiceSettingsInterface import PixelsDiceSettingsInterface
 from ...misc import utils as utils
@@ -32,7 +31,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
         pixelsDiceSettings: PixelsDiceSettingsInterface,
         timber: TimberInterface,
         connectionLoopSleepTimeSeconds: float = 10,
-        eventLoopSleepTimeSeconds: float = 0.5,
+        eventLoopSleepTimeSeconds: float = 1,
         queueTimeoutSeconds: int = 3,
         notifyCharacteristicUuid: str = '6e400001-b5a3-f393-e0a9-e50e24dcca9e',
     ):
@@ -89,7 +88,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
             self.__timber.log('PixelsDiceMachine', f'Failed to scan for devices', e, traceback.format_exc())
             return None
 
-        diceDevice: BLEDevice | None = None
+        diceDevice: BLEDevice | Any | None = None
         connectedDice: DiceBluetoothInfo | None = None
         allDeviceNames: set[str] = set()
 
@@ -131,6 +130,10 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
             await client.disconnect()
             return None
 
+        await self.__submitEvent(PixelsDiceClientConnectedEvent(
+            connectedDice = connectedDice,
+        ))
+
         await client.start_notify(
             char_specifier = notifyCharacteristic,
             callback = self.__onBleakClientNotify,
@@ -156,32 +159,30 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
     async def __onBleakClientNotify(
         self,
         characteristic: BleakGATTCharacteristic,
-        data: bytearray,
+        rawData: bytearray,
     ):
+        if characteristic.uuid != self.__notifyCharacteristicUuid:
+            self.__timber.log('PixelsDiceMachine', f'Received a characteristic notification with the wrong UUID ({characteristic=})')
+            return
+
         connectedDice = self.__connectedDice
 
         if connectedDice is None:
+            self.__timber.log('PixelsDiceMachine', f'Received a characteristic notification, but there is no connected dice ({connectedDice=}) ({characteristic=})')
             return
 
         state = await self.__pixelsDiceStateMapper.map(
-            data = data,
+            rawData = rawData,
         )
 
-        if isinstance(state, PixelsDiceBatteryState):
-            await self.__submitEvent(PixelsDiceBatteryEvent(
-                isCharging = state.isCharging,
-                connectedDice = connectedDice,
-                battery = state.battery,
-            ))
-
-        elif isinstance(state, PixelsDiceRollState):
+        if isinstance(state, PixelsDiceRollState):
             await self.__submitEvent(PixelsDiceRollEvent(
                 connectedDice = connectedDice,
                 roll = state.roll,
             ))
 
         else:
-            # empty for now, but in the future, we might want to observe other states
+            # empty for now, but in the future, we may want to observe other states
             pass
 
     def setEventListener(self, listener: PixelsDiceEventListener | None):
@@ -242,8 +243,3 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
             self.__eventQueue.put(event, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
             self.__timber.log('PixelsDiceMachine', f'Encountered queue.Full when submitting a new event ({event}) into the event queue (queue size: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
-
-    async def test(self):
-        connectedDice = await self.__connectToDice()
-        self.__connectedDice = connectedDice
-        print(f'{connectedDice=}')

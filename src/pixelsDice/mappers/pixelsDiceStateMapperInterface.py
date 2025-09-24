@@ -9,6 +9,6 @@ class PixelsDiceStateMapperInterface(ABC):
     @abstractmethod
     async def map(
         self,
-        data: bytearray | Any | None,
+        rawData: bytearray | Any | None,
     ) -> AbsPixelsDiceState | None:
         pass
