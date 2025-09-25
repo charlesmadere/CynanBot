@@ -144,9 +144,10 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
-        self.__isStarted: bool = False
         self.__actionQueue: Final[SimpleQueue[AbsChatterItemAction]] = SimpleQueue()
         self.__eventQueue: Final[SimpleQueue[AbsChatterItemEvent]] = SimpleQueue()
+
+        self.__isStarted: bool = False
         self.__eventListener: ChatterItemEventListener | None = None
 
     async def __fetchTokensAndDetails(

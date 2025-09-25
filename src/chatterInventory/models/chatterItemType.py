@@ -10,6 +10,7 @@ class ChatterItemType(Enum):
     GASHAPON = auto()
     GRENADE = auto()
     TM_36 = auto()
+    VORE = auto()
 
     @property
     def humanName(self) -> str:
@@ -21,6 +22,7 @@ class ChatterItemType(Enum):
             case ChatterItemType.GASHAPON: return 'Gashapon/ガシャポン'
             case ChatterItemType.GRENADE: return 'Grenade'
             case ChatterItemType.TM_36: return 'TM 36'
+            case ChatterItemType.VORE: return 'Vore'
             case _: raise ValueError(f'Unknown ChatterItemType value: \"{self}\"')
 
     @property
@@ -33,4 +35,5 @@ class ChatterItemType(Enum):
             case ChatterItemType.GASHAPON: return 'Gashapons/ガシャポン'
             case ChatterItemType.GRENADE: return 'Grenades'
             case ChatterItemType.TM_36: return 'TM 36\'s'
+            case ChatterItemType.VORE: return 'Vores'
             case _: raise ValueError(f'Unknown ChatterItemType value: \"{self}\"')

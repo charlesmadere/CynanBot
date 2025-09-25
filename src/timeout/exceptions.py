@@ -3,6 +3,7 @@ from typing import Final
 from .models.bananaTimeoutTarget import BananaTimeoutTarget
 from .models.timeoutDiceRoll import TimeoutDiceRoll
 from .models.timeoutDiceRollFailureData import TimeoutDiceRollFailureData
+from .models.voreTimeoutTarget import VoreTimeoutTarget
 
 
 class BananaTimeoutDiceRollFailedException(Exception):
@@ -34,6 +35,22 @@ class BananaTimeoutDiceRollFailedException(Exception):
 
     @property
     def timeoutTarget(self) -> BananaTimeoutTarget:
+        return self.__timeoutTarget
+
+
+class ImmuneTimeoutTargetException(Exception):
+
+    def __init__(
+        self,
+        timeoutTarget: VoreTimeoutTarget,
+    ):
+        if not isinstance(timeoutTarget, VoreTimeoutTarget):
+            raise TypeError(f'timeoutTarget argument is malformed: \"{timeoutTarget}\"')
+
+        self.__timeoutTarget: Final[VoreTimeoutTarget] = timeoutTarget
+
+    @property
+    def timeoutTarget(self) -> VoreTimeoutTarget:
         return self.__timeoutTarget
 
 

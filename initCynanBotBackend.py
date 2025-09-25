@@ -225,6 +225,7 @@ from src.timeout.useCases.determineAirStrikeTargetsUseCase import DetermineAirSt
 from src.timeout.useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
 from src.timeout.useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
 from src.timeout.useCases.determineTm36SplashTargetUseCase import DetermineTm36SplashTargetUseCase
+from src.timeout.useCases.determineVoreTargetUseCase import DetermineVoreTargetUseCase
 from src.transparent.transparentApiService import TransparentApiService
 from src.transparent.transparentApiServiceInterface import TransparentApiServiceInterface
 from src.transparent.transparentXmlMapper import TransparentXmlMapper
@@ -1614,6 +1615,14 @@ determineTm36SplashTargetUseCase = DetermineTm36SplashTargetUseCase(
     userIdsRepository = userIdsRepository,
 )
 
+determineVoreTargetUseCase = DetermineVoreTargetUseCase(
+    timber = timber,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils,
+    twitchTokensUtils = twitchTokensUtils,
+    userIdsRepository = userIdsRepository,
+)
+
 timeoutIdGenerator: TimeoutIdGeneratorInterface = TimeoutIdGenerator()
 
 anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = AnivCopyMessageTimeoutScoreRepository(
@@ -1633,6 +1642,7 @@ timeoutActionMachine: TimeoutActionMachineInterface = TimeoutActionMachine(
     determineBananaTargetUseCase = determineBananaTargetUseCase,
     determineGrenadeTargetUseCase = determineGrenadeTargetUseCase,
     determineTm36SplashTargetUseCase = determineTm36SplashTargetUseCase,
+    determineVoreTargetUseCase = determineVoreTargetUseCase,
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     timber = timber,
@@ -2243,6 +2253,8 @@ cynanBot = CynanBot(
     mostRecentChatsRepository = mostRecentChatsRepository,
     openTriviaDatabaseSessionTokenRepository = openTriviaDatabaseSessionTokenRepository,
     pokepediaRepository = pokepediaRepository,
+    pixelsDiceEventListener = None,
+    pixelsDiceMachine = None,
     psqlCredentialsProvider = psqlCredentialsProvider,
     recurringActionsEventHandler = recurringActionsEventHandler,
     recurringActionsHelper = recurringActionsHelper,

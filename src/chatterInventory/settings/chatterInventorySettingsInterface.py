@@ -7,6 +7,7 @@ from ..models.itemDetails.bananaItemDetails import BananaItemDetails
 from ..models.itemDetails.gashaponItemDetails import GashaponItemDetails
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 from ..models.itemDetails.tm36ItemDetails import Tm36ItemDetails
+from ..models.itemDetails.voreItemDetails import VoreItemDetails
 from ...misc.clearable import Clearable
 
 
@@ -38,6 +39,10 @@ class ChatterInventorySettingsInterface(Clearable, ABC):
 
     @abstractmethod
     async def getTm36ItemDetails(self) -> Tm36ItemDetails:
+        pass
+
+    @abstractmethod
+    async def getVoreItemDetails(self) -> VoreItemDetails:
         pass
 
     @abstractmethod

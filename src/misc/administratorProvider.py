@@ -1,3 +1,5 @@
+from typing import Final
+
 from .administratorProviderInterface import AdministratorProviderInterface
 from .generalSettingsRepository import GeneralSettingsRepository
 from ..twitch.tokens.twitchTokensRepository import TwitchTokensRepositoryInterface
@@ -10,7 +12,7 @@ class AdministratorProvider(AdministratorProviderInterface):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface
+        userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -19,9 +21,9 @@ class AdministratorProvider(AdministratorProviderInterface):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
         self.__administratorUserId: str | None = None
 
@@ -39,7 +41,7 @@ class AdministratorProvider(AdministratorProviderInterface):
 
         administratorUserId = await self.__userIdsRepository.requireUserId(
             userName = userName,
-            twitchAccessToken = twitchAccessToken
+            twitchAccessToken = twitchAccessToken,
         )
 
         self.__administratorUserId = administratorUserId

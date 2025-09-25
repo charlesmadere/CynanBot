@@ -12,6 +12,7 @@ from ..models.itemDetails.bananaItemDetails import BananaItemDetails
 from ..models.itemDetails.gashaponItemDetails import GashaponItemDetails
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 from ..models.itemDetails.tm36ItemDetails import Tm36ItemDetails
+from ..models.itemDetails.voreItemDetails import VoreItemDetails
 from ...misc import utils as utils
 
 
@@ -59,6 +60,11 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         tm36.append(re.compile(r'^\s*tm(?:\s+|_|-)?36s?\s*$', re.IGNORECASE))
         tm36.freeze()
 
+        vore: FrozenList[Pattern] = FrozenList()
+        vore.append(re.compile(r'^\s*voars?\s*$', re.IGNORECASE))
+        vore.append(re.compile(r'^\s*vores?\s*$', re.IGNORECASE))
+        vore.freeze()
+
         return frozendict({
             ChatterItemType.AIR_STRIKE: airStrike,
             ChatterItemType.ANIMAL_PET: animalPet,
@@ -67,6 +73,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
             ChatterItemType.GASHAPON: gashapon,
             ChatterItemType.GRENADE: grenade,
             ChatterItemType.TM_36: tm36,
+            ChatterItemType.VORE: vore,
         })
 
     async def parseAirStrikeItemDetails(
@@ -213,6 +220,19 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
             minDurationSeconds = minDurationSeconds,
         )
 
+    async def parseVoreItemDetails(
+        self,
+        itemDetailsJson: dict[str, Any] | Any | None,
+    ) -> VoreItemDetails | None:
+        if not isinstance(itemDetailsJson, dict) or len(itemDetailsJson) == 0:
+            return None
+
+        timeoutDurationSeconds = utils.getIntFromDict(itemDetailsJson, 'timeoutDurationSeconds')
+
+        return VoreItemDetails(
+            timeoutDurationSeconds = timeoutDurationSeconds,
+        )
+
     async def requireItemType(
         self,
         itemType: str | Any | None
@@ -257,4 +277,5 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
             case ChatterItemType.GASHAPON: return 'gashapon'
             case ChatterItemType.GRENADE: return 'grenade'
             case ChatterItemType.TM_36: return 'tm36'
+            case ChatterItemType.VORE: return 'vore'
             case _: raise ValueError(f'Unknown ChatterItemType value: \"{itemType}\"')
