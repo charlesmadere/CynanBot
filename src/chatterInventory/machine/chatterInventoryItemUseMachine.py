@@ -662,8 +662,24 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
                     action = action,
                 )
 
+            case ChatterItemType.VORE:
+                await self.__handleVoreItemAction(
+                    chatterInventory = chatterInventory,
+                    action = action,
+                )
+
             case _:
                 raise UnknownChatterItemTypeException(f'Encountered unknown ChatterItemType: \"{action}\"')
+
+    async def __handleVoreItemAction(
+        self,
+        chatterInventory: ChatterInventoryData | None,
+        action: UseChatterItemAction,
+    ):
+        itemDetails = await self.__chatterInventorySettings.getVoreItemDetails()
+
+        # TODO
+        pass
 
     def setEventListener(self, listener: ChatterItemEventListener | None):
         if listener is not None and not isinstance(listener, ChatterItemEventListener):
