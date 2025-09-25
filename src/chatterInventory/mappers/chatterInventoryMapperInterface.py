@@ -10,6 +10,7 @@ from ..models.itemDetails.bananaItemDetails import BananaItemDetails
 from ..models.itemDetails.gashaponItemDetails import GashaponItemDetails
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 from ..models.itemDetails.tm36ItemDetails import Tm36ItemDetails
+from ..models.itemDetails.voreItemDetails import VoreItemDetails
 
 
 class ChatterInventoryMapperInterface(ABC):
@@ -68,6 +69,13 @@ class ChatterInventoryMapperInterface(ABC):
         self,
         itemDetailsJson: dict[str, Any] | Any | None,
     ) -> Tm36ItemDetails | None:
+        pass
+
+    @abstractmethod
+    async def parseVoreItemDetails(
+        self,
+        itemDetailsJson: dict[str, Any] | Any | None,
+    ) -> VoreItemDetails | None:
         pass
 
     @abstractmethod

@@ -74,6 +74,9 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
         self.__eventListener: PixelsDiceEventListener | None = None
 
     async def __connectToDice(self) -> DiceBluetoothInfo | None:
+        if not await self.__pixelsDiceSettings.isEnabled():
+            return None
+
         diceName = await self.__pixelsDiceSettings.getDiceName()
 
         if not utils.isValidStr(diceName):

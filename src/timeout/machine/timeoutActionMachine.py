@@ -8,8 +8,8 @@ from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .timeoutActionMachineInterface import TimeoutActionMachineInterface
-from ..exceptions import BananaTimeoutDiceRollFailedException, UnknownTimeoutActionTypeException, \
-    UnknownTimeoutTargetException
+from ..exceptions import BananaTimeoutDiceRollFailedException, ImmuneTimeoutTargetException, \
+    UnknownTimeoutActionTypeException, UnknownTimeoutTargetException
 from ..guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from ..idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
 from ..listener.timeoutEventListener import TimeoutEventListener
@@ -20,6 +20,7 @@ from ..models.actions.basicTimeoutAction import BasicTimeoutAction
 from ..models.actions.copyAnivMessageTimeoutAction import CopyAnivMessageTimeoutAction
 from ..models.actions.grenadeTimeoutAction import GrenadeTimeoutAction
 from ..models.actions.tm36TimeoutAction import Tm36TimeoutAction
+from ..models.actions.voreTimeoutAction import VoreTimeoutAction
 from ..models.airStrikeTimeoutTarget import AirStrikeTimeoutTarget
 from ..models.basicTimeoutTarget import BasicTimeoutTarget
 from ..models.events.absTimeoutEvent import AbsTimeoutEvent
@@ -42,8 +43,11 @@ from ..models.events.noBananaTargetAvailableTimeoutEvent import NoBananaTargetAv
 from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
 from ..models.events.noTm36InventoryAvailableTimeoutEvent import NoTm36InventoryAvailableTimeoutEvent
+from ..models.events.noVoreInventoryAvailableTimeoutEvent import NoVoreInventoryAvailableTimeoutEvent
+from ..models.events.noVoreTargetAvailableTimeoutEvent import NoVoreTargetAvailableTimeoutEvent
 from ..models.events.tm36TimeoutEvent import Tm36TimeoutEvent
 from ..models.events.tm36TimeoutFailedTimeoutEvent import Tm36TimeoutFailedTimeoutEvent
+from ..models.events.voreTargetIsImmuneTimeoutEvent import VoreTargetIsImmuneTimeoutEvent
 from ..models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ..repositories.chatterTimeoutHistoryRepositoryInterface import ChatterTimeoutHistoryRepositoryInterface
 from ..useCases.calculateTimeoutDurationUseCase import CalculateTimeoutDurationUseCase
@@ -51,6 +55,7 @@ from ..useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTarget
 from ..useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
 from ..useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
 from ..useCases.determineTm36SplashTargetUseCase import DetermineTm36SplashTargetUseCase
+from ..useCases.determineVoreTargetUseCase import DetermineVoreTargetUseCase
 from ...aniv.repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
     AnivCopyMessageTimeoutScoreRepositoryInterface
 from ...asplodieStats.models.asplodieStats import AsplodieStats
@@ -85,6 +90,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         determineBananaTargetUseCase: DetermineBananaTargetUseCase,
         determineGrenadeTargetUseCase: DetermineGrenadeTargetUseCase,
         determineTm36SplashTargetUseCase: DetermineTm36SplashTargetUseCase,
+        determineVoreTargetUseCase: DetermineVoreTargetUseCase,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         timber: TimberInterface,
@@ -118,6 +124,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'determineGrenadeTargetUseCase argument is malformed: \"{determineGrenadeTargetUseCase}\"')
         elif not isinstance(determineTm36SplashTargetUseCase, DetermineTm36SplashTargetUseCase):
             raise TypeError(f'determineTm36SplashTargetUseCase argument is malformed: \"{determineTm36SplashTargetUseCase}\"')
+        elif not isinstance(determineVoreTargetUseCase, DetermineVoreTargetUseCase):
+            raise TypeError(f'determineVoreTargetUseCase argument is malformed: \"{determineVoreTargetUseCase}\"')
         elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
             raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
@@ -154,6 +162,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__determineBananaTargetUseCase: Final[DetermineBananaTargetUseCase] = determineBananaTargetUseCase
         self.__determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCase] = determineGrenadeTargetUseCase
         self.__determineTm36SplashTargetUseCase: Final[DetermineTm36SplashTargetUseCase] = determineTm36SplashTargetUseCase
+        self.__determineVoreTargetUseCase: Final[DetermineVoreTargetUseCase] = determineVoreTargetUseCase
         self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
         self.__timber: Final[TimberInterface] = timber
@@ -638,6 +647,9 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         elif isinstance(action, Tm36TimeoutAction):
             await self.__handleTm36TimeoutAction(action)
 
+        elif isinstance(action, VoreTimeoutAction):
+            await self.__handleVoreTimeoutAction(action)
+
         else:
             raise UnknownTimeoutActionTypeException(f'Encountered unknown AbsTimeoutAction: \"{action}\"')
 
@@ -740,6 +752,74 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             splashTimeoutTarget = splashTimeoutTarget,
             timeoutResult = timeoutResult,
         ))
+
+    async def __handleVoreTimeoutAction(self, action: VoreTimeoutAction):
+        if not isinstance(action, VoreTimeoutAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
+
+        if not await self.__verifyStreamLiveStatus(action):
+            await self.__submitEvent(IncorrectLiveStatusTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
+
+        instigatorUserName = await self.__requireUserName(
+            action = action,
+            chatterUserId = action.instigatorUserId,
+        )
+
+        try:
+            timeoutTarget = await self.__determineVoreTargetUseCase.invoke(
+                timeoutAction = action,
+            )
+        except ImmuneTimeoutTargetException as e:
+            self.__timber.log('TimeoutActionMachine', f'Vore target is immune ({action=})', e, traceback.format_exc())
+            await self.__submitEvent(VoreTargetIsImmuneTimeoutEvent(
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+                timeoutTarget = e.timeoutTarget,
+            ))
+            return
+        except UnknownTimeoutTargetException as e:
+            self.__timber.log('TimeoutActionMachine', f'Failed to determine vore target ({action=})', e, traceback.format_exc())
+            await self.__submitEvent(NoVoreTargetAvailableTimeoutEvent(
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+                instigatorUserName = instigatorUserName,
+                originatingAction = action,
+            ))
+            return
+
+        if not action.ignoreInventory:
+            inventory = await self.__chatterInventoryHelper.get(
+                chatterUserId = action.instigatorUserId,
+                twitchChannelId = action.twitchChannelId,
+            )
+
+            if inventory[ChatterItemType.VORE] < 1:
+                await self.__submitEvent(NoVoreInventoryAvailableTimeoutEvent(
+                    eventId = await self.__timeoutIdGenerator.generateEventId(),
+                    originatingAction = action,
+                    timeoutTarget = timeoutTarget,
+                ))
+                return
+
+        timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
+            timeoutAction = action,
+        )
+
+        timeoutResult = await self.__twitchTimeoutHelper.timeout(
+            durationSeconds = timeoutDuration.seconds,
+            reason = f'{ChatterItemType.VORE.humanName} timeout for {timeoutDuration.message}',
+            twitchAccessToken = action.moderatorTwitchAccessToken,
+            twitchChannelAccessToken = action.userTwitchAccessToken,
+            twitchChannelId = action.twitchChannelId,
+            userIdToTimeout = timeoutTarget.targetUserId,
+            user = action.user,
+        )
+
+        # TODO
+        pass
 
     async def __requireUserName(
         self,

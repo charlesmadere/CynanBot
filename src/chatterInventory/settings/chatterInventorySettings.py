@@ -11,6 +11,7 @@ from ..models.itemDetails.bananaItemDetails import BananaItemDetails
 from ..models.itemDetails.gashaponItemDetails import GashaponItemDetails
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 from ..models.itemDetails.tm36ItemDetails import Tm36ItemDetails
+from ..models.itemDetails.voreItemDetails import VoreItemDetails
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 
@@ -54,6 +55,9 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             maxDurationSeconds = 300, # 5 minutes
             minDurationSeconds = 1800, # 30 minutes
         ),
+        defaultVoreItemDetails: VoreItemDetails = VoreItemDetails(
+            timeoutDurationSeconds = 86400, # 1 day
+        ),
         defaultEnabledItemTypes: frozenset[ChatterItemType] = frozenset({
             ChatterItemType.AIR_STRIKE,
             ChatterItemType.ANIMAL_PET,
@@ -80,6 +84,8 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             raise TypeError(f'grenadeItemDetails argument is malformed: \"{defaultGrenadeItemDetails}\"')
         elif not isinstance(defaultTm36ItemDetails, Tm36ItemDetails):
             raise TypeError(f'defaultTm36ItemDetails argument is malformed: \"{defaultTm36ItemDetails}\"')
+        elif not isinstance(defaultVoreItemDetails, VoreItemDetails):
+            raise TypeError(f'defaultVoreItemDetails argument is malformed: \"{defaultVoreItemDetails}\"')
         elif not isinstance(defaultEnabledItemTypes, frozenset):
             raise TypeError(f'defaultEnabledItemTypes argument is malformed: \"{defaultEnabledItemTypes}\"')
 
@@ -91,6 +97,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         self.__defaultGashaponItemDetails: Final[GashaponItemDetails] = defaultGashaponItemDetails
         self.__defaultGrenadeItemDetails: Final[GrenadeItemDetails] = defaultGrenadeItemDetails
         self.__defaultTm36ItemDetails: Final[Tm36ItemDetails] = defaultTm36ItemDetails
+        self.__defaultVoreItemDetails: Final[VoreItemDetails] = defaultVoreItemDetails
         self.__defaultEnabledItemTypes: Final[frozenset[ChatterItemType]] = defaultEnabledItemTypes
 
         self.__cache: dict[str, Any] | None = None
@@ -178,6 +185,16 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
         if itemDetails is None:
             return self.__defaultTm36ItemDetails
+        else:
+            return itemDetails
+
+    async def getVoreItemDetails(self) -> VoreItemDetails:
+        jsonContents = await self.__readJson()
+        itemDetailsJson = jsonContents.get('voreItemDetails', None)
+        itemDetails = await self.__chatterInventoryMapper.parseVoreItemDetails(itemDetailsJson)
+
+        if itemDetails is None:
+            return self.__defaultVoreItemDetails
         else:
             return itemDetails
 
