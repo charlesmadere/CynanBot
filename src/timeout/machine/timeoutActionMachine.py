@@ -48,6 +48,8 @@ from ..models.events.noVoreTargetAvailableTimeoutEvent import NoVoreTargetAvaila
 from ..models.events.tm36TimeoutEvent import Tm36TimeoutEvent
 from ..models.events.tm36TimeoutFailedTimeoutEvent import Tm36TimeoutFailedTimeoutEvent
 from ..models.events.voreTargetIsImmuneTimeoutEvent import VoreTargetIsImmuneTimeoutEvent
+from ..models.events.voreTimeoutEvent import VoreTimeoutEvent
+from ..models.events.voreTimeoutFailedTimeoutEvent import VoreTimeoutFailedTimeoutEvent
 from ..models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ..repositories.chatterTimeoutHistoryRepositoryInterface import ChatterTimeoutHistoryRepositoryInterface
 from ..useCases.calculateTimeoutDurationUseCase import CalculateTimeoutDurationUseCase
@@ -776,8 +778,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         except ImmuneTimeoutTargetException as e:
             self.__timber.log('TimeoutActionMachine', f'Vore target is immune ({action=})', e, traceback.format_exc())
             await self.__submitEvent(VoreTargetIsImmuneTimeoutEvent(
-                originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
+                originatingAction = action,
                 timeoutTarget = e.timeoutTarget,
             ))
             return
@@ -818,8 +820,52 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             user = action.user,
         )
 
-        # TODO
-        pass
+        if timeoutResult is not TwitchTimeoutResult.SUCCESS:
+            await self.__submitEvent(VoreTimeoutFailedTimeoutEvent(
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+                instigatorUserName = instigatorUserName,
+                timeoutResult = timeoutResult,
+                originatingAction = action,
+                target = timeoutTarget,
+            ))
+            return
+
+        asplodieStats = await self.__asplodieStatsRepository.addAsplodie(
+            isSelfAsplodie = timeoutTarget.targetUserId == action.instigatorUserId,
+            durationAsplodiedSeconds = timeoutDuration.seconds,
+            chatterUserId = timeoutTarget.targetUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        chatterTimeoutHistory = await self.__chatterTimeoutHistoryRepository.add(
+            durationSeconds = timeoutDuration.seconds,
+            chatterUserId = timeoutTarget.targetUserId,
+            timedOutByUserId = action.instigatorUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        updatedInventory: ChatterItemGiveResult | None = None
+
+        if not action.ignoreInventory:
+            updatedInventory = await self.__chatterInventoryHelper.give(
+                itemType = ChatterItemType.VORE,
+                giveAmount = -1,
+                chatterUserId = action.instigatorUserId,
+                twitchChannelId = action.twitchChannelId,
+            )
+
+        await self.__submitEvent(VoreTimeoutEvent(
+            asplodieStats = asplodieStats,
+            timeoutDuration = timeoutDuration,
+            updatedInventory = updatedInventory,
+            chatterTimeoutHistory = chatterTimeoutHistory,
+            eventId = await self.__timeoutIdGenerator.generateEventId(),
+            instigatorUserName = instigatorUserName,
+            ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup(),
+            timeoutResult = timeoutResult,
+            originatingAction = action,
+            target = timeoutTarget,
+        ))
 
     async def __requireUserName(
         self,

@@ -26,8 +26,12 @@ from ..models.events.noBananaInventoryAvailableTimeoutEvent import NoBananaInven
 from ..models.events.noBananaTargetAvailableTimeoutEvent import NoBananaTargetAvailableTimeoutEvent
 from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
+from ..models.events.noVoreInventoryAvailableTimeoutEvent import NoVoreInventoryAvailableTimeoutEvent
+from ..models.events.noVoreTargetAvailableTimeoutEvent import NoVoreTargetAvailableTimeoutEvent
 from ..models.events.tm36TimeoutEvent import Tm36TimeoutEvent
 from ..models.events.tm36TimeoutFailedTimeoutEvent import Tm36TimeoutFailedTimeoutEvent
+from ..models.events.voreTimeoutEvent import VoreTimeoutEvent
+from ..models.events.voreTimeoutFailedTimeoutEvent import VoreTimeoutFailedTimeoutEvent
 from ...chatterInventory.models.chatterItemType import ChatterItemType
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -175,6 +179,16 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
                 event = event,
             )
 
+        elif isinstance(event, NoVoreInventoryAvailableTimeoutEvent):
+            await self.__handleNoVoreInventoryAvailableTimeoutEvent(
+                event = event,
+            )
+
+        elif isinstance(event, NoVoreTargetAvailableTimeoutEvent):
+            await self.__handleNoVoreTargetAvailableTimeoutEvent(
+                event = event,
+            )
+
         elif isinstance(event, Tm36TimeoutEvent):
             await self.__handleTm36TimeoutEvent(
                 event = event,
@@ -182,6 +196,16 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
 
         elif isinstance(event, Tm36TimeoutFailedTimeoutEvent):
             await self.__handleTm36TimeoutFailedTimeoutEvent(
+                event = event,
+            )
+
+        elif isinstance(event, VoreTimeoutEvent):
+            await self.__handleVoreTimeoutEvent(
+                event = event,
+            )
+
+        elif isinstance(event, VoreTimeoutFailedTimeoutEvent):
+            await self.__handleVoreTimeoutFailedTimeoutEvent(
                 event = event,
             )
 
@@ -494,6 +518,20 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             replyMessageId = event.twitchChatMessageId,
         )
 
+    async def __handleNoVoreInventoryAvailableTimeoutEvent(
+        self,
+        event: NoVoreInventoryAvailableTimeoutEvent,
+    ):
+        # TODO
+        pass
+
+    async def __handleNoVoreTargetAvailableTimeoutEvent(
+        self,
+        event: NoVoreTargetAvailableTimeoutEvent,
+    ):
+        # TODO
+        pass
+
     def __chooseRandomGrenadeSoundAlert(self) -> SoundAlert:
         soundAlerts: FrozenList[SoundAlert] = FrozenList([
             SoundAlert.GRENADE_1,
@@ -547,6 +585,20 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         event: Tm36TimeoutFailedTimeoutEvent,
     ):
         # this method is intentionally empty
+        pass
+
+    async def __handleVoreTimeoutEvent(
+        self,
+        event: VoreTimeoutEvent,
+    ):
+        # TODO
+        pass
+
+    async def __handleVoreTimeoutFailedTimeoutEvent(
+        self,
+        event: VoreTimeoutFailedTimeoutEvent,
+    ):
+        # TODO
         pass
 
     def setTwitchConnectionReadinessProvider(self, provider: TwitchConnectionReadinessProvider | None):
