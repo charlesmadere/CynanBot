@@ -103,32 +103,30 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
 
         self.__isStarted = True
         self.__timber.log('WebsocketConnectionServer', 'Starting WebsocketConnectionServer...')
-        self.__backgroundTaskHelper.createTask(self.__startWebsocketServer())
+        self.__backgroundTaskHelper.createTask(self.__startServerLoop())
 
-    async def __startWebsocketServer(self):
+    async def __startServerLoop(self):
         while True:
             host = await self.__websocketConnectionServerSettings.getHost()
             port = await self.__websocketConnectionServerSettings.getPort()
 
             try:
+                self.__timber.log('WebsocketConnectionServer', f'Starting connection... ({host=}) ({port=})')
+
                 async with websockets.serve(
-                    self.__websocketConnectionReceived,
+                    handler = self.__websocketConnectionReceived,
                     host = host,
                     port = port,
                 ) as websocket:
-                    self.__timber.log('WebsocketConnectionServer', f'Serving... ({host=}) ({port=})')
                     await websocket.wait_closed()
-                    self.__timber.log('WebsocketConnectionServer', f'Finished serving ({host=}) ({port=})')
             except Exception as e:
-                self.__timber.log('WebsocketConnectionServer', f'Encountered exception within `__startWebsocketServer()` ({host=}) ({port=}): {e}', e, traceback.format_exc())
-
                 if str(e) == 'Event loop is closed':
                     # this annoying code provides us an escape from this infinite loop when using
                     # CTRL+C at the terminal to stop the bot
-                    self.__timber.log('WebsocketConnectionServer', f'Breaking from `__startWebsocketServer()` loop')
                     return
 
-            self.__timber.log('WebsocketConnectionServer', f'Sleeping within `__startWebsocketServer()`')
+                self.__timber.log('WebsocketConnectionServer', f'Encountered exception during server loop ({host=}) ({port=})', e, traceback.format_exc())
+
             await asyncio.sleep(self.__websocketSleepTimeSeconds)
 
     def submitEvent(
@@ -144,8 +142,11 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not isinstance(eventType, WebsocketEventType):
             raise TypeError(f'eventType argument is malformed: \"{eventType}\"')
-        elif not isinstance(eventData, dict) or len(eventData) == 0:
+        elif not isinstance(eventData, dict):
             raise TypeError(f'eventData argument for eventType \"{eventType}\" and twitchChannel \"{twitchChannel}\" is malformed: \"{eventData}\"')
+
+        if len(eventData) == 0:
+            return
 
         event: dict[str, Any] = {
             'twitchChannel': twitchChannel,
