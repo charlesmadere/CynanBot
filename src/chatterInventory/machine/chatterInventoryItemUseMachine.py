@@ -38,6 +38,7 @@ from ..models.events.useBananaChatterItemEvent import UseBananaChatterItemEvent
 from ..models.events.useCassetteTapeChatterItemEvent import UseCassetteTapeChatterItemEvent
 from ..models.events.useGrenadeChatterItemEvent import UseGrenadeChatterItemEvent
 from ..models.events.useTm36ChatterItemEvent import UseTm36ChatterItemEvent
+from ..models.events.useVoreChatterItemEvent import UseVoreChatterItemEvent
 from ..models.events.voicemailMessageIsEmptyChatterItemEvent import VoicemailMessageIsEmptyChatterItemEvent
 from ..models.events.voicemailTargetIsOriginatingUserChatterItemEvent import \
     VoicemailTargetIsOriginatingUserChatterItemEvent
@@ -57,6 +58,7 @@ from ...timeout.models.actions.airStrikeTimeoutAction import AirStrikeTimeoutAct
 from ...timeout.models.actions.bananaTimeoutAction import BananaTimeoutAction
 from ...timeout.models.actions.grenadeTimeoutAction import GrenadeTimeoutAction
 from ...timeout.models.actions.tm36TimeoutAction import Tm36TimeoutAction
+from ...timeout.models.actions.voreTimeoutAction import VoreTimeoutAction
 from ...timeout.models.exactTimeoutDuration import ExactTimeoutDuration
 from ...timeout.models.randomLinearTimeoutDuration import RandomLinearTimeoutDuration
 from ...timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
@@ -662,8 +664,50 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
                     action = action,
                 )
 
+            case ChatterItemType.VORE:
+                await self.__handleVoreItemAction(
+                    chatterInventory = chatterInventory,
+                    action = action,
+                )
+
             case _:
                 raise UnknownChatterItemTypeException(f'Encountered unknown ChatterItemType: \"{action}\"')
+
+    async def __handleVoreItemAction(
+        self,
+        chatterInventory: ChatterInventoryData | None,
+        action: UseChatterItemAction,
+    ):
+        itemDetails = await self.__chatterInventorySettings.getVoreItemDetails()
+
+        timeoutDuration: AbsTimeoutDuration = ExactTimeoutDuration(
+            seconds = itemDetails.timeoutDurationSeconds,
+        )
+
+        tokensAndDetails = await self.__fetchTokensAndDetails(
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        self.__timeoutActionMachine.submitAction(VoreTimeoutAction(
+            timeoutDuration = timeoutDuration,
+            ignoreInventory = action.ignoreInventory,
+            actionId = await self.__timeoutIdGenerator.generateActionId(),
+            chatMessage = action.chatMessage,
+            instigatorUserId = action.chatterUserId,
+            moderatorTwitchAccessToken = tokensAndDetails.moderatorTwitchAccessToken,
+            moderatorUserId = tokensAndDetails.moderatorUserId,
+            twitchChannelId = action.twitchChannelId,
+            twitchChatMessageId = action.twitchChatMessageId,
+            userTwitchAccessToken = tokensAndDetails.userTwitchAccessToken,
+            streamStatusRequirement = TimeoutStreamStatusRequirement.ANY,
+            user = action.user,
+        ))
+
+        await self.__submitEvent(UseVoreChatterItemEvent(
+            eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            originatingAction = action,
+            itemDetails = itemDetails,
+        ))
 
     def setEventListener(self, listener: ChatterItemEventListener | None):
         if listener is not None and not isinstance(listener, ChatterItemEventListener):

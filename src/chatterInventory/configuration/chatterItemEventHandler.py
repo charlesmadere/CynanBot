@@ -18,6 +18,7 @@ from ..models.events.useBananaChatterItemEvent import UseBananaChatterItemEvent
 from ..models.events.useCassetteTapeChatterItemEvent import UseCassetteTapeChatterItemEvent
 from ..models.events.useGrenadeChatterItemEvent import UseGrenadeChatterItemEvent
 from ..models.events.useTm36ChatterItemEvent import UseTm36ChatterItemEvent
+from ..models.events.useVoreChatterItemEvent import UseVoreChatterItemEvent
 from ..models.events.voicemailMessageIsEmptyChatterItemEvent import VoicemailMessageIsEmptyChatterItemEvent
 from ..models.events.voicemailTargetIsOriginatingUserChatterItemEvent import \
     VoicemailTargetIsOriginatingUserChatterItemEvent
@@ -143,6 +144,11 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
 
         elif isinstance(event, UseTm36ChatterItemEvent):
             await self.__handleTm36ChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, UseVoreChatterItemEvent):
+            await self.__handleVoreChatterItemEvent(
                 event = event,
             )
 
@@ -358,6 +364,14 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
+
+    async def __handleVoreChatterItemEvent(
+        self,
+        event: UseVoreChatterItemEvent,
+    ):
+        # We don't handle this item use here. Instead, we handle this within the
+        # TimeoutEventHandler class. It's a bit of a weird flow but... whatever :P
+        pass
 
     def setTwitchConnectionReadinessProvider(self, provider: TwitchConnectionReadinessProvider | None):
         if provider is not None and not isinstance(provider, TwitchConnectionReadinessProvider):

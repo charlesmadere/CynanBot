@@ -61,17 +61,9 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.parseSoundAlert('launch_air_strike')
         assert result is SoundAlert.LAUNCH_AIR_STRIKE
 
-    def test_parseSoundAlert_withMegaGrenade1String(self):
-        result = self.jsonMapper.parseSoundAlert('mega_grenade_1')
-        assert result is SoundAlert.MEGA_GRENADE_1
-
-    def test_parseSoundAlert_withMegaGrenade2String(self):
-        result = self.jsonMapper.parseSoundAlert('mega_grenade_2')
-        assert result is SoundAlert.MEGA_GRENADE_2
-
-    def test_parseSoundAlert_withMegaGrenade3String(self):
-        result = self.jsonMapper.parseSoundAlert('mega_grenade_3')
-        assert result is SoundAlert.MEGA_GRENADE_3
+    def test_parseSoundAlert_withMegaGrenadeString(self):
+        result = self.jsonMapper.parseSoundAlert('mega_grenade')
+        assert result is SoundAlert.MEGA_GRENADE
 
     def test_parseSoundAlert_withNone(self):
         result = self.jsonMapper.parseSoundAlert(None)
@@ -165,6 +157,10 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.parseSoundAlert('tnt')
         assert result is SoundAlert.AIR_STRIKE
 
+    def test_parseSoundAlert_withVoreString(self):
+        result = self.jsonMapper.parseSoundAlert('vore')
+        assert result is SoundAlert.VORE
+
     def test_parseSoundAlert_withWhitespaceString(self):
         result = self.jsonMapper.parseSoundAlert(' ')
         assert result is None
@@ -201,6 +197,10 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.requireSoundAlert('hype_train')
         assert result is SoundAlert.HYPE_TRAIN
 
+    def test_requireSoundAlert_withMegaGrenade(self):
+        result = self.jsonMapper.requireSoundAlert('mega_grenade')
+        assert result is SoundAlert.MEGA_GRENADE
+
     def test_requireSoundAlert_withNone(self):
         result: SoundAlert | None = None
 
@@ -220,6 +220,10 @@ class TestSoundAlertJsonMapper:
     def test_requireSoundAlert_withSubscribe(self):
         result = self.jsonMapper.requireSoundAlert('subscribe')
         assert result is SoundAlert.SUBSCRIBE
+
+    def test_requireSoundAlert_withVore(self):
+        result = self.jsonMapper.requireSoundAlert('vore')
+        assert result is SoundAlert.VORE
 
     def test_requireSoundAlert_withWhitespaceString(self):
         result: SoundAlert | None = None
@@ -290,17 +294,9 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.LAUNCH_AIR_STRIKE)
         assert result == 'launch_air_strike'
 
-    def test_serializeSoundAlert_withMegaGrenade1(self):
-        result = self.jsonMapper.serializeSoundAlert(SoundAlert.MEGA_GRENADE_1)
-        assert result == 'mega_grenade_1'
-
-    def test_serializeSoundAlert_withMegaGrenade2(self):
-        result = self.jsonMapper.serializeSoundAlert(SoundAlert.MEGA_GRENADE_2)
-        assert result == 'mega_grenade_2'
-
-    def test_serializeSoundAlert_withMegaGrenade3(self):
-        result = self.jsonMapper.serializeSoundAlert(SoundAlert.MEGA_GRENADE_3)
-        assert result == 'mega_grenade_3'
+    def test_serializeSoundAlert_withMegaGrenade(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.MEGA_GRENADE)
+        assert result == 'mega_grenade'
 
     def test_serializeSoundAlert_withPointRedemption01(self):
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.POINT_REDEMPTION_01)
@@ -381,3 +377,7 @@ class TestSoundAlertJsonMapper:
     def test_serializeSoundAlert_withSubscribe(self):
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.SUBSCRIBE)
         assert result == 'subscribe'
+
+    def test_serializeSoundAlert_withVore(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.VORE)
+        assert result == 'vore'

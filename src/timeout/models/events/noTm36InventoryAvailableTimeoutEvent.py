@@ -9,6 +9,7 @@ from ..actions.tm36TimeoutAction import Tm36TimeoutAction
 class NoTm36InventoryAvailableTimeoutEvent(AbsTimeoutEvent):
     eventId: str
     targetUserName: str
+    thumbsDownEmote: str
     originatingAction: Tm36TimeoutAction
 
     def getEventId(self) -> str:

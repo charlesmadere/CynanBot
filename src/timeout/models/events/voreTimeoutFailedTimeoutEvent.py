@@ -4,14 +4,16 @@ from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.voreTimeoutAction import VoreTimeoutAction
 from ..voreTimeoutTarget import VoreTimeoutTarget
+from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
 @dataclass(frozen = True)
-class NoVoreInventoryAvailableTimeoutEvent(AbsTimeoutEvent):
+class VoreTimeoutFailedTimeoutEvent(AbsTimeoutEvent):
     eventId: str
-    thumbsDownEmote: str
+    instigatorUserName: str
+    timeoutResult: TwitchTimeoutResult
     originatingAction: VoreTimeoutAction
-    timeoutTarget: VoreTimeoutTarget
+    target: VoreTimeoutTarget
 
     def getEventId(self) -> str:
         return self.eventId
