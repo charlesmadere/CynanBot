@@ -9,6 +9,7 @@ from ..voreTimeoutTarget import VoreTimeoutTarget
 @dataclass(frozen = True)
 class NoVoreInventoryAvailableTimeoutEvent(AbsTimeoutEvent):
     eventId: str
+    thumbsDownEmote: str
     originatingAction: VoreTimeoutAction
     timeoutTarget: VoreTimeoutTarget
 

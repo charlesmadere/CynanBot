@@ -681,6 +681,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 await self.__submitEvent(NoTm36InventoryAvailableTimeoutEvent(
                     eventId = await self.__timeoutIdGenerator.generateEventId(),
                     targetUserName = targetUserName,
+                    thumbsDownEmote = await self.__trollmojiHelper.getThumbsDownEmoteOrBackup(),
                     originatingAction = action,
                 ))
                 return
@@ -801,6 +802,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             if inventory[ChatterItemType.VORE] < 1:
                 await self.__submitEvent(NoVoreInventoryAvailableTimeoutEvent(
                     eventId = await self.__timeoutIdGenerator.generateEventId(),
+                    thumbsDownEmote = await self.__trollmojiHelper.getThumbsDownEmoteOrBackup(),
                     originatingAction = action,
                     timeoutTarget = timeoutTarget,
                 ))

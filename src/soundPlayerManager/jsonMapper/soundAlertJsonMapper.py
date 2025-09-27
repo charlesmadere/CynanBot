@@ -29,9 +29,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case 'hype_train': return SoundAlert.HYPE_TRAIN
             case 'jackpot': return SoundAlert.JACKPOT
             case 'launch_air_strike': return SoundAlert.LAUNCH_AIR_STRIKE
-            case 'mega_grenade_1': return SoundAlert.MEGA_GRENADE_1
-            case 'mega_grenade_2': return SoundAlert.MEGA_GRENADE_2
-            case 'mega_grenade_3': return SoundAlert.MEGA_GRENADE_3
+            case 'mega_grenade': return SoundAlert.MEGA_GRENADE
             case 'point_redemption_01': return SoundAlert.POINT_REDEMPTION_01
             case 'point_redemption_02': return SoundAlert.POINT_REDEMPTION_02
             case 'point_redemption_03': return SoundAlert.POINT_REDEMPTION_03
@@ -54,6 +52,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case 'splat': return SoundAlert.SPLAT
             case 'subscribe': return SoundAlert.SUBSCRIBE
             case 'tnt': return SoundAlert.AIR_STRIKE
+            case 'vore': return SoundAlert.VORE
             case _: return None
 
     def requireSoundAlert(
@@ -87,9 +86,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case SoundAlert.HYPE_TRAIN: return 'hype_train'
             case SoundAlert.JACKPOT: return 'jackpot'
             case SoundAlert.LAUNCH_AIR_STRIKE: return 'launch_air_strike'
-            case SoundAlert.MEGA_GRENADE_1: return 'mega_grenade_1'
-            case SoundAlert.MEGA_GRENADE_2: return 'mega_grenade_2'
-            case SoundAlert.MEGA_GRENADE_3: return 'mega_grenade_3'
+            case SoundAlert.MEGA_GRENADE: return 'mega_grenade'
             case SoundAlert.POINT_REDEMPTION_01: return 'point_redemption_01'
             case SoundAlert.POINT_REDEMPTION_02: return 'point_redemption_02'
             case SoundAlert.POINT_REDEMPTION_03: return 'point_redemption_03'
@@ -111,4 +108,5 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case SoundAlert.RANDOM_FROM_DIRECTORY: return 'random_from_directory'
             case SoundAlert.SPLAT: return 'splat'
             case SoundAlert.SUBSCRIBE: return 'subscribe'
+            case SoundAlert.VORE: return 'vore'
             case _: raise ValueError(f'Unknown SoundAlert value: \"{soundAlert}\"')

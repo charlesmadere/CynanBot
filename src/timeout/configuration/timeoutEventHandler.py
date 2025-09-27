@@ -26,10 +26,12 @@ from ..models.events.noBananaInventoryAvailableTimeoutEvent import NoBananaInven
 from ..models.events.noBananaTargetAvailableTimeoutEvent import NoBananaTargetAvailableTimeoutEvent
 from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
+from ..models.events.noTm36InventoryAvailableTimeoutEvent import NoTm36InventoryAvailableTimeoutEvent
 from ..models.events.noVoreInventoryAvailableTimeoutEvent import NoVoreInventoryAvailableTimeoutEvent
 from ..models.events.noVoreTargetAvailableTimeoutEvent import NoVoreTargetAvailableTimeoutEvent
 from ..models.events.tm36TimeoutEvent import Tm36TimeoutEvent
 from ..models.events.tm36TimeoutFailedTimeoutEvent import Tm36TimeoutFailedTimeoutEvent
+from ..models.events.voreTargetIsImmuneTimeoutEvent import VoreTargetIsImmuneTimeoutEvent
 from ..models.events.voreTimeoutEvent import VoreTimeoutEvent
 from ..models.events.voreTimeoutFailedTimeoutEvent import VoreTimeoutFailedTimeoutEvent
 from ...chatterInventory.models.chatterItemType import ChatterItemType
@@ -179,6 +181,11 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
                 event = event,
             )
 
+        elif isinstance(event, NoTm36InventoryAvailableTimeoutEvent):
+            await self.__handleNoTm36InventoryAvailableTimeoutEvent(
+                event = event,
+            )
+
         elif isinstance(event, NoVoreInventoryAvailableTimeoutEvent):
             await self.__handleNoVoreInventoryAvailableTimeoutEvent(
                 event = event,
@@ -196,6 +203,11 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
 
         elif isinstance(event, Tm36TimeoutFailedTimeoutEvent):
             await self.__handleTm36TimeoutFailedTimeoutEvent(
+                event = event,
+            )
+
+        elif isinstance(event, VoreTargetIsImmuneTimeoutEvent):
+            await self.__handleVoreTargetIsImmuneTimeoutEvent(
                 event = event,
             )
 
@@ -463,7 +475,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         event: NoAirStrikeInventoryAvailableTimeoutEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'Sorry, you have no air strikes!',
+            text = f'Sorry, you have no {ChatterItemType.AIR_STRIKE.pluralHumanName}!',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -473,7 +485,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         event: NoAirStrikeTargetsAvailableTimeoutEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'Sorry, there are no air strike targets available!',
+            text = f'Sorry, there are no {ChatterItemType.AIR_STRIKE.humanName} targets available!',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -483,7 +495,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         event: NoBananaInventoryAvailableTimeoutEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'Sorry, you have no bananas!',
+            text = f'Sorry, you have no {ChatterItemType.BANANA.pluralHumanName}!',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -493,7 +505,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         event: NoBananaTargetAvailableTimeoutEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'Sorry, your banana target is not available!',
+            text = f'Sorry, your {ChatterItemType.BANANA.humanName} target is not available!',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -503,7 +515,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         event: NoGrenadeInventoryAvailableTimeoutEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'Sorry, you have no grenades!',
+            text = f'Sorry, you have no {ChatterItemType.GRENADE.pluralHumanName}!',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -513,7 +525,17 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         event: NoGrenadeTargetAvailableTimeoutEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'Sorry @{event.thumbsDownEmote}, you don\'t have any grenades available',
+            text = f'Sorry, there are no {ChatterItemType.GRENADE.humanName} targets available',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleNoTm36InventoryAvailableTimeoutEvent(
+        self,
+        event: NoTm36InventoryAvailableTimeoutEvent,
+    ):
+        self.__twitchChatMessenger.send(
+            text = f'Sorry @{event.thumbsDownEmote}, you don\'t have any {ChatterItemType.TM_36.pluralHumanName} available',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -522,15 +544,21 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         self,
         event: NoVoreInventoryAvailableTimeoutEvent,
     ):
-        # TODO
-        pass
+        self.__twitchChatMessenger.send(
+            text = f'Sorry @{event.thumbsDownEmote}, you don\'t have any {ChatterItemType.VORE.pluralHumanName} available',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleNoVoreTargetAvailableTimeoutEvent(
         self,
         event: NoVoreTargetAvailableTimeoutEvent,
     ):
-        # TODO
-        pass
+        self.__twitchChatMessenger.send(
+            text = f'Sorry, your {ChatterItemType.VORE.humanName} target is not available!',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     def __chooseRandomGrenadeSoundAlert(self) -> SoundAlert:
         soundAlerts: FrozenList[SoundAlert] = FrozenList([
@@ -541,24 +569,13 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         soundAlerts.freeze()
         return random.choice(soundAlerts)
 
-    def __chooseRandomMegaGrenadeSoundAlert(self) -> SoundAlert:
-        soundAlerts: FrozenList[SoundAlert] = FrozenList([
-            SoundAlert.MEGA_GRENADE_1,
-            SoundAlert.MEGA_GRENADE_2,
-            SoundAlert.MEGA_GRENADE_3,
-        ])
-        soundAlerts.freeze()
-        return random.choice(soundAlerts)
-
     async def __handleTm36TimeoutEvent(
         self,
         event: Tm36TimeoutEvent,
     ):
         if event.user.areSoundAlertsEnabled:
             soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
-            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(
-                alert = self.__chooseRandomMegaGrenadeSoundAlert(),
-            ))
+            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.MEGA_GRENADE))
 
         remainingInventoryString = ''
         if event.updatedInventory is not None:
@@ -587,18 +604,41 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         # this method is intentionally empty
         pass
 
+    async def __handleVoreTargetIsImmuneTimeoutEvent(
+        self,
+        event: VoreTargetIsImmuneTimeoutEvent,
+    ):
+        self.__twitchChatMessenger.send(
+            text = f'Sorry, your {ChatterItemType.VORE.humanName} target is not immune!',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
     async def __handleVoreTimeoutEvent(
         self,
         event: VoreTimeoutEvent,
     ):
-        # TODO
-        pass
+        if event.user.areSoundAlertsEnabled:
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.VORE))
+
+        remainingInventoryString = ''
+        if event.updatedInventory is not None:
+            remainingInventoryString = await self.__getInventoryRemainingString(
+                itemType = ChatterItemType.VORE,
+                inventory = event.updatedInventory.inventory,
+            )
+
+        self.__twitchChatMessenger.send(
+            text = f'{event.ripBozoEmote} @{event.instigatorUserName} used {ChatterItemType.VORE.humanName} on @{event.target.targetUserName}! {remainingInventoryString}',
+            twitchChannelId = event.twitchChannelId,
+        )
 
     async def __handleVoreTimeoutFailedTimeoutEvent(
         self,
         event: VoreTimeoutFailedTimeoutEvent,
     ):
-        # TODO
+        # this method is intentionally empty
         pass
 
     def setTwitchConnectionReadinessProvider(self, provider: TwitchConnectionReadinessProvider | None):
