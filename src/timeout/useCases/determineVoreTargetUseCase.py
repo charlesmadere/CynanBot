@@ -2,7 +2,7 @@ import re
 import traceback
 from typing import Final, Pattern
 
-from ..exceptions import UnknownTimeoutTargetException, ImmuneTimeoutTargetException
+from ..exceptions import ImmuneTimeoutTargetException, UnknownTimeoutTargetException
 from ..models.actions.voreTimeoutAction import VoreTimeoutAction
 from ..models.voreTimeoutTarget import VoreTimeoutTarget
 from ...misc import utils as utils
