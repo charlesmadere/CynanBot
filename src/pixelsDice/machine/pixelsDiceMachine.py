@@ -4,7 +4,10 @@ import traceback
 from queue import SimpleQueue
 from typing import Any, Final
 
-from bleak import AdvertisementData, BleakClient, BleakGATTCharacteristic, BleakScanner, BLEDevice
+from bleak import BleakClient, BleakScanner
+from bleak.backends.characteristic import BleakGATTCharacteristic
+from bleak.backends.device import BLEDevice
+from bleak.backends.scanner import AdvertisementData
 from frozenlist import FrozenList
 
 from .pixelsDiceMachineInterface import PixelsDiceMachineInterface
