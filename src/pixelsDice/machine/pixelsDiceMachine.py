@@ -8,6 +8,7 @@ from bleak import AdvertisementData, BleakClient, BleakGATTCharacteristic, Bleak
 from frozenlist import FrozenList
 
 from .pixelsDiceMachineInterface import PixelsDiceMachineInterface
+from ..exceptions import PixelsDiceRequestQueueException
 from ..listeners.pixelsDiceEventListener import PixelsDiceEventListener
 from ..mappers.pixelsDiceStateMapperInterface import PixelsDiceStateMapperInterface
 from ..models.diceBluetoothInfo import DiceBluetoothInfo
@@ -285,5 +286,6 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
             self.__requestQueue.put(request, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
             self.__timber.log('PixelsDiceMachine', f'Encountered queue.Full when submitting a new request ({request}) into the request queue (queue size: {self.__requestQueue.qsize()})', e, traceback.format_exc())
+            raise PixelsDiceRequestQueueException(f'Failed to add a new request ({request}) into the request queue (queue size: {self.__requestQueue.qsize()})')
 
         return self.__requestQueue.qsize()
