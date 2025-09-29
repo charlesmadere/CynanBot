@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from ..listeners.pixelsDiceEventListener import PixelsDiceEventListener
+from ..models.diceRollRequest import DiceRollRequest
 
 
 class PixelsDiceMachineInterface(ABC):
@@ -11,4 +12,8 @@ class PixelsDiceMachineInterface(ABC):
 
     @abstractmethod
     def start(self):
+        pass
+
+    @abstractmethod
+    def submitRequest(self, request: DiceRollRequest) -> int:
         pass

@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 
-from ..models.pixelsDiceRoll import PixelsDiceRoll
+from ..models.diceRollResult import DiceRollResult
 
 
 class PixelsDiceRollRequestCallback(ABC):
 
     @abstractmethod
-    async def onPixelsDiceRolled(self, roll: PixelsDiceRoll):
+    async def onPixelsDiceRolled(self, result: DiceRollResult):
         pass

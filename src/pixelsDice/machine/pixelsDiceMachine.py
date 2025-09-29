@@ -4,13 +4,15 @@ import traceback
 from queue import SimpleQueue
 from typing import Any, Final
 
-from bleak import BleakClient, BleakGATTCharacteristic, BleakScanner, BLEDevice
+from bleak import AdvertisementData, BleakClient, BleakGATTCharacteristic, BleakScanner, BLEDevice
 from frozenlist import FrozenList
 
 from .pixelsDiceMachineInterface import PixelsDiceMachineInterface
 from ..listeners.pixelsDiceEventListener import PixelsDiceEventListener
 from ..mappers.pixelsDiceStateMapperInterface import PixelsDiceStateMapperInterface
 from ..models.diceBluetoothInfo import DiceBluetoothInfo
+from ..models.diceRollRequest import DiceRollRequest
+from ..models.diceRollResult import DiceRollResult
 from ..models.events.absPixelsDiceEvent import AbsPixelsDiceEvent
 from ..models.events.pixelsDiceClientConnectedEvent import PixelsDiceClientConnectedEvent
 from ..models.events.pixelsDiceClientDisconnectedEvent import PixelsDiceClientDisconnectedEvent
@@ -68,6 +70,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
         self.__notifyCharacteristicUuid: Final[str] = notifyCharacteristicUuid
 
         self.__eventQueue: Final[SimpleQueue[AbsPixelsDiceEvent]] = SimpleQueue()
+        self.__requestQueue: Final[SimpleQueue[DiceRollRequest]] = SimpleQueue()
 
         self.__isStarted: bool = False
         self.__connectedDice: DiceBluetoothInfo | None = None
@@ -85,6 +88,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
 
         try:
             devices = await BleakScanner.discover(
+                return_adv = True,
                 service_uuids = [ self.__notifyCharacteristicUuid ],
             )
         except Exception as e:
@@ -92,10 +96,11 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
             return None
 
         diceDevice: BLEDevice | Any | None = None
+        diceAdvertisement: AdvertisementData | None = None
         connectedDice: DiceBluetoothInfo | None = None
         allDeviceNames: set[str] = set()
 
-        for index, device in enumerate(devices):
+        for device, advertisement in devices.values():
             if not utils.isValidStr(device.name):
                 continue
 
@@ -103,17 +108,18 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
 
             if diceDevice is None and device.name.casefold() == diceName.casefold():
                 diceDevice = device
+                diceAdvertisement = advertisement
 
                 connectedDice = DiceBluetoothInfo(
                     diceAddress = device.address,
                     diceName = device.name,
                 )
 
-        if not isinstance(diceDevice, BLEDevice) or connectedDice is None:
+        if not isinstance(diceDevice, BLEDevice) or not isinstance(diceAdvertisement, AdvertisementData) or connectedDice is None:
             self.__timber.log('PixelsDiceMachine', f'Failed to find device with name \"{diceName}\" among {len(devices)} device(s): {allDeviceNames=}')
             return None
 
-        self.__timber.log('PixelsDiceMachine', f'Found device ({connectedDice=}) among {len(devices)} device(s)')
+        self.__timber.log('PixelsDiceMachine', f'Found device ({connectedDice=}) ({diceDevice=}) ({diceAdvertisement=})')
 
         client = BleakClient(
             address_or_ble_device = diceDevice,
@@ -226,7 +232,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
                         event = self.__eventQueue.get_nowait()
                         events.append(event)
                 except queue.Empty as e:
-                    self.__timber.log('PixelsDiceMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('PixelsDiceMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=})', e, traceback.format_exc())
 
                 events.freeze()
 
@@ -234,7 +240,31 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
                     try:
                         await eventListener.onNewPixelsDiceEvent(event)
                     except Exception as e:
-                        self.__timber.log('PixelsDiceMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({index=}) ({event=}): {e}', e, traceback.format_exc())
+                        self.__timber.log('PixelsDiceMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({index=}) ({event=})', e, traceback.format_exc())
+
+                    if not isinstance(event, PixelsDiceRollEvent):
+                        continue
+
+                    request: DiceRollRequest | None = None
+
+                    if not self.__requestQueue.empty():
+                        try:
+                            request = self.__requestQueue.get_nowait()
+                        except queue.Empty as e:
+                            self.__timber.log('PixelsDiceMachine', f'Encountered queue.Empty when retrieving a dice roll request (queue size: {self.__requestQueue.qsize()}) ({len(events)=}) ({index=}) ({event=})', e, traceback.format_exc())
+
+                    if request is None:
+                        continue
+
+                    result = DiceRollResult(
+                        remainingQueueSize = self.__requestQueue.qsize(),
+                        roll = event.roll,
+                    )
+
+                    try:
+                        await request.callback.onPixelsDiceRolled(result)
+                    except Exception as e:
+                        self.__timber.log('PixelsDiceMachine', f'Encountered unknown Exception when notifying pixel dice roll (queue size: {self.__requestQueue.qsize()}) ({len(events)=}) ({index=}) ({event=}) ({request=})', e, traceback.format_exc())
 
             await asyncio.sleep(self.__eventLoopSleepTimeSeconds)
 
@@ -245,4 +275,15 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
         try:
             self.__eventQueue.put(event, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
-            self.__timber.log('PixelsDiceMachine', f'Encountered queue.Full when submitting a new event ({event}) into the event queue (queue size: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
+            self.__timber.log('PixelsDiceMachine', f'Encountered queue.Full when submitting a new event ({event}) into the event queue (queue size: {self.__eventQueue.qsize()})', e, traceback.format_exc())
+
+    def submitRequest(self, request: DiceRollRequest) -> int:
+        if not isinstance(request, DiceRollRequest):
+            raise TypeError(f'request argument is malformed: \"{request}\"')
+
+        try:
+            self.__requestQueue.put(request, block = True, timeout = self.__queueTimeoutSeconds)
+        except queue.Full as e:
+            self.__timber.log('PixelsDiceMachine', f'Encountered queue.Full when submitting a new request ({request}) into the request queue (queue size: {self.__requestQueue.qsize()})', e, traceback.format_exc())
+
+        return self.__requestQueue.qsize()
