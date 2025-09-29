@@ -52,10 +52,6 @@ from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from src.chatterInventory.helpers.stub.stubChatterInventoryHelper import StubChatterInventoryHelper
-from src.cheerActions.airStrike.airStrikeCheerActionHelper import AirStrikeCheerActionHelper
-from src.cheerActions.airStrike.airStrikeCheerActionHelperInterface import AirStrikeCheerActionHelperInterface
-from src.cheerActions.beanChance.beanChanceCheerActionHelper import BeanChanceCheerActionHelper
-from src.cheerActions.beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from src.cheerActions.cheerActionHelper import CheerActionHelper
 from src.cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
@@ -66,8 +62,6 @@ from src.cheerActions.cheerActionsWizard import CheerActionsWizard
 from src.cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from src.cheerActions.settings.cheerActionSettingsRepository import CheerActionSettingsRepository
 from src.cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
-from src.cheerActions.timeout.timeoutCheerActionHelper import TimeoutCheerActionHelper
-from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
 from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
@@ -1795,45 +1789,25 @@ cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper()
 cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = CheerActionSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/cheerActionSettings.json'
-    )
+        fileName = '../config/cheerActionSettings.json',
+    ),
 )
 
 cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository(
     backingDatabase = backingDatabase,
     cheerActionJsonMapper = cheerActionJsonMapper,
     cheerActionSettingsRepository = cheerActionSettingsRepository,
-    timber = timber
-)
-
-beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface = BeanChanceCheerActionHelper(
-    beanStatsRepository = beanStatsRepository,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
-    trollmojiHelper = trollmojiHelper,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
-timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerActionHelper(
-    timeoutActionMachine = timeoutActionMachine,
-    timeoutIdGenerator = timeoutIdGenerator,
-)
-
-airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheerActionHelper(
-    timber = timber,
-    timeoutActionMachine = timeoutActionMachine,
-    timeoutActionSettings = timeoutActionSettings,
-    timeoutIdGenerator = timeoutIdGenerator,
 )
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     adgeCheerActionHelper = None,
-    airStrikeCheerActionHelper = airStrikeCheerActionHelper,
-    beanChanceCheerActionHelper = beanChanceCheerActionHelper,
+    airStrikeCheerActionHelper = None,
+    beanChanceCheerActionHelper = None,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = None,
     soundAlertCheerActionHelper = None,
-    timeoutCheerActionHelper = timeoutCheerActionHelper,
+    timeoutCheerActionHelper = None,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
@@ -2191,7 +2165,7 @@ cynanBot = CynanBot(
     activeChattersRepository = activeChattersRepository,
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
     addOrRemoveUserDataHelper = addOrRemoveUserDataHelper,
-    airStrikeCheerActionHelper = airStrikeCheerActionHelper,
+    airStrikeCheerActionHelper = None,
     administratorProvider = administratorProvider,
     anivCopyMessageTimeoutScoreHelper = anivCopyMessageTimeoutScoreHelper,
     anivCopyMessageTimeoutScorePresenter = anivCopyMessageTimeoutScorePresenter,
@@ -2202,7 +2176,7 @@ cynanBot = CynanBot(
     backgroundTaskHelper = backgroundTaskHelper,
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     bannedWordsRepository = bannedWordsRepository,
-    beanChanceCheerActionHelper = beanChanceCheerActionHelper,
+    beanChanceCheerActionHelper = None,
     beanStatsPresenter = beanStatsPresenter,
     beanStatsRepository = beanStatsRepository,
     bizhawkSettingsRepository = None,

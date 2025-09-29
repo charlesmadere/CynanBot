@@ -11,6 +11,7 @@ class BananaTimeoutAction(AbsTimeoutAction):
     timeoutDuration: AbsTimeoutDuration
     ignoreInventory: bool
     isRandomChanceEnabled: bool
+    useDiceRoll: bool
     actionId: str
     chatMessage: str | None
     instigatorUserId: str

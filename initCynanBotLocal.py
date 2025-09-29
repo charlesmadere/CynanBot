@@ -2125,8 +2125,9 @@ soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface = SoundAlertCh
 )
 
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerActionHelper(
-    timeoutActionMachine = timeoutActionMachine,
-    timeoutIdGenerator = timeoutIdGenerator,
+    chatterInventoryIdGenerator = chatterInventoryIdGenerator,
+    chatterInventorySettings = chatterInventorySettings,
+    useChatterItemHelper = useChatterItemHelper,
 )
 
 voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheerActionHelper(

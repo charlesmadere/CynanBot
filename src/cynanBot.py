@@ -1642,15 +1642,8 @@ class CynanBot(
 
     @commands.command(
         name = 'useitem',
-        aliases = [
-            'use', 'usechatteritem', 'use-item', 'use_item'
-            'airstrike', 'air-strike', 'air_strike', 'tnt',
-            'animalpet', 'animal-pet', 'animal_pet', 'pet', 'petanimal', 'pet-animal', 'pet_animal',
-            'banana',
-            'gacha', 'gachapon', 'gasha', 'gashapon', 'lootbox', 'lootcrate',
-            'grenade',
-            'tm36', 'tm-36', 'tm_36',
-        ])
+        aliases = [ 'use', 'usechatteritem', 'use-item', 'use_item' ]
+    )
     async def command_usechatteritem(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__useChatterItemCommand.handleChatCommand(context)
