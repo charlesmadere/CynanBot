@@ -367,7 +367,6 @@ class TriviaEventHandler(AbsTriviaEventHandler):
             self.__twitchChatMessenger.send(
                 text = launchpadPrompt,
                 twitchChannelId = event.twitchChannelId,
-                replyMessageId = event.twitchChatMessageId,
             )
 
     async def __handleOutOfTimeSuperTriviaEvent(
