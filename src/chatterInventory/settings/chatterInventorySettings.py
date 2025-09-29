@@ -102,6 +102,10 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
         self.__cache: dict[str, Any] | None = None
 
+    async def areDiceRollsEnabled(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'diceRollsEnabled', True)
+
     async def clearCaches(self):
         self.__cache = None
 

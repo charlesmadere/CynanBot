@@ -2798,15 +2798,15 @@ cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper()
 cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = CheerActionSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/cheerActionSettings.json'
-    )
+        fileName = '../config/cheerActionSettings.json',
+    ),
 )
 
 cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository(
     backingDatabase = backingDatabase,
     cheerActionJsonMapper = cheerActionJsonMapper,
     cheerActionSettingsRepository = cheerActionSettingsRepository,
-    timber = timber
+    timber = timber,
 )
 
 airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheerActionHelper(
@@ -2833,8 +2833,9 @@ soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface = SoundAlertCh
 )
 
 timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerActionHelper(
-    timeoutActionMachine = timeoutActionMachine,
-    timeoutIdGenerator = timeoutIdGenerator,
+    chatterInventoryIdGenerator = chatterInventoryIdGenerator,
+    chatterInventorySettings = chatterInventorySettings,
+    useChatterItemHelper = useChatterItemHelper,
 )
 
 voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheerActionHelper(

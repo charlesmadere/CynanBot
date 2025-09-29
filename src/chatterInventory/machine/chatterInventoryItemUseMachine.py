@@ -256,6 +256,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             timeoutDuration = timeoutDuration,
             ignoreInventory = action.ignoreInventory,
             isRandomChanceEnabled = itemDetails.randomChanceEnabled,
+            useDiceRoll = await self.__chatterInventorySettings.areDiceRollsEnabled(),
             actionId = await self.__timeoutIdGenerator.generateActionId(),
             chatMessage = action.chatMessage,
             instigatorUserId = action.chatterUserId,

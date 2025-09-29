@@ -54,17 +54,13 @@ class PixelsDiceEventHandler(PixelsDiceEventListener):
             self.__timber.log('PixelsDiceEventHandler', f'Received unhandled pixels dice event ({event=})')
 
     async def __handleConnectedEvent(self, event: PixelsDiceClientConnectedEvent):
-        # this method is intentionally empty (for now at least)
-        pass
+        self.__timber.log('PixelsDiceEventHandler', f'Pixels Dice connected ({event=})')
+        # this method is intentionally rather thin, for now at least
 
     async def __handleDisconnectedEvent(self, event: PixelsDiceClientDisconnectedEvent):
-        # this method is intentionally empty (for now at least)
-        pass
+        self.__timber.log('PixelsDiceEventHandler', f'Pixels Dice disconnected ({event=})')
+        # this method is intentionally rather thin, for now at least
 
     async def __handleRollEvent(self, event: PixelsDiceRollEvent):
-        twitchChannelId = await self.__administratorProvider.getAdministratorUserId()
-
-        self.__twitchChatMessenger.send(
-            text = f'🎲 Rolled a {event.roll}!',
-            twitchChannelId = twitchChannelId,
-        )
+        self.__timber.log('PixelsDiceEventHandler', f'Pixels Dice disconnected ({event=})')
+        # this method is intentionally rather thin, for now at least

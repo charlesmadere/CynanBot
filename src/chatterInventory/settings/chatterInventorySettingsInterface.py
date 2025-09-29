@@ -14,6 +14,10 @@ from ...misc.clearable import Clearable
 class ChatterInventorySettingsInterface(Clearable, ABC):
 
     @abstractmethod
+    async def areDiceRollsEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     async def getAirStrikeItemDetails(self) -> AirStrikeItemDetails:
         pass
 

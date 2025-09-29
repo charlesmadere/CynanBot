@@ -7,14 +7,13 @@ from .timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .timeoutCheerActionTargetType import TimeoutCheerActionTargetType
 from ..absCheerAction import AbsCheerAction
 from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
+from ...chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
+from ...chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
+from ...chatterInventory.models.chatterItemType import ChatterItemType
+from ...chatterInventory.models.useChatterItemRequest import UseChatterItemRequest
+from ...chatterInventory.models.useChatterItemResult import UseChatterItemResult
+from ...chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ...misc import utils as utils
-from ...timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
-from ...timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
-from ...timeout.models.absTimeoutDuration import AbsTimeoutDuration
-from ...timeout.models.actions.absTimeoutAction import AbsTimeoutAction
-from ...timeout.models.actions.bananaTimeoutAction import BananaTimeoutAction
-from ...timeout.models.actions.grenadeTimeoutAction import GrenadeTimeoutAction
-from ...timeout.models.exactTimeoutDuration import ExactTimeoutDuration
 from ...timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ...users.userInterface import UserInterface
 
@@ -23,16 +22,20 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
 
     def __init__(
         self,
-        timeoutActionMachine: TimeoutActionMachineInterface,
-        timeoutIdGenerator: TimeoutIdGeneratorInterface,
+        chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface,
+        chatterInventorySettings: ChatterInventorySettingsInterface,
+        useChatterItemHelper: UseChatterItemHelperInterface,
     ):
-        if not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
-            raise TypeError(f'timeoutActionMachine argument is malformed: \"{timeoutActionMachine}\"')
-        elif not isinstance(timeoutIdGenerator, TimeoutIdGeneratorInterface):
-            raise TypeError(f'timeoutIdGenerator argument is malformed: \"{timeoutIdGenerator}\"')
+        if not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
+            raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
+        elif not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
+            raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
+        elif not isinstance(useChatterItemHelper, UseChatterItemHelperInterface):
+            raise TypeError(f'useChatterItemHelper argument is malformed: \"{useChatterItemHelper}\"')
 
-        self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
-        self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
+        self.__chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = chatterInventoryIdGenerator
+        self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
+        self.__useChatterItemHelper: Final[UseChatterItemHelperInterface] = useChatterItemHelper
 
     async def handleTimeoutCheerAction(
         self,
@@ -78,49 +81,25 @@ class TimeoutCheerActionHelper(TimeoutCheerActionHelperInterface):
         if not isinstance(action, TimeoutCheerAction) or not action.isEnabled:
             return False
 
-        timeoutDuration: AbsTimeoutDuration = ExactTimeoutDuration(
-            seconds = action.durationSeconds,
-        )
-
-        actionId = await self.__timeoutIdGenerator.generateActionId()
-
-        streamStatusRequirement = await self.__mapStreamStatusRequirement(action.streamStatusRequirement)
-
-        timeoutAction: AbsTimeoutAction
+        itemType: ChatterItemType
 
         if action.targetType is TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY:
-            timeoutAction = BananaTimeoutAction(
-                timeoutDuration = timeoutDuration,
-                ignoreInventory = True,
-                isRandomChanceEnabled = True,
-                actionId = actionId,
-                chatMessage = message,
-                instigatorUserId = cheerUserId,
-                moderatorTwitchAccessToken = moderatorTwitchAccessToken,
-                moderatorUserId = moderatorUserId,
-                twitchChannelId = twitchChannelId,
-                twitchChatMessageId = twitchChatMessageId,
-                userTwitchAccessToken = userTwitchAccessToken,
-                streamStatusRequirement = streamStatusRequirement,
-                user = user,
-            )
+            itemType = ChatterItemType.BANANA
         else:
-            timeoutAction = GrenadeTimeoutAction(
-                timeoutDuration = timeoutDuration,
-                ignoreInventory = True,
-                actionId = actionId,
-                instigatorUserId = cheerUserId,
-                moderatorTwitchAccessToken = moderatorTwitchAccessToken,
-                moderatorUserId = moderatorUserId,
-                twitchChannelId = twitchChannelId,
-                twitchChatMessageId = twitchChatMessageId,
-                userTwitchAccessToken = userTwitchAccessToken,
-                streamStatusRequirement = streamStatusRequirement,
-                user = user,
-            )
+            itemType = ChatterItemType.GRENADE
 
-        self.__timeoutActionMachine.submitAction(timeoutAction)
-        return True
+        result = await self.__useChatterItemHelper.useItem(UseChatterItemRequest(
+            ignoreInventory = True,
+            itemType = itemType,
+            chatMessage = message,
+            chatterUserId = cheerUserId,
+            requestId = await self.__chatterInventoryIdGenerator.generateRequestId(),
+            twitchChannelId = twitchChannelId,
+            twitchChatMessageId = twitchChatMessageId,
+            user = user,
+        ))
+
+        return result is UseChatterItemResult.OK
 
     async def __mapStreamStatusRequirement(
         self,
