@@ -1,9 +1,9 @@
 from typing import Final
 
+from .models.absTimeoutTarget import AbsTimeoutTarget
 from .models.bananaTimeoutTarget import BananaTimeoutTarget
 from .models.timeoutDiceRoll import TimeoutDiceRoll
 from .models.timeoutDiceRollFailureData import TimeoutDiceRollFailureData
-from .models.voreTimeoutTarget import VoreTimeoutTarget
 
 
 class BananaTimeoutDiceRollFailedException(Exception):
@@ -42,15 +42,15 @@ class ImmuneTimeoutTargetException(Exception):
 
     def __init__(
         self,
-        timeoutTarget: VoreTimeoutTarget,
+        timeoutTarget: AbsTimeoutTarget,
     ):
-        if not isinstance(timeoutTarget, VoreTimeoutTarget):
+        if not isinstance(timeoutTarget, AbsTimeoutTarget):
             raise TypeError(f'timeoutTarget argument is malformed: \"{timeoutTarget}\"')
 
-        self.__timeoutTarget: Final[VoreTimeoutTarget] = timeoutTarget
+        self.__timeoutTarget: Final[AbsTimeoutTarget] = timeoutTarget
 
     @property
-    def timeoutTarget(self) -> VoreTimeoutTarget:
+    def timeoutTarget(self) -> AbsTimeoutTarget:
         return self.__timeoutTarget
 
 

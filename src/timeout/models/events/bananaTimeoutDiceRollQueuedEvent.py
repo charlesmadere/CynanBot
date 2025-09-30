@@ -2,18 +2,16 @@ from dataclasses import dataclass
 
 from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
-from ..actions.voreTimeoutAction import VoreTimeoutAction
+from ..actions.bananaTimeoutAction import BananaTimeoutAction
 from ..basicTimeoutTarget import BasicTimeoutTarget
-from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
 @dataclass(frozen = True)
-class VoreTimeoutFailedTimeoutEvent(AbsTimeoutEvent):
+class BananaTimeoutDiceRollQueuedEvent(AbsTimeoutEvent):
+    originatingAction: BananaTimeoutAction
     timeoutTarget: BasicTimeoutTarget
+    requestQueueSize: int
     eventId: str
-    instigatorUserName: str
-    timeoutResult: TwitchTimeoutResult
-    originatingAction: VoreTimeoutAction
 
     def getEventId(self) -> str:
         return self.eventId

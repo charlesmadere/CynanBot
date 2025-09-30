@@ -3,15 +3,15 @@ from dataclasses import dataclass
 from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.voreTimeoutAction import VoreTimeoutAction
-from ..voreTimeoutTarget import VoreTimeoutTarget
+from ..basicTimeoutTarget import BasicTimeoutTarget
 
 
 @dataclass(frozen = True)
 class NoVoreInventoryAvailableTimeoutEvent(AbsTimeoutEvent):
+    timeoutTarget: BasicTimeoutTarget
     eventId: str
     thumbsDownEmote: str
     originatingAction: VoreTimeoutAction
-    timeoutTarget: VoreTimeoutTarget
 
     def getEventId(self) -> str:
         return self.eventId

@@ -609,7 +609,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         event: VoreTargetIsImmuneTimeoutEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'Sorry, your {ChatterItemType.VORE.humanName} target is not immune!',
+            text = f'Sorry, your {ChatterItemType.VORE.humanName} target is immune!',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -630,7 +630,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             )
 
         self.__twitchChatMessenger.send(
-            text = f'{event.ripBozoEmote} @{event.instigatorUserName} used {ChatterItemType.VORE.humanName} on @{event.target.targetUserName}! {remainingInventoryString}',
+            text = f'{event.ripBozoEmote} @{event.instigatorUserName} used {ChatterItemType.VORE.humanName} on @{event.timeoutTarget.targetUserName}! {remainingInventoryString}',
             twitchChannelId = event.twitchChannelId,
         )
 
