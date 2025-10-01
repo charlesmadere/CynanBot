@@ -74,7 +74,6 @@ from ...pixelsDice.models.diceRollRequest import DiceRollRequest
 from ...pixelsDice.models.diceRollResult import DiceRollResult
 from ...timber.timberInterface import TimberInterface
 from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
-from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ...twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from ...twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from ...twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
@@ -86,7 +85,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
 
     def __init__(
         self,
-        activeChattersRepository: ActiveChattersRepositoryInterface,
         anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface,
         asplodieStatsRepository: AsplodieStatsRepositoryInterface,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
@@ -110,9 +108,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         sleepTimeSeconds: float = 1,
         queueTimeoutSeconds: int = 3,
     ):
-        if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
-            raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
-        elif not isinstance(anivCopyMessageTimeoutScoreRepository, AnivCopyMessageTimeoutScoreRepositoryInterface):
+        if not isinstance(anivCopyMessageTimeoutScoreRepository, AnivCopyMessageTimeoutScoreRepositoryInterface):
             raise TypeError(f'anivCopyMessageTimeoutScoreRepository argument is malformed: \"{anivCopyMessageTimeoutScoreRepository}\"')
         elif not isinstance(asplodieStatsRepository, AsplodieStatsRepositoryInterface):
             raise TypeError(f'asplodieStatsRepository argument is malformed: \"{asplodieStatsRepository}\"')
@@ -161,7 +157,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
-        self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__anivCopyMessageTimeoutScoreRepository: Final[AnivCopyMessageTimeoutScoreRepositoryInterface] = anivCopyMessageTimeoutScoreRepository
         self.__asplodieStatsRepository: Final[AsplodieStatsRepositoryInterface] = asplodieStatsRepository
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper

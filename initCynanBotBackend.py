@@ -1624,7 +1624,6 @@ anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInte
 )
 
 timeoutActionMachine: TimeoutActionMachineInterface = TimeoutActionMachine(
-    activeChattersRepository = activeChattersRepository,
     anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
     asplodieStatsRepository = asplodieStatsRepository,
     backgroundTaskHelper = backgroundTaskHelper,
