@@ -1,15 +1,15 @@
 from dataclasses import dataclass
 
 from .absTimeoutEvent import AbsTimeoutEvent
-from ..absTimeoutTarget import AbsTimeoutTarget
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.voreTimeoutAction import VoreTimeoutAction
+from ..timeoutTarget import TimeoutTarget
 
 
 @dataclass(frozen = True)
 class VoreTargetIsImmuneTimeoutEvent(AbsTimeoutEvent):
-    timeoutTarget: AbsTimeoutTarget
     eventId: str
+    timeoutTarget: TimeoutTarget
     originatingAction: VoreTimeoutAction
 
     def getEventId(self) -> str:

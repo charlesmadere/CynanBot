@@ -3,15 +3,15 @@ from dataclasses import dataclass
 from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.bananaTimeoutAction import BananaTimeoutAction
-from ..basicTimeoutTarget import BasicTimeoutTarget
+from ..timeoutTarget import TimeoutTarget
 
 
 @dataclass(frozen = True)
 class BananaTimeoutDiceRollQueuedEvent(AbsTimeoutEvent):
     originatingAction: BananaTimeoutAction
-    timeoutTarget: BasicTimeoutTarget
     requestQueueSize: int
     eventId: str
+    timeoutTarget: TimeoutTarget
 
     def getEventId(self) -> str:
         return self.eventId

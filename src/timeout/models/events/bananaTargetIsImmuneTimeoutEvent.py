@@ -1,16 +1,16 @@
 from dataclasses import dataclass
 
 from .absTimeoutEvent import AbsTimeoutEvent
-from ..absTimeoutTarget import AbsTimeoutTarget
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.bananaTimeoutAction import BananaTimeoutAction
+from ..timeoutTarget import TimeoutTarget
 
 
 @dataclass(frozen = True)
 class BananaTargetIsImmuneTimeoutEvent(AbsTimeoutEvent):
-    timeoutTarget: AbsTimeoutTarget
     originatingAction: BananaTimeoutAction
     eventId: str
+    timeoutTarget: TimeoutTarget
 
     def getEventId(self) -> str:
         return self.eventId

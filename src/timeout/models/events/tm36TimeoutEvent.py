@@ -4,7 +4,7 @@ from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.tm36TimeoutAction import Tm36TimeoutAction
 from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
-from ..tm36SplashTimeoutTarget import Tm36SplashTimeoutTarget
+from ..timeoutTarget import TimeoutTarget
 from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
@@ -17,7 +17,7 @@ class Tm36TimeoutEvent(AbsTimeoutEvent):
     eventId: str
     explodedEmote: str
     targetUserName: str
-    splashTimeoutTarget: Tm36SplashTimeoutTarget | None
+    splashTimeoutTarget: TimeoutTarget | None
     originatingAction: Tm36TimeoutAction
     timeoutResult: TwitchTimeoutResult
 

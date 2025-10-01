@@ -4,7 +4,7 @@ from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.grenadeTimeoutAction import GrenadeTimeoutAction
 from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
-from ..grenadeTimeoutTarget import GrenadeTimeoutTarget
+from ..timeoutTarget import TimeoutTarget
 from ....asplodieStats.models.asplodieStats import AsplodieStats
 from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
@@ -16,11 +16,11 @@ class GrenadeTimeoutEvent(AbsTimeoutEvent):
     timeoutDuration: CalculatedTimeoutDuration
     updatedInventory: ChatterItemGiveResult | None
     originatingAction: GrenadeTimeoutAction
-    target: GrenadeTimeoutTarget
     bombEmote: str
     eventId: str
     explodedEmote: str
     instigatorUserName: str
+    timeoutTarget: TimeoutTarget
     timeoutResult: TwitchTimeoutResult
 
     def getEventId(self) -> str:

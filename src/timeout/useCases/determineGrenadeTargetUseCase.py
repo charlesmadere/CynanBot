@@ -4,7 +4,7 @@ from typing import Final
 
 from ..exceptions import UnknownTimeoutTargetException
 from ..models.actions.grenadeTimeoutAction import GrenadeTimeoutAction
-from ..models.grenadeTimeoutTarget import GrenadeTimeoutTarget
+from ..models.timeoutTarget import TimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.activeChatters.activeChatter import ActiveChatter
@@ -67,7 +67,7 @@ class DetermineGrenadeTargetUseCase:
     async def invoke(
         self,
         timeoutAction: GrenadeTimeoutAction,
-    ) -> GrenadeTimeoutTarget | None:
+    ) -> TimeoutTarget | None:
         if not isinstance(timeoutAction, GrenadeTimeoutAction):
             raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
 
@@ -80,9 +80,9 @@ class DetermineGrenadeTargetUseCase:
                 userId = timeoutAction.instigatorUserId,
             )
 
-            return GrenadeTimeoutTarget(
-                targetUserId = timeoutAction.instigatorUserId,
-                targetUserName = targetUserName,
+            return TimeoutTarget(
+                userId = timeoutAction.instigatorUserId,
+                userName = targetUserName,
             )
 
         activeChatters = await self.__activeChattersRepository.get(
@@ -108,7 +108,7 @@ class DetermineGrenadeTargetUseCase:
             twitchChannelId = timeoutAction.twitchChannelId,
         )
 
-        return GrenadeTimeoutTarget(
-            targetUserId = randomChatter.chatterUserId,
-            targetUserName = randomChatter.chatterUserName,
+        return TimeoutTarget(
+            userId = randomChatter.chatterUserId,
+            userName = randomChatter.chatterUserName,
         )

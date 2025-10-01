@@ -4,7 +4,7 @@ from typing import Final, Pattern
 
 from ..exceptions import UnknownTimeoutTargetException, ImmuneTimeoutTargetException
 from ..models.actions.absTimeoutAction import AbsTimeoutAction
-from ..models.basicTimeoutTarget import BasicTimeoutTarget
+from ..models.timeoutTarget import TimeoutTarget
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
@@ -89,7 +89,7 @@ class DetermineTimeoutTargetUseCase:
     async def invoke(
         self,
         timeoutAction: AbsTimeoutAction,
-    ) -> BasicTimeoutTarget:
+    ) -> TimeoutTarget:
         if not isinstance(timeoutAction, AbsTimeoutAction):
             raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
 
@@ -105,9 +105,9 @@ class DetermineTimeoutTargetUseCase:
         if targetUserId == timeoutAction.getTwitchChannelId():
             targetUserId = timeoutAction.getInstigatorUserId()
 
-        timeoutTarget = BasicTimeoutTarget(
-            targetUserId = targetUserId,
-            targetUserName = targetUserName,
+        timeoutTarget = TimeoutTarget(
+            userId = targetUserId,
+            userName = targetUserName,
         )
 
         if await self.__timeoutImmuneUserIdsRepository.isImmune(targetUserId):

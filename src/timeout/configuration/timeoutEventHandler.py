@@ -250,7 +250,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         userNames: list[str] = list()
 
         for target in event.targets:
-            userNames.append(f'@{target.targetUserName}')
+            userNames.append(f'@{target.userName}')
 
         userNames.sort(key = lambda userName: userName.casefold())
         userNamesString = ', '.join(userNames)
@@ -300,7 +300,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         event: BananaTimeoutDiceRollFailedEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'{event.ripBozoEmote} Sorry @{event.instigatorUserName}, your timeout of @{event.target.targetUserName} failed {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, but needed greater than {event.diceRollFailureData.failureRoll}) {event.ripBozoEmote}',
+            text = f'{event.ripBozoEmote} Sorry @{event.instigatorUserName}, your timeout of @{event.timeoutTarget.userName} failed {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, but needed greater than {event.diceRollFailureData.failureRoll}) {event.ripBozoEmote}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -314,11 +314,11 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             if event.isReverse:
                 message = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserName} dropped a banana but they tripped themselves up! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} but got a {event.diceRoll.roll})'
             else:
-                message = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.target.targetUserName}! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, needed greater than {event.diceRollFailureData.reverseRoll})'
+                message = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.timeoutTarget.userName}! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, needed greater than {event.diceRollFailureData.reverseRoll})'
         elif event.isReverse:
             message = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserName} dropped a banana but they tripped themselves up! {event.ripBozoEmote}'
         else:
-            message = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.target.targetUserName}! {event.ripBozoEmote}'
+            message = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.timeoutTarget.userName}! {event.ripBozoEmote}'
 
         self.__twitchChatMessenger.send(
             text = message,
@@ -337,7 +337,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             if event.isReverse:
                 ttsMessage = f'Oh no! {event.instigatorUserName} got hit with a reverse! Rip bozo!'
             else:
-                ttsMessage = f'{event.instigatorUserName} timed out {event.target.targetUserName} for {event.timeoutDuration.message}! Rip bozo!'
+                ttsMessage = f'{event.instigatorUserName} timed out {event.timeoutTarget.userName} for {event.timeoutDuration.message}! Rip bozo!'
 
             providerOverridableStatus: TtsProviderOverridableStatus
 
@@ -451,7 +451,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             )
 
         self.__twitchChatMessenger.send(
-            text = f'{event.explodedEmote} @{event.target.targetUserName} {event.bombEmote} {remainingInventoryString}',
+            text = f'{event.explodedEmote} @{event.timeoutTarget.userName} {event.bombEmote} {remainingInventoryString}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -593,7 +593,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             return
 
         self.__twitchChatMessenger.send(
-            text = f'{event.explodedEmote} @{event.splashTimeoutTarget.targetUserName} was also hit with splash damage! {event.bombEmote}',
+            text = f'{event.explodedEmote} @{event.splashTimeoutTarget.userName} was also hit with splash damage! {event.bombEmote}',
             twitchChannelId = event.twitchChannelId,
         )
 
@@ -630,7 +630,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             )
 
         self.__twitchChatMessenger.send(
-            text = f'{event.ripBozoEmote} @{event.instigatorUserName} used {ChatterItemType.VORE.humanName} on @{event.timeoutTarget.targetUserName}! {remainingInventoryString}',
+            text = f'{event.ripBozoEmote} @{event.instigatorUserName} used {ChatterItemType.VORE.humanName} on @{event.timeoutTarget.userName}! {remainingInventoryString}',
             twitchChannelId = event.twitchChannelId,
         )
 

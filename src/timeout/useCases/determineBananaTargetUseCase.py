@@ -4,11 +4,10 @@ from typing import Final
 
 from ..exceptions import BananaTimeoutDiceRollFailedException
 from ..guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
-from ..models.absTimeoutTarget import AbsTimeoutTarget
 from ..models.actions.bananaTimeoutAction import BananaTimeoutAction
-from ..models.bananaTimeoutTarget import BananaTimeoutTarget
 from ..models.timeoutDiceRoll import TimeoutDiceRoll
 from ..models.timeoutDiceRollFailureData import TimeoutDiceRollFailureData
+from ..models.timeoutTarget import TimeoutTarget
 from ..repositories.chatterTimeoutHistoryRepositoryInterface import ChatterTimeoutHistoryRepositoryInterface
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ...misc import utils as utils
@@ -21,10 +20,10 @@ class DetermineBananaTargetUseCase:
 
     @dataclass(frozen = True)
     class ResultData:
-        timeoutTarget: BananaTimeoutTarget
         isReverse: bool
         diceRoll: TimeoutDiceRoll | None
         diceRollFailureData: TimeoutDiceRollFailureData | None
+        timeoutTarget: TimeoutTarget
 
     def __init__(
         self,
@@ -118,33 +117,30 @@ class DetermineBananaTargetUseCase:
 
     async def invoke(
         self,
-        timeoutTarget: AbsTimeoutTarget,
         timeoutAction: BananaTimeoutAction,
         instigatorUserName: str,
         diceRoll: TimeoutDiceRoll | None,
+        timeoutTarget: TimeoutTarget,
     ) -> ResultData:
-        if not isinstance(timeoutTarget, AbsTimeoutTarget):
-            raise TypeError(f'timeoutTarget argument is malformed: \"{timeoutTarget}\"')
-        elif not isinstance(timeoutAction, BananaTimeoutAction):
+        if not isinstance(timeoutAction, BananaTimeoutAction):
             raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
         elif not utils.isValidStr(instigatorUserName):
             raise TypeError(f'instigatorUserName argument is malformed: \"{instigatorUserName}\"')
         elif diceRoll is not None and not isinstance(diceRoll, TimeoutDiceRoll):
             raise TypeError(f'diceRoll argument is malformed: \"{diceRoll}\"')
+        elif not isinstance(timeoutTarget, TimeoutTarget):
+            raise TypeError(f'timeoutTarget argument is malformed: \"{timeoutTarget}\"')
 
-        isTryingToTimeoutThemselves = timeoutTarget.getTargetUserId() == timeoutAction.instigatorUserId
+        isTryingToTimeoutThemselves = timeoutTarget.userId == timeoutAction.instigatorUserId
 
         isGuaranteedTimeoutTarget = await self.__guaranteedTimeoutUsersRepository.isGuaranteed(
-            userId = timeoutTarget.getTargetUserId(),
+            userId = timeoutTarget.userId,
         )
 
         if isTryingToTimeoutThemselves or isGuaranteedTimeoutTarget or not timeoutAction.isRandomChanceEnabled:
             return DetermineBananaTargetUseCase.ResultData(
-                timeoutTarget = BananaTimeoutTarget(
-                    targetUserId = timeoutTarget.getTargetUserId(),
-                    targetUserName = timeoutTarget.getTargetUserName(),
-                ),
-                isReverse = timeoutTarget.getTargetUserId() == timeoutAction.twitchChannelId or isTryingToTimeoutThemselves,
+                timeoutTarget = timeoutTarget,
+                isReverse = timeoutTarget.userId == timeoutAction.twitchChannelId or isTryingToTimeoutThemselves,
                 diceRoll = None,
                 diceRollFailureData = None,
             )
@@ -154,15 +150,15 @@ class DetermineBananaTargetUseCase:
 
         diceRollFailureData = await self.__generateDiceRollFailureData(
             timeoutAction = timeoutAction,
-            targetUserId = timeoutTarget.getTargetUserId(),
+            targetUserId = timeoutTarget.userId,
             diceRoll = diceRoll,
         )
 
         if diceRoll.roll < diceRollFailureData.reverseRoll:
             return DetermineBananaTargetUseCase.ResultData(
-                timeoutTarget = BananaTimeoutTarget(
-                    targetUserId = timeoutAction.instigatorUserId,
-                    targetUserName = instigatorUserName,
+                timeoutTarget = TimeoutTarget(
+                    userId = timeoutAction.instigatorUserId,
+                    userName = instigatorUserName,
                 ),
                 isReverse = True,
                 diceRoll = diceRoll,
@@ -170,19 +166,13 @@ class DetermineBananaTargetUseCase:
             )
         elif diceRoll.roll <= diceRollFailureData.failureRoll:
             raise BananaTimeoutDiceRollFailedException(
-                timeoutTarget = BananaTimeoutTarget(
-                    targetUserId = timeoutTarget.getTargetUserId(),
-                    targetUserName = timeoutTarget.getTargetUserName(),
-                ),
+                timeoutTarget = timeoutTarget,
                 diceRoll = diceRoll,
                 diceRollFailureData = diceRollFailureData,
             )
         else:
             return DetermineBananaTargetUseCase.ResultData(
-                timeoutTarget = BananaTimeoutTarget(
-                    targetUserId = timeoutTarget.getTargetUserId(),
-                    targetUserName = timeoutTarget.getTargetUserName(),
-                ),
+                timeoutTarget = timeoutTarget,
                 isReverse = False,
                 diceRoll = diceRoll,
                 diceRollFailureData = diceRollFailureData,
