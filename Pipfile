@@ -11,7 +11,7 @@ asyncpg = "0.30.0"
 audioplayer = { version = "0.6", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
 bleak = { version = "1.1.1", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
 charset-normalizer = "3.4.3"
-cryptography = "46.0.1"
+cryptography = "46.0.2"
 emoji = "2.15.0"
 frozendict = "2.4.6"
 frozenlist = "1.7.0"
