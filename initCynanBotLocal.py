@@ -2136,19 +2136,6 @@ voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheer
     useChatterItemHelper = useChatterItemHelper,
 )
 
-cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
-    adgeCheerActionHelper = None,
-    airStrikeCheerActionHelper = airStrikeCheerActionHelper,
-    beanChanceCheerActionHelper = beanChanceCheerActionHelper,
-    cheerActionsRepository = cheerActionsRepository,
-    crowdControlCheerActionHelper = crowdControlCheerActionHelper,
-    soundAlertCheerActionHelper = soundAlertCheerActionHelper,
-    timeoutCheerActionHelper = timeoutCheerActionHelper,
-    twitchHandleProvider = authRepository,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
-    voicemailCheerActionHelper = voicemailCheerActionHelper,
-)
 
 
 #########################################
@@ -2225,13 +2212,29 @@ ttsChatterChatAction = TtsChatterChatAction(
     compositeTtsManagerProvider = compositeTtsManagerProvider,
     streamAlertsManager = streamAlertsManager,
     ttsChatterRepository = ttsChatterRepository,
-    ttsChatterSettingsRepository = ttsChatterSettingsRepository
+    ttsChatterSettingsRepository = ttsChatterSettingsRepository,
+    twitchChatMessenger = twitchChatMessenger
 )
 
 ttsChatterPointRedemption = TtsChatterPointRedemption(
     timber = timber,
     ttsChatterRepository = ttsChatterRepository,
     twitchUtils = twitchUtils
+)
+
+cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+    adgeCheerActionHelper = None,
+    airStrikeCheerActionHelper = airStrikeCheerActionHelper,
+    beanChanceCheerActionHelper = beanChanceCheerActionHelper,
+    cheerActionsRepository = cheerActionsRepository,
+    crowdControlCheerActionHelper = crowdControlCheerActionHelper,
+    soundAlertCheerActionHelper = soundAlertCheerActionHelper,
+    timeoutCheerActionHelper = timeoutCheerActionHelper,
+    ttsChatterChatAction = ttsChatterChatAction,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository,
+    voicemailCheerActionHelper = voicemailCheerActionHelper,
 )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
@@ -2419,6 +2422,7 @@ twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHand
     timber = timber,
     triviaGameBuilder = None,
     triviaGameMachine = None,
+    ttsChatterChatAction = ttsChatterChatAction,
     twitchChatMessenger = twitchChatMessenger,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchHandleProvider = authRepository,

@@ -2844,19 +2844,6 @@ voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheer
     useChatterItemHelper = useChatterItemHelper,
 )
 
-cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
-    adgeCheerActionHelper = None,
-    airStrikeCheerActionHelper = airStrikeCheerActionHelper,
-    beanChanceCheerActionHelper = beanChanceCheerActionHelper,
-    cheerActionsRepository = cheerActionsRepository,
-    crowdControlCheerActionHelper = crowdControlCheerActionHelper,
-    soundAlertCheerActionHelper = soundAlertCheerActionHelper,
-    timeoutCheerActionHelper = timeoutCheerActionHelper,
-    twitchHandleProvider = authRepository,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
-    voicemailCheerActionHelper = voicemailCheerActionHelper,
-)
 
 
 #############################################
@@ -2995,7 +2982,8 @@ ttsChatterChatAction = TtsChatterChatAction(
     compositeTtsManagerProvider = compositeTtsManagerProvider,
     streamAlertsManager = streamAlertsManager,
     ttsChatterRepository = ttsChatterRepository,
-    ttsChatterSettingsRepository = ttsChatterSettingsRepository
+    ttsChatterSettingsRepository = ttsChatterSettingsRepository,
+    twitchChatMessenger = twitchChatMessenger
 )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
@@ -3018,6 +3006,20 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     voicemailChatAction = voicemailChatAction
 )
 
+cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+    adgeCheerActionHelper = None,
+    airStrikeCheerActionHelper = airStrikeCheerActionHelper,
+    beanChanceCheerActionHelper = beanChanceCheerActionHelper,
+    cheerActionsRepository = cheerActionsRepository,
+    crowdControlCheerActionHelper = crowdControlCheerActionHelper,
+    soundAlertCheerActionHelper = soundAlertCheerActionHelper,
+    timeoutCheerActionHelper = timeoutCheerActionHelper,
+    ttsChatterChatAction = ttsChatterChatAction,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository,
+    voicemailCheerActionHelper = voicemailCheerActionHelper,
+)
 
 ######################################################
 ## Channel Point Redemptions initialization section ##
@@ -3293,6 +3295,7 @@ twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHand
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
     triviaGameMachine = triviaGameMachine,
+    ttsChatterChatAction = ttsChatterChatAction,
     twitchChatMessenger = twitchChatMessenger,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchHandleProvider = authRepository,

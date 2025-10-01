@@ -9,6 +9,9 @@ from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStat
 from ..tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
 from ..ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
 from ..ttsChatter.settings.ttsChatterSettingsRepositoryInterface import TtsChatterSettingsRepositoryInterface
+from ..twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier
+from ..twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
+from ..twitch.chatMessenger.twitchChatMessenger import TwitchChatMessenger
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..users.accessLevel.accessLevel import AccessLevel
 from ..users.userInterface import UserInterface
@@ -22,7 +25,8 @@ class TtsChatterChatAction(AbsChatAction):
         compositeTtsManagerProvider: CompositeTtsManagerProviderInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         ttsChatterRepository: TtsChatterRepositoryInterface,
-        ttsChatterSettingsRepository: TtsChatterSettingsRepositoryInterface
+        ttsChatterSettingsRepository: TtsChatterSettingsRepositoryInterface,
+        twitchChatMessenger: TwitchChatMessenger
     ):
         if not isinstance(accessLevelCheckingHelper, AccessLevelCheckingHelperInterface):
             raise TypeError(f'accessLevelCheckingHelper argument is malformed: \"{accessLevelCheckingHelper}\"')
@@ -34,12 +38,69 @@ class TtsChatterChatAction(AbsChatAction):
             raise TypeError(f'ttsChatterRepository argument is malformed: \"{ttsChatterRepository}\"')
         elif not isinstance(ttsChatterSettingsRepository, TtsChatterSettingsRepositoryInterface):
             raise TypeError(f'ttsChatterSettingsRepository argument is malformed: \"{ttsChatterSettingsRepository}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessenger):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
         self.__accessLevelCheckingHelper: AccessLevelCheckingHelperInterface = accessLevelCheckingHelper
         self.__compositeTtsManagerProvider: CompositeTtsManagerProviderInterface = compositeTtsManagerProvider
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__ttsChatterRepository: TtsChatterRepositoryInterface = ttsChatterRepository
         self.__ttsChatterSettingsRepository: TtsChatterSettingsRepositoryInterface = ttsChatterSettingsRepository
+        self.__twitchChatMessenger: TwitchChatMessenger = twitchChatMessenger
+        self.__subscriptionCounter: int
+        self.__remainder: int
+
+    async def __checkTtsThresholdMet(self) -> bool:
+        return self.__subscriptionCounter >= await self.__ttsChatterSettingsRepository.ttsOnThreshold()
+
+    async def decrementTtsSubCount(
+        self,
+        bits,
+        twitchChannelId,
+    ):
+        count = utils.math.floor(bits + self.__remainder / await self.__ttsChatterSettingsRepository.ttsOffThreshold())
+        self.__subscriptionCounter -= count
+        self.__remainder = bits + self.__remainder % await self.__ttsChatterSettingsRepository.ttsOffThreshold()
+
+        left = await self.__ttsChatterSettingsRepository.ttsOnThreshold() - self.__subscriptionCounter
+        self.__twitchChatMessenger.send(
+            text = f'{left} subs remaining to turn on TTS',
+            twitchChannelId = twitchChannelId,
+            delaySeconds = 3
+        )
+
+
+    async def incrementTtsSubCount(
+        self,
+        subscriptionData: AbsTwitchSubscriptionHandler.SubscriptionData
+    ):
+        user = subscriptionData.user
+
+        if not user.isTtsEnabled:
+            return
+
+        total = subscriptionData.total
+        multiplier: int = 1
+
+        if total is None and subscriptionData.communitySubGift is not None:
+            total = subscriptionData.communitySubGift.total
+
+        if total is None:
+            return
+
+        match subscriptionData.tier:
+            case TwitchSubscriberTier.TIER_TWO:
+                multiplier = 2
+            case TwitchSubscriberTier.TIER_THREE:
+                multiplier = 5
+
+        self.__subscriptionCounter += total * multiplier
+        left = await self.__ttsChatterSettingsRepository.ttsOnThreshold() - self.__subscriptionCounter
+        self.__twitchChatMessenger.send(
+            text = f'{left} subs remaining to turn on TTS',
+            twitchChannelId = subscriptionData.twitchChannelId,
+            delaySeconds = 3
+        )
 
     async def handleChat(
         self,
@@ -48,6 +109,9 @@ class TtsChatterChatAction(AbsChatAction):
         user: UserInterface
     ) -> bool:
         if not user.areTtsChattersEnabled or not user.isTtsEnabled:
+            return False
+
+        if await self.__ttsChatterSettingsRepository.useThreshold() and not self.__checkTtsThresholdMet():
             return False
 
         if not await self.__ttsChatterRepository.isTtsChatter(

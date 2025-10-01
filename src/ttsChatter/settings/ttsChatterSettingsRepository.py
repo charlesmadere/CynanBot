@@ -35,6 +35,18 @@ class TtsChatterSettingsRepository(TtsChatterSettingsRepositoryInterface):
         self.__cache = jsonContents
         return jsonContents
 
+    async def useThreshold(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'useThreshold', fallback = True)
+
+    async def ttsOffThreshold(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'ttsOffThreshold', fallback = 500)
+
+    async def ttsOnThreshold(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'ttsOnThreshold', fallback = 10)
+
     async def useMessageQueueing(self) -> bool:
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'useMessageQueueing', fallback = True)

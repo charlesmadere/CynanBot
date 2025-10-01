@@ -10,6 +10,7 @@ from ..emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ..officialAccounts.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from ..tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ...chatActions.ttsChatterChatAction import TtsChatterChatAction
 from ...misc import utils as utils
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
@@ -33,6 +34,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
         triviaGameMachine: TriviaGameMachineInterface | None,
+        ttsChatterChatAction: TtsChatterChatAction | None,
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
@@ -49,6 +51,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        elif ttsChatterChatAction is not None and not isinstance(ttsChatterChatAction, TtsChatterChatAction):
+            raise TypeError(f'ttsChatterChatAction argument is malformed: \"{ttsChatterChatAction}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchEmotesHelper, TwitchEmotesHelperInterface):
@@ -65,6 +69,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface | None] = triviaGameBuilder
         self.__triviaGameMachine: Final[TriviaGameMachineInterface | None] = triviaGameMachine
+        self.__ttsChatterChatAction: Final[TtsChatterChatAction | None] = ttsChatterChatAction
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchEmotesHelper: Final[TwitchEmotesHelperInterface] = twitchEmotesHelper
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
@@ -85,6 +90,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         if user.isTtsEnabled:
             await self.__processTtsEvent(subscriptionData)
+            if self.__ttsChatterChatAction is not None:
+                await self.__ttsChatterChatAction.incrementTtsSubCount(subscriptionData)
 
     async def onNewSubscriptionDataBundle(
         self,

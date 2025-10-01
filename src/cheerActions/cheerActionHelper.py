@@ -9,6 +9,7 @@ from .crowdControl.crowdControlCheerActionHelperInterface import CrowdControlChe
 from .soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from .timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .voicemail.voicemailCheerActionHelperInterface import VoicemailCheerActionHelperInterface
+from ..chatActions.ttsChatterChatAction import TtsChatterChatAction
 from ..misc import utils as utils
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
@@ -27,6 +28,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface | None,
         soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None,
         timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None,
+        ttsChatterChatAction: TtsChatterChatAction | None,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -45,7 +47,9 @@ class CheerActionHelper(CheerActionHelperInterface):
         elif soundAlertCheerActionHelper is not None and not isinstance(soundAlertCheerActionHelper, SoundAlertCheerActionHelperInterface):
             raise TypeError(f'soundAlertCheerActionHelper argument is malformed: \"{soundAlertCheerActionHelper}\"')
         elif timeoutCheerActionHelper is not None and not isinstance(timeoutCheerActionHelper, TimeoutCheerActionHelperInterface):
-            raise TypeError(f'timeoutCheerActionHelper argument is malformed: \"{timeoutCheerActionHelper}\"')
+            raise TypeError(f'timeoutCheerActionHelper argument is malformed: \"{ttsChatterChatAction}\"')
+        elif ttsChatterChatAction is not None and not isinstance(ttsChatterChatAction, TtsChatterChatAction):
+            raise TypeError(f'ttsChatterChatAction argument is malformed: \"{timeoutCheerActionHelper}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -62,6 +66,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__crowdControlCheerActionHelper: Final[CrowdControlCheerActionHelperInterface | None] = crowdControlCheerActionHelper
         self.__soundAlertCheerActionHelper: Final[SoundAlertCheerActionHelperInterface | None] = soundAlertCheerActionHelper
         self.__timeoutCheerActionHelper: Final[TimeoutCheerActionHelperInterface | None] = timeoutCheerActionHelper
+        self.__ttsChatterChatAction: Final[TtsChatterChatAction | None] = ttsChatterChatAction
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
@@ -113,6 +118,9 @@ class CheerActionHelper(CheerActionHelperInterface):
         actions = await self.__cheerActionsRepository.getActions(
             twitchChannelId = twitchChannelId,
         )
+
+        if self.__ttsChatterChatAction is not None:
+            await self.__ttsChatterChatAction.decrementTtsSubCount(bits, twitchChannelId)
 
         if actions is None or len(actions) == 0:
             return False
