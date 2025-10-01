@@ -138,7 +138,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
-        elif not isinstance(pixelsDiceMachine, PixelsDiceMachineInterface):
+        elif pixelsDiceMachine is not None and not isinstance(pixelsDiceMachine, PixelsDiceMachineInterface):
             raise TypeError(f'pixelsDiceMachine argument is malformed: \"{pixelsDiceMachine}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -175,7 +175,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__determineTm36SplashTargetUseCase: Final[DetermineTm36SplashTargetUseCase] = determineTm36SplashTargetUseCase
         self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
-        self.__pixelsDiceMachine: Final[PixelsDiceMachineInterface] = pixelsDiceMachine
+        self.__pixelsDiceMachine: Final[PixelsDiceMachineInterface | None] = pixelsDiceMachine
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
         self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
