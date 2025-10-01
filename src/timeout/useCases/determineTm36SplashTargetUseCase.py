@@ -4,7 +4,7 @@ from typing import Final
 
 from ..exceptions import UnknownTimeoutTargetException
 from ..models.actions.tm36TimeoutAction import Tm36TimeoutAction
-from ..models.tm36SplashTimeoutTarget import Tm36SplashTimeoutTarget
+from ..models.timeoutTarget import TimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.activeChatters.activeChatter import ActiveChatter
@@ -67,7 +67,7 @@ class DetermineTm36SplashTargetUseCase:
     async def invoke(
         self,
         timeoutAction: Tm36TimeoutAction,
-    ) -> Tm36SplashTimeoutTarget | None:
+    ) -> TimeoutTarget | None:
         if not isinstance(timeoutAction, Tm36TimeoutAction):
             raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
 
@@ -100,7 +100,7 @@ class DetermineTm36SplashTargetUseCase:
             twitchChannelId = timeoutAction.twitchChannelId,
         )
 
-        return Tm36SplashTimeoutTarget(
-            targetUserId = randomChatter.chatterUserId,
-            targetUserName = randomChatter.chatterUserName,
+        return TimeoutTarget(
+            userId = randomChatter.chatterUserId,
+            userName = randomChatter.chatterUserName,
         )

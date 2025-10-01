@@ -3,11 +3,11 @@ from dataclasses import dataclass
 from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.bananaTimeoutAction import BananaTimeoutAction
-from ..bananaTimeoutTarget import BananaTimeoutTarget
 from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ..chatterTimeoutHistory import ChatterTimeoutHistory
 from ..timeoutDiceRoll import TimeoutDiceRoll
 from ..timeoutDiceRollFailureData import TimeoutDiceRollFailureData
+from ..timeoutTarget import TimeoutTarget
 from ....asplodieStats.models.asplodieStats import AsplodieStats
 from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
@@ -17,7 +17,6 @@ from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 class BananaTimeoutEvent(AbsTimeoutEvent):
     asplodieStats: AsplodieStats
     originatingAction: BananaTimeoutAction
-    target: BananaTimeoutTarget
     isReverse: bool
     timeoutDuration: CalculatedTimeoutDuration
     updatedInventory: ChatterItemGiveResult | None
@@ -27,6 +26,7 @@ class BananaTimeoutEvent(AbsTimeoutEvent):
     ripBozoEmote: str
     diceRoll: TimeoutDiceRoll | None
     diceRollFailureData: TimeoutDiceRollFailureData | None
+    timeoutTarget: TimeoutTarget
     timeoutResult: TwitchTimeoutResult
 
     def getEventId(self) -> str:

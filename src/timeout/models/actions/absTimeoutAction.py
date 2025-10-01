@@ -12,6 +12,10 @@ class AbsTimeoutAction(ABC):
         pass
 
     @abstractmethod
+    def getChatMessage(self) -> str | None:
+        pass
+
+    @abstractmethod
     def getInstigatorUserId(self) -> str:
         pass
 

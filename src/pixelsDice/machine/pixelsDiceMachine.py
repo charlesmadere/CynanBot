@@ -266,7 +266,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
                     )
 
                     try:
-                        await request.callback.onPixelsDiceRolled(result)
+                        await request.callback(result)
                     except Exception as e:
                         self.__timber.log('PixelsDiceMachine', f'Encountered unknown Exception when notifying pixel dice roll (queue size: {self.__requestQueue.qsize()}) ({len(events)=}) ({index=}) ({event=}) ({request=})', e, traceback.format_exc())
 
