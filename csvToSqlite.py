@@ -72,7 +72,7 @@ triviaContentScanner: TriviaContentScannerInterface = TriviaContentScanner(
 
 def readInCsvRows(fileName: str) -> list[list[str]]:
     if not utils.isValidStr(fileName):
-        raise ValueError(f'fileName argument is malformed: \"{fileName}\"')
+        raise TypeError(f'fileName argument is malformed: \"{fileName}\"')
 
     bannedWords = bannedWordsRepository.getBannedWords()
     rows: list[list[str]] = list()
@@ -84,27 +84,18 @@ def readInCsvRows(fileName: str) -> list[list[str]]:
         for row in reader:
             lineNumber = lineNumber + 1
 
-            if not utils.hasItems(row):
+            if not isinstance(row, list) or len(row) == 0:
                 print(f'Row #{lineNumber} in \"{fileName}\" is null/empty: {row}')
                 continue
 
-            encounteredBannedWord = False
-
             for r in row:
                 for bannedWord in bannedWords:
-                    if isinstance(bannedWord, BannedWord) and bannedWord.word in r.lower():
-                        encounteredBannedWord = True
-                        break
+                    if isinstance(bannedWord, BannedWord) and (bannedWord.word in r.lower() or bannedWord.word in r.casefold()):
+                        raise RuntimeError(f'Row #{lineNumber} in \"{fileName}\" contains a banned word: {row}')
 
-                if encounteredBannedWord:
-                    break
+            rows.append(row)
 
-            if encounteredBannedWord:
-                raise RuntimeError(f'Row #{lineNumber} in \"{fileName}\" contains a banned word: {row}')
-            else:
-                rows.append(row)
-
-    if not utils.hasItems(rows):
+    if len(rows) == 0:
         raise RuntimeError(f'Unable to read in any rows from \"{fileName}\": {rows}')
 
     print(f'Read in {len(rows)} row(s) from \"{fileName}\"')
@@ -112,9 +103,9 @@ def readInCsvRows(fileName: str) -> list[list[str]]:
 
 def writeRowsToSqlite(databaseName: str, rows: list[list[str]]):
     if not utils.isValidStr(databaseName):
-        raise ValueError(f'databaseName argument is malformed: \"{databaseName}\"')
-    elif not utils.hasItems(rows):
-        raise ValueError(f'rows argument is malformed: \"{rows}\"')
+        raise TypeError(f'databaseName argument is malformed: \"{databaseName}\"')
+    elif not isinstance(rows, list) or len(rows) == 0:
+        raise TypeError(f'rows argument is malformed: \"{rows}\"')
 
     connection = sqlite3.connect(databaseName)
     cursor = connection.cursor()
@@ -124,7 +115,7 @@ def writeRowsToSqlite(databaseName: str, rows: list[list[str]]):
     for row in rows:
         rowNumber = rowNumber + 1
 
-        if not utils.hasItems(row):
+        if not isinstance(row, list) or len(row) == 0:
             raise ValueError(f'Row #{rowNumber} is null/empty: {row}')
 
         originalQuestionId: str = utils.cleanStr(row[0])
