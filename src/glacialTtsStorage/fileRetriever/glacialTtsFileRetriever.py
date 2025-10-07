@@ -7,7 +7,7 @@ import aiofiles.os
 import aiofiles.ospath
 
 from .glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
-from ..exceptions import GlacialTtsAlreadyExists, GlacialTtsFolderIsNotAFolder
+from ..exceptions import GlacialTtsFileReferenceAlreadyExists, GlacialTtsFolderIsNotAFolder
 from ..models.glacialTtsFileReference import GlacialTtsFileReference
 from ..repository.glacialTtsStorageRepositoryInterface import GlacialTtsStorageRepositoryInterface
 from ...misc import utils as utils
@@ -75,14 +75,14 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
 
         if fileReference is None:
             return None
-        else:
-            self.__timber.log('GlacialTtsFileRetriever', f'Found a Glacial TTS file to reuse ({glacialTtsData=}) ({fileReference=})')
 
-            return GlacialTtsFileReference(
-                glacialTtsData = glacialTtsData,
-                fileName = fileReference.fileName,
-                filePath = fileReference.filePath,
-            )
+        self.__timber.log('GlacialTtsFileRetriever', f'Found a Glacial TTS file to reuse ({glacialTtsData=}) ({fileReference=})')
+
+        return GlacialTtsFileReference(
+            glacialTtsData = glacialTtsData,
+            fileName = fileReference.fileName,
+            filePath = fileReference.filePath,
+        )
 
     async def __findFile(
         self,
@@ -145,28 +145,19 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         elif not isinstance(provider, TtsProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
-        glacialTtsData = await self.__glacialTtsStorageRepository.get(
-            message = message,
-            voice = voice,
-            provider = provider,
-        )
-
-        if glacialTtsData is not None:
-            raise GlacialTtsAlreadyExists(f'A Glacial TTS file already exists for the given data ({message=}) ({voice=}) ({provider=}) ({glacialTtsData=})')
-
         glacialTtsData = await self.__glacialTtsStorageRepository.add(
             message = message,
             voice = voice,
             provider = provider,
         )
 
-        fileReference = await self.__findFile(
+        glacialTtsFileReference = await self.__findFile(
             glacialId = glacialTtsData.glacialId,
             provider = provider,
         )
 
-        if fileReference is not None:
-            raise GlacialTtsAlreadyExists(f'A Glacial TTS file already exists for the given data ({message=}) ({voice=}) ({provider=}) ({fileReference=})')
+        if glacialTtsFileReference is not None:
+            raise GlacialTtsFileReferenceAlreadyExists(f'TTS file reference already exists for the given arguments ({fileExtension=}) ({message=}) ({voice=}) ({provider=}) ({glacialTtsData=}) ({glacialTtsFileReference=})')
 
         providerFolder = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(provider)
         fileName = f'{glacialTtsData.glacialId}.{fileExtension}'
