@@ -340,7 +340,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         self,
         speechBytes: bytes,
         fileName: str,
-        filePath: str
+        filePath: str,
     ) -> bool:
         if not isinstance(speechBytes, bytes):
             raise TypeError(f'speechBytes argument is malformed: \"{speechBytes}\"')
@@ -355,7 +355,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             async with aiofiles.open(
                 file = filePath,
                 mode = 'wb',
-                loop = self.__eventLoop
+                loop = self.__eventLoop,
             ) as file:
                 await file.write(speechBytes)
                 await file.flush()

@@ -1,5 +1,6 @@
 import traceback
 from datetime import datetime
+from typing import Final
 
 from .decTalkHelperInterface import DecTalkHelperInterface
 from ..apiService.decTalkApiServiceInterface import DecTalkApiServiceInterface
@@ -19,7 +20,7 @@ class DecTalkHelper(DecTalkHelperInterface):
         decTalkApiService: DecTalkApiServiceInterface,
         decTalkSettingsRepository: DecTalkSettingsRepositoryInterface,
         timber: TimberInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface
+        timeZoneRepository: TimeZoneRepositoryInterface,
     ):
         if not isinstance(decTalkApiService, DecTalkApiServiceInterface):
             raise TypeError(f'decTalkApiService argument is malformed: \"{decTalkApiService}\"')
@@ -30,15 +31,15 @@ class DecTalkHelper(DecTalkHelperInterface):
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
-        self.__decTalkApiService: DecTalkApiServiceInterface = decTalkApiService
-        self.__decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = decTalkSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
+        self.__decTalkApiService: Final[DecTalkApiServiceInterface] = decTalkApiService
+        self.__decTalkSettingsRepository: Final[DecTalkSettingsRepositoryInterface] = decTalkSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
 
     async def __createFullMessage(
         self,
         donationPrefix: str | None,
-        message: str | None
+        message: str | None,
     ) -> str | None:
         if not await self.__decTalkSettingsRepository.useDonationPrefix():
             return message
@@ -57,7 +58,7 @@ class DecTalkHelper(DecTalkHelperInterface):
         donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> DecTalkFileReference | None:
         if voice is not None and not isinstance(voice, DecTalkVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
@@ -87,7 +88,7 @@ class DecTalkHelper(DecTalkHelperInterface):
         try:
             speechFile = await self.__decTalkApiService.generateSpeechFile(
                 voice = voice,
-                text = fullMessage
+                text = fullMessage,
             )
         except DecTalkExecutableIsMissingException as e:
             self.__timber.log('DecTalkHelper', f'Encountered executable file is missing exception when generating speech ({voice=}) ({fullMessage=}): {e}', e, traceback.format_exc())
@@ -100,5 +101,5 @@ class DecTalkHelper(DecTalkHelperInterface):
 
         return DecTalkFileReference(
             storeDateTime = storeDateTime,
-            filePath = speechFile
+            filePath = speechFile,
         )

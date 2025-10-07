@@ -1,7 +1,7 @@
 import re
 import traceback
 from asyncio import AbstractEventLoop
-from typing import Pattern
+from typing import Final, Pattern
 
 import aiofiles
 import aiofiles.os
@@ -31,7 +31,7 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
         microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
         microsoftSamMessageVoiceParser: MicrosoftSamMessageVoiceParserInterface,
         microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -48,15 +48,15 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = glacialTtsFileRetriever
-        self.__microsoftSamApiHelper: MicrosoftSamApiHelperInterface = microsoftSamApiHelper
-        self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
-        self.__microsoftSamMessageVoiceParser: MicrosoftSamMessageVoiceParserInterface = microsoftSamMessageVoiceParser
-        self.__microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = microsoftSamSettingsRepository
-        self.__timber: TimberInterface = timber
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__glacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = glacialTtsFileRetriever
+        self.__microsoftSamApiHelper: Final[MicrosoftSamApiHelperInterface] = microsoftSamApiHelper
+        self.__microsoftSamJsonParser: Final[MicrosoftSamJsonParserInterface] = microsoftSamJsonParser
+        self.__microsoftSamMessageVoiceParser: Final[MicrosoftSamMessageVoiceParserInterface] = microsoftSamMessageVoiceParser
+        self.__microsoftSamSettingsRepository: Final[MicrosoftSamSettingsRepositoryInterface] = microsoftSamSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
 
-        self.__directoryTreeRegEx: Pattern = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
+        self.__directoryTreeRegEx: Final[Pattern] = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
 
     async def __createDirectories(self, filePath: str):
         # this logic removes the file name from the file path, leaving us with just a directory tree
@@ -83,7 +83,7 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
     async def __createFullMessage(
         self,
         donationPrefix: str | None,
-        message: str | None
+        message: str | None,
     ) -> str | None:
         if not await self.__microsoftSamSettingsRepository.useDonationPrefix():
             return message
@@ -102,7 +102,7 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
         donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> MicrosoftSamFileReference | None:
         if voice is not None and not isinstance(voice, MicrosoftSamVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
@@ -181,7 +181,7 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
         self,
         speechBytes: bytes,
         fileName: str,
-        filePath: str
+        filePath: str,
     ) -> bool:
         if not isinstance(speechBytes, bytes):
             raise TypeError(f'speechBytes argument is malformed: \"{speechBytes}\"')
@@ -196,7 +196,7 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
             async with aiofiles.open(
                 file = filePath,
                 mode = 'wb',
-                loop = self.__eventLoop
+                loop = self.__eventLoop,
             ) as file:
                 await file.write(speechBytes)
                 await file.flush()
