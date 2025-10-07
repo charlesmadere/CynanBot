@@ -130,7 +130,13 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
 
     async def __startAlertLoop(self):
         while True:
-            if await self.__processCurrentAlert():
+            try:
+                if await self.__processCurrentAlert():
+                    await asyncio.sleep(self.__queueSleepTimeSeconds)
+                    continue
+            except Exception as e:
+                self.__timber.log('StreamAlertsManager', f'Encountered an error when processing current alert ({self.__currentAlert=})', e, traceback.format_exc())
+                self.__currentAlert = None
                 await asyncio.sleep(self.__queueSleepTimeSeconds)
                 continue
 
