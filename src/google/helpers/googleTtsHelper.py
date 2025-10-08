@@ -52,7 +52,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         googleSettingsRepository: GoogleSettingsRepositoryInterface,
         googleTtsApiHelper: GoogleTtsApiHelperInterface,
         googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -93,13 +93,13 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
 
         if await aiofiles.ospath.exists(
             path = directory,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             return
 
         await aiofiles.os.makedirs(
             name = directory,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         )
 
         self.__timber.log('GoogleTtsHelper', f'Created new directories ({filePath=}) ({directory=})')
@@ -107,7 +107,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
     async def __createFullMessage(
         self,
         donationPrefix: str | None,
-        message: str | None
+        message: str | None,
     ) -> str | None:
         if not await self.__googleSettingsRepository.useDonationPrefix():
             return message
