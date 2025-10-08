@@ -2,7 +2,7 @@ import re
 import traceback
 from asyncio import AbstractEventLoop
 from dataclasses import dataclass
-from typing import Pattern
+from typing import Final, Pattern
 
 import aiofiles
 import aiofiles.os
@@ -54,14 +54,14 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         elif not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = glacialTtsFileRetriever
-        self.__timber: TimberInterface = timber
-        self.__ttsMonsterMessageChunkParser: TtsMonsterMessageChunkParserInterface = ttsMonsterMessageChunkParser
-        self.__ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = ttsMonsterPrivateApiHelper
-        self.__ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = ttsMonsterSettingsRepository
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__glacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = glacialTtsFileRetriever
+        self.__timber: Final[TimberInterface] = timber
+        self.__ttsMonsterMessageChunkParser: Final[TtsMonsterMessageChunkParserInterface] = ttsMonsterMessageChunkParser
+        self.__ttsMonsterPrivateApiHelper: Final[TtsMonsterPrivateApiHelperInterface] = ttsMonsterPrivateApiHelper
+        self.__ttsMonsterSettingsRepository: Final[TtsMonsterSettingsRepositoryInterface] = ttsMonsterSettingsRepository
 
-        self.__directoryTreeRegEx: Pattern = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
+        self.__directoryTreeRegEx: Final[Pattern] = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
 
     async def __createDirectories(self, filePath: str):
         # this logic removes the file name from the file path, leaving us with just a directory tree
@@ -74,13 +74,13 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
         if await aiofiles.ospath.exists(
             path = directory,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             return
 
         await aiofiles.os.makedirs(
             name = directory,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         )
 
         self.__timber.log('TtsMonsterHelper', f'Created new directories ({filePath=}) ({directory=})')
@@ -88,7 +88,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
     async def __createFullMessage(
         self,
         donationPrefix: str | None,
-        message: str | None
+        message: str | None,
     ) -> str | None:
         donationPrefixConfig = await self.__ttsMonsterSettingsRepository.getDonationPrefixConfig()
 
@@ -123,7 +123,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
     async def __determineMessageVoices(self, message: str) -> MessageVoices:
         messageChunks = await self.__ttsMonsterMessageChunkParser.parse(
             message = message,
-            defaultVoice = await self.__ttsMonsterSettingsRepository.getDefaultVoice()
+            defaultVoice = await self.__ttsMonsterSettingsRepository.getDefaultVoice(),
         )
 
         allVoices: set[TtsMonsterVoice] = set()
@@ -140,7 +140,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         return TtsMonsterHelper.MessageVoices(
             messageChunks = messageChunks,
             allVoices = frozenset(allVoices),
-            primaryVoice = primaryVoice
+            primaryVoice = primaryVoice,
         )
 
     async def generateTts(
@@ -149,7 +149,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str,
-        voice: TtsMonsterVoice | None
+        voice: TtsMonsterVoice | None,
     ) -> TtsMonsterFileReference | None:
         if donationPrefix is not None and not isinstance(donationPrefix, str):
             raise TypeError(f'donationPrefix argument is malformed: \"{donationPrefix}\"')
@@ -167,7 +167,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
         fullMessage = await self.__createFullMessage(
             donationPrefix = donationPrefix,
-            message = message
+            message = message,
         )
 
         if not utils.isValidStr(fullMessage):
@@ -189,13 +189,13 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
                 storeDateTime = glacialFile.storeDateTime,
                 allVoices = messageVoices.allVoices,
                 filePath = glacialFile.filePath,
-                primaryVoice = messageVoices.primaryVoice
+                primaryVoice = messageVoices.primaryVoice,
             )
 
         speechBytes = await self.__ttsMonsterPrivateApiHelper.getSpeech(
             message = fullMessage,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if speechBytes is None:
@@ -211,13 +211,13 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         if await self.__saveSpeechBytes(
             speechBytes = speechBytes,
             fileName = glacialFile.fileName,
-            filePath = glacialFile.filePath
+            filePath = glacialFile.filePath,
         ):
             return TtsMonsterFileReference(
                 storeDateTime = glacialFile.storeDateTime,
                 allVoices = messageVoices.allVoices,
                 filePath = glacialFile.filePath,
-                primaryVoice = messageVoices.primaryVoice
+                primaryVoice = messageVoices.primaryVoice,
             )
         else:
             self.__timber.log('TtsMonsterHelper', f'Failed to write TTS Monster speechBytes to file ({fullMessage=}) ({glacialFile=})')
@@ -227,7 +227,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         self,
         speechBytes: bytes,
         fileName: str,
-        filePath: str
+        filePath: str,
     ) -> bool:
         if not isinstance(speechBytes, bytes):
             raise TypeError(f'speechBytes argument is malformed: \"{speechBytes}\"')
@@ -242,7 +242,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             async with aiofiles.open(
                 file = filePath,
                 mode = 'wb',
-                loop = self.__eventLoop
+                loop = self.__eventLoop,
             ) as file:
                 await file.write(speechBytes)
                 await file.flush()

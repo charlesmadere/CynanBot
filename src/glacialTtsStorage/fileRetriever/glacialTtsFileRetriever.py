@@ -7,7 +7,7 @@ import aiofiles.os
 import aiofiles.ospath
 
 from .glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
-from ..exceptions import GlacialTtsFileReferenceAlreadyExists, GlacialTtsFolderIsNotAFolder
+from ..exceptions import GlacialTtsFolderIsNotAFolder
 from ..models.glacialTtsFileReference import GlacialTtsFileReference
 from ..repository.glacialTtsStorageRepositoryInterface import GlacialTtsStorageRepositoryInterface
 from ...misc import utils as utils
@@ -157,7 +157,7 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         )
 
         if glacialTtsFileReference is not None:
-            raise GlacialTtsFileReferenceAlreadyExists(f'TTS file reference already exists for the given arguments ({fileExtension=}) ({message=}) ({voice=}) ({provider=}) ({glacialTtsData=}) ({glacialTtsFileReference=})')
+            self.__timber.log('GlacialTtsFileRetriever', f'Clobbering a TTS file that already exists for the given arguments ({fileExtension=}) ({message=}) ({voice=}) ({provider=}) ({glacialTtsData=}) ({glacialTtsFileReference=})')
 
         providerFolder = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(provider)
         fileName = f'{glacialTtsData.glacialId}.{fileExtension}'

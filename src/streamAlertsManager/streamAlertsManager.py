@@ -29,7 +29,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
         streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface,
         timber: TimberInterface,
         queueSleepTimeSeconds: float = 0.25,
-        queueTimeoutSeconds: float = 3
+        queueTimeoutSeconds: float = 3,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -135,21 +135,21 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
                     await asyncio.sleep(self.__queueSleepTimeSeconds)
                     continue
             except Exception as e:
-                self.__timber.log('StreamAlertsManager', f'Encountered an error when processing current alert ({self.__currentAlert=})', e, traceback.format_exc())
+                self.__timber.log('StreamAlertsManager', f'Encountered an error while processing current alert ({self.__currentAlert=})', e, traceback.format_exc())
                 self.__currentAlert = None
                 await asyncio.sleep(self.__queueSleepTimeSeconds)
                 continue
 
-            newAlert: StreamAlert | None = None
+            nextAlert: StreamAlert | None = None
 
             if not self.__alertQueue.empty():
                 try:
-                    newAlert = self.__alertQueue.get_nowait()
+                    nextAlert = self.__alertQueue.get_nowait()
                 except queue.Empty as e:
-                    self.__timber.log('StreamAlertsManager', f'Encountered queue.Empty when grabbing alert from queue (queue size: {self.__alertQueue.qsize()}): {e}', e, traceback.format_exc())
+                    self.__timber.log('StreamAlertsManager', f'Encountered queue.Empty when grabbing next alert from queue ({nextAlert=}) (queue size: {self.__alertQueue.qsize()})', e, traceback.format_exc())
 
-            if newAlert is not None:
-                self.__currentAlert = await self.__createCurrentAlert(newAlert)
+            if nextAlert is not None:
+                self.__currentAlert = await self.__createCurrentAlert(nextAlert)
 
             alertsDelayBetweenSeconds = await self.__streamAlertsSettingsRepository.getAlertsDelayBetweenSeconds()
             await asyncio.sleep(alertsDelayBetweenSeconds)
