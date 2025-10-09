@@ -2836,10 +2836,9 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 )
 
 airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheerActionHelper(
-    timber = timber,
-    timeoutActionMachine = timeoutActionMachine,
-    timeoutActionSettings = timeoutActionSettings,
-    timeoutIdGenerator = timeoutIdGenerator,
+    chatterInventoryIdGenerator = chatterInventoryIdGenerator,
+    chatterInventorySettings = chatterInventorySettings,
+    useChatterItemHelper = useChatterItemHelper,
 )
 
 beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface = BeanChanceCheerActionHelper(

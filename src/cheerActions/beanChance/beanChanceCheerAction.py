@@ -1,3 +1,5 @@
+from typing import Final
+
 from ..absCheerAction import AbsCheerAction
 from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ..cheerActionType import CheerActionType
@@ -12,13 +14,13 @@ class BeanChanceCheerAction(AbsCheerAction):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         randomChance: int,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if not utils.isValidInt(randomChance):
@@ -26,7 +28,7 @@ class BeanChanceCheerAction(AbsCheerAction):
         elif randomChance < 0 or randomChance > 100:
             raise ValueError(f'randomChance argument is out of bounds: {randomChance}')
 
-        self.__randomChance: int = randomChance
+        self.__randomChance: Final[int] = randomChance
 
     @property
     def actionType(self) -> CheerActionType:

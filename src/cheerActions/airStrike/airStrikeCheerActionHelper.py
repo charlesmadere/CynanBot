@@ -5,15 +5,13 @@ from frozendict import frozendict
 from .airStrikeCheerAction import AirStrikeCheerAction
 from .airStrikeCheerActionHelperInterface import AirStrikeCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
+from ...chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
+from ...chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
+from ...chatterInventory.models.chatterItemType import ChatterItemType
+from ...chatterInventory.models.useChatterItemRequest import UseChatterItemRequest
+from ...chatterInventory.models.useChatterItemResult import UseChatterItemResult
+from ...chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ...misc import utils as utils
-from ...timber.timberInterface import TimberInterface
-from ...timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
-from ...timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
-from ...timeout.models.absTimeoutDuration import AbsTimeoutDuration
-from ...timeout.models.actions.airStrikeTimeoutAction import AirStrikeTimeoutAction
-from ...timeout.models.randomLinearTimeoutDuration import RandomLinearTimeoutDuration
-from ...timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
-from ...timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ...users.userInterface import UserInterface
 
 
@@ -21,24 +19,20 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
 
     def __init__(
         self,
-        timber: TimberInterface,
-        timeoutActionMachine: TimeoutActionMachineInterface,
-        timeoutActionSettings: TimeoutActionSettingsInterface,
-        timeoutIdGenerator: TimeoutIdGeneratorInterface,
+        chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface,
+        chatterInventorySettings: ChatterInventorySettingsInterface,
+        useChatterItemHelper: UseChatterItemHelperInterface,
     ):
-        if not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
-            raise TypeError(f'timeoutActionMachine argument is malformed: \"{timeoutActionMachine}\"')
-        elif not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
-            raise TypeError(f'timeoutActionSettings argument is malformed: \"{timeoutActionSettings}\"')
-        elif not isinstance(timeoutIdGenerator, TimeoutIdGeneratorInterface):
-            raise TypeError(f'timeoutIdGenerator argument is malformed: \"{timeoutIdGenerator}\"')
+        if not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
+            raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
+        elif not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
+            raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
+        elif not isinstance(useChatterItemHelper, UseChatterItemHelperInterface):
+            raise TypeError(f'useChatterItemHelper argument is malformed: \"{useChatterItemHelper}\"')
 
-        self.__timber: Final[TimberInterface] = timber
-        self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
-        self.__timeoutActionSettings: Final[TimeoutActionSettingsInterface] = timeoutActionSettings
-        self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
+        self.__chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = chatterInventoryIdGenerator
+        self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
+        self.__useChatterItemHelper: Final[UseChatterItemHelperInterface] = useChatterItemHelper
 
     async def handleAirStrikeCheerAction(
         self,
@@ -84,25 +78,15 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
         if not isinstance(action, AirStrikeCheerAction) or not action.isEnabled:
             return False
 
-        timeoutDuration: AbsTimeoutDuration = RandomLinearTimeoutDuration(
-            maximumSeconds = action.maxDurationSeconds,
-            minimumSeconds = action.minDurationSeconds,
-        )
-
-        self.__timeoutActionMachine.submitAction(AirStrikeTimeoutAction(
-            timeoutDuration = timeoutDuration,
+        result = self.__useChatterItemHelper.useItem(UseChatterItemRequest(
             ignoreInventory = True,
-            maxTimeoutTargets = action.maxTimeoutChatters,
-            minTimeoutTargets = action.minTimeoutChatters,
-            actionId = await self.__timeoutIdGenerator.generateActionId(),
-            instigatorUserId = cheerUserId,
-            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
-            moderatorUserId = moderatorUserId,
+            itemType = ChatterItemType.AIR_STRIKE,
+            chatMessage = message,
+            chatterUserId = cheerUserId,
+            requestId = await self.__chatterInventoryIdGenerator.generateRequestId(),
             twitchChannelId = twitchChannelId,
             twitchChatMessageId = twitchChatMessageId,
-            userTwitchAccessToken = userTwitchAccessToken,
-            streamStatusRequirement = TimeoutStreamStatusRequirement.ANY,
             user = user,
         ))
 
-        return True
+        return result is UseChatterItemResult.OK
