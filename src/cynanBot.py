@@ -771,6 +771,7 @@ class CynanBot(
         self.__beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = beanChanceCheerActionHelper
         self.__chatActionsManager: ChatActionsManagerInterface | None = chatActionsManager
         self.__chatLogger: ChatLoggerInterface = chatLogger
+        self.__chatterInventoryItemUseMachine: Final[ChatterInventoryItemUseMachineInterface | None] = chatterInventoryItemUseMachine
         self.__crowdControlActionHandler: Final[CrowdControlActionHandler | None] = crowdControlActionHandler
         self.__crowdControlMachine: Final[CrowdControlMachineInterface | None] = crowdControlMachine
         self.__crowdControlMessageHandler: Final[CrowdControlMessageHandler | None] = crowdControlMessageHandler
@@ -1175,6 +1176,9 @@ class CynanBot(
         if self.__twitchChannelPointRedemptionHandler is not None:
             self.__twitchChannelPointRedemptionHandler.setTwitchChannelProvider(self)
             self.__twitchChannelPointRedemptionHandler.start()
+
+        if self.__chatterInventoryItemUseMachine is not None:
+            self.__chatterInventoryItemUseMachine.start()
 
         if self.__crowdControlMachine is not None:
             self.__crowdControlMachine.setActionHandler(self.__crowdControlActionHandler)
