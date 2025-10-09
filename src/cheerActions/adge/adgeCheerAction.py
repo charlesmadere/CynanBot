@@ -14,13 +14,13 @@ class AdgeCheerAction(AbsCheerAction):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         adgeLengthSeconds: int,
         bits: int,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if not utils.isValidInt(adgeLengthSeconds):

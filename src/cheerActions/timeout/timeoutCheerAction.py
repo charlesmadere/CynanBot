@@ -1,4 +1,5 @@
 import locale
+from typing import Final
 
 from .timeoutCheerActionTargetType import TimeoutCheerActionTargetType
 from ..absCheerAction import AbsCheerAction
@@ -17,13 +18,13 @@ class TimeoutCheerAction(AbsCheerAction):
         bits: int,
         durationSeconds: int,
         twitchChannelId: str,
-        targetType: TimeoutCheerActionTargetType
+        targetType: TimeoutCheerActionTargetType,
     ):
         super().__init__(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if not utils.isValidBool(isRandomChanceEnabled):
@@ -35,9 +36,9 @@ class TimeoutCheerAction(AbsCheerAction):
         elif not isinstance(targetType, TimeoutCheerActionTargetType):
             raise TypeError(f'targetType argument is malformed: \"{targetType}\"')
 
-        self.__isRandomChanceEnabled: bool = isRandomChanceEnabled
-        self.__durationSeconds: int = durationSeconds
-        self.__targetType: TimeoutCheerActionTargetType = targetType
+        self.__isRandomChanceEnabled: Final[bool] = isRandomChanceEnabled
+        self.__durationSeconds: Final[int] = durationSeconds
+        self.__targetType: Final[TimeoutCheerActionTargetType] = targetType
 
     @property
     def actionType(self) -> CheerActionType:

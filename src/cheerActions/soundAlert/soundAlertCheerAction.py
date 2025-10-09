@@ -14,13 +14,13 @@ class SoundAlertCheerAction(AbsCheerAction):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         directory: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if not utils.isValidStr(directory):

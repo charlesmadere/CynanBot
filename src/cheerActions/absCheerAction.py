@@ -1,6 +1,6 @@
 import locale
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Final
 
 from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from .cheerActionType import CheerActionType
@@ -14,7 +14,7 @@ class AbsCheerAction(ABC):
         isEnabled: bool,
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         if not utils.isValidBool(isEnabled):
             raise TypeError(f'isEnabled argument is malformed: \"{isEnabled}\"')
@@ -27,10 +27,10 @@ class AbsCheerAction(ABC):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        self.__isEnabled: bool = isEnabled
-        self.__streamStatusRequirement: CheerActionStreamStatusRequirement = streamStatusRequirement
-        self.__bits = bits
-        self.__twitchChannelId: str = twitchChannelId
+        self.__isEnabled: Final[bool] = isEnabled
+        self.__streamStatusRequirement: Final[CheerActionStreamStatusRequirement] = streamStatusRequirement
+        self.__bits: Final[int] = bits
+        self.__twitchChannelId: Final[str] = twitchChannelId
 
     @property
     @abstractmethod
@@ -76,7 +76,7 @@ class AbsCheerAction(ABC):
             'bits': self.__bits,
             'isEnabled': self.__isEnabled,
             'streamStatusRequirement': self.__streamStatusRequirement,
-            'twitchChannelId': self.__twitchChannelId
+            'twitchChannelId': self.__twitchChannelId,
         }
 
     @property

@@ -291,7 +291,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             grenadeSoundAlert = self.__chooseRandomGrenadeSoundAlert()
             temporarySoundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
             self.__backgroundTaskHelper.createTask(temporarySoundPlayerManager.playSoundAlert(grenadeSoundAlert))
-            await asyncio.sleep(0.75)
+            await asyncio.sleep(0.50)
 
         await baseSoundPlayerManager.playSoundAlert(SoundAlert.SPLAT)
 

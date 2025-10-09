@@ -557,8 +557,11 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
 
         # There is a lot of room for exploitation without this fairly obtuse line.
         # We really, really don't want to allow for anyone to sneak in trade amounts
-        # that cause item duplications, cause people to be ripped off, or for people
-        # to end up with negative inventory amounts.
+        # that could cause item duplications, may cause people to be ripped off, or
+        # for people to end up with negative inventory amounts.
+        #
+        # This line intends to normalize/handle all of these potentially weird
+        # interactions by forcing us down to a tradeAmount of 0.
         tradeAmount = int(max(min(action.tradeAmount, fromChatterCurrentInventory[action.itemType]), 0))
 
         if tradeAmount < 1:
