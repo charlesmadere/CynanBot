@@ -76,15 +76,15 @@ class LotrDatabaseQuestionStorage(LotrDatabaseQuestionStorageInterface):
         connection = await aiosqlite.connect(self.__databaseFile)
         cursor = await connection.execute(
             '''
-                SELECT answerA, answerB, answerC, answerD, question, triviaId FROM lotrQuestions
+                SELECT answerA, answerB, answerC, answerD, category, question, triviaId FROM lotrQuestions
                 ORDER BY RANDOM()
                 LIMIT 1
-            '''
+            ''',
         )
 
         row = await cursor.fetchone()
 
-        if row is None or len(row) != 6:
+        if row is None or len(row) != 7:
             raise NoTriviaQuestionsAvailableException(f'Unable to fetch trivia question data from LOTR! ({self.__databaseFile=}) ({row=})')
 
         answerA: str | None = row[0]
