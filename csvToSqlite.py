@@ -191,7 +191,7 @@ def writeQuestionAnswerRowsToSqlite(
                 INSERT INTO lotrQuestions (answerA, answerB, answerC, answerD, category, question, triviaId)
                 VALUES ($1, $2, $3, $4, $5, $6, $7)
             ''',
-            ( answerA, answerB, answerC, answerD, category, questionId, question ),
+            ( answerA, answerB, answerC, answerD, category, question, questionId ),
         )
     except (sqlite3.IntegrityError, sqlite3.OperationalError) as e:
         raise RuntimeError(f'Unable to insert question into DB: {e}\n{rowNumber=} {row=} {answerA=} {answerB=} {answerC=} {answerD=} {category=} {question=} {questionId=}: {e}')
