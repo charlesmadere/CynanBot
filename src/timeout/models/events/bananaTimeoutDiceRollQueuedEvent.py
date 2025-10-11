@@ -1,3 +1,4 @@
+import locale
 from dataclasses import dataclass
 
 from .absTimeoutEvent import AbsTimeoutEvent
@@ -11,6 +12,7 @@ class BananaTimeoutDiceRollQueuedEvent(AbsTimeoutEvent):
     originatingAction: BananaTimeoutAction
     requestQueueSize: int
     eventId: str
+    instigatorUserName: str
     timeoutTarget: TimeoutTarget
 
     def getEventId(self) -> str:
@@ -18,3 +20,7 @@ class BananaTimeoutDiceRollQueuedEvent(AbsTimeoutEvent):
 
     def getOriginatingAction(self) -> AbsTimeoutAction:
         return self.originatingAction
+
+    @property
+    def requestQueueSizeStr(self) -> str:
+        return locale.format_string("%d", self.requestQueueSize, grouping = True)

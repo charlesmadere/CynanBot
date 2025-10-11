@@ -10,6 +10,7 @@ from .absTimeoutEventHandler import AbsTimeoutEventHandler
 from ..models.events.absTimeoutEvent import AbsTimeoutEvent
 from ..models.events.airStrikeTimeoutEvent import AirStrikeTimeoutEvent
 from ..models.events.bananaTimeoutDiceRollFailedEvent import BananaTimeoutDiceRollFailedEvent
+from ..models.events.bananaTimeoutDiceRollQueuedEvent import BananaTimeoutDiceRollQueuedEvent
 from ..models.events.bananaTimeoutEvent import BananaTimeoutEvent
 from ..models.events.bananaTimeoutFailedTimeoutEvent import BananaTimeoutFailedTimeoutEvent
 from ..models.events.basicTimeoutEvent import BasicTimeoutEvent
@@ -98,6 +99,11 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
 
         elif isinstance(event, BananaTimeoutDiceRollFailedEvent):
             await self.__handleBananaTimeoutDiceRollFailedEvent(
+                event = event,
+            )
+
+        elif isinstance(event, BananaTimeoutDiceRollQueuedEvent):
+            await self.__handleBananaTimeoutDiceRollQueuedEvent(
                 event = event,
             )
 
@@ -301,6 +307,16 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         self.__twitchChatMessenger.send(
             text = f'{event.ripBozoEmote} Sorry @{event.instigatorUserName}, your timeout of @{event.timeoutTarget.userName} failed {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, but needed greater than {event.diceRollFailureData.failureRoll}) {event.ripBozoEmote}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleBananaTimeoutDiceRollQueuedEvent(
+        self,
+        event: BananaTimeoutDiceRollQueuedEvent,
+    ):
+        self.__twitchChatMessenger.send(
+            text = f'🎲 @{event.instigatorUserName} queued up a dice roll versus @{event.timeoutTarget.userName}! (queue size is now {event.requestQueueSizeStr})',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
