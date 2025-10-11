@@ -343,7 +343,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
-        if action.useDiceRoll and self.__pixelsDiceMachine is not None:
+        if action.useDiceRoll and self.__pixelsDiceMachine is not None and self.__pixelsDiceMachine.isStarted:
             async def onDiceRolled(result: DiceRollResult):
                 await self.__handleBananaTimeoutActionEnding(
                     action = action,

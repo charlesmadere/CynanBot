@@ -8,14 +8,14 @@ class StubCrowdControlActionHandler(CrowdControlActionHandler):
 
     async def handleButtonPressAction(
         self,
-        action: ButtonPressCrowdControlAction
+        action: ButtonPressCrowdControlAction,
     ) -> CrowdControlActionHandleResult:
         # this method is intentionally empty
         return CrowdControlActionHandleResult.ABANDON
 
     async def handleGameShuffleAction(
         self,
-        action: GameShuffleCrowdControlAction
+        action: GameShuffleCrowdControlAction,
     ) -> CrowdControlActionHandleResult:
         # this method is intentionally empty
         return CrowdControlActionHandleResult.ABANDON

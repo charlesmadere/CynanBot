@@ -154,6 +154,10 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
 
         return connectedDice
 
+    @property
+    def isStarted(self) -> bool:
+        return self.__isStarted
+
     def __onBleakClientDisconnected(self, client: BleakClient):
         self.__backgroundTaskHelper.createTask(self.__onBleakClientDisconnectedAsync(
             client = client,

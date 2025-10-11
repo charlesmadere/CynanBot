@@ -5,8 +5,8 @@ from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -16,21 +16,21 @@ class TestCheerChatCommand(AbsChatCommand):
         self,
         twitchCheerHandler: AbsTwitchCheerHandler,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface
+        twitchChatMessenger: TwitchChatMessengerInterface,
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(twitchCheerHandler, AbsTwitchCheerHandler):
             raise TypeError(f'twitchCheerHandler argument is malformed: \"{twitchCheerHandler}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__twitchCheerHandler: Final[AbsTwitchCheerHandler] = twitchCheerHandler
         self.__timber: Final[TimberInterface] = timber
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
@@ -41,18 +41,17 @@ class TestCheerChatCommand(AbsChatCommand):
         if twitchChannelId != ctx.getAuthorId():
             self.__timber.log('TestCheerChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
-
-        if not user.areCheerActionsEnabled:
+        elif not user.areCheerActionsEnabled:
             self.__timber.log('TestCheerChatCommand', f'Command use by {ctx.getAuthorName()}:{ctx.getAuthorId()} will not proceed as cheer actions in {user.handle} are not enabled!')
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             self.__timber.log('TestCheerChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} didn\'t specify a bit amount ({splits=})')
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'⚠ Bit amount argument is missing. Example: !testcheer 100',
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Bit amount argument is missing. Example: !testcheer 100',
+                twitchChannelId = twitchChannelId,
+                replyMessageId = await ctx.getMessageId(),
             )
             return
 
@@ -60,15 +59,15 @@ class TestCheerChatCommand(AbsChatCommand):
 
         try:
             bits = int(splits[1])
-        except Exception:
+        except:
             pass
 
         if not utils.isValidInt(bits) or bits < 1 or bits > utils.getIntMaxSafeSize():
             self.__timber.log('TestCheerChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} specified an invalid bit amount ({splits=}) ({bits=})')
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'⚠ Bit amount argument is malformed. Example: !testcheer 100',
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Bit amount argument is malformed. Example: !testcheer 100',
+                twitchChannelId = twitchChannelId,
+                replyMessageId = await ctx.getMessageId(),
             )
             return
 
@@ -88,11 +87,11 @@ class TestCheerChatCommand(AbsChatCommand):
             ))
         except Exception as e:
             exception = e
-            self.__timber.log('TestCheerChatCommand', f'Encountered exception when attempting to run onNewCheer() for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({bits=}) ({chatMessage=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TestCheerChatCommand', f'Encountered exception when attempting to run onNewCheer() for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({bits=}) ({chatMessage=})', e, traceback.format_exc())
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = f'ⓘ Cheer test results ({bits=}) ({chatMessage=}) ({exception=})',
+        self.__twitchChatMessenger.send(
+            text = f'ⓘ Cheer test results ({bits=}) ({chatMessage=}) ({exception=})',
+            twitchChannelId = twitchChannelId,
             replyMessageId = await ctx.getMessageId(),
         )
 
