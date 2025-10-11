@@ -48,6 +48,8 @@ from src.chatActions.ttsChatterChatAction import TtsChatterChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
+from src.chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
+from src.chatterInventory.configuration.chatterItemEventHandler import ChatterItemEventHandler
 from src.chatterInventory.helpers.chatterInventoryHelper import ChatterInventoryHelper
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from src.chatterInventory.helpers.useChatterItemHelper import UseChatterItemHelper
@@ -125,6 +127,7 @@ from src.crowdControl.crowdControlMachineInterface import CrowdControlMachineInt
 from src.crowdControl.idGenerator.crowdControlIdGenerator import CrowdControlIdGenerator
 from src.crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
 from src.crowdControl.message.crowdControlMessageHandler import CrowdControlMessageHandler
+from src.crowdControl.message.crowdControlMessageListener import CrowdControlMessageListener
 from src.crowdControl.message.crowdControlMessagePresenter import CrowdControlMessagePresenter
 from src.crowdControl.message.crowdControlMessagePresenterInterface import CrowdControlMessagePresenterInterface
 from src.crowdControl.settings.crowdControlSettingsRepository import CrowdControlSettingsRepository
@@ -1931,6 +1934,15 @@ chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface = Chatte
     userIdsRepository = userIdsRepository,
 )
 
+chatterItemEventHandler: AbsChatterItemEventHandler = ChatterItemEventHandler(
+    backgroundTaskHelper = backgroundTaskHelper,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
+    soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
+)
+
 itemRequestMessageParser = ItemRequestMessageParser(
     chatterInventoryMapper = chatterInventoryMapper,
 )
@@ -2007,7 +2019,7 @@ crowdControlMessagePresenter: CrowdControlMessagePresenterInterface = CrowdContr
     trollmojiHelper = trollmojiHelper
 )
 
-crowdControlMessageHandler = CrowdControlMessageHandler(
+crowdControlMessageListener: CrowdControlMessageListener = CrowdControlMessageHandler(
     crowdControlMessagePresenter = crowdControlMessagePresenter,
     twitchChatMessenger = twitchChatMessenger,
 )
@@ -2465,6 +2477,7 @@ cynanBot = CynanBot(
     chatterInventoryItemUseMachine = chatterInventoryItemUseMachine,
     chatterInventoryMapper = chatterInventoryMapper,
     chatterInventorySettings = chatterInventorySettings,
+    chatterItemEventHandler = chatterItemEventHandler,
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
     chatterPreferredTtsRepository = chatterPreferredTtsRepository,
@@ -2481,7 +2494,7 @@ cynanBot = CynanBot(
     crowdControlAutomator = crowdControlAutomator,
     crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlMachine = crowdControlMachine,
-    crowdControlMessageHandler = crowdControlMessageHandler,
+    crowdControlMessageListener = crowdControlMessageListener,
     crowdControlSettingsRepository = crowdControlSettingsRepository,
     crowdControlUserInputUtils = crowdControlUserInputUtils,
     cutenessPresenter = None,

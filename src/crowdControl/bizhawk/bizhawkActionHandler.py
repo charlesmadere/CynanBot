@@ -84,7 +84,7 @@ class BizhawkActionHandler(CrowdControlActionHandler):
     async def __handleBizhawkKeyPress(
         self,
         keyBind: BizhawkKey,
-        action: CrowdControlAction
+        action: CrowdControlAction,
     ) -> CrowdControlActionHandleResult:
         if not isinstance(keyBind, BizhawkKey):
             raise TypeError(f'keyBind argument is malformed: \"{keyBind}\"')
@@ -109,13 +109,13 @@ class BizhawkActionHandler(CrowdControlActionHandler):
 
     async def handleButtonPressAction(
         self,
-        action: ButtonPressCrowdControlAction
+        action: ButtonPressCrowdControlAction,
     ) -> CrowdControlActionHandleResult:
         if not isinstance(action, ButtonPressCrowdControlAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
         keyBind = await self.__bizhawkSettingsRepository.getButtonKeyBind(
-            button = action.button
+            button = action.button,
         )
 
         if keyBind is None:
@@ -124,12 +124,12 @@ class BizhawkActionHandler(CrowdControlActionHandler):
 
         return await self.__handleBizhawkKeyPress(
             keyBind = keyBind,
-            action = action
+            action = action,
         )
 
     async def handleGameShuffleAction(
         self,
-        action: GameShuffleCrowdControlAction
+        action: GameShuffleCrowdControlAction,
     ) -> CrowdControlActionHandleResult:
         if not isinstance(action, GameShuffleCrowdControlAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
@@ -142,7 +142,7 @@ class BizhawkActionHandler(CrowdControlActionHandler):
 
         return await self.__handleBizhawkKeyPress(
             keyBind = keyBind,
-            action = action
+            action = action,
         )
 
     async def __requireBizhawkConnection(self) -> BizhawkConnection:
@@ -177,7 +177,7 @@ class BizhawkActionHandler(CrowdControlActionHandler):
         bizhawkConnection = BizhawkActionHandler.BizhawkConnection(
             connection = connection,
             processId = bizhawkProcessInfo.processId,
-            name = bizhawkProcessInfo.name
+            name = bizhawkProcessInfo.name,
         )
 
         self.__bizhawkConnection = bizhawkConnection

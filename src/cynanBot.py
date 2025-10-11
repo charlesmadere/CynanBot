@@ -107,6 +107,7 @@ from .chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCo
 from .chatCommands.weatherChatCommand import WeatherChatCommand
 from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
+from .chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
 from .chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from .chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from .chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
@@ -135,7 +136,7 @@ from .crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSett
 from .crowdControl.crowdControlActionHandler import CrowdControlActionHandler
 from .crowdControl.crowdControlMachineInterface import CrowdControlMachineInterface
 from .crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
-from .crowdControl.message.crowdControlMessageHandler import CrowdControlMessageHandler
+from .crowdControl.message.crowdControlMessageListener import CrowdControlMessageListener
 from .crowdControl.settings.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from .crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdControlUserInputUtilsInterface
 from .cuteness.cutenessPresenterInterface import CutenessPresenterInterface
@@ -318,6 +319,7 @@ class CynanBot(
         chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface | None,
         chatterInventoryMapper: ChatterInventoryMapperInterface | None,
         chatterInventorySettings: ChatterInventorySettingsInterface | None,
+        chatterItemEventHandler: AbsChatterItemEventHandler | None,
         chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface | None,
         chatterPreferredTtsPresenter: ChatterPreferredTtsPresenter | None,
         chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface | None,
@@ -334,7 +336,7 @@ class CynanBot(
         crowdControlAutomator: CrowdControlAutomatorInterface | None,
         crowdControlIdGenerator: CrowdControlIdGeneratorInterface | None,
         crowdControlMachine: CrowdControlMachineInterface | None,
-        crowdControlMessageHandler: CrowdControlMessageHandler | None,
+        crowdControlMessageListener: CrowdControlMessageListener | None,
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface | None,
         crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface | None,
         cutenessPresenter: CutenessPresenterInterface | None,
@@ -519,6 +521,8 @@ class CynanBot(
             raise TypeError(f'chatterInventoryMapper argument is malformed: \"{chatterInventoryMapper}\"')
         elif chatterInventorySettings is not None and not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
+        elif chatterItemEventHandler is not None and not isinstance(chatterItemEventHandler, AbsChatterItemEventHandler):
+            raise TypeError(f'chatterItemEventHandler argument is malformed: \"{chatterItemEventHandler}\"')
         elif chatterPreferredTtsHelper is not None and not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
         elif chatterPreferredTtsPresenter is not None and not isinstance(chatterPreferredTtsPresenter, ChatterPreferredTtsPresenter):
@@ -551,8 +555,8 @@ class CynanBot(
             raise TypeError(f'crowdControlIdGenerator argument is malformed: \"{crowdControlIdGenerator}\"')
         elif crowdControlMachine is not None and not isinstance(crowdControlMachine, CrowdControlMachineInterface):
             raise TypeError(f'crowdControlMachine argument is malformed: \"{crowdControlMachine}\"')
-        elif crowdControlMessageHandler is not None and not isinstance(crowdControlMessageHandler, CrowdControlMessageHandler):
-            raise TypeError(f'crowdControlMessageHandler argument is malformed: \"{crowdControlMessageHandler}\"')
+        elif crowdControlMessageListener is not None and not isinstance(crowdControlMessageListener, CrowdControlMessageListener):
+            raise TypeError(f'crowdControlMessageListener argument is malformed: \"{crowdControlMessageListener}\"')
         elif crowdControlSettingsRepository is not None and not isinstance(crowdControlSettingsRepository, CrowdControlSettingsRepositoryInterface):
             raise TypeError(f'crowdControlSettingsRepository argument is malformed: \"{crowdControlSettingsRepository}\"')
         elif crowdControlUserInputUtils is not None and not isinstance(crowdControlUserInputUtils, CrowdControlUserInputUtilsInterface):
@@ -772,9 +776,10 @@ class CynanBot(
         self.__chatActionsManager: ChatActionsManagerInterface | None = chatActionsManager
         self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__chatterInventoryItemUseMachine: Final[ChatterInventoryItemUseMachineInterface | None] = chatterInventoryItemUseMachine
+        self.__chatterItemEventHandler: Final[AbsChatterItemEventHandler | None] = chatterItemEventHandler
         self.__crowdControlActionHandler: Final[CrowdControlActionHandler | None] = crowdControlActionHandler
         self.__crowdControlMachine: Final[CrowdControlMachineInterface | None] = crowdControlMachine
-        self.__crowdControlMessageHandler: Final[CrowdControlMessageHandler | None] = crowdControlMessageHandler
+        self.__crowdControlMessageListener: Final[CrowdControlMessageListener | None] = crowdControlMessageListener
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
         self.__pixelsDiceEventListener: Final[PixelsDiceEventListener | None] = pixelsDiceEventListener
@@ -1177,12 +1182,16 @@ class CynanBot(
             self.__twitchChannelPointRedemptionHandler.setTwitchChannelProvider(self)
             self.__twitchChannelPointRedemptionHandler.start()
 
+        if self.__chatterItemEventHandler is not None:
+            self.__chatterItemEventHandler.setTwitchConnectionReadinessProvider(self)
+
         if self.__chatterInventoryItemUseMachine is not None:
+            self.__chatterInventoryItemUseMachine.setEventListener(self.__chatterItemEventHandler)
             self.__chatterInventoryItemUseMachine.start()
 
         if self.__crowdControlMachine is not None:
             self.__crowdControlMachine.setActionHandler(self.__crowdControlActionHandler)
-            self.__crowdControlMachine.setMessageListener(self.__crowdControlMessageHandler)
+            self.__crowdControlMachine.setMessageListener(self.__crowdControlMessageListener)
             self.__crowdControlMachine.start()
 
         if self.__timeoutEventHandler is not None:
