@@ -62,5 +62,5 @@ class PixelsDiceEventHandler(PixelsDiceEventListener):
         # this method is intentionally rather thin, for now at least
 
     async def __handleRollEvent(self, event: PixelsDiceRollEvent):
-        self.__timber.log('PixelsDiceEventHandler', f'Pixels Dice disconnected ({event=})')
+        self.__timber.log('PixelsDiceEventHandler', f'Pixels Dice rolled ({event=})')
         # this method is intentionally rather thin, for now at least
