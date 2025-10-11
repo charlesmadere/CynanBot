@@ -60,7 +60,7 @@ class TestCheerChatCommand(AbsChatCommand):
 
         try:
             bits = int(splits[1])
-        except Exception:
+        except:
             pass
 
         if not utils.isValidInt(bits) or bits < 1 or bits > utils.getIntMaxSafeSize():

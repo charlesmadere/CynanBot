@@ -490,7 +490,7 @@ def safeStrToInt(s: str | None) -> int | None:
 
     try:
         return int(s)
-    except Exception:
+    except:
         return None
 
 MINUTE_IN_SECONDS: Final[int] = 60
