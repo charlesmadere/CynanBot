@@ -1013,7 +1013,7 @@ class CynanBot(
         if twitchCheerHandler is None:
             self.__testCheerCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__testCheerCommand: AbsChatCommand = TestCheerChatCommand(twitchCheerHandler, timber, twitchUtils, usersRepository)
+            self.__testCheerCommand: AbsChatCommand = TestCheerChatCommand(twitchCheerHandler, timber, twitchChatMessenger, usersRepository)
 
         if eccoHelper is None:
             self.__eccoCommand: AbsChatCommand = StubChatCommand()
