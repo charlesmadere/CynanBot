@@ -362,6 +362,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 originatingAction = action,
                 requestQueueSize = requestQueueSize,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
+                instigatorUserName = instigatorUserName,
             ))
         else:
             await self.__handleBananaTimeoutActionEnding(
