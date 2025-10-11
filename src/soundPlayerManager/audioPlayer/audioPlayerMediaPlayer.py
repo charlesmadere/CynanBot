@@ -59,21 +59,21 @@ class AudioPlayerMediaPlayer:
             return False
         elif not await aiofiles.ospath.exists(
             path = filePath,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             self.__isPlayingOrLoading = False
             self.__timber.log('AudioPlayerMediaPlayer', f'Attempted to play, but filePath does not point to a file that exists ({filePath=})')
             return False
         elif await aiofiles.ospath.isdir(
             s = filePath,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             self.__isPlayingOrLoading = False
             self.__timber.log('AudioPlayerMediaPlayer', f'Attempted to play, but filePath points to a directory instead of a file ({filePath=})')
             return False
         elif not await aiofiles.ospath.isfile(
             path = filePath,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             self.__isPlayingOrLoading = False
             self.__timber.log('AudioPlayerMediaPlayer', f'Attempted to play, but filePath points to something that is not a file ({filePath=})')
@@ -81,12 +81,12 @@ class AudioPlayerMediaPlayer:
 
         playbackTask = AudioPlayerPlaybackTask(
             volume = self.__volume,
-            filePath = filePath
+            filePath = filePath,
         )
 
         playbackThread = Thread(
             target = self.__play,
-            args = ( playbackTask, )
+            args = ( playbackTask, ),
         )
 
         self.__playbackTask = playbackTask
@@ -137,7 +137,7 @@ class AudioPlayerMediaPlayer:
 
         audioPlayer.play(
             loop = False,
-            block = False
+            block = False,
         )
 
         isStillPlaying = True
