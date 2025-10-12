@@ -15,7 +15,7 @@ class TtsMonsterPrivateApiHelper(TtsMonsterPrivateApiHelperInterface):
         self,
         timber: TimberInterface,
         ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface,
-        ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface
+        ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -32,7 +32,7 @@ class TtsMonsterPrivateApiHelper(TtsMonsterPrivateApiHelperInterface):
         self,
         message: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> bytes | None:
         if message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -45,7 +45,7 @@ class TtsMonsterPrivateApiHelper(TtsMonsterPrivateApiHelperInterface):
             return None
 
         tokens = await self.__ttsMonsterTokensRepository.get(
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if tokens is None:
@@ -64,7 +64,7 @@ class TtsMonsterPrivateApiHelper(TtsMonsterPrivateApiHelperInterface):
 
         try:
             speechBytes = await self.__ttsMonsterPrivateApiService.fetchGeneratedTts(
-                ttsUrl = ttsResponse.data.link
+                ttsUrl = ttsResponse.data.link,
             )
         except GenericNetworkException as e:
             self.__timber.log('TtsMonsterPrivateApiHelper', f'Encountered network error when fetching generated TTS ({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({ttsResponse=}): {e}', e, traceback.format_exc())

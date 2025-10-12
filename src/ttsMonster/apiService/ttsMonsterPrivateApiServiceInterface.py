@@ -8,7 +8,7 @@ class TtsMonsterPrivateApiServiceInterface(ABC):
     @abstractmethod
     async def fetchGeneratedTts(
         self,
-        ttsUrl: str
+        ttsUrl: str,
     ) -> bytes:
         pass
 
@@ -17,6 +17,6 @@ class TtsMonsterPrivateApiServiceInterface(ABC):
         self,
         key: str,
         message: str,
-        userId: str
+        userId: str,
     ) -> TtsMonsterPrivateApiTtsResponse:
         pass

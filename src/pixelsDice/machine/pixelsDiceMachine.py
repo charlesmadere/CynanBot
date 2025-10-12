@@ -37,7 +37,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
         pixelsDiceSettings: PixelsDiceSettingsInterface,
         timber: TimberInterface,
         connectionLoopSleepTimeSeconds: float = 10,
-        eventLoopSleepTimeSeconds: float = 1,
+        eventLoopSleepTimeSeconds: float = 0.5,
         queueTimeoutSeconds: int = 3,
         notifyCharacteristicUuid: str = '6e400001-b5a3-f393-e0a9-e50e24dcca9e',
     ):
@@ -120,7 +120,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
                 )
 
         if not isinstance(diceDevice, BLEDevice) or not isinstance(diceAdvertisement, AdvertisementData) or connectedDice is None:
-            self.__timber.log('PixelsDiceMachine', f'Failed to find device with name \"{diceName}\" among {len(devices)} device(s): {allDeviceNames=}')
+            self.__timber.log('PixelsDiceMachine', f'Failed to find device with name \"{diceName}\" among {len(devices)} device(s): {allDeviceNames}')
             return None
 
         self.__timber.log('PixelsDiceMachine', f'Found device ({diceName=}) ({connectedDice=}) ({diceDevice=}) ({diceAdvertisement=})')

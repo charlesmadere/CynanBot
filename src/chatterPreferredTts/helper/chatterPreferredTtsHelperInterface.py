@@ -9,7 +9,7 @@ class ChatterPreferredTtsHelperInterface(ABC):
     async def applyRandomPreferredTts(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ChatterPreferredTts:
         pass
 
@@ -18,7 +18,7 @@ class ChatterPreferredTtsHelperInterface(ABC):
         self,
         chatterUserId: str,
         twitchChannelId: str,
-        userMessage: str | None
+        userMessage: str | None,
     ) -> ChatterPreferredTts:
         pass
 
@@ -26,6 +26,6 @@ class ChatterPreferredTtsHelperInterface(ABC):
     async def get(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ChatterPreferredTts | None:
         pass

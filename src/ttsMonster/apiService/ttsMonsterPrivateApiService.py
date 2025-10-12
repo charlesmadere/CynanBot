@@ -16,7 +16,7 @@ class TtsMonsterPrivateApiService(TtsMonsterPrivateApiServiceInterface):
         self,
         networkClientProvider: NetworkClientProvider,
         timber: TimberInterface,
-        ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface
+        ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface,
     ):
         if not isinstance(networkClientProvider, NetworkClientProvider):
             raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
@@ -31,7 +31,7 @@ class TtsMonsterPrivateApiService(TtsMonsterPrivateApiServiceInterface):
 
     async def fetchGeneratedTts(
         self,
-        ttsUrl: str
+        ttsUrl: str,
     ) -> bytes:
         if not utils.isValidUrl(ttsUrl):
             raise TypeError(f'ttsUrl argument is malformed: \"{ttsUrl}\"')
@@ -62,7 +62,7 @@ class TtsMonsterPrivateApiService(TtsMonsterPrivateApiServiceInterface):
         self,
         key: str,
         message: str,
-        userId: str
+        userId: str,
     ) -> TtsMonsterPrivateApiTtsResponse:
         if not utils.isValidStr(key):
             raise TypeError(f'key argument is malformed: \"{key}\"')

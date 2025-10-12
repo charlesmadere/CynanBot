@@ -7,6 +7,8 @@ from ..models.events.absChatterItemEvent import AbsChatterItemEvent
 from ..models.events.animalPetChatterItemEvent import AnimalPetChatterItemEvent
 from ..models.events.cassetteTapeMessageHasNoTargetChatterItemEvent import \
     CassetteTapeMessageHasNoTargetChatterItemEvent
+from ..models.events.cassetteTapeTargetIsNotFollowingChatterItemEvent import \
+    CassetteTapeTargetIsNotFollowingChatterItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
 from ..models.events.gashaponResultsChatterItemEvent import GashaponResultsChatterItemEvent
@@ -89,6 +91,11 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
 
         elif isinstance(event, CassetteTapeMessageHasNoTargetChatterItemEvent):
             await self.__handleCassetteTapeMessageHasNoTargetChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, CassetteTapeTargetIsNotFollowingChatterItemEvent):
+            await self.__handleCassetteTapeTargetIsNotFollowingChatterItemEvent(
                 event = event,
             )
 
@@ -234,6 +241,16 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
     ):
         self.__twitchChatMessenger.send(
             text = f'⚠ Sorry, the first word in the voicemail message must be a username (including the @ character is OK)',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleCassetteTapeTargetIsNotFollowingChatterItemEvent(
+        self,
+        event: CassetteTapeTargetIsNotFollowingChatterItemEvent,
+    ):
+        self.__twitchChatMessenger.send(
+            text = f'⚠ Sorry, you can\'t send a voicemail to someone who isn\'t following the channel',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
