@@ -63,7 +63,7 @@ class TtsMonsterPrivateApiJsonMapperInterface(ABC):
         self,
         key: str,
         message: str,
-        userId: str
+        userId: str,
     ) -> dict[str, Any]:
         pass
 

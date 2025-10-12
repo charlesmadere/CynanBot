@@ -9,6 +9,6 @@ class ChatterPreferredTtsUserMessageHelperInterface(ABC):
     @abstractmethod
     async def parseUserMessage(
         self,
-        userMessage: str | Any | None
+        userMessage: str | Any | None,
     ) -> AbsTtsProperties | None:
         pass

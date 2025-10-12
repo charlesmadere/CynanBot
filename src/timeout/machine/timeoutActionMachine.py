@@ -105,7 +105,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        sleepTimeSeconds: float = 1,
+        sleepTimeSeconds: float = 0.5,
         queueTimeoutSeconds: int = 3,
     ):
         if not isinstance(anivCopyMessageTimeoutScoreRepository, AnivCopyMessageTimeoutScoreRepositoryInterface):

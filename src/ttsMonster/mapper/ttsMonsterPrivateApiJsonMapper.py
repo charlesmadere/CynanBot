@@ -191,7 +191,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
     async def parseVoice(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> TtsMonsterVoice | None:
         if not utils.isValidStr(string):
             return None
@@ -216,7 +216,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
     async def requireVoice(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> TtsMonsterVoice:
         result = await self.parseVoice(string)
 
@@ -242,7 +242,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         self,
         key: str,
         message: str,
-        userId: str
+        userId: str,
     ) -> dict[str, Any]:
         if not utils.isValidStr(key):
             raise TypeError(f'key argument is malformed: \"{key}\"')
@@ -255,11 +255,11 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             'data': {
                 'ai': True,
                 'details': {
-                    'provider': self.__provider
+                    'provider': self.__provider,
                 },
                 'key': key,
                 'message': message,
-                'userId': userId
+                'userId': userId,
             }
         }
 

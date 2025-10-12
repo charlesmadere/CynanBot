@@ -43,7 +43,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
         microsoftTtsJsonParser: MicrosoftTtsJsonParserInterface,
         streamElementsJsonParser: StreamElementsJsonParserInterface,
         timber: TimberInterface,
-        ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface
+        ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface,
     ):
         if not isinstance(decTalkVoiceMapper, DecTalkVoiceMapperInterface):
             raise TypeError(f'decTalkVoiceMapper argument is malformed: \"{decTalkVoiceMapper}\"')
@@ -85,7 +85,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
     async def __createCommodoreSamTtsProperties(
         self,
-        match: Match[str]
+        match: Match[str],
     ) -> AbsTtsProperties | None:
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
@@ -94,7 +94,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
     async def __createDecTalkTtsProperties(
         self,
-        match: Match[str]
+        match: Match[str],
     ) -> AbsTtsProperties | None:
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
@@ -104,16 +104,16 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
         if utils.isValidStr(decTalkVoiceCommand):
             decTalkVoice = await self.__decTalkVoiceMapper.parseVoice(
-                string = decTalkVoiceCommand
+                string = decTalkVoiceCommand,
             )
 
         return DecTalkTtsProperties(
-            voice = decTalkVoice
+            voice = decTalkVoice,
         )
 
     async def __createGoogleTtsProperties(
         self,
-        match: Match[str]
+        match: Match[str],
     ) -> AbsTtsProperties | None:
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
@@ -123,16 +123,16 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
         if utils.isValidStr(languageEntryCommand):
             languageEntry = await self.__languagesRepository.getLanguageForCommand(
-                command = languageEntryCommand
+                command = languageEntryCommand,
             )
 
         return GoogleTtsProperties(
-            languageEntry = languageEntry
+            languageEntry = languageEntry,
         )
 
     async def __createHalfLifeTtsProperties(
         self,
-        match: Match[str]
+        match: Match[str],
     ) -> AbsTtsProperties | None:
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
@@ -142,16 +142,16 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
         if utils.isValidStr(halfLifeVoiceCommand):
             halfLifeVoice = self.__halfLifeJsonParser.parseVoice(
-                voiceString = halfLifeVoiceCommand
+                voiceString = halfLifeVoiceCommand,
             )
 
         return HalfLifeTtsProperties(
-            voice = halfLifeVoice
+            voice = halfLifeVoice,
         )
 
     async def __createMicrosoftSamTtsProperties(
         self,
-        match: Match[str]
+        match: Match[str],
     ) -> AbsTtsProperties | None:
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
@@ -161,16 +161,16 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
         if utils.isValidStr(microsoftSamVoiceCommand):
             microsoftSamVoice = await self.__microsoftSamJsonParser.parseVoice(
-                string = microsoftSamVoiceCommand
+                string = microsoftSamVoiceCommand,
             )
 
         return MicrosoftSamTtsProperties(
-            voice = microsoftSamVoice
+            voice = microsoftSamVoice,
         )
 
     async def __createMicrosoftTtsProperties(
         self,
-        match: Match[str]
+        match: Match[str],
     ) -> AbsTtsProperties | None:
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
@@ -180,16 +180,16 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
         if utils.isValidStr(microsoftTtsVoiceCommand):
             microsoftTtsVoice = await self.__microsoftTtsJsonParser.parseVoice(
-                string = microsoftTtsVoiceCommand
+                string = microsoftTtsVoiceCommand,
             )
 
         return MicrosoftTtsTtsProperties(
-            voice = microsoftTtsVoice
+            voice = microsoftTtsVoice,
         )
 
     async def __createRandoTtsTtsProperties(
         self,
-        match: Match[str]
+        match: Match[str],
     ) -> AbsTtsProperties | None:
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
@@ -198,7 +198,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
     async def __createShotgunTtsTtsProperties(
         self,
-        match: Match[str]
+        match: Match[str],
     ) -> AbsTtsProperties | None:
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
@@ -207,7 +207,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
     async def __createStreamElementsTtsProperties(
         self,
-        match: Match[str]
+        match: Match[str],
     ) -> AbsTtsProperties | None:
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
@@ -217,16 +217,16 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
         if utils.isValidStr(streamElementsVoiceCommand):
             streamElementsVoice = await self.__streamElementsJsonParser.parseVoice(
-                string = streamElementsVoiceCommand
+                string = streamElementsVoiceCommand,
             )
 
         return StreamElementsTtsProperties(
-            voice = streamElementsVoice
+            voice = streamElementsVoice,
         )
 
     async def __createTtsMonsterTtsProperties(
         self,
-        match: Match[str]
+        match: Match[str],
     ) -> AbsTtsProperties | None:
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
@@ -236,16 +236,16 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
         if utils.isValidStr(ttsMonsterVoiceCommand):
             ttsMonsterVoice = await self.__ttsMonsterPrivateApiJsonMapper.parseVoice(
-                string = ttsMonsterVoiceCommand
+                string = ttsMonsterVoiceCommand,
             )
 
         return TtsMonsterTtsProperties(
-            voice = ttsMonsterVoice
+            voice = ttsMonsterVoice,
         )
 
     async def __createUnrestrictedDecTalkTtsProperties(
         self,
-        match: Match[str]
+        match: Match[str],
     ) -> AbsTtsProperties | None:
         if not isinstance(match, Match):
             raise TypeError(f'match argument is malformed: \"{match}\"')
@@ -254,7 +254,7 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
 
     async def parseUserMessage(
         self,
-        userMessage: str | Any | None
+        userMessage: str | Any | None,
     ) -> AbsTtsProperties | None:
         if not utils.isValidStr(userMessage):
             return None
@@ -311,12 +311,12 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
             # directions for this command, and just typed in a language instead. If so,
             # we might be able to match up their string with a language name.
             languageEntry = await self.__languagesRepository.getLanguageForCommand(
-                command = userMessage
+                command = userMessage,
             )
 
             if languageEntry is not None:
                 googleProperties = GoogleTtsProperties(
-                    languageEntry = languageEntry
+                    languageEntry = languageEntry,
                 )
 
                 self.__timber.log('ChatterPreferredTtsUserMessageHelper', f'Hit fall-back language-based case for user message ({googleProperties=}) ({languageEntry=}) ({userMessage=})')
@@ -326,12 +326,12 @@ class ChatterPreferredTtsUserMessageHelper(ChatterPreferredTtsUserMessageHelperI
             # directions for this command, and just typed in the name of a TTS Monster
             # voice instead.
             ttsMonsterVoice = await self.__ttsMonsterPrivateApiJsonMapper.parseVoice(
-                string = userMessage
+                string = userMessage,
             )
 
             if ttsMonsterVoice is not None:
                 ttsMonsterTtsProperties = TtsMonsterTtsProperties(
-                    voice = ttsMonsterVoice
+                    voice = ttsMonsterVoice,
                 )
 
                 self.__timber.log('ChatterPreferredTtsUserMessageHelper', f'Hit fall-back TTS Monster voice case for user message ({ttsMonsterTtsProperties=}) ({ttsMonsterVoice=}) ({userMessage=})')

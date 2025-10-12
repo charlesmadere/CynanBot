@@ -62,7 +62,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
     async def applyRandomPreferredTts(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ChatterPreferredTts:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
@@ -126,11 +126,11 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         preferredTts = ChatterPreferredTts(
             properties = properties,
             chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         await self.__chatterPreferredTtsRepository.set(
-            preferredTts = preferredTts
+            preferredTts = preferredTts,
         )
 
         self.__timber.log('ChatterPreferredTtsHelper', f'Randomly chose and assigned new TTS ({preferredTts=}) ({chatterUserId=}) ({twitchChannelId=})')
@@ -140,7 +140,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         self,
         chatterUserId: str,
         twitchChannelId: str,
-        userMessage: str | None
+        userMessage: str | None,
     ) -> ChatterPreferredTts:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
@@ -179,7 +179,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         voice = random.choice(voices)
 
         return DecTalkTtsProperties(
-            voice = voice
+            voice = voice,
         )
 
     async def __chooseRandomGoogleProperties(self) -> GoogleTtsProperties:
@@ -197,7 +197,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         languageEntry = random.choice(languageEntries)
 
         return GoogleTtsProperties(
-            languageEntry = languageEntry
+            languageEntry = languageEntry,
         )
 
     async def __chooseRandomHalfLifeProperties(self) -> HalfLifeTtsProperties:
@@ -205,7 +205,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         voice = random.choice(voices)
 
         return HalfLifeTtsProperties(
-            voice = voice
+            voice = voice,
         )
 
     async def __chooseRandomMicrosoftProperties(self) -> MicrosoftTtsTtsProperties:
@@ -213,7 +213,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         voice = random.choice(voices)
 
         return MicrosoftTtsTtsProperties(
-            voice = voice
+            voice = voice,
         )
 
     async def __chooseRandomMicrosoftSamProperties(self) -> MicrosoftSamTtsProperties:
@@ -221,7 +221,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         voice = random.choice(voices)
 
         return MicrosoftSamTtsProperties(
-            voice = voice
+            voice = voice,
         )
 
     async def __chooseRandomStreamElementsProperties(self) -> StreamElementsTtsProperties:
@@ -229,7 +229,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         voice = random.choice(voices)
 
         return StreamElementsTtsProperties(
-            voice = voice
+            voice = voice,
         )
 
     async def __chooseRandomTtsMonsterProperties(self) -> TtsMonsterTtsProperties:
@@ -237,13 +237,13 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         voice = random.choice(voices)
 
         return TtsMonsterTtsProperties(
-            voice = voice
+            voice = voice,
         )
 
     async def get(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ChatterPreferredTts | None:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
