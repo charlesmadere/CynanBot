@@ -8,7 +8,7 @@ class PixelsDiceMachineInterface(ABC):
 
     @property
     @abstractmethod
-    def isStarted(self) -> bool:
+    def isConnected(self) -> bool:
         pass
 
     @abstractmethod

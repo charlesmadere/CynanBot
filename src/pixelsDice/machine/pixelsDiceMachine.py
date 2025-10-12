@@ -123,7 +123,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
             self.__timber.log('PixelsDiceMachine', f'Failed to find device with name \"{diceName}\" among {len(devices)} device(s): {allDeviceNames=}')
             return None
 
-        self.__timber.log('PixelsDiceMachine', f'Found device ({connectedDice=}) ({diceDevice=}) ({diceAdvertisement=})')
+        self.__timber.log('PixelsDiceMachine', f'Found device ({diceName=}) ({connectedDice=}) ({diceDevice=}) ({diceAdvertisement=})')
 
         client = BleakClient(
             address_or_ble_device = diceDevice,
@@ -135,6 +135,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
             await client.connect()
         except Exception as e:
             self.__timber.log('PixelsDiceMachine', f'Failed to establish a connection ({connectedDice=}) ({client=})', e, traceback.format_exc())
+            return None
 
         notifyCharacteristic = client.services.get_characteristic(self.__notifyCharacteristicUuid)
 
@@ -155,8 +156,8 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
         return connectedDice
 
     @property
-    def isStarted(self) -> bool:
-        return self.__isStarted
+    def isConnected(self) -> bool:
+        return self.__connectedDice is not None
 
     def __onBleakClientDisconnected(self, client: BleakClient):
         self.__backgroundTaskHelper.createTask(self.__onBleakClientDisconnectedAsync(
