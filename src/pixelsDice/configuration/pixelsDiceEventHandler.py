@@ -33,8 +33,6 @@ class PixelsDiceEventHandler(PixelsDiceEventListener):
         if not isinstance(event, AbsPixelsDiceEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
-        self.__timber.log('PixelsDiceEventHandler', f'Received new pixels dice event ({event=})')
-
         if isinstance(event, PixelsDiceClientConnectedEvent):
             await self.__handleConnectedEvent(
                 event = event,

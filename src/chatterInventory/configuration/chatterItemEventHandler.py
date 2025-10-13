@@ -74,8 +74,6 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
         if not isinstance(event, AbsChatterItemEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
-        self.__timber.log('ChatterItemEventHandler', f'Received new chatter item event ({event=})')
-
         twitchConnectionReadinessProvider = self.__twitchConnectionReadinessProvider
 
         if twitchConnectionReadinessProvider is None:

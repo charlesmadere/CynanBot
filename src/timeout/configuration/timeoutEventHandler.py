@@ -82,8 +82,6 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         if not isinstance(event, AbsTimeoutEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
-        self.__timber.log('TimeoutEventHandler', f'Received new timeout event ({event=})')
-
         twitchConnectionReadinessProvider = self.__twitchConnectionReadinessProvider
 
         if twitchConnectionReadinessProvider is None:
