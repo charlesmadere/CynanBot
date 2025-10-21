@@ -78,7 +78,7 @@ class AirStrikeCheerActionHelper(AirStrikeCheerActionHelperInterface):
         if not isinstance(action, AirStrikeCheerAction) or not action.isEnabled:
             return False
 
-        result = self.__useChatterItemHelper.useItem(UseChatterItemRequest(
+        result = await self.__useChatterItemHelper.useItem(UseChatterItemRequest(
             ignoreInventory = True,
             itemType = ChatterItemType.AIR_STRIKE,
             chatMessage = message,
