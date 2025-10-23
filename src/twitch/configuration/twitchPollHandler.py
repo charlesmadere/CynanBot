@@ -150,18 +150,17 @@ class TwitchPollHandler(AbsTwitchPollHandler):
 
         choices = event.choices
         title = event.title
-        pollStatus = event.pollStatus
         subscriptionType = dataBundle.metadata.subscriptionType
 
-        if choices is None or len(choices) == 0 or not utils.isValidStr(title) or pollStatus is None or subscriptionType is None:
-            self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({choices=}) ({title=}) ({pollStatus=}) ({subscriptionType=})')
+        if choices is None or len(choices) == 0 or not utils.isValidStr(title) or subscriptionType is None:
+            self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({choices=}) ({title=}) ({subscriptionType=})')
             return
 
         pollData = AbsTwitchPollHandler.PollData(
             choices = choices,
             title = title,
             twitchChannelId = twitchChannelId,
-            pollStatus = pollStatus,
+            pollStatus = event.pollStatus,
             subscriptionType = subscriptionType,
             user = user,
         )

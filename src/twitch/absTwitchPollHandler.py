@@ -17,7 +17,7 @@ class AbsTwitchPollHandler(ABC):
         choices: FrozenList[TwitchPollChoice]
         title: str
         twitchChannelId: str
-        pollStatus: TwitchPollStatus
+        pollStatus: TwitchPollStatus | None
         subscriptionType: TwitchWebsocketSubscriptionType
         user: UserInterface
 

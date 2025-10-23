@@ -1443,7 +1443,7 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__enableCheerActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'freegiveitem', aliases = [ 'freeitemgive', 'freegivechatteritem' ])
+    @commands.command(name = 'freegiveitem', aliases = [ 'freeitem', 'freeitemgive', 'freegivechatteritem' ])
     async def command_freegivechatteritem(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__freeGiveChatterItemCommand.handleChatCommand(context)
