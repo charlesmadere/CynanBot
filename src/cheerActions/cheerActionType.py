@@ -8,6 +8,7 @@ class CheerActionType(Enum):
     BEAN_CHANCE = auto()
     CROWD_CONTROL = auto()
     GAME_SHUFFLE = auto()
+    ITEM_USE = auto()
     SOUND_ALERT = auto()
     TIMEOUT = auto()
     VOICEMAIL = auto()

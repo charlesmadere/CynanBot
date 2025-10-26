@@ -1,7 +1,10 @@
 import json
+from typing import Final
 
 import pytest
 
+from src.chatterInventory.mappers.chatterInventoryMapper import ChatterInventoryMapper
+from src.chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from src.cheerActions.absCheerAction import AbsCheerAction
 from src.cheerActions.airStrike.airStrikeCheerAction import AirStrikeCheerAction
 from src.cheerActions.beanChance.beanChanceCheerAction import BeanChanceCheerAction
@@ -19,7 +22,11 @@ from src.cheerActions.voicemail.voicemailCheerAction import VoicemailCheerAction
 
 class TestCheerActionJsonMapper:
 
-    mapper: CheerActionJsonMapperInterface = CheerActionJsonMapper()
+    chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = ChatterInventoryMapper()
+
+    mapper: Final[CheerActionJsonMapperInterface] = CheerActionJsonMapper(
+        chatterInventoryMapper = chatterInventoryMapper,
+    )
 
     @pytest.mark.asyncio
     async def test_parseCheerActionStreamStatusRequirement_withAnyString(self):
@@ -104,9 +111,37 @@ class TestCheerActionJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_parseCheerActionType_withGameShuffle(self):
+    async def test_parseCheerActionType_withGameShuffleString(self):
         result = await self.mapper.parseCheerActionType('game_shuffle')
         assert result is CheerActionType.GAME_SHUFFLE
+
+        result = await self.mapper.parseCheerActionType('game-shuffle')
+        assert result is CheerActionType.GAME_SHUFFLE
+
+        result = await self.mapper.parseCheerActionType('game shuffle')
+        assert result is CheerActionType.GAME_SHUFFLE
+
+        result = await self.mapper.parseCheerActionType('gameshuffle')
+        assert result is CheerActionType.GAME_SHUFFLE
+
+    @pytest.mark.asyncio
+    async def test_parseCheerActionType_withItemString(self):
+        result = await self.mapper.parseCheerActionType('item')
+        assert result is CheerActionType.ITEM_USE
+
+    @pytest.mark.asyncio
+    async def test_parseCheerActionType_withItemUseString(self):
+        result = await self.mapper.parseCheerActionType('item_use')
+        assert result is CheerActionType.ITEM_USE
+
+        result = await self.mapper.parseCheerActionType('item-use')
+        assert result is CheerActionType.ITEM_USE
+
+        result = await self.mapper.parseCheerActionType('item use')
+        assert result is CheerActionType.ITEM_USE
+
+        result = await self.mapper.parseCheerActionType('itemuse')
+        assert result is CheerActionType.ITEM_USE
 
     @pytest.mark.asyncio
     async def test_parseCheerActionType_withNone(self):
@@ -118,6 +153,15 @@ class TestCheerActionJsonMapper:
         result = await self.mapper.parseCheerActionType('sound_alert')
         assert result is CheerActionType.SOUND_ALERT
 
+        result = await self.mapper.parseCheerActionType('sound-alert')
+        assert result is CheerActionType.SOUND_ALERT
+
+        result = await self.mapper.parseCheerActionType('sound alert')
+        assert result is CheerActionType.SOUND_ALERT
+
+        result = await self.mapper.parseCheerActionType('soundalert')
+        assert result is CheerActionType.SOUND_ALERT
+
     @pytest.mark.asyncio
     async def test_parseCheerActionType_withTimeoutString(self):
         result = await self.mapper.parseCheerActionType('timeout')
@@ -127,6 +171,20 @@ class TestCheerActionJsonMapper:
     async def test_parseCheerActionType_withTntString(self):
         result = await self.mapper.parseCheerActionType('tnt')
         assert result is CheerActionType.AIR_STRIKE
+
+    @pytest.mark.asyncio
+    async def test_parseCheerActionType_withUseItemString(self):
+        result = await self.mapper.parseCheerActionType('use_item')
+        assert result is CheerActionType.ITEM_USE
+
+        result = await self.mapper.parseCheerActionType('use-item')
+        assert result is CheerActionType.ITEM_USE
+
+        result = await self.mapper.parseCheerActionType('use item')
+        assert result is CheerActionType.ITEM_USE
+
+        result = await self.mapper.parseCheerActionType('useitem')
+        assert result is CheerActionType.ITEM_USE
 
     @pytest.mark.asyncio
     async def test_parseCheerActionType_withVoicemailString(self):
@@ -190,7 +248,7 @@ class TestCheerActionJsonMapper:
             streamStatusRequirement = CheerActionStreamStatusRequirement.ANY,
             bits = 999,
             jsonString = None,
-            twitchChannelId = 'abc123'
+            twitchChannelId = 'abc123',
         )
 
         assert isinstance(result, VoicemailCheerAction)
@@ -265,10 +323,61 @@ class TestCheerActionJsonMapper:
         result = await self.mapper.requireCheerActionType('bean_chance')
         assert result is CheerActionType.BEAN_CHANCE
 
+        result = await self.mapper.requireCheerActionType('bean-chance')
+        assert result is CheerActionType.BEAN_CHANCE
+
+        result = await self.mapper.requireCheerActionType('bean chance')
+        assert result is CheerActionType.BEAN_CHANCE
+
+        result = await self.mapper.requireCheerActionType('beanchance')
+        assert result is CheerActionType.BEAN_CHANCE
+
     @pytest.mark.asyncio
     async def test_requireCheerActionType_withCrowdControlString(self):
         result = await self.mapper.requireCheerActionType('crowd_control')
         assert result is CheerActionType.CROWD_CONTROL
+
+        result = await self.mapper.requireCheerActionType('crowd-control')
+        assert result is CheerActionType.CROWD_CONTROL
+
+        result = await self.mapper.requireCheerActionType('crowd control')
+        assert result is CheerActionType.CROWD_CONTROL
+
+        result = await self.mapper.requireCheerActionType('crowdcontrol')
+        assert result is CheerActionType.CROWD_CONTROL
+
+    @pytest.mark.asyncio
+    async def test_requireCheerActionType_withGameShuffleString(self):
+        result = await self.mapper.requireCheerActionType('game_shuffle')
+        assert result is CheerActionType.GAME_SHUFFLE
+
+        result = await self.mapper.requireCheerActionType('game-shuffle')
+        assert result is CheerActionType.GAME_SHUFFLE
+
+        result = await self.mapper.requireCheerActionType('game shuffle')
+        assert result is CheerActionType.GAME_SHUFFLE
+
+        result = await self.mapper.requireCheerActionType('gameshuffle')
+        assert result is CheerActionType.GAME_SHUFFLE
+
+    @pytest.mark.asyncio
+    async def test_requireCheerActionType_withItemString(self):
+        result = await self.mapper.requireCheerActionType('item')
+        assert result is CheerActionType.ITEM_USE
+
+    @pytest.mark.asyncio
+    async def test_requireCheerActionType_withItemUseString(self):
+        result = await self.mapper.requireCheerActionType('item_use')
+        assert result is CheerActionType.ITEM_USE
+
+        result = await self.mapper.requireCheerActionType('item-use')
+        assert result is CheerActionType.ITEM_USE
+
+        result = await self.mapper.requireCheerActionType('item use')
+        assert result is CheerActionType.ITEM_USE
+
+        result = await self.mapper.requireCheerActionType('itemuse')
+        assert result is CheerActionType.ITEM_USE
 
     @pytest.mark.asyncio
     async def test_requireCheerActionType_withSoundAlertString(self):
@@ -284,6 +393,20 @@ class TestCheerActionJsonMapper:
     async def test_requireCheerActionType_withTntString(self):
         result = await self.mapper.requireCheerActionType('tnt')
         assert result is CheerActionType.AIR_STRIKE
+
+    @pytest.mark.asyncio
+    async def test_requireCheerActionType_withUseItem(self):
+        result = await self.mapper.requireCheerActionType('use_item')
+        assert result is CheerActionType.ITEM_USE
+
+        result = await self.mapper.requireCheerActionType('use-item')
+        assert result is CheerActionType.ITEM_USE
+
+        result = await self.mapper.requireCheerActionType('use item')
+        assert result is CheerActionType.ITEM_USE
+
+        result = await self.mapper.requireCheerActionType('useitem')
+        assert result is CheerActionType.ITEM_USE
 
     @pytest.mark.asyncio
     async def test_requireCheerActionType_withVoicemailString(self):
@@ -559,6 +682,11 @@ class TestCheerActionJsonMapper:
     async def test_serializeCheerActionType_withGameShuffle(self):
         result = await self.mapper.serializeCheerActionType(CheerActionType.GAME_SHUFFLE)
         assert result == 'game_shuffle'
+
+    @pytest.mark.asyncio
+    async def test_serializeCheerActionType_withItemUse(self):
+        result = await self.mapper.serializeCheerActionType(CheerActionType.ITEM_USE)
+        assert result == 'item_use'
 
     @pytest.mark.asyncio
     async def test_serializeCheerActionType_withSoundAlert(self):
