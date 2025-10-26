@@ -1783,7 +1783,9 @@ beanStatsRepository: BeanStatsRepositoryInterface = BeanStatsRepository(
 ## Cheer Actions initialization section ##
 ##########################################
 
-cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper()
+cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper(
+    chatterInventoryMapper = chatterInventoryMapper,
+)
 
 cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = CheerActionSettingsRepository(
     settingsJsonReader = JsonFileReader(
