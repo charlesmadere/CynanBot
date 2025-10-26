@@ -52,6 +52,8 @@ from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from src.chatterInventory.helpers.stub.stubChatterInventoryHelper import StubChatterInventoryHelper
+from src.chatterInventory.mappers.chatterInventoryMapper import ChatterInventoryMapper
+from src.chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from src.cheerActions.cheerActionHelper import CheerActionHelper
 from src.cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
@@ -1777,6 +1779,13 @@ beanStatsRepository: BeanStatsRepositoryInterface = BeanStatsRepository(
     timeZoneRepository = timeZoneRepository,
     userIdsRepository = userIdsRepository
 )
+
+
+##############################################
+## Chatter Inventory initialization section ##
+##############################################
+
+chatterInventoryMapper: ChatterInventoryMapperInterface = ChatterInventoryMapper()
 
 
 ##########################################
