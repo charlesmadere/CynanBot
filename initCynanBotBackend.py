@@ -1814,8 +1814,8 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = StarWarsQuotesRepository(
     quotesJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = 'starWarsQuotesRepository.json'
-    )
+        fileName = 'starWarsQuotesRepository.json',
+    ),
 )
 
 
@@ -1824,13 +1824,13 @@ starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = StarWarsQuotesRepo
 ##################################
 
 jishoJsonMapper: JishoJsonMapperInterface = JishoJsonMapper(
-    timber = timber
+    timber = timber,
 )
 
 jishoApiService: JishoApiServiceInterface = JishoApiService(
     jishoJsonMapper = jishoJsonMapper,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
 jishoPresenter: JishoPresenterInterface = JishoPresenter()
@@ -1838,7 +1838,7 @@ jishoPresenter: JishoPresenterInterface = JishoPresenter()
 jishoHelper: JishoHelperInterface = JishoHelper(
     jishoApiService = jishoApiService,
     jishoPresenter = jishoPresenter,
-    timber = timber
+    timber = timber,
 )
 
 
