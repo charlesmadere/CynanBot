@@ -25,10 +25,6 @@ from src.aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from src.asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRepository
 from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
-from src.beanStats.beanStatsPresenter import BeanStatsPresenter
-from src.beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
-from src.beanStats.beanStatsRepository import BeanStatsRepository
-from src.beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
 from src.channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
 from src.channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
@@ -144,10 +140,8 @@ from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChat
 from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.networkClientProvider import NetworkClientProvider
-from src.network.networkClientType import NetworkClientType
 from src.network.networkJsonMapper import NetworkJsonMapper
 from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
-from src.network.requests.requestsClientProvider import RequestsClientProvider
 from src.openWeather.apiService.openWeatherApiService import OpenWeatherApiService
 from src.openWeather.apiService.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
 from src.openWeather.jsonMapper.openWeatherJsonMapper import OpenWeatherJsonMapper
@@ -557,26 +551,15 @@ match generalSettingsSnapshot.requireDatabaseType():
     case _:
         raise RuntimeError(f'Unknown/misconfigured DatabaseType: \"{generalSettingsSnapshot.requireDatabaseType()}\"')
 
-networkClientProvider: NetworkClientProvider
-match generalSettingsSnapshot.requireNetworkClientType():
-    case NetworkClientType.AIOHTTP:
-        aioHttpCookieJarProvider = AioHttpCookieJarProvider(
-            eventLoop = eventLoop,
-        )
+aioHttpCookieJarProvider = AioHttpCookieJarProvider(
+    eventLoop = eventLoop,
+)
 
-        networkClientProvider = AioHttpClientProvider(
-            eventLoop = eventLoop,
-            cookieJarProvider = aioHttpCookieJarProvider,
-            timber = timber,
-        )
-
-    case NetworkClientType.REQUESTS:
-        networkClientProvider = RequestsClientProvider(
-            timber = timber,
-        )
-
-    case _:
-        raise RuntimeError(f'Unknown/misconfigured NetworkClientType: \"{generalSettingsSnapshot.requireNetworkClientType()}\"')
+networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
+    eventLoop = eventLoop,
+    cookieJarProvider = aioHttpCookieJarProvider,
+    timber = timber,
+)
 
 authRepository = AuthRepository(
     authJsonReader = JsonFileReader(
@@ -1767,20 +1750,6 @@ recurringActionsEventHandler: AbsRecurringActionsEventHandler = RecurringActions
 )
 
 
-#################################
-## Bean initialization section ##
-#################################
-
-beanStatsPresenter: BeanStatsPresenterInterface = BeanStatsPresenter()
-
-beanStatsRepository: BeanStatsRepositoryInterface = BeanStatsRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    userIdsRepository = userIdsRepository
-)
-
-
 ##############################################
 ## Chatter Inventory initialization section ##
 ##############################################
@@ -1832,8 +1801,8 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = StarWarsQuotesRepository(
     quotesJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = 'starWarsQuotesRepository.json'
-    )
+        fileName = 'starWarsQuotesRepository.json',
+    ),
 )
 
 
@@ -1842,13 +1811,13 @@ starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = StarWarsQuotesRepo
 ##################################
 
 jishoJsonMapper: JishoJsonMapperInterface = JishoJsonMapper(
-    timber = timber
+    timber = timber,
 )
 
 jishoApiService: JishoApiServiceInterface = JishoApiService(
     jishoJsonMapper = jishoJsonMapper,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
 jishoPresenter: JishoPresenterInterface = JishoPresenter()
@@ -1856,7 +1825,7 @@ jishoPresenter: JishoPresenterInterface = JishoPresenter()
 jishoHelper: JishoHelperInterface = JishoHelper(
     jishoApiService = jishoApiService,
     jishoPresenter = jishoPresenter,
-    timber = timber
+    timber = timber,
 )
 
 
@@ -2187,8 +2156,8 @@ cynanBot = CynanBot(
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     bannedWordsRepository = bannedWordsRepository,
     beanChanceCheerActionHelper = None,
-    beanStatsPresenter = beanStatsPresenter,
-    beanStatsRepository = beanStatsRepository,
+    beanStatsPresenter = None,
+    beanStatsRepository = None,
     bizhawkSettingsRepository = None,
     chatActionsManager = chatActionsManager,
     chatLogger = chatLogger,

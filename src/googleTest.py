@@ -171,7 +171,6 @@ soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPla
 
 soundPlayerManager: SoundPlayerManagerInterface = AudioPlayerSoundPlayerManager(
     eventLoop = eventLoop,
-    chatBandInstrumentSoundsRepository = None,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository

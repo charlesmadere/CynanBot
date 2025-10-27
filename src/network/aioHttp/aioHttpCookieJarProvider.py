@@ -20,7 +20,7 @@ class AioHttpCookieJarProvider:
 
         if cookieJar is None:
             cookieJar = DummyCookieJar(
-                loop = self.__eventLoop
+                loop = self.__eventLoop,
             )
 
             self.__cookieJar = cookieJar

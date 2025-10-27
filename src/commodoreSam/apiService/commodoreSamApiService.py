@@ -6,7 +6,7 @@ from asyncio import AbstractEventLoop, CancelledError as AsyncioCancelledError
 from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
 from dataclasses import dataclass
-from typing import ByteString, Pattern
+from typing import ByteString, Final, Pattern
 
 import aiofiles
 import aiofiles.os
@@ -45,7 +45,7 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
         commodoreSamSettingsRepository: CommodoreSamSettingsRepositoryInterface,
         timber: TimberInterface,
         ttsDirectoryProvider: TtsDirectoryProviderInterface,
-        fileExtension: str = 'wav'
+        fileExtension: str = 'wav',
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -58,24 +58,24 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
         elif not utils.isValidStr(fileExtension):
             raise TypeError(f'fileExtension argument is malformed: \"{fileExtension}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__commodoreSamSettingsRepository: CommodoreSamSettingsRepositoryInterface = commodoreSamSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__ttsDirectoryProvider: TtsDirectoryProviderInterface = ttsDirectoryProvider
-        self.__fileExtension: str = fileExtension
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__commodoreSamSettingsRepository: Final[CommodoreSamSettingsRepositoryInterface] = commodoreSamSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__ttsDirectoryProvider: Final[TtsDirectoryProviderInterface] = ttsDirectoryProvider
+        self.__fileExtension: Final[str] = fileExtension
 
-        self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
+        self.__fileNameRegEx: Final[Pattern] = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
     async def __createTtsDirectory(self, ttsDirectory: str):
         if await aiofiles.ospath.exists(
             path = ttsDirectory,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             return
 
         await aiofiles.os.makedirs(
             name = ttsDirectory,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         )
 
         self.__timber.log('CommodoreSamApiService', f'Created new TTS directory ({ttsDirectory=})')
@@ -105,7 +105,7 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
             pitch = pitch,
             speed = speed,
             throat = throat,
-            fullArgumentString = fullArgumentString.strip()
+            fullArgumentString = fullArgumentString.strip(),
         )
 
     async def __generateFilePaths(self) -> FilePaths:
@@ -123,7 +123,7 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
             commodoreSamPath = os.path.normpath(commodoreSamPath),
             fileName = os.path.normpath(fileName),
             fullFilePath = os.path.normpath(fullFilePath),
-            ttsDirectory = os.path.normpath(ttsDirectory)
+            ttsDirectory = os.path.normpath(ttsDirectory),
         )
 
     async def generateSpeechFile(self, text: str) -> str:
@@ -136,7 +136,7 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
 
         if not await aiofiles.ospath.isfile(
             path = filePaths.commodoreSamPath,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             raise CommodoreSamExecutableIsMissingException(f'Couldn\'t find Commodore SAM executable ({filePaths=})')
 
@@ -151,12 +151,12 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
             commodoreSamProcess = await asyncio.create_subprocess_shell(
                 cmd = command,
                 stdout = asyncio.subprocess.PIPE,
-                stderr = asyncio.subprocess.PIPE
+                stderr = asyncio.subprocess.PIPE,
             )
 
             outputTuple = await asyncio.wait_for(
                 fut = commodoreSamProcess.communicate(),
-                timeout = 3
+                timeout = 3,
             )
         except BaseException as e:
             exception = e
@@ -176,7 +176,7 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
 
         if not await aiofiles.ospath.isfile(
             path = filePaths.fullFilePath,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             raise CommodoreSamFailedToGenerateSpeechFileException(f'Failed to generate speech file ({filePaths=}) ({command=}) ({outputString=}) ({exception=})')
 

@@ -46,7 +46,7 @@ class EccoResponseParser(EccoResponseParserInterface):
             'EDT': 'America/New_York',
             'EST': 'America/New_York',
             'PDT': 'America/Los_Angeles',
-            'PST': 'America/Los_Angeles'
+            'PST': 'America/Los_Angeles',
         })
 
         self.__htmlParser: Final[HTMLParser] = etree.HTMLParser(
@@ -97,7 +97,7 @@ class EccoResponseParser(EccoResponseParserInterface):
         result = etree.fromstring(
             text = htmlString,
             parser = self.__htmlParser,
-            base_url = self.__baseUrl
+            base_url = self.__baseUrl,
         )
 
         if result is None:
@@ -125,7 +125,10 @@ class EccoResponseParser(EccoResponseParserInterface):
 
         return None
 
-    async def __cleanDateTimeInfo(self, scriptTimer: str | None) -> CleanedDateTimeInfo | None:
+    async def __cleanDateTimeInfo(
+        self,
+        scriptTimer: str | Any | None,
+    ) -> CleanedDateTimeInfo | None:
         if not utils.isValidStr(scriptTimer):
             return None
 
@@ -145,7 +148,7 @@ class EccoResponseParser(EccoResponseParserInterface):
 
     async def __determineTimeZone(
         self,
-        timeZoneAbbreviation: str | Any | None
+        timeZoneAbbreviation: str | Any | None,
     ) -> tzinfo:
         if utils.isValidStr(timeZoneAbbreviation):
             fullTimeZoneName = self.__timeZoneAbbreviationToTimeZoneName.get(timeZoneAbbreviation, None)
