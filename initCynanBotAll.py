@@ -293,10 +293,8 @@ from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChat
 from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.networkClientProvider import NetworkClientProvider
-from src.network.networkClientType import NetworkClientType
 from src.network.networkJsonMapper import NetworkJsonMapper
 from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
-from src.network.requests.requestsClientProvider import RequestsClientProvider
 from src.openWeather.apiService.openWeatherApiService import OpenWeatherApiService
 from src.openWeather.apiService.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
 from src.openWeather.jsonMapper.openWeatherJsonMapper import OpenWeatherJsonMapper
@@ -801,26 +799,15 @@ match generalSettingsSnapshot.requireDatabaseType():
     case _:
         raise RuntimeError(f'Unknown/misconfigured DatabaseType: \"{generalSettingsSnapshot.requireDatabaseType()}\"')
 
-networkClientProvider: NetworkClientProvider
-match generalSettingsSnapshot.requireNetworkClientType():
-    case NetworkClientType.AIOHTTP:
-        aioHttpCookieJarProvider = AioHttpCookieJarProvider(
-            eventLoop = eventLoop,
-        )
+aioHttpCookieJarProvider = AioHttpCookieJarProvider(
+    eventLoop = eventLoop,
+)
 
-        networkClientProvider = AioHttpClientProvider(
-            eventLoop = eventLoop,
-            cookieJarProvider = aioHttpCookieJarProvider,
-            timber = timber,
-        )
-
-    case NetworkClientType.REQUESTS:
-        networkClientProvider = RequestsClientProvider(
-            timber = timber,
-        )
-
-    case _:
-        raise RuntimeError(f'Unknown/misconfigured NetworkClientType: \"{generalSettingsSnapshot.requireNetworkClientType()}\"')
+networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
+    eventLoop = eventLoop,
+    cookieJarProvider = aioHttpCookieJarProvider,
+    timber = timber,
+)
 
 authRepository = AuthRepository(
     authJsonReader = JsonFileReader(
