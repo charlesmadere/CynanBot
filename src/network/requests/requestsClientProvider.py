@@ -13,7 +13,7 @@ class RequestsClientProvider(NetworkClientProvider):
     def __init__(
         self,
         timber: TimberInterface,
-        timeoutSeconds: int = 30
+        timeoutSeconds: int = 30,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -28,7 +28,7 @@ class RequestsClientProvider(NetworkClientProvider):
     async def get(self) -> NetworkHandle:
         return RequestsHandle(
             timber = self.__timber,
-            timeoutSeconds = self.__timeoutSeconds
+            timeoutSeconds = self.__timeoutSeconds,
         )
 
     @property

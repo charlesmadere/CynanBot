@@ -38,7 +38,7 @@ class DecTalkApiService(DecTalkApiServiceInterface):
         decTalkSettingsRepository: DecTalkSettingsRepositoryInterface,
         timber: TimberInterface,
         ttsDirectoryProvider: TtsDirectoryProviderInterface,
-        fileExtension: str = 'wav'
+        fileExtension: str = 'wav',
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
