@@ -962,11 +962,11 @@ class CynanBot(
             self.__giveCutenessCommand: AbsChatCommand = StubChatCommand()
             self.__myCutenessCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__cutenessCommand: AbsChatCommand = CutenessChatCommand(cutenessPresenter, cutenessRepository, timber, twitchUtils, userIdsRepository, usersRepository)
-            self.__cutenessChampionsCommand: AbsChatCommand = CutenessChampionsChatCommand(cutenessPresenter, cutenessRepository, timber, twitchUtils, usersRepository)
-            self.__cutenessHistoryCommand: AbsChatCommand = CutenessHistoryChatCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
-            self.__giveCutenessCommand: AbsChatCommand = GiveCutenessChatCommand(cutenessRepository, timber, triviaUtils, authRepository, twitchUtils, userIdsRepository, usersRepository)
-            self.__myCutenessCommand: AbsChatCommand = MyCutenessChatCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, usersRepository)
+            self.__cutenessCommand: AbsChatCommand = CutenessChatCommand(cutenessPresenter, cutenessRepository, timber, twitchChatMessenger, userIdsRepository, usersRepository)
+            self.__cutenessChampionsCommand: AbsChatCommand = CutenessChampionsChatCommand(cutenessPresenter, cutenessRepository, timber, twitchChatMessenger, usersRepository)
+            self.__cutenessHistoryCommand: AbsChatCommand = CutenessHistoryChatCommand(cutenessRepository, cutenessUtils, timber, twitchChatMessenger, userIdsRepository, usersRepository)
+            self.__giveCutenessCommand: AbsChatCommand = GiveCutenessChatCommand(cutenessRepository, timber, triviaUtils, authRepository, twitchChatMessenger, userIdsRepository, usersRepository)
+            self.__myCutenessCommand: AbsChatCommand = MyCutenessChatCommand(cutenessRepository, cutenessUtils, timber, twitchChatMessenger, usersRepository)
 
         if funtoonTokensRepository is None:
             self.__setFuntoonTokenCommand: AbsChatCommand = StubChatCommand()
@@ -1003,7 +1003,7 @@ class CynanBot(
         if ttsChatterRepository is None:
             self.__removeTtsChatterCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__removeTtsChatterCommand: AbsChatCommand = RemoveTtsChatterChatCommand(timber, ttsChatterRepository, twitchUtils, usersRepository)
+            self.__removeTtsChatterCommand: AbsChatCommand = RemoveTtsChatterChatCommand(timber, ttsChatterRepository, twitchChatMessenger, usersRepository)
 
         if streamAlertsManager is None or ttsJsonMapper is None:
             self.__ttsCommand: AbsChatCommand = StubChatCommand()

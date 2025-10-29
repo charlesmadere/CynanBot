@@ -306,18 +306,11 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             itemType = utils.getStrFromDict(jsonContents, 'itemType'),
         )
 
-        itemQuantity = utils.getIntFromDict(
-            d = jsonContents,
-            key = 'itemQuantity',
-            fallback = 1,
-        )
-
         return ItemUseCheerAction(
             isEnabled = isEnabled,
             itemType = itemType,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            itemQuantity = itemQuantity,
             twitchChannelId = twitchChannelId,
         )
 
@@ -789,7 +782,6 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         jsonContents: dict[str, Any] = {
             'itemType': itemTypeString,
-            'itemQuantity': cheerAction.itemQuantity,
         }
 
         return json.dumps(jsonContents)

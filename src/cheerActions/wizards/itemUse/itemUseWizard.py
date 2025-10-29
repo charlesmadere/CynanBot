@@ -1,13 +1,14 @@
 from typing import Any, Final
 
-from .gameShuffleStep import GameShuffleStep
-from .gameShuffleSteps import GameShuffleSteps
+from .itemUseStep import ItemUseStep
+from .itemUseSteps import ItemUseSteps
 from ..absWizard import AbsWizard
 from ...cheerActionType import CheerActionType
+from ....chatterInventory.models.chatterItemType import ChatterItemType
 from ....misc import utils as utils
 
 
-class GameShuffleWizard(AbsWizard):
+class ItemUseWizard(AbsWizard):
 
     def __init__(
         self,
@@ -19,24 +20,24 @@ class GameShuffleWizard(AbsWizard):
             twitchChannelId = twitchChannelId,
         )
 
-        self.__steps: Final[GameShuffleSteps] = GameShuffleSteps()
+        self.__steps: Final[ItemUseSteps] = ItemUseSteps()
+        self.__itemType: ChatterItemType | None = None
         self.__bits: int | None = None
-        self.__gigaShuffleChance: int | None = None
 
     @property
     def cheerActionType(self) -> CheerActionType:
-        return CheerActionType.GAME_SHUFFLE
+        return CheerActionType.ITEM_USE
 
     @property
-    def currentStep(self) -> GameShuffleStep:
+    def currentStep(self) -> ItemUseStep:
         return self.__steps.currentStep
 
     @property
-    def gigaShuffleChance(self) -> int | None:
-        return self.__gigaShuffleChance
+    def itemType(self) -> ChatterItemType | None:
+        return self.__itemType
 
     def printOut(self) -> str:
-        return f'{self.__bits=}, {self.__gigaShuffleChance=}'
+        return f'{self.__bits=}, {self.__itemType=}'
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
@@ -50,6 +51,14 @@ class GameShuffleWizard(AbsWizard):
 
         return bits
 
+    def requireItemType(self) -> ChatterItemType:
+        itemType = self.__itemType
+
+        if itemType is None:
+            raise ValueError(f'itemType value has not been set: ({self=})')
+
+        return itemType
+
     def setBits(self, bits: int):
         if not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
@@ -58,23 +67,21 @@ class GameShuffleWizard(AbsWizard):
 
         self.__bits = bits
 
-    def setGigaShuffleChance(self, gigaShuffleChance: int):
-        if not utils.isValidInt(gigaShuffleChance):
-            raise TypeError(f'gigaShuffleChance argument is malformed: \"{gigaShuffleChance}\"')
-        elif gigaShuffleChance < 0 or gigaShuffleChance > 100:
-            raise ValueError(f'gigaShuffleChance argument is out of bounds: {gigaShuffleChance}')
+    def setItemType(self, itemType: ChatterItemType):
+        if not isinstance(itemType, ChatterItemType):
+            raise TypeError(f'itemType argument is malformed: \"{itemType}\"')
 
-        self.__gigaShuffleChance = gigaShuffleChance
+        self.__itemType = itemType
 
     @property
-    def steps(self) -> GameShuffleSteps:
+    def steps(self) -> ItemUseSteps:
         return self.__steps
 
     def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
             'currentStep': self.currentStep,
-            'gigaShuffleChance': self.__gigaShuffleChance,
+            'itemType': self.__itemType,
             'steps': self.__steps,
             'twitchChannel': self.twitchChannel,
             'twitchChannelId': self.twitchChannelId,

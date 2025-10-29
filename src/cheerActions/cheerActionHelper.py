@@ -6,6 +6,7 @@ from .beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActi
 from .cheerActionHelperInterface import CheerActionHelperInterface
 from .cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .crowdControl.crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
+from .itemUse.itemUseCheerActionHelperInterface import ItemUseCheerActionHelperInterface
 from .soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from .timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
 from .voicemail.voicemailCheerActionHelperInterface import VoicemailCheerActionHelperInterface
@@ -25,6 +26,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None,
         cheerActionsRepository: CheerActionsRepositoryInterface,
         crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface | None,
+        itemUseCheerActionHelper: ItemUseCheerActionHelperInterface | None,
         soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None,
         timeoutCheerActionHelper: TimeoutCheerActionHelperInterface | None,
         twitchHandleProvider: TwitchHandleProviderInterface,
@@ -42,6 +44,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif crowdControlCheerActionHelper is not None and not isinstance(crowdControlCheerActionHelper, CrowdControlCheerActionHelperInterface):
             raise TypeError(f'crowdControlCheerActionHelper argument is malformed: \"{crowdControlCheerActionHelper}\"')
+        elif itemUseCheerActionHelper is not None and not isinstance(itemUseCheerActionHelper, ItemUseCheerActionHelperInterface):
+            raise TypeError(f'itemUseCheerActionHelper argument is malformed: \"{itemUseCheerActionHelper}\"')
         elif soundAlertCheerActionHelper is not None and not isinstance(soundAlertCheerActionHelper, SoundAlertCheerActionHelperInterface):
             raise TypeError(f'soundAlertCheerActionHelper argument is malformed: \"{soundAlertCheerActionHelper}\"')
         elif timeoutCheerActionHelper is not None and not isinstance(timeoutCheerActionHelper, TimeoutCheerActionHelperInterface):
@@ -60,6 +64,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__beanChanceCheerActionHelper: Final[BeanChanceCheerActionHelperInterface | None] = beanChanceCheerActionHelper
         self.__cheerActionsRepository: Final[CheerActionsRepositoryInterface] = cheerActionsRepository
         self.__crowdControlCheerActionHelper: Final[CrowdControlCheerActionHelperInterface | None] = crowdControlCheerActionHelper
+        self.__itemUseCheerActionHelper: Final[ItemUseCheerActionHelperInterface | None] = itemUseCheerActionHelper
         self.__soundAlertCheerActionHelper: Final[SoundAlertCheerActionHelperInterface | None] = soundAlertCheerActionHelper
         self.__timeoutCheerActionHelper: Final[TimeoutCheerActionHelperInterface | None] = timeoutCheerActionHelper
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
@@ -163,6 +168,21 @@ class CheerActionHelper(CheerActionHelperInterface):
             return True
 
         elif self.__crowdControlCheerActionHelper is not None and await self.__crowdControlCheerActionHelper.handleCrowdControlCheerAction(
+            actions = actions,
+            bits = bits,
+            cheerUserId = cheerUserId,
+            cheerUserName = cheerUserName,
+            message = message,
+            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
+            moderatorUserId = moderatorUserId,
+            twitchChannelId = twitchChannelId,
+            twitchChatMessageId = twitchChatMessageId,
+            userTwitchAccessToken = userTwitchAccessToken,
+            user = user,
+        ):
+            return True
+
+        elif self.__itemUseCheerActionHelper is not None and await self.__itemUseCheerActionHelper.handleItemUseCheerAction(
             actions = actions,
             bits = bits,
             cheerUserId = cheerUserId,
