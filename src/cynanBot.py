@@ -25,6 +25,7 @@ from .chatCommands.addCrowdControlCheerActionChatCommand import AddCrowdControlC
 from .chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
 from .chatCommands.addGameShuffleCheerActionChatCommand import AddGameShuffleCheerActionChatCommand
 from .chatCommands.addGlobalTriviaControllerChatCommand import AddGlobalTriviaControllerChatCommand
+from .chatCommands.addItemUseCheerActionChatCommand import AddItemUseCheerActionChatCommand
 from .chatCommands.addRecurringCutenessActionChatCommand import AddRecurringCutenessActionChatCommand
 from .chatCommands.addRecurringSuperTriviaActionChatCommand import AddRecurringSuperTriviaActionChatCommand
 from .chatCommands.addRecurringWeatherActionChatCommand import AddRecurringWeatherActionChatCommand
@@ -849,6 +850,7 @@ class CynanBot(
             self.__addAirStrikeCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addCrowdControlCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addGameShuffleCheerActionCommand: AbsChatCommand = StubChatCommand()
+            self.__addItemUseCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addTimeoutCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__addVoicemailCheerActionCommand: AbsChatCommand = StubChatCommand()
@@ -861,6 +863,7 @@ class CynanBot(
             self.__addAirStrikeCheerActionCommand: AbsChatCommand = AddAirStrikeCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchChatMessenger, usersRepository)
             self.__addCrowdControlCheerActionCommand: AbsChatCommand = AddCrowdControlCheerActionChatCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addGameShuffleCheerActionCommand: AbsChatCommand = AddGameShuffleCheerActionChatCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
+            self.__addItemUseCheerActionCommand: AbsChatCommand = AddItemUseCheerActionChatCommand(administratorProvider, cheerActionsWizard, timber, twitchChatMessenger, usersRepository)
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = AddSoundAlertCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addTimeoutCheerActionCommand: AbsChatCommand = AddTimeoutCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
             self.__addVoicemailCheerActionCommand: AbsChatCommand = AddVoicemailCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchUtils, usersRepository)
@@ -1282,6 +1285,11 @@ class CynanBot(
     async def command_addglobaltriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addGlobalTriviaControllerCommand.handleChatCommand(context)
+
+    @commands.command(name = 'additemuseaction')
+    async def command_additemuseaction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__addItemUseCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'addrecurringcutenessaction')
     async def command_addrecurringcutenessaction(self, ctx: Context):
