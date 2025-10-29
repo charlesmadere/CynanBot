@@ -449,7 +449,7 @@ class CynanBot(
             prefix = '!',
             retain_cache = True,
             token = authRepository.getAll().requireTwitchIrcAuthToken(),
-            heartbeat = 15
+            heartbeat = 15,
         )
 
         if not isinstance(eventLoop, AbstractEventLoop):
