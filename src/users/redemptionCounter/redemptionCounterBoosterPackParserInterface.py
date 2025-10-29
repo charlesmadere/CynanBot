@@ -11,13 +11,13 @@ class RedemptionCounterBoosterPackParserInterface(ABC):
     @abstractmethod
     def parseBoosterPack(
         self,
-        jsonContents: dict[str, Any]
+        jsonContents: dict[str, Any],
     ) -> RedemptionCounterBoosterPack:
         pass
 
     @abstractmethod
     def parseBoosterPacks(
         self,
-        jsonContents: list[dict[str, Any]] | Any | None
+        jsonContents: list[dict[str, Any]] | Any | None,
     ) -> frozendict[str, RedemptionCounterBoosterPack] | None:
         pass

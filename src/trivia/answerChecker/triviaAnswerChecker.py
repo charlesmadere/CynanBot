@@ -1083,7 +1083,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'frames per second'
         if word == 'ftp':
             yield 'file transfer protocol'
-        if word == 'goog':
+        if word in { 'goog', 'googl' }:
             yield 'google'
         if word == 'gps':
             yield 'global positioning system'
@@ -1105,6 +1105,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'internet protocol'
         if word in { 'ms', 'msft' }:
             yield 'microsoft'
+        if word in { 'net', 'network' }:
+            yield 'internet'
         if word == 'op':
             yield 'operand'
             yield 'operation'
@@ -1145,6 +1147,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'vhs':
             yield 'video home system'
         if word == 'www':
+            yield 'internet'
+            yield 'web'
             yield 'world wide web'
 
         # units and measurements (imperial and metric)

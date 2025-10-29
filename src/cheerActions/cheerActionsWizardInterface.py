@@ -19,6 +19,6 @@ class CheerActionsWizardInterface(ABC):
         self,
         cheerActionType: CheerActionType,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AbsWizard:
         pass

@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from frozendict import frozendict
 
@@ -29,7 +30,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         backingDatabase: BackingDatabase,
         cheerActionJsonMapper: CheerActionJsonMapperInterface,
         cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -40,13 +41,13 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__cheerActionJsonMapper: CheerActionJsonMapperInterface = cheerActionJsonMapper
-        self.__cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = cheerActionSettingsRepository
-        self.__timber: TimberInterface = timber
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__cheerActionJsonMapper: Final[CheerActionJsonMapperInterface] = cheerActionJsonMapper
+        self.__cheerActionSettingsRepository: Final[CheerActionSettingsRepositoryInterface] = cheerActionSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
 
         self.__isDatabaseReady: bool = False
-        self.__cache: dict[str, frozendict[int, AbsCheerAction]] = dict()
+        self.__cache: Final[dict[str, frozendict[int, AbsCheerAction]]] = dict()
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -59,7 +60,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         actionType: CheerActionType,
         bits: int,
         configurationJson: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AbsCheerAction:
         if not utils.isValidBool(isEnabled):
             raise TypeError(f'isEnabled argument is malformed: \"{isEnabled}\"')
@@ -83,7 +84,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                     streamStatusRequirement = streamStatusRequirement,
                     bits = bits,
                     jsonString = configurationJson,
-                    twitchChannelId = twitchChannelId
+                    twitchChannelId = twitchChannelId,
                 )
 
             case CheerActionType.AIR_STRIKE:
@@ -92,7 +93,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                     streamStatusRequirement = streamStatusRequirement,
                     bits = bits,
                     jsonString = configurationJson,
-                    twitchChannelId = twitchChannelId
+                    twitchChannelId = twitchChannelId,
                 )
 
             case CheerActionType.BEAN_CHANCE:
@@ -101,7 +102,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                     streamStatusRequirement = streamStatusRequirement,
                     bits = bits,
                     jsonString = configurationJson,
-                    twitchChannelId = twitchChannelId
+                    twitchChannelId = twitchChannelId,
                 )
 
             case CheerActionType.CROWD_CONTROL:
@@ -110,7 +111,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                     streamStatusRequirement = streamStatusRequirement,
                     bits = bits,
                     jsonString = configurationJson,
-                    twitchChannelId = twitchChannelId
+                    twitchChannelId = twitchChannelId,
                 )
 
             case CheerActionType.GAME_SHUFFLE:
@@ -119,7 +120,16 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                     streamStatusRequirement = streamStatusRequirement,
                     bits = bits,
                     jsonString = configurationJson,
-                    twitchChannelId = twitchChannelId
+                    twitchChannelId = twitchChannelId,
+                )
+
+            case CheerActionType.ITEM_USE:
+                return await self.__cheerActionJsonMapper.requireItemUseCheerAction(
+                    isEnabled = isEnabled,
+                    streamStatusRequirement = streamStatusRequirement,
+                    bits = bits,
+                    jsonString = configurationJson,
+                    twitchChannelId = twitchChannelId,
                 )
 
             case CheerActionType.SOUND_ALERT:
@@ -128,7 +138,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                     streamStatusRequirement = streamStatusRequirement,
                     bits = bits,
                     jsonString = configurationJson,
-                    twitchChannelId = twitchChannelId
+                    twitchChannelId = twitchChannelId,
                 )
 
             case CheerActionType.TIMEOUT:
@@ -137,7 +147,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                     streamStatusRequirement = streamStatusRequirement,
                     bits = bits,
                     jsonString = configurationJson,
-                    twitchChannelId = twitchChannelId
+                    twitchChannelId = twitchChannelId,
                 )
 
             case CheerActionType.VOICEMAIL:
@@ -146,7 +156,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                     streamStatusRequirement = streamStatusRequirement,
                     bits = bits,
                     jsonString = configurationJson,
-                    twitchChannelId = twitchChannelId
+                    twitchChannelId = twitchChannelId,
                 )
 
             case _:
@@ -160,7 +170,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
 
         action = await self.getAction(
             bits = bits,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if action is None:
@@ -193,7 +203,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         return await self.__enableOrDisableAction(
             enable = False,
             bits = bits,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def enableAction(self, bits: int, twitchChannelId: str) -> EditCheerActionResult:
@@ -207,14 +217,14 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         return await self.__enableOrDisableAction(
             enable = True,
             bits = bits,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def __enableOrDisableAction(
         self,
         enable: bool,
         bits: int,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> EditCheerActionResult:
         if not utils.isValidBool(enable):
             raise TypeError(f'enable argument is malformed: \"{enable}\"')
@@ -227,13 +237,13 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
 
         action = await self.getAction(
             bits = bits,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if action is None:
             return NotFoundEditCheerActionResult(
                 bits = bits,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
         elif enable and action.isEnabled:
             return AlreadyEnabledEditCheerActionResult(action)
@@ -255,7 +265,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
 
         action = await self.getAction(
             bits = bits,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if action is None:
@@ -318,7 +328,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                     actionType = actionType,
                     streamStatusRequirement = streamStatusRequirement,
                     configurationJson = configurationJson,
-                    twitchChannelId = twitchChannelId
+                    twitchChannelId = twitchChannelId,
                 )
 
                 actions[bits] = cheerAction
@@ -386,7 +396,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
 
         existingAction = await self.getAction(
             bits = action.bits,
-            twitchChannelId = action.twitchChannelId
+            twitchChannelId = action.twitchChannelId,
         )
 
         if existingAction is not None:

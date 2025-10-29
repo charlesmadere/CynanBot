@@ -2,6 +2,8 @@ import traceback
 from typing import Final
 
 from .absChatAction import AbsChatAction
+from ..chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
+from ..chatterInventory.models.chatterItemType import ChatterItemType
 from ..cheerActions.airStrike.airStrikeCheerAction import AirStrikeCheerAction
 from ..cheerActions.beanChance.beanChanceCheerAction import BeanChanceCheerAction
 from ..cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
@@ -10,6 +12,7 @@ from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositor
 from ..cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from ..cheerActions.crowdControl.crowdControlButtonPressCheerAction import CrowdControlButtonPressCheerAction
 from ..cheerActions.crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
+from ..cheerActions.itemUse.itemUseCheerAction import ItemUseCheerAction
 from ..cheerActions.soundAlert.soundAlertCheerAction import SoundAlertCheerAction
 from ..cheerActions.timeout.timeoutCheerAction import TimeoutCheerAction
 from ..cheerActions.timeout.timeoutCheerActionTargetType import TimeoutCheerActionTargetType
@@ -22,6 +25,8 @@ from ..cheerActions.wizards.crowdControl.crowdControlStep import CrowdControlSte
 from ..cheerActions.wizards.crowdControl.crowdControlWizard import CrowdControlWizard
 from ..cheerActions.wizards.gameShuffle.gameShuffleStep import GameShuffleStep
 from ..cheerActions.wizards.gameShuffle.gameShuffleWizard import GameShuffleWizard
+from ..cheerActions.wizards.itemUse.itemUseStep import ItemUseStep
+from ..cheerActions.wizards.itemUse.itemUseWizard import ItemUseWizard
 from ..cheerActions.wizards.soundAlert.soundAlertStep import SoundAlertStep
 from ..cheerActions.wizards.soundAlert.soundAlertWizard import SoundAlertWizard
 from ..cheerActions.wizards.stepResult import StepResult
@@ -41,13 +46,16 @@ class CheerActionsWizardChatAction(AbsChatAction):
 
     def __init__(
         self,
+        chatterInventoryMapper: ChatterInventoryMapperInterface,
         cheerActionJsonMapper: CheerActionJsonMapperInterface,
         cheerActionsRepository: CheerActionsRepositoryInterface,
         cheerActionsWizard: CheerActionsWizardInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
-        if not isinstance(cheerActionJsonMapper, CheerActionJsonMapperInterface):
+        if not isinstance(chatterInventoryMapper, ChatterInventoryMapperInterface):
+            raise TypeError(f'chatterInventoryMapper argument is malformed: \"{chatterInventoryMapper}\"')
+        elif not isinstance(cheerActionJsonMapper, CheerActionJsonMapperInterface):
             raise TypeError(f'cheerActionJsonMapper argument is malformed: \"{cheerActionJsonMapper}\"')
         elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
@@ -58,6 +66,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
+        self.__chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = chatterInventoryMapper
         self.__cheerActionJsonMapper: Final[CheerActionJsonMapperInterface] = cheerActionJsonMapper
         self.__cheerActionsRepository: Final[CheerActionsRepositoryInterface] = cheerActionsRepository
         self.__cheerActionsWizard: Final[CheerActionsWizardInterface] = cheerActionsWizard
@@ -68,7 +77,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
         self,
         content: str,
         wizard: AirStrikeWizard,
-        message: TwitchMessage
+        message: TwitchMessage,
     ) -> bool:
         steps = wizard.steps
 
@@ -143,7 +152,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     minDurationSeconds = wizard.requireMinDurationSeconds(),
                     maxTimeoutChatters = wizard.requireMaxTimeoutChatters(),
                     minTimeoutChatters = wizard.requireMinTimeoutChatters(),
-                    twitchChannelId = wizard.twitchChannelId
+                    twitchChannelId = wizard.twitchChannelId,
                 ))
 
                 self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Air Strike wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
@@ -193,7 +202,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
         self,
         content: str,
         wizard: BeanChanceWizard,
-        message: TwitchMessage
+        message: TwitchMessage,
     ) -> bool:
         steps = wizard.steps
 
@@ -235,7 +244,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
                     bits = wizard.requireBits(),
                     randomChance = wizard.requireRandomChance(),
-                    twitchChannelId = wizard.twitchChannelId
+                    twitchChannelId = wizard.twitchChannelId,
                 ))
 
                 self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Bean Chance wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
@@ -272,7 +281,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
         self,
         content: str,
         wizard: CrowdControlWizard,
-        message: TwitchMessage
+        message: TwitchMessage,
     ) -> bool:
         steps = wizard.steps
 
@@ -303,7 +312,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     isEnabled = True,
                     streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
                     bits = wizard.requireBits(),
-                    twitchChannelId = wizard.twitchChannelId
+                    twitchChannelId = wizard.twitchChannelId,
                 ))
 
                 self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Crowd Control wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
@@ -337,7 +346,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
         self,
         content: str,
         wizard: GameShuffleWizard,
-        message: TwitchMessage
+        message: TwitchMessage,
     ) -> bool:
         steps = wizard.steps
 
@@ -379,7 +388,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
                     bits = wizard.requireBits(),
                     gigaShuffleChance = wizard.gigaShuffleChance,
-                    twitchChannelId = wizard.twitchChannelId
+                    twitchChannelId = wizard.twitchChannelId,
                 ))
 
                 self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Game Shuffle wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
@@ -413,11 +422,98 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                 return True
 
+    async def __configureItemUseWizard(
+        self,
+        content: str,
+        wizard: ItemUseWizard,
+        message: TwitchMessage,
+    ) -> bool:
+        steps = wizard.steps
+
+        match steps.currentStep:
+            case ItemUseStep.BITS:
+                try:
+                    bits = int(content)
+                    wizard.setBits(bits)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for item Use wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__send(message, f'⚠ The Item Use wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case ItemUseStep.ITEM_TYPE:
+                try:
+                    itemType = await self.__chatterInventoryMapper.requireItemType(content)
+                    wizard.setItemType(itemType)
+                except Exception as e:
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set item type value for Item Use wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    await self.__send(message, f'⚠ The item Use wizard encountered an error, please try again')
+                    await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                    return True
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Item Use wizard is in an invalid state ({wizard=}) ({content=})')
+                await self.__send(message, f'⚠ The Item Use wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+        stepResult = steps.stepForward()
+
+        match stepResult:
+            case StepResult.DONE:
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+
+                await self.__cheerActionsRepository.setAction(ItemUseCheerAction(
+                    isEnabled = True,
+                    streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
+                    bits = wizard.requireBits(),
+                    itemType = wizard.requireItemType(),
+                    twitchChannelId = wizard.twitchChannelId,
+                ))
+
+                self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Item Use wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
+                await self.__send(message, f'ⓘ Finished configuring Item Use ({wizard.printOut()})')
+                return True
+
+            case StepResult.NEXT:
+                # this is intentionally empty
+                pass
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Item Use wizard is in an invalid state ({wizard=}) ({content=})')
+                await self.__send(message, f'⚠ The Item Use wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+        match steps.currentStep:
+            case ItemUseStep.BITS:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Item Use wizard is in an invalid state ({wizard=}) ({content=})')
+                await self.__send(message, f'⚠ The Item Use wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
+            case ItemUseStep.ITEM_TYPE:
+                itemTypeStrings: list[str] = list()
+
+                for itemType in ChatterItemType:
+                    itemTypeString = await self.__chatterInventoryMapper.serializeItemType(itemType)
+                    itemTypeStrings.append(itemTypeString)
+
+                itemTypesString = ', '.join(itemTypeStrings)
+                await self.__send(message, f'ⓘ Next, please specify the Item Use\'s item type. This value must be one of the following: {itemTypesString}.')
+                return True
+
+            case _:
+                self.__timber.log('CheerActionsWizardChatAction', f'The Item Use wizard is in an invalid state ({wizard=}) ({content=})')
+                await self.__send(message, f'⚠ The Item Use wizard is in an invalid state, please try again')
+                await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
+                return True
+
     async def __configureSoundAlertWizard(
         self,
         content: str,
         wizard: SoundAlertWizard,
-        message: TwitchMessage
+        message: TwitchMessage,
     ) -> bool:
         steps = wizard.steps
 
@@ -458,7 +554,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
                     bits = wizard.requireBits(),
                     directory = wizard.requireDirectory(),
-                    twitchChannelId = wizard.twitchChannelId
+                    twitchChannelId = wizard.twitchChannelId,
                 ))
 
                 self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Sound Alert wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
@@ -496,7 +592,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
         self,
         content: str,
         wizard: TimeoutWizard,
-        message: TwitchMessage
+        message: TwitchMessage,
     ) -> bool:
         steps = wizard.steps
 
@@ -570,7 +666,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     bits = wizard.requireBits(),
                     durationSeconds = wizard.requireDurationSeconds(),
                     twitchChannelId = wizard.twitchChannelId,
-                    targetType = wizard.requireTargetType()
+                    targetType = wizard.requireTargetType(),
                 ))
 
                 self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Timeout wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
@@ -634,7 +730,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
         self,
         content: str,
         wizard: VoicemailWizard,
-        message: TwitchMessage
+        message: TwitchMessage,
     ) -> bool:
         steps = wizard.steps
 
@@ -665,7 +761,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     isEnabled = True,
                     streamStatusRequirement = CheerActionStreamStatusRequirement.ONLINE,
                     bits = wizard.requireBits(),
-                    twitchChannelId = wizard.twitchChannelId
+                    twitchChannelId = wizard.twitchChannelId,
                 ))
 
                 self.__timber.log('CheerActionsWizardChatAction', f'Finished configuring Voicemail wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
@@ -699,7 +795,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
         self,
         mostRecentChat: MostRecentChat | None,
         message: TwitchMessage,
-        user: UserInterface
+        user: UserInterface,
     ) -> bool:
         content = utils.cleanStr(message.getContent())
         twitchChannelId = await message.getTwitchChannelId()
@@ -712,49 +808,56 @@ class CheerActionsWizardChatAction(AbsChatAction):
             return await self.__configureAirStrikeWizard(
                 content = content,
                 wizard = wizard,
-                message = message
+                message = message,
             )
 
         elif isinstance(wizard, BeanChanceWizard):
             return await self.__configureBeanChanceWizard(
                 content = content,
                 wizard = wizard,
-                message = message
+                message = message,
             )
 
         elif isinstance(wizard, CrowdControlWizard):
             return await self.__configureCrowdControlWizard(
                 content = content,
                 wizard = wizard,
-                message = message
+                message = message,
             )
 
         elif isinstance(wizard, GameShuffleWizard):
             return await self.__configureGameShuffleWizard(
                 content = content,
                 wizard = wizard,
-                message = message
+                message = message,
+            )
+
+        elif isinstance(wizard, ItemUseWizard):
+            return await self.__configureItemUseWizard(
+                content = content,
+                wizard = wizard,
+                message = message,
             )
 
         elif isinstance(wizard, SoundAlertWizard):
             return await self.__configureSoundAlertWizard(
                 content = content,
                 wizard = wizard,
-                message = message
+                message = message,
             )
 
         elif isinstance(wizard, TimeoutWizard):
             return await self.__configureTimeoutWizard(
                 content = content,
                 wizard = wizard,
-                message = message
+                message = message,
             )
 
         elif isinstance(wizard, VoicemailWizard):
             return await self.__configureVoicemailWizard(
                 content = content,
                 wizard = wizard,
-                message = message
+                message = message,
             )
 
         else:

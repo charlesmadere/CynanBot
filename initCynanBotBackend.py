@@ -1785,6 +1785,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     beanChanceCheerActionHelper = None,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = None,
+    itemUseCheerActionHelper = None,
     soundAlertCheerActionHelper = None,
     timeoutCheerActionHelper = None,
     twitchHandleProvider = authRepository,
@@ -1854,10 +1855,11 @@ chatLoggerChatAction = ChatLoggerChatAction(
 )
 
 cheerActionsWizard: CheerActionsWizardInterface = CheerActionsWizard(
-    timber = timber
+    timber = timber,
 )
 
 cheerActionsWizardChatAction = CheerActionsWizardChatAction(
+    chatterInventoryMapper = chatterInventoryMapper,
     cheerActionJsonMapper = cheerActionJsonMapper,
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
