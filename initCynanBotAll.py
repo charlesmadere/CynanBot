@@ -107,6 +107,8 @@ from src.cheerActions.cheerActionsWizard import CheerActionsWizard
 from src.cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from src.cheerActions.crowdControl.crowdControlCheerActionHelper import CrowdControlCheerActionHelper
 from src.cheerActions.crowdControl.crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
+from src.cheerActions.itemUse.itemUseCheerActionHelper import ItemUseCheerActionHelper
+from src.cheerActions.itemUse.itemUseCheerActionHelperInterface import ItemUseCheerActionHelperInterface
 from src.cheerActions.settings.cheerActionSettingsRepository import CheerActionSettingsRepository
 from src.cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from src.cheerActions.soundAlert.soundAlertCheerActionHelper import SoundAlertCheerActionHelper
@@ -2850,6 +2852,12 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface = BeanChanceCh
     twitchChatMessenger = twitchChatMessenger,
 )
 
+itemUseCheerActionHelper: ItemUseCheerActionHelperInterface = ItemUseCheerActionHelper(
+    chatterInventoryIdGenerator = chatterInventoryIdGenerator,
+    chatterInventorySettings = chatterInventorySettings,
+    useChatterItemHelper = useChatterItemHelper,
+)
+
 soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface = SoundAlertCheerActionHelper(
     backgroundTaskHelper = backgroundTaskHelper,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
@@ -2876,7 +2884,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     beanChanceCheerActionHelper = beanChanceCheerActionHelper,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = crowdControlCheerActionHelper,
-    itemUseCheerActionHelper = None,
+    itemUseCheerActionHelper = itemUseCheerActionHelper,
     soundAlertCheerActionHelper = soundAlertCheerActionHelper,
     timeoutCheerActionHelper = timeoutCheerActionHelper,
     twitchHandleProvider = authRepository,
