@@ -1781,17 +1781,14 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     adgeCheerActionHelper = None,
-    airStrikeCheerActionHelper = None,
     beanChanceCheerActionHelper = None,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = None,
     itemUseCheerActionHelper = None,
     soundAlertCheerActionHelper = None,
-    timeoutCheerActionHelper = None,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
-    voicemailCheerActionHelper = None,
 )
 
 
