@@ -444,7 +444,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         self,
         event: CopyAnivMessageTimeoutFailedTimeoutEvent,
     ):
-        # this method is intentionally empty
+        # this event type is intentionally ignored
         pass
 
     async def __handleGrenadeTimeoutEvent(
@@ -474,14 +474,14 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         self,
         event: GrenadeTimeoutFailedTimeoutEvent,
     ):
-        # this method is intentionally empty
+        # this event type is intentionally ignored
         pass
 
     async def __handleIncorrectLiveStatusTimeoutEvent(
         self,
         event: IncorrectLiveStatusTimeoutEvent,
     ):
-        # this method is intentionally empty
+        # this event type is intentionally ignored
         pass
 
     async def __handleNoAirStrikeInventoryAvailableTimeoutEvent(
@@ -615,7 +615,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         self,
         event: Tm36TimeoutFailedTimeoutEvent,
     ):
-        # this method is intentionally empty
+        # this event type is intentionally ignored
         pass
 
     async def __handleVoreTargetIsImmuneTimeoutEvent(
@@ -646,13 +646,14 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         self.__twitchChatMessenger.send(
             text = f'{event.ripBozoEmote} @{event.instigatorUserName} used {ChatterItemType.VORE.humanName} on @{event.timeoutTarget.userName}! {remainingInventoryString}',
             twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
         )
 
     async def __handleVoreTimeoutFailedTimeoutEvent(
         self,
         event: VoreTimeoutFailedTimeoutEvent,
     ):
-        # this method is intentionally empty
+        # this event type is intentionally ignored
         pass
 
     def setTwitchConnectionReadinessProvider(self, provider: TwitchConnectionReadinessProvider | None):

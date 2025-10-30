@@ -2880,17 +2880,14 @@ voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheer
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     adgeCheerActionHelper = None,
-    airStrikeCheerActionHelper = airStrikeCheerActionHelper,
     beanChanceCheerActionHelper = beanChanceCheerActionHelper,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = crowdControlCheerActionHelper,
     itemUseCheerActionHelper = itemUseCheerActionHelper,
     soundAlertCheerActionHelper = soundAlertCheerActionHelper,
-    timeoutCheerActionHelper = timeoutCheerActionHelper,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
-    voicemailCheerActionHelper = voicemailCheerActionHelper,
 )
 
 
