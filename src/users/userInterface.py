@@ -85,6 +85,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def areTtsChattersEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def blueSkyUrl(self) -> str | None:
         pass
 
@@ -520,11 +525,6 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def areTtsChattersEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
     def isTtsEnabled(self) -> bool:
         pass
 
@@ -536,6 +536,11 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def isVulnerableChattersEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def isWatchStreakTtsAnnounceEnabled(self) -> bool:
         pass
 
     @property

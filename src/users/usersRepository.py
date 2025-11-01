@@ -212,6 +212,7 @@ class UsersRepository(UsersRepositoryInterface):
         isTtsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.TTS_ENABLED.jsonKey, False)
         isVoicemailEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.VOICEMAIL_ENABLED.jsonKey, False)
         isVulnerableChattersEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.VULNERABLE_CHATTERS_ENABLED.jsonKey, False)
+        isWatchStreakTtsAnnounceEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.WATCH_STREAK_TTS_ANNOUNCE_ENABLED.jsonKey, False)
         isWeatherEnabled = utils.getBoolFromDict(userJson, 'weatherEnabled', False)
         isWordOfTheDayEnabled = utils.getBoolFromDict(userJson, 'wordOfTheDayEnabled', False)
         minimumRaidViewersForNotification = utils.getIntFromDict(userJson, 'minimumRaidViewersForNotification', 2)
@@ -233,7 +234,7 @@ class UsersRepository(UsersRepositoryInterface):
         defaultLanguageString = utils.getStrFromDict(
             d = userJson,
             key = 'defaultLanguage',
-            fallback = self.__languageEntryJsonMapper.serializeLanguageEntry(LanguageEntry.ENGLISH)
+            fallback = self.__languageEntryJsonMapper.serializeLanguageEntry(LanguageEntry.ENGLISH),
         )
 
         defaultLanguage = self.__languageEntryJsonMapper.requireLanguageEntry(defaultLanguageString)
@@ -410,6 +411,7 @@ class UsersRepository(UsersRepositoryInterface):
             areRecurringActionsEnabled = areRecurringActionsEnabled,
             areRedemptionCountersEnabled = areRedemptionCountersEnabled,
             areSoundAlertsEnabled = areSoundAlertsEnabled,
+            areTtsChattersEnabled = areTtsChattersEnabled,
             isAnivContentScanningEnabled = isAnivContentScanningEnabled,
             isAnivMessageCopyTimeoutChatReportingEnabled = isAnivMessageCopyTimeoutChatReportingEnabled,
             isAnivMessageCopyTimeoutEnabled = isAnivMessageCopyTimeoutEnabled,
@@ -451,10 +453,10 @@ class UsersRepository(UsersRepositoryInterface):
             isTranslateEnabled = isTranslateEnabled,
             isTriviaGameEnabled = isTriviaGameEnabled,
             isTriviaScoreEnabled = isTriviaScoreEnabled,
-            areTtsChattersEnabled = areTtsChattersEnabled,
             isTtsEnabled = isTtsEnabled,
             isVoicemailEnabled = isVoicemailEnabled,
             isVulnerableChattersEnabled = isVulnerableChattersEnabled,
+            isWatchStreakTtsAnnounceEnabled = isWatchStreakTtsAnnounceEnabled,
             isWeatherEnabled = isWeatherEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
             anivMessageCopyTimeoutProbability = anivMessageCopyTimeoutProbability,

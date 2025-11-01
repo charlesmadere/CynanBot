@@ -139,6 +139,10 @@ class TestUserJsonConstants:
         result = UserJsonConstant.VULNERABLE_CHATTERS_ENABLED.jsonKey
         assert result == 'vulnerableChattersEnabled'
 
+    def test_jsonKey_withWatchStreakTtsAnnounceEnabled(self):
+        result = UserJsonConstant.WATCH_STREAK_TTS_ANNOUNCE_ENABLED.jsonKey
+        assert result == 'watchStreakTtsAnnounceEnabled'
+
     def test_jsonKey_withWeatherEnabled(self):
         result = UserJsonConstant.WEATHER_ENABLED.jsonKey
         assert result == 'weatherEnabled'

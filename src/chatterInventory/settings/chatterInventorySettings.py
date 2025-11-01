@@ -33,7 +33,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         ),
         defaultBananaItemDetails: BananaItemDetails = BananaItemDetails(
             randomChanceEnabled = True,
-            durationSeconds = 60,
+            durationSeconds = 180, # 3 minutes
         ),
         defaultGashaponItemDetails: GashaponItemDetails = GashaponItemDetails(
             pullRates = frozendict({
