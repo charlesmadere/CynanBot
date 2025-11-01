@@ -85,6 +85,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def areTtsChattersEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def blueSkyUrl(self) -> str | None:
         pass
 
@@ -516,11 +521,6 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def isTriviaScoreEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
-    def areTtsChattersEnabled(self) -> bool:
         pass
 
     @property

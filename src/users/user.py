@@ -381,6 +381,7 @@ class User(UserInterface):
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
         self.__areRedemptionCountersEnabled: bool = areRedemptionCountersEnabled
         self.__areSoundAlertsEnabled: bool = areSoundAlertsEnabled
+        self.__areTtsChattersEnabled: Final[bool] = areTtsChattersEnabled
         self.__isAnivContentScanningEnabled: bool = isAnivContentScanningEnabled
         self.__isAnivMessageCopyTimeoutChatReportingEnabled: bool = isAnivMessageCopyTimeoutChatReportingEnabled
         self.__isAnivMessageCopyTimeoutEnabled: bool = isAnivMessageCopyTimeoutEnabled
@@ -422,7 +423,6 @@ class User(UserInterface):
         self.__isTranslateEnabled: bool = isTranslateEnabled
         self.__isTriviaGameEnabled: bool = isTriviaGameEnabled
         self.__isTriviaScoreEnabled: bool = isTriviaScoreEnabled
-        self.__areTtsChattersEnabled: bool = areTtsChattersEnabled
         self.__isTtsEnabled: Final[bool] = isTtsEnabled
         self.__isVoicemailEnabled: Final[bool] = isVoicemailEnabled
         self.__isVulnerableChattersEnabled: bool = isVulnerableChattersEnabled
@@ -537,6 +537,10 @@ class User(UserInterface):
     @property
     def areSoundAlertsEnabled(self) -> bool:
         return self.__areSoundAlertsEnabled
+
+    @property
+    def areTtsChattersEnabled(self) -> bool:
+        return self.__areTtsChattersEnabled
 
     @property
     def blueSkyUrl(self) -> str | None:
@@ -913,10 +917,6 @@ class User(UserInterface):
     @property
     def isVulnerableChattersEnabled(self) -> bool:
         return self.__isVulnerableChattersEnabled
-
-    @property
-    def areTtsChattersEnabled(self) -> bool:
-        return self.__areTtsChattersEnabled
 
     @property
     def isWatchStreakTtsAnnounceEnabled(self) -> bool:
