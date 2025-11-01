@@ -114,7 +114,7 @@ class AnivCheckChatAction(AbsChatAction):
         self.__timeoutActionMachine.submitAction(BasicTimeoutAction(
             timeoutDuration = timeoutDuration,
             actionId = await self.__timeoutIdGenerator.generateActionId(),
-            chatMessage = f'ⓘ Briefly timed out @{message.getAuthorName()} — {contentCode}',
+            chatMessage = None,
             instigatorUserId = moderatorUserId,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
