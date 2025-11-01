@@ -460,7 +460,7 @@ class User(UserInterface):
         self.__crowdControlButtonPressRewardId: str | None = crowdControlButtonPressRewardId
         self.__crowdControlGameShuffleRewardId: str | None = crowdControlGameShuffleRewardId
         self.__discordUrl: str | None = discordUrl
-        self.__handle: str = handle
+        self.__handle: Final[str] = handle
         self.__instagram: str | None = instagram
         self.__locationId: str | None = locationId
         self.__mastodonUrl: str | None = mastodonUrl
