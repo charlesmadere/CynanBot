@@ -540,6 +540,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def isWatchStreakTtsAnnounceEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isWeatherEnabled(self) -> bool:
         pass
 

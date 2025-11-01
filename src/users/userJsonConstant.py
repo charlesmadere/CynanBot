@@ -35,6 +35,7 @@ class UserJsonConstant(Enum):
     TTS_ENABLED = auto()
     VOICEMAIL_ENABLED = auto()
     VULNERABLE_CHATTERS_ENABLED = auto()
+    WATCH_STREAK_TTS_ANNOUNCE_ENABLED = auto()
     WEATHER_ENABLED = auto()
     WHICH_ANIV_USER = auto()
 
@@ -73,6 +74,7 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.TTS_ENABLED: return 'ttsEnabled'
             case UserJsonConstant.VOICEMAIL_ENABLED: return 'voicemailEnabled'
             case UserJsonConstant.VULNERABLE_CHATTERS_ENABLED: return 'vulnerableChattersEnabled'
+            case UserJsonConstant.WATCH_STREAK_TTS_ANNOUNCE_ENABLED: return 'watchStreakTtsAnnounceEnabled'
             case UserJsonConstant.WEATHER_ENABLED: return 'weatherEnabled'
             case UserJsonConstant.WHICH_ANIV_USER: return 'whichAnivUser'
             case _: raise ValueError(f'unknown UserJsonConstant value: \"{self}\"')
