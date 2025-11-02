@@ -1539,6 +1539,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'number'
         if word == 'ocd':
             yield 'obsessive compulsive disorder'
+        if word in { 'olympic', 'olympics' }:
+            yield 'olympic games'
         if word == 'parcel':
             yield 'delivery'
             yield 'mail'

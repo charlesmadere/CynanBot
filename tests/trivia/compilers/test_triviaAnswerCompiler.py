@@ -526,6 +526,20 @@ class TestTriviaAnswerCompiler:
         assert 'sparrballong' in result
 
     @pytest.mark.asyncio
+    async def test_compileTextAnswersList_withStephanFAustin(self):
+        result = await self.compiler.compileTextAnswersList(['(Stephen F.) Austin III'])
+        assert isinstance(result, list)
+        assert len(result) == 8
+        assert 'stephen f austin iii' in result
+        assert 'stephen austin iii' in result
+        assert 'stephen f austin' in result
+        assert 'stephen austin' in result
+        assert 'f austin iii' in result
+        assert 'austin iii' in result
+        assert 'f austin' in result
+        assert 'austin' in result
+
+    @pytest.mark.asyncio
     async def test_compileTextAnswersList_withTheirHouse(self):
         result = await self.compiler.compileTextAnswersList(['their house'])
         assert result is not None

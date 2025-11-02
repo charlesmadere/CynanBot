@@ -21,7 +21,7 @@ class TriviaAnswerCompilerInterface(ABC):
         self,
         answers: Collection[str | None] | None,
         allWords: frozenset[str] | None = None,
-        expandParentheses: bool = True
+        expandParentheses: bool = True,
     ) -> list[str]:
         pass
 
