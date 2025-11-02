@@ -39,9 +39,7 @@ def boolToInt(b: bool) -> int:
 
 CARROT_REMOVAL_REG_EX: Final[Pattern] = re.compile(r'<\/?\w+>', re.IGNORECASE)
 EXTRA_WHITE_SPACE_REG_EX: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
-
-# this regex contains some invisible characters, please be careful before modifying
-RIDICULOUS_BLANK_CHARACTERS_REG_EX: Final[Pattern] = re.compile(r'[\U000e0000͏]', re.IGNORECASE)
+RIDICULOUS_BLANK_OR_INVISIBLE_CHARACTERS_REG_EX: Final[Pattern] = re.compile(r'[\u0001\u00AD\u034F\u180E\u200B\u200C\u200D\u2060\uFEFF\U000E0000]', re.IGNORECASE)
 
 def cleanStr(
     s: str | None,
@@ -62,7 +60,7 @@ def cleanStr(
         return ''
 
     s = EXTRA_WHITE_SPACE_REG_EX.sub(' ', s).strip()
-    s = RIDICULOUS_BLANK_CHARACTERS_REG_EX.sub('', s).strip()
+    s = RIDICULOUS_BLANK_OR_INVISIBLE_CHARACTERS_REG_EX.sub('', s).strip()
 
     s = s.replace('\r\n', replacement)\
          .replace('\r', replacement)\
