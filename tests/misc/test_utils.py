@@ -82,6 +82,11 @@ class TestUtils:
         assert isinstance(result, str)
         assert result == 'aineAww dviperCopium dviperWitch RalpherZ softPog'
 
+    def test_cleanStr_withWeird7tvMessage(self):
+        result = utils.cleanStr('!supertrivia ͏')
+        assert isinstance(result, str)
+        assert result == '!supertrivia'
+
     def test_cleanStr_withWhitespaceString(self):
         result = utils.cleanStr(' ')
         assert isinstance(result, str)

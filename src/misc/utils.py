@@ -39,7 +39,9 @@ def boolToInt(b: bool) -> int:
 
 CARROT_REMOVAL_REG_EX: Final[Pattern] = re.compile(r'<\/?\w+>', re.IGNORECASE)
 EXTRA_WHITE_SPACE_REG_EX: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
-RIDICULOUS_BLANK_CHARACTERS_REG_EX: Final[Pattern] = re.compile(r'[\U000e0000]', re.IGNORECASE)
+
+# this regex contains some invisible characters, please be careful before modifying
+RIDICULOUS_BLANK_CHARACTERS_REG_EX: Final[Pattern] = re.compile(r'[\U000e0000͏]', re.IGNORECASE)
 
 def cleanStr(
     s: str | None,
