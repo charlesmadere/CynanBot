@@ -79,7 +79,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
             try:
                 numberOfGames = int(numberOfGamesStr)
             except Exception as e:
-                self.__timber.log('SuperTriviaChatCommand', f'Unable to convert the numberOfGamesStr argument into an int (given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}) ({numberOfGamesStr=}): {e}', e, traceback.format_exc())
+                self.__timber.log('SuperTriviaChatCommand', f'Unable to convert the numberOfGamesStr argument into an int (given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}) ({splits=}) ({numberOfGamesStr=})', e, traceback.format_exc())
                 self.__twitchChatMessenger.send(
                     text = f'⚠ Error converting the given count into an int. Example: !supertrivia 2',
                     twitchChannelId = await ctx.getTwitchChannelId(),
