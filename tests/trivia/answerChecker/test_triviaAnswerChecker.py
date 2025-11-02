@@ -1813,3 +1813,63 @@ class TestTriviaAnswerChecker:
 
         result = await self.triviaAnswerChecker.checkAnswer('red', question)
         assert result is TriviaAnswerCheckResult.INCORRECT
+
+    @pytest.mark.asyncio
+    async def test_checkAnswer_withQuestionAnswerQuestion_withOlympicGames(self):
+        categoryText = 'International Sports'
+        questionText = 'This is a big international sporting event with a logo that has rings.'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText,
+        )
+
+        originalCorrectAnswers: list[str] = [ 'olympic games' ]
+        correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
+
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = originalCorrectAnswers,
+            allWords = allWords,
+        )
+
+        expandedCompiledCorrectAnswers: set[str] = set()
+        for compiledCorrectAnswer in compiledCorrectAnswers:
+            expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
+
+        question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = allWords,
+            compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
+            correctAnswers = correctAnswers,
+            originalCorrectAnswers = originalCorrectAnswers,
+            category = categoryText,
+            categoryId = None,
+            question = questionText,
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.FUNTOON
+        )
+
+        result = await self.triviaAnswerChecker.checkAnswer(None, question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
+
+        result = await self.triviaAnswerChecker.checkAnswer('', question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
+
+        result = await self.triviaAnswerChecker.checkAnswer(' ', question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
+
+        result = await self.triviaAnswerChecker.checkAnswer('olympic', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('olympics', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('olympic games', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('games', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('sports', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
