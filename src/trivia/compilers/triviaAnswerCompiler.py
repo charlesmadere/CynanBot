@@ -1,6 +1,6 @@
 import re
 import traceback
-from typing import Collection, Pattern
+from typing import Collection, Final, Pattern
 
 import roman
 import unicodedata
@@ -29,16 +29,20 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
     There are many other simple conversions that this class performs, but those are some key examples.
     """
 
-    def __init__(self, timber: TimberInterface):
+    def __init__(
+        self,
+        timber: TimberInterface,
+    ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__timber: TimberInterface = timber
+        self.__timber: Final[TimberInterface] = timber
 
         self.__ampersandRegEx: Pattern = re.compile(r'(^&\s+)|(\s+&\s+)|(\s+&$)', re.IGNORECASE)
         self.__decadeRegEx: Pattern = re.compile(r'^((in\s+)?the\s+)?(\d{4})\'?s$', re.IGNORECASE)
         self.__equationRegEx: Pattern = re.compile(r'([a-z])\s*=\s*(-?(?:\d*\.)?\d+)', re.IGNORECASE)
         self.__firstMiddleLastNameRegEx: Pattern = re.compile(r'^\w+\s+(\w\.?)\s+\w+(\s+(i{0,3}|iv|vi{0,3}|i?x|jr\.?|junior|senior|sr\.?)\.?)?$', re.IGNORECASE)
+        self.__firstNameAndMiddleInitialGroupedMatchRegEx: Final[Pattern] = re.compile(r'^\(\w+\s+(\w\.?)\)\s+\w+(\s+(i{0,3}|iv|vi{0,3}|i?x|jr\.?|junior|senior|sr\.?)\.?)?$', re.IGNORECASE)
         self.__hashRegEx: Pattern = re.compile(r'(#)')
         self.__honoraryPrefixRegEx: Pattern = re.compile(r'^(bishop|brother|captain|chancellor|chief|colonel|corporal|csar|czar|dean|director|doctor|dr\.?|duke|earl|esq|esquire|executive|father|general|judge|king|lady|lieutenant|lord|madam|madame|master|minister|miss|missus|mister|mistress|mother|mr\.?|mrs\.?|ms\.?|mx\.?|officer|president|priest|prime minister|principal|private|professor|queen|rabbi|representative|reverend|saint|secretary|senator|senior|sister|sir|sire|teacher|tsar|tzar|warden)\s+', re.IGNORECASE)
         self.__japaneseHonorarySuffixRegEx: Pattern = re.compile(r'(\s|-)(chan|kohai|kouhai|kun|sama|san|senpai|sensei|tan)$', re.IGNORECASE)
@@ -110,7 +114,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
                 (?P<y>[уýУÝΥ𝙮𝐲𝝲𝑦ᶌ𝞬ʏ𝖞𝚢ｙꭚ𝒚𝓎ɣ𝗒ყ𝘆ү𝛾γ𝛄𝔂𝜸𝔶ℽ𝘺ỿϒ𝔜𝕐𝙔𝚈ⲨᎩ𐊲𝑌ꓬҮ𝒀𝖄𝖸Ｙ𝛶𝚼Ꮍ])|
                 (?P<z>[ʐżŻ𝓏𝙯ᴢ𝐳𝗓ꮓ𝔃𝚣𝔷𝒛𝘻𝗭𝚭ᏃΖ𝘡𝜡𝙕𝞕ꓜ𝝛𝐙𝑍ℤℨ𝖅Ｚ𝒵𝖹])
             """,
-            re.VERBOSE | re.IGNORECASE
+            re.VERBOSE | re.IGNORECASE,
         )
 
     async def compileBoolAnswer(self, answer: str | None) -> bool:
@@ -186,7 +190,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         self,
         answers: Collection[str | None] | None,
         allWords: frozenset[str] | None = None,
-        expandParentheses: bool = True
+        expandParentheses: bool = True,
     ) -> list[str]:
         if answers is not None and not isinstance(answers, Collection):
             raise TypeError(f'answers argument is malformed: \"{answers}\"')
@@ -213,7 +217,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
                 if expandParentheses:
                     possibilities = await self.__getParentheticalPossibilities(
                         allWords = allWords,
-                        answer = case
+                        answer = case,
                     )
                 else:
                     possibilities = [ case ]
@@ -473,15 +477,16 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
     async def __getParentheticalPossibilities(
         self,
         allWords: frozenset[str] | None,
-        answer: str
+        answer: str,
     ) -> list[str]:
         if allWords is not None and len(allWords) >= 1:
             answer = await self.__patchWordsAppearingInQuestionAsOptional(
                 allWords = allWords,
-                answer = answer
+                answer = answer,
             )
 
         answer = await self.__patchAnswerFirstMiddleLastName(answer)
+        answer = await self.__patchAnswerFirstNameAndMiddleInitialGroupedAndThenLastName(answer)
         answer = await self.__patchAnswerHonoraryPrefixes(answer)
         answer = await self.__patchAnswerJapaneseHonorarySuffixes(answer)
         answer = await self.__patchAnswerPossessivePronounPrefixes(answer)
@@ -539,6 +544,28 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         answer = answer[:indexOfFirstSpace] + '(' + firstMiddleLastNameMatch.group(1) + ')' + answer[indexOfSecondSpace:]
 
         if not utils.isValidStr(firstMiddleLastNameMatch.group(3)):
+            # this name does not have a suffix like "Jr" or "Sr"
+            return answer
+
+        indexOfThirdSpace = answer.rfind(' ') + 1
+        answer = answer[:indexOfThirdSpace] + '(' + answer[indexOfThirdSpace:len(answer)] + ')'
+
+        return answer
+
+    # This method checks to see if an answer matches this pattern: "(First name Middle initial) Last name", such as
+    # "(George H.) Richard III". This method would then transform that full name into "(George) (H.) Richard (III)".
+    async def __patchAnswerFirstNameAndMiddleInitialGroupedAndThenLastName(self, answer: str) -> str:
+        firstNameAndMiddleInitialGroupedMatch = self.__firstNameAndMiddleInitialGroupedMatchRegEx.fullmatch(answer)
+
+        if firstNameAndMiddleInitialGroupedMatch is None or not utils.isValidStr(firstNameAndMiddleInitialGroupedMatch.group()):
+            # return the unmodified answer
+            return answer
+
+        indexOfFirstSpace = answer.find(' ')
+        indexOfSecondSpace = answer.find(' ', indexOfFirstSpace + 1)
+        answer = answer[:indexOfFirstSpace] + ') (' + firstNameAndMiddleInitialGroupedMatch.group(1) + ')' + answer[indexOfSecondSpace:]
+
+        if not utils.isValidStr(firstNameAndMiddleInitialGroupedMatch.group(3)):
             # this name does not have a suffix like "Jr" or "Sr"
             return answer
 
