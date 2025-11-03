@@ -1,11 +1,12 @@
 import traceback
+from typing import Final
 
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 
 class CutenessPointRedemption(AbsChannelPointRedemption):
@@ -14,23 +15,23 @@ class CutenessPointRedemption(AbsChannelPointRedemption):
         self,
         cutenessRepository: CutenessRepositoryInterface,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface
+        twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
-        self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
+        self.__cutenessRepository: Final[CutenessRepositoryInterface] = cutenessRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> bool:
         twitchUser = twitchChannelPointsMessage.twitchUser
         if not twitchUser.isCutenessEnabled:
@@ -58,6 +59,9 @@ class CutenessPointRedemption(AbsChannelPointRedemption):
             self.__timber.log('CutenessRedemption', f'Redeemed cuteness of {incrementAmount} for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
         except Exception as e:
             self.__timber.log('CutenessRedemption', f'Error redeeming cuteness of {incrementAmount} for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}: {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {twitchChannelPointsMessage.userName}')
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Error increasing cuteness for {twitchChannelPointsMessage.userName}',
+                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            )
 
         return True

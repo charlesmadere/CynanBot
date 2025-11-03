@@ -12,9 +12,9 @@ from ..chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterfa
     ChatterPreferredTtsSettingsRepositoryInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 
 class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
@@ -25,7 +25,7 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
         chatterPreferredTtsPresenter: ChatterPreferredTtsPresenter,
         chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface
+        twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
@@ -35,21 +35,21 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
             raise TypeError(f'chatterPreferredTtsSettingsRepository argument is malformed: \"{chatterPreferredTtsSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
         self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = chatterPreferredTtsHelper
         self.__chatterPreferredTtsPresenter: Final[ChatterPreferredTtsPresenter] = chatterPreferredTtsPresenter
         self.__chatterPreferredTtsSettingsRepository: Final[ChatterPreferredTtsSettingsRepositoryInterface] = chatterPreferredTtsSettingsRepository
         self.__timber: Final[TimberInterface] = timber
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__randomRegEx: Final[Pattern] = re.compile(r'^\s*random(?:ize)?\s*$', re.IGNORECASE)
 
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> bool:
         if not await self.__chatterPreferredTtsSettingsRepository.isEnabled():
             return False
@@ -65,24 +65,33 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
             if self.__randomRegEx.fullmatch(userMessage):
                 preferredTts = await self.__chatterPreferredTtsHelper.applyRandomPreferredTts(
                     chatterUserId = twitchChannelPointsMessage.userId,
-                    twitchChannelId = twitchChannelPointsMessage.twitchChannelId
+                    twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
                 )
             else:
                 preferredTts = await self.__chatterPreferredTtsHelper.applyUserMessagePreferredTts(
                     chatterUserId = twitchChannelPointsMessage.userId,
                     twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
-                    userMessage = userMessage
+                    userMessage = userMessage,
                 )
         except (FailedToChooseRandomTtsException, NoEnabledTtsProvidersException, UnableToParseUserMessageIntoTtsException) as e:
             self.__timber.log('ChatterPreferredTtsPointRedemption', f'Failed to set preferred TTS given by {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({twitchChannelPointsMessage=}) ({userMessage=}): {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(twitchChannel, f'⚠ @{twitchChannelPointsMessage.userName} unable to set your preferred TTS! Please check your input and try again.')
+            self.__twitchChatMessenger.send(
+                text = f'⚠ @{twitchChannelPointsMessage.userName} unable to set your preferred TTS! Please check your input and try again.',
+                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            )
             return True
         except TtsProviderIsNotEnabledException as e:
             self.__timber.log('ChatterPreferredTtsPointRedemption', f'The TTS Provider requested by {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} is not enabled ({userMessage=}): {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(twitchChannel, f'⚠ @{twitchChannelPointsMessage.userName} the TTS provider you requested is not available! Please try a different TTS provider.')
+            self.__twitchChatMessenger.send(
+                text = f'⚠ @{twitchChannelPointsMessage.userName} the TTS provider you requested is not available! Please try a different TTS provider.',
+                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            )
             return True
 
         printOut = await self.__chatterPreferredTtsPresenter.printOut(preferredTts)
-        await self.__twitchUtils.safeSend(twitchChannel, f'ⓘ @{twitchChannelPointsMessage.userName} here\'s your new preferred TTS: {printOut}')
+        self.__twitchChatMessenger.send(
+            text = f'ⓘ @{twitchChannelPointsMessage.userName} here\'s your new preferred TTS: {printOut}',
+            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+        )
         self.__timber.log('ChatterPreferredTtsPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
         return True
