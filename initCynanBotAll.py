@@ -3058,13 +3058,13 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 
 casualGamePollPointRedemption: CasualGamePollPointRedemption | None = CasualGamePollPointRedemption(
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 cutenessPointRedemption: CutenessPointRedemption | None = CutenessPointRedemption(
     cutenessRepository = cutenessRepository,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None = ChatterPreferredTtsPointRedemption(
@@ -3072,13 +3072,13 @@ chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None = 
     chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
     chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 decTalkSongPointRedemption: DecTalkSongPointRedemption | None = DecTalkSongPointRedemption(
     eventLoop = eventLoop,
     streamAlertsManager = streamAlertsManager,
-    timber = timber
+    timber = timber,
 )
 
 pkmnBattlePointRedemption: PkmnBattlePointRedemption | None = PkmnBattlePointRedemption(

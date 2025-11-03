@@ -1910,13 +1910,13 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 
 casualGamePollPointRedemption: CasualGamePollPointRedemption | None = CasualGamePollPointRedemption(
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 cutenessPointRedemption: CutenessPointRedemption | None = CutenessPointRedemption(
     cutenessRepository = cutenessRepository,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 pkmnBattlePointRedemption: PkmnBattlePointRedemption | None = PkmnBattlePointRedemption(
