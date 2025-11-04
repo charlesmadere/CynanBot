@@ -973,12 +973,12 @@ class CynanBot(
         if jishoHelper is None:
             self.__jishoCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__jishoCommand: AbsChatCommand = JishoChatCommand(generalSettingsRepository, jishoHelper, timber, twitchUtils, usersRepository)
+            self.__jishoCommand: AbsChatCommand = JishoChatCommand(generalSettingsRepository, jishoHelper, timber, twitchChatMessenger, usersRepository)
 
         if anivCopyMessageTimeoutScoreHelper is None or anivCopyMessageTimeoutScorePresenter is None or anivSettings is None:
             self.__anivTimeoutsCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__anivTimeoutsCommand: AbsChatCommand = AnivTimeoutsChatCommand(anivCopyMessageTimeoutScoreHelper, anivCopyMessageTimeoutScorePresenter, anivSettings, timber, twitchChannelEditorsRepository, twitchUtils, userIdsRepository, usersRepository)
+            self.__anivTimeoutsCommand: AbsChatCommand = AnivTimeoutsChatCommand(anivCopyMessageTimeoutScoreHelper, anivCopyMessageTimeoutScorePresenter, anivSettings, timber, twitchChannelEditorsRepository, twitchChatMessenger, userIdsRepository, usersRepository)
 
         if pokepediaRepository is None:
             self.__pkMonCommand: AbsChatCommand = StubChatCommand()
