@@ -8,8 +8,8 @@ from ..aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
@@ -23,7 +23,7 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
         anivSettings: AnivSettingsInterface,
         timber: TimberInterface,
         twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
     ):
@@ -37,8 +37,8 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChannelEditorsRepository, TwitchChannelEditorsRepositoryInterface):
             raise TypeError(f'twitchChannelEditorsRepository argument is malformed: \"{twitchChannelEditorsRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -49,7 +49,7 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
         self.__anivSettings: Final[AnivSettingsInterface] = anivSettings
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChannelEditorsRepository: Final[TwitchChannelEditorsRepositoryInterface] = twitchChannelEditorsRepository
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
@@ -74,9 +74,9 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
             userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 
             if not utils.isValidStr(userId):
-                await self.__twitchUtils.safeSend(
-                    messageable = ctx,
-                    message = f'⚠ Unable to find aniv timeout score for \"{userName}\"',
+                self.__twitchChatMessenger.send(
+                    text = f'⚠ Unable to find aniv timeout score for \"{userName}\"',
+                    twitchChannelId = await ctx.getTwitchChannelId(),
                     replyMessageId = await ctx.getMessageId(),
                 )
                 return
@@ -89,9 +89,9 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
                 language = user.defaultLanguage,
             )
 
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = printOut,
+            self.__twitchChatMessenger.send(
+                text = printOut,
+                twitchChannelId = await ctx.getTwitchChannelId(),
                 replyMessageId = await ctx.getMessageId(),
             )
             return
@@ -106,9 +106,9 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
             preparedScore = preparedScore,
         )
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = printOut,
+        self.__twitchChatMessenger.send(
+            text = printOut,
+            twitchChannelId = await ctx.getTwitchChannelId(),
             replyMessageId = await ctx.getMessageId(),
         )
 
