@@ -3085,7 +3085,7 @@ pkmnBattlePointRedemption: PkmnBattlePointRedemption | None = PkmnBattlePointRed
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 pkmnCatchPointRedemption: PkmnCatchPointRedemption | None = PkmnCatchPointRedemption(
@@ -3136,7 +3136,7 @@ triviaGamePointRedemption: TriviaGamePointRedemption | None = TriviaGamePointRed
 ttsChatterPointRedemption: TtsChatterPointRedemption | None = TtsChatterPointRedemption(
     timber = timber,
     ttsChatterRepository = ttsChatterRepository,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 

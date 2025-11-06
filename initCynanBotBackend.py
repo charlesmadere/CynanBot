@@ -1923,7 +1923,7 @@ pkmnBattlePointRedemption: PkmnBattlePointRedemption | None = PkmnBattlePointRed
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 pkmnCatchPointRedemption: PkmnCatchPointRedemption | None = PkmnCatchPointRedemption(
