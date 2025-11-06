@@ -2264,7 +2264,7 @@ ttsChatterChatAction = TtsChatterChatAction(
 ttsChatterPointRedemption = TtsChatterPointRedemption(
     timber = timber,
     ttsChatterRepository = ttsChatterRepository,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
