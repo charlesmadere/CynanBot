@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Final
 
 from .absChatCommand import AbsChatCommand
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -10,8 +11,8 @@ from ..trivia.banned.triviaBanHelperInterface import TriviaBanHelperInterface
 from ..trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
 from ..trivia.history.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -26,8 +27,8 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
         triviaHistoryRepository: TriviaHistoryRepositoryInterface,
         triviaUtils: TriviaUtilsInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface
+        twitchChatMessenger: TwitchChatMessengerInterface,
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -43,20 +44,20 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
             raise TypeError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__triviaBanHelper: TriviaBanHelperInterface = triviaBanHelper
-        self.__triviaEmoteGenerator: TriviaEmoteGeneratorInterface = triviaEmoteGenerator
-        self.__triviaHistoryRepository: TriviaHistoryRepositoryInterface = triviaHistoryRepository
-        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__triviaBanHelper: Final[TriviaBanHelperInterface] = triviaBanHelper
+        self.__triviaEmoteGenerator: Final[TriviaEmoteGeneratorInterface] = triviaEmoteGenerator
+        self.__triviaHistoryRepository: Final[TriviaHistoryRepositoryInterface] = triviaHistoryRepository
+        self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def __getRelativeTimeString(self, dateTime: datetime) -> str:
         now = datetime.now(self.__timeZoneRepository.getDefault())
@@ -79,17 +80,17 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannelId = await ctx.getTwitchChannelId(),
-            userId = ctx.getAuthorId()
+            userId = ctx.getAuthorId(),
         ):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no arguments were supplied')
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'⚠ Unable to ban trivia question as no emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}',
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Unable to ban trivia question as no emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
             )
             return
 
@@ -98,41 +99,41 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
 
         if not utils.isValidStr(normalizedEmote):
             self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but an invalid emote argument was given: \"{emote}\"')
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'⚠ Unable to ban trivia question as an invalid emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}',
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Unable to ban trivia question as an invalid emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
             )
             return
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
             emote = normalizedEmote,
             twitchChannel = user.handle,
-            twitchChannelId = await ctx.getTwitchChannelId()
+            twitchChannelId = await ctx.getTwitchChannelId(),
         )
 
         if reference is None:
             self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no trivia question reference was found with emote \"{emote}\"')
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")',
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
             )
             return
 
         await self.__triviaBanHelper.ban(
             triviaId = reference.triviaId,
             userId = ctx.getAuthorId(),
-            triviaSource = reference.triviaSource
+            triviaSource = reference.triviaSource,
         )
 
         dateAndTimeString = SimpleDateTime(reference.dateTime).getDateAndTimeStr()
         relativeTimeString = await self.__getRelativeTimeString(reference.dateTime)
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = f'{normalizedEmote} Banned trivia question {reference.triviaSource.toStr()}:{reference.triviaId} — {dateAndTimeString} ({relativeTimeString})',
-            replyMessageId = await ctx.getMessageId()
+        self.__twitchChatMessenger.send(
+            text = f'{normalizedEmote} Banned trivia question {reference.triviaSource.toStr()}:{reference.triviaId} — {dateAndTimeString} ({relativeTimeString})',
+            twitchChannelId = await ctx.getTwitchChannelId(),
+            replyMessageId = await ctx.getMessageId(),
         )
 
         self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({emote=}) ({normalizedEmote=}) ({reference=})')
