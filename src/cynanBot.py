@@ -938,11 +938,11 @@ class CynanBot(
             self.__addTriviaControllerCommand: AbsChatCommand = AddTriviaControllerChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
             self.__addTriviaAnswerCommand: AbsChatCommand = AddTriviaAnswerChatCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchChatMessenger, usersRepository)
             self.__answerCommand: AbsChatCommand = AnswerChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
-            self.__banTriviaQuestionCommand: AbsChatCommand = BanTriviaQuestionChatCommand(generalSettingsRepository, timber, timeZoneRepository, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__banTriviaQuestionCommand: AbsChatCommand = BanTriviaQuestionChatCommand(generalSettingsRepository, timber, timeZoneRepository, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchChatMessenger, usersRepository)
             self.__clearSuperTriviaQueueCommand: AbsChatCommand = ClearSuperTriviaQueueChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, triviaUtils, usersRepository)
             self.__deleteTriviaAnswersCommand: AbsChatCommand = DeleteTriviaAnswersChatCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__getGlobalTriviaControllersCommand: AbsChatCommand = GetGlobalTriviaControllersChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameGlobalControllersRepository, triviaUtils, twitchChatMessenger, usersRepository)
-            self.__getTriviaAnswersCommand: AbsChatCommand = GetTriviaAnswersChatCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__getTriviaAnswersCommand: AbsChatCommand = GetTriviaAnswersChatCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchChatMessenger, usersRepository)
             self.__getTriviaControllersCommand: AbsChatCommand = GetTriviaControllersChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, triviaUtils, twitchChatMessenger, usersRepository)
             self.__removeGlobalTriviaControllerChatCommand: AbsChatCommand = RemoveGlobalTriviaControllerChatCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
             self.__removeTriviaControllerChatCommand: AbsChatCommand = RemoveTriviaControllerChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
@@ -1647,7 +1647,7 @@ class CynanBot(
 
     @commands.command(
         name = 'useitem',
-        aliases = [ 'use', 'usechatteritem', 'use-item', 'use_item' ]
+        aliases = [ 'use', 'Use', 'USE', 'usechatteritem', 'use-item', 'use_item' ]
     )
     async def command_usechatteritem(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
