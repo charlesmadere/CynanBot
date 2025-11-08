@@ -1647,7 +1647,7 @@ class CynanBot(
 
     @commands.command(
         name = 'useitem',
-        aliases = [ 'use', 'usechatteritem', 'use-item', 'use_item' ]
+        aliases = [ 'use', 'Use', 'USE', 'usechatteritem', 'use-item', 'use_item' ]
     )
     async def command_usechatteritem(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
