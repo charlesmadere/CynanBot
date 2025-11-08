@@ -91,14 +91,40 @@ class TesthalfLifeJsonParser:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_requireVoice_withMale(self):
-        result = self.parser.requireVoice('intercom')
-        assert result is HalfLifeVoice.INTERCOM
+    async def test_requireVoice_withAll(self):
+        result = self.parser.requireVoice('all')
+        assert result is HalfLifeVoice.ALL
 
     @pytest.mark.asyncio
-    async def test_requireVoice_withPolice(self):
-        result = self.parser.requireVoice('police')
-        assert result is HalfLifeVoice.POLICE
+    async def test_requireVoice_withAllVoices(self):
+        result = self.parser.requireVoice('all voices')
+        assert result is HalfLifeVoice.ALL
+
+        result = self.parser.requireVoice('all-voices')
+        assert result is HalfLifeVoice.ALL
+
+        result = self.parser.requireVoice('all_voices')
+        assert result is HalfLifeVoice.ALL
+
+        result = self.parser.requireVoice('allvoices')
+        assert result is HalfLifeVoice.ALL
+
+        result = self.parser.requireVoice('all voice')
+        assert result is HalfLifeVoice.ALL
+
+        result = self.parser.requireVoice('all-voice')
+        assert result is HalfLifeVoice.ALL
+
+        result = self.parser.requireVoice('all_voice')
+        assert result is HalfLifeVoice.ALL
+
+        result = self.parser.requireVoice('allvoice')
+        assert result is HalfLifeVoice.ALL
+
+    @pytest.mark.asyncio
+    async def test_requireVoice_withBarney(self):
+        result = self.parser.requireVoice('barney')
+        assert result is HalfLifeVoice.BARNEY
 
     @pytest.mark.asyncio
     async def test_requireVoice_withEmptyString(self):
@@ -110,6 +136,16 @@ class TesthalfLifeJsonParser:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_requireVoice_withHev(self):
+        result = self.parser.requireVoice('hev')
+        assert result is HalfLifeVoice.HEV
+
+    @pytest.mark.asyncio
+    async def test_requireVoice_withMale(self):
+        result = self.parser.requireVoice('intercom')
+        assert result is HalfLifeVoice.INTERCOM
+
+    @pytest.mark.asyncio
     async def test_requireVoice_withNone(self):
         result: HalfLifeVoice | None = None
 
@@ -119,6 +155,21 @@ class TesthalfLifeJsonParser:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_requireVoice_withPolice(self):
+        result = self.parser.requireVoice('police')
+        assert result is HalfLifeVoice.POLICE
+
+    @pytest.mark.asyncio
+    async def test_requireVoice_withScientist(self):
+        result = self.parser.requireVoice('scientist')
+        assert result is HalfLifeVoice.SCIENTIST
+
+    @pytest.mark.asyncio
+    async def test_requireVoice_withSoldier(self):
+        result = self.parser.requireVoice('soldier')
+        assert result == HalfLifeVoice.SOLDIER
+
+    @pytest.mark.asyncio
     async def test_requireVoice_withWhitespaceString(self):
         result: HalfLifeVoice | None = None
 
@@ -126,6 +177,15 @@ class TesthalfLifeJsonParser:
             result = self.parser.requireVoice(' ')
 
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_allVoicesAreSerialized(self):
+        strings: set[str] = set()
+
+        for voice in HalfLifeVoice:
+            strings.add(self.parser.serializeVoice(voice))
+
+        assert len(strings) == len(HalfLifeVoice)
 
     @pytest.mark.asyncio
     async def test_serializeVoice_withAll(self):
