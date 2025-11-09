@@ -872,9 +872,9 @@ class CynanBot(
             self.__crowdControlCommand: AbsChatCommand = StubChatCommand()
             self.__removeGameShuffleAutomatorCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__addGameShuffleAutomatorCommand: AbsChatCommand = AddGameShuffleAutomatorChatCommand(administratorProvider, crowdControlAutomator, timber, twitchUtils, usersRepository)
+            self.__addGameShuffleAutomatorCommand: AbsChatCommand = AddGameShuffleAutomatorChatCommand(administratorProvider, crowdControlAutomator, timber, twitchChatMessenger, usersRepository)
             self.__crowdControlCommand: AbsChatCommand = CrowdControlChatCommand(administratorProvider, crowdControlIdGenerator, crowdControlMachine, crowdControlUserInputUtils, timber, timeZoneRepository, twitchChatMessenger, usersRepository)
-            self.__removeGameShuffleAutomatorCommand: AbsChatCommand = RemoveGameShuffleAutomatorChatCommand(administratorProvider, crowdControlAutomator, timber, twitchUtils, usersRepository)
+            self.__removeGameShuffleAutomatorCommand: AbsChatCommand = RemoveGameShuffleAutomatorChatCommand(administratorProvider, crowdControlAutomator, timber, twitchChatMessenger, usersRepository)
 
         if recurringActionsHelper is None or recurringActionsMachine is None or recurringActionsRepository is None or recurringActionsWizard is None:
             self.__addRecurringCutenessActionCommand: AbsChatCommand = StubChatCommand()

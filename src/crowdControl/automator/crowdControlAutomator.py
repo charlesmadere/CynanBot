@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
+from typing import Final
 
 from .crowdControlAutomatorAddResult import CrowdControlAutomatorAddResult
 from .crowdControlAutomatorData import CrowdControlAutomatorData
@@ -29,7 +30,7 @@ class CrowdControlAutomator(CrowdControlAutomatorInterface):
         twitchHandleProvider: TwitchHandleProviderInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
-        refreshSleepTimeSeconds: float = 5
+        refreshSleepTimeSeconds: float = 5,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -52,23 +53,23 @@ class CrowdControlAutomator(CrowdControlAutomatorInterface):
         elif refreshSleepTimeSeconds < 1 or refreshSleepTimeSeconds > 60:
             raise ValueError(f'refreshSleepTimeSeconds argument is malformed: \"{refreshSleepTimeSeconds}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__crowdControlIdGenerator: CrowdControlIdGeneratorInterface = crowdControlIdGenerator
-        self.__crowdControlMachine: CrowdControlMachineInterface = crowdControlMachine
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__refreshSleepTimeSeconds: float = refreshSleepTimeSeconds
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__crowdControlIdGenerator: Final[CrowdControlIdGeneratorInterface] = crowdControlIdGenerator
+        self.__crowdControlMachine: Final[CrowdControlMachineInterface] = crowdControlMachine
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
+        self.__refreshSleepTimeSeconds: Final[float] = refreshSleepTimeSeconds
 
         self.__isStarted: bool = False
-        self.__automatorData: dict[str, CrowdControlAutomatorData] = dict()
-        self.__lastGameShuffleTimes: dict[str, datetime | None] = dict()
+        self.__automatorData: Final[dict[str, CrowdControlAutomatorData]] = dict()
+        self.__lastGameShuffleTimes: Final[dict[str, datetime | None]] = dict()
 
     async def addGameShuffleAutomator(
         self,
-        automatorData: CrowdControlAutomatorData
+        automatorData: CrowdControlAutomatorData,
     ) -> CrowdControlAutomatorAddResult:
         if not isinstance(automatorData, CrowdControlAutomatorData):
             raise TypeError(f'automatorData argument is malformed: \"{automatorData}\"')
@@ -114,12 +115,12 @@ class CrowdControlAutomator(CrowdControlAutomatorInterface):
                 now = now,
                 cynanBotUserId = cynanBotUserId,
                 cynanBotUserName = cynanBotUserName,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
 
     async def removeGameShuffleAutomator(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CrowdControlAutomatorRemovalResult:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
@@ -153,7 +154,7 @@ class CrowdControlAutomator(CrowdControlAutomatorInterface):
         now: datetime,
         cynanBotUserId: str,
         cynanBotUserName: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         userName = await self.__userIdsRepository.requireUserName(twitchChannelId)
         user = await self.__usersRepository.getUserAsync(userName)
@@ -172,7 +173,7 @@ class CrowdControlAutomator(CrowdControlAutomatorInterface):
             chatterUserName = cynanBotUserName,
             twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
-            twitchChatMessageId = None
+            twitchChatMessageId = None,
         ))
 
         self.__timber.log('CrowdControlAutomator', f'Submitted automated game shuffle ({user=}) ({twitchChannelId=})')
