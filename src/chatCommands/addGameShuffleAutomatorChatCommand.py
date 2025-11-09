@@ -68,7 +68,7 @@ class AddGameShuffleAutomatorChatCommand(AbsChatCommand):
         try:
             reoccurSeconds = int(reoccurSecondsStr)
         except Exception as e:
-            self.__timber.log('AddGameShuffleAutomatorChatCommand', f'Unable to convert reoccur seconds given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} into an int: \"{reoccurSecondsStr}\": {e}', e, traceback.format_exc())
+            self.__timber.log('AddGameShuffleAutomatorChatCommand', f'Unable to convert reoccur seconds given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} into an int ({reoccurSecondsStr=})', e, traceback.format_exc())
 
             self.__twitchChatMessenger.send(
                 text = f'⚠ The given number of seconds argument is malformed. Example using 5 minutes: !addgameshuffleautomator 300',
