@@ -65,6 +65,10 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
         johnny.append(re.compile(r'^\s*joh?nn?y\s*$', re.IGNORECASE))
         johnny.freeze()
 
+        kermit: FrozenList[Pattern] = FrozenList()
+        kermit.append(re.compile(r'^\s*kermit\s*$', re.IGNORECASE))
+        kermit.freeze()
+
         kkona: FrozenList[Pattern] = FrozenList()
         kkona.append(re.compile(r'^\s*kk?ona\s*$', re.IGNORECASE))
         kkona.freeze()
@@ -119,6 +123,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             TtsMonsterVoice.HIKARI: hikari,
             TtsMonsterVoice.JAZZ: jazz,
             TtsMonsterVoice.JOHNNY: johnny,
+            TtsMonsterVoice.KERMIT: kermit,
             TtsMonsterVoice.KKONA: kkona,
             TtsMonsterVoice.NARRATOR: narrator,
             TtsMonsterVoice.PIRATE: pirate,
@@ -134,7 +139,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
     async def parseDonationPrefixConfig(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> TtsMonsterDonationPrefixConfig | None:
         if not utils.isValidStr(string):
             return None
@@ -149,7 +154,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
     async def parseTtsData(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> TtsMonsterPrivateApiTtsData | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
@@ -168,12 +173,12 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
         return TtsMonsterPrivateApiTtsData(
             link = link,
-            warning = warning
+            warning = warning,
         )
 
     async def parseTtsResponse(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> TtsMonsterPrivateApiTtsResponse | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
@@ -186,7 +191,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
         return TtsMonsterPrivateApiTtsResponse(
             status = status,
-            data = data
+            data = data,
         )
 
     async def parseVoice(
@@ -205,7 +210,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
     async def requireDonationPrefixConfig(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> TtsMonsterDonationPrefixConfig:
         result = await self.parseDonationPrefixConfig(string)
 
@@ -227,7 +232,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
     async def serializeDonationPrefixConfig(
         self,
-        donationPrefixConfig: TtsMonsterDonationPrefixConfig
+        donationPrefixConfig: TtsMonsterDonationPrefixConfig,
     ) -> str:
         if not isinstance(donationPrefixConfig, TtsMonsterDonationPrefixConfig):
             raise TypeError(f'donationPrefixConfig argument is malformed: \"{donationPrefixConfig}\"')
@@ -265,7 +270,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
 
     async def serializeVoice(
         self,
-        voice: TtsMonsterVoice
+        voice: TtsMonsterVoice,
     ) -> str:
         if not isinstance(voice, TtsMonsterVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
@@ -279,6 +284,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
             case TtsMonsterVoice.HIKARI: return 'hikari'
             case TtsMonsterVoice.JAZZ: return 'jazz'
             case TtsMonsterVoice.JOHNNY: return 'johnny'
+            case TtsMonsterVoice.KERMIT: return 'kermit'
             case TtsMonsterVoice.KKONA: return 'kkona'
             case TtsMonsterVoice.NARRATOR: return 'narrator'
             case TtsMonsterVoice.PIRATE: return 'pirate'

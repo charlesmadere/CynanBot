@@ -1488,10 +1488,6 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'deceleration'
         if word == 'dna':
             yield 'deoxyribonucleic acid'
-        if word == 'est':
-            yield 'establish'
-            yield 'established'
-            yield 'estimate'
         if word == 'capital':
             yield 'capitol'
         if word == 'co':
@@ -1511,9 +1507,12 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'est':
             yield 'estimate'
             yield 'estimated'
+            yield 'estimation'
             yield 'established'
         if word == 'eta':
             yield 'estimated time of arrival'
+        if word == 'extract':
+            yield 'abstract'
         if word == 'fi':
             yield 'fiction'
         if word == 'fl':

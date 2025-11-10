@@ -43,6 +43,10 @@ class TestTtsMonsterVoice:
         result = TtsMonsterVoice.JOHNNY.humanName
         assert result == 'Johnny'
 
+    def test_humanName_withKermit(self):
+        result = TtsMonsterVoice.KERMIT.humanName
+        assert result == 'Kermit'
+
     def test_humanName_withKkona(self):
         result = TtsMonsterVoice.KKONA.humanName
         assert result == 'Kkona'
@@ -122,6 +126,10 @@ class TestTtsMonsterVoice:
     def test_inMessageName_withJohnny(self):
         result = TtsMonsterVoice.JOHNNY.inMessageName
         assert result == 'johnny'
+
+    def test_inMessageName_withKermit(self):
+        result = TtsMonsterVoice.KERMIT.inMessageName
+        assert result == 'kermit'
 
     def test_inMessageName_withKkona(self):
         result = TtsMonsterVoice.KKONA.inMessageName
