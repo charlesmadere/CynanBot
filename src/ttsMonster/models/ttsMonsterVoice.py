@@ -11,6 +11,7 @@ class TtsMonsterVoice(Enum):
     HIKARI = auto()
     JAZZ = auto()
     JOHNNY = auto()
+    KERMIT = auto()
     KKONA = auto()
     NARRATOR = auto()
     PIRATE = auto()
@@ -34,6 +35,7 @@ class TtsMonsterVoice(Enum):
             case TtsMonsterVoice.HIKARI: return 'Hikari'
             case TtsMonsterVoice.JAZZ: return 'Jazz'
             case TtsMonsterVoice.JOHNNY: return 'Johnny'
+            case TtsMonsterVoice.KERMIT: return 'Kermit'
             case TtsMonsterVoice.KKONA: return 'Kkona'
             case TtsMonsterVoice.NARRATOR: return 'Narrator'
             case TtsMonsterVoice.PIRATE: return 'Pirate'
@@ -58,6 +60,7 @@ class TtsMonsterVoice(Enum):
             case TtsMonsterVoice.HIKARI: return 'hikari'
             case TtsMonsterVoice.JAZZ: return 'jazz'
             case TtsMonsterVoice.JOHNNY: return 'johnny'
+            case TtsMonsterVoice.KERMIT: return 'kermit'
             case TtsMonsterVoice.KKONA: return 'kkona'
             case TtsMonsterVoice.NARRATOR: return 'narrator'
             case TtsMonsterVoice.PIRATE: return 'pirate'
