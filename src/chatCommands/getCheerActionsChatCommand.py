@@ -1,9 +1,11 @@
+from typing import Final
+
 from .absChatCommand import AbsChatCommand
 from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -14,8 +16,8 @@ class GetCheerActionsChatCommand(AbsChatCommand):
         administratorProvider: AdministratorProviderInterface,
         cheerActionsRepository: CheerActionsRepositoryInterface,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface
+        twitchChatMessenger: TwitchChatMessengerInterface,
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -23,16 +25,16 @@ class GetCheerActionsChatCommand(AbsChatCommand):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
+        self.__cheerActionsRepository: Final[CheerActionsRepositoryInterface] = cheerActionsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -44,7 +46,7 @@ class GetCheerActionsChatCommand(AbsChatCommand):
             return
 
         actions = await self.__cheerActionsRepository.getActions(
-            twitchChannelId = userId
+            twitchChannelId = await ctx.getTwitchChannelId(),
         )
 
         enabledOrDisabledState: str
@@ -55,23 +57,23 @@ class GetCheerActionsChatCommand(AbsChatCommand):
             enabledOrDisabledState = 'disabled'
 
         if len(actions) == 0:
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'ⓘ You have no cheer actions (cheer actions are {enabledOrDisabledState} for your user)',
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = f'ⓘ You have no cheer actions (cheer actions are {enabledOrDisabledState} for your user)',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
             )
         else:
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'ⓘ You have {len(actions)} cheer action(s) (cheer actions are {enabledOrDisabledState} for your user)',
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = f'ⓘ You have {len(actions)} cheer action(s) (cheer actions are {enabledOrDisabledState} for your user)',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
             )
 
             for action in actions.values():
-                await self.__twitchUtils.safeSend(
-                    messageable = ctx,
-                    message = f'Action {action.bits} — {action.printOut()}',
-                    replyMessageId = await ctx.getMessageId()
+                self.__twitchChatMessenger.send(
+                    text = f'Action {action.bits} — {action.printOut()}',
+                    twitchChannelId = await ctx.getTwitchChannelId(),
+                    replyMessageId = await ctx.getMessageId(),
                 )
 
         self.__timber.log('GetCheerActionsCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

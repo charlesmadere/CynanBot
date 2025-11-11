@@ -861,11 +861,11 @@ class CynanBot(
             self.__addItemUseCheerActionCommand: AbsChatCommand = AddItemUseCheerActionChatCommand(administratorProvider, cheerActionsWizard, timber, twitchChatMessenger, usersRepository)
             self.__addSoundAlertCheerActionCommand: AbsChatCommand = AddSoundAlertCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchChatMessenger, usersRepository)
             self.__addVoicemailCheerActionCommand: AbsChatCommand = AddVoicemailCheerActionCommand(administratorProvider, cheerActionsWizard, timber, twitchChatMessenger, usersRepository)
-            self.__beanInstructionsCommand: AbsChatCommand = BeanInstructionsChatCommand(cheerActionsRepository, timber, twitchUtils, usersRepository)
+            self.__beanInstructionsCommand: AbsChatCommand = BeanInstructionsChatCommand(cheerActionsRepository, timber, twitchChatMessenger, usersRepository)
             self.__deleteCheerActionCommand: AbsChatCommand = DeleteCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchChatMessenger, userIdsRepository, usersRepository)
             self.__disableCheerActionCommand: AbsChatCommand = DisableCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchChatMessenger, usersRepository)
             self.__enableCheerActionCommand: AbsChatCommand = EnableCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchChatMessenger, usersRepository)
-            self.__getCheerActionsCommand: AbsChatCommand = GetCheerActionsChatCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, usersRepository)
+            self.__getCheerActionsCommand: AbsChatCommand = GetCheerActionsChatCommand(administratorProvider, cheerActionsRepository, timber, twitchChatMessenger, usersRepository)
 
         if crowdControlAutomator is None or crowdControlIdGenerator is None or crowdControlMachine is None or crowdControlUserInputUtils is None:
             self.__addGameShuffleAutomatorCommand: AbsChatCommand = StubChatCommand()
@@ -949,7 +949,7 @@ class CynanBot(
             self.__superAnswerCommand: AbsChatCommand = SuperAnswerChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
             self.__superTriviaCommand: AbsChatCommand = SuperTriviaChatCommand(generalSettingsRepository, timber, triviaGameBuilder, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchChatMessenger, usersRepository)
             self.__triviaInfoCommand: AbsChatCommand = TriviaInfoChatCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, timeZoneRepository, triviaEmoteGenerator, triviaHistoryRepository, triviaQuestionOccurrencesRepository, triviaUtils, twitchChatMessenger, usersRepository)
-            self.__triviaScoreCommand: AbsChatCommand = TriviaScoreChatCommand(generalSettingsRepository, shinyTriviaOccurencesRepository, timber, toxicTriviaOccurencesRepository, triviaScoreRepository, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
+            self.__triviaScoreCommand: AbsChatCommand = TriviaScoreChatCommand(generalSettingsRepository, shinyTriviaOccurencesRepository, timber, toxicTriviaOccurencesRepository, triviaScoreRepository, triviaUtils, twitchChatMessenger, userIdsRepository, usersRepository)
             self.__unbanTriviaQuestionChatCommand: AbsChatCommand = UnbanTriviaQuestionChatCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
 
         if cutenessPresenter is None or cutenessRepository is None or cutenessUtils is None or triviaUtils is None:

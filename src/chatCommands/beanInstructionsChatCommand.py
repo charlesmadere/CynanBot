@@ -1,9 +1,11 @@
+from typing import Final
+
 from .absChatCommand import AbsChatCommand
 from ..cheerActions.beanChance.beanChanceCheerAction import BeanChanceCheerAction
 from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -13,30 +15,30 @@ class BeanInstructionsChatCommand(AbsChatCommand):
         self,
         cheerActionsRepository: CheerActionsRepositoryInterface,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         usersRepository: UsersRepositoryInterface,
-        delimiter: str = ', '
+        delimiter: str = ', ',
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__delimiter: str = delimiter
+        self.__cheerActionsRepository: Final[CheerActionsRepositoryInterface] = cheerActionsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
+        self.__delimiter: Final[str] = delimiter
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         cheerActions = await self.__cheerActionsRepository.getActions(
-            twitchChannelId = await ctx.getTwitchChannelId()
+            twitchChannelId = await ctx.getTwitchChannelId(),
         )
 
         if cheerActions is None or len(cheerActions) == 0:
@@ -60,13 +62,13 @@ class BeanInstructionsChatCommand(AbsChatCommand):
 
         beanChanceCheerActionsString = self.__delimiter.join(beanCheerActionStrings)
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = f'ⓘ Bean Chances: {beanChanceCheerActionsString}',
-            replyMessageId = await ctx.getMessageId()
+        self.__twitchChatMessenger.send(
+            text = f'ⓘ Bean Chances: {beanChanceCheerActionsString}',
+            twitchChannelId = await ctx.getTwitchChannelId(),
+            replyMessageId = await ctx.getMessageId(),
         )
 
-        self.__timber.log('BeanInstructionsChatCommand', f'Handled !beaninstructions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('BeanInstructionsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
     async def __toString(self, beanCheerAction: BeanChanceCheerAction) -> str:
         bits: str

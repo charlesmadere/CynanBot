@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 import pytest
 
@@ -14,10 +14,10 @@ from src.ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 
 class TestTtsMonsterPrivateApiJsonMapper:
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    mapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
-        timber = timber
+    mapper: Final[TtsMonsterPrivateApiJsonMapperInterface] = TtsMonsterPrivateApiJsonMapper(
+        timber = timber,
     )
 
     @pytest.mark.asyncio
