@@ -28,7 +28,7 @@ python-vlc = { version = "3.0.21203", markers = "sys_platform == 'darwin' or sys
 pytz = "2025.2"
 pywin32 = { version = "311", markers = "sys_platform == 'win32'" }
 requests = "2.32.5"
-roman = "5.1"
+roman = "5.2"
 twitchio = "2.10.0"
 typing_extensions = "4.15.0"
 websockets = "15.0.1"
