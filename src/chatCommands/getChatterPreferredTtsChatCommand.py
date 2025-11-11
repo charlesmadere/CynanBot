@@ -11,9 +11,9 @@ from ..chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterfa
     ChatterPreferredTtsSettingsRepositoryInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.exceptions import NoSuchUserException
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
@@ -34,9 +34,9 @@ class GetChatterPreferredTtsChatCommand(AbsChatCommand):
         chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface,
         timber: TimberInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(chatterPreferredTtsPresenter, ChatterPreferredTtsPresenter):
             raise TypeError(f'chatterPreferredTtsPresenter argument is malformed: \"{chatterPreferredTtsPresenter}\"')
@@ -48,8 +48,8 @@ class GetChatterPreferredTtsChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -60,7 +60,7 @@ class GetChatterPreferredTtsChatCommand(AbsChatCommand):
         self.__chatterPreferredTtsSettingsRepository: Final[ChatterPreferredTtsSettingsRepositoryInterface] = chatterPreferredTtsSettingsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
@@ -79,25 +79,24 @@ class GetChatterPreferredTtsChatCommand(AbsChatCommand):
                 messageContent = messageContent,
                 chatterUserId = ctx.getAuthorId(),
                 chatterUserName = ctx.getAuthorName(),
-                twitchChannelId = await ctx.getTwitchChannelId()
+                twitchChannelId = await ctx.getTwitchChannelId(),
             )
         except NoSuchUserException as e:
             self.__timber.log('GetChatterPreferredTtsChatCommand', f'Failed to find user ID information for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({messageContent=}): {e}', e, traceback.format_exc())
 
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'⚠ Failed to find preferred TTS info for the given user',
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Failed to find preferred TTS info for the given user',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
             )
-
             return
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = await self.__toString(
+        self.__twitchChatMessenger.send(
+            text = await self.__toString(
                 preferredTtsLookupData = preferredTtsLookupData,
                 chatterUserId = ctx.getAuthorId(),
             ),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             replyMessageId = await ctx.getMessageId(),
         )
 
@@ -108,7 +107,7 @@ class GetChatterPreferredTtsChatCommand(AbsChatCommand):
         messageContent: str | None,
         chatterUserId: str,
         chatterUserName: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> PreferredTtsLookupData:
         splits = utils.getCleanedSplits(messageContent)
         lookupUserName: str
@@ -120,8 +119,8 @@ class GetChatterPreferredTtsChatCommand(AbsChatCommand):
             lookupUserId = await self.__userIdsRepository.requireUserId(
                 userName = lookupUserName,
                 twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-                    twitchChannelId = twitchChannelId
-                )
+                    twitchChannelId = twitchChannelId,
+                ),
             )
         else:
             lookupUserName = chatterUserName
@@ -129,13 +128,13 @@ class GetChatterPreferredTtsChatCommand(AbsChatCommand):
 
         preferredTts = await self.__chatterPreferredTtsRepository.get(
             chatterUserId = lookupUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         return GetChatterPreferredTtsChatCommand.PreferredTtsLookupData(
             preferredTts = preferredTts,
             chatterUserId = lookupUserId,
-            chatterUserName = lookupUserName
+            chatterUserName = lookupUserName,
         )
 
     async def __toString(
@@ -149,7 +148,7 @@ class GetChatterPreferredTtsChatCommand(AbsChatCommand):
             printOut = ''
         else:
             printOut = await self.__chatterPreferredTtsPresenter.printOut(
-                preferredTts = preferredTtsLookupData.preferredTts
+                preferredTts = preferredTtsLookupData.preferredTts,
             )
 
         if preferredTtsLookupData.chatterUserId == chatterUserId:
