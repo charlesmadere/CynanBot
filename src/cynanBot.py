@@ -772,8 +772,8 @@ class CynanBot(
         self.__airStrikeCheerActionHelper: Final[AirStrikeCheerActionHelperInterface | None] = airStrikeCheerActionHelper
         self.__authRepository: Final[AuthRepository] = authRepository
         self.__beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = beanChanceCheerActionHelper
-        self.__chatActionsManager: ChatActionsManagerInterface | None = chatActionsManager
-        self.__chatLogger: ChatLoggerInterface = chatLogger
+        self.__chatActionsManager: Final[ChatActionsManagerInterface | None] = chatActionsManager
+        self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
         self.__chatterInventoryItemUseMachine: Final[ChatterInventoryItemUseMachineInterface | None] = chatterInventoryItemUseMachine
         self.__chatterItemEventHandler: Final[AbsChatterItemEventHandler | None] = chatterItemEventHandler
         self.__crowdControlActionHandler: Final[CrowdControlActionHandler | None] = crowdControlActionHandler
@@ -796,14 +796,14 @@ class CynanBot(
         self.__ttsChatterRepository: TtsChatterRepositoryInterface | None = ttsChatterRepository
         self.__twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = twitchChannelJoinHelper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
+        self.__twitchConfiguration: Final[TwitchConfiguration] = twitchConfiguration
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__twitchWebsocketClient: TwitchWebsocketClientInterface | None = twitchWebsocketClient
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__websocketConnectionServer: WebsocketConnectionServerInterface | None = websocketConnectionServer
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchWebsocketClient: Final[TwitchWebsocketClientInterface | None] = twitchWebsocketClient
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
+        self.__websocketConnectionServer: Final[WebsocketConnectionServerInterface | None] = websocketConnectionServer
 
         #######################################
         ## Initialization of command objects ##
