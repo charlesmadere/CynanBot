@@ -995,7 +995,7 @@ class CynanBot(
         if translationHelper is None:
             self.__translateCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__translateCommand: AbsChatCommand = TranslateChatCommand(languagesRepository, timber, translationHelper, twitchUtils, usersRepository)
+            self.__translateCommand: AbsChatCommand = TranslateChatCommand(languagesRepository, timber, translationHelper, twitchChatMessenger, usersRepository)
 
         if ttsChatterRepository is None:
             self.__removeTtsChatterCommand: AbsChatCommand = StubChatCommand()
