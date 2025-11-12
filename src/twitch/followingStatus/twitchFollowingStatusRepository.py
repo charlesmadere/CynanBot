@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import traceback
 from collections import defaultdict
 from datetime import datetime

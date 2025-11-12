@@ -1,6 +1,7 @@
 import traceback
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from typing import Final
 
 from .twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ..api.models.twitchEmoteType import TwitchEmoteType
@@ -36,7 +37,7 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        cacheTimeDelta: timedelta = timedelta(hours = 3)
+        cacheTimeDelta: timedelta = timedelta(hours = 3),
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -55,16 +56,16 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         elif not isinstance(cacheTimeDelta, timedelta):
             raise TypeError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
-        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface = twitchSubscriptionsRepository
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__cacheTimeDelta: timedelta = cacheTimeDelta
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
+        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__twitchSubscriptionsRepository: Final[TwitchSubscriptionsRepositoryInterface] = twitchSubscriptionsRepository
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__cacheTimeDelta: Final[timedelta] = cacheTimeDelta
 
-        self.__cache: dict[str, TwitchEmotesHelper.Entry | None] = dict()
+        self.__cache: Final[dict[str, TwitchEmotesHelper.Entry | None]] = dict()
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -72,7 +73,7 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
 
     async def __fetchFromTwitchApi(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> Entry | None:
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
         twitchId = await self.__userIdsRepository.requireUserId(twitchHandle)
@@ -88,20 +89,20 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         try:
             emotesResponse = await self.__twitchApiService.fetchChannelEmotes(
                 broadcasterId = twitchChannelId,
-                twitchAccessToken = twitchAccessToken
+                twitchAccessToken = twitchAccessToken,
             )
 
             subscriptionStatus = await self.__twitchSubscriptionsRepository.fetchSubscriptionStatus(
                 twitchAccessToken = twitchAccessToken,
                 twitchChannelId = twitchChannelId,
-                userId = twitchId
+                userId = twitchId,
             )
         except (GenericNetworkException, TwitchJsonException, TwitchStatusCodeException) as e:
             self.__timber.log('TwitchEmotesHelper', f'Encountered network error when fetching either broadcaster subscription or emotes ({twitchChannelId=}) ({emotesResponse=}) ({subscriptionStatus=}): {e}', e, traceback.format_exc())
 
         viableEmoteNames = await self.__processTwitchResponseIntoViableSubscriptionEmotes(
             emotesResponse = emotesResponse,
-            subscriptionStatus = subscriptionStatus
+            subscriptionStatus = subscriptionStatus,
         )
 
         self.__timber.log('TwitchEmotesHelper', f'Fetched {len(viableEmoteNames)} viable emote name(s) ({twitchChannelId=}) ({subscriptionStatus=}) ({viableEmoteNames=})')
@@ -109,12 +110,12 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         return TwitchEmotesHelper.Entry(
             fetchDateTime = datetime.now(self.__timeZoneRepository.getDefault()),
             availableEmotes = viableEmoteNames,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def fetchViableSubscriptionEmoteNames(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> frozenset[str]:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
@@ -130,7 +131,7 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
             entry = TwitchEmotesHelper.Entry(
                 fetchDateTime = datetime.now(self.__timeZoneRepository.getDefault()),
                 availableEmotes = frozenset(),
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
 
         self.__cache[twitchChannelId] = entry
@@ -138,7 +139,7 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
 
     async def __getCachedEntry(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> Entry | None:
         cachedEntry = self.__cache.get(twitchChannelId, None)
 
@@ -155,7 +156,7 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
     async def __processTwitchResponseIntoViableSubscriptionEmotes(
         self,
         emotesResponse: TwitchEmotesResponse | None,
-        subscriptionStatus: TwitchSubscriptionStatus | None
+        subscriptionStatus: TwitchSubscriptionStatus | None,
     ) -> frozenset[str]:
         if emotesResponse is not None and not isinstance(emotesResponse, TwitchEmotesResponse):
             raise TypeError(f'emotesResponse argument is malformed: \"{emotesResponse}\"')
