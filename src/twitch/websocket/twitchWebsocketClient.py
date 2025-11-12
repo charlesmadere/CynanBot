@@ -152,9 +152,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         dataBundle: TwitchWebsocketDataBundle | None,
         user: TwitchWebsocketUser,
     ):
-        if not isinstance(user, TwitchWebsocketUser):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-
         jsonLoggingLevel = await self.__twitchWebsocketSettingsRepository.getLoggingLevel()
         shouldLog = False
 

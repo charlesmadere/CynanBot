@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import traceback
 from collections import defaultdict
 from datetime import datetime
@@ -28,7 +26,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        cacheSize: int = 32,
+        cacheSize: int = 64,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
