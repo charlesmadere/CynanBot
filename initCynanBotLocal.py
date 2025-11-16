@@ -432,6 +432,8 @@ from src.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import 
 from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from src.twitch.globalTwitchConstants import GlobalTwitchConstants
+from src.twitch.ircReconnectHelper.twitchIrcReconnectHelper import TwitchIrcReconnectHelper
+from src.twitch.ircReconnectHelper.twitchIrcReconnectHelperInterface import TwitchIrcReconnectHelperInterface
 from src.twitch.ircTagsParser.twitchIrcTagsParser import TwitchIrcTagsParser
 from src.twitch.ircTagsParser.twitchIrcTagsParserInterface import TwitchIrcTagsParserInterface
 from src.twitch.isLive.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
@@ -759,7 +761,14 @@ twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHel
     backgroundTaskHelper = backgroundTaskHelper,
     verified = True,
     timber = timber,
-    usersRepository = usersRepository
+    usersRepository = usersRepository,
+)
+
+twitchIrcReconnectHelper: TwitchIrcReconnectHelperInterface = TwitchIrcReconnectHelper(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber,
+    userIdsRepository = userIdsRepository,
+    usersRepository = usersRepository,
 )
 
 twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface = TwitchPredictionWebsocketUtils(
@@ -2572,6 +2581,7 @@ cynanBot = CynanBot(
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
+    twitchIrcReconnectHelper = twitchIrcReconnectHelper,
     twitchMessageStringUtils = twitchMessageStringUtils,
     twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,

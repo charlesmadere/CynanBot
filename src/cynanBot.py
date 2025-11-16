@@ -243,6 +243,7 @@ from .twitch.configuration.twitchConnectionReadinessProvider import TwitchConnec
 from .twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from .twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from .twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
+from .twitch.ircReconnectHelper.twitchIrcReconnectHelperInterface import TwitchIrcReconnectHelperInterface
 from .twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from .twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
 from .twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
@@ -417,6 +418,7 @@ class CynanBot(
         twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface | None,
+        twitchIrcReconnectHelper: TwitchIrcReconnectHelperInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
         twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface | None,
@@ -716,6 +718,8 @@ class CynanBot(
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif twitchFriendsUserIdRepository is not None and not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
+        elif not isinstance(twitchIrcReconnectHelper, TwitchIrcReconnectHelperInterface):
+            raise TypeError(f'twitchIrcReconnectHelper argument is malformed: \"{twitchIrcReconnectHelper}\"')
         elif twitchMessageStringUtils is not None and not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
             raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
@@ -759,19 +763,19 @@ class CynanBot(
         elif wordOfTheDayRepository is not None and not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
             raise TypeError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
-        self.__twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = twitchChannelPointRedemptionHandler
-        self.__twitchChatHandler: AbsTwitchChatHandler | None = twitchChatHandler
-        self.__twitchCheerHandler: AbsTwitchCheerHandler | None = twitchCheerHandler
-        self.__twitchFollowHandler: AbsTwitchFollowHandler | None = twitchFollowHandler
-        self.__twitchHypeTrainHandler: AbsTwitchHypeTrainHandler | None = twitchHypeTrainHandler
-        self.__twitchPollHandler: AbsTwitchPollHandler | None = twitchPollHandler
-        self.__twitchPredictionHandler: AbsTwitchPredictionHandler | None = twitchPredictionHandler
-        self.__twitchRaidHandler: AbsTwitchRaidHandler | None = twitchRaidHandler
-        self.__twitchSubscriptionHandler: AbsTwitchSubscriptionHandler | None = twitchSubscriptionHandler
-        self.__addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface = addOrRemoveUserDataHelper
+        self.__twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler | None] = twitchChannelPointRedemptionHandler
+        self.__twitchChatHandler: Final[AbsTwitchChatHandler | None] = twitchChatHandler
+        self.__twitchCheerHandler: Final[AbsTwitchCheerHandler | None] = twitchCheerHandler
+        self.__twitchFollowHandler: Final[AbsTwitchFollowHandler | None] = twitchFollowHandler
+        self.__twitchHypeTrainHandler: Final[AbsTwitchHypeTrainHandler | None] = twitchHypeTrainHandler
+        self.__twitchPollHandler: Final[AbsTwitchPollHandler | None] = twitchPollHandler
+        self.__twitchPredictionHandler: Final[AbsTwitchPredictionHandler | None] = twitchPredictionHandler
+        self.__twitchRaidHandler: Final[AbsTwitchRaidHandler | None] = twitchRaidHandler
+        self.__twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler | None] = twitchSubscriptionHandler
+        self.__addOrRemoveUserDataHelper: Final[AddOrRemoveUserDataHelperInterface] = addOrRemoveUserDataHelper
         self.__airStrikeCheerActionHelper: Final[AirStrikeCheerActionHelperInterface | None] = airStrikeCheerActionHelper
         self.__authRepository: Final[AuthRepository] = authRepository
-        self.__beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None = beanChanceCheerActionHelper
+        self.__beanChanceCheerActionHelper: Final[BeanChanceCheerActionHelperInterface | None] = beanChanceCheerActionHelper
         self.__chatActionsManager: Final[ChatActionsManagerInterface | None] = chatActionsManager
         self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
         self.__chatterInventoryItemUseMachine: Final[ChatterInventoryItemUseMachineInterface | None] = chatterInventoryItemUseMachine
@@ -779,24 +783,25 @@ class CynanBot(
         self.__crowdControlActionHandler: Final[CrowdControlActionHandler | None] = crowdControlActionHandler
         self.__crowdControlMachine: Final[CrowdControlMachineInterface | None] = crowdControlMachine
         self.__crowdControlMessageListener: Final[CrowdControlMessageListener | None] = crowdControlMessageListener
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
+        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
+        self.__mostRecentAnivMessageTimeoutHelper: Final[MostRecentAnivMessageTimeoutHelperInterface | None] = mostRecentAnivMessageTimeoutHelper
         self.__pixelsDiceEventListener: Final[PixelsDiceEventListener | None] = pixelsDiceEventListener
         self.__pixelsDiceMachine: Final[PixelsDiceMachineInterface | None] = pixelsDiceMachine
-        self.__recurringActionsEventHandler: AbsRecurringActionsEventHandler | None = recurringActionsEventHandler
-        self.__recurringActionsMachine: RecurringActionsMachineInterface | None = recurringActionsMachine
-        self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
-        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
-        self.__timber: TimberInterface = timber
+        self.__recurringActionsEventHandler: Final[AbsRecurringActionsEventHandler | None] = recurringActionsEventHandler
+        self.__recurringActionsMachine: Final[RecurringActionsMachineInterface | None] = recurringActionsMachine
+        self.__sentMessageLogger: Final[SentMessageLoggerInterface] = sentMessageLogger
+        self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
+        self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface | None] = timeoutActionMachine
         self.__timeoutEventHandler: Final[AbsTimeoutEventHandler | None] = timeoutEventHandler
         self.__triviaEventHandler: Final[AbsTriviaEventHandler | None] = triviaEventHandler
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
         self.__triviaRepository: TriviaRepositoryInterface | None = triviaRepository
-        self.__ttsChatterRepository: TtsChatterRepositoryInterface | None = ttsChatterRepository
-        self.__twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = twitchChannelJoinHelper
+        self.__ttsChatterRepository: Final[TtsChatterRepositoryInterface | None] = ttsChatterRepository
+        self.__twitchChannelJoinHelper: Final[TwitchChannelJoinHelperInterface] = twitchChannelJoinHelper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchConfiguration: Final[TwitchConfiguration] = twitchConfiguration
+        self.__twitchIrcReconnectHelper: Final[TwitchIrcReconnectHelperInterface] = twitchIrcReconnectHelper
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
@@ -814,14 +819,14 @@ class CynanBot(
         self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettings, asplodieStatsRepository, authRepository, bannedTriviaGameControllersRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, guaranteedTimeoutUsersRepository, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionSettings, triviaGameControllersRepository, triviaGameGlobalControllersRepository, triviaSettingsRepository, trollmojiHelper, trollmojiSettingsRepository, ttsChatterRepository, ttsChatterSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchChatMessenger, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, voicemailsRepository, voicemailSettingsRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__confirmCommand: AbsChatCommand = ConfirmChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, usersRepository)
-        self.__cynanSourceCommand: AbsChatCommand = CynanSourceChatCommand(timber, twitchUtils, usersRepository)
+        self.__cynanSourceCommand: AbsChatCommand = CynanSourceChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__discordCommand: AbsChatCommand = DiscordChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__loremIpsumCommand: AbsChatCommand = LoremIpsumChatCommand(administratorProvider, timber, twitchChatMessenger, usersRepository)
         self.__removeUserCommand: AbsChatCommand = RemoveUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
         self.__setTwitchCodeCommand: AbsChatCommand = SetTwitchCodeChatCommand(administratorProvider, timber, twitchTokensRepository, twitchUtils, usersRepository)
         self.__skipTtsCommand: AbsChatCommand = SkipTtsChatCommand(administratorProvider, compositeTtsManagerProvider, timber, twitchChannelEditorsRepository)
         self.__timeCommand: AbsChatCommand = TimeChatCommand(timber, twitchChatMessenger, usersRepository)
-        self.__twitchUserInfoCommand: AbsChatCommand = TwitchUserInfoChatCommand(administratorProvider, timber, twitchApiService, authRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
+        self.__twitchUserInfoCommand: AbsChatCommand = TwitchUserInfoChatCommand(administratorProvider, timber, twitchApiService, twitchChatMessenger, authRepository, twitchTokensRepository, userIdsRepository, usersRepository)
 
         if asplodieStatsPresenter is None or asplodieStatsRepository is None:
             self.__asplodieStatsCommand: AbsChatCommand = StubChatCommand()
@@ -1242,6 +1247,9 @@ class CynanBot(
             ))
 
             self.__twitchWebsocketClient.start()
+
+        self.__twitchIrcReconnectHelper.setTwitchIoBot(self)
+        self.__twitchIrcReconnectHelper.start()
 
     async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
         self.__timber.log('CynanBot', f'Joining channels: {event}')
