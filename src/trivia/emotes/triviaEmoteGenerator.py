@@ -1,4 +1,5 @@
 import random
+from typing import Final
 
 from frozendict import frozendict
 from frozenlist import FrozenList
@@ -14,18 +15,18 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        triviaEmoteRepository: TriviaEmoteRepositoryInterface
+        triviaEmoteRepository: TriviaEmoteRepositoryInterface,
     ):
         if not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber arguent is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaEmoteRepository, TriviaEmoteRepositoryInterface):
             raise TypeError(f'triviaEmoteRepository argument is malformed: \"{triviaEmoteRepository}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__triviaEmoteRepository: TriviaEmoteRepositoryInterface = triviaEmoteRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaEmoteRepository: Final[TriviaEmoteRepositoryInterface] = triviaEmoteRepository
 
-        self.__emojiToEquivalents: frozendict[str, frozenset[str] | None] = self.__createEmojiToEquivalentsDictionary()
-        self.__emojiEquivalents: FrozenList[str] = FrozenList(self.__emojiToEquivalents)
+        self.__emojiToEquivalents: Final[frozendict[str, frozenset[str] | None]] = self.__createEmojiToEquivalentsDictionary()
+        self.__emojiEquivalents: Final[FrozenList[str]] = FrozenList(self.__emojiToEquivalents)
         self.__emojiEquivalents.freeze()
 
     def __createEmojiToEquivalentsDictionary(self) -> frozendict[str, frozenset[str] | None]:
@@ -79,7 +80,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['🐬'] = frozenset({ '🦈' })
         emotesDict['🐉'] = frozenset({ '🐲', '🦖' })
         emotesDict['🔌'] = frozenset({ '⚡' })
-        emotesDict['🐘'] = None
+        emotesDict['🐘'] = frozenset({ '𓃰' })
         emotesDict['🧐'] = None
         emotesDict['🚒'] = None
         emotesDict['🐟'] = frozenset({ '🐡', '🎣', '🐠' })
@@ -176,7 +177,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
 
         await self.__triviaEmoteRepository.setEmoteIndexFor(
             emoteIndex = newEmoteIndex,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         return self.__emojiEquivalents[newEmoteIndex]
