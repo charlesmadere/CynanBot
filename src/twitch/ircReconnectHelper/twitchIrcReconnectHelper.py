@@ -123,8 +123,8 @@ class TwitchIrcReconnectHelper(TwitchIrcReconnectHelperInterface):
                 if connectedUserId in enabledUserIds:
                     connectedUserIds.add(connectedUserId)
                 else:
-                    # This would mean we are connected to a channel that we shouldn't be. I guess
-                    # this should definitely be impossible, but let's just log it for now.
+                    # This would mean we are connected to a channel that we shouldn't be. This
+                    # state should probably be impossible, but whatever, let's just log it.
                     self.__timber.log('TwitchIrcReconnectHelper', f'Discovered a channel that we\'re connected to, but it isn\'t in the enabled users list ({connectedChannel=}) ({connectedUserId=}) ({enabledUsers=})')
 
         disconnectedUsers: FrozenList[TwitchIrcReconnectHelper.TwitchUserData] = FrozenList()
