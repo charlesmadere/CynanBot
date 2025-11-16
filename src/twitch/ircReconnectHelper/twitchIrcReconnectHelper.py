@@ -175,6 +175,9 @@ class TwitchIrcReconnectHelper(TwitchIrcReconnectHelperInterface):
         self.__backgroundTaskHelper.createTask(self.__startIrcConnectionCheckRefreshLoop())
 
     async def __startIrcConnectionCheckRefreshLoop(self):
+        # wait a bit before performing the first IRC connection check
+        await asyncio.sleep(self.__sleepTimeSeconds)
+
         while True:
             twitchIoBot = self.__twitchIoBot
 
