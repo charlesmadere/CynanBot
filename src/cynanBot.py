@@ -243,6 +243,7 @@ from .twitch.configuration.twitchConnectionReadinessProvider import TwitchConnec
 from .twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from .twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from .twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
+from .twitch.ircReconnectHelper.twitchIrcReconnectHelperInterface import TwitchIrcReconnectHelperInterface
 from .twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from .twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
 from .twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
@@ -417,6 +418,7 @@ class CynanBot(
         twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface | None,
+        twitchIrcReconnectHelper: TwitchIrcReconnectHelperInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
         twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface | None,
@@ -716,6 +718,8 @@ class CynanBot(
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif twitchFriendsUserIdRepository is not None and not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
+        elif not isinstance(twitchIrcReconnectHelper, TwitchIrcReconnectHelperInterface):
+            raise TypeError(f'twitchIrcReconnectHelper argument is malformed: \"{twitchIrcReconnectHelper}\"')
         elif twitchMessageStringUtils is not None and not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
             raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
@@ -797,6 +801,7 @@ class CynanBot(
         self.__twitchChannelJoinHelper: Final[TwitchChannelJoinHelperInterface] = twitchChannelJoinHelper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchConfiguration: Final[TwitchConfiguration] = twitchConfiguration
+        self.__twitchIrcReconnectHelper: Final[TwitchIrcReconnectHelperInterface] = twitchIrcReconnectHelper
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
@@ -1242,6 +1247,9 @@ class CynanBot(
             ))
 
             self.__twitchWebsocketClient.start()
+
+        self.__twitchIrcReconnectHelper.setTwitchIoBot(self)
+        self.__twitchIrcReconnectHelper.start()
 
     async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
         self.__timber.log('CynanBot', f'Joining channels: {event}')
