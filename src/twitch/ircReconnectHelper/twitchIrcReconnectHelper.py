@@ -80,10 +80,10 @@ class TwitchIrcReconnectHelper(TwitchIrcReconnectHelperInterface):
         disconnectedUserNames: list[str] = [ user.userName for user in disconnectedUsers ]
 
         try:
-            # This call might not be necessary, I'm not really sure. It depends on
-            # if the Twitch IO library is actually aware of the fact of its dead IRC
-            # connection(s). But whatever, let's just manually disconnect from these
-            # channels before reconnecting to them.
+            # This call might not be necessary, I'm not really sure. It depends on if
+            # the Twitch IO library is actually aware of its dead IRC connection(s).
+            # But whatever, let's just manually disconnect from these channels before
+            # reconnecting to them.
             await twitchIoBot.part_channels(disconnectedUserNames)
         except Exception as e:
             # This try/catch block is probably a bit extraneous, but whatever. I want
