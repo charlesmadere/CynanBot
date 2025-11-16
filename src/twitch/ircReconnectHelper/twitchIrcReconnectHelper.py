@@ -80,10 +80,10 @@ class TwitchIrcReconnectHelper(TwitchIrcReconnectHelperInterface):
         disconnectedUserNames: list[str] = [ user.userName for user in disconnectedUsers ]
 
         try:
-            # This call might not be necessary, I'm not really sure. It depends on
-            # if the Twitch IO library is actually aware of the fact of its dead IRC
-            # connection(s). But whatever, let's just manually disconnect from these
-            # channels before reconnecting to them.
+            # This call might not be necessary, I'm not really sure. It depends on if
+            # the Twitch IO library is actually aware of its dead IRC connection(s).
+            # But whatever, let's just manually disconnect from these channels before
+            # reconnecting to them.
             await twitchIoBot.part_channels(disconnectedUserNames)
         except Exception as e:
             # This try/catch block is probably a bit extraneous, but whatever. I want
@@ -123,8 +123,8 @@ class TwitchIrcReconnectHelper(TwitchIrcReconnectHelperInterface):
                 if connectedUserId in enabledUserIds:
                     connectedUserIds.add(connectedUserId)
                 else:
-                    # This would mean we are connected to a channel that we shouldn't be. I guess
-                    # this should definitely be impossible, but let's just log it for now.
+                    # This would mean we are connected to a channel that we shouldn't be. This
+                    # state should probably be impossible, but whatever, let's just log it.
                     self.__timber.log('TwitchIrcReconnectHelper', f'Discovered a channel that we\'re connected to, but it isn\'t in the enabled users list ({connectedChannel=}) ({connectedUserId=}) ({enabledUsers=})')
 
         disconnectedUsers: FrozenList[TwitchIrcReconnectHelper.TwitchUserData] = FrozenList()
