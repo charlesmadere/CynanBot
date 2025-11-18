@@ -2,6 +2,7 @@ import asyncio
 import queue
 import random
 import traceback
+from collections import defaultdict
 from dataclasses import dataclass
 from queue import SimpleQueue
 from typing import Final
@@ -371,12 +372,8 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             return
 
         itemDetails = await self.__chatterInventorySettings.getGashaponItemDetails()
-        awardedItems: dict[ChatterItemType, int] = dict()
-
-        for itemType in ChatterItemType:
-            awardedItems[itemType] = 0
-
         enabledItemTypes = await self.__chatterInventorySettings.getEnabledItemTypes()
+        awardedItems: dict[ChatterItemType, int] = defaultdict(lambda: 0)
         itemsWereAwarded = False
 
         for _ in range(itemDetails.iterations):
