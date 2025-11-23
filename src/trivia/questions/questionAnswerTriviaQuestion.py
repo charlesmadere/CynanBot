@@ -7,7 +7,6 @@ from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import BadTriviaOriginalCorrectAnswersException, NoTriviaCorrectAnswersException
-from ...misc import utils as utils
 
 
 class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
@@ -61,8 +60,10 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
         return frozenCompiledCorrectAnswers
 
     @property
-    def correctAnswers(self) -> list[str]:
-        return utils.copyList(self.__correctAnswers)
+    def correctAnswers(self) -> FrozenList[str]:
+        correctAnswers: FrozenList[str] = FrozenList(self.__correctAnswers)
+        correctAnswers.freeze()
+        return correctAnswers
 
     @property
     def originalCorrectAnswers(self) -> FrozenList[str]:
@@ -71,8 +72,10 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
         return frozenOriginalCorrectAnswers
 
     @property
-    def responses(self) -> list[str]:
-        return list()
+    def responses(self) -> FrozenList[str]:
+        responses: FrozenList[str] = FrozenList()
+        responses.freeze()
+        return responses
 
     def toDictionary(self) -> dict[str, Any]:
         return {

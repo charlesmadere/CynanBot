@@ -1,5 +1,7 @@
 from typing import Any, Final
 
+from frozenlist import FrozenList
+
 from .absTriviaQuestion import AbsTriviaQuestion
 from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
@@ -41,12 +43,17 @@ class TrueFalseTriviaQuestion(AbsTriviaQuestion):
         return self.__correctAnswer
 
     @property
-    def correctAnswers(self) -> list[str]:
-        return [ str(self.__correctAnswer).lower() ]
+    def correctAnswers(self) -> FrozenList[str]:
+        correctAnswers: FrozenList[str] = FrozenList()
+        correctAnswers.append(str(self.__correctAnswer).lower())
+        correctAnswers.freeze()
+        return correctAnswers
 
     @property
-    def responses(self) -> list[str]:
-        return [ str(True).lower(), str(False).lower() ]
+    def responses(self) -> FrozenList[str]:
+        responses: FrozenList[str] = FrozenList([ str(True).lower(), str(False).lower() ])
+        responses.freeze()
+        return responses
 
     def toDictionary(self) -> dict[str, Any]:
         return {

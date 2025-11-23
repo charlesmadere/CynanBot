@@ -1,11 +1,13 @@
 from typing import Any, Final
 
+from frozendict import frozendict
+from frozenlist import FrozenList
+
 from .absTriviaQuestion import AbsTriviaQuestion
 from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException
-from ...misc import utils as utils
 
 
 class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
@@ -41,11 +43,13 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
         self.__multipleChoiceResponses: Final[list[str]] = multipleChoiceResponses
 
     @property
-    def correctAnswers(self) -> list[str]:
-        return utils.copyList(self.__correctAnswers)
+    def correctAnswers(self) -> FrozenList[str]:
+        correctAnswers: FrozenList[str] = FrozenList(self.__correctAnswers)
+        correctAnswers.freeze()
+        return correctAnswers
 
     @property
-    def indexesWithCorrectAnswers(self) -> dict[int, str]:
+    def indexesWithCorrectAnswers(self) -> frozendict[int, str]:
         indexesWithCorrectAnswers: dict[int, str] = dict()
 
         for index, response in enumerate(self.__multipleChoiceResponses):
@@ -53,11 +57,13 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
                 if response.casefold() == correctAnswer.casefold():
                     indexesWithCorrectAnswers[index] = response
 
-        return indexesWithCorrectAnswers
+        return frozendict(indexesWithCorrectAnswers)
 
     @property
-    def responses(self) -> list[str]:
-        return utils.copyList(self.__multipleChoiceResponses)
+    def responses(self) -> FrozenList[str]:
+        responses: FrozenList[str] = FrozenList(self.__multipleChoiceResponses)
+        responses.freeze()
+        return responses
 
     @property
     def responseCount(self) -> int:

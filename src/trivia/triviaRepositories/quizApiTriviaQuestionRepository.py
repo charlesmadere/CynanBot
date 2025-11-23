@@ -135,7 +135,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
             if await self._verifyIsActuallyMultipleChoiceQuestion(
                 correctAnswers = correctAnswers,
-                multipleChoiceResponses = multipleChoiceResponses
+                multipleChoiceResponses = multipleChoiceResponses,
             ):
                 return MultipleChoiceTriviaQuestion(
                     correctAnswers = correctAnswers,

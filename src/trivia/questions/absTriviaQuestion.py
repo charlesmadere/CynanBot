@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any, Final
 
+from frozenlist import FrozenList
+
 from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
@@ -58,7 +60,7 @@ class AbsTriviaQuestion(ABC):
 
     @property
     @abstractmethod
-    def correctAnswers(self) -> list[str]:
+    def correctAnswers(self) -> FrozenList[str]:
         pass
 
     @property
@@ -75,7 +77,7 @@ class AbsTriviaQuestion(ABC):
 
     @property
     @abstractmethod
-    def responses(self) -> list[str]:
+    def responses(self) -> FrozenList[str]:
         pass
 
     @abstractmethod
