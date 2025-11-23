@@ -19,6 +19,10 @@ class AnivUserIdsRepositoryInterface(ABC):
         pass
 
     @abstractmethod
+    async def getAlbeeevUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getAllUsers(self) -> frozendict[WhichAnivUser, str | None]:
         pass
 

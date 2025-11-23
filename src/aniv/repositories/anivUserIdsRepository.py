@@ -41,13 +41,18 @@ class AnivUserIdsRepository(AnivUserIdsRepositoryInterface):
     async def getAcacUserId(self) -> str | None:
         return await self.__twitchFriendsUserIdRepository.getAcacUserId()
 
+    async def getAlbeeevUserId(self) -> str | None:
+        return await self.__twitchFriendsUserIdRepository.getAlbeeevUserId()
+
     async def getAllUsers(self) -> frozendict[WhichAnivUser, str | None]:
         acacUserId = await self.getAcacUserId()
+        albeeevUserId = await self.getAlbeeevUserId()
         aneevUserId = await self.getAneevUserId()
         anivUserId = await self.getAnivUserId()
 
         return frozendict({
             WhichAnivUser.ACAC: acacUserId,
+            WhichAnivUser.ALBEEEV: albeeevUserId,
             WhichAnivUser.ANEEV: aneevUserId,
             WhichAnivUser.ANIV: anivUserId,
         })
