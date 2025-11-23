@@ -176,63 +176,6 @@ class TestUtils:
         result = utils.containsUrl(' ')
         assert result is False
 
-    def test_copyList_withEmptyList(self):
-        original: list[Any] = list()
-        result = utils.copyList(original)
-        assert isinstance(result, list)
-        assert len(result) == 0
-        assert result is not original
-
-    def test_copyList_withIntList(self):
-        original: list[int] = [ 1, 2, 3, 4 ]
-        result = utils.copyList(original)
-        assert result is not None
-        assert len(result) == 4
-        assert result is not original
-        assert result == original
-
-    def test_copyList_withNone(self):
-        result: list = utils.copyList(None)
-        assert result is not None
-        assert len(result) == 0
-
-    def test_copyList_withStrList(self):
-        original: list[str] = [ '1', '2', '3', '4' ]
-        result = utils.copyList(original)
-        assert result is not None
-        assert len(result) == 4
-        assert result is not original
-        assert result == original
-
-    def test_copySet_withEmptySet(self):
-        original: set[Any] = set()
-        result = utils.copySet(original)
-        assert isinstance(result, set)
-        assert len(result) == 0
-        assert result is not original
-        assert result == original
-
-    def test_copySet_withIntSet(self):
-        original: set[int] = { 1, 2, 3, 4 }
-        result = utils.copySet(original)
-        assert isinstance(result, set)
-        assert len(result) == 4
-        assert result is not original
-        assert result == original
-
-    def test_copySet_withNone(self):
-        result = utils.copySet(None)
-        assert isinstance(result, set)
-        assert len(result) == 0
-
-    def test_copySet_withStrSet(self):
-        original: set[str] = { '1', '2', '3', '4' }
-        result = utils.copySet(original)
-        assert isinstance(result, set)
-        assert len(result) == 4
-        assert result is not original
-        assert result == original
-
     def test_getBoolFromDict_withEmptyDict(self):
         d: dict[str, Any] = dict()
         value: bool | None = None

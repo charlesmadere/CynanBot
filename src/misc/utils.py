@@ -95,22 +95,6 @@ def containsUrl(s: str | None) -> TypeGuard[str]:
 
     return False
 
-def copyList(l: list[Any] | None) -> list:
-    newList = list()
-
-    if l is not None and len(l) >= 1:
-        newList.extend(l)
-
-    return newList
-
-def copySet(s: set[Any] | None) -> set:
-    newSet = set()
-
-    if s is not None and len(s) >= 1:
-        newSet.update(s)
-
-    return newSet
-
 def cToF(celsius: float) -> float:
     if not isValidNum(celsius):
         raise TypeError(f'celsius argument is malformed: \"{celsius}\"')
