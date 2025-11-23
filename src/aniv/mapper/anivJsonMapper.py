@@ -19,6 +19,10 @@ class AnivJsonMapper(AnivJsonMapperInterface):
         acac.append(re.compile(r'^\s*a(?:\s+|_|-)?c(?:\s+|_|-)?a(?:\s+|_|-)?c\s*$', re.IGNORECASE))
         acac.freeze()
 
+        albeeev: FrozenList[Pattern] = FrozenList()
+        albeeev.append(re.compile(r'^\s*a(?:\s+|_|-)?l(?:\s+|_|-)?b(?:\s+|_|-)?e(?:\s+|_|-)?e(?:\s+|_|-)?e(?:\s+|_|-)?v\s*$', re.IGNORECASE))
+        albeeev.freeze()
+
         aneev: FrozenList[Pattern] = FrozenList()
         aneev.append(re.compile(r'^\s*a(?:\s+|_|-)?n(?:\s+|_|-)?e(?:\s+|_|-)?e(?:\s+|_|-)?v\s*$', re.IGNORECASE))
         aneev.freeze()
@@ -29,13 +33,14 @@ class AnivJsonMapper(AnivJsonMapperInterface):
 
         return frozendict({
             WhichAnivUser.ACAC: acac,
+            WhichAnivUser.ALBEEEV: albeeev,
             WhichAnivUser.ANEEV: aneev,
             WhichAnivUser.ANIV: aniv,
         })
 
     def parseWhichAnivUser(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> WhichAnivUser | None:
         if not utils.isValidStr(string):
             return None
@@ -49,7 +54,7 @@ class AnivJsonMapper(AnivJsonMapperInterface):
 
     def requireWhichAnivUser(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> WhichAnivUser:
         result = self.parseWhichAnivUser(string)
 

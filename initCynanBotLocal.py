@@ -159,8 +159,6 @@ from src.funtoon.apiService.funtoonApiService import FuntoonApiService
 from src.funtoon.apiService.funtoonApiServiceInterface import FuntoonApiServiceInterface
 from src.funtoon.funtoonHelper import FuntoonHelper
 from src.funtoon.funtoonHelperInterface import FuntoonHelperInterface
-from src.funtoon.funtoonUserIdProvider import FuntoonUserIdProvider
-from src.funtoon.funtoonUserIdProviderInterface import FuntoonUserIdProviderInterface
 from src.funtoon.jsonMapper.funtoonJsonMapper import FuntoonJsonMapper
 from src.funtoon.jsonMapper.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
 from src.funtoon.tokens.funtoonTokensRepository import FuntoonTokensRepository
@@ -825,16 +823,14 @@ trollmojiHelper: TrollmojiHelperInterface = TrollmojiHelper(
 ## Funtoon initialization section ##
 ####################################
 
-funtoonUserIdProvider: FuntoonUserIdProviderInterface = FuntoonUserIdProvider()
-
 funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     userIdsRepository = userIdsRepository,
     seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/funtoonTokensRepositorySeedFile.json'
-    )
+        fileName = '../config/funtoonTokensRepositorySeedFile.json',
+    ),
 )
 
 funtoonJsonMapper: FuntoonJsonMapperInterface = FuntoonJsonMapper()
@@ -842,7 +838,7 @@ funtoonJsonMapper: FuntoonJsonMapperInterface = FuntoonJsonMapper()
 funtoonApiService: FuntoonApiServiceInterface = FuntoonApiService(
     funtoonJsonMapper = funtoonJsonMapper,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
 funtoonHelper: FuntoonHelperInterface = FuntoonHelper(
@@ -857,11 +853,11 @@ emojiRepository: EmojiRepositoryInterface = EmojiRepository(
         eventLoop = eventLoop,
         fileName = 'emojiRepository.json'
     ),
-    timber = timber
+    timber = timber,
 )
 
 emojiHelper: EmojiHelperInterface = EmojiHelper(
-    emojiRepository = emojiRepository
+    emojiRepository = emojiRepository,
 )
 
 isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepository(
@@ -953,7 +949,6 @@ twitchChatMessenger: TwitchChatMessengerInterface = TwitchChatMessenger(
 
 timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = TimeoutImmuneUserIdsRepository(
     cynanBotUserIdsProvider = cynanBotUserIdsProvider,
-    funtoonUserIdProvider = funtoonUserIdProvider,
     officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     timber = timber,
     twitchFriendsUserIdProvider = twitchFriendsUserIdRepository,

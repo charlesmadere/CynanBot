@@ -22,6 +22,19 @@ class TestAnivJsonMapper:
         result = self.mapper.parseWhichAnivUser('a c a c')
         assert result is WhichAnivUser.ACAC
 
+    def test_parseWhichAnivUser_withAlbeeevStrings(self):
+        result = self.mapper.parseWhichAnivUser('albeeev')
+        assert result is WhichAnivUser.ALBEEEV
+
+        result = self.mapper.parseWhichAnivUser('a_l_b_e_e_e_v')
+        assert result is WhichAnivUser.ALBEEEV
+
+        result = self.mapper.parseWhichAnivUser('a-l-b-e-e-e-v')
+        assert result is WhichAnivUser.ALBEEEV
+
+        result = self.mapper.parseWhichAnivUser('a l b e e e v')
+        assert result is WhichAnivUser.ALBEEEV
+
     def test_parseWhichAnivUser_withAneevStrings(self):
         result = self.mapper.parseWhichAnivUser('aneev')
         assert result is WhichAnivUser.ANEEV
@@ -72,6 +85,19 @@ class TestAnivJsonMapper:
 
         result = self.mapper.requireWhichAnivUser('a c a c')
         assert result is WhichAnivUser.ACAC
+
+    def test_requireWhichAnivUser_withAlbeeevStrings(self):
+        result = self.mapper.requireWhichAnivUser('albeeev')
+        assert result is WhichAnivUser.ALBEEEV
+
+        result = self.mapper.requireWhichAnivUser('a_l_b_e_e_e_v')
+        assert result is WhichAnivUser.ALBEEEV
+
+        result = self.mapper.requireWhichAnivUser('a-l-b-e-e-e-v')
+        assert result is WhichAnivUser.ALBEEEV
+
+        result = self.mapper.requireWhichAnivUser('a l b e e e v')
+        assert result is WhichAnivUser.ALBEEEV
 
     def test_requireWhichAnivUser_withAneevStrings(self):
         result = self.mapper.requireWhichAnivUser('aneev')
