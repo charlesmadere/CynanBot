@@ -69,7 +69,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if await self._triviaSettingsRepository.useNewAnswerCheckingMethod():
             allWords = await self.__triviaQuestionCompiler.findAllWordsInQuestion(
                 category = category,
-                question = question
+                question = question,
             )
 
         originalCorrectAnswers: list[str] = list()
@@ -100,7 +100,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         compiledCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(
             answers = compiledCorrectAnswers,
-            allWords = allWords
+            allWords = allWords,
         )
 
         expandedCompiledCorrectAnswers: set[str] = set()
@@ -118,7 +118,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaId = triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = self.triviaSource
+            triviaSource = self.triviaSource,
         )
 
     async def hasQuestionSetAvailable(self) -> bool:
