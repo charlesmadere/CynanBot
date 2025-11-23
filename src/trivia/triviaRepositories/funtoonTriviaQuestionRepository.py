@@ -27,10 +27,10 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
         timber: TimberInterface,
         triviaAnswerCompiler: TriviaAnswerCompilerInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
     ):
         super().__init__(
-            triviaSettingsRepository = triviaSettingsRepository
+            triviaSettingsRepository = triviaSettingsRepository,
         )
 
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
