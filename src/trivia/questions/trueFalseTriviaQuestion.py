@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .absTriviaQuestion import AbsTriviaQuestion
 from .triviaQuestionType import TriviaQuestionType
@@ -19,7 +19,7 @@ class TrueFalseTriviaQuestion(AbsTriviaQuestion):
         triviaId: str,
         triviaDifficulty: TriviaDifficulty,
         originalTriviaSource: TriviaSource | None,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ):
         super().__init__(
             category = category,
@@ -28,13 +28,13 @@ class TrueFalseTriviaQuestion(AbsTriviaQuestion):
             triviaId = triviaId,
             triviaDifficulty = triviaDifficulty,
             originalTriviaSource = originalTriviaSource,
-            triviaSource = triviaSource
+            triviaSource = triviaSource,
         )
 
         if not utils.isValidBool(correctAnswer):
             raise NoTriviaCorrectAnswersException(f'correctAnswer argument is malformed: \"{correctAnswer}\"')
 
-        self.__correctAnswer: bool = correctAnswer
+        self.__correctAnswer: Final[bool] = correctAnswer
 
     @property
     def correctAnswer(self) -> bool:
@@ -60,7 +60,7 @@ class TrueFalseTriviaQuestion(AbsTriviaQuestion):
             'triviaDifficulty': self.triviaDifficulty,
             'triviaId': self.triviaId,
             'triviaSource': self.triviaSource,
-            'triviaType': self.triviaType
+            'triviaType': self.triviaType,
         }
 
     @property

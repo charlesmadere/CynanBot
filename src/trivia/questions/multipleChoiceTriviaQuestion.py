@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .absTriviaQuestion import AbsTriviaQuestion
 from .triviaQuestionType import TriviaQuestionType
@@ -20,7 +20,7 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
         triviaId: str,
         triviaDifficulty: TriviaDifficulty,
         originalTriviaSource: TriviaSource | None,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ):
         super().__init__(
             category = category,
@@ -29,7 +29,7 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
             triviaId = triviaId,
             triviaDifficulty = triviaDifficulty,
             originalTriviaSource = originalTriviaSource,
-            triviaSource = triviaSource
+            triviaSource = triviaSource,
         )
 
         if not isinstance(correctAnswers, list) or len(correctAnswers) == 0:
@@ -37,8 +37,8 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
         elif not isinstance(multipleChoiceResponses, list) or len(multipleChoiceResponses) == 0:
             raise NoTriviaMultipleChoiceResponsesException(f'multipleChoiceResponses argument is malformed: \"{multipleChoiceResponses}\"')
 
-        self.__correctAnswers: list[str] = correctAnswers
-        self.__multipleChoiceResponses: list[str] = multipleChoiceResponses
+        self.__correctAnswers: Final[list[str]] = correctAnswers
+        self.__multipleChoiceResponses: Final[list[str]] = multipleChoiceResponses
 
     @property
     def correctAnswers(self) -> list[str]:
@@ -76,7 +76,7 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
             'triviaDifficulty': self.triviaDifficulty,
             'triviaId': self.triviaId,
             'triviaSource': self.triviaSource,
-            'triviaType': self.triviaType
+            'triviaType': self.triviaType,
         }
 
     @property
