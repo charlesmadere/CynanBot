@@ -1,6 +1,6 @@
 import html
 import re
-from typing import Collection, Pattern
+from typing import Collection, Final, Pattern
 
 from frozendict import frozendict
 
@@ -18,28 +18,31 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
     part of trivia questions.
     """
 
-    def __init__(self, timber: TimberInterface):
+    def __init__(
+        self,
+        timber: TimberInterface,
+    ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__timber: TimberInterface = timber
+        self.__timber: Final[TimberInterface] = timber
 
-        self.__ellipsisRegEx: Pattern = re.compile(r'(\.){3,}', re.IGNORECASE)
-        self.__findWordsRegEx: Pattern = re.compile(r'[\w|-]{2,}', re.IGNORECASE)
-        self.__newLineRegEx: Pattern = re.compile(r'(\n)+', re.IGNORECASE)
-        self.__tagRemovalRegEx: Pattern = re.compile(r'[<\[]\/?\w+[>\]]', re.IGNORECASE)
-        self.__underscoreRegEx: Pattern = re.compile(r'_{2,}', re.IGNORECASE)
-        self.__weirdEllipsisRegEx: Pattern = re.compile(r'\.\s\.\s\.', re.IGNORECASE)
-        self.__whiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
+        self.__ellipsisRegEx: Final[Pattern] = re.compile(r'\.{3,}', re.IGNORECASE)
+        self.__findWordsRegEx: Final[Pattern] = re.compile(r'[\w|-]{2,}', re.IGNORECASE)
+        self.__newLineRegEx: Final[Pattern] = re.compile(r'\n+', re.IGNORECASE)
+        self.__tagRemovalRegEx: Final[Pattern] = re.compile(r'[<\[]\/?\w+[>\]]', re.IGNORECASE)
+        self.__underscoreRegEx: Final[Pattern] = re.compile(r'_{2,}', re.IGNORECASE)
+        self.__weirdEllipsisRegEx: Final[Pattern] = re.compile(r'\.\s\.\s\.', re.IGNORECASE)
+        self.__whiteSpaceRegEx: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
 
-        self.__textReplacements: frozendict[str, str | None] = frozendict({
+        self.__textReplacements: Final[frozendict[str, str | None]] = frozendict({
             'the ukraine': 'Ukraine',
         })
 
     async def compileCategory(
         self,
         category: str | None,
-        htmlUnescape: bool = False
+        htmlUnescape: bool = False,
     ) -> str:
         if category is not None and not isinstance(category, str):
             raise TypeError(f'category argument is malformed: \"{category}\"')
@@ -48,13 +51,13 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
 
         return await self.__compileText(
             text = category,
-            htmlUnescape = htmlUnescape
+            htmlUnescape = htmlUnescape,
         )
 
     async def compileQuestion(
         self,
         question: str | None,
-        htmlUnescape: bool = False
+        htmlUnescape: bool = False,
     ) -> str:
         if question is not None and not isinstance(question, str):
             raise TypeError(f'question argument is malformed: \"{question}\"')
@@ -63,13 +66,13 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
 
         return await self.__compileText(
             text = question,
-            htmlUnescape = htmlUnescape
+            htmlUnescape = htmlUnescape,
         )
 
     async def compileResponse(
         self,
         response: str | None,
-        htmlUnescape: bool = False
+        htmlUnescape: bool = False,
     ) -> str:
         if response is not None and not isinstance(response, str):
             raise TypeError(f'response argument is malformed: \"{response}\"')
@@ -78,13 +81,13 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
 
         return await self.__compileText(
             text = response,
-            htmlUnescape = htmlUnescape
+            htmlUnescape = htmlUnescape,
         )
 
     async def compileResponses(
         self,
         responses: Collection[str | None] | None,
-        htmlUnescape: bool = False
+        htmlUnescape: bool = False,
     ) -> list[str]:
         if responses is not None and not isinstance(responses, Collection):
             raise TypeError(f'responses argument is malformed: \"{responses}\"')
@@ -99,7 +102,7 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
         for response in responses:
             compiledResponse = await self.compileResponse(
                 response = response,
-                htmlUnescape = htmlUnescape
+                htmlUnescape = htmlUnescape,
             )
 
             if utils.isValidStr(compiledResponse):
@@ -110,7 +113,7 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
     async def __compileText(
         self,
         text: str | None,
-        htmlUnescape: bool
+        htmlUnescape: bool,
     ) -> str:
         if text is not None and not isinstance(text, str):
             raise TypeError(f'text argument is malformed: \"{text}\"')
@@ -156,7 +159,7 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
     async def findAllWordsInQuestion(
         self,
         category: str | None,
-        question: str
+        question: str,
     ) -> frozenset[str]:
         if category is not None and not isinstance(category, str):
             raise TypeError(f'category argument is malformed: \"{category}\"')
@@ -167,12 +170,12 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
 
         await self.__findAndAddWords(
             allWords = allWords,
-            string = category
+            string = category,
         )
 
         await self.__findAndAddWords(
             allWords = allWords,
-            string = question
+            string = question,
         )
 
         return frozenset(allWords)
@@ -180,7 +183,7 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
     async def __findAndAddWords(
         self,
         allWords: set[str],
-        string: str | None
+        string: str | None,
     ):
         if not isinstance(allWords, set):
             raise TypeError(f'allWords argument is malformed: \"{allWords}\"')

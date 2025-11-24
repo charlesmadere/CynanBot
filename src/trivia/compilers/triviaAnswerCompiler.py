@@ -117,6 +117,24 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             re.VERBOSE | re.IGNORECASE,
         )
 
+        self.__globalOptionalWords: Final[frozenset[str]] = frozenset({
+            'alley', 'arch', 'avenue', 'basin', 'bay', 'beach', 'bluff', 'boulder', 'bridge', 'brook',
+            'boulevard', 'building', 'butte', 'bypass', 'campus', 'cape', 'castle', 'cathedral', 'canyon',
+            'capital', 'chapel', 'circle', 'city', 'cliff', 'coast', 'community', 'continent', 'country',
+            'county', 'court', 'cove', 'creek', 'crescent', 'crag', 'dell', 'depot', 'desert', 'district',
+            'divide', 'dock', 'dunes', 'drive', 'estate', 'expanse', 'factory', 'fen', 'field', 'flats',
+            'foothills', 'forest', 'fort', 'garden', 'glacier', 'glen', 'grove', 'harbor', 'heights',
+            'highway', 'hill', 'inlet', 'island', 'junction', 'jungle', 'knoll', 'lake', 'lagoon', 'lane',
+            'library', 'mall', 'manor', 'marsh', 'market', 'meadow', 'mesa', 'metro', 'mill', 'mire',
+            'monument', 'moor', 'mountain', 'neighborhood', 'observatory', 'ocean', 'outpost', 'palace',
+            'park', 'parkway', 'parish', 'pass', 'path', 'peninsula', 'pier', 'plain', 'plateau', 'plaza',
+            'pond', 'port', 'prairie', 'prefecture', 'province', 'range', 'ravine', 'reef', 'region',
+            'residence', 'reservoir', 'ridge', 'river', 'road', 'route', 'sandbar', 'sea', 'shoal', 'shore',
+            'sound', 'spring', 'square', 'state', 'station', 'street', 'subdivision', 'swamp', 'terminal',
+            'terrace', 'territory', 'tower', 'town', 'township', 'trail', 'tundra', 'tunnel', 'valley',
+            'village', 'ward', 'warehouse', 'waterfall', 'way',
+        })
+
     async def compileBoolAnswer(self, answer: str | None) -> bool:
         if answer is not None and not isinstance(answer, str):
             raise BadTriviaAnswerException(f'answer can\'t be compiled to bool ({answer=})')
@@ -653,6 +671,10 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         if matches is None:
             return answer
 
+        allOptionalWords: set[str] = set()
+        allOptionalWords.update(allWords)
+        allOptionalWords.update(self.__globalOptionalWords)
+
         patchedWords: list[str] = list()
         patchedAnswer = answer
         totalOffset = 0
@@ -663,7 +685,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
             word = match.group().casefold()
 
-            if word not in allWords:
+            if word not in allOptionalWords:
                 continue
 
             patchedWords.append(word)
@@ -681,7 +703,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         modificationCount = len(patchedWords)
 
         if modificationCount == 0:
-            self.__timber.log('TriviaAnswerCompiler', f'Abandoned patching words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=}) ({allWords=})')
+            self.__timber.log('TriviaAnswerCompiler', f'Abandoned patching words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=}) ({allWords=}) ({allOptionalWords=})')
             return answer
 
         # The below logic checks to see if every single word in the answer now has parens. This
@@ -699,8 +721,8 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             allWordsInAnswerWithParensCount = len(allWordsInAnswerWithParens)
 
         if allWordsInAnswerCount != 0 and allWordsInAnswerWithParensCount != 0 and allWordsInAnswerCount == allWordsInAnswerWithParensCount:
-            self.__timber.log('TriviaAnswerCompiler', f'Abandoned patching words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=}) ({allWordsInAnswerWithParensCount=}) ({allWordsInAnswerWithParensCount=}) ({allWords=})')
+            self.__timber.log('TriviaAnswerCompiler', f'Abandoned patching words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=}) ({allWordsInAnswerWithParensCount=}) ({allWordsInAnswerWithParensCount=}) ({allWords=}) ({allOptionalWords=})')
             return answer
         else:
-            self.__timber.log('TriviaAnswerCompiler', f'Patched words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=}) ({allWordsInAnswerWithParensCount=}) ({allWordsInAnswerWithParensCount=}) ({allWords=})')
+            self.__timber.log('TriviaAnswerCompiler', f'Patched words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=}) ({allWordsInAnswerWithParensCount=}) ({allWordsInAnswerWithParensCount=}) ({allWords=}) ({allOptionalWords=})')
             return patchedAnswer

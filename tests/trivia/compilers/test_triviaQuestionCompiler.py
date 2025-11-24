@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.timber.timberInterface import TimberInterface
@@ -8,10 +10,10 @@ from src.trivia.compilers.triviaQuestionCompilerInterface import TriviaQuestionC
 
 class TestTriviaQuestionCompiler:
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    compiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(
-        timber = timber
+    compiler: Final[TriviaQuestionCompilerInterface] = TriviaQuestionCompiler(
+        timber = timber,
     )
 
     @pytest.mark.asyncio
@@ -208,7 +210,7 @@ class TestTriviaQuestionCompiler:
     async def test_findAllWordsInQuestion3(self):
         result = await self.compiler.findAllWordsInQuestion(
             category = 'Movies',
-            question = 'This \"golden\" movie from the 90\'s stars James Bond.'
+            question = 'This \"golden\" movie from the 90\'s stars James Bond.',
         )
 
         assert isinstance(result, frozenset)
@@ -219,8 +221,34 @@ class TestTriviaQuestionCompiler:
         assert 'movie' in result
         assert 'from' in result
         assert 'the' in result
-        assert '90' in result # should we filter out numbers?
+        assert '90' in result # should we filter out numbers? (I think this is OK)
         assert 'stars' in result
+        assert 'james' in result
+        assert 'bond' in result
+
+    @pytest.mark.asyncio
+    async def test_findAllWordsInQuestion4(self):
+        result = await self.compiler.findAllWordsInQuestion(
+            category = 'Famous Quotes',
+            question = 'This \"splitting\" quote was said by Gert Frobe (Goldfinger) to Sean Connery (James Bond).',
+        )
+
+        assert isinstance(result, frozenset)
+        assert len(result) == 16
+        assert 'famous' in result
+        assert 'quotes' in result
+        assert 'this' in result
+        assert 'splitting' in result
+        assert 'quote' in result
+        assert 'was' in result
+        assert 'said' in result # should we filter out numbers?
+        assert 'by' in result
+        assert 'gert' in result
+        assert 'frobe' in result
+        assert 'goldfinger' in result
+        assert 'to' in result
+        assert 'sean' in result
+        assert 'connery' in result
         assert 'james' in result
         assert 'bond' in result
 

@@ -683,25 +683,27 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'saul'
         if word in { 'bastian', 'seb', 'sebby', 'bast' }:
             yield 'sebastian'
+        if word in { 'seann', 'shaun', 'shaugn', 'shawn', 'shean' }:
+            yield 'sean'
         if word in { 'si', 'sy', 'sylas' }:
             yield 'silas'
         if word in { 'sol', 'solly' 'sully' }:
             yield 'solomon'
-        if word in { 'steph', 'stephan', 'steven', 'stevenson', 'stevie' }:
-            yield 'steve'
+        if word in { 'steph', 'stephan', 'steven', 'stevensen', 'stevenson', 'stevie' }:
             yield 'stephen'
+            yield 'steve'
             yield 'steven'
         if word in { 'si', 'sly', 'sy', 'syl', 'vester', 'vet', 'vessie' }:
             yield 'sylvester'
-        if word in { 'terry' }:
+        if word in { 'terry', 'terance', 'terrance', 'terrence' }:
             yield 'terence'
-        if word in { 'theo', 'ted', 'teddy' }:
+        if word in { 'theo', 'ted', 'teddie', 'teddy' }:
             yield 'theodore'
         if word in { 'terry', 'tess', 'tessie', 'tessa', 'thirza', 'thursa', 'tracy' }:
             yield 'theresa'
-        if word in { 'tim', 'timmy' }:
+        if word in { 'tim', 'timmy', 'timmothy' }:
             yield 'timothy'
-        if word in { 'thom', 'tom', 'tommy', 'tony' }:
+        if word in { 'thom', 'tom', 'tomas', 'tomm', 'tommy', 'tony' }:
             yield 'thomas'
         if word == 'toby':
             yield 'tobias'

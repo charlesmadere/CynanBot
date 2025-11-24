@@ -1,31 +1,34 @@
+from abc import ABC
+from typing import Final
+
 from .triviaQuestionRepositoryInterface import TriviaQuestionRepositoryInterface
 from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaExceptions import NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException
 from ...misc import utils as utils
 
 
-class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface):
+class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface, ABC):
 
     def __init__(
         self,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
     ):
         if not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
 
-        self._triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
+        self._triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = triviaSettingsRepository
 
     async def _buildMultipleChoiceResponsesList(
         self,
         correctAnswers: list[str],
-        multipleChoiceResponses: list[str]
+        multipleChoiceResponses: list[str],
     ) -> list[str]:
         if not isinstance(correctAnswers, list) or len(correctAnswers) == 0:
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
         elif not isinstance(multipleChoiceResponses, list) or len(multipleChoiceResponses) == 0:
             raise NoTriviaMultipleChoiceResponsesException(f'multipleChoiceResponses argument is malformed: \"{multipleChoiceResponses}\"')
 
-        filteredMultipleChoiceResponses: list[str] = utils.copyList(correctAnswers)
+        filteredMultipleChoiceResponses: list[str] = list(correctAnswers)
         maxMultipleChoiceResponses = await self._triviaSettingsRepository.getMaxMultipleChoiceResponses()
 
         # Annoyingly, I've encountered a few situations where we can have a question with more
@@ -65,7 +68,7 @@ class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface):
     async def _verifyIsActuallyMultipleChoiceQuestion(
         self,
         correctAnswers: list[str],
-        multipleChoiceResponses: list[str]
+        multipleChoiceResponses: list[str],
     ) -> bool:
         if not isinstance(correctAnswers, list) or len(correctAnswers) == 0:
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')

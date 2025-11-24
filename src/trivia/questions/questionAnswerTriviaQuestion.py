@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from frozenlist import FrozenList
 
@@ -7,7 +7,6 @@ from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import BadTriviaOriginalCorrectAnswersException, NoTriviaCorrectAnswersException
-from ...misc import utils as utils
 
 
 class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
@@ -24,7 +23,7 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
         triviaId: str,
         triviaDifficulty: TriviaDifficulty,
         originalTriviaSource: TriviaSource | None,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ):
         super().__init__(
             category = category,
@@ -33,7 +32,7 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
             triviaId = triviaId,
             triviaDifficulty = triviaDifficulty,
             triviaSource = triviaSource,
-            originalTriviaSource = originalTriviaSource
+            originalTriviaSource = originalTriviaSource,
         )
 
         if allWords is not None and not isinstance(allWords, frozenset):
@@ -45,10 +44,10 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
         elif not isinstance(originalCorrectAnswers, list) or len(originalCorrectAnswers) == 0:
             raise BadTriviaOriginalCorrectAnswersException(f'originalCorrectAnswers argument is malformed: \"{originalCorrectAnswers}\"')
 
-        self.__allWords: frozenset[str] | None = allWords
-        self.__compiledCorrectAnswers: list[str] = compiledCorrectAnswers
-        self.__correctAnswers: list[str] = correctAnswers
-        self.__originalCorrectAnswers: list[str] = originalCorrectAnswers
+        self.__allWords: Final[frozenset[str] | None] = allWords
+        self.__compiledCorrectAnswers: Final[list[str]] = compiledCorrectAnswers
+        self.__correctAnswers: Final[list[str]] = correctAnswers
+        self.__originalCorrectAnswers: Final[list[str]] = originalCorrectAnswers
 
     @property
     def allWords(self) -> frozenset[str] | None:
@@ -61,8 +60,10 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
         return frozenCompiledCorrectAnswers
 
     @property
-    def correctAnswers(self) -> list[str]:
-        return utils.copyList(self.__correctAnswers)
+    def correctAnswers(self) -> FrozenList[str]:
+        correctAnswers: FrozenList[str] = FrozenList(self.__correctAnswers)
+        correctAnswers.freeze()
+        return correctAnswers
 
     @property
     def originalCorrectAnswers(self) -> FrozenList[str]:
@@ -71,8 +72,10 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
         return frozenOriginalCorrectAnswers
 
     @property
-    def responses(self) -> list[str]:
-        return list()
+    def responses(self) -> FrozenList[str]:
+        responses: FrozenList[str] = FrozenList()
+        responses.freeze()
+        return responses
 
     def toDictionary(self) -> dict[str, Any]:
         return {
@@ -87,7 +90,7 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
             'triviaDifficulty': self.triviaDifficulty,
             'triviaId': self.triviaId,
             'triviaSource': self.triviaSource,
-            'triviaType': self.triviaType
+            'triviaType': self.triviaType,
         }
 
     @property
