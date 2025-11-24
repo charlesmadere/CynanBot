@@ -31,7 +31,7 @@ class TwitchApiServiceInterface(ABC):
         self,
         broadcasterId: str,
         twitchAccessToken: str,
-        userId: str
+        userId: str,
     ) -> bool:
         pass
 

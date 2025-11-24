@@ -12,6 +12,7 @@ from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInter
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ...network.exceptions import GenericNetworkException
 from ...timber.timberInterface import TimberInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
@@ -96,7 +97,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
                 )
 
                 if not utils.isValidStr(twitchAccessToken):
-                    self.__timber.log('TwitchTimeoutRemodHelper', f'Unable to retrieve Twitch access token for {remodAction.broadcasterUserName}:{remodAction.broadcasterUserId}')
+                    self.__timber.log('TwitchTimeoutRemodHelper', f'Unable to retrieve Twitch access token when attempting to re-mod user ({remodAction=}) ({twitchAccessToken=})')
                     broadcastersWithoutTokens.add(remodAction.broadcasterUserId)
                     await self.__deleteFromRepository(remodAction)
                     continue
@@ -108,11 +109,18 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
                 twitchAccessToken = twitchAccessToken,
             )
 
-            if await self.__twitchApiService.addModerator(
-                broadcasterId = remodAction.broadcasterUserId,
-                twitchAccessToken = twitchAccessToken,
-                userId = remodAction.userId,
-            ):
+            successfulRemod: bool
+
+            try:
+                successfulRemod = await self.__twitchApiService.addModerator(
+                    broadcasterId = remodAction.broadcasterUserId,
+                    twitchAccessToken = twitchAccessToken,
+                    userId = remodAction.userId,
+                )
+            except GenericNetworkException:
+                successfulRemod = False
+
+            if successfulRemod:
                 self.__timber.log('TwitchTimeoutRemodHelper', f'Successfully re-modded user ({remodAction=}) ({userName=})')
             else:
                 self.__timber.log('TwitchTimeoutRemodHelper', f'Failed to re-mod user ({remodAction=}) ({userName=})')

@@ -72,7 +72,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         self,
         broadcasterId: str,
         twitchAccessToken: str,
-        userId: str
+        userId: str,
     ) -> bool:
         if not utils.isValidStr(broadcasterId):
             raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
@@ -90,7 +90,7 @@ class TwitchApiService(TwitchApiServiceInterface):
                 url = f'https://api.twitch.tv/helix/moderation/moderators?broadcaster_id={broadcasterId}&user_id={userId}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
-                    'Client-Id': twitchClientId
+                    'Client-Id': twitchClientId,
                 }
             )
         except GenericNetworkException as e:
