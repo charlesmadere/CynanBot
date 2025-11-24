@@ -702,25 +702,39 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
         if isinstance(action, AirStrikeTimeoutAction):
-            await self.__handleAirStrikeTimeoutAction(action)
+            await self.__handleAirStrikeTimeoutAction(
+                action = action,
+            )
 
         elif isinstance(action, BananaTimeoutAction):
-            await self.__handleBananaTimeoutAction(action)
+            await self.__handleBananaTimeoutAction(
+                action = action,
+            )
 
         elif isinstance(action, BasicTimeoutAction):
-            await self.__handleBasicTimeoutAction(action)
+            await self.__handleBasicTimeoutAction(
+                action = action,
+            )
 
         elif isinstance(action, CopyAnivMessageTimeoutAction):
-            await self.__handleCopyAnivMessageTimeoutAction(action)
+            await self.__handleCopyAnivMessageTimeoutAction(
+                action = action,
+            )
 
         elif isinstance(action, GrenadeTimeoutAction):
-            await self.__handleGrenadeTimeoutAction(action)
+            await self.__handleGrenadeTimeoutAction(
+                action = action,
+            )
 
         elif isinstance(action, Tm36TimeoutAction):
-            await self.__handleTm36TimeoutAction(action)
+            await self.__handleTm36TimeoutAction(
+                action = action,
+            )
 
         elif isinstance(action, VoreTimeoutAction):
-            await self.__handleVoreTimeoutAction(action)
+            await self.__handleVoreTimeoutAction(
+                action = action,
+            )
 
         else:
             raise UnknownTimeoutActionTypeException(f'Encountered unknown AbsTimeoutAction: \"{action}\"')
