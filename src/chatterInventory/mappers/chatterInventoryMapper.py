@@ -173,7 +173,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
     async def parseInventory(
         self,
-        inventoryJson: dict[str, int | Any | None] | frozendict[str, int | Any | None] | Any | None
+        inventoryJson: dict[str, int | Any | None] | frozendict[str, int | Any | None] | Any | None,
     ) -> frozendict[ChatterItemType, int]:
         if not isinstance(inventoryJson, dict):
             inventoryJson = dict()
@@ -193,7 +193,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
     async def parseItemType(
         self,
-        itemType: str | Any | None
+        itemType: str | Any | None,
     ) -> ChatterItemType | None:
         if not utils.isValidStr(itemType):
             return None
