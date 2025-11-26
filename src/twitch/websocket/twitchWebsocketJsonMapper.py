@@ -54,7 +54,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
     async def parseLoggingLevel(
         self,
-        loggingLevel: str | Any | None
+        loggingLevel: str | Any | None,
     ) -> TwitchWebsocketJsonLoggingLevel:
         if not utils.isValidStr(loggingLevel):
             raise TypeError(f'loggingLevel argument is malformed: \"{loggingLevel}\"')
@@ -69,7 +69,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
     async def __parsePayload(
         self,
-        payloadJson: dict[str, Any] | None
+        payloadJson: dict[str, Any] | None,
     ) -> TwitchWebsocketPayload | None:
         if not isinstance(payloadJson, dict) or len(payloadJson) == 0:
             return None
@@ -86,7 +86,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
     async def parseWebsocketDataBundle(
         self,
-        dataBundleJson: dict[str, Any] | Any | None
+        dataBundleJson: dict[str, Any] | Any | None,
     ) -> TwitchWebsocketDataBundle | None:
         if not isinstance(dataBundleJson, dict) or len(dataBundleJson) == 0:
             return None
@@ -106,7 +106,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
     async def parseWebsocketEvent(
         self,
-        eventJson: dict[str, Any] | Any | None
+        eventJson: dict[str, Any] | Any | None,
     ) -> TwitchWebsocketEvent | None:
         if not isinstance(eventJson, dict) or len(eventJson) == 0:
             return None
@@ -572,7 +572,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
     async def parseWebsocketSession(
         self,
-        sessionJson: dict[str, Any] | Any | None
+        sessionJson: dict[str, Any] | Any | None,
     ) -> TwitchWebsocketSession | None:
         if not isinstance(sessionJson, dict) or len(sessionJson) == 0:
             return None
@@ -605,7 +605,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
     async def parseWebsocketSubscription(
         self,
-        subscriptionJson: dict[str, Any] | Any | None
+        subscriptionJson: dict[str, Any] | Any | None,
     ) -> TwitchWebsocketSubscription | None:
         if not isinstance(subscriptionJson, dict) or len(subscriptionJson) == 0:
             return None
@@ -632,7 +632,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
     async def serializeLoggingLevel(
         self,
-        loggingLevel: TwitchWebsocketJsonLoggingLevel
+        loggingLevel: TwitchWebsocketJsonLoggingLevel,
     ) -> str:
         if not isinstance(loggingLevel, TwitchWebsocketJsonLoggingLevel):
             raise TypeError(f'loggingLevel argument is malformed: \"{loggingLevel}\"')

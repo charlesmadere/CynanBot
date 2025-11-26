@@ -145,7 +145,10 @@ class GiveChatterItemChatCommand(AbsChatCommand):
             return None
 
         itemTypeString = splits[2]
-        itemType = await self.__chatterInventoryMapper.parseItemType(itemTypeString)
+
+        itemType = await self.__chatterInventoryMapper.parseItemType(
+            itemType = itemTypeString,
+        )
 
         if itemType is None:
             self.__timber.log('GiveChatterItemChatCommand', f'Failed to parse itemTypeString into a ChatterItemType ({itemTypeString=}) ({splits=})')

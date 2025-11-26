@@ -13,41 +13,41 @@ class TwitchWebsocketJsonMapperInterface(ABC):
     @abstractmethod
     async def parseLoggingLevel(
         self,
-        loggingLevel: str | Any | None
+        loggingLevel: str | Any | None,
     ) -> TwitchWebsocketJsonLoggingLevel:
         pass
 
     @abstractmethod
     async def parseWebsocketDataBundle(
         self,
-        dataBundleJson: dict[str, Any] | Any | None
+        dataBundleJson: dict[str, Any] | Any | None,
     ) -> TwitchWebsocketDataBundle | None:
         pass
 
     @abstractmethod
     async def parseWebsocketEvent(
         self,
-        eventJson: dict[str, Any] | Any | None
+        eventJson: dict[str, Any] | Any | None,
     ) -> TwitchWebsocketEvent | None:
         pass
 
     @abstractmethod
     async def parseWebsocketSession(
         self,
-        sessionJson: dict[str, Any] | Any | None
+        sessionJson: dict[str, Any] | Any | None,
     ) -> TwitchWebsocketSession | None:
         pass
 
     @abstractmethod
     async def parseWebsocketSubscription(
         self,
-        subscriptionJson: dict[str, Any] | Any | None
+        subscriptionJson: dict[str, Any] | Any | None,
     ) -> TwitchWebsocketSubscription | None:
         pass
 
     @abstractmethod
     async def serializeLoggingLevel(
         self,
-        loggingLevel: TwitchWebsocketJsonLoggingLevel
+        loggingLevel: TwitchWebsocketJsonLoggingLevel,
     ) -> str:
         pass

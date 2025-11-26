@@ -53,14 +53,14 @@ class ChatterInventoryMapperInterface(ABC):
     @abstractmethod
     async def parseInventory(
         self,
-        inventoryJson: dict[str, int | Any | None] | frozendict[str, int | Any | None] | Any | None
+        inventoryJson: dict[str, int | Any | None] | frozendict[str, int | Any | None] | Any | None,
     ) -> frozendict[ChatterItemType, int]:
         pass
 
     @abstractmethod
     async def parseItemType(
         self,
-        itemType: str | Any | None
+        itemType: str | Any | None,
     ) -> ChatterItemType | None:
         pass
 
