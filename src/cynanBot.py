@@ -897,7 +897,7 @@ class CynanBot(
             self.__addRecurringWeatherActionCommand: AbsChatCommand = AddRecurringWeatherActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchChatMessenger, usersRepository)
             self.__addRecurringWordOfTheDayActionCommand: AbsChatCommand = AddRecurringWordOfTheDayActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchChatMessenger, usersRepository)
             self.__getRecurringActionsCommand: AbsChatCommand = GetRecurringActionsChatCommand(administratorProvider, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
-            self.__removeRecurringCutenessActionCommand: AbsChatCommand = RemoveRecurringCutenessActionChatCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
+            self.__removeRecurringCutenessActionCommand: AbsChatCommand = RemoveRecurringCutenessActionChatCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
             self.__removeRecurringSuperTriviaActionCommand: AbsChatCommand = RemoveRecurringSuperTriviaActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
             self.__removeRecurringWeatherActionCommand: AbsChatCommand = RemoveRecurringWeatherActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
             self.__removeRecurringWordOfTheDayActionCommand: AbsChatCommand = RemoveRecurringWordOfTheDayActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
