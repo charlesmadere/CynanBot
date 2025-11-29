@@ -3096,21 +3096,21 @@ pkmnCatchPointRedemption: PkmnCatchPointRedemption | None = PkmnCatchPointRedemp
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 pkmnEvolvePointRedemption: PkmnEvolvePointRedemption | None = PkmnEvolvePointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 pkmnShinyPointRedemption: PkmnShinyPointRedemption | None = PkmnShinyPointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 soundAlertPointRedemption: SoundAlertPointRedemption | None = SoundAlertPointRedemption(
