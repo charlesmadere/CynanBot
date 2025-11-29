@@ -1,5 +1,6 @@
 import traceback
 import urllib.parse
+from typing import Final
 
 from .streamElementsApiServiceInterface import StreamElementsApiServiceInterface
 from ..models.streamElementsVoice import StreamElementsVoice
@@ -14,21 +15,21 @@ class StreamElementsApiService(StreamElementsApiServiceInterface):
     def __init__(
         self,
         networkClientProvider: NetworkClientProvider,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(networkClientProvider, NetworkClientProvider):
             raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__networkClientProvider: NetworkClientProvider = networkClientProvider
-        self.__timber: TimberInterface = timber
+        self.__networkClientProvider: Final[NetworkClientProvider] = networkClientProvider
+        self.__timber: Final[TimberInterface] = timber
 
     async def getSpeech(
         self,
         text: str,
         userKey: str,
-        voice: StreamElementsVoice
+        voice: StreamElementsVoice,
     ) -> bytes:
         if not utils.isValidStr(text):
             raise TypeError(f'text argument is malformed: \"{text}\"')
@@ -43,7 +44,7 @@ class StreamElementsApiService(StreamElementsApiServiceInterface):
 
         try:
             response = await clientSession.get(
-                url = f'https://api.streamelements.com/kappa/v2/speech?voice={voice.urlValue}&text={text}&key={userKey}'
+                url = f'https://api.streamelements.com/kappa/v2/speech?voice={voice.urlValue}&text={text}&key={userKey}',
             )
         except GenericNetworkException as e:
             self.__timber.log('StreamElementsApiService', f'Encountered network error when fetching speech ({voice=}) ({text=}) ({userKey=}): {e}', e, traceback.format_exc())

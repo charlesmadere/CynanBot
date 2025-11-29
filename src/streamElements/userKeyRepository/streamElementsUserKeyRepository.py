@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from .streamElementsUserKeyRepositoryInterface import StreamElementsUserKeyRepositoryInterface
 from ...misc import utils as utils
@@ -17,7 +18,7 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        seedFileReader: JsonReaderInterface | None = None
+        seedFileReader: JsonReaderInterface | None = None,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -28,13 +29,13 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
         elif seedFileReader is not None and not isinstance(seedFileReader, JsonReaderInterface):
             raise TypeError(f'seedFileReader argument is malformed: \"{seedFileReader}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timber: TimberInterface = timber
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timber: Final[TimberInterface] = timber
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__seedFileReader: JsonReaderInterface | None = seedFileReader
 
         self.__isDatabaseReady: bool = False
-        self.__cache: dict[str, str | None] = dict()
+        self.__cache: Final[dict[str, str | None]] = dict()
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -70,7 +71,7 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
 
             await self.set(
                 userKey = userKey,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
 
         self.__timber.log('StreamElementsUserKeyRepository', f'Finished reading in seed file \"{seedFileReader}\"')
@@ -147,7 +148,7 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
 
     async def remove(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
@@ -169,7 +170,7 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
     async def set(
         self,
         userKey: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         if userKey is not None and not isinstance(userKey, str):
             raise TypeError(f'userKey argument is malformed: \"{userKey}\"')
@@ -179,15 +180,17 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
         if utils.isValidStr(userKey):
             await self.__update(
                 userKey = userKey,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
         else:
-            await self.remove(twitchChannelId = twitchChannelId)
+            await self.remove(
+                twitchChannelId = twitchChannelId,
+            )
 
     async def __update(
         self,
         userKey: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         if not utils.isValidStr(userKey):
             raise TypeError(f'userKey argument is malformed: \"{userKey}\"')
