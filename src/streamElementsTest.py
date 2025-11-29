@@ -1,45 +1,45 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
-from .glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
-from .glacialTtsStorage.stub.stubGlacialTtsFileRetriever import StubGlacialTtsFileRetriever
-from .google.jsonMapper.googleJsonMapper import GoogleJsonMapper
-from .google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
-from .location.timeZoneRepository import TimeZoneRepository
-from .location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from .network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
-from .network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
-from .network.networkClientProvider import NetworkClientProvider
-from .storage.jsonStaticReader import JsonStaticReader
-from .streamElements.apiService.streamElementsApiService import StreamElementsApiService
-from .streamElements.apiService.streamElementsApiServiceInterface import StreamElementsApiServiceInterface
-from .streamElements.helper.streamElementsApiHelper import StreamElementsApiHelper
-from .streamElements.helper.streamElementsApiHelperInterface import StreamElementsApiHelperInterface
-from .streamElements.helper.streamElementsHelper import StreamElementsHelper
-from .streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
-from .streamElements.models.streamElementsVoice import StreamElementsVoice
-from .streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
-from .streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
-from .streamElements.parser.streamElementsMessageVoiceParser import StreamElementsMessageVoiceParser
-from .streamElements.parser.streamElementsMessageVoiceParserInterface import \
+from src.glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
+from src.glacialTtsStorage.stub.stubGlacialTtsFileRetriever import StubGlacialTtsFileRetriever
+from src.google.jsonMapper.googleJsonMapper import GoogleJsonMapper
+from src.google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
+from src.location.timeZoneRepository import TimeZoneRepository
+from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
+from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
+from src.network.networkClientProvider import NetworkClientProvider
+from src.storage.jsonStaticReader import JsonStaticReader
+from src.streamElements.apiService.streamElementsApiService import StreamElementsApiService
+from src.streamElements.apiService.streamElementsApiServiceInterface import StreamElementsApiServiceInterface
+from src.streamElements.helper.streamElementsApiHelper import StreamElementsApiHelper
+from src.streamElements.helper.streamElementsApiHelperInterface import StreamElementsApiHelperInterface
+from src.streamElements.helper.streamElementsHelper import StreamElementsHelper
+from src.streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
+from src.streamElements.models.streamElementsVoice import StreamElementsVoice
+from src.streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
+from src.streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
+from src.streamElements.parser.streamElementsMessageVoiceParser import StreamElementsMessageVoiceParser
+from src.streamElements.parser.streamElementsMessageVoiceParserInterface import \
     StreamElementsMessageVoiceParserInterface
-from .streamElements.settings.streamElementsSettingsRepository import StreamElementsSettingsRepository
-from .streamElements.settings.streamElementsSettingsRepositoryInterface import \
+from src.streamElements.settings.streamElementsSettingsRepository import StreamElementsSettingsRepository
+from src.streamElements.settings.streamElementsSettingsRepositoryInterface import \
     StreamElementsSettingsRepositoryInterface
-from .streamElements.streamElementsMessageCleaner import StreamElementsMessageCleaner
-from .streamElements.streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
-from .streamElements.userKeyRepository.streamElementsUserKeyRepositoryInterface import \
+from src.streamElements.streamElementsMessageCleaner import StreamElementsMessageCleaner
+from src.streamElements.streamElementsMessageCleanerInterface import StreamElementsMessageCleanerInterface
+from src.streamElements.userKeyRepository.streamElementsUserKeyRepositoryInterface import \
     StreamElementsUserKeyRepositoryInterface
-from .timber.timberInterface import TimberInterface
-from .timber.timberStub import TimberStub
-from .tts.directoryProvider.ttsDirectoryProvider import TtsDirectoryProvider
-from .tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
-from .tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
-from .tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
-from .tts.settings.ttsSettingsRepository import TtsSettingsRepository
-from .tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from .twitch.twitchMessageStringUtils import TwitchMessageStringUtils
-from .twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
+from src.timber.timberInterface import TimberInterface
+from src.timber.timberStub import TimberStub
+from src.tts.directoryProvider.ttsDirectoryProvider import TtsDirectoryProvider
+from src.tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
+from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
+from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
+from src.tts.settings.ttsSettingsRepository import TtsSettingsRepository
+from src.tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
+from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 
 class FakeStreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
@@ -64,18 +64,18 @@ timber: TimberInterface = TimberStub()
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
 aioHttpCookieJarProvider = AioHttpCookieJarProvider(
-    eventLoop = eventLoop
+    eventLoop = eventLoop,
 )
 
 networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
     eventLoop = eventLoop,
     cookieJarProvider = aioHttpCookieJarProvider,
-    timber = timber
+    timber = timber,
 )
 
 googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
@@ -91,23 +91,23 @@ twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStrin
 
 streamElementsMessageCleaner: StreamElementsMessageCleanerInterface = StreamElementsMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils
+    twitchMessageStringUtils = twitchMessageStringUtils,
 )
 
 streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiService(
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
 streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
 
 streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser(
-    streamElementsJsonParser = streamElementsJsonParser
+    streamElementsJsonParser = streamElementsJsonParser,
 )
 
 streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = StreamElementsSettingsRepository(
     settingsJsonReader = JsonStaticReader(dict()),
-    streamElementsJsonParser = streamElementsJsonParser
+    streamElementsJsonParser = streamElementsJsonParser,
 )
 
 streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = FakeStreamElementsUserKeyRepository()
@@ -115,14 +115,14 @@ streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = Fake
 streamElementsApiHelper: StreamElementsApiHelperInterface = StreamElementsApiHelper(
     streamElementsApiService = streamElementsApiService,
     streamElementsUserKeyRepository = streamElementsUserKeyRepository,
-    timber = timber
+    timber = timber,
 )
 
 ttsDirectoryProvider: TtsDirectoryProviderInterface = TtsDirectoryProvider()
 
 glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = StubGlacialTtsFileRetriever(
     timeZoneRepository = timeZoneRepository,
-    ttsDirectoryProvider = ttsDirectoryProvider
+    ttsDirectoryProvider = ttsDirectoryProvider,
 )
 
 streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
@@ -132,7 +132,7 @@ streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
     streamElementsJsonParser = streamElementsJsonParser,
     streamElementsMessageVoiceParser = streamElementsMessageVoiceParser,
     streamElementsSettingsRepository = streamElementsSettingsRepository,
-    timber = timber
+    timber = timber,
 )
 
 async def main():
@@ -145,7 +145,7 @@ async def main():
         message = message,
         twitchChannel = 'twitchChannel',
         twitchChannelId = 'twitchChannelId',
-        voice = StreamElementsVoice.BRIAN
+        voice = StreamElementsVoice.BRIAN,
     )
 
     print(f'{message=} {fileReference=}')
