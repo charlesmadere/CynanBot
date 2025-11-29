@@ -1,6 +1,6 @@
 import random
 from datetime import datetime
-from typing import Collection
+from typing import Collection, Final
 
 from frozendict import frozendict
 from frozenlist import FrozenList
@@ -46,12 +46,12 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
-        self.__crowdControlIdGenerator: CrowdControlIdGeneratorInterface = crowdControlIdGenerator
-        self.__crowdControlMachine: CrowdControlMachineInterface = crowdControlMachine
-        self.__crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface = crowdControlSettingsRepository
-        self.__crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface = crowdControlUserInputUtils
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
+        self.__crowdControlIdGenerator: Final[CrowdControlIdGeneratorInterface] = crowdControlIdGenerator
+        self.__crowdControlMachine: Final[CrowdControlMachineInterface] = crowdControlMachine
+        self.__crowdControlSettingsRepository: Final[CrowdControlSettingsRepositoryInterface] = crowdControlSettingsRepository
+        self.__crowdControlUserInputUtils: Final[CrowdControlUserInputUtilsInterface] = crowdControlUserInputUtils
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
 
     async def __createGameShuffleActions(
         self,
@@ -162,9 +162,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
 
         action = actions.get(bits, None)
 
-        if action is None:
-            return False
-        elif not action.isEnabled:
+        if action is None or not action.isEnabled:
             return False
         elif isinstance(action, CrowdControlButtonPressCheerAction):
             return await self.__inputButtonPressIntoCrowdControl(
