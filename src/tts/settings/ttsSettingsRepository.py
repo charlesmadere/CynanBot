@@ -61,7 +61,7 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
         maxMessageSize = utils.getIntFromDict(
             d = jsonContents,
             key = 'maxMessageSize',
-            fallback = 500
+            fallback = 500,
         )
 
         if maxMessageSize < 1 or maxMessageSize > utils.getIntMaxSafeSize():
@@ -104,7 +104,7 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
 
         if isinstance(shotgunParametersJson, dict):
             shotgunParameters = await self.__ttsJsonMapper.asyncParseShotgunProviderUseParameters(
-                jsonContents = shotgunParametersJson
+                jsonContents = shotgunParametersJson,
             )
 
         if shotgunParameters is None:
@@ -118,7 +118,7 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
         timeoutSeconds = utils.getFloatFromDict(
             d = jsonContents,
             key = 'timeoutSeconds',
-            fallback = 45
+            fallback = 46,
         )
 
         if timeoutSeconds < 3 or timeoutSeconds > utils.getIntMaxSafeSize():
