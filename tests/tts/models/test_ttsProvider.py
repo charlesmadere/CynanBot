@@ -39,6 +39,10 @@ class TestTtsProvider:
         result = TtsProvider.RANDO_TTS.humanName
         assert result == 'Rando TTS'
 
+    def test_humanName_withShotgunTts(self):
+        result = TtsProvider.SHOTGUN_TTS.humanName
+        assert result == 'Shotgun TTS'
+
     def test_humanName_withStreamElements(self):
         result = TtsProvider.STREAM_ELEMENTS.humanName
         assert result == 'Stream Elements'

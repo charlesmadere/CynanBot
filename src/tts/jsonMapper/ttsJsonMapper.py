@@ -16,7 +16,10 @@ from ...timber.timberInterface import TimberInterface
 
 class TtsJsonMapper(TtsJsonMapperInterface):
 
-    def __init__(self, timber: TimberInterface):
+    def __init__(
+        self,
+        timber: TimberInterface,
+    ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
@@ -26,24 +29,30 @@ class TtsJsonMapper(TtsJsonMapperInterface):
 
     async def asyncParseProvider(
         self,
-        ttsProvider: str | Any | None
+        ttsProvider: str | Any | None,
     ) -> TtsProvider | None:
-        return self.parseProvider(ttsProvider)
+        return self.parseProvider(
+            ttsProvider = ttsProvider,
+        )
 
     async def asyncRequireProvider(
         self,
-        ttsProvider: str | Any | None
+        ttsProvider: str | Any | None,
     ) -> TtsProvider:
-        return self.requireProvider(ttsProvider)
+        return self.requireProvider(
+            ttsProvider = ttsProvider,
+        )
 
     async def asyncSerializeProvider(
         self,
-        ttsProvider: TtsProvider
+        ttsProvider: TtsProvider,
     ) -> str:
         if not isinstance(ttsProvider, TtsProvider):
             raise TypeError(f'ttsProvider argument is malformed: \"{ttsProvider}\"')
 
-        return self.serializeProvider(ttsProvider)
+        return self.serializeProvider(
+            ttsProvider = ttsProvider,
+        )
 
     def __buildTtsProviderRegExes(self) -> frozendict[TtsProvider, Collection[Pattern]]:
         commodoreSam: FrozenList[Pattern] = FrozenList()
@@ -110,7 +119,7 @@ class TtsJsonMapper(TtsJsonMapperInterface):
 
     def parseProvider(
         self,
-        ttsProvider: str | Any | None
+        ttsProvider: str | Any | None,
     ) -> TtsProvider | None:
         if not utils.isValidStr(ttsProvider):
             return None
@@ -124,7 +133,7 @@ class TtsJsonMapper(TtsJsonMapperInterface):
 
     async def asyncParseShotgunProviderUseParameters(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> ShotgunProviderUseParameters | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
@@ -159,7 +168,7 @@ class TtsJsonMapper(TtsJsonMapperInterface):
 
     def requireProvider(
         self,
-        ttsProvider: str | Any | None
+        ttsProvider: str | Any | None,
     ) -> TtsProvider:
         result = self.parseProvider(ttsProvider)
 
@@ -170,7 +179,7 @@ class TtsJsonMapper(TtsJsonMapperInterface):
 
     def serializeProvider(
         self,
-        ttsProvider: TtsProvider
+        ttsProvider: TtsProvider,
     ) -> str:
         if not isinstance(ttsProvider, TtsProvider):
             raise TypeError(f'ttsProvider argument is malformed: \"{ttsProvider}\"')

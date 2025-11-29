@@ -1,7 +1,7 @@
 import re
 import traceback
 from asyncio import AbstractEventLoop
-from typing import Pattern
+from typing import Final, Pattern
 
 import aiofiles
 import aiofiles.os
@@ -31,7 +31,7 @@ class StreamElementsHelper(StreamElementsHelperInterface):
         streamElementsJsonParser: StreamElementsJsonParserInterface,
         streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface,
         streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -48,15 +48,15 @@ class StreamElementsHelper(StreamElementsHelperInterface):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = glacialTtsFileRetriever
-        self.__streamElementsApiHelper: StreamElementsApiHelperInterface = streamElementsApiHelper
-        self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
-        self.__streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = streamElementsMessageVoiceParser
-        self.__streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = streamElementsSettingsRepository
-        self.__timber: TimberInterface = timber
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__glacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = glacialTtsFileRetriever
+        self.__streamElementsApiHelper: Final[StreamElementsApiHelperInterface] = streamElementsApiHelper
+        self.__streamElementsJsonParser: Final[StreamElementsJsonParserInterface] = streamElementsJsonParser
+        self.__streamElementsMessageVoiceParser: Final[StreamElementsMessageVoiceParserInterface] = streamElementsMessageVoiceParser
+        self.__streamElementsSettingsRepository: Final[StreamElementsSettingsRepositoryInterface] = streamElementsSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
 
-        self.__directoryTreeRegEx: Pattern = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
+        self.__directoryTreeRegEx: Final[Pattern] = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
 
     async def __createDirectories(self, filePath: str):
         # this logic removes the file name from the file path, leaving us with just a directory tree
@@ -69,13 +69,13 @@ class StreamElementsHelper(StreamElementsHelperInterface):
 
         if await aiofiles.ospath.exists(
             path = directory,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             return
 
         await aiofiles.os.makedirs(
             name = directory,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         )
 
         self.__timber.log('StreamElementsHelper', f'Created new directories ({filePath=}) ({directory=})')
@@ -83,7 +83,7 @@ class StreamElementsHelper(StreamElementsHelperInterface):
     async def __createFullMessage(
         self,
         donationPrefix: str | None,
-        message: str | None
+        message: str | None,
     ) -> str | None:
         if not await self.__streamElementsSettingsRepository.useDonationPrefix():
             return message
@@ -102,7 +102,7 @@ class StreamElementsHelper(StreamElementsHelperInterface):
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str,
-        voice: StreamElementsVoice | None
+        voice: StreamElementsVoice | None,
     ) -> StreamElementsFileReference | None:
         if donationPrefix is not None and not isinstance(donationPrefix, str):
             raise TypeError(f'donationPrefix argument is malformed: \"{donationPrefix}\"')
@@ -138,20 +138,20 @@ class StreamElementsHelper(StreamElementsHelperInterface):
         glacialFile = await self.__glacialTtsFileRetriever.findFile(
             message = fullMessage,
             voice = await self.__streamElementsJsonParser.serializeVoice(voice),
-            provider = TtsProvider.STREAM_ELEMENTS
+            provider = TtsProvider.STREAM_ELEMENTS,
         )
 
         if glacialFile is not None:
             return StreamElementsFileReference(
                 storeDateTime = glacialFile.storeDateTime,
                 filePath = glacialFile.filePath,
-                voice = await self.__streamElementsJsonParser.requireVoice(glacialFile.voice)
+                voice = await self.__streamElementsJsonParser.requireVoice(glacialFile.voice),
             )
 
         speechBytes = await self.__streamElementsApiHelper.getSpeech(
             message = fullMessage,
             twitchChannelId = twitchChannelId,
-            voice = voice
+            voice = voice,
         )
 
         if speechBytes is None:
@@ -161,18 +161,18 @@ class StreamElementsHelper(StreamElementsHelperInterface):
             fileExtension = await self.__streamElementsSettingsRepository.getFileExtension(),
             message = fullMessage,
             voice = await self.__streamElementsJsonParser.serializeVoice(voice),
-            provider = TtsProvider.STREAM_ELEMENTS
+            provider = TtsProvider.STREAM_ELEMENTS,
         )
 
         if await self.__saveSpeechBytes(
             speechBytes = speechBytes,
             fileName = glacialFile.fileName,
-            filePath = glacialFile.filePath
+            filePath = glacialFile.filePath,
         ):
             return StreamElementsFileReference(
                 storeDateTime = glacialFile.storeDateTime,
                 filePath = glacialFile.filePath,
-                voice = voice
+                voice = voice,
             )
         else:
             self.__timber.log('StreamElementsHelper', f'Failed to write Stream Elements TTS speechBytes to file ({fullMessage=}) ({glacialFile=})')
@@ -182,7 +182,7 @@ class StreamElementsHelper(StreamElementsHelperInterface):
         self,
         speechBytes: bytes,
         fileName: str,
-        filePath: str
+        filePath: str,
     ) -> bool:
         if not isinstance(speechBytes, bytes):
             raise TypeError(f'speechBytes argument is malformed: \"{speechBytes}\"')
@@ -197,7 +197,7 @@ class StreamElementsHelper(StreamElementsHelperInterface):
             async with aiofiles.open(
                 file = filePath,
                 mode = 'wb',
-                loop = self.__eventLoop
+                loop = self.__eventLoop,
             ) as file:
                 await file.write(speechBytes)
                 await file.flush()

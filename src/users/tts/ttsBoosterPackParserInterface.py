@@ -11,13 +11,13 @@ class TtsBoosterPackParserInterface(ABC):
     @abstractmethod
     def parseBoosterPack(
         self,
-        jsonContents: dict[str, Any]
+        jsonContents: dict[str, Any],
     ) -> TtsBoosterPack:
         pass
 
     @abstractmethod
     def parseBoosterPacks(
         self,
-        jsonContents: list[dict[str, Any]] | Any | None
+        jsonContents: list[dict[str, Any]] | Any | None,
     ) -> FrozenList[TtsBoosterPack] | None:
         pass

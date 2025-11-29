@@ -10,6 +10,6 @@ class StreamElementsApiHelperInterface(ABC):
         self,
         message: str | None,
         twitchChannelId: str,
-        voice: StreamElementsVoice
+        voice: StreamElementsVoice,
     ) -> bytes | None:
         pass

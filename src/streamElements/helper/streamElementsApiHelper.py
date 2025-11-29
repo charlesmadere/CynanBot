@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from .streamElementsApiHelperInterface import StreamElementsApiHelperInterface
 from ..apiService.streamElementsApiServiceInterface import StreamElementsApiServiceInterface
@@ -15,7 +16,7 @@ class StreamElementsApiHelper(StreamElementsApiHelperInterface):
         self,
         streamElementsApiService: StreamElementsApiServiceInterface,
         streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(streamElementsApiService, StreamElementsApiServiceInterface):
             raise TypeError(f'streamElementsApiService argument is malformed: \"{streamElementsApiService}\"')
@@ -24,15 +25,15 @@ class StreamElementsApiHelper(StreamElementsApiHelperInterface):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__streamElementsApiService: StreamElementsApiServiceInterface = streamElementsApiService
-        self.__streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = streamElementsUserKeyRepository
-        self.__timber: TimberInterface = timber
+        self.__streamElementsApiService: Final[StreamElementsApiServiceInterface] = streamElementsApiService
+        self.__streamElementsUserKeyRepository: Final[StreamElementsUserKeyRepositoryInterface] = streamElementsUserKeyRepository
+        self.__timber: Final[TimberInterface] = timber
 
     async def getSpeech(
         self,
         message: str | None,
         twitchChannelId: str,
-        voice: StreamElementsVoice
+        voice: StreamElementsVoice,
     ) -> bytes | None:
         if message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -45,7 +46,7 @@ class StreamElementsApiHelper(StreamElementsApiHelperInterface):
             return None
 
         userKey = await self.__streamElementsUserKeyRepository.get(
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if not utils.isValidStr(userKey):
@@ -56,7 +57,7 @@ class StreamElementsApiHelper(StreamElementsApiHelperInterface):
             return await self.__streamElementsApiService.getSpeech(
                 text = message,
                 userKey = userKey,
-                voice = voice
+                voice = voice,
             )
         except GenericNetworkException as e:
             self.__timber.log('StreamElementsApiHelper', f'Encountered network error when fetching speech ({message=}) ({twitchChannelId=}) ({userKey=}): {e}', e, traceback.format_exc())

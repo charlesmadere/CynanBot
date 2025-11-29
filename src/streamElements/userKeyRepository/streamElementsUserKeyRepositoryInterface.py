@@ -10,14 +10,14 @@ class StreamElementsUserKeyRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def get(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> str | None:
         pass
 
     @abstractmethod
     async def remove(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         pass
 
@@ -25,6 +25,6 @@ class StreamElementsUserKeyRepositoryInterface(Clearable, ABC):
     async def set(
         self,
         userKey: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         pass

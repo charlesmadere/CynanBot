@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.timber.timberInterface import TimberInterface
@@ -12,9 +14,9 @@ from src.tts.models.ttsProvider import TtsProvider
 
 class TestTtsJsonMapper:
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    jsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
+    jsonMapper: Final[TtsJsonMapperInterface] = TtsJsonMapper(
         timber = timber,
     )
 
@@ -345,8 +347,14 @@ class TestTtsJsonMapper:
         result = self.jsonMapper.parseProvider('rando_tts')
         assert result is TtsProvider.RANDO_TTS
 
-    def test_parseProvider_withShotgunTtsString(self):
+    def test_parseProvider_withShotgunTtsStrings(self):
         result = self.jsonMapper.parseProvider('shotgun_tts')
+        assert result is TtsProvider.SHOTGUN_TTS
+
+        result = self.jsonMapper.parseProvider('shotguntts')
+        assert result is TtsProvider.SHOTGUN_TTS
+
+        result = self.jsonMapper.parseProvider('shotgun')
         assert result is TtsProvider.SHOTGUN_TTS
 
     def test_parseProvider_withSingingDecTalkStrings(self):
