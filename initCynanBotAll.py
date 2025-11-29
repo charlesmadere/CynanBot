@@ -3116,7 +3116,8 @@ pkmnShinyPointRedemption: PkmnShinyPointRedemption | None = PkmnShinyPointRedemp
 soundAlertPointRedemption: SoundAlertPointRedemption | None = SoundAlertPointRedemption(
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-    streamAlertsManager = streamAlertsManager
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
 )
 
 superTriviaGamePointRedemption: SuperTriviaGamePointRedemption | None = SuperTriviaGamePointRedemption(

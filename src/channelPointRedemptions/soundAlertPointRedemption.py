@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..misc import utils as utils
 from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
@@ -6,6 +8,7 @@ from ..soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface 
 from ..soundPlayerManager.soundAlert import SoundAlert
 from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
+from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
 from ..users.soundAlert.soundAlertRedemption import SoundAlertRedemption
@@ -18,7 +21,8 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         self,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface,
-        streamAlertsManager: StreamAlertsManagerInterface
+        streamAlertsManager: StreamAlertsManagerInterface,
+        timber: TimberInterface,
     ):
         if not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
@@ -26,15 +30,18 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
             raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
-        self.__soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = soundPlayerRandomizerHelper
-        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
+        self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
+        self.__soundPlayerRandomizerHelper: Final[SoundPlayerRandomizerHelperInterface] = soundPlayerRandomizerHelper
+        self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
+        self.__timber: Final[TimberInterface] = timber
 
     async def __findSoundAlertRedemption(
         self,
         twitchChannelPointsMessage: TwitchChannelPointsMessage,
-        user: UserInterface
+        user: UserInterface,
     ) -> SoundAlertRedemption | None:
         if not isinstance(twitchChannelPointsMessage, TwitchChannelPointsMessage):
             raise TypeError(f'twitchChannelPointsMessage argument is malformed: \"{twitchChannelPointsMessage}\"')
@@ -50,7 +57,7 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> bool:
         user = twitchChannelPointsMessage.twitchUser
         if not user.areSoundAlertsEnabled:
@@ -67,7 +74,7 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         if soundAlert is None:
             soundAlertRedemption = await self.__findSoundAlertRedemption(
                 twitchChannelPointsMessage = twitchChannelPointsMessage,
-                user = user
+                user = user,
             )
 
         if soundAlertRedemption is not None:
@@ -75,7 +82,7 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
 
             if soundAlertRedemption.soundAlert is SoundAlert.RANDOM_FROM_DIRECTORY:
                 filePath = await self.__soundPlayerRandomizerHelper.chooseRandomFromDirectorySoundAlert(
-                    directoryPath = soundAlertRedemption.directoryPath
+                    directoryPath = soundAlertRedemption.directoryPath,
                 )
             else:
                 soundAlert = soundAlertRedemption.soundAlert
@@ -94,8 +101,9 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
             self.__streamAlertsManager.submitAlert(StreamAlert(
                 soundAlert = soundAlert,
                 twitchChannel = twitchChannel.getTwitchChannelName(),
-                twitchChannelId = await twitchChannel.getTwitchChannelId(),
-                ttsEvent = None
+                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+                ttsEvent = None,
             ))
 
+        self.__timber.log('SoundAlertPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {user.handle} ({soundAlert=}) ({filePath=}) ({isImmediate=})')
         return True

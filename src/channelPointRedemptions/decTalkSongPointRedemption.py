@@ -34,13 +34,13 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
 
         self.__decTalkSongsRepository: Final[JsonReaderInterface] = JsonFileReader(
             eventLoop = eventLoop,
-            fileName = 'decTalkSongsRepository.json'
+            fileName = 'decTalkSongsRepository.json',
         )
 
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> bool:
         twitchUser = twitchChannelPointsMessage.twitchUser
         if not twitchUser.isDecTalkSongsEnabled:
@@ -68,19 +68,19 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
             twitchChannel = twitchUser.handle,
-            twitchChannelId = await twitchChannel.getTwitchChannelId(),
+            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
             ttsEvent = TtsEvent(
                 message = message,
                 twitchChannel = twitchUser.handle,
-                twitchChannelId = await twitchChannel.getTwitchChannelId(),
+                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
                 userId = twitchChannelPointsMessage.userId,
                 userName = twitchChannelPointsMessage.userName,
                 donation = None,
                 provider = TtsProvider.UNRESTRICTED_DEC_TALK,
                 providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
-                raidInfo = None
-            )
+                raidInfo = None,
+            ),
         ))
 
-        self.__timber.log('DecTalkSongPointRedemption', f'Redeemed DecTalk song {decTalkSongBoosterPack} for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
+        self.__timber.log('DecTalkSongPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({decTalkSongBoosterPack=})')
         return True

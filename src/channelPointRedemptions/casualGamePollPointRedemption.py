@@ -42,8 +42,7 @@ class CasualGamePollPointRedemption(AbsChannelPointRedemption):
         if not utils.isValidUrl(casualGamePollUrl):
             return False
 
-        twitchChannelId = await twitchChannel.getTwitchChannelId()
-        if not self.__lastMessageTimes.isReadyAndUpdate(twitchChannelId):
+        if not self.__lastMessageTimes.isReadyAndUpdate(twitchChannelPointsMessage.twitchChannelId):
             return False
 
         self.__twitchChatMessenger.send(
@@ -51,5 +50,5 @@ class CasualGamePollPointRedemption(AbsChannelPointRedemption):
             twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
         )
 
-        self.__timber.log('CasualGamePollPointRedemption', f'Redeemed casual game poll for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
+        self.__timber.log('CasualGamePollPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
         return True

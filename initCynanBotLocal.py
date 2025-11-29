@@ -2321,7 +2321,8 @@ if soundPlayerManagerProvider is not None and soundPlayerRandomizerHelper is not
     soundAlertPointRedemption = SoundAlertPointRedemption(
         soundPlayerManagerProvider = soundPlayerManagerProvider,
         soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-        streamAlertsManager = streamAlertsManager
+        streamAlertsManager = streamAlertsManager,
+        timber = timber,
     )
 
 
