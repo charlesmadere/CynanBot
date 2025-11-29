@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from frozenlist import FrozenList
 
@@ -12,31 +12,33 @@ class TtsBoosterPackParser(TtsBoosterPackParserInterface):
 
     def __init__(
         self,
-        ttsJsonMapper: TtsJsonMapperInterface
+        ttsJsonMapper: TtsJsonMapperInterface,
     ):
         if not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
             raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
 
-        self.__ttsJsonMapper: TtsJsonMapperInterface = ttsJsonMapper
+        self.__ttsJsonMapper: Final[TtsJsonMapperInterface] = ttsJsonMapper
 
     def parseBoosterPack(
         self,
-        jsonContents: dict[str, Any]
+        jsonContents: dict[str, Any],
     ) -> TtsBoosterPack:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
+        isEnabled = utils.getBoolFromDict(jsonContents, 'enabled', fallback = True)
         cheerAmount = utils.getIntFromDict(jsonContents, 'cheerAmount')
         ttsProvider = self.__ttsJsonMapper.requireProvider(utils.getStrFromDict(jsonContents, 'ttsProvider'))
 
         return TtsBoosterPack(
+            isEnabled = isEnabled,
             cheerAmount = cheerAmount,
-            ttsProvider = ttsProvider
+            ttsProvider = ttsProvider,
         )
 
     def parseBoosterPacks(
         self,
-        jsonContents: list[dict[str, Any]] | Any | None
+        jsonContents: list[dict[str, Any]] | Any | None,
     ) -> FrozenList[TtsBoosterPack] | None:
         if not isinstance(jsonContents, list) or len(jsonContents) == 0:
             return None

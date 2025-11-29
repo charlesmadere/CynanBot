@@ -10,48 +10,48 @@ class TtsJsonMapperInterface(ABC):
     @abstractmethod
     async def asyncParseProvider(
         self,
-        ttsProvider: str | Any | None
+        ttsProvider: str | Any | None,
     ) -> TtsProvider | None:
         pass
 
     @abstractmethod
     async def asyncParseShotgunProviderUseParameters(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> ShotgunProviderUseParameters | None:
         pass
 
     @abstractmethod
     async def asyncRequireProvider(
         self,
-        ttsProvider: str | Any | None
+        ttsProvider: str | Any | None,
     ) -> TtsProvider:
         pass
 
     @abstractmethod
     async def asyncSerializeProvider(
         self,
-        ttsProvider: TtsProvider
+        ttsProvider: TtsProvider,
     ) -> str:
         pass
 
     @abstractmethod
     def parseProvider(
         self,
-        ttsProvider: str | Any | None
+        ttsProvider: str | Any | None,
     ) -> TtsProvider | None:
         pass
 
     @abstractmethod
     def requireProvider(
         self,
-        ttsProvider: str | Any | None
+        ttsProvider: str | Any | None,
     ) -> TtsProvider:
         pass
 
     @abstractmethod
     def serializeProvider(
         self,
-        ttsProvider: TtsProvider
+        ttsProvider: TtsProvider,
     ) -> str:
         pass
