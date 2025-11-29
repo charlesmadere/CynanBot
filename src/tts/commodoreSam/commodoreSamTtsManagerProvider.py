@@ -24,7 +24,7 @@ class CommodoreSamTtsManagerProvider(CommodoreSamTtsManagerProviderInterface):
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
     ):
         if not isinstance(commodoreSamHelper, CommodoreSamHelperInterface):
             raise TypeError(f'commodoreSamHelper argument is malformed: \"{commodoreSamHelper}\"')
@@ -53,7 +53,7 @@ class CommodoreSamTtsManagerProvider(CommodoreSamTtsManagerProviderInterface):
 
     def constructNewInstance(
         self,
-        useSharedSoundPlayerManager: bool = True
+        useSharedSoundPlayerManager: bool = True,
     ) -> CommodoreSamTtsManagerInterface | None:
         if not utils.isValidBool(useSharedSoundPlayerManager):
             raise TypeError(f'useSharedSoundPlayerManager argument is malformed: \"{useSharedSoundPlayerManager}\"')

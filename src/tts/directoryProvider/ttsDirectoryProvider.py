@@ -1,3 +1,5 @@
+from typing import Final
+
 from .ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
 from ..models.ttsProvider import TtsProvider
 from ...misc import utils as utils
@@ -9,7 +11,7 @@ class TtsDirectoryProvider(TtsDirectoryProviderInterface):
         if not utils.isValidStr(rootTtsDirectory):
             raise TypeError(f'rootTtsDirectory argument is malformed: \"{rootTtsDirectory}\"')
 
-        self.__rootTtsDirectory: str = rootTtsDirectory
+        self.__rootTtsDirectory: Final[str] = rootTtsDirectory
 
     async def getFullTtsDirectoryFor(self, provider: TtsProvider) -> str:
         if not isinstance(provider, TtsProvider):

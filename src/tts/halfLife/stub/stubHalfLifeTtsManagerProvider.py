@@ -6,7 +6,7 @@ class StubHalfLifeTtsManagerProvider(HalfLifeTtsManagerProviderInterface):
 
     def constructNewInstance(
         self,
-        useSharedSoundPlayerManager: bool = True
+        useSharedSoundPlayerManager: bool = True,
     ) -> HalfLifeTtsManagerInterface | None:
         return None
 

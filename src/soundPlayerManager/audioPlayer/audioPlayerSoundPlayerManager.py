@@ -60,7 +60,7 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
 
     async def playPlaylist(
         self,
-        playlist: SoundPlayerPlaylist
+        playlist: SoundPlayerPlaylist,
     ) -> bool:
         if not isinstance(playlist, SoundPlayerPlaylist):
             raise TypeError(f'playlist argument is malformed: \"{playlist}\"')
@@ -79,21 +79,21 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
                 return False
             elif not await aiofiles.ospath.exists(
                 path = playlistFile.filePath,
-                loop = self.__eventLoop
+                loop = self.__eventLoop,
             ):
                 self.__timber.log('AudioPlayerSoundPlayerManager', f'The given file path at index {index} does not exist: ({playlist=}) ({playlistFile=})')
                 self.__isLoadingOrPlaying = False
                 return False
             elif not await aiofiles.ospath.isfile(
                 path = playlistFile.filePath,
-                loop = self.__eventLoop
+                loop = self.__eventLoop,
             ):
                 self.__timber.log('AudioPlayerSoundPlayerManager', f'The given file path at index {index} is not a file: ({playlist=}) ({playlistFile=})')
                 self.__isLoadingOrPlaying = False
                 return False
 
         await self.__progressThroughPlaylist(
-            playlist = playlist
+            playlist = playlist,
         )
 
         return True
@@ -101,7 +101,7 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
     async def playSoundAlert(
         self,
         alert: SoundAlert,
-        volume: int | None = None
+        volume: int | None = None,
     ) -> bool:
         if not isinstance(alert, SoundAlert):
             raise TypeError(f'alert argument is malformed: \"{alert}\"')
@@ -124,13 +124,13 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
 
         return await self.playSoundFile(
             filePath = filePath,
-            volume = volume
+            volume = volume,
         )
 
     async def playSoundFile(
         self,
         filePath: str | None,
-        volume: int | None = None
+        volume: int | None = None,
     ) -> bool:
         if filePath is not None and not isinstance(filePath, str):
             raise TypeError(f'filePath argument is malformed: \"{filePath}\"')
@@ -150,24 +150,24 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
 
         playlistFiles.append(SoundPlaybackFile(
             volume = None,
-            filePath = filePath
+            filePath = filePath,
         ))
 
         playlistFiles.freeze()
 
         playlist = SoundPlayerPlaylist(
             playlistFiles = playlistFiles,
-            volume = volume
+            volume = volume,
         )
 
         return await self.playPlaylist(
-            playlist = playlist
+            playlist = playlist,
         )
 
     async def playSoundFiles(
         self,
         filePaths: Collection[str],
-        volume: int | None = None
+        volume: int | None = None,
     ) -> bool:
         if not isinstance(filePaths, Collection):
             raise TypeError(f'filePaths argument is malformed: \"{filePaths}\"')
@@ -185,7 +185,7 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
         for filePath in filePaths:
             playlistFiles.append(SoundPlaybackFile(
                 volume = None,
-                filePath = filePath
+                filePath = filePath,
             ))
 
         playlistFiles.freeze()
@@ -196,11 +196,11 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
 
         playlist = SoundPlayerPlaylist(
             playlistFiles = playlistFiles,
-            volume = volume
+            volume = volume,
         )
 
         return await self.playPlaylist(
-            playlist = playlist
+            playlist = playlist,
         )
 
     async def __progressThroughPlaylist(self, playlist: SoundPlayerPlaylist):

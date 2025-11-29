@@ -10,7 +10,7 @@ class TtsMonsterTtsManagerProviderInterface(TtsManagerProviderInterface, ABC):
     @abstractmethod
     def constructNewInstance(
         self,
-        useSharedSoundPlayerManager: bool = True
+        useSharedSoundPlayerManager: bool = True,
     ) -> TtsMonsterTtsManagerInterface | None:
         pass
 

@@ -34,7 +34,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
@@ -105,7 +105,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         async def playSoundFile():
             await self.__soundPlayerManager.playSoundFile(
                 filePath = fileReference.filePath,
-                volume = volume
+                volume = volume,
             )
 
             self.__isLoadingOrPlaying = False

@@ -26,7 +26,7 @@ class MicrosoftTtsManagerProvider(MicrosoftTtsManagerProviderInterface):
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
@@ -58,7 +58,7 @@ class MicrosoftTtsManagerProvider(MicrosoftTtsManagerProviderInterface):
 
     def constructNewInstance(
         self,
-        useSharedSoundPlayerManager: bool = True
+        useSharedSoundPlayerManager: bool = True,
     ) -> MicrosoftTtsManagerInterface | None:
         if not utils.isValidBool(useSharedSoundPlayerManager):
             raise TypeError(f'useSharedSoundPlayerManager argument is malformed: \"{useSharedSoundPlayerManager}\"')
@@ -78,7 +78,7 @@ class MicrosoftTtsManagerProvider(MicrosoftTtsManagerProviderInterface):
             soundPlayerManager = soundPlayerManager,
             timber = self.__timber,
             ttsCommandBuilder = self.__ttsCommandBuilder,
-            ttsSettingsRepository = self.__ttsSettingsRepository
+            ttsSettingsRepository = self.__ttsSettingsRepository,
         )
 
     def getSharedInstance(self) -> MicrosoftTtsManagerInterface | None:

@@ -14,7 +14,7 @@ class StubSoundPlayerManager(SoundPlayerManagerInterface):
 
     async def playPlaylist(
         self,
-        playlist: SoundPlayerPlaylist
+        playlist: SoundPlayerPlaylist,
     ) -> bool:
         # this method is intentionally empty
         return False
@@ -22,7 +22,7 @@ class StubSoundPlayerManager(SoundPlayerManagerInterface):
     async def playSoundAlert(
         self,
         alert: SoundAlert,
-        volume: int | None = None
+        volume: int | None = None,
     ) -> bool:
         # this method is intentionally empty
         return False
@@ -30,7 +30,7 @@ class StubSoundPlayerManager(SoundPlayerManagerInterface):
     async def playSoundFile(
         self,
         filePath: str | None,
-        volume: int | None = None
+        volume: int | None = None,
     ) -> bool:
         # this method is intentionally empty
         return False
@@ -38,7 +38,7 @@ class StubSoundPlayerManager(SoundPlayerManagerInterface):
     async def playSoundFiles(
         self,
         filePaths: Collection[str],
-        volume: int | None = None
+        volume: int | None = None,
     ) -> bool:
         # this method is intentionally empty
         return False

@@ -31,7 +31,7 @@ class MicrosoftTtsManager(MicrosoftTtsManagerInterface):
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')

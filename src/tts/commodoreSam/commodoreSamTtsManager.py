@@ -24,7 +24,7 @@ class CommodoreSamTtsManager(CommodoreSamTtsManagerInterface):
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
     ):
         if not isinstance(commodoreSamHelper, CommodoreSamHelperInterface):
             raise TypeError(f'commodoreSamHelper argument is malformed: \"{commodoreSamHelper}\"')
@@ -58,7 +58,7 @@ class CommodoreSamTtsManager(CommodoreSamTtsManagerInterface):
         async def playSoundFile():
             await self.__soundPlayerManager.playSoundFile(
                 filePath = fileReference.filePath,
-                volume = volume
+                volume = volume,
             )
 
             self.__isLoadingOrPlaying = False

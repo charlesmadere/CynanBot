@@ -9,7 +9,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
 
     def parseSoundAlert(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> SoundAlert | None:
         if not utils.isValidStr(jsonString):
             return None
@@ -57,7 +57,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
 
     def requireSoundAlert(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> SoundAlert:
         result = self.parseSoundAlert(jsonString)
 
@@ -68,7 +68,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
 
     def serializeSoundAlert(
         self,
-        soundAlert: SoundAlert
+        soundAlert: SoundAlert,
     ) -> str:
         if not isinstance(soundAlert, SoundAlert):
             raise TypeError(f'soundAlert argument is malformed: \"{soundAlert}\"')

@@ -69,13 +69,13 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
 
         if await aiofiles.ospath.exists(
             path = directory,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             return
 
         await aiofiles.os.makedirs(
             name = directory,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         )
 
         self.__timber.log('MicrosoftSamHelper', f'Created new directories ({filePath=}) ({directory=})')
@@ -129,7 +129,7 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
 
         fullMessage = await self.__createFullMessage(
             donationPrefix = donationPrefix,
-            message = message
+            message = message,
         )
 
         if not utils.isValidStr(fullMessage):
@@ -138,19 +138,19 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
         glacialFile = await self.__glacialTtsFileRetriever.findFile(
             message = fullMessage,
             voice = await self.__microsoftSamJsonParser.serializeVoice(voice),
-            provider = TtsProvider.MICROSOFT_SAM
+            provider = TtsProvider.MICROSOFT_SAM,
         )
 
         if glacialFile is not None:
             return MicrosoftSamFileReference(
                 storeDateTime = glacialFile.storeDateTime,
                 voice = await self.__microsoftSamJsonParser.requireVoice(glacialFile.voice),
-                filePath = glacialFile.filePath
+                filePath = glacialFile.filePath,
             )
 
         speechBytes = await self.__microsoftSamApiHelper.getSpeech(
             voice = voice,
-            message = fullMessage
+            message = fullMessage,
         )
 
         if speechBytes is None:
@@ -160,18 +160,18 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
             fileExtension = await self.__microsoftSamSettingsRepository.getFileExtension(),
             message = fullMessage,
             voice = await self.__microsoftSamJsonParser.serializeVoice(voice),
-            provider = TtsProvider.MICROSOFT_SAM
+            provider = TtsProvider.MICROSOFT_SAM,
         )
 
         if await self.__saveSpeechBytes(
             speechBytes = speechBytes,
             fileName = glacialFile.fileName,
-            filePath = glacialFile.filePath
+            filePath = glacialFile.filePath,
         ):
             return MicrosoftSamFileReference(
                 storeDateTime = glacialFile.storeDateTime,
                 voice = voice,
-                filePath = glacialFile.filePath
+                filePath = glacialFile.filePath,
             )
         else:
             self.__timber.log('MicrosoftSamHelper', f'Failed to write Microsoft Sam TTS speechBytes to file ({fullMessage=}) ({glacialFile=})')
