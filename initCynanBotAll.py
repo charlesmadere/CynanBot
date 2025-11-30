@@ -2988,6 +2988,7 @@ recurringActionsWizardChatAction = RecurringActionsWizardChatAction(
 saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
     anivUserIdsRepository = anivUserIdsRepository,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+    timber = timber,
 )
 
 soundAlertChatAction = SoundAlertChatAction(

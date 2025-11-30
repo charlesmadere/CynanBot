@@ -5,6 +5,7 @@ from ..aniv.repositories.anivUserIdsRepositoryInterface import AnivUserIdsReposi
 from ..aniv.repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
+from ..timber.timberInterface import TimberInterface
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..users.userInterface import UserInterface
 
@@ -15,14 +16,18 @@ class SaveMostRecentAnivMessageChatAction(AbsChatAction):
         self,
         anivUserIdsRepository: AnivUserIdsRepositoryInterface,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface,
+        timber: TimberInterface,
     ):
         if not isinstance(anivUserIdsRepository, AnivUserIdsRepositoryInterface):
             raise TypeError(f'anivUserIdsRepository argument is malformed: \"{anivUserIdsRepository}\"')
         elif not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
             raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__anivUserIdsRepository: Final[AnivUserIdsRepositoryInterface] = anivUserIdsRepository
         self.__mostRecentAnivMessageRepository: Final[MostRecentAnivMessageRepositoryInterface] = mostRecentAnivMessageRepository
+        self.__timber: Final[TimberInterface] = timber
 
     async def handleChat(
         self,
@@ -38,11 +43,13 @@ class SaveMostRecentAnivMessageChatAction(AbsChatAction):
             return False
 
         cleanedMessage = utils.cleanStr(message.getContent())
+        twitchChannelId = await message.getTwitchChannelId()
 
         await self.__mostRecentAnivMessageRepository.set(
             message = cleanedMessage,
-            twitchChannelId = await message.getTwitchChannelId(),
+            twitchChannelId = twitchChannelId,
             whichAnivUser = whichAnivUser,
         )
 
+        self.__timber.log('SaveMostRecentAnivMessageChatAction', f'Updated most recent aniv message ({user=}) ({twitchChannelId=}) ({whichAnivUser=})')
         return True

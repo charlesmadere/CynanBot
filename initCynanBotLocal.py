@@ -2218,13 +2218,14 @@ persistAllUsersChatAction = PersistAllUsersChatAction(
 saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
     anivUserIdsRepository = anivUserIdsRepository,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+    timber = timber,
 )
 
 soundAlertChatAction = SoundAlertChatAction(
     accessLevelCheckingHelper = accessLevelCheckingHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-    timber = timber
+    timber = timber,
 )
 
 supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
