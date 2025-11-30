@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 from datetime import datetime, timedelta
 from typing import Final
 
@@ -97,14 +98,14 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
                 )
 
                 if not utils.isValidStr(twitchAccessToken):
-                    self.__timber.log('TwitchTimeoutRemodHelper', f'Unable to retrieve Twitch access token when attempting to re-mod user ({remodAction=}) ({twitchAccessToken=})')
+                    self.__timber.log('TwitchTimeoutRemodHelper', f'Unable to retrieve broadcaster\'s Twitch access token when attempting to re-mod user ({remodAction=}) ({twitchAccessToken=})')
                     broadcastersWithoutTokens.add(remodAction.broadcasterUserId)
                     await self.__deleteFromRepository(remodAction)
                     continue
 
                 twitchAccessTokens[remodAction.broadcasterUserId] = twitchAccessToken
 
-            userName = await self.__userIdsRepository.requireUserName(
+            userName = await self.__userIdsRepository.fetchUserName(
                 userId = remodAction.userId,
                 twitchAccessToken = twitchAccessToken,
             )
@@ -136,11 +137,15 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
 
         self.__isStarted = True
         self.__timber.log('TwitchTimeoutRemodHelper', 'Starting TwitchTimeoutRemodHelper...')
-        self.__backgroundTaskHelper.createTask(self.__startEventLoop())
+        self.__backgroundTaskHelper.createTask(self.__startRefreshLoop())
 
-    async def __startEventLoop(self):
+    async def __startRefreshLoop(self):
         while True:
-            await self.__refresh()
+            try:
+                await self.__refresh()
+            except Exception as e:
+                self.__timber.log('TwitchTimeoutRemodHelper', f'Encountered unknown exception when re-applying mod statuses', e, traceback.format_exc())
+
             await asyncio.sleep(self.__queueSleepTimeSeconds)
 
     async def submitRemodData(

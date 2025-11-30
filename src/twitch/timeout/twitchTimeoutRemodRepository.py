@@ -53,7 +53,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
         )
 
         await connection.close()
-        self.__timber.log('CheerActionRemodRepository', f'Added remod action ({data=})')
+        self.__timber.log('TwitchTimeoutRemodRepository', f'Added remod action ({data=})')
 
     async def delete(self, broadcasterUserId: str, userId: str):
         if not utils.isValidStr(broadcasterUserId):
@@ -71,7 +71,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
         )
 
         await connection.close()
-        self.__timber.log('CheerActionRemodRepository', f'Deleted remod action ({broadcasterUserId=}) ({userId=})')
+        self.__timber.log('TwitchTimeoutRemodRepository', f'Deleted remod action ({broadcasterUserId=}) ({userId=})')
 
     async def getAll(self) -> Collection[TwitchTimeoutRemodData]:
         connection = await self.__getDatabaseConnection()
