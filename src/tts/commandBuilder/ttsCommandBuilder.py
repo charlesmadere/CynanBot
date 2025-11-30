@@ -24,7 +24,7 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
     async def __processCheerDonationPrefix(
         self,
         event: TtsEvent,
-        donation: TtsCheerDonation
+        donation: TtsCheerDonation,
     ) -> str | None:
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
@@ -47,13 +47,13 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         if isinstance(donation, TtsCheerDonation):
             return await self.__processCheerDonationPrefix(
                 event = event,
-                donation = donation
+                donation = donation,
             )
 
         elif isinstance(donation, TtsSubscriptionDonation):
             return await self.__processSubscriptionDonationPrefix(
                 event = event,
-                donation = donation
+                donation = donation,
             )
 
         else:
@@ -62,7 +62,7 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
     async def __processSubscriptionDonationPrefix(
         self,
         event: TtsEvent,
-        donation: TtsSubscriptionDonation
+        donation: TtsSubscriptionDonation,
     ) -> str:
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')

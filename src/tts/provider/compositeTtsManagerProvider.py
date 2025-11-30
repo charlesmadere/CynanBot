@@ -81,45 +81,45 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
 
     def constructNewInstance(
         self,
-        useSharedSoundPlayerManager: bool = True
+        useSharedSoundPlayerManager: bool = True,
     ) -> CompositeTtsManagerInterface:
         if not utils.isValidBool(useSharedSoundPlayerManager):
             raise TypeError(f'useSharedSoundPlayerManager argument is malformed: \"{useSharedSoundPlayerManager}\"')
 
         commodoreSamTtsManager = self.__commodoreSamTtsManagerProvider.constructNewInstance(
-            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager,
         )
 
         decTalkTtsManager = self.__decTalkTtsManagerProvider.constructNewInstance(
-            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager,
         )
 
         unrestrictedDecTalkTtsManager = self.__unrestrictedDecTalkTtsManagerProvider.constructNewInstance(
-            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager,
         )
 
         googleTtsManager = self.__googleTtsManagerProvider.constructNewInstance(
-            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager,
         )
 
         halfLifeTtsManager = self.__halfLifeTtsManagerProvider.constructNewInstance(
-            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager,
         )
 
         microsoftTtsManager = self.__microsoftTtsManagerProvider.constructNewInstance(
-            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager,
         )
 
         microsoftSamTtsManager = self.__microsoftSamTtsManagerProvider.constructNewInstance(
-            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager,
         )
 
         streamElementsTtsManager = self.__streamElementsTtsManagerProvider.constructNewInstance(
-            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager,
         )
 
         ttsMonsterTtsManager = self.__ttsMonsterTtsManagerProvider.constructNewInstance(
-            useSharedSoundPlayerManager = useSharedSoundPlayerManager
+            useSharedSoundPlayerManager = useSharedSoundPlayerManager,
         )
 
         return CompositeTtsManager(

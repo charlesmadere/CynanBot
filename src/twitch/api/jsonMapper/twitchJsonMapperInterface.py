@@ -362,7 +362,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseNoticeType(
         self,
-        noticeType: str | Any | None
+        noticeType: str | Any | None,
     ) -> TwitchNoticeType | None:
         pass
 

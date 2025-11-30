@@ -1167,7 +1167,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseNoticeType(
         self,
-        noticeType: str | Any | None
+        noticeType: str | Any | None,
     ) -> TwitchNoticeType | None:
         if not utils.isValidStr(noticeType):
             return None

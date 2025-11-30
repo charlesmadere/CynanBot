@@ -74,7 +74,7 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
             )
             actionCompleted = True
 
-        self.__timber.log('PkmnCatchRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} ({pkmnCatchBoosterPack.catchType=}) in {twitchUser.handle}')
+        self.__timber.log('PkmnCatchRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({pkmnCatchBoosterPack=})')
         return actionCompleted
 
     def __toFuntoonPkmnCatchType(

@@ -3,6 +3,7 @@ import queue
 import traceback
 from datetime import datetime, timedelta
 from queue import SimpleQueue
+from typing import Final
 
 from .actions.buttonPressCrowdControlAction import ButtonPressCrowdControlAction
 from .actions.crowdControlAction import CrowdControlAction
@@ -52,20 +53,20 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
-        self.__crowdControlIdGenerator: CrowdControlIdGeneratorInterface = crowdControlIdGenerator
-        self.__crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface = crowdControlSettingsRepository
-        self.__soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = soundPlayerManagerProvider
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__queueTimeoutSeconds: int = queueTimeoutSeconds
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__crowdControlIdGenerator: Final[CrowdControlIdGeneratorInterface] = crowdControlIdGenerator
+        self.__crowdControlSettingsRepository: Final[CrowdControlSettingsRepositoryInterface] = crowdControlSettingsRepository
+        self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
         self.__isPaused: bool = False
         self.__isStarted: bool = False
         self.__actionHandler: CrowdControlActionHandler | None = None
         self.__messageListener: CrowdControlMessageListener | None = None
-        self.__actionQueue: SimpleQueue[CrowdControlAction] = SimpleQueue()
-        self.__messageQueue: SimpleQueue[CrowdControlMessage] = SimpleQueue()
+        self.__actionQueue: Final[SimpleQueue[CrowdControlAction]] = SimpleQueue()
+        self.__messageQueue: Final[SimpleQueue[CrowdControlMessage]] = SimpleQueue()
 
     async def __handleAction(
         self,
@@ -310,7 +311,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
 
         message = CrowdControlMessage(
             originatingAction = action,
-            messageId = await self.__crowdControlIdGenerator.generateMessageId()
+            messageId = await self.__crowdControlIdGenerator.generateMessageId(),
         )
 
         try:

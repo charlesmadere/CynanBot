@@ -6,7 +6,7 @@ class StubMicrosoftTtsManagerProvider(MicrosoftTtsManagerProviderInterface):
 
     def constructNewInstance(
         self,
-        useSharedSoundPlayerManager: bool = True
+        useSharedSoundPlayerManager: bool = True,
     ) -> MicrosoftTtsManagerInterface | None:
         return None
 

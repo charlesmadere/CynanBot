@@ -51,14 +51,14 @@ class CutenessPointRedemption(AbsChannelPointRedemption):
             await self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = incrementAmount,
                 twitchChannel = twitchUser.handle,
-                twitchChannelId = await twitchChannel.getTwitchChannelId(),
+                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
                 userId = twitchChannelPointsMessage.userId,
-                userName = twitchChannelPointsMessage.userName
+                userName = twitchChannelPointsMessage.userName,
             )
 
-            self.__timber.log('CutenessRedemption', f'Redeemed cuteness of {incrementAmount} for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
+            self.__timber.log('CutenessRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({incrementAmount=})')
         except Exception as e:
-            self.__timber.log('CutenessRedemption', f'Error redeeming cuteness of {incrementAmount} for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}: {e}', e, traceback.format_exc())
+            self.__timber.log('CutenessRedemption', f'Error redeeming for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({incrementAmount=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ Error increasing cuteness for {twitchChannelPointsMessage.userName}',
                 twitchChannelId = twitchChannelPointsMessage.twitchChannelId,

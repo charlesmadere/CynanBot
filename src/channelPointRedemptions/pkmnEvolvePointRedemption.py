@@ -58,5 +58,5 @@ class PkmnEvolvePointRedemption(AbsChannelPointRedemption):
             )
             actionCompleted = True
 
-        self.__timber.log('PkmnEvolveRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
+        self.__timber.log('PkmnEvolveRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({actionCompleted=})')
         return actionCompleted

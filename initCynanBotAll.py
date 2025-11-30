@@ -2988,6 +2988,7 @@ recurringActionsWizardChatAction = RecurringActionsWizardChatAction(
 saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
     anivUserIdsRepository = anivUserIdsRepository,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+    timber = timber,
 )
 
 soundAlertChatAction = SoundAlertChatAction(
@@ -3116,7 +3117,8 @@ pkmnShinyPointRedemption: PkmnShinyPointRedemption | None = PkmnShinyPointRedemp
 soundAlertPointRedemption: SoundAlertPointRedemption | None = SoundAlertPointRedemption(
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-    streamAlertsManager = streamAlertsManager
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
 )
 
 superTriviaGamePointRedemption: SuperTriviaGamePointRedemption | None = SuperTriviaGamePointRedemption(

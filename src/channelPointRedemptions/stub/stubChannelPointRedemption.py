@@ -6,12 +6,10 @@ from ...twitch.configuration.twitchChannelPointsMessage import \
 
 class StubPointRedemption(AbsChannelPointRedemption):
 
-    def __init__(self):
-        pass
-
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> bool:
+        # this method is intentionally empty
         return False

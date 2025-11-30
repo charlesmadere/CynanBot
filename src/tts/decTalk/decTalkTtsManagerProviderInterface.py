@@ -9,7 +9,7 @@ class DecTalkTtsManagerProviderInterface(TtsManagerProviderInterface, ABC):
     @abstractmethod
     def constructNewInstance(
         self,
-        useSharedSoundPlayerManager: bool = True
+        useSharedSoundPlayerManager: bool = True,
     ) -> DecTalkTtsManagerInterface | None:
         pass
 

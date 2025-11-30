@@ -8,7 +8,7 @@ class SoundPlayerJsonMapper(SoundPlayerJsonMapperInterface):
 
     def parseSoundPlayerType(
         self,
-        soundPlayerType: str | Any | None
+        soundPlayerType: str | Any | None,
     ) -> SoundPlayerType:
         if not isinstance(soundPlayerType, str):
             raise TypeError(f'soundPlayerType argument is malformed: \"{soundPlayerType}\"')

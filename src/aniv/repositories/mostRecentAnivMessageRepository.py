@@ -63,7 +63,5 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
                 message = cleanedMessage,
                 whichAnivUser = whichAnivUser,
             )
-            self.__timber.log('MostRecentAnivMessageRepository', f'Updated most recent aniv message ({twitchChannelId=}) ({whichAnivUser=})')
         else:
             self.__cache[twitchChannelId].pop(whichAnivUser, None)
-            self.__timber.log('MostRecentAnivMessageRepository', f'Removed most recent aniv message ({twitchChannelId=}) ({whichAnivUser=})')

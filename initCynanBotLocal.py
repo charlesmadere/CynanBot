@@ -2218,13 +2218,14 @@ persistAllUsersChatAction = PersistAllUsersChatAction(
 saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
     anivUserIdsRepository = anivUserIdsRepository,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+    timber = timber,
 )
 
 soundAlertChatAction = SoundAlertChatAction(
     accessLevelCheckingHelper = accessLevelCheckingHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-    timber = timber
+    timber = timber,
 )
 
 supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
@@ -2321,7 +2322,8 @@ if soundPlayerManagerProvider is not None and soundPlayerRandomizerHelper is not
     soundAlertPointRedemption = SoundAlertPointRedemption(
         soundPlayerManagerProvider = soundPlayerManagerProvider,
         soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-        streamAlertsManager = streamAlertsManager
+        streamAlertsManager = streamAlertsManager,
+        timber = timber,
     )
 
 

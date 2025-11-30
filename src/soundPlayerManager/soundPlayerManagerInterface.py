@@ -15,7 +15,7 @@ class SoundPlayerManagerInterface(ABC):
     @abstractmethod
     async def playPlaylist(
         self,
-        playlist: SoundPlayerPlaylist
+        playlist: SoundPlayerPlaylist,
     ) -> bool:
         pass
 
@@ -23,7 +23,7 @@ class SoundPlayerManagerInterface(ABC):
     async def playSoundAlert(
         self,
         alert: SoundAlert,
-        volume: int | None = None
+        volume: int | None = None,
     ) -> bool:
         pass
 
@@ -31,7 +31,7 @@ class SoundPlayerManagerInterface(ABC):
     async def playSoundFile(
         self,
         filePath: str | None,
-        volume: int | None = None
+        volume: int | None = None,
     ) -> bool:
         pass
 
@@ -39,7 +39,7 @@ class SoundPlayerManagerInterface(ABC):
     async def playSoundFiles(
         self,
         filePaths: Collection[str],
-        volume: int | None = None
+        volume: int | None = None,
     ) -> bool:
         pass
 

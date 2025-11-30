@@ -28,7 +28,7 @@ class GoogleTtsManagerProvider(GoogleTtsManagerProviderInterface):
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
@@ -63,7 +63,7 @@ class GoogleTtsManagerProvider(GoogleTtsManagerProviderInterface):
 
     def constructNewInstance(
         self,
-        useSharedSoundPlayerManager: bool = True
+        useSharedSoundPlayerManager: bool = True,
     ) -> GoogleTtsManagerInterface | None:
         if not utils.isValidBool(useSharedSoundPlayerManager):
             raise TypeError(f'useSharedSoundPlayerManager argument is malformed: \"{useSharedSoundPlayerManager}\"')
@@ -84,7 +84,7 @@ class GoogleTtsManagerProvider(GoogleTtsManagerProviderInterface):
             soundPlayerManager = soundPlayerManager,
             timber = self.__timber,
             ttsCommandBuilder = self.__ttsCommandBuilder,
-            ttsSettingsRepository = self.__ttsSettingsRepository
+            ttsSettingsRepository = self.__ttsSettingsRepository,
         )
 
     def getSharedInstance(self) -> GoogleTtsManagerInterface | None:

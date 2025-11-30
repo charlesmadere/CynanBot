@@ -1885,6 +1885,7 @@ if mostRecentAnivMessageRepository is not None:
     saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
         anivUserIdsRepository = anivUserIdsRepository,
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+        timber = timber,
     )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
@@ -1904,7 +1905,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     ttsChatterChatAction = None,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
-    voicemailChatAction = None
+    voicemailChatAction = None,
 )
 
 
