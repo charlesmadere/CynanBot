@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Collection
+from typing import Collection, Final
 
 from frozenlist import FrozenList
 
@@ -20,7 +20,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        remodTimeBuffer: timedelta = timedelta(seconds = 3)
+        remodTimeBuffer: timedelta = timedelta(seconds = 3),
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -31,10 +31,10 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
         elif not isinstance(remodTimeBuffer, timedelta):
             raise TypeError(f'remodTimeBuffer argument is malformed: \"{remodTimeBuffer}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__remodTimeBuffer: timedelta = remodTimeBuffer
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__remodTimeBuffer: Final[timedelta] = remodTimeBuffer
 
         self.__isDatabaseReady: bool = False
 
@@ -49,7 +49,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
                 VALUES ($1, $2, $3)
                 ON CONFLICT (broadcasteruserid, userid) DO UPDATE SET remoddatetime = EXCLUDED.remoddatetime
             ''',
-            data.broadcasterUserId, data.remodDateTime.isoformat(), data.userId
+            data.broadcasterUserId, data.remodDateTime.isoformat(), data.userId,
         )
 
         await connection.close()
@@ -67,7 +67,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
                 DELETE FROM twitchtimeoutremodactions
                 WHERE broadcasteruserid = $1 AND userid = $2
             ''',
-            broadcasterUserId, userId
+            broadcasterUserId, userId,
         )
 
         await connection.close()
@@ -80,7 +80,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
                 SELECT twitchtimeoutremodactions.broadcasteruserid, twitchtimeoutremodactions.remoddatetime, twitchtimeoutremodactions.userid, userids.username FROM twitchtimeoutremodactions
                 INNER JOIN userids ON twitchtimeoutremodactions.broadcasteruserid = userids.userid
                 ORDER BY twitchtimeoutremodactions.remoddatetime ASC
-            '''
+            ''',
         )
 
         await connection.close()
@@ -98,7 +98,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
                     remodDateTime = remodDateTime,
                     broadcasterUserId = record[0],
                     broadcasterUserName = record[3],
-                    userId = record[2]
+                    userId = record[2],
                 ))
 
         data.freeze()
@@ -125,7 +125,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
                             userid text NOT NULL,
                             PRIMARY KEY (broadcasteruserid, userid)
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -137,7 +137,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
                             userid TEXT NOT NULL,
                             PRIMARY KEY (broadcasteruserid, userid)
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:
