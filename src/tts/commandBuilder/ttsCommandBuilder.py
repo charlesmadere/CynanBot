@@ -9,13 +9,15 @@ from ...misc import utils as utils
 class TtsCommandBuilder(TtsCommandBuilderInterface):
 
     async def buildDonationPrefix(self, event: TtsEvent | None) -> str | None:
-        if event is not None and not isinstance(event, TtsEvent):
-            raise TypeError(f'event argument is malformed: \"{event}\"')
-
         if event is None:
             return None
+        elif not isinstance(event, TtsEvent):
+            raise TypeError(f'event argument is malformed: \"{event}\"')
 
-        donationPrefix = await self.__processDonationPrefix(event)
+        donationPrefix = await self.__processDonationPrefix(
+            event = event,
+        )
+
         if not utils.isValidStr(donationPrefix):
             return None
 
@@ -28,10 +30,8 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
     ) -> str | None:
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
-        elif not isinstance(donation, TtsCheerDonation):
+        elif not isinstance(donation, TtsCheerDonation) or donation.donationType is not TtsDonationType.CHEER:
             raise TypeError(f'donation argument is malformed: \"{donation}\"')
-        elif donation.donationType is not TtsDonationType.CHEER:
-            raise TypeError(f'TtsDonationType is not {TtsDonationType.CHEER}: \"{donation.donationType}\" ({donation=})')
 
         return f'{event.userName} cheered {donation.bits}!'
 
@@ -66,10 +66,8 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
     ) -> str:
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
-        elif not isinstance(donation, TtsSubscriptionDonation):
+        elif not isinstance(donation, TtsSubscriptionDonation) or donation.donationType is not TtsDonationType.SUBSCRIPTION:
             raise TypeError(f'donation argument is malformed: \"{donation}\"')
-        elif donation.donationType is not TtsDonationType.SUBSCRIPTION:
-            raise TypeError(f'TtsDonationType is not {TtsDonationType.SUBSCRIPTION}: \"{donation.donationType}\" ({donation=})')
 
         numberOfGiftedSubs = donation.numberOfGiftedSubs
 
@@ -81,9 +79,11 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
             else:
                 subsPlurality = 'subs'
 
+            numberOfGiftedSubsStr = donation.numberOfGiftedSubsStr
+
             if donation.isAnonymous:
-                return f'anonymous gifted {numberOfGiftedSubs} {subsPlurality}!'
+                return f'anonymous gifted {numberOfGiftedSubsStr} {subsPlurality}!'
             else:
-                return f'{event.userName} gifted {numberOfGiftedSubs} {subsPlurality}!'
+                return f'{event.userName} gifted {numberOfGiftedSubsStr} {subsPlurality}!'
         else:
             return f'{event.userName} subscribed!'
