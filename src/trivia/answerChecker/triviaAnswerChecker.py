@@ -707,7 +707,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'thomas'
         if word == 'toby':
             yield 'tobias'
-        if word in { 'anthony', 'toni' }:
+        if word in { 'anthony', 'antony', 'toni' }:
             yield 'tony'
         if word == 'ulie':
             yield 'ulysses'
