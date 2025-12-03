@@ -62,7 +62,7 @@ class LanguageEntry(Enum):
 
     @property
     def commandNames(self) -> FrozenList[str]:
-        commandNames: list[str]
+        commandNames: list[str] = list()
 
         match self:
             case LanguageEntry.AFRIKAANS:
@@ -219,14 +219,13 @@ class LanguageEntry(Enum):
                 commandNames = [ 'ur', 'urd', 'urdu', 'اُردُو' ]
 
             case LanguageEntry.VIETNAMESE:
-                commandNames = [ 'vi', 'vn', 'vietnamese', 'vietnam', 'viet']
+                commandNames = [ 'vi', 'vn', 'vietnamese', 'vietnam', 'viet' ]
 
             case _:
                 raise RuntimeError(f'Unknown LanguageEntry value: \"{self}\"')
 
         frozenCommandNames: FrozenList[str] = FrozenList(commandNames)
         frozenCommandNames.freeze()
-
         return frozenCommandNames
 
     @property

@@ -703,7 +703,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'theresa'
         if word in { 'tim', 'timmy', 'timmothy' }:
             yield 'timothy'
-        if word in { 'thom', 'tom', 'tomas', 'tomm', 'tommy', 'tony' }:
+        if word in { 'thom', 'tom', 'tomas', 'tomm', 'tomy', 'tommy', 'tony' }:
             yield 'thomas'
         if word == 'toby':
             yield 'tobias'
