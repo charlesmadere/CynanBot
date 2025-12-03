@@ -740,6 +740,16 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'zeke':
             yield 'ezekiel'
 
+        # important people of history
+        if word in { 'gandi', 'gandy' }:
+            yield 'gandhi'
+        if word in { 'gangis', 'gengis', 'gingis' }:
+            yield 'genghis khan'
+        if word in { 'sokrates', 'socratese' }:
+            yield 'socrates'
+        if word in { 'tut', 'tutankhamen', 'tutenkhamen' }:
+            yield 'tutankhamun'
+
         # geographical features/streets
         if word in { 'aly', 'ally' }:
             yield 'alley'
@@ -1089,7 +1099,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'google'
         if word == 'gps':
             yield 'global positioning system'
-        if word == 'gpu':
+        if word in { 'gpu', 'graphic', 'graphical' }:
+            yield 'graphics card'
             yield 'graphics processing unit'
         if word == 'hd':
             yield 'high definition'
@@ -1132,6 +1143,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'sd':
             yield 'standard definition'
         if word == 'sec':
+            yield 'secure'
             yield 'security'
         if word == 'sftp':
             yield 'secure file transfer protocol'
@@ -1140,8 +1152,17 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'scale independent pixels'
         if word == 'ssd':
             yield 'solid state drive'
+        if word in { 'ssl', 'tls' }:
+            yield 'secure sockets layer'
+            yield 'transport layer security'
+        if word == 'ssh':
+            yield 'secure shell'
         if word == 'txt':
             yield 'text'
+        if word in { 'gui', 'ui' }:
+            yield 'graphical interface'
+            yield 'graphical user interface'
+            yield 'user interface'
         if word == 'uri':
             yield 'uniform resource identifier'
         if word == 'url':
@@ -1532,6 +1553,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'generator'
         if word == 'grey':
             yield 'gray'
+        if word in { 'kan', 'kahn' }:
+            yield 'khan'
         if word == 'lang':
             yield 'language'
         if word == 'mom':
