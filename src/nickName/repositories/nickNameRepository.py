@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Final
 
 from lru import LRU
@@ -167,6 +169,8 @@ class NickNameRepository(NickNameRepositoryInterface):
             raise TypeError(f'nickName argument is malformed: \"{nickName}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        nickName = utils.cleanStr(nickName)
 
         if not utils.isValidStr(nickName):
             return await self.remove(

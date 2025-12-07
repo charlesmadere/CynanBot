@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.tts.commandBuilder.ttsCommandBuilder import TtsCommandBuilder
@@ -12,7 +14,9 @@ from src.twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier
 
 class TestTtsCommandBuilder:
 
-    commandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()
+    commandBuilder: Final[TtsCommandBuilderInterface] = TtsCommandBuilder(
+        nickNameHelper = None,
+    )
 
     @pytest.mark.asyncio
     async def test_buildDonationPrefix_withCheerDonation(self):

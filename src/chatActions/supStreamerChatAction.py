@@ -1,10 +1,12 @@
 import random
 from datetime import datetime, timedelta
+from typing import Final
 
 from .absChatAction import AbsChatAction
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
+from ..nickName.helpers.nickNameHelperInterface import NickNameHelperInterface
 from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..supStreamer.supStreamerHelperInterface import SupStreamerHelperInterface
@@ -22,6 +24,7 @@ class SupStreamerChatAction(AbsChatAction):
 
     def __init__(
         self,
+        nickNameHelper: NickNameHelperInterface | None,
         streamAlertsManager: StreamAlertsManagerInterface,
         supStreamerHelper: SupStreamerHelperInterface,
         supStreamerRepository: SupStreamerRepositoryInterface,
@@ -31,7 +34,9 @@ class SupStreamerChatAction(AbsChatAction):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         cooldown: timedelta = timedelta(hours = 6),
     ):
-        if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if nickNameHelper is not None and not isinstance(nickNameHelper, NickNameHelperInterface):
+            raise TypeError(f'nickNameHelper argument is malformed: \"{nickNameHelper}\"')
+        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(supStreamerHelper, SupStreamerHelperInterface):
             raise TypeError(f'supStreamerHelper argument is malformed: \"{supStreamerHelper}\"')
@@ -48,14 +53,15 @@ class SupStreamerChatAction(AbsChatAction):
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
-        self.__supStreamerHelper: SupStreamerHelperInterface = supStreamerHelper
-        self.__supStreamerRepository: SupStreamerRepositoryInterface = supStreamerRepository
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = twitchFollowingStatusRepository
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__cooldown: timedelta = cooldown
+        self.__nickNameHelper: Final[NickNameHelperInterface | None] = nickNameHelper
+        self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
+        self.__supStreamerHelper: Final[SupStreamerHelperInterface] = supStreamerHelper
+        self.__supStreamerRepository: Final[SupStreamerRepositoryInterface] = supStreamerRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface] = twitchFollowingStatusRepository
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__cooldown: Final[timedelta] = cooldown
 
     async def handleChat(
         self,
@@ -120,6 +126,8 @@ class SupStreamerChatAction(AbsChatAction):
             twitchChannelId = await message.getTwitchChannelId(),
         )
 
+        authorName = await self.__determineAuthorName(message)
+
         self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.handle}')
 
         providerOverridableStatus: TtsProviderOverridableStatus
@@ -134,7 +142,7 @@ class SupStreamerChatAction(AbsChatAction):
             twitchChannel = user.handle,
             twitchChannelId = await message.getTwitchChannelId(),
             ttsEvent = TtsEvent(
-                message = f'{message.getAuthorName()} {reply}',
+                message = f'{authorName} {reply}',
                 twitchChannel = user.handle,
                 twitchChannelId = await message.getTwitchChannelId(),
                 userId = message.getAuthorId(),
@@ -147,6 +155,23 @@ class SupStreamerChatAction(AbsChatAction):
         ))
 
         return True
+
+    async def __determineAuthorName(self, message: TwitchMessage) -> str:
+        if not isinstance(message, TwitchMessage):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+
+        if self.__nickNameHelper is None:
+            return message.getAuthorName()
+
+        nickNameData = await self.__nickNameHelper.get(
+            chatterUserId = message.getAuthorId(),
+            twitchChannelId = await message.getTwitchChannelId(),
+        )
+
+        if nickNameData is not None and utils.isValidStr(nickNameData.nickName):
+            return nickNameData.nickName
+        else:
+            return message.getAuthorName()
 
     async def __isFollowing(self, message: TwitchMessage) -> bool:
         if not isinstance(message, TwitchMessage):
