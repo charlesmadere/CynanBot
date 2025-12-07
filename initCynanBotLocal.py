@@ -1173,7 +1173,9 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
     ttsJsonMapper = ttsJsonMapper,
 )
 
-ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()
+ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder(
+    nickNameHelper = nickNameHelper,
+)
 
 ttsDirectoryProvider: TtsDirectoryProviderInterface = TtsDirectoryProvider()
 
