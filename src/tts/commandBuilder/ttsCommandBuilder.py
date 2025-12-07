@@ -1,12 +1,24 @@
+from typing import Final
+
 from .ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..models.ttsCheerDonation import TtsCheerDonation
 from ..models.ttsDonationType import TtsDonationType
 from ..models.ttsEvent import TtsEvent
 from ..models.ttsSubscriptionDonation import TtsSubscriptionDonation
 from ...misc import utils as utils
+from ...nickName.helpers.nickNameHelperInterface import NickNameHelperInterface
 
 
 class TtsCommandBuilder(TtsCommandBuilderInterface):
+
+    def __init__(
+        self,
+        nickNameHelper: NickNameHelperInterface | None,
+    ):
+        if nickNameHelper is not None and not isinstance(nickNameHelper, NickNameHelperInterface):
+            raise TypeError(f'nickNameHelper argument is malformed: \"{nickNameHelper}\"')
+
+        self.__nickNameHelper: Final[NickNameHelperInterface | None] = nickNameHelper
 
     async def buildDonationPrefix(self, event: TtsEvent | None) -> str | None:
         if event is None:
@@ -23,6 +35,23 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
 
         return donationPrefix
 
+    async def __fetchEventUserName(
+        self,
+        event: TtsEvent,
+    ) -> str:
+        if self.__nickNameHelper is None:
+            return event.userName
+
+        nickNameData = await self.__nickNameHelper.get(
+            chatterUserId = event.userId,
+            twitchChannelId = event.twitchChannelId,
+        )
+
+        if nickNameData is not None and utils.isValidStr(nickNameData.nickName):
+            return nickNameData.nickName
+        else:
+            return event.userName
+
     async def __processCheerDonationPrefix(
         self,
         event: TtsEvent,
@@ -33,7 +62,11 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         elif not isinstance(donation, TtsCheerDonation) or donation.donationType is not TtsDonationType.CHEER:
             raise TypeError(f'donation argument is malformed: \"{donation}\"')
 
-        return f'{event.userName} cheered {donation.bits}!'
+        eventUserName = await self.__fetchEventUserName(
+            event = event,
+        )
+
+        return f'{eventUserName} cheered {donation.bits}!'
 
     async def __processDonationPrefix(self, event: TtsEvent) -> str | None:
         if not isinstance(event, TtsEvent):
@@ -44,7 +77,7 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         if donation is None:
             return None
 
-        if isinstance(donation, TtsCheerDonation):
+        elif isinstance(donation, TtsCheerDonation):
             return await self.__processCheerDonationPrefix(
                 event = event,
                 donation = donation,
@@ -69,6 +102,10 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         elif not isinstance(donation, TtsSubscriptionDonation) or donation.donationType is not TtsDonationType.SUBSCRIPTION:
             raise TypeError(f'donation argument is malformed: \"{donation}\"')
 
+        eventUserName = await self.__fetchEventUserName(
+            event = event,
+        )
+
         numberOfGiftedSubs = donation.numberOfGiftedSubs
 
         if numberOfGiftedSubs is not None and numberOfGiftedSubs >= 1:
@@ -84,6 +121,6 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
             if donation.isAnonymous:
                 return f'anonymous gifted {numberOfGiftedSubsStr} {subsPlurality}!'
             else:
-                return f'{event.userName} gifted {numberOfGiftedSubsStr} {subsPlurality}!'
+                return f'{eventUserName} gifted {numberOfGiftedSubsStr} {subsPlurality}!'
         else:
-            return f'{event.userName} subscribed!'
+            return f'{eventUserName} subscribed!'

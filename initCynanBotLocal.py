@@ -258,6 +258,12 @@ from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvide
 from src.network.networkClientProvider import NetworkClientProvider
 from src.network.networkJsonMapper import NetworkJsonMapper
 from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
+from src.nickName.helpers.nickNameHelper import NickNameHelper
+from src.nickName.helpers.nickNameHelperInterface import NickNameHelperInterface
+from src.nickName.repositories.nickNameRepository import NickNameRepository
+from src.nickName.repositories.nickNameRepositoryInterface import NickNameRepositoryInterface
+from src.nickName.settings.nickNameSettings import NickNameSettings
+from src.nickName.settings.nickNameSettingsInterface import NickNameSettingsInterface
 from src.pixelsDice.configuration.pixelsDiceEventHandler import PixelsDiceEventHandler
 from src.pixelsDice.listeners.pixelsDiceEventListener import PixelsDiceEventListener
 from src.pixelsDice.machine.pixelsDiceMachine import PixelsDiceMachine
@@ -1058,6 +1064,28 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = SoundPlayerMan
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
+)
+
+
+######################################
+## Nick Name initialization section ##
+######################################
+
+nickNameSettings: NickNameSettingsInterface = NickNameSettings(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/nickNameSettings.json',
+    ),
+)
+
+nickNameRepository: NickNameRepositoryInterface = NickNameRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+)
+
+nickNameHelper: NickNameHelperInterface = NickNameHelper(
+    nickNameRepository = nickNameRepository,
+    nickNameSettings = nickNameSettings,
 )
 
 
@@ -2228,22 +2256,28 @@ soundAlertChatAction = SoundAlertChatAction(
     timber = timber,
 )
 
+
+#########################################
+## Sup Streamer initialization section ##
+#########################################
+
 supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 supStreamerHelper: SupStreamerHelperInterface = SupStreamerHelper()
 
 supStreamerChatAction: SupStreamerChatAction = SupStreamerChatAction(
+    nickNameHelper = nickNameHelper,
     streamAlertsManager = streamAlertsManager,
     supStreamerHelper = supStreamerHelper,
     supStreamerRepository = supStreamerRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchTokensRepository = twitchTokensRepository
+    twitchTokensRepository = twitchTokensRepository,
 )
 
 ttsChatterRepository: TtsChatterRepositoryInterface = TtsChatterRepository(
