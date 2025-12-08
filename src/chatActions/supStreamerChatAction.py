@@ -24,7 +24,7 @@ class SupStreamerChatAction(AbsChatAction):
 
     def __init__(
         self,
-        nickNameHelper: NickNameHelperInterface | None,
+        nickNameHelper: NickNameHelperInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         supStreamerHelper: SupStreamerHelperInterface,
         supStreamerRepository: SupStreamerRepositoryInterface,
@@ -34,7 +34,7 @@ class SupStreamerChatAction(AbsChatAction):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         cooldown: timedelta = timedelta(hours = 6),
     ):
-        if nickNameHelper is not None and not isinstance(nickNameHelper, NickNameHelperInterface):
+        if not isinstance(nickNameHelper, NickNameHelperInterface):
             raise TypeError(f'nickNameHelper argument is malformed: \"{nickNameHelper}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
@@ -53,7 +53,7 @@ class SupStreamerChatAction(AbsChatAction):
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__nickNameHelper: Final[NickNameHelperInterface | None] = nickNameHelper
+        self.__nickNameHelper: Final[NickNameHelperInterface] = nickNameHelper
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__supStreamerHelper: Final[SupStreamerHelperInterface] = supStreamerHelper
         self.__supStreamerRepository: Final[SupStreamerRepositoryInterface] = supStreamerRepository
@@ -159,9 +159,6 @@ class SupStreamerChatAction(AbsChatAction):
     async def __determineAuthorName(self, message: TwitchMessage) -> str:
         if not isinstance(message, TwitchMessage):
             raise TypeError(f'message argument is malformed: \"{message}\"')
-
-        if self.__nickNameHelper is None:
-            return message.getAuthorName()
 
         nickNameData = await self.__nickNameHelper.get(
             chatterUserId = message.getAuthorId(),

@@ -13,12 +13,12 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
 
     def __init__(
         self,
-        nickNameHelper: NickNameHelperInterface | None,
+        nickNameHelper: NickNameHelperInterface,
     ):
-        if nickNameHelper is not None and not isinstance(nickNameHelper, NickNameHelperInterface):
+        if not isinstance(nickNameHelper, NickNameHelperInterface):
             raise TypeError(f'nickNameHelper argument is malformed: \"{nickNameHelper}\"')
 
-        self.__nickNameHelper: Final[NickNameHelperInterface | None] = nickNameHelper
+        self.__nickNameHelper: Final[NickNameHelperInterface] = nickNameHelper
 
     async def buildDonationPrefix(self, event: TtsEvent | None) -> str | None:
         if event is None:
@@ -39,9 +39,6 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         self,
         event: TtsEvent,
     ) -> str:
-        if self.__nickNameHelper is None:
-            return event.userName
-
         nickNameData = await self.__nickNameHelper.get(
             chatterUserId = event.userId,
             twitchChannelId = event.twitchChannelId,

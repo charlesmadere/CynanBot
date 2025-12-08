@@ -2,6 +2,8 @@ from typing import Final
 
 import pytest
 
+from src.nickName.helpers.nickNameHelperInterface import NickNameHelperInterface
+from src.nickName.helpers.stub.stubNickNameHelper import StubNickNameHelper
 from src.tts.commandBuilder.ttsCommandBuilder import TtsCommandBuilder
 from src.tts.commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from src.tts.models.ttsCheerDonation import TtsCheerDonation
@@ -14,8 +16,10 @@ from src.twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier
 
 class TestTtsCommandBuilder:
 
+    nickNameHelper: Final[NickNameHelperInterface] = StubNickNameHelper()
+
     commandBuilder: Final[TtsCommandBuilderInterface] = TtsCommandBuilder(
-        nickNameHelper = None,
+        nickNameHelper = nickNameHelper,
     )
 
     @pytest.mark.asyncio
