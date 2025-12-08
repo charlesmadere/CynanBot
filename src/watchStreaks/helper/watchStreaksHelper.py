@@ -4,6 +4,7 @@ from .watchStreaksHelperInterface import WatchStreaksHelperInterface
 from ..models.watchStreakTtsAnnouncementResult import WatchStreakTtsAnnouncementResult
 from ..settings.watchStreakSettingsInterface import WatchStreakSettingsInterface
 from ...misc import utils as utils
+from ...nickName.helpers.nickNameHelperInterface import NickNameHelperInterface
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
@@ -16,20 +17,40 @@ class WatchStreaksHelper(WatchStreaksHelperInterface):
 
     def __init__(
         self,
+        nickNameHelper: NickNameHelperInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         watchStreakSettings: WatchStreakSettingsInterface,
     ):
-        if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if not isinstance(nickNameHelper, NickNameHelperInterface):
+            raise TypeError(f'nickNameHelper argument is malformed: \"{nickNameHelper}\"')
+        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(watchStreakSettings, WatchStreakSettingsInterface):
             raise TypeError(f'watchStreakSettings argument is malformed: \"{watchStreakSettings}\"')
 
+        self.__nickNameHelper: Final[NickNameHelperInterface] = nickNameHelper
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__watchStreakSettings: Final[WatchStreakSettingsInterface] = watchStreakSettings
+
+    async def __determineCallOutUserName(
+        self,
+        chatterUserId: str,
+        chatterUserName: str,
+        twitchChannelId: str,
+    ) -> str:
+        nickNameData = await self.__nickNameHelper.get(
+            chatterUserId = chatterUserId,
+            twitchChannelId = twitchChannelId,
+        )
+
+        if nickNameData is not None and utils.isValidStr(nickNameData.nickName):
+            return nickNameData.nickName
+        else:
+            return chatterUserName
 
     async def watchStreakTtsAnnounce(
         self,
@@ -57,6 +78,12 @@ class WatchStreaksHelper(WatchStreaksHelperInterface):
         elif watchStreak < await self.__watchStreakSettings.getMinimumWatchStreakForTts():
             return WatchStreakTtsAnnouncementResult.STREAK_TOO_SHORT
 
+        callOutUserName = await self.__determineCallOutUserName(
+            chatterUserId = chatterUserId,
+            chatterUserName = chatterUserName,
+            twitchChannelId = twitchChannelId,
+        )
+
         providerOverridableStatus: TtsProviderOverridableStatus
 
         if user.isChatterPreferredTtsEnabled:
@@ -69,7 +96,7 @@ class WatchStreaksHelper(WatchStreaksHelperInterface):
             twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
             ttsEvent = TtsEvent(
-                message = f'Thanks {chatterUserName} for the {watchStreak} watch streak!',
+                message = f'Thanks {callOutUserName} for the {watchStreak} watch streak!',
                 twitchChannel = user.handle,
                 twitchChannelId = twitchChannelId,
                 userId = chatterUserId,
@@ -81,5 +108,5 @@ class WatchStreaksHelper(WatchStreaksHelperInterface):
             ),
         ))
 
-        self.__timber.log('WatchStreaksHelper', f'Submitted watch streak announcement ({user=}) ({watchStreak=}) ({chatterUserId=}) ({chatterUserName=}) ({twitchChannelId=})')
-        return WatchStreakTtsAnnouncementResult.OK
+        self.__timber.log('WatchStreaksHelper', f'Submitted watch streak announcement ({user=}) ({watchStreak=}) ({chatterUserId=}) ({chatterUserName=}) ({twitchChannelId=}) ({callOutUserName=})')
+        return WatchStreakTtsAnnouncementResult.SUBMITTED_TTS_EVENT
