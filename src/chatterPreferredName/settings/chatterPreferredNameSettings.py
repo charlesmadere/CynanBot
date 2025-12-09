@@ -1,11 +1,11 @@
 from typing import Any, Final
 
-from .nickNameSettingsInterface import NickNameSettingsInterface
+from .chatterPreferredNameSettingsInterface import ChatterPreferredNameSettingsInterface
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 
 
-class NickNameSettings(NickNameSettingsInterface):
+class ChatterPreferredNameSettings(ChatterPreferredNameSettingsInterface):
 
     def __init__(self, settingsJsonReader: JsonReaderInterface):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
@@ -34,7 +34,7 @@ class NickNameSettings(NickNameSettingsInterface):
             jsonContents = dict()
 
         if not isinstance(jsonContents, dict):
-            raise IOError(f'Error reading from Nick Name settings file: {self.__settingsJsonReader}')
+            raise IOError(f'Error reading from Chatter Preferred Name settings file: {self.__settingsJsonReader}')
 
         self.__cache = jsonContents
         return jsonContents

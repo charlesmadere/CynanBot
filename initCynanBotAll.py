@@ -79,6 +79,14 @@ from src.chatterInventory.repositories.chatterInventoryRepositoryInterface impor
 from src.chatterInventory.settings.chatterInventorySettings import ChatterInventorySettings
 from src.chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from src.chatterInventory.useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
+from src.chatterPreferredName.helpers.chatterPreferredNameHelper import ChatterPreferredNameHelper
+from src.chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
+from src.chatterPreferredName.repositories.chatterPreferredNameRepository import ChatterPreferredNameRepository
+from src.chatterPreferredName.repositories.chatterPreferredNameRepositoryInterface import \
+    ChatterPreferredNameRepositoryInterface
+from src.chatterPreferredName.settings.chatterPreferredNameSettings import ChatterPreferredNameSettings
+from src.chatterPreferredName.settings.chatterPreferredNameSettingsInterface import \
+    ChatterPreferredNameSettingsInterface
 from src.chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
 from src.chatterPreferredTts.helper.chatterPreferredTtsHelper import ChatterPreferredTtsHelper
 from src.chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
@@ -295,12 +303,6 @@ from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvide
 from src.network.networkClientProvider import NetworkClientProvider
 from src.network.networkJsonMapper import NetworkJsonMapper
 from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
-from src.nickName.helpers.nickNameHelper import NickNameHelper
-from src.nickName.helpers.nickNameHelperInterface import NickNameHelperInterface
-from src.nickName.repositories.nickNameRepository import NickNameRepository
-from src.nickName.repositories.nickNameRepositoryInterface import NickNameRepositoryInterface
-from src.nickName.settings.nickNameSettings import NickNameSettings
-from src.nickName.settings.nickNameSettingsInterface import NickNameSettingsInterface
 from src.openWeather.apiService.openWeatherApiService import OpenWeatherApiService
 from src.openWeather.apiService.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
 from src.openWeather.jsonMapper.openWeatherJsonMapper import OpenWeatherJsonMapper
@@ -1271,25 +1273,25 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = SoundPlayerMan
 )
 
 
-######################################
-## Nick Name initialization section ##
-######################################
+###################################################
+## Chatter Preferred Name initialization section ##
+###################################################
 
-nickNameSettings: NickNameSettingsInterface = NickNameSettings(
+chatterPreferredNameSettings: ChatterPreferredNameSettingsInterface = ChatterPreferredNameSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/nickNameSettings.json',
+        fileName = '../config/chatterPreferredNameSettings.json',
     ),
 )
 
-nickNameRepository: NickNameRepositoryInterface = NickNameRepository(
+chatterPreferredNameRepository: ChatterPreferredNameRepositoryInterface = ChatterPreferredNameRepository(
     backingDatabase = backingDatabase,
     timber = timber,
 )
 
-nickNameHelper: NickNameHelperInterface = NickNameHelper(
-    nickNameRepository = nickNameRepository,
-    nickNameSettings = nickNameSettings,
+chatterPreferredNameHelper: ChatterPreferredNameHelperInterface = ChatterPreferredNameHelper(
+    chatterPreferredNameRepository = chatterPreferredNameRepository,
+    chatterPreferredNameSettings = chatterPreferredNameSettings,
 )
 
 
@@ -1378,7 +1380,7 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
 )
 
 ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder(
-    nickNameHelper = nickNameHelper,
+    chatterPreferredNameHelper = chatterPreferredNameHelper,
 )
 
 ttsDirectoryProvider: TtsDirectoryProviderInterface = TtsDirectoryProvider()
@@ -3042,7 +3044,7 @@ supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
 supStreamerHelper: SupStreamerHelperInterface = SupStreamerHelper()
 
 supStreamerChatAction: SupStreamerChatAction = SupStreamerChatAction(
-    nickNameHelper = nickNameHelper,
+    chatterPreferredNameHelper = chatterPreferredNameHelper,
     streamAlertsManager = streamAlertsManager,
     supStreamerHelper = supStreamerHelper,
     supStreamerRepository = supStreamerRepository,
@@ -3054,14 +3056,14 @@ supStreamerChatAction: SupStreamerChatAction = SupStreamerChatAction(
 
 ttsChatterRepository: TtsChatterRepositoryInterface = TtsChatterRepository(
     backingDatabase = backingDatabase,
-    timber = timber
+    timber = timber,
 )
 
 ttsChatterSettingsRepository: TtsChatterSettingsRepositoryInterface = TtsChatterSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/ttsChatterSettingsRepository.json'
-    )
+        fileName = '../config/ttsChatterSettingsRepository.json',
+    ),
 )
 
 ttsChatterChatAction = TtsChatterChatAction(

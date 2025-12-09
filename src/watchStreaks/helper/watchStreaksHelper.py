@@ -3,8 +3,8 @@ from typing import Final
 from .watchStreaksHelperInterface import WatchStreaksHelperInterface
 from ..models.watchStreakTtsAnnouncementResult import WatchStreakTtsAnnouncementResult
 from ..settings.watchStreakSettingsInterface import WatchStreakSettingsInterface
+from ...chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
 from ...misc import utils as utils
-from ...nickName.helpers.nickNameHelperInterface import NickNameHelperInterface
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
@@ -17,13 +17,13 @@ class WatchStreaksHelper(WatchStreaksHelperInterface):
 
     def __init__(
         self,
-        nickNameHelper: NickNameHelperInterface,
+        chatterPreferredNameHelper: ChatterPreferredNameHelperInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         watchStreakSettings: WatchStreakSettingsInterface,
     ):
-        if not isinstance(nickNameHelper, NickNameHelperInterface):
-            raise TypeError(f'nickNameHelper argument is malformed: \"{nickNameHelper}\"')
+        if not isinstance(chatterPreferredNameHelper, ChatterPreferredNameHelperInterface):
+            raise TypeError(f'chatterPreferredNameHelper argument is malformed: \"{chatterPreferredNameHelper}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -31,7 +31,7 @@ class WatchStreaksHelper(WatchStreaksHelperInterface):
         elif not isinstance(watchStreakSettings, WatchStreakSettingsInterface):
             raise TypeError(f'watchStreakSettings argument is malformed: \"{watchStreakSettings}\"')
 
-        self.__nickNameHelper: Final[NickNameHelperInterface] = nickNameHelper
+        self.__chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = chatterPreferredNameHelper
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__watchStreakSettings: Final[WatchStreakSettingsInterface] = watchStreakSettings
@@ -42,15 +42,15 @@ class WatchStreaksHelper(WatchStreaksHelperInterface):
         chatterUserName: str,
         twitchChannelId: str,
     ) -> str:
-        nickNameData = await self.__nickNameHelper.get(
+        preferredNameData = await self.__chatterPreferredNameHelper.get(
             chatterUserId = chatterUserId,
             twitchChannelId = twitchChannelId,
         )
 
-        if nickNameData is not None and utils.isValidStr(nickNameData.nickName):
-            return nickNameData.nickName
-        else:
+        if preferredNameData is None:
             return chatterUserName
+        else:
+            return preferredNameData.preferredName
 
     async def watchStreakTtsAnnounce(
         self,
