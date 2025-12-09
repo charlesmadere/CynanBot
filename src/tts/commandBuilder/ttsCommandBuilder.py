@@ -5,20 +5,20 @@ from ..models.ttsCheerDonation import TtsCheerDonation
 from ..models.ttsDonationType import TtsDonationType
 from ..models.ttsEvent import TtsEvent
 from ..models.ttsSubscriptionDonation import TtsSubscriptionDonation
+from ...chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
 from ...misc import utils as utils
-from ...nickName.helpers.nickNameHelperInterface import NickNameHelperInterface
 
 
 class TtsCommandBuilder(TtsCommandBuilderInterface):
 
     def __init__(
         self,
-        nickNameHelper: NickNameHelperInterface,
+        chatterPreferredNameHelper: ChatterPreferredNameHelperInterface,
     ):
-        if not isinstance(nickNameHelper, NickNameHelperInterface):
-            raise TypeError(f'nickNameHelper argument is malformed: \"{nickNameHelper}\"')
+        if not isinstance(chatterPreferredNameHelper, ChatterPreferredNameHelperInterface):
+            raise TypeError(f'chatterPreferredNameHelper argument is malformed: \"{chatterPreferredNameHelper}\"')
 
-        self.__nickNameHelper: Final[NickNameHelperInterface] = nickNameHelper
+        self.__chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = chatterPreferredNameHelper
 
     async def buildDonationPrefix(self, event: TtsEvent | None) -> str | None:
         if event is None:
@@ -39,15 +39,15 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         self,
         event: TtsEvent,
     ) -> str:
-        nickNameData = await self.__nickNameHelper.get(
+        preferredNameData = await self.__chatterPreferredNameHelper.get(
             chatterUserId = event.userId,
             twitchChannelId = event.twitchChannelId,
         )
 
-        if nickNameData is not None and utils.isValidStr(nickNameData.nickName):
-            return nickNameData.nickName
-        else:
+        if preferredNameData is None:
             return event.userName
+        else:
+            return preferredNameData.preferredName
 
     async def __processCheerDonationPrefix(
         self,

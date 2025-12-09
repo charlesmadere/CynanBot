@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
 
-from ..models.nickNameData import NickNameData
+from ..models.chatterPreferredNameData import ChatterPreferredNameData
 
 
-class NickNameHelperInterface(ABC):
+class ChatterPreferredNameHelperInterface(ABC):
 
     @abstractmethod
     async def get(
         self,
         chatterUserId: str,
         twitchChannelId: str,
-    ) -> NickNameData | None:
+    ) -> ChatterPreferredNameData | None:
         pass

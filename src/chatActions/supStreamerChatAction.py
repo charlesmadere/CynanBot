@@ -3,10 +3,10 @@ from datetime import datetime, timedelta
 from typing import Final
 
 from .absChatAction import AbsChatAction
+from ..chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
-from ..nickName.helpers.nickNameHelperInterface import NickNameHelperInterface
 from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..supStreamer.supStreamerHelperInterface import SupStreamerHelperInterface
@@ -24,7 +24,7 @@ class SupStreamerChatAction(AbsChatAction):
 
     def __init__(
         self,
-        nickNameHelper: NickNameHelperInterface,
+        chatterPreferredNameHelper: ChatterPreferredNameHelperInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         supStreamerHelper: SupStreamerHelperInterface,
         supStreamerRepository: SupStreamerRepositoryInterface,
@@ -34,8 +34,8 @@ class SupStreamerChatAction(AbsChatAction):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         cooldown: timedelta = timedelta(hours = 6),
     ):
-        if not isinstance(nickNameHelper, NickNameHelperInterface):
-            raise TypeError(f'nickNameHelper argument is malformed: \"{nickNameHelper}\"')
+        if not isinstance(chatterPreferredNameHelper, ChatterPreferredNameHelperInterface):
+            raise TypeError(f'chatterPreferredNameHelper argument is malformed: \"{chatterPreferredNameHelper}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(supStreamerHelper, SupStreamerHelperInterface):
@@ -53,7 +53,7 @@ class SupStreamerChatAction(AbsChatAction):
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__nickNameHelper: Final[NickNameHelperInterface] = nickNameHelper
+        self.__chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = chatterPreferredNameHelper
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__supStreamerHelper: Final[SupStreamerHelperInterface] = supStreamerHelper
         self.__supStreamerRepository: Final[SupStreamerRepositoryInterface] = supStreamerRepository
@@ -160,15 +160,15 @@ class SupStreamerChatAction(AbsChatAction):
         if not isinstance(message, TwitchMessage):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
-        nickNameData = await self.__nickNameHelper.get(
+        preferredNameData = await self.__chatterPreferredNameHelper.get(
             chatterUserId = message.getAuthorId(),
             twitchChannelId = await message.getTwitchChannelId(),
         )
 
-        if nickNameData is not None and utils.isValidStr(nickNameData.nickName):
-            return nickNameData.nickName
-        else:
+        if preferredNameData is None:
             return message.getAuthorName()
+        else:
+            return preferredNameData.preferredName
 
     async def __isFollowing(self, message: TwitchMessage) -> bool:
         if not isinstance(message, TwitchMessage):
