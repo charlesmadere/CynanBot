@@ -219,6 +219,7 @@ class UsersRepository(UsersRepositoryInterface):
         blueSkyUrl = utils.getStrFromDict(userJson, UserJsonConstant.BLUE_SKY_URL.jsonKey, '')
         casualGamePollRewardId = utils.getStrFromDict(userJson, 'casualGamePollRewardId', '')
         casualGamePollUrl = utils.getStrFromDict(userJson, 'casualGamePollUrl', '')
+        chatterPreferredNameRewardId = utils.getStrFromDict(userJson, 'chatterPreferredNameRewardId', '')
         discordUrl = utils.getStrFromDict(userJson, UserJsonConstant.DISCORD_URL.jsonKey, '')
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
@@ -489,6 +490,7 @@ class UsersRepository(UsersRepositoryInterface):
             blueSkyUrl = blueSkyUrl,
             casualGamePollRewardId = casualGamePollRewardId,
             casualGamePollUrl = casualGamePollUrl,
+            chatterPreferredNameRewardId = chatterPreferredNameRewardId,
             crowdControlButtonPressRewardId = crowdControlButtonPressRewardId,
             crowdControlGameShuffleRewardId = crowdControlGameShuffleRewardId,
             discordUrl = discordUrl,

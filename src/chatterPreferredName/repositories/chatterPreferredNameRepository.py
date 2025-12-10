@@ -67,7 +67,7 @@ class ChatterPreferredNameRepository(ChatterPreferredNameRepositoryInterface):
         preferredName: str | None = None
 
         if record is not None and len(record) >= 1:
-            preferredName = record[0]
+            preferredName = utils.cleanStr(record[0])
 
         if not utils.isValidStr(preferredName):
             self.__cache[f'{twitchChannelId}:{chatterUserId}'] = None

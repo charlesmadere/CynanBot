@@ -118,21 +118,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         )
 
         self.__globalOptionalWords: Final[frozenset[str]] = frozenset({
-            'alley', 'arch', 'avenue', 'basin', 'bay', 'beach', 'bluff', 'boulder', 'bridge', 'brook',
-            'boulevard', 'building', 'butte', 'bypass', 'campus', 'cape', 'castle', 'cathedral', 'canyon',
-            'capital', 'chapel', 'circle', 'city', 'cliff', 'coast', 'community', 'continent', 'country',
-            'county', 'court', 'cove', 'creek', 'crescent', 'crag', 'dell', 'depot', 'desert', 'district',
-            'divide', 'dock', 'dunes', 'drive', 'estate', 'expanse', 'factory', 'fen', 'field', 'flats',
-            'foothills', 'forest', 'fort', 'garden', 'glacier', 'glen', 'grove', 'harbor', 'heights',
-            'highway', 'hill', 'inlet', 'island', 'junction', 'jungle', 'knoll', 'lake', 'lagoon', 'lane',
-            'library', 'mall', 'manor', 'marsh', 'market', 'meadow', 'mesa', 'metro', 'mill', 'mire',
-            'monument', 'moor', 'mountain', 'neighborhood', 'observatory', 'ocean', 'outpost', 'palace',
-            'park', 'parkway', 'parish', 'pass', 'path', 'peninsula', 'pier', 'plain', 'plateau', 'plaza',
-            'pond', 'port', 'prairie', 'prefecture', 'province', 'range', 'ravine', 'reef', 'region',
-            'residence', 'reservoir', 'ridge', 'river', 'road', 'route', 'sandbar', 'sea', 'shoal', 'shore',
-            'sound', 'spring', 'square', 'state', 'station', 'street', 'subdivision', 'swamp', 'terminal',
-            'terrace', 'territory', 'tower', 'town', 'township', 'trail', 'tundra', 'tunnel', 'valley',
-            'village', 'ward', 'warehouse', 'waterfall', 'way',
+            'city', 'county', 'island', 'lake', 'mountain', 'ocean', 'park', 'river', 'road', 'sea', 'street',
         })
 
     async def compileBoolAnswer(self, answer: str | None) -> bool:
