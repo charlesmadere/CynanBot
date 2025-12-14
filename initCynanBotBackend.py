@@ -1,6 +1,7 @@
 import asyncio
 import locale
 from asyncio import AbstractEventLoop
+from typing import Final
 
 from src.aniv.contentScanner.anivContentScanner import AnivContentScanner
 from src.aniv.contentScanner.anivContentScannerInterface import AnivContentScannerInterface
@@ -2134,7 +2135,7 @@ twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHand
 ## CynanBot initialization section ##
 #####################################
 
-cynanBot = CynanBot(
+cynanBot: Final[CynanBot] = CynanBot(
     eventLoop = eventLoop,
     twitchChannelPointRedemptionHandler = twitchChannelPointRedemptionHandler,
     twitchChatHandler = twitchChatHandler,

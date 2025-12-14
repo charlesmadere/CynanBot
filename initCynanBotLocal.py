@@ -1,6 +1,7 @@
 import asyncio
 import locale
 from asyncio import AbstractEventLoop
+from typing import Final
 
 from src.accessLevelChecking.accessLevelCheckingHelper import AccessLevelCheckingHelper
 from src.accessLevelChecking.accessLevelCheckingHelperInterface import AccessLevelCheckingHelperInterface
@@ -68,6 +69,7 @@ from src.chatterInventory.settings.chatterInventorySettingsInterface import Chat
 from src.chatterInventory.useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
 from src.chatterPreferredName.helpers.chatterPreferredNameHelper import ChatterPreferredNameHelper
 from src.chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
+from src.chatterPreferredName.helpers.chatterPreferredNameStringCleaner import ChatterPreferredNameStringCleaner
 from src.chatterPreferredName.repositories.chatterPreferredNameRepository import ChatterPreferredNameRepository
 from src.chatterPreferredName.repositories.chatterPreferredNameRepositoryInterface import \
     ChatterPreferredNameRepositoryInterface
@@ -1073,19 +1075,22 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = SoundPlayerMan
 ## Chatter Preferred Name initialization section ##
 ###################################################
 
-chatterPreferredNameSettings: ChatterPreferredNameSettingsInterface = ChatterPreferredNameSettings(
+chatterPreferredNameSettings: Final[ChatterPreferredNameSettingsInterface] = ChatterPreferredNameSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/chatterPreferredNameSettings.json',
     ),
 )
 
-chatterPreferredNameRepository: ChatterPreferredNameRepositoryInterface = ChatterPreferredNameRepository(
+chatterPreferredNameStringCleaner: Final[ChatterPreferredNameStringCleaner] = ChatterPreferredNameStringCleaner()
+
+chatterPreferredNameRepository: Final[ChatterPreferredNameRepositoryInterface] = ChatterPreferredNameRepository(
     backingDatabase = backingDatabase,
+    chatterPreferredNameStringCleaner = chatterPreferredNameStringCleaner,
     timber = timber,
 )
 
-chatterPreferredNameHelper: ChatterPreferredNameHelperInterface = ChatterPreferredNameHelper(
+chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = ChatterPreferredNameHelper(
     chatterPreferredNameRepository = chatterPreferredNameRepository,
     chatterPreferredNameSettings = chatterPreferredNameSettings,
 )
@@ -2481,7 +2486,7 @@ twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHand
 ## CynanBot initialization section ##
 #####################################
 
-cynanBot = CynanBot(
+cynanBot: Final[CynanBot] = CynanBot(
     eventLoop = eventLoop,
     twitchChannelPointRedemptionHandler = twitchChannelPointRedemptionHandler,
     twitchChatHandler = twitchChatHandler,

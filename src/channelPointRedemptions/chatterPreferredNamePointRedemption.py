@@ -2,8 +2,8 @@ from typing import Final
 
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
+from ..chatterPreferredName.helpers.chatterPreferredNameStringCleaner import ChatterPreferredNameStringCleaner
 from ..chatterPreferredName.settings.chatterPreferredNameSettingsInterface import ChatterPreferredNameSettingsInterface
-from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
@@ -16,6 +16,7 @@ class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption):
         self,
         chatterPreferredNameHelper: ChatterPreferredNameHelperInterface,
         chatterPreferredNameSettings: ChatterPreferredNameSettingsInterface,
+        chatterPreferredNameStringCleaner: ChatterPreferredNameStringCleaner,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
@@ -23,6 +24,8 @@ class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption):
             raise TypeError(f'chatterPreferredNameHelper argument is malformed: \"{chatterPreferredNameHelper}\"')
         elif not isinstance(chatterPreferredNameSettings, ChatterPreferredNameSettingsInterface):
             raise TypeError(f'chatterPreferredNameSettings argument is malformed: \"{chatterPreferredNameSettings}\"')
+        elif not isinstance(chatterPreferredNameStringCleaner, ChatterPreferredNameStringCleaner):
+            raise TypeError(f'chatterPreferredNameStringCleaner argument is malformed: \"{chatterPreferredNameStringCleaner}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
@@ -30,6 +33,7 @@ class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption):
 
         self.__chatterPreferredTtsHelper: Final[ChatterPreferredNameHelperInterface] = chatterPreferredNameHelper
         self.__chatterPreferredTtsSettingsRepository: Final[ChatterPreferredNameSettingsInterface] = chatterPreferredNameSettings
+        self.__chatterPreferredNameStringCleaner: Final[ChatterPreferredNameStringCleaner] = chatterPreferredNameStringCleaner
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
@@ -42,7 +46,10 @@ class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption):
             return False
 
         twitchUser = twitchChannelPointsMessage.twitchUser
-        userMessage = utils.cleanStr(twitchChannelPointsMessage.redemptionMessage)
+
+        preferredName = await self.__chatterPreferredNameStringCleaner.clean(
+            name = twitchChannelPointsMessage.redemptionMessage,
+        )
 
         # TODO
 
