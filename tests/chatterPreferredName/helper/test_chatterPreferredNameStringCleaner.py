@@ -15,6 +15,11 @@ class TestChatterPreferredNameStringCleaner:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_clean_withCrazyString2(self):
+        result = await self.cleaner.clean('...')
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_clean_withEmptyString(self):
         result = await self.cleaner.clean('')
         assert result is None
@@ -43,6 +48,11 @@ class TestChatterPreferredNameStringCleaner:
     async def test_clean_withName3(self):
         result = await self.cleaner.clean('\"gaR\"')
         assert result == 'gaR'
+
+    @pytest.mark.asyncio
+    async def test_clean_withName4(self):
+        result = await self.cleaner.clean('\"bastion_blue_succubus87\"')
+        assert result == 'bastion blue succubus87'
 
     @pytest.mark.asyncio
     async def test_clean_withSentence1(self):
