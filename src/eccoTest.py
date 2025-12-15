@@ -20,7 +20,7 @@ eventLoop: AbstractEventLoop = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
 
 backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
-    eventLoop = eventLoop
+    eventLoop = eventLoop,
 )
 
 timber: TimberInterface = TimberStub()
@@ -29,23 +29,23 @@ timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
 eccoResponseParser: EccoResponseParserInterface = EccoResponseParser(
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 networkClientProvider: NetworkClientProvider = RequestsClientProvider(
-    timber = timber
+    timber = timber,
 )
 
 eccoApiService: EccoApiServiceInterface = EccoApiService(
     eccoResponseParser = eccoResponseParser,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
 eccoHelper: EccoHelperInterface = EccoHelper(
     eccoApiService = eccoApiService,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 async def main():
