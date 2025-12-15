@@ -38,7 +38,7 @@ class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption):
         twitchUser = twitchChannelPointsMessage.twitchUser
 
         try:
-            result = await self.__chatterPreferredTtsHelper.set(
+            preferredNameData = await self.__chatterPreferredTtsHelper.set(
                 chatterUserId = twitchChannelPointsMessage.userId,
                 preferredName = twitchChannelPointsMessage.redemptionMessage,
                 twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
@@ -55,7 +55,7 @@ class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption):
             return False
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ @{twitchChannelPointsMessage.userName} here\'s your new preferred name: {result.preferredName}',
+            text = f'ⓘ @{twitchChannelPointsMessage.userName} here\'s your new preferred name: {preferredNameData.preferredName}',
             twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
         )
 
