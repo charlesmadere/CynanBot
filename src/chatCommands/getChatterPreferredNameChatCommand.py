@@ -35,12 +35,12 @@ class GetChatterPreferredNameChatCommand(AbsChatCommand):
         if not await self.__chatterPreferredNameSettings.isEnabled():
             return
 
-        result = await self.__chatterPreferredNameHelper.get(
+        preferredNameData = await self.__chatterPreferredNameHelper.get(
             chatterUserId = ctx.getAuthorId(),
             twitchChannelId = await ctx.getTwitchChannelId(),
         )
 
-        if result is None:
+        if preferredNameData is None:
             self.__twitchChatMessenger.send(
                 text = f'ⓘ You currently don\'t have a preferred name',
                 twitchChannelId = await ctx.getTwitchChannelId(),
@@ -49,7 +49,7 @@ class GetChatterPreferredNameChatCommand(AbsChatCommand):
             return
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ Your preferred name: {result.preferredName}',
+            text = f'ⓘ Your preferred name: {preferredNameData.preferredName}',
             twitchChannelId = await ctx.getTwitchChannelId(),
             replyMessageId = await ctx.getMessageId(),
         )
