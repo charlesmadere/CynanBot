@@ -1297,6 +1297,7 @@ chatterPreferredNameRepository: Final[ChatterPreferredNameRepositoryInterface] =
 chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = ChatterPreferredNameHelper(
     chatterPreferredNameRepository = chatterPreferredNameRepository,
     chatterPreferredNameSettings = chatterPreferredNameSettings,
+    chatterPreferredNameStringCleaner = chatterPreferredNameStringCleaner,
 )
 
 
