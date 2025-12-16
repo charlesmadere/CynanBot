@@ -93,6 +93,23 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
             userName = splits[1],
         )
 
+        if lookupUser is None:
+            self.__timber.log('SetChatterPreferredNameChatCommand', f'Invalid user name argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Username and preferred name is necessary for this command. Example: !setpreferredname {twitchHandle} John Smith',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
+            )
+            return
+        elif not utils.isValidStr(lookupUser.userId):
+            self.__timber.log('SetChatterPreferredNameChatCommand', f'Unknown user name argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Unable to find info for user \"{lookupUser.userName}\". A username and preferred name is necessary for this command. Example: !setpreferredname {twitchHandle} John Smith',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
+            )
+            return
+
         oldPreferredNameData = await self.__chatterPreferredNameHelper.get(
             chatterUserId = ctx.getAuthorId(),
             twitchChannelId = twitchChannelId,
