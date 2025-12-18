@@ -2313,17 +2313,14 @@ ttsChatterPointRedemption = TtsChatterPointRedemption(
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     adgeCheerActionHelper = None,
-    airStrikeCheerActionHelper = airStrikeCheerActionHelper,
     beanChanceCheerActionHelper = beanChanceCheerActionHelper,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = crowdControlCheerActionHelper,
+    itemUseCheerActionHelper = itemUseCheerActionHelper,
     soundAlertCheerActionHelper = soundAlertCheerActionHelper,
-    timeoutCheerActionHelper = timeoutCheerActionHelper,
-    ttsChatterChatAction = ttsChatterChatAction,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
-    voicemailCheerActionHelper = voicemailCheerActionHelper,
+    userIdsRepository = userIdsRepository
 )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(

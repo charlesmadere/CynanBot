@@ -47,8 +47,8 @@ class TtsChatterChatAction(AbsChatAction):
         self.__ttsChatterRepository: TtsChatterRepositoryInterface = ttsChatterRepository
         self.__ttsChatterSettingsRepository: TtsChatterSettingsRepositoryInterface = ttsChatterSettingsRepository
         self.__twitchChatMessenger: TwitchChatMessenger = twitchChatMessenger
-        self.__subscriptionCounter: int
-        self.__remainder: int
+        self.__subscriptionCounter: int = 0
+        self.__remainder: int = 0
 
     async def __checkTtsThresholdMet(self) -> bool:
         return self.__subscriptionCounter >= await self.__ttsChatterSettingsRepository.ttsOnThreshold()
@@ -58,16 +58,10 @@ class TtsChatterChatAction(AbsChatAction):
         bits,
         twitchChannelId,
     ):
-        count = utils.math.floor(bits + self.__remainder / await self.__ttsChatterSettingsRepository.ttsOffThreshold())
+        count = utils.math.floor((bits + self.__remainder) / await self.__ttsChatterSettingsRepository.ttsOffThreshold())
         self.__subscriptionCounter -= count
-        self.__remainder = bits + self.__remainder % await self.__ttsChatterSettingsRepository.ttsOffThreshold()
-
-        left = await self.__ttsChatterSettingsRepository.ttsOnThreshold() - self.__subscriptionCounter
-        self.__twitchChatMessenger.send(
-            text = f'{left} subs remaining to turn on TTS',
-            twitchChannelId = twitchChannelId,
-            delaySeconds = 3
-        )
+        self.__remainder = (bits + self.__remainder) % await self.__ttsChatterSettingsRepository.ttsOffThreshold()
+        await self.reportStatusToChat(twitchChannelId)
 
 
     async def incrementTtsSubCount(
@@ -95,12 +89,28 @@ class TtsChatterChatAction(AbsChatAction):
                 multiplier = 5
 
         self.__subscriptionCounter += total * multiplier
-        left = await self.__ttsChatterSettingsRepository.ttsOnThreshold() - self.__subscriptionCounter
+
+        await self.reportStatusToChat(subscriptionData.twitchChannelId)
+
+    async def reportStatusToChat(
+        self,
+        twitchChannelId
+    ):
+        message: str
+        if await self.__checkTtsThresholdMet():
+            left = (self.__subscriptionCounter * await self.__ttsChatterSettingsRepository.ttsOffThreshold()) - self.__remainder
+            message = f'{left} bits remaining to turn off TTS'
+        else:
+            # x = 1 - 0
+            left = await self.__ttsChatterSettingsRepository.ttsOnThreshold() - self.__subscriptionCounter
+            message = f'{left} subs remaining to turn on TTS'
+
         self.__twitchChatMessenger.send(
-            text = f'{left} subs remaining to turn on TTS',
-            twitchChannelId = subscriptionData.twitchChannelId,
-            delaySeconds = 3
+            text = message,
+            twitchChannelId = twitchChannelId,
+            delaySeconds = 1
         )
+
 
     async def handleChat(
         self,
@@ -111,7 +121,7 @@ class TtsChatterChatAction(AbsChatAction):
         if not user.areTtsChattersEnabled or not user.isTtsEnabled:
             return False
 
-        if await self.__ttsChatterSettingsRepository.useThreshold() and not self.__checkTtsThresholdMet():
+        if await self.__ttsChatterSettingsRepository.useThreshold() and not await self.__checkTtsThresholdMet():
             return False
 
         if not await self.__ttsChatterRepository.isTtsChatter(
@@ -128,6 +138,7 @@ class TtsChatterChatAction(AbsChatAction):
             return False
 
         if await self.__ttsChatterSettingsRepository.subscriberOnly() and not await self.__accessLevelCheckingHelper.checkStatus(AccessLevel.SUBSCRIBER, message):
+
             return False
 
         providerOverridableStatus: TtsProviderOverridableStatus
