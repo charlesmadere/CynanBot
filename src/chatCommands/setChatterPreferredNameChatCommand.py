@@ -1,7 +1,10 @@
+import traceback
 from dataclasses import dataclass
 from typing import Final
 
 from .absChatCommand import AbsChatCommand
+from ..chatterPreferredName.exceptions import ChatterPreferredNameFeatureIsDisabledException, \
+    ChatterPreferredNameIsInvalidException
 from ..chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
 from ..chatterPreferredName.settings.chatterPreferredNameSettingsInterface import ChatterPreferredNameSettingsInterface
 from ..misc import utils as utils
@@ -79,7 +82,7 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 3:
-            self.__timber.log('SetChatterPreferredNameChatCommand', f'Less than 2 arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+            self.__timber.log('SetChatterPreferredNameChatCommand', f'Less than 3 arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
             self.__twitchChatMessenger.send(
                 text = f'⚠ Username and preferred name is necessary for this command. Example: !setpreferredname {twitchHandle} example',
@@ -115,7 +118,33 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
             twitchChannelId = twitchChannelId,
         )
 
-        # TODO
+        try:
+            newPreferredNameData = await self.__chatterPreferredNameHelper.set(
+                chatterUserId = lookupUser.userId,
+                preferredName = ' '.join(splits[2:]),
+                twitchChannelId = twitchChannelId,
+            )
+        except ChatterPreferredNameFeatureIsDisabledException as e:
+            self.__timber.log('SetChatterPreferredNameChatCommand', f'This feature is disabled when handling command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}', e, traceback.format_exc())
+            return
+        except ChatterPreferredNameIsInvalidException as e:
+            self.__timber.log('SetChatterPreferredNameChatCommand', f'The given preferred name is invalid when handling command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}', e, traceback.format_exc())
+            self.__twitchChatMessenger.send(
+                text = f'⚠ The given preferred name for @{lookupUser.userName} is invalid',
+                twitchChannelId = twitchChannelId,
+                replyMessageId = await ctx.getMessageId(),
+            )
+            return
+
+        oldPreferredNameSuffix = ''
+        if oldPreferredNameData is not None:
+            oldPreferredNameSuffix = f'(previously was {oldPreferredNameData.preferredName})'
+
+        self.__twitchChatMessenger.send(
+            text = f'ⓘ New preferred name set for @{lookupUser.userName} — {newPreferredNameData.preferredName} {oldPreferredNameSuffix}',
+            twitchChannelId = await ctx.getTwitchChannelId(),
+            replyMessageId = await ctx.getMessageId(),
+        )
 
         self.__timber.log('SetChatterPreferredNameChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
@@ -128,7 +157,6 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
             return None
 
         userName = utils.removePreceedingAt(userName)
-
         if not utils.strContainsAlphanumericCharacters(userName):
             return None
 
