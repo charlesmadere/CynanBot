@@ -33,6 +33,7 @@ from src.beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterfac
 from src.beanStats.beanStatsRepository import BeanStatsRepository
 from src.beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
+from src.channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.decTalkSongPointRedemption import DecTalkSongPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
@@ -2341,12 +2342,18 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 ## Channel Point Redemptions initialization section ##
 ######################################################
 
-casualGamePollPointRedemption: CasualGamePollPointRedemption | None = CasualGamePollPointRedemption(
+casualGamePollPointRedemption: Final[CasualGamePollPointRedemption] = CasualGamePollPointRedemption(
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None = ChatterPreferredTtsPointRedemption(
+chatterPreferredNamePointRedemption: Final[ChatterPreferredNamePointRedemption] = ChatterPreferredNamePointRedemption(
+    chatterPreferredNameHelper = chatterPreferredNameHelper,
+    timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
+)
+
+chatterPreferredTtsPointRedemption: Final[ChatterPreferredTtsPointRedemption] = ChatterPreferredTtsPointRedemption(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
     chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
@@ -2354,7 +2361,7 @@ chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None = 
     twitchChatMessenger = twitchChatMessenger,
 )
 
-decTalkSongPointRedemption: DecTalkSongPointRedemption | None = DecTalkSongPointRedemption(
+decTalkSongPointRedemption: Final[DecTalkSongPointRedemption] = DecTalkSongPointRedemption(
     eventLoop = eventLoop,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
@@ -2397,9 +2404,10 @@ websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnect
 ## Twitch events initialization section ##
 ##########################################
 
-twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = TwitchChannelPointRedemptionHandler(
+twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
     casualGamePollPointRedemption = casualGamePollPointRedemption,
+    chatterPreferredNamePointRedemption = chatterPreferredNamePointRedemption,
     chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = None,
     decTalkSongPointRedemption = decTalkSongPointRedemption,

@@ -12,6 +12,7 @@ from ..absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemp
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ...channelPointRedemptions.absChannelPointRedemption import AbsChannelPointRedemption
 from ...channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
+from ...channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from ...channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from ...channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
 from ...channelPointRedemptions.decTalkSongPointRedemption import DecTalkSongPointRedemption
@@ -40,6 +41,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         casualGamePollPointRedemption: CasualGamePollPointRedemption | None,
+        chatterPreferredNamePointRedemption: ChatterPreferredNamePointRedemption | None,
         chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None,
         cutenessPointRedemption: CutenessPointRedemption | None,
         decTalkSongPointRedemption: DecTalkSongPointRedemption | None,
@@ -63,6 +65,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif casualGamePollPointRedemption is not None and not isinstance(casualGamePollPointRedemption, CasualGamePollPointRedemption):
             raise TypeError(f'casualGamePollPointRedemption argument is malformed: \"{casualGamePollPointRedemption}\"')
+        elif chatterPreferredNamePointRedemption is not None and not isinstance(chatterPreferredNamePointRedemption, ChatterPreferredNamePointRedemption):
+            raise TypeError(f'chatterPreferredNamePointRedemption argument is malformed: \"{chatterPreferredNamePointRedemption}\"')
         elif chatterPreferredTtsPointRedemption is not None and not isinstance(chatterPreferredTtsPointRedemption, ChatterPreferredTtsPointRedemption):
             raise TypeError(f'chatterPreferredTtsPointRedemption argument is malformed: \"{chatterPreferredTtsPointRedemption}\"')
         elif cutenessPointRedemption is not None and not isinstance(cutenessPointRedemption, CutenessPointRedemption):
@@ -118,6 +122,11 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__casualGamePollPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
             self.__casualGamePollPointRedemption: AbsChannelPointRedemption = casualGamePollPointRedemption
+
+        if chatterPreferredNamePointRedemption is None:
+            self.__chatterPreferredNamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+        else:
+            self.__chatterPreferredNamePointRedemption: AbsChannelPointRedemption = chatterPreferredNamePointRedemption
 
         if chatterPreferredTtsPointRedemption is None:
             self.__chatterPreferredTtsPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
@@ -210,6 +219,13 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.isCasualGamePollEnabled and channelPointsMessage.rewardId == user.casualGamePollRewardId:
             if await self.__casualGamePollPointRedemption.handlePointRedemption(
+                twitchChannel = twitchChannel,
+                twitchChannelPointsMessage = channelPointsMessage,
+            ):
+                return
+
+        if channelPointsMessage.rewardId == user.chatterPreferredNameRewardId:
+            if await self.__chatterPreferredNamePointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage,
             ):
