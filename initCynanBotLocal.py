@@ -1,6 +1,7 @@
 import asyncio
 import locale
 from asyncio import AbstractEventLoop
+from typing import Final
 
 from src.accessLevelChecking.accessLevelCheckingHelper import AccessLevelCheckingHelper
 from src.accessLevelChecking.accessLevelCheckingHelperInterface import AccessLevelCheckingHelperInterface
@@ -32,6 +33,7 @@ from src.beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterfac
 from src.beanStats.beanStatsRepository import BeanStatsRepository
 from src.beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
+from src.channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.decTalkSongPointRedemption import DecTalkSongPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
@@ -68,6 +70,7 @@ from src.chatterInventory.settings.chatterInventorySettingsInterface import Chat
 from src.chatterInventory.useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
 from src.chatterPreferredName.helpers.chatterPreferredNameHelper import ChatterPreferredNameHelper
 from src.chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
+from src.chatterPreferredName.helpers.chatterPreferredNameStringCleaner import ChatterPreferredNameStringCleaner
 from src.chatterPreferredName.repositories.chatterPreferredNameRepository import ChatterPreferredNameRepository
 from src.chatterPreferredName.repositories.chatterPreferredNameRepositoryInterface import \
     ChatterPreferredNameRepositoryInterface
@@ -1073,21 +1076,25 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = SoundPlayerMan
 ## Chatter Preferred Name initialization section ##
 ###################################################
 
-chatterPreferredNameSettings: ChatterPreferredNameSettingsInterface = ChatterPreferredNameSettings(
+chatterPreferredNameSettings: Final[ChatterPreferredNameSettingsInterface] = ChatterPreferredNameSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/chatterPreferredNameSettings.json',
     ),
 )
 
-chatterPreferredNameRepository: ChatterPreferredNameRepositoryInterface = ChatterPreferredNameRepository(
+chatterPreferredNameStringCleaner: Final[ChatterPreferredNameStringCleaner] = ChatterPreferredNameStringCleaner()
+
+chatterPreferredNameRepository: Final[ChatterPreferredNameRepositoryInterface] = ChatterPreferredNameRepository(
     backingDatabase = backingDatabase,
+    chatterPreferredNameStringCleaner = chatterPreferredNameStringCleaner,
     timber = timber,
 )
 
-chatterPreferredNameHelper: ChatterPreferredNameHelperInterface = ChatterPreferredNameHelper(
+chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = ChatterPreferredNameHelper(
     chatterPreferredNameRepository = chatterPreferredNameRepository,
     chatterPreferredNameSettings = chatterPreferredNameSettings,
+    chatterPreferredNameStringCleaner = chatterPreferredNameStringCleaner,
 )
 
 
@@ -2348,12 +2355,18 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 ## Channel Point Redemptions initialization section ##
 ######################################################
 
-casualGamePollPointRedemption: CasualGamePollPointRedemption | None = CasualGamePollPointRedemption(
+casualGamePollPointRedemption: Final[CasualGamePollPointRedemption] = CasualGamePollPointRedemption(
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None = ChatterPreferredTtsPointRedemption(
+chatterPreferredNamePointRedemption: Final[ChatterPreferredNamePointRedemption] = ChatterPreferredNamePointRedemption(
+    chatterPreferredNameHelper = chatterPreferredNameHelper,
+    timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
+)
+
+chatterPreferredTtsPointRedemption: Final[ChatterPreferredTtsPointRedemption] = ChatterPreferredTtsPointRedemption(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
     chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
@@ -2361,7 +2374,7 @@ chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None = 
     twitchChatMessenger = twitchChatMessenger,
 )
 
-decTalkSongPointRedemption: DecTalkSongPointRedemption | None = DecTalkSongPointRedemption(
+decTalkSongPointRedemption: Final[DecTalkSongPointRedemption] = DecTalkSongPointRedemption(
     eventLoop = eventLoop,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
@@ -2404,9 +2417,10 @@ websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnect
 ## Twitch events initialization section ##
 ##########################################
 
-twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = TwitchChannelPointRedemptionHandler(
+twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
     casualGamePollPointRedemption = casualGamePollPointRedemption,
+    chatterPreferredNamePointRedemption = chatterPreferredNamePointRedemption,
     chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = None,
     decTalkSongPointRedemption = decTalkSongPointRedemption,
@@ -2495,7 +2509,7 @@ twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHand
 ## CynanBot initialization section ##
 #####################################
 
-cynanBot = CynanBot(
+cynanBot: Final[CynanBot] = CynanBot(
     eventLoop = eventLoop,
     twitchChannelPointRedemptionHandler = twitchChannelPointRedemptionHandler,
     twitchChatHandler = twitchChatHandler,

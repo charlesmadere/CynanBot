@@ -111,6 +111,7 @@ class User(UserInterface):
         blueSkyUrl: str | None,
         casualGamePollRewardId: str | None,
         casualGamePollUrl: str | None,
+        chatterPreferredNameRewardId: str | None,
         crowdControlButtonPressRewardId: str | None,
         crowdControlGameShuffleRewardId: str | None,
         discordUrl: str | None,
@@ -310,6 +311,8 @@ class User(UserInterface):
             raise TypeError(f'casualGamePollRewardId argument is malformed: \"{casualGamePollRewardId}\"')
         elif casualGamePollUrl is not None and not isinstance(casualGamePollUrl, str):
             raise TypeError(f'casualGamePollUrl argument is malformed: \"{casualGamePollUrl}\"')
+        elif chatterPreferredNameRewardId is not None and not isinstance(chatterPreferredNameRewardId, str):
+            raise TypeError(f'chatterPreferredNameRewardId argument is malformed: \"{chatterPreferredNameRewardId}\"')
         elif crowdControlButtonPressRewardId is not None and not isinstance(crowdControlButtonPressRewardId, str):
             raise TypeError(f'crowdControlButtonPressRewardId argument is malformed: \"{crowdControlButtonPressRewardId}\"')
         elif crowdControlGameShuffleRewardId is not None and not isinstance(crowdControlGameShuffleRewardId, str):
@@ -457,6 +460,7 @@ class User(UserInterface):
         self.__blueSkyUrl: str | None = blueSkyUrl
         self.__casualGamePollRewardId: str | None = casualGamePollRewardId
         self.__casualGamePollUrl: str | None = casualGamePollUrl
+        self.__chatterPreferredNameRewardId: Final[str | None] = chatterPreferredNameRewardId
         self.__crowdControlButtonPressRewardId: str | None = crowdControlButtonPressRewardId
         self.__crowdControlGameShuffleRewardId: str | None = crowdControlGameShuffleRewardId
         self.__discordUrl: str | None = discordUrl
@@ -581,6 +585,10 @@ class User(UserInterface):
     @property
     def casualGamePollUrl(self) -> str | None:
         return self.__casualGamePollUrl
+
+    @property
+    def chatterPreferredNameRewardId(self) -> str | None:
+        return self.__chatterPreferredNameRewardId
 
     @property
     def decTalkSongBoosterPacks(self) -> frozendict[str, DecTalkSongBoosterPack] | None:

@@ -5,6 +5,7 @@ from typing import Final
 from lru import LRU
 
 from .chatterPreferredNameRepositoryInterface import ChatterPreferredNameRepositoryInterface
+from ..helpers.chatterPreferredNameStringCleaner import ChatterPreferredNameStringCleaner
 from ..models.chatterPreferredNameData import ChatterPreferredNameData
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
@@ -18,11 +19,14 @@ class ChatterPreferredNameRepository(ChatterPreferredNameRepositoryInterface):
     def __init__(
         self,
         backingDatabase: BackingDatabase,
+        chatterPreferredNameStringCleaner: ChatterPreferredNameStringCleaner,
         timber: TimberInterface,
         cacheSize: int = 32,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        elif not isinstance(chatterPreferredNameStringCleaner, ChatterPreferredNameStringCleaner):
+            raise TypeError(f'chatterPreferredNameStringCleaner argument is malformed: \"{chatterPreferredNameStringCleaner}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidInt(cacheSize):
@@ -31,6 +35,7 @@ class ChatterPreferredNameRepository(ChatterPreferredNameRepositoryInterface):
             raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
 
         self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__chatterPreferredNameStringCleaner: Final[ChatterPreferredNameStringCleaner] = chatterPreferredNameStringCleaner
         self.__timber: Final[TimberInterface] = timber
 
         self.__isDatabaseReady: bool = False
@@ -67,7 +72,7 @@ class ChatterPreferredNameRepository(ChatterPreferredNameRepositoryInterface):
         preferredName: str | None = None
 
         if record is not None and len(record) >= 1:
-            preferredName = record[0]
+            preferredName = await self.__chatterPreferredNameStringCleaner.clean(record[0])
 
         if not utils.isValidStr(preferredName):
             self.__cache[f'{twitchChannelId}:{chatterUserId}'] = None
@@ -170,7 +175,7 @@ class ChatterPreferredNameRepository(ChatterPreferredNameRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        preferredName = utils.cleanStr(preferredName)
+        preferredName = await self.__chatterPreferredNameStringCleaner.clean(preferredName)
 
         if not utils.isValidStr(preferredName):
             return await self.remove(

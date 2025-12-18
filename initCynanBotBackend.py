@@ -1,6 +1,7 @@
 import asyncio
 import locale
 from asyncio import AbstractEventLoop
+from typing import Final
 
 from src.aniv.contentScanner.anivContentScanner import AnivContentScanner
 from src.aniv.contentScanner.anivContentScannerInterface import AnivContentScannerInterface
@@ -1913,39 +1914,39 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 ## Channel Point Redemptions initialization section ##
 ######################################################
 
-casualGamePollPointRedemption: CasualGamePollPointRedemption | None = CasualGamePollPointRedemption(
+casualGamePollPointRedemption: Final[CasualGamePollPointRedemption] = CasualGamePollPointRedemption(
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-cutenessPointRedemption: CutenessPointRedemption | None = CutenessPointRedemption(
+cutenessPointRedemption: Final[CutenessPointRedemption | None] = CutenessPointRedemption(
     cutenessRepository = cutenessRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-pkmnBattlePointRedemption: PkmnBattlePointRedemption | None = PkmnBattlePointRedemption(
+pkmnBattlePointRedemption: Final[PkmnBattlePointRedemption | None] = PkmnBattlePointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-pkmnCatchPointRedemption: PkmnCatchPointRedemption | None = PkmnCatchPointRedemption(
+pkmnCatchPointRedemption: Final[PkmnCatchPointRedemption | None] = PkmnCatchPointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-pkmnEvolvePointRedemption: PkmnEvolvePointRedemption | None = PkmnEvolvePointRedemption(
+pkmnEvolvePointRedemption: Final[PkmnEvolvePointRedemption | None] = PkmnEvolvePointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-pkmnShinyPointRedemption: PkmnShinyPointRedemption | None = PkmnShinyPointRedemption(
+pkmnShinyPointRedemption: Final[PkmnShinyPointRedemption | None] = PkmnShinyPointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
@@ -1982,21 +1983,21 @@ if cutenessRepository is not None and triviaGameBuilder is not None and triviaGa
 ## Ecco initialization section ##
 #################################
 
-eccoResponseParser: EccoResponseParserInterface = EccoResponseParser(
+eccoResponseParser: Final[EccoResponseParserInterface] = EccoResponseParser(
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-eccoApiService: EccoApiServiceInterface = EccoApiService(
+eccoApiService: Final[EccoApiServiceInterface] = EccoApiService(
     eccoResponseParser = eccoResponseParser,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
-eccoHelper: EccoHelperInterface = EccoHelper(
+eccoHelper: Final[EccoHelperInterface] = EccoHelper(
     eccoApiService = eccoApiService,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 
@@ -2044,9 +2045,10 @@ redemptionCounterPointRedemption = RedemptionCounterPointRedemption(
 ## Twitch events initialization section ##
 ##########################################
 
-twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = TwitchChannelPointRedemptionHandler(
+twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
     casualGamePollPointRedemption = casualGamePollPointRedemption,
+    chatterPreferredNamePointRedemption = None,
     chatterPreferredTtsPointRedemption = None,
     cutenessPointRedemption = cutenessPointRedemption,
     decTalkSongPointRedemption = None,
@@ -2135,7 +2137,7 @@ twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHand
 ## CynanBot initialization section ##
 #####################################
 
-cynanBot = CynanBot(
+cynanBot: Final[CynanBot] = CynanBot(
     eventLoop = eventLoop,
     twitchChannelPointRedemptionHandler = twitchChannelPointRedemptionHandler,
     twitchChatHandler = twitchChatHandler,

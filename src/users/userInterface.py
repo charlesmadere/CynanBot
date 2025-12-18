@@ -100,6 +100,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def chatterPreferredNameRewardId(self) -> str | None:
+        pass
+
+    @property
+    @abstractmethod
     def crowdControlBoosterPacks(self) -> frozendict[str, CrowdControlBoosterPack] | None:
         pass
 

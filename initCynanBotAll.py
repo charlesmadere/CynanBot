@@ -1,6 +1,7 @@
 import asyncio
 import locale
 from asyncio import AbstractEventLoop
+from typing import Final
 
 from src.accessLevelChecking.accessLevelCheckingHelper import AccessLevelCheckingHelper
 from src.accessLevelChecking.accessLevelCheckingHelperInterface import AccessLevelCheckingHelperInterface
@@ -81,6 +82,7 @@ from src.chatterInventory.settings.chatterInventorySettingsInterface import Chat
 from src.chatterInventory.useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
 from src.chatterPreferredName.helpers.chatterPreferredNameHelper import ChatterPreferredNameHelper
 from src.chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
+from src.chatterPreferredName.helpers.chatterPreferredNameStringCleaner import ChatterPreferredNameStringCleaner
 from src.chatterPreferredName.repositories.chatterPreferredNameRepository import ChatterPreferredNameRepository
 from src.chatterPreferredName.repositories.chatterPreferredNameRepositoryInterface import \
     ChatterPreferredNameRepositoryInterface
@@ -1277,21 +1279,25 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = SoundPlayerMan
 ## Chatter Preferred Name initialization section ##
 ###################################################
 
-chatterPreferredNameSettings: ChatterPreferredNameSettingsInterface = ChatterPreferredNameSettings(
+chatterPreferredNameSettings: Final[ChatterPreferredNameSettingsInterface] = ChatterPreferredNameSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/chatterPreferredNameSettings.json',
     ),
 )
 
-chatterPreferredNameRepository: ChatterPreferredNameRepositoryInterface = ChatterPreferredNameRepository(
+chatterPreferredNameStringCleaner: Final[ChatterPreferredNameStringCleaner] = ChatterPreferredNameStringCleaner()
+
+chatterPreferredNameRepository: Final[ChatterPreferredNameRepositoryInterface] = ChatterPreferredNameRepository(
     backingDatabase = backingDatabase,
+    chatterPreferredNameStringCleaner = chatterPreferredNameStringCleaner,
     timber = timber,
 )
 
-chatterPreferredNameHelper: ChatterPreferredNameHelperInterface = ChatterPreferredNameHelper(
+chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = ChatterPreferredNameHelper(
     chatterPreferredNameRepository = chatterPreferredNameRepository,
     chatterPreferredNameSettings = chatterPreferredNameSettings,
+    chatterPreferredNameStringCleaner = chatterPreferredNameStringCleaner,
 )
 
 
@@ -3111,18 +3117,18 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 ## Channel Point Redemptions initialization section ##
 ######################################################
 
-casualGamePollPointRedemption: CasualGamePollPointRedemption | None = CasualGamePollPointRedemption(
+casualGamePollPointRedemption: Final[CasualGamePollPointRedemption | None] = CasualGamePollPointRedemption(
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-cutenessPointRedemption: CutenessPointRedemption | None = CutenessPointRedemption(
+cutenessPointRedemption: Final[CutenessPointRedemption | None] = CutenessPointRedemption(
     cutenessRepository = cutenessRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None = ChatterPreferredTtsPointRedemption(
+chatterPreferredTtsPointRedemption: Final[ChatterPreferredTtsPointRedemption | None] = ChatterPreferredTtsPointRedemption(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
     chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
@@ -3130,34 +3136,34 @@ chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None = 
     twitchChatMessenger = twitchChatMessenger,
 )
 
-decTalkSongPointRedemption: DecTalkSongPointRedemption | None = DecTalkSongPointRedemption(
+decTalkSongPointRedemption: Final[DecTalkSongPointRedemption | None] = DecTalkSongPointRedemption(
     eventLoop = eventLoop,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
 )
 
-pkmnBattlePointRedemption: PkmnBattlePointRedemption | None = PkmnBattlePointRedemption(
+pkmnBattlePointRedemption: Final[PkmnBattlePointRedemption | None] = PkmnBattlePointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-pkmnCatchPointRedemption: PkmnCatchPointRedemption | None = PkmnCatchPointRedemption(
+pkmnCatchPointRedemption: Final[PkmnCatchPointRedemption | None] = PkmnCatchPointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-pkmnEvolvePointRedemption: PkmnEvolvePointRedemption | None = PkmnEvolvePointRedemption(
+pkmnEvolvePointRedemption: Final[PkmnEvolvePointRedemption | None] = PkmnEvolvePointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-pkmnShinyPointRedemption: PkmnShinyPointRedemption | None = PkmnShinyPointRedemption(
+pkmnShinyPointRedemption: Final[PkmnShinyPointRedemption | None] = PkmnShinyPointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
@@ -3200,21 +3206,21 @@ ttsChatterPointRedemption: TtsChatterPointRedemption | None = TtsChatterPointRed
 ## Ecco initialization section ##
 #################################
 
-eccoResponseParser: EccoResponseParserInterface = EccoResponseParser(
+eccoResponseParser: Final[EccoResponseParserInterface] = EccoResponseParser(
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-eccoApiService: EccoApiServiceInterface = EccoApiService(
+eccoApiService: Final[EccoApiServiceInterface] = EccoApiService(
     eccoResponseParser = eccoResponseParser,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
-eccoHelper: EccoHelperInterface = EccoHelper(
+eccoHelper: Final[EccoHelperInterface] = EccoHelper(
     eccoApiService = eccoApiService,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 
@@ -3277,9 +3283,10 @@ redemptionCounterPointRedemption = RedemptionCounterPointRedemption(
 ## Twitch events initialization section ##
 ##########################################
 
-twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler = TwitchChannelPointRedemptionHandler(
+twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
     casualGamePollPointRedemption = casualGamePollPointRedemption,
+    chatterPreferredNamePointRedemption = None,
     chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = cutenessPointRedemption,
     decTalkSongPointRedemption = decTalkSongPointRedemption,
@@ -3368,7 +3375,7 @@ twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHand
 ## CynanBot initialization section ##
 #####################################
 
-cynanBot = CynanBot(
+cynanBot: Final[CynanBot] = CynanBot(
     eventLoop = eventLoop,
     twitchChannelPointRedemptionHandler = twitchChannelPointRedemptionHandler,
     twitchChatHandler = twitchChatHandler,
