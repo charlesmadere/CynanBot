@@ -6,6 +6,7 @@ from ...tts.models.ttsProvider import TtsProvider
 
 @dataclass(frozen = True)
 class TtsBoosterPack:
+    isEnabled: bool
     cheerAmount: int
     ttsProvider: TtsProvider
 

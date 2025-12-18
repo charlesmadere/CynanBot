@@ -1,15 +1,14 @@
 import traceback
-from datetime import timedelta
+from typing import Final
 
 from .absChatCommand import AbsChatCommand
 from ..language.languageEntry import LanguageEntry
 from ..language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from ..language.translationHelperInterface import TranslationHelperInterface
 from ..misc import utils as utils
-from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -20,9 +19,8 @@ class TranslateChatCommand(AbsChatCommand):
         languagesRepository: LanguagesRepositoryInterface,
         timber: TimberInterface,
         translationHelper: TranslationHelperInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         usersRepository: UsersRepositoryInterface,
-        cooldown: timedelta = timedelta(seconds = 15)
     ):
         if not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
@@ -30,19 +28,16 @@ class TranslateChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(translationHelper, TranslationHelperInterface):
             raise TypeError(f'translationHelper argument is malformed: \"{translationHelper}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
-        self.__timber: TimberInterface = timber
-        self.__translationHelper: TranslationHelperInterface = translationHelper
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
+        self.__languagesRepository: Final[LanguagesRepositoryInterface] = languagesRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__translationHelper: Final[TranslationHelperInterface] = translationHelper
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def __determineOptionalLanguageEntry(self, splits: list[str]) -> LanguageEntry | None:
         if not isinstance(splits, list) or len(splits) == 0:
@@ -51,7 +46,7 @@ class TranslateChatCommand(AbsChatCommand):
         if len(splits[1]) >= 3 and splits[1][0:2] == '--':
             return await self.__languagesRepository.getLanguageForCommand(
                 command = splits[1][2:],
-                hasIso6391Code = True
+                hasIso6391Code = True,
             )
 
         return None
@@ -61,15 +56,13 @@ class TranslateChatCommand(AbsChatCommand):
 
         if not user.isTranslateEnabled:
             return
-        elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
-            return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'⚠ Please specify the text you want to translate. Example: !translate I like tamales',
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Please specify the text you want to translate. Example: !translate I like tamales',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
             )
             return
 
@@ -84,20 +77,20 @@ class TranslateChatCommand(AbsChatCommand):
         try:
             response = await self.__translationHelper.translate(
                 text = text,
-                targetLanguage = targetLanguageEntry
+                targetLanguage = targetLanguageEntry,
             )
 
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = response.toStr(),
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = response.toStr(),
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
             )
         except Exception as e:
             self.__timber.log('TranslateCommand', f'Error translating ({targetLanguageEntry=}) ({text=}): {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = '⚠ Error translating',
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = '⚠ Error translating',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
             )
 
         self.__timber.log('TranslateCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

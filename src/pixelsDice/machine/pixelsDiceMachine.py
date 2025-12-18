@@ -37,7 +37,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
         pixelsDiceSettings: PixelsDiceSettingsInterface,
         timber: TimberInterface,
         connectionLoopSleepTimeSeconds: float = 10,
-        eventLoopSleepTimeSeconds: float = 1,
+        eventLoopSleepTimeSeconds: float = 0.5,
         queueTimeoutSeconds: int = 3,
         notifyCharacteristicUuid: str = '6e400001-b5a3-f393-e0a9-e50e24dcca9e',
     ):
@@ -120,10 +120,10 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
                 )
 
         if not isinstance(diceDevice, BLEDevice) or not isinstance(diceAdvertisement, AdvertisementData) or connectedDice is None:
-            self.__timber.log('PixelsDiceMachine', f'Failed to find device with name \"{diceName}\" among {len(devices)} device(s): {allDeviceNames=}')
+            self.__timber.log('PixelsDiceMachine', f'Failed to find device with name \"{diceName}\" among {len(devices)} device(s): {allDeviceNames}')
             return None
 
-        self.__timber.log('PixelsDiceMachine', f'Found device ({connectedDice=}) ({diceDevice=}) ({diceAdvertisement=})')
+        self.__timber.log('PixelsDiceMachine', f'Found device ({diceName=}) ({connectedDice=}) ({diceDevice=}) ({diceAdvertisement=})')
 
         client = BleakClient(
             address_or_ble_device = diceDevice,
@@ -135,6 +135,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
             await client.connect()
         except Exception as e:
             self.__timber.log('PixelsDiceMachine', f'Failed to establish a connection ({connectedDice=}) ({client=})', e, traceback.format_exc())
+            return None
 
         notifyCharacteristic = client.services.get_characteristic(self.__notifyCharacteristicUuid)
 
@@ -153,6 +154,10 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
         )
 
         return connectedDice
+
+    @property
+    def isConnected(self) -> bool:
+        return self.__connectedDice is not None
 
     def __onBleakClientDisconnected(self, client: BleakClient):
         self.__backgroundTaskHelper.createTask(self.__onBleakClientDisconnectedAsync(
@@ -266,7 +271,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
                     )
 
                     try:
-                        await request.callback.onPixelsDiceRolled(result)
+                        await request.callback(result)
                     except Exception as e:
                         self.__timber.log('PixelsDiceMachine', f'Encountered unknown Exception when notifying pixel dice roll (queue size: {self.__requestQueue.qsize()}) ({len(events)=}) ({index=}) ({event=}) ({request=})', e, traceback.format_exc())
 

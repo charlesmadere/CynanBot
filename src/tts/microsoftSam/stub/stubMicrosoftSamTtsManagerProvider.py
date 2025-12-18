@@ -6,7 +6,7 @@ class StubMicrosoftSamTtsManagerProvider(MicrosoftSamTtsManagerProviderInterface
 
     def constructNewInstance(
         self,
-        useSharedSoundPlayerManager: bool = True
+        useSharedSoundPlayerManager: bool = True,
     ) -> MicrosoftSamTtsManagerInterface | None:
         return None
 

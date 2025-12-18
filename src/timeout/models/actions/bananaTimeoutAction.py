@@ -26,6 +26,9 @@ class BananaTimeoutAction(AbsTimeoutAction):
     def getActionId(self) -> str:
         return self.actionId
 
+    def getChatMessage(self) -> str | None:
+        return self.chatMessage
+
     def getInstigatorUserId(self) -> str:
         return self.instigatorUserId
 

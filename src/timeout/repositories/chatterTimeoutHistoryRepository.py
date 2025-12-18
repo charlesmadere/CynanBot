@@ -212,7 +212,7 @@ class ChatterTimeoutHistoryRepository(ChatterTimeoutHistoryRepositoryInterface):
                             totaldurationseconds bigint DEFAULT 0 NOT NULL,
                             history jsonb DEFAULT NULL,
                             chatteruserid text NOT NULL,
-                            twitchchannelid text NOT NULL
+                            twitchchannelid text NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
                         )
                     '''
@@ -225,7 +225,7 @@ class ChatterTimeoutHistoryRepository(ChatterTimeoutHistoryRepositoryInterface):
                             totaldurationseconds INTEGER NOT NULL DEFAULT 0,
                             history text DEFAULT NULL,
                             chatteruserid TEXT NOT NULL,
-                            twitchchannelid TEXT NOT NULL
+                            twitchchannelid TEXT NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
                         ) STRICT
                     '''

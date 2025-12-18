@@ -28,7 +28,7 @@ class TtsChatCommand(AbsChatCommand):
         timber: TimberInterface,
         ttsJsonMapper: TtsJsonMapperInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -77,10 +77,10 @@ class TtsChatCommand(AbsChatCommand):
         if ttsBoosterPacks is None or len(ttsBoosterPacks) == 0:
             return strings
 
-        sortedTtsBoosterPacks: list[TtsBoosterPack] = list(ttsBoosterPacks)
-        sortedTtsBoosterPacks.sort(key = lambda boosterPack: boosterPack.cheerAmount)
+        for ttsBoosterPack in ttsBoosterPacks:
+            if not ttsBoosterPack.isEnabled:
+                continue
 
-        for ttsBoosterPack in sortedTtsBoosterPacks:
             bitsString: str
 
             if ttsBoosterPack.cheerAmount == 1:
@@ -139,7 +139,7 @@ class TtsChatCommand(AbsChatCommand):
                 self.__twitchChatMessenger.send(
                     text = f'⚠ TTS provider argument is malformed! Available TTS provider(s): {ttsProviderString}. Example: !tts --{random.choice(ttsProviderStrings)} Hello, World!',
                     twitchChannelId = await ctx.getTwitchChannelId(),
-                    replyMessageId = await ctx.getMessageId()
+                    replyMessageId = await ctx.getMessageId(),
                 )
 
                 return

@@ -1,5 +1,9 @@
+from typing import Final
+
 import pytest
 
+from src.chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
+from src.chatterPreferredName.helpers.stub.stubChatterPreferredNameHelper import StubChatterPreferredNameHelper
 from src.tts.commandBuilder.ttsCommandBuilder import TtsCommandBuilder
 from src.tts.commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from src.tts.models.ttsCheerDonation import TtsCheerDonation
@@ -12,7 +16,11 @@ from src.twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier
 
 class TestTtsCommandBuilder:
 
-    commandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()
+    chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = StubChatterPreferredNameHelper()
+
+    commandBuilder: Final[TtsCommandBuilderInterface] = TtsCommandBuilder(
+        chatterPreferredNameHelper = chatterPreferredNameHelper,
+    )
 
     @pytest.mark.asyncio
     async def test_buildDonationPrefix_withCheerDonation(self):

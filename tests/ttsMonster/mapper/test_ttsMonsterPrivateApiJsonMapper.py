@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 import pytest
 
@@ -14,10 +14,10 @@ from src.ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 
 class TestTtsMonsterPrivateApiJsonMapper:
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    mapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
-        timber = timber
+    mapper: Final[TtsMonsterPrivateApiJsonMapperInterface] = TtsMonsterPrivateApiJsonMapper(
+        timber = timber,
     )
 
     @pytest.mark.asyncio
@@ -200,6 +200,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
         assert result is TtsMonsterVoice.JOHNNY
 
     @pytest.mark.asyncio
+    async def test_parseVoice_withKermit(self):
+        result = await self.mapper.parseVoice('kermit')
+        assert result is TtsMonsterVoice.KERMIT
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withKkona(self):
         result = await self.mapper.parseVoice('kkona')
         assert result is TtsMonsterVoice.KKONA
@@ -376,6 +381,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
     async def test_requireVoice_withJohnny(self):
         result = await self.mapper.requireVoice('johnny')
         assert result is TtsMonsterVoice.JOHNNY
+
+    @pytest.mark.asyncio
+    async def test_requireVoice_withKermit(self):
+        result = await self.mapper.requireVoice('kermit')
+        assert result is TtsMonsterVoice.KERMIT
 
     @pytest.mark.asyncio
     async def test_requireVoice_withKkona(self):
@@ -566,6 +576,11 @@ class TestTtsMonsterPrivateApiJsonMapper:
     async def test_serializeVoice_withJohnny(self):
         result = await self.mapper.serializeVoice(TtsMonsterVoice.JOHNNY)
         assert result == 'johnny'
+
+    @pytest.mark.asyncio
+    async def test_serializeVoice_withKermit(self):
+        result = await self.mapper.serializeVoice(TtsMonsterVoice.KERMIT)
+        assert result == 'kermit'
 
     @pytest.mark.asyncio
     async def test_serializeVoice_withKkona(self):

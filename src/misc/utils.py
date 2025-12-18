@@ -39,7 +39,7 @@ def boolToInt(b: bool) -> int:
 
 CARROT_REMOVAL_REG_EX: Final[Pattern] = re.compile(r'<\/?\w+>', re.IGNORECASE)
 EXTRA_WHITE_SPACE_REG_EX: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
-RIDICULOUS_BLANK_CHARACTERS_REG_EX: Final[Pattern] = re.compile(r'[\U000e0000]', re.IGNORECASE)
+RIDICULOUS_BLANK_OR_INVISIBLE_CHARACTERS_REG_EX: Final[Pattern] = re.compile(r'[\u0001\u00AD\u034F\u180E\u200B\u200C\u200D\u2060\uFEFF\U000E0000]', re.IGNORECASE)
 
 def cleanStr(
     s: str | None,
@@ -60,7 +60,7 @@ def cleanStr(
         return ''
 
     s = EXTRA_WHITE_SPACE_REG_EX.sub(' ', s).strip()
-    s = RIDICULOUS_BLANK_CHARACTERS_REG_EX.sub('', s).strip()
+    s = RIDICULOUS_BLANK_OR_INVISIBLE_CHARACTERS_REG_EX.sub('', s).strip()
 
     s = s.replace('\r\n', replacement)\
          .replace('\r', replacement)\
@@ -94,22 +94,6 @@ def containsUrl(s: str | None) -> TypeGuard[str]:
             return True
 
     return False
-
-def copyList(l: list[Any] | None) -> list:
-    newList = list()
-
-    if l is not None and len(l) >= 1:
-        newList.extend(l)
-
-    return newList
-
-def copySet(s: set[Any] | None) -> set:
-    newSet = set()
-
-    if s is not None and len(s) >= 1:
-        newSet.update(s)
-
-    return newSet
 
 def cToF(celsius: float) -> float:
     if not isValidNum(celsius):
@@ -490,7 +474,7 @@ def safeStrToInt(s: str | None) -> int | None:
 
     try:
         return int(s)
-    except Exception:
+    except:
         return None
 
 MINUTE_IN_SECONDS: Final[int] = 60

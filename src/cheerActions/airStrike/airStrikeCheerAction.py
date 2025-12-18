@@ -18,13 +18,13 @@ class AirStrikeCheerAction(AbsCheerAction):
         minDurationSeconds: int,
         maxTimeoutChatters: int,
         minTimeoutChatters: int,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if not utils.isValidInt(maxDurationSeconds):

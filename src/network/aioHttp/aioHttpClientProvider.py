@@ -19,7 +19,7 @@ class AioHttpClientProvider(NetworkClientProvider):
         eventLoop: AbstractEventLoop,
         cookieJarProvider: AioHttpCookieJarProvider,
         timber: TimberInterface,
-        timeoutSeconds: int = 30
+        timeoutSeconds: int = 30,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -46,14 +46,14 @@ class AioHttpClientProvider(NetworkClientProvider):
             clientSession = aiohttp.ClientSession(
                 loop = self.__eventLoop,
                 cookie_jar = await self.__cookieJarProvider.get(),
-                timeout = aiohttp.ClientTimeout(total = self.__timeoutSeconds)
+                timeout = aiohttp.ClientTimeout(total = self.__timeoutSeconds),
             )
 
             self.__clientSession = clientSession
 
         return AioHttpHandle(
             clientSession = clientSession,
-            timber = self.__timber
+            timber = self.__timber,
         )
 
     @property

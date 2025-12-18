@@ -13,6 +13,6 @@ class MicrosoftSamHelperInterface(ABC):
         donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> MicrosoftSamFileReference | None:
         pass

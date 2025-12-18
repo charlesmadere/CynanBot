@@ -110,7 +110,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         async def playPlaylist():
             await self.__soundPlayerManager.playSoundFile(
                 filePath = fileReference.filePath,
-                volume = volume
+                volume = volume,
             )
 
             self.__isLoadingOrPlaying = False

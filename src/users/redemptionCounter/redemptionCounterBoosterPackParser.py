@@ -11,7 +11,7 @@ class RedemptionCounterBoosterPackParser(RedemptionCounterBoosterPackParserInter
 
     def parseBoosterPack(
         self,
-        jsonContents: dict[str, Any]
+        jsonContents: dict[str, Any],
     ) -> RedemptionCounterBoosterPack:
         if not isinstance(jsonContents, dict):
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
@@ -38,12 +38,12 @@ class RedemptionCounterBoosterPackParser(RedemptionCounterBoosterPackParserInter
             incrementAmount = incrementAmount,
             counterName = counterName,
             emote = emote,
-            rewardId = rewardId
+            rewardId = rewardId,
         )
 
     def parseBoosterPacks(
         self,
-        jsonContents: list[dict[str, Any]] | Any | None
+        jsonContents: list[dict[str, Any]] | Any | None,
     ) -> frozendict[str, RedemptionCounterBoosterPack] | None:
         if not isinstance(jsonContents, list) or len(jsonContents) == 0:
             return None

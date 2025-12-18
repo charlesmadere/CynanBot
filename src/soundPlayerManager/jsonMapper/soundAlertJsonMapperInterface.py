@@ -9,20 +9,20 @@ class SoundAlertJsonMapperInterface(ABC):
     @abstractmethod
     def parseSoundAlert(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> SoundAlert | None:
         pass
 
     @abstractmethod
     def requireSoundAlert(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> SoundAlert:
         pass
 
     @abstractmethod
     def serializeSoundAlert(
         self,
-        soundAlert: SoundAlert
+        soundAlert: SoundAlert,
     ) -> str:
         pass

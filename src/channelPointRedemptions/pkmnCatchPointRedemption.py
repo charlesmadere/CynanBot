@@ -1,11 +1,13 @@
+from typing import Final
+
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..funtoon.funtoonHelperInterface import FuntoonHelperInterface
 from ..funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from ..users.pkmn.pkmnCatchType import PkmnCatchType
 
@@ -17,7 +19,7 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
         funtoonHelper: FuntoonHelperInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface
+        twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(funtoonHelper, FuntoonHelperInterface):
             raise TypeError(f'funtoonHelper argument is malformed: \"{funtoonHelper}\"')
@@ -25,18 +27,18 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
-        self.__funtoonHelper: FuntoonHelperInterface = funtoonHelper
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
+        self.__funtoonHelper: Final[FuntoonHelperInterface] = funtoonHelper
+        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> bool:
         twitchUser = twitchChannelPointsMessage.twitchUser
         if not twitchUser.isPkmnEnabled:
@@ -59,22 +61,25 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
 
         if generalSettings.isFuntoonApiEnabled() and await self.__funtoonHelper.pkmnCatch(
             twitchChannel = twitchUser.handle,
-            twitchChannelId = await twitchChannel.getTwitchChannelId(),
+            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
             userThatRedeemed = twitchChannelPointsMessage.userName,
-            funtoonPkmnCatchType = funtoonPkmnCatchType
+            funtoonPkmnCatchType = funtoonPkmnCatchType,
         ):
             actionCompleted = True
 
         if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
-            await self.__twitchUtils.safeSend(twitchChannel, f'!catch {twitchChannelPointsMessage.userName}')
+            self.__twitchChatMessenger.send(
+                text = f'!catch {twitchChannelPointsMessage.userName}',
+                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            )
             actionCompleted = True
 
-        self.__timber.log('PkmnCatchRedemption', f'Redeemed pkmn catch for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} (catch type: {pkmnCatchBoosterPack.catchType}) in {twitchUser.handle}')
+        self.__timber.log('PkmnCatchRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({pkmnCatchBoosterPack=})')
         return actionCompleted
 
     def __toFuntoonPkmnCatchType(
         self,
-        pkmnCatchBoosterPack: PkmnCatchBoosterPack
+        pkmnCatchBoosterPack: PkmnCatchBoosterPack,
     ) -> FuntoonPkmnCatchType:
         if not isinstance(pkmnCatchBoosterPack, PkmnCatchBoosterPack):
             raise TypeError(f'pkmnCatchBoosterPack argument is malformed: \"{pkmnCatchBoosterPack}\"')

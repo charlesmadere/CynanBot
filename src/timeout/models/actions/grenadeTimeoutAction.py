@@ -23,6 +23,9 @@ class GrenadeTimeoutAction(AbsTimeoutAction):
     def getActionId(self) -> str:
         return self.actionId
 
+    def getChatMessage(self) -> str | None:
+        return None
+
     def getInstigatorUserId(self) -> str:
         return self.instigatorUserId
 

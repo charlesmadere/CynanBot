@@ -83,7 +83,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                 VALUES ($1, $2, $3, $4, $5)
                 ON CONFLICT (glacialId, provider) DO NOTHING
             ''',
-            ( storeDateTime.isoformat(), glacialId, message, providerString, voice, )
+            ( storeDateTime.isoformat(), glacialId, message, providerString, voice, ),
         )
 
         await connection.commit()
@@ -122,7 +122,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                     WHERE message = $1 AND provider = $2 AND voice = $3
                     LIMIT 1
                 ''',
-                ( message, providerString, voice, )
+                ( message, providerString, voice, ),
             )
         else:
             cursor = await connection.execute(
@@ -131,7 +131,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                     WHERE message = $1 AND provider = $2 AND voice is NULL
                     LIMIT 1
                 ''',
-                ( message, providerString, )
+                ( message, providerString, ),
             )
 
         row = await cursor.fetchone()
@@ -147,7 +147,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                 glacialId = row[1],
                 message = message,
                 voice = voice,
-                provider = provider
+                provider = provider,
             )
 
         await connection.close()
@@ -197,7 +197,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                 WHERE glacialId = $1 AND provider = $2
                 LIMIT 1
             ''',
-            ( glacialId, providerString, )
+            ( glacialId, providerString, ),
         )
 
         row = await cursor.fetchone()
@@ -213,7 +213,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                 glacialId = glacialId,
                 message = row[1],
                 voice = row[2],
-                provider = provider
+                provider = provider,
             )
 
             await connection.execute(
@@ -221,7 +221,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                     DELETE FROM glacialTtsStorage
                     WHERE glacialId = $1 AND provider = $2
                 ''',
-                ( glacialId, providerString, )
+                ( glacialId, providerString, ),
             )
 
             await connection.commit()

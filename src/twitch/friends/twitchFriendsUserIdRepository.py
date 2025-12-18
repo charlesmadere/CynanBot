@@ -9,6 +9,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         self,
         acacUserId: str | None = '1274825203',
         albeeesUserId: str | None = '61963795',
+        albeeevUserId: str | None = '1387490799',
         aneevUserId: str | None = '1284413302',
         anivUserId: str | None = '749050409',
         ayAerithUserId: str | None = '277720347',
@@ -16,6 +17,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         charlesUserId: str | None = '74350217',
         dylanStewUserId: str | None = '66822320',
         eddieUserId: str | None = '22587336',
+        funtoonUserId: str | None = '477393386',
         hokkaidoubareUserId: str | None = '490529357',
         imytUserId: str | None = '20037000',
         jrpUserId: str | None = '47768842',
@@ -36,6 +38,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'acacUserId argument is malformed: \"{acacUserId}\"')
         elif albeeesUserId is not None and not isinstance(albeeesUserId, str):
             raise TypeError(f'albeeesUserId argument is malformed: \"{albeeesUserId}\"')
+        elif albeeevUserId is not None and not isinstance(albeeevUserId, str):
+            raise TypeError(f'albeeevUserId argument is malformed: \"{albeeevUserId}\"')
         elif aneevUserId is not None and not isinstance(aneevUserId, str):
             raise TypeError(f'aneevUserId argument is malformed: \"{aneevUserId}\"')
         elif anivUserId is not None and not isinstance(anivUserId, str):
@@ -50,6 +54,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'dylanStewUserId argument is malformed: \"{dylanStewUserId}\"')
         elif eddieUserId is not None and not isinstance(eddieUserId, str):
             raise TypeError(f'eddieUserId argument is malformed: \"{eddieUserId}\"')
+        elif funtoonUserId is not None and not isinstance(funtoonUserId, str):
+            raise TypeError(f'funtoonUserId argument is malformed: \"{funtoonUserId}\"')
         elif hokkaidoubareUserId is not None and not isinstance(hokkaidoubareUserId, str):
             raise TypeError(f'hokkaidoubareUserId argument is malformed: \"{hokkaidoubareUserId}\"')
         elif imytUserId is not None and not isinstance(imytUserId, str):
@@ -83,6 +89,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
 
         self.__acacUserId: Final[str | None] = acacUserId
         self.__albeeesUserId: Final[str | None] = albeeesUserId
+        self.__albeeevUserId: Final[str | None] = albeeevUserId
         self.__aneevUserId: Final[str | None] = aneevUserId
         self.__anivUserId: Final[str | None] = anivUserId
         self.__ayAerithUserId: Final[str | None] = ayAerithUserId
@@ -90,6 +97,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         self.__charlesUserId: Final[str | None] = charlesUserId
         self.__dylanStewUserId: Final[str | None] = dylanStewUserId
         self.__eddieUserId: Final[str | None] = eddieUserId
+        self.__funtoonUserId: Final[str | None] = funtoonUserId
         self.__hokkaidoubareUserId: Final[str | None] = hokkaidoubareUserId
         self.__imytUserId: Final[str | None] = imytUserId
         self.__jrpUserId: Final[str | None] = jrpUserId
@@ -112,6 +120,9 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
     async def getAlbeeesUserId(self) -> str | None:
         return self.__albeeesUserId
 
+    async def getAlbeeevUserId(self) -> str | None:
+        return self.__albeeevUserId
+
     async def getAneevUserId(self) -> str | None:
         return self.__aneevUserId
 
@@ -132,6 +143,9 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
 
     async def getEddieUserId(self) -> str | None:
         return self.__eddieUserId
+
+    async def getFuntoonUserId(self) -> str | None:
+        return self.__funtoonUserId
 
     async def getHokkaidoubareUserId(self) -> str | None:
         return self.__hokkaidoubareUserId

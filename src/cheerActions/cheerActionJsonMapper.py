@@ -14,16 +14,26 @@ from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequireme
 from .cheerActionType import CheerActionType
 from .crowdControl.crowdControlButtonPressCheerAction import CrowdControlButtonPressCheerAction
 from .crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
+from .itemUse.itemUseCheerAction import ItemUseCheerAction
 from .soundAlert.soundAlertCheerAction import SoundAlertCheerAction
 from .timeout.timeoutCheerAction import TimeoutCheerAction
 from .timeout.timeoutCheerActionTargetType import TimeoutCheerActionTargetType
 from .voicemail.voicemailCheerAction import VoicemailCheerAction
+from ..chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from ..misc import utils as utils
 
 
 class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
-    def __init__(self):
+    def __init__(
+        self,
+        chatterInventoryMapper: ChatterInventoryMapperInterface,
+    ):
+        if not isinstance(chatterInventoryMapper, ChatterInventoryMapperInterface):
+            raise TypeError(f'chatterInventoryMapper argument is malformed: \"{chatterInventoryMapper}\"')
+
+        self.__chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = chatterInventoryMapper
+
         self.__cheerActionTypeRegExes: Final[frozendict[CheerActionType, Collection[Pattern]]] = self.__createCheerActionTypeRegExes()
         self.__timeoutCheerActionTargetTypeRegExes: Final[frozendict[TimeoutCheerActionTargetType, Collection[Pattern]]] = self.__createTimeoutCheerActionTargetTypeRegExes()
 
@@ -53,6 +63,12 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         gameShuffle.append(re.compile(r'\s*game(?:\s|_|-)*shuffle\s*$', re.IGNORECASE))
         gameShuffle.freeze()
 
+        itemUse: FrozenList[Pattern] = FrozenList()
+        itemUse.append(re.compile(r'\s*item\s*$', re.IGNORECASE))
+        itemUse.append(re.compile(r'\s*item(?:\s|_|-)*use\s*$', re.IGNORECASE))
+        itemUse.append(re.compile(r'\s*use(?:\s|_|-)*item\s*$', re.IGNORECASE))
+        itemUse.freeze()
+
         soundAlert: FrozenList[Pattern] = FrozenList()
         soundAlert.append(re.compile(r'\s*sound\s*$', re.IGNORECASE))
         soundAlert.append(re.compile(r'\s*sound(?:\s|_|-)*alert\s*$', re.IGNORECASE))
@@ -72,6 +88,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             CheerActionType.BEAN_CHANCE: beanChance,
             CheerActionType.CROWD_CONTROL: crowdControl,
             CheerActionType.GAME_SHUFFLE: gameShuffle,
+            CheerActionType.ITEM_USE: itemUse,
             CheerActionType.SOUND_ALERT: soundAlert,
             CheerActionType.TIMEOUT: timeout,
             CheerActionType.VOICEMAIL: voicemail,
@@ -96,7 +113,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         return frozendict({
             TimeoutCheerActionTargetType.ANY: anyRegExes,
             TimeoutCheerActionTargetType.RANDOM_ONLY: randomRegExes,
-            TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY: specificTargetOnlyRegExes
+            TimeoutCheerActionTargetType.SPECIFIC_TARGET_ONLY: specificTargetOnlyRegExes,
         })
 
     async def parseAdgeCheerAction(
@@ -105,7 +122,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AdgeCheerAction | None:
         if not utils.isValidStr(jsonString):
             return None
@@ -115,7 +132,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         adgeLengthSeconds = utils.getIntFromDict(
             d = jsonContents,
             key = 'adgeLengthSeconds',
-            fallback = 30
+            fallback = 30,
         )
 
         return AdgeCheerAction(
@@ -123,7 +140,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             streamStatusRequirement = streamStatusRequirement,
             adgeLengthSeconds = adgeLengthSeconds,
             bits = bits,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def parseAirStrikeCheerAction(
@@ -132,7 +149,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AirStrikeCheerAction | None:
         if not utils.isValidStr(jsonString):
             return None
@@ -142,25 +159,25 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         maxDurationSeconds = utils.getIntFromDict(
             d = jsonContents,
             key = 'maxDurationSeconds',
-            fallback = 60
+            fallback = 60,
         )
 
         minDurationSeconds = utils.getIntFromDict(
             d = jsonContents,
             key = 'minDurationSeconds',
-            fallback = 60
+            fallback = 60,
         )
 
         maxTimeoutChatters = utils.getIntFromDict(
             d = jsonContents,
             key = 'maxTimeoutChatters',
-            fallback = 10
+            fallback = 10,
         )
 
         minTimeoutChatters = utils.getIntFromDict(
             d = jsonContents,
             key = 'minTimeoutChatters',
-            fallback = 3
+            fallback = 3,
         )
 
         return AirStrikeCheerAction(
@@ -171,7 +188,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             minDurationSeconds = minDurationSeconds,
             maxTimeoutChatters = maxTimeoutChatters,
             minTimeoutChatters = minTimeoutChatters,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def parseBeanChanceCheerAction(
@@ -180,7 +197,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> BeanChanceCheerAction | None:
         if not utils.isValidStr(jsonString):
             return None
@@ -189,7 +206,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         randomChance = utils.getIntFromDict(
             d = jsonContents,
-            key = 'randomChance'
+            key = 'randomChance',
         )
 
         return BeanChanceCheerAction(
@@ -197,12 +214,12 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             randomChance = randomChance,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def parseCheerActionStreamStatusRequirement(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> CheerActionStreamStatusRequirement | None:
         if not utils.isValidStr(jsonString):
             return None
@@ -217,7 +234,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
     async def parseCheerActionType(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> CheerActionType | None:
         if not utils.isValidStr(jsonString):
             return None
@@ -235,7 +252,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CrowdControlButtonPressCheerAction | None:
         if not utils.isValidStr(jsonString):
             return None
@@ -244,7 +261,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def parseCrowdControlGameShuffleCheerAction(
@@ -253,7 +270,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CrowdControlGameShuffleCheerAction | None:
         if not utils.isValidStr(jsonString):
             return None
@@ -269,7 +286,32 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             gigaShuffleChance = gigaShuffleChance,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
+        )
+
+    async def parseItemUseCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str,
+    ) -> ItemUseCheerAction | None:
+        if not utils.isValidStr(jsonString):
+            return None
+
+        jsonContents: dict[str, Any] = json.loads(jsonString)
+
+        itemType = await self.__chatterInventoryMapper.requireItemType(
+            itemType = utils.getStrFromDict(jsonContents, 'itemType'),
+        )
+
+        return ItemUseCheerAction(
+            isEnabled = isEnabled,
+            itemType = itemType,
+            streamStatusRequirement = streamStatusRequirement,
+            bits = bits,
+            twitchChannelId = twitchChannelId,
         )
 
     async def parseSoundAlertCheerAction(
@@ -278,20 +320,20 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> SoundAlertCheerAction | None:
         if not utils.isValidStr(jsonString):
             return None
 
         jsonContents: dict[str, Any] = json.loads(jsonString)
-        directory = utils.getStrFromDict(d = jsonContents, key = 'directory')
+        directory = utils.getStrFromDict(jsonContents, 'directory')
 
         return SoundAlertCheerAction(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             directory = directory,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def parseTimeoutCheerAction(
@@ -300,7 +342,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> TimeoutCheerAction | None:
         if not utils.isValidStr(jsonString):
             return None
@@ -310,22 +352,26 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         durationSeconds = utils.getIntFromDict(
             d = jsonContents,
             key = 'durationSeconds',
-            fallback = 60
+            fallback = 60,
         )
 
         isRandomChanceEnabled = utils.getBoolFromDict(
             d = jsonContents,
             key = 'randomChanceEnabled',
-            fallback = True
+            fallback = True,
         )
 
         targetTypeString = utils.getStrFromDict(
             d = jsonContents,
             key = 'targetType',
-            fallback = await self.serializeTimeoutCheerActionTargetType(TimeoutCheerActionTargetType.ANY)
+            fallback = await self.serializeTimeoutCheerActionTargetType(
+                targetType = TimeoutCheerActionTargetType.ANY,
+            ),
         )
 
-        targetType = await self.requireTimeoutCheerActionTargetType(targetTypeString)
+        targetType = await self.requireTimeoutCheerActionTargetType(
+            string = targetTypeString,
+        )
 
         return TimeoutCheerAction(
             isEnabled = isEnabled,
@@ -334,12 +380,12 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             bits = bits,
             durationSeconds = durationSeconds,
             twitchChannelId = twitchChannelId,
-            targetType = targetType
+            targetType = targetType,
         )
 
     async def parseTimeoutCheerActionTargetType(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> TimeoutCheerActionTargetType | None:
         if not utils.isValidStr(string):
             return None
@@ -357,13 +403,13 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> VoicemailCheerAction | None:
         return VoicemailCheerAction(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def requireAdgeCheerAction(
@@ -372,14 +418,14 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AdgeCheerAction:
         action = await self.parseAdgeCheerAction(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             jsonString = jsonString,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if action is None:
@@ -393,14 +439,14 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AirStrikeCheerAction:
         action = await self.parseAirStrikeCheerAction(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             jsonString = jsonString,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if action is None:
@@ -414,14 +460,14 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> BeanChanceCheerAction:
         action = await self.parseBeanChanceCheerAction(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             jsonString = jsonString,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if action is None:
@@ -431,7 +477,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
     async def requireCheerActionStreamStatusRequirement(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> CheerActionStreamStatusRequirement:
         streamStatusRequirement = await self.parseCheerActionStreamStatusRequirement(jsonString)
 
@@ -442,7 +488,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
     async def requireCheerActionType(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> CheerActionType:
         actionType = await self.parseCheerActionType(jsonString)
 
@@ -457,14 +503,14 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CrowdControlButtonPressCheerAction:
         action = await self.parseCrowdControlButtonPressCheerAction(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             jsonString = jsonString,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if action is None:
@@ -478,18 +524,39 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CrowdControlGameShuffleCheerAction:
         action = await self.parseCrowdControlGameShuffleCheerAction(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             jsonString = jsonString,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if action is None:
             raise ValueError(f'Unable to create CrowdControlGameShuffleCheerAction! ({isEnabled=}) ({streamStatusRequirement=}) ({bits=}) ({jsonString=}) ({twitchChannelId=})')
+
+        return action
+
+    async def requireItemUseCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str,
+    ) -> ItemUseCheerAction:
+        action = await self.parseItemUseCheerAction(
+            isEnabled = isEnabled,
+            streamStatusRequirement = streamStatusRequirement,
+            bits = bits,
+            jsonString = jsonString,
+            twitchChannelId = twitchChannelId,
+        )
+
+        if action is None:
+            raise ValueError(f'Unable to create ItemUseCheerAction! ({isEnabled=}) ({streamStatusRequirement=}) ({bits=}) ({jsonString=}) ({twitchChannelId=})')
 
         return action
 
@@ -499,14 +566,14 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> SoundAlertCheerAction:
         action = await self.parseSoundAlertCheerAction(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             jsonString = jsonString,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if action is None:
@@ -520,14 +587,14 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> TimeoutCheerAction:
         action = await self.parseTimeoutCheerAction(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             jsonString = jsonString,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if action is None:
@@ -537,7 +604,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
     async def requireTimeoutCheerActionTargetType(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> TimeoutCheerActionTargetType:
         targetType = await self.parseTimeoutCheerActionTargetType(string)
 
@@ -552,14 +619,14 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> VoicemailCheerAction:
         action = await self.parseVoicemailCheerAction(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
             jsonString = jsonString,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if action is None:
@@ -569,46 +636,57 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
     async def serializeAbsCheerAction(
         self,
-        cheerAction: AbsCheerAction
+        cheerAction: AbsCheerAction,
     ) -> str:
         if not isinstance(cheerAction, AbsCheerAction):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
 
         if isinstance(cheerAction, AdgeCheerAction):
             return await self.__serializeAdgeCheerAction(cheerAction)
+
         elif isinstance(cheerAction, AirStrikeCheerAction):
             return await self.__serializeAirStrikeCheerAction(cheerAction)
+
         elif isinstance(cheerAction, BeanChanceCheerAction):
             return await self.__serializeBeanChanceCheerAction(cheerAction)
+
         elif isinstance(cheerAction, CrowdControlButtonPressCheerAction):
             return await self.__serializeCrowdControlButtonPressCheerAction(cheerAction)
+
         elif isinstance(cheerAction, CrowdControlGameShuffleCheerAction):
             return await self.__serializeCrowdControlGameShuffleCheerAction(cheerAction)
+
+        elif isinstance(cheerAction, ItemUseCheerAction):
+            return await self.__serializeItemUseCheerAction(cheerAction)
+
         elif isinstance(cheerAction, SoundAlertCheerAction):
             return await self.__serializeSoundAlertCheerAction(cheerAction)
+
         elif isinstance(cheerAction, TimeoutCheerAction):
             return await self.__serializeTimeoutCheerAction(cheerAction)
+
         elif isinstance(cheerAction, VoicemailCheerAction):
             return await self.__serializeVoicemailCheerAction(cheerAction)
+
         else:
             raise RuntimeError(f'Encountered unknown AbsCheerAction type ({cheerAction=})')
 
     async def __serializeAdgeCheerAction(
         self,
-        cheerAction: AdgeCheerAction
+        cheerAction: AdgeCheerAction,
     ) -> str:
         if not isinstance(cheerAction, AdgeCheerAction):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
 
         jsonContents: dict[str, Any] = {
-            'adgeLengthSeconds': cheerAction.adgeLengthSeconds
+            'adgeLengthSeconds': cheerAction.adgeLengthSeconds,
         }
 
         return json.dumps(jsonContents)
 
     async def __serializeAirStrikeCheerAction(
         self,
-        cheerAction: AirStrikeCheerAction
+        cheerAction: AirStrikeCheerAction,
     ) -> str:
         if not isinstance(cheerAction, AirStrikeCheerAction):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
@@ -617,27 +695,27 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             'maxDurationSeconds': cheerAction.maxDurationSeconds,
             'minDurationSeconds': cheerAction.minDurationSeconds,
             'maxTimeoutChatters': cheerAction.maxTimeoutChatters,
-            'minTimeoutChatters': cheerAction.minTimeoutChatters
+            'minTimeoutChatters': cheerAction.minTimeoutChatters,
         }
 
         return json.dumps(jsonContents)
 
     async def __serializeBeanChanceCheerAction(
         self,
-        cheerAction: BeanChanceCheerAction
+        cheerAction: BeanChanceCheerAction,
     ) -> str:
         if not isinstance(cheerAction, BeanChanceCheerAction):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
 
         jsonContents: dict[str, Any] = {
-            'randomChance': cheerAction.randomChance
+            'randomChance': cheerAction.randomChance,
         }
 
         return json.dumps(jsonContents)
 
     async def serializeCheerActionStreamStatusRequirement(
         self,
-        streamStatusRequirement: CheerActionStreamStatusRequirement
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
     ) -> str:
         if not isinstance(streamStatusRequirement, CheerActionStreamStatusRequirement):
             raise TypeError(f'streamStatusRequirement argument is malformed: \"{streamStatusRequirement}\"')
@@ -650,7 +728,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
     async def serializeCheerActionType(
         self,
-        actionType: CheerActionType
+        actionType: CheerActionType,
     ) -> str:
         if not isinstance(actionType, CheerActionType):
             raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
@@ -661,6 +739,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
             case CheerActionType.BEAN_CHANCE: return 'bean_chance'
             case CheerActionType.CROWD_CONTROL: return 'crowd_control'
             case CheerActionType.GAME_SHUFFLE: return 'game_shuffle'
+            case CheerActionType.ITEM_USE: return 'item_use'
             case CheerActionType.SOUND_ALERT: return 'sound_alert'
             case CheerActionType.TIMEOUT: return 'timeout'
             case CheerActionType.VOICEMAIL: return 'voicemail'
@@ -668,7 +747,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
     async def __serializeCrowdControlButtonPressCheerAction(
         self,
-        cheerAction: CrowdControlButtonPressCheerAction
+        cheerAction: CrowdControlButtonPressCheerAction,
     ) -> str:
         if not isinstance(cheerAction, CrowdControlButtonPressCheerAction):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
@@ -678,7 +757,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
     async def __serializeCrowdControlGameShuffleCheerAction(
         self,
-        cheerAction: CrowdControlGameShuffleCheerAction
+        cheerAction: CrowdControlGameShuffleCheerAction,
     ) -> str:
         if not isinstance(cheerAction, CrowdControlGameShuffleCheerAction):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
@@ -690,22 +769,39 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
         return json.dumps(jsonContents)
 
+    async def __serializeItemUseCheerAction(
+        self,
+        cheerAction: ItemUseCheerAction,
+    ) -> str:
+        if not isinstance(cheerAction, ItemUseCheerAction):
+            raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
+
+        itemTypeString = await self.__chatterInventoryMapper.serializeItemType(
+            itemType = cheerAction.itemType,
+        )
+
+        jsonContents: dict[str, Any] = {
+            'itemType': itemTypeString,
+        }
+
+        return json.dumps(jsonContents)
+
     async def __serializeSoundAlertCheerAction(
         self,
-        cheerAction: SoundAlertCheerAction
+        cheerAction: SoundAlertCheerAction,
     ) -> str:
         if not isinstance(cheerAction, SoundAlertCheerAction):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
 
         jsonContents: dict[str, Any] = {
-            'directory': cheerAction.directory
+            'directory': cheerAction.directory,
         }
 
         return json.dumps(jsonContents)
 
     async def __serializeTimeoutCheerAction(
         self,
-        cheerAction: TimeoutCheerAction
+        cheerAction: TimeoutCheerAction,
     ) -> str:
         if not isinstance(cheerAction, TimeoutCheerAction):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')
@@ -715,14 +811,14 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
         jsonContents: dict[str, Any] = {
             'durationSeconds': cheerAction.durationSeconds,
             'randomChanceEnabled': cheerAction.isRandomChanceEnabled,
-            'targetType': targetTypeString
+            'targetType': targetTypeString,
         }
 
         return json.dumps(jsonContents)
 
     async def serializeTimeoutCheerActionTargetType(
         self,
-        targetType: TimeoutCheerActionTargetType
+        targetType: TimeoutCheerActionTargetType,
     ) -> str:
         if not isinstance(targetType, TimeoutCheerActionTargetType):
             raise TypeError(f'targetType argument is malformed: \"{targetType}\"')
@@ -735,7 +831,7 @@ class CheerActionJsonMapper(CheerActionJsonMapperInterface):
 
     async def __serializeVoicemailCheerAction(
         self,
-        cheerAction: VoicemailCheerAction
+        cheerAction: VoicemailCheerAction,
     ) -> str:
         if not isinstance(cheerAction, VoicemailCheerAction):
             raise TypeError(f'cheerAction argument is malformed: \"{cheerAction}\"')

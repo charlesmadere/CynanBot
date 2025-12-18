@@ -8,7 +8,7 @@ class TriviaQuestionCompilerInterface(ABC):
     async def compileCategory(
         self,
         category: str | None,
-        htmlUnescape: bool = False
+        htmlUnescape: bool = False,
     ) -> str:
         pass
 
@@ -16,7 +16,7 @@ class TriviaQuestionCompilerInterface(ABC):
     async def compileQuestion(
         self,
         question: str | None,
-        htmlUnescape: bool = False
+        htmlUnescape: bool = False,
     ) -> str:
         pass
 
@@ -24,7 +24,7 @@ class TriviaQuestionCompilerInterface(ABC):
     async def compileResponse(
         self,
         response: str | None,
-        htmlUnescape: bool = False
+        htmlUnescape: bool = False,
     ) -> str:
         pass
 
@@ -32,7 +32,7 @@ class TriviaQuestionCompilerInterface(ABC):
     async def compileResponses(
         self,
         responses: Collection[str | None] | None,
-        htmlUnescape: bool = False
+        htmlUnescape: bool = False,
     ) -> list[str]:
         pass
 
@@ -40,6 +40,6 @@ class TriviaQuestionCompilerInterface(ABC):
     async def findAllWordsInQuestion(
         self,
         category: str | None,
-        question: str
+        question: str,
     ) -> frozenset[str]:
         pass

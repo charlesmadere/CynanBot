@@ -13,6 +13,6 @@ class StreamElementsHelperInterface(ABC):
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str,
-        voice: StreamElementsVoice | None
+        voice: StreamElementsVoice | None,
     ) -> StreamElementsFileReference | None:
         pass

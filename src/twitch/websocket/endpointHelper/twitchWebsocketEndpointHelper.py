@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing import Final
 
 from .twitchWebsocketEndpointHelperInterface import TwitchWebsocketEndpointHelperInterface
 from ..twitchWebsocketUser import TwitchWebsocketUser
@@ -11,17 +12,17 @@ class TwitchWebsocketEndpointHelper(TwitchWebsocketEndpointHelperInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        defaultTwitchWebsocketEndpointUrl: str = 'wss://eventsub.wss.twitch.tv/ws'
+        defaultTwitchWebsocketEndpointUrl: str = 'wss://eventsub.wss.twitch.tv/ws',
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidUrl(defaultTwitchWebsocketEndpointUrl):
             raise TypeError(f'defaultTwitchWebsocketEndpointUrl argument is malformed: \"{defaultTwitchWebsocketEndpointUrl}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__defaultTwitchWebsocketEndpointUrl: str = defaultTwitchWebsocketEndpointUrl
+        self.__timber: Final[TimberInterface] = timber
+        self.__defaultTwitchWebsocketEndpointUrl: Final[str] = defaultTwitchWebsocketEndpointUrl
 
-        self.__twitchEndpointUrls: dict[TwitchWebsocketUser, str] = defaultdict(lambda: defaultTwitchWebsocketEndpointUrl)
+        self.__twitchEndpointUrls: Final[dict[TwitchWebsocketUser, str]] = defaultdict(lambda: defaultTwitchWebsocketEndpointUrl)
 
     def __getitem__(self, key: TwitchWebsocketUser) -> str:
         if not isinstance(key, TwitchWebsocketUser):

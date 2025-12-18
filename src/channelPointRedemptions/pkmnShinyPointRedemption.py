@@ -1,10 +1,12 @@
+from typing import Final
+
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..funtoon.funtoonHelperInterface import FuntoonHelperInterface
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchChannel import TwitchChannel
 from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 
 class PkmnShinyPointRedemption(AbsChannelPointRedemption):
@@ -14,7 +16,7 @@ class PkmnShinyPointRedemption(AbsChannelPointRedemption):
         funtoonHelper: FuntoonHelperInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface
+        twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(funtoonHelper, FuntoonHelperInterface):
             raise TypeError(f'funtoonHelper argument is malformed: \"{funtoonHelper}\"')
@@ -22,18 +24,18 @@ class PkmnShinyPointRedemption(AbsChannelPointRedemption):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
-        self.__funtoonHelper: FuntoonHelperInterface = funtoonHelper
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
+        self.__funtoonHelper: Final[FuntoonHelperInterface] = funtoonHelper
+        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> bool:
         twitchUser = twitchChannelPointsMessage.twitchUser
         if not twitchUser.isPkmnEnabled:
@@ -44,14 +46,17 @@ class PkmnShinyPointRedemption(AbsChannelPointRedemption):
 
         if generalSettings.isFuntoonApiEnabled() and await self.__funtoonHelper.pkmnGiveShiny(
             twitchChannel = twitchUser.handle,
-            twitchChannelId = await twitchChannel.getTwitchChannelId(),
-            userThatRedeemed = twitchChannelPointsMessage.userName
+            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            userThatRedeemed = twitchChannelPointsMessage.userName,
         ):
             actionCompleted = True
 
         if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
-            await self.__twitchUtils.safeSend(twitchChannel, f'!freeshiny {twitchChannelPointsMessage.userName}')
+            self.__twitchChatMessenger.send(
+                text = f'!freeshiny {twitchChannelPointsMessage.userName}',
+                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            )
             actionCompleted = True
 
-        self.__timber.log('PkmnShinyRedemption', f'Redeemed pkmn shiny for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
+        self.__timber.log('PkmnShinyRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({actionCompleted=})')
         return actionCompleted

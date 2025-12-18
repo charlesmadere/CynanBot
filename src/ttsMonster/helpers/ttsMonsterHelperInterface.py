@@ -13,6 +13,6 @@ class TtsMonsterHelperInterface(ABC):
         message: str | None,
         twitchChannel: str,
         twitchChannelId: str,
-        voice: TtsMonsterVoice | None
+        voice: TtsMonsterVoice | None,
     ) -> TtsMonsterFileReference | None:
         pass

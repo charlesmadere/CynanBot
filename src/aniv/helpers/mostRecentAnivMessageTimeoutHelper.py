@@ -1,4 +1,5 @@
 import random
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Final
 
@@ -31,6 +32,11 @@ from ...users.userInterface import UserInterface
 
 
 class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInterface):
+
+    @dataclass(frozen = True)
+    class TimeoutRoll:
+        randomNumber: float
+        timeoutProbability: float
 
     def __init__(
         self,
@@ -151,12 +157,17 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if not utils.isValidStr(userTwitchAccessToken):
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, failed to fetch Twitch access token when potentially trying to time out {chatterUserName}:{chatterUserId} for copying a message ({copiedAnivMessage=})')
             return False
-        elif not await self.__isTimeoutRoll(user):
+
+        timeoutRng = await self.__rollTimeoutRng(user)
+
+        if timeoutRng.randomNumber > timeoutRng.timeoutProbability:
             await self.__anivCopyMessageTimeoutScoreRepository.incrementDodgeScore(
                 chatterUserId = chatterUserId,
                 twitchChannelId = twitchChannelId,
             )
             return False
+
+        self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, {chatterUserName}:{chatterUserId} will be timed out for copying a message ({copiedAnivMessage=}) ({timeoutRng=})')
 
         moderatorUserId = await self.__userIdsRepository.requireUserId(
             userName = await self.__twitchHandleProvider.getTwitchHandle(),
@@ -205,10 +216,10 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             minimumSeconds = minimumSeconds,
         )
 
-    async def __isTimeoutRoll(
+    async def __rollTimeoutRng(
         self,
         user: UserInterface,
-    ) -> bool:
+    ) -> TimeoutRoll:
         if not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
@@ -216,8 +227,10 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if not utils.isValidNum(timeoutProbability):
             timeoutProbability = await self.__anivSettings.getCopyMessageTimeoutProbability()
 
-        randomNumber = random.random()
-        return randomNumber > timeoutProbability
+        return MostRecentAnivMessageTimeoutHelper.TimeoutRoll(
+            randomNumber = random.random(),
+            timeoutProbability = timeoutProbability,
+        )
 
     async def __findMatchingCopiedAnivMessage(
         self,

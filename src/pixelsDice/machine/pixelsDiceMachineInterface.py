@@ -6,6 +6,11 @@ from ..models.diceRollRequest import DiceRollRequest
 
 class PixelsDiceMachineInterface(ABC):
 
+    @property
+    @abstractmethod
+    def isConnected(self) -> bool:
+        pass
+
     @abstractmethod
     def setEventListener(self, listener: PixelsDiceEventListener | None):
         pass

@@ -1,7 +1,7 @@
 import asyncio
 import os
 import traceback
-from typing import Collection
+from typing import Collection, Final
 
 import aiofiles.ospath
 from frozenlist import FrozenList
@@ -33,9 +33,9 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         elif playbackLoopSleepTimeSeconds < 0.25 or playbackLoopSleepTimeSeconds > 1:
             raise ValueError(f'playbackLoopSleepTimeSeconds argument is out of bounds: {playbackLoopSleepTimeSeconds}')
 
-        self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__playbackLoopSleepTimeSeconds: float = playbackLoopSleepTimeSeconds
+        self.__soundPlayerSettingsRepository: Final[SoundPlayerSettingsRepositoryInterface] = soundPlayerSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__playbackLoopSleepTimeSeconds: Final[float] = playbackLoopSleepTimeSeconds
 
         self.__isLoadingOrPlaying: bool = False
         self.__mediaPlayer: VlcMediaPlayer | None = None
@@ -50,7 +50,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
     async def playPlaylist(
         self,
-        playlist: SoundPlayerPlaylist
+        playlist: SoundPlayerPlaylist,
     ) -> bool:
         if not isinstance(playlist, SoundPlayerPlaylist):
             raise TypeError(f'playlist argument is malformed: \"{playlist}\"')
@@ -85,7 +85,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
     async def playSoundAlert(
         self,
         alert: SoundAlert,
-        volume: int | None = None
+        volume: int | None = None,
     ) -> bool:
         if not isinstance(alert, SoundAlert):
             raise TypeError(f'alert argument is malformed: \"{alert}\"')
@@ -109,24 +109,24 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         playlistFiles.append(SoundPlaybackFile(
             volume = None,
-            filePath = filePath
+            filePath = filePath,
         ))
 
         playlistFiles.freeze()
 
         playlist = SoundPlayerPlaylist(
             playlistFiles = playlistFiles,
-            volume = volume
+            volume = volume,
         )
 
         return await self.playPlaylist(
-            playlist = playlist
+            playlist = playlist,
         )
 
     async def playSoundFile(
         self,
         filePath: str | None,
-        volume: int | None = None
+        volume: int | None = None,
     ) -> bool:
         if filePath is not None and not isinstance(filePath, str):
             raise TypeError(f'filePath argument is malformed: \"{filePath}\"')
@@ -146,24 +146,24 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         playlistFiles.append(SoundPlaybackFile(
             volume = None,
-            filePath = filePath
+            filePath = filePath,
         ))
 
         playlistFiles.freeze()
 
         playlist = SoundPlayerPlaylist(
             playlistFiles = playlistFiles,
-            volume = volume
+            volume = volume,
         )
 
         return await self.playPlaylist(
-            playlist = playlist
+            playlist = playlist,
         )
 
     async def playSoundFiles(
         self,
         filePaths: Collection[str],
-        volume: int | None = None
+        volume: int | None = None,
     ) -> bool:
         if not isinstance(filePaths, Collection):
             raise TypeError(f'filePaths argument is malformed: \"{filePaths}\"')
@@ -181,7 +181,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         for filePath in filePaths:
             playlistFiles.append(SoundPlaybackFile(
                 volume = None,
-                filePath = filePath
+                filePath = filePath,
             ))
 
         playlistFiles.freeze()
@@ -192,11 +192,11 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         playlist = SoundPlayerPlaylist(
             playlistFiles = playlistFiles,
-            volume = volume
+            volume = volume,
         )
 
         return await self.playPlaylist(
-            playlist = playlist
+            playlist = playlist,
         )
 
     async def __progressThroughPlaylist(self, playlist: SoundPlayerPlaylist):

@@ -9,6 +9,7 @@ from .cheerActionStreamStatusRequirement import CheerActionStreamStatusRequireme
 from .cheerActionType import CheerActionType
 from .crowdControl.crowdControlButtonPressCheerAction import CrowdControlButtonPressCheerAction
 from .crowdControl.crowdControlGameShuffleCheerAction import CrowdControlGameShuffleCheerAction
+from .itemUse.itemUseCheerAction import ItemUseCheerAction
 from .soundAlert.soundAlertCheerAction import SoundAlertCheerAction
 from .timeout.timeoutCheerAction import TimeoutCheerAction
 from .timeout.timeoutCheerActionTargetType import TimeoutCheerActionTargetType
@@ -24,7 +25,7 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AdgeCheerAction | None:
         pass
 
@@ -35,7 +36,7 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AirStrikeCheerAction | None:
         pass
 
@@ -46,21 +47,21 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> BeanChanceCheerAction | None:
         pass
 
     @abstractmethod
     async def parseCheerActionType(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> CheerActionType | None:
         pass
 
     @abstractmethod
     async def parseCheerActionStreamStatusRequirement(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> CheerActionStreamStatusRequirement | None:
         pass
 
@@ -71,7 +72,7 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CrowdControlButtonPressCheerAction | None:
         pass
 
@@ -82,8 +83,19 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CrowdControlGameShuffleCheerAction | None:
+        pass
+
+    @abstractmethod
+    async def parseItemUseCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str,
+    ) -> ItemUseCheerAction | None:
         pass
 
     @abstractmethod
@@ -93,7 +105,7 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> SoundAlertCheerAction | None:
         pass
 
@@ -104,14 +116,14 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> TimeoutCheerAction | None:
         pass
 
     @abstractmethod
     async def parseTimeoutCheerActionTargetType(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> TimeoutCheerActionTargetType | None:
         pass
 
@@ -122,7 +134,7 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> VoicemailCheerAction | None:
         pass
 
@@ -133,7 +145,7 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AdgeCheerAction:
         pass
 
@@ -144,7 +156,7 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AirStrikeCheerAction:
         pass
 
@@ -155,21 +167,21 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> BeanChanceCheerAction:
         pass
 
     @abstractmethod
     async def requireCheerActionStreamStatusRequirement(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> CheerActionStreamStatusRequirement:
         pass
 
     @abstractmethod
     async def requireCheerActionType(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> CheerActionType:
         pass
 
@@ -180,7 +192,7 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CrowdControlButtonPressCheerAction:
         pass
 
@@ -191,8 +203,19 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CrowdControlGameShuffleCheerAction:
+        pass
+
+    @abstractmethod
+    async def requireItemUseCheerAction(
+        self,
+        isEnabled: bool,
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
+        bits: int,
+        jsonString: str | None,
+        twitchChannelId: str,
+    ) -> ItemUseCheerAction:
         pass
 
     @abstractmethod
@@ -202,7 +225,7 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> SoundAlertCheerAction:
         pass
 
@@ -213,14 +236,14 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> TimeoutCheerAction:
         pass
 
     @abstractmethod
     async def requireTimeoutCheerActionTargetType(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> TimeoutCheerActionTargetType:
         pass
 
@@ -231,34 +254,34 @@ class CheerActionJsonMapperInterface(ABC):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         jsonString: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> VoicemailCheerAction:
         pass
 
     @abstractmethod
     async def serializeAbsCheerAction(
         self,
-        cheerAction: AbsCheerAction
+        cheerAction: AbsCheerAction,
     ) -> str:
         pass
 
     @abstractmethod
     async def serializeCheerActionStreamStatusRequirement(
         self,
-        streamStatusRequirement: CheerActionStreamStatusRequirement
+        streamStatusRequirement: CheerActionStreamStatusRequirement,
     ) -> str:
         pass
 
     @abstractmethod
     async def serializeCheerActionType(
         self,
-        actionType: CheerActionType
+        actionType: CheerActionType,
     ) -> str:
         pass
 
     @abstractmethod
     async def serializeTimeoutCheerActionTargetType(
         self,
-        targetType: TimeoutCheerActionTargetType
+        targetType: TimeoutCheerActionTargetType,
     ) -> str:
         pass

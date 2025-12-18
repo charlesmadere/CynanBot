@@ -166,11 +166,11 @@ class Timber(TimberInterface):
         for timberDirectory, timberFileToEntriesDict in structure.items():
             if not await aiofiles.ospath.exists(
                 path = timberDirectory,
-                loop = self.__backgroundTaskHelper.eventLoop
+                loop = self.__backgroundTaskHelper.eventLoop,
             ):
                 await aiofiles.os.makedirs(
                     name = timberDirectory,
-                    loop = self.__backgroundTaskHelper.eventLoop
+                    loop = self.__backgroundTaskHelper.eventLoop,
                 )
 
             for timberFile, entriesList in timberFileToEntriesDict.items():
@@ -178,12 +178,12 @@ class Timber(TimberInterface):
                     file = timberFile,
                     mode = 'a',
                     encoding = 'utf-8',
-                    loop = self.__backgroundTaskHelper.eventLoop
+                    loop = self.__backgroundTaskHelper.eventLoop,
                 ) as file:
                     for entry in entriesList:
                         logStatement = self.__getLogStatement(
                             ensureNewLine = True,
-                            timberEntry = entry
+                            timberEntry = entry,
                         )
 
                         await file.write(logStatement)
@@ -193,11 +193,11 @@ class Timber(TimberInterface):
         for timberErrorDirectory, timberErrorFileToEntriesDict in errorStructure.items():
             if not await aiofiles.ospath.exists(
                 path = timberErrorDirectory,
-                loop = self.__backgroundTaskHelper.eventLoop
+                loop = self.__backgroundTaskHelper.eventLoop,
             ):
                 await aiofiles.os.makedirs(
                     name = timberErrorDirectory,
-                    loop = self.__backgroundTaskHelper.eventLoop
+                    loop = self.__backgroundTaskHelper.eventLoop,
                 )
 
             for timberErrorFile, entriesList in timberErrorFileToEntriesDict.items():
@@ -205,12 +205,12 @@ class Timber(TimberInterface):
                     file = timberErrorFile,
                     mode = 'a',
                     encoding = 'utf-8',
-                    loop = self.__backgroundTaskHelper.eventLoop
+                    loop = self.__backgroundTaskHelper.eventLoop,
                 ) as file:
                     for entry in entriesList:
                         errorStatement = self.__getErrorStatement(
                             ensureNewLine = True,
-                            timberEntry = entry
+                            timberEntry = entry,
                         )
 
                         if utils.isValidStr(errorStatement):

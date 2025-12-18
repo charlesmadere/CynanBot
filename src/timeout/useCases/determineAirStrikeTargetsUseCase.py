@@ -6,7 +6,7 @@ from frozenlist import FrozenList
 
 from ..exceptions import UnknownTimeoutTargetException
 from ..models.actions.airStrikeTimeoutAction import AirStrikeTimeoutAction
-from ..models.airStrikeTimeoutTarget import AirStrikeTimeoutTarget
+from ..models.timeoutTarget import TimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.activeChatters.activeChatter import ActiveChatter
@@ -69,11 +69,11 @@ class DetermineAirStrikeTargetsUseCase:
     async def invoke(
         self,
         timeoutAction: AirStrikeTimeoutAction,
-    ) -> FrozenList[AirStrikeTimeoutTarget]:
+    ) -> FrozenList[TimeoutTarget]:
         if not isinstance(timeoutAction, AirStrikeTimeoutAction):
             raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
 
-        timeoutTargets: set[AirStrikeTimeoutTarget] = set()
+        timeoutTargets: set[TimeoutTarget] = set()
 
         additionalReverseProbability = await self.__timeoutActionSettings.getGrenadeAdditionalReverseProbability()
         randomReverseNumber = random.random()
@@ -84,9 +84,9 @@ class DetermineAirStrikeTargetsUseCase:
                 userId = timeoutAction.instigatorUserId,
             )
 
-            timeoutTargets.add(AirStrikeTimeoutTarget(
-                targetUserId = timeoutAction.instigatorUserId,
-                targetUserName = targetUserName,
+            timeoutTargets.add(TimeoutTarget(
+                userId = timeoutAction.instigatorUserId,
+                userName = targetUserName,
             ))
 
         activeChatters = await self.__activeChattersRepository.get(
@@ -109,9 +109,9 @@ class DetermineAirStrikeTargetsUseCase:
             randomChatter = vulnerableChattersList[randomChatterIndex]
             del vulnerableChattersList[randomChatterIndex]
 
-            timeoutTargets.add(AirStrikeTimeoutTarget(
-                targetUserId = randomChatter.chatterUserId,
-                targetUserName = randomChatter.chatterUserName,
+            timeoutTargets.add(TimeoutTarget(
+                userId = randomChatter.chatterUserId,
+                userName = randomChatter.chatterUserName,
             ))
 
             await self.__activeChattersRepository.remove(
@@ -119,10 +119,10 @@ class DetermineAirStrikeTargetsUseCase:
                 twitchChannelId = timeoutAction.twitchChannelId,
             )
 
-        timeoutTargetsList: list[AirStrikeTimeoutTarget] = list(timeoutTargets)
-        timeoutTargetsList.sort(key = lambda target: target.targetUserName.casefold())
+        timeoutTargetsList: list[TimeoutTarget] = list(timeoutTargets)
+        timeoutTargetsList.sort(key = lambda target: target.userName.casefold())
 
-        frozenTimeoutTargetsList: FrozenList[AirStrikeTimeoutTarget] = FrozenList(timeoutTargetsList)
+        frozenTimeoutTargetsList: FrozenList[TimeoutTarget] = FrozenList(timeoutTargetsList)
         frozenTimeoutTargetsList.freeze()
 
         return frozenTimeoutTargetsList

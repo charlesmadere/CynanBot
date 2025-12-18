@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from frozenlist import FrozenList
 
@@ -14,31 +14,34 @@ from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInte
 
 class TestTtsBoosterPackParser:
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
+    ttsJsonMapper: Final[TtsJsonMapperInterface] = TtsJsonMapper(
         timber = timber,
     )
 
-    parser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
+    parser: Final[TtsBoosterPackParserInterface] = TtsBoosterPackParser(
         ttsJsonMapper = ttsJsonMapper,
     )
 
     def test_parseBoosterPack(self):
         boosterPack = TtsBoosterPack(
+            isEnabled = True,
             cheerAmount = 100,
             ttsProvider = TtsProvider.DEC_TALK,
         )
 
         result = self.parser.parseBoosterPack({
+            'enabled': boosterPack.isEnabled,
             'cheerAmount': boosterPack.cheerAmount,
             'ttsProvider': self.ttsJsonMapper.serializeProvider(boosterPack.ttsProvider),
         })
 
         assert isinstance(result, TtsBoosterPack)
         assert result == boosterPack
-        assert result.cheerAmount == 100
-        assert result.ttsProvider is TtsProvider.DEC_TALK
+        assert result.isEnabled == boosterPack.isEnabled
+        assert result.cheerAmount == boosterPack.cheerAmount
+        assert result.ttsProvider is boosterPack.ttsProvider
 
     def test_parseBoosterPacks(self):
         jsonContents: list[dict[str, Any]] = [
@@ -47,6 +50,7 @@ class TestTtsBoosterPackParser:
                 'ttsProvider': self.ttsJsonMapper.serializeProvider(TtsProvider.DEC_TALK),
             },
             {
+                'enabled': True,
                 'cheerAmount': 150,
                 'ttsProvider': self.ttsJsonMapper.serializeProvider(TtsProvider.TTS_MONSTER),
             },
@@ -55,6 +59,7 @@ class TestTtsBoosterPackParser:
                 'ttsProvider': self.ttsJsonMapper.serializeProvider(TtsProvider.STREAM_ELEMENTS),
             },
             {
+                'enabled': False,
                 'cheerAmount': 500,
                 'ttsProvider': self.ttsJsonMapper.serializeProvider(TtsProvider.SHOTGUN_TTS),
             },
@@ -65,18 +70,22 @@ class TestTtsBoosterPackParser:
         assert len(results) == 4
 
         entry = results[0]
+        assert entry.isEnabled == False
         assert entry.cheerAmount == 500
         assert entry.ttsProvider is TtsProvider.SHOTGUN_TTS
 
         entry = results[1]
+        assert entry.isEnabled == True
         assert entry.cheerAmount == 150
         assert entry.ttsProvider is TtsProvider.TTS_MONSTER
 
         entry = results[2]
+        assert entry.isEnabled == True
         assert entry.cheerAmount == 100
         assert entry.ttsProvider is TtsProvider.STREAM_ELEMENTS
 
         entry = results[3]
+        assert entry.isEnabled == True
         assert entry.cheerAmount == 50
         assert entry.ttsProvider is TtsProvider.DEC_TALK
 

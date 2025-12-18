@@ -9,6 +9,6 @@ class SoundPlayerJsonMapperInterface(ABC):
     @abstractmethod
     def parseSoundPlayerType(
         self,
-        soundPlayerType: str | Any | None
+        soundPlayerType: str | Any | None,
     ) -> SoundPlayerType:
         pass

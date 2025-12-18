@@ -6,7 +6,7 @@ class StubGoogleTtsManagerProvider(GoogleTtsManagerProviderInterface):
 
     def constructNewInstance(
         self,
-        useSharedSoundPlayerManager: bool = True
+        useSharedSoundPlayerManager: bool = True,
     ) -> GoogleTtsManagerInterface | None:
         return None
 

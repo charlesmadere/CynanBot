@@ -1,3 +1,5 @@
+from typing import Final
+
 import emoji
 
 from .emojiHelperInterface import EmojiHelperInterface
@@ -9,12 +11,12 @@ class EmojiHelper(EmojiHelperInterface):
 
     def __init__(
         self,
-        emojiRepository: EmojiRepositoryInterface
+        emojiRepository: EmojiRepositoryInterface,
     ):
         if not isinstance(emojiRepository, EmojiRepositoryInterface):
             raise TypeError(f'emojiRepository argument is malformed: \"{emojiRepository}\"')
 
-        self.__emojiRepository: EmojiRepositoryInterface = emojiRepository
+        self.__emojiRepository: Final[EmojiRepositoryInterface] = emojiRepository
 
     async def getHumanNameForEmoji(self, emoji: str | None) -> str | None:
         if not utils.isValidStr(emoji):

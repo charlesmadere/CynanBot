@@ -211,7 +211,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             return
 
         for ttsBoosterPack in ttsBoosterPacks:
-            if cheer.bits >= ttsBoosterPack.cheerAmount:
+            if ttsBoosterPack.isEnabled and cheer.bits >= ttsBoosterPack.cheerAmount:
                 provider = ttsBoosterPack.ttsProvider
                 break
 

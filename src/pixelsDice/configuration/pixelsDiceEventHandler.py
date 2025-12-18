@@ -33,8 +33,6 @@ class PixelsDiceEventHandler(PixelsDiceEventListener):
         if not isinstance(event, AbsPixelsDiceEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
-        self.__timber.log('PixelsDiceEventHandler', f'Received new pixels dice event ({event=})')
-
         if isinstance(event, PixelsDiceClientConnectedEvent):
             await self.__handleConnectedEvent(
                 event = event,
@@ -62,5 +60,5 @@ class PixelsDiceEventHandler(PixelsDiceEventListener):
         # this method is intentionally rather thin, for now at least
 
     async def __handleRollEvent(self, event: PixelsDiceRollEvent):
-        self.__timber.log('PixelsDiceEventHandler', f'Pixels Dice disconnected ({event=})')
+        self.__timber.log('PixelsDiceEventHandler', f'Pixels Dice rolled ({event=})')
         # this method is intentionally rather thin, for now at least

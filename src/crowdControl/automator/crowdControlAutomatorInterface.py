@@ -10,14 +10,14 @@ class CrowdControlAutomatorInterface(ABC):
     @abstractmethod
     async def addGameShuffleAutomator(
         self,
-        automatorData: CrowdControlAutomatorData
+        automatorData: CrowdControlAutomatorData,
     ) -> CrowdControlAutomatorAddResult:
         pass
 
     @abstractmethod
     async def removeGameShuffleAutomator(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CrowdControlAutomatorRemovalResult:
         pass
 

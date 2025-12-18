@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Final
+
+from frozenlist import FrozenList
 
 from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
@@ -23,7 +25,7 @@ class AbsTriviaQuestion(ABC):
         triviaId: str,
         triviaDifficulty: TriviaDifficulty,
         originalTriviaSource: TriviaSource | None,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ):
         if category is not None and not isinstance(category, str):
             raise BadTriviaCategoryException(f'category argument is malformed: \"{category}\"')
@@ -40,13 +42,13 @@ class AbsTriviaQuestion(ABC):
         elif not isinstance(triviaSource, TriviaSource):
             raise BadTriviaSourceException(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
-        self.__category: str | None = category
-        self.__categoryId: str | None = categoryId
-        self.__question: str = question
-        self.__triviaId: str = triviaId
-        self.__triviaDifficulty: TriviaDifficulty = triviaDifficulty
-        self.__originalTriviaSource: TriviaSource | None = originalTriviaSource
-        self.__triviaSource: TriviaSource = triviaSource
+        self.__category: Final[str | None] = category
+        self.__categoryId: Final[str | None] = categoryId
+        self.__question: Final[str] = question
+        self.__triviaId: Final[str] = triviaId
+        self.__triviaDifficulty: Final[TriviaDifficulty] = triviaDifficulty
+        self.__originalTriviaSource: Final[TriviaSource | None] = originalTriviaSource
+        self.__triviaSource: Final[TriviaSource] = triviaSource
 
     @property
     def category(self) -> str | None:
@@ -58,7 +60,7 @@ class AbsTriviaQuestion(ABC):
 
     @property
     @abstractmethod
-    def correctAnswers(self) -> list[str]:
+    def correctAnswers(self) -> FrozenList[str]:
         pass
 
     @property
@@ -75,7 +77,7 @@ class AbsTriviaQuestion(ABC):
 
     @property
     @abstractmethod
-    def responses(self) -> list[str]:
+    def responses(self) -> FrozenList[str]:
         pass
 
     @abstractmethod

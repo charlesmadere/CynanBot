@@ -10,6 +10,7 @@ from .absTimeoutEventHandler import AbsTimeoutEventHandler
 from ..models.events.absTimeoutEvent import AbsTimeoutEvent
 from ..models.events.airStrikeTimeoutEvent import AirStrikeTimeoutEvent
 from ..models.events.bananaTimeoutDiceRollFailedEvent import BananaTimeoutDiceRollFailedEvent
+from ..models.events.bananaTimeoutDiceRollQueuedEvent import BananaTimeoutDiceRollQueuedEvent
 from ..models.events.bananaTimeoutEvent import BananaTimeoutEvent
 from ..models.events.bananaTimeoutFailedTimeoutEvent import BananaTimeoutFailedTimeoutEvent
 from ..models.events.basicTimeoutEvent import BasicTimeoutEvent
@@ -81,8 +82,6 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         if not isinstance(event, AbsTimeoutEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
-        self.__timber.log('TimeoutEventHandler', f'Received new timeout event ({event=})')
-
         twitchConnectionReadinessProvider = self.__twitchConnectionReadinessProvider
 
         if twitchConnectionReadinessProvider is None:
@@ -98,6 +97,11 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
 
         elif isinstance(event, BananaTimeoutDiceRollFailedEvent):
             await self.__handleBananaTimeoutDiceRollFailedEvent(
+                event = event,
+            )
+
+        elif isinstance(event, BananaTimeoutDiceRollQueuedEvent):
+            await self.__handleBananaTimeoutDiceRollQueuedEvent(
                 event = event,
             )
 
@@ -250,7 +254,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         userNames: list[str] = list()
 
         for target in event.targets:
-            userNames.append(f'@{target.targetUserName}')
+            userNames.append(f'@{target.userName}')
 
         userNames.sort(key = lambda userName: userName.casefold())
         userNamesString = ', '.join(userNames)
@@ -291,7 +295,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             grenadeSoundAlert = self.__chooseRandomGrenadeSoundAlert()
             temporarySoundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
             self.__backgroundTaskHelper.createTask(temporarySoundPlayerManager.playSoundAlert(grenadeSoundAlert))
-            await asyncio.sleep(0.75)
+            await asyncio.sleep(0.50)
 
         await baseSoundPlayerManager.playSoundAlert(SoundAlert.SPLAT)
 
@@ -300,7 +304,17 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         event: BananaTimeoutDiceRollFailedEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'{event.ripBozoEmote} Sorry @{event.instigatorUserName}, your timeout of @{event.target.targetUserName} failed {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, but needed greater than {event.diceRollFailureData.failureRoll}) {event.ripBozoEmote}',
+            text = f'{event.ripBozoEmote} Sorry @{event.instigatorUserName}, your timeout of @{event.timeoutTarget.userName} failed {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, but needed greater than {event.diceRollFailureData.failureRoll}) {event.ripBozoEmote}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleBananaTimeoutDiceRollQueuedEvent(
+        self,
+        event: BananaTimeoutDiceRollQueuedEvent,
+    ):
+        self.__twitchChatMessenger.send(
+            text = f'🎲 @{event.instigatorUserName} queued up a dice roll versus @{event.timeoutTarget.userName}! (queue size is now {event.requestQueueSizeStr})',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -314,11 +328,11 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             if event.isReverse:
                 message = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserName} dropped a banana but they tripped themselves up! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} but got a {event.diceRoll.roll})'
             else:
-                message = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.target.targetUserName}! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, needed greater than {event.diceRollFailureData.reverseRoll})'
+                message = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.timeoutTarget.userName}! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, needed greater than {event.diceRollFailureData.reverseRoll})'
         elif event.isReverse:
             message = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserName} dropped a banana but they tripped themselves up! {event.ripBozoEmote}'
         else:
-            message = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.target.targetUserName}! {event.ripBozoEmote}'
+            message = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.timeoutTarget.userName}! {event.ripBozoEmote}'
 
         self.__twitchChatMessenger.send(
             text = message,
@@ -337,7 +351,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             if event.isReverse:
                 ttsMessage = f'Oh no! {event.instigatorUserName} got hit with a reverse! Rip bozo!'
             else:
-                ttsMessage = f'{event.instigatorUserName} timed out {event.target.targetUserName} for {event.timeoutDuration.message}! Rip bozo!'
+                ttsMessage = f'{event.instigatorUserName} timed out {event.timeoutTarget.userName} for {event.timeoutDuration.message}! Rip bozo!'
 
             providerOverridableStatus: TtsProviderOverridableStatus
 
@@ -430,7 +444,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         self,
         event: CopyAnivMessageTimeoutFailedTimeoutEvent,
     ):
-        # this method is intentionally empty
+        # this event type is intentionally ignored
         pass
 
     async def __handleGrenadeTimeoutEvent(
@@ -451,7 +465,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             )
 
         self.__twitchChatMessenger.send(
-            text = f'{event.explodedEmote} @{event.target.targetUserName} {event.bombEmote} {remainingInventoryString}',
+            text = f'{event.explodedEmote} @{event.timeoutTarget.userName} {event.bombEmote} {remainingInventoryString}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -460,14 +474,14 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         self,
         event: GrenadeTimeoutFailedTimeoutEvent,
     ):
-        # this method is intentionally empty
+        # this event type is intentionally ignored
         pass
 
     async def __handleIncorrectLiveStatusTimeoutEvent(
         self,
         event: IncorrectLiveStatusTimeoutEvent,
     ):
-        # this method is intentionally empty
+        # this event type is intentionally ignored
         pass
 
     async def __handleNoAirStrikeInventoryAvailableTimeoutEvent(
@@ -593,7 +607,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             return
 
         self.__twitchChatMessenger.send(
-            text = f'{event.explodedEmote} @{event.splashTimeoutTarget.targetUserName} was also hit with splash damage! {event.bombEmote}',
+            text = f'{event.explodedEmote} @{event.splashTimeoutTarget.userName} was also hit with splash damage! {event.bombEmote}',
             twitchChannelId = event.twitchChannelId,
         )
 
@@ -601,7 +615,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         self,
         event: Tm36TimeoutFailedTimeoutEvent,
     ):
-        # this method is intentionally empty
+        # this event type is intentionally ignored
         pass
 
     async def __handleVoreTargetIsImmuneTimeoutEvent(
@@ -609,7 +623,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         event: VoreTargetIsImmuneTimeoutEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'Sorry, your {ChatterItemType.VORE.humanName} target is not immune!',
+            text = f'Sorry, your {ChatterItemType.VORE.humanName} target is immune!',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -630,15 +644,16 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             )
 
         self.__twitchChatMessenger.send(
-            text = f'{event.ripBozoEmote} @{event.instigatorUserName} used {ChatterItemType.VORE.humanName} on @{event.target.targetUserName}! {remainingInventoryString}',
+            text = f'{event.ripBozoEmote} @{event.instigatorUserName} used {ChatterItemType.VORE.humanName} on @{event.timeoutTarget.userName}! {remainingInventoryString}',
             twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
         )
 
     async def __handleVoreTimeoutFailedTimeoutEvent(
         self,
         event: VoreTimeoutFailedTimeoutEvent,
     ):
-        # this method is intentionally empty
+        # this event type is intentionally ignored
         pass
 
     def setTwitchConnectionReadinessProvider(self, provider: TwitchConnectionReadinessProvider | None):

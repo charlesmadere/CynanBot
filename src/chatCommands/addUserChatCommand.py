@@ -4,9 +4,9 @@ from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.addOrRemoveUserActionType import AddOrRemoveUserActionType
 from ..users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
@@ -21,7 +21,7 @@ class AddUserChatCommand(AbsChatCommand):
         administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
     ):
@@ -33,8 +33,8 @@ class AddUserChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -44,7 +44,7 @@ class AddUserChatCommand(AbsChatCommand):
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__timber: Final[TimberInterface] = timber
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
@@ -59,36 +59,57 @@ class AddUserChatCommand(AbsChatCommand):
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             self.__timber.log('AddUserChatCommand', f'Not enough arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !adduser command: \"{splits}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.handle}')
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.handle}',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
+            )
             return
 
         userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('AddUserChatCommand', f'Invalid username argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !adduser command: \"{splits}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.handle}')
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.handle}',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
+            )
             return
 
         if await self.__usersRepository.containsUserAsync(userName):
             self.__timber.log('AddUserChatCommand', f'Username argument (\"{userName}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} already exists as a user')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add \"{userName}\" as this user already exists!')
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Unable to add \"{userName}\" as this user already exists!',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
+            )
             return
 
         userId = await self.__userIdsRepository.fetchUserId(
             userName = userName,
             twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-                twitchChannelId = await ctx.getTwitchChannelId()
-            )
+                twitchChannelId = await ctx.getTwitchChannelId(),
+            ),
         )
 
         if not utils.isValidStr(userId):
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to fetch user ID for \"{userName}\"!')
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Unable to fetch user ID for \"{userName}\"!',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
+            )
             return
 
         await self.__addOrRemoveUserDataHelper.setUserData(
             actionType = AddOrRemoveUserActionType.ADD,
             userId = userId,
-            userName = userName
+            userName = userName,
         )
 
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ To add user \"{userName}\" ({userId}), please respond with `!confirm`')
+        self.__twitchChatMessenger.send(
+            text = f'ⓘ To add user \"{userName}\" ({userId}), please respond with `!confirm`',
+            twitchChannelId = await ctx.getTwitchChannelId(),
+            replyMessageId = await ctx.getMessageId(),
+        )
+
         self.__timber.log('AddUserChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

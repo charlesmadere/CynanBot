@@ -5,7 +5,7 @@ from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.voreTimeoutAction import VoreTimeoutAction
 from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ..chatterTimeoutHistory import ChatterTimeoutHistory
-from ..voreTimeoutTarget import VoreTimeoutTarget
+from ..timeoutTarget import TimeoutTarget
 from ....asplodieStats.models.asplodieStats import AsplodieStats
 from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
@@ -20,9 +20,9 @@ class VoreTimeoutEvent(AbsTimeoutEvent):
     eventId: str
     instigatorUserName: str
     ripBozoEmote: str
+    timeoutTarget: TimeoutTarget
     timeoutResult: TwitchTimeoutResult
     originatingAction: VoreTimeoutAction
-    target: VoreTimeoutTarget
 
     def getEventId(self) -> str:
         return self.eventId

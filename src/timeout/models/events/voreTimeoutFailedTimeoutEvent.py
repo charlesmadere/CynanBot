@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.voreTimeoutAction import VoreTimeoutAction
-from ..voreTimeoutTarget import VoreTimeoutTarget
+from ..timeoutTarget import TimeoutTarget
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
@@ -11,9 +11,9 @@ from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 class VoreTimeoutFailedTimeoutEvent(AbsTimeoutEvent):
     eventId: str
     instigatorUserName: str
+    timeoutTarget: TimeoutTarget
     timeoutResult: TwitchTimeoutResult
     originatingAction: VoreTimeoutAction
-    target: VoreTimeoutTarget
 
     def getEventId(self) -> str:
         return self.eventId

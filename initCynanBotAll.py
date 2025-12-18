@@ -61,6 +61,8 @@ from src.chatActions.ttsChatterChatAction import TtsChatterChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
+from src.chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
+from src.chatterInventory.configuration.chatterItemEventHandler import ChatterItemEventHandler
 from src.chatterInventory.helpers.chatterInventoryHelper import ChatterInventoryHelper
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from src.chatterInventory.helpers.useChatterItemHelper import UseChatterItemHelper
@@ -77,6 +79,14 @@ from src.chatterInventory.repositories.chatterInventoryRepositoryInterface impor
 from src.chatterInventory.settings.chatterInventorySettings import ChatterInventorySettings
 from src.chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from src.chatterInventory.useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
+from src.chatterPreferredName.helpers.chatterPreferredNameHelper import ChatterPreferredNameHelper
+from src.chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
+from src.chatterPreferredName.repositories.chatterPreferredNameRepository import ChatterPreferredNameRepository
+from src.chatterPreferredName.repositories.chatterPreferredNameRepositoryInterface import \
+    ChatterPreferredNameRepositoryInterface
+from src.chatterPreferredName.settings.chatterPreferredNameSettings import ChatterPreferredNameSettings
+from src.chatterPreferredName.settings.chatterPreferredNameSettingsInterface import \
+    ChatterPreferredNameSettingsInterface
 from src.chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
 from src.chatterPreferredTts.helper.chatterPreferredTtsHelper import ChatterPreferredTtsHelper
 from src.chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
@@ -105,6 +115,8 @@ from src.cheerActions.cheerActionsWizard import CheerActionsWizard
 from src.cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from src.cheerActions.crowdControl.crowdControlCheerActionHelper import CrowdControlCheerActionHelper
 from src.cheerActions.crowdControl.crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
+from src.cheerActions.itemUse.itemUseCheerActionHelper import ItemUseCheerActionHelper
+from src.cheerActions.itemUse.itemUseCheerActionHelperInterface import ItemUseCheerActionHelperInterface
 from src.cheerActions.settings.cheerActionSettingsRepository import CheerActionSettingsRepository
 from src.cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from src.cheerActions.soundAlert.soundAlertCheerActionHelper import SoundAlertCheerActionHelper
@@ -138,6 +150,7 @@ from src.crowdControl.crowdControlMachineInterface import CrowdControlMachineInt
 from src.crowdControl.idGenerator.crowdControlIdGenerator import CrowdControlIdGenerator
 from src.crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
 from src.crowdControl.message.crowdControlMessageHandler import CrowdControlMessageHandler
+from src.crowdControl.message.crowdControlMessageListener import CrowdControlMessageListener
 from src.crowdControl.message.crowdControlMessagePresenter import CrowdControlMessagePresenter
 from src.crowdControl.message.crowdControlMessagePresenterInterface import CrowdControlMessagePresenterInterface
 from src.crowdControl.settings.crowdControlSettingsRepository import CrowdControlSettingsRepository
@@ -179,8 +192,6 @@ from src.funtoon.apiService.funtoonApiService import FuntoonApiService
 from src.funtoon.apiService.funtoonApiServiceInterface import FuntoonApiServiceInterface
 from src.funtoon.funtoonHelper import FuntoonHelper
 from src.funtoon.funtoonHelperInterface import FuntoonHelperInterface
-from src.funtoon.funtoonUserIdProvider import FuntoonUserIdProvider
-from src.funtoon.funtoonUserIdProviderInterface import FuntoonUserIdProviderInterface
 from src.funtoon.jsonMapper.funtoonJsonMapper import FuntoonJsonMapper
 from src.funtoon.jsonMapper.funtoonJsonMapperInterface import FuntoonJsonMapperInterface
 from src.funtoon.tokens.funtoonTokensRepository import FuntoonTokensRepository
@@ -290,10 +301,8 @@ from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChat
 from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.networkClientProvider import NetworkClientProvider
-from src.network.networkClientType import NetworkClientType
 from src.network.networkJsonMapper import NetworkJsonMapper
 from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
-from src.network.requests.requestsClientProvider import RequestsClientProvider
 from src.openWeather.apiService.openWeatherApiService import OpenWeatherApiService
 from src.openWeather.apiService.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
 from src.openWeather.jsonMapper.openWeatherJsonMapper import OpenWeatherJsonMapper
@@ -404,8 +413,8 @@ from src.timeout.useCases.calculateTimeoutDurationUseCase import CalculateTimeou
 from src.timeout.useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
 from src.timeout.useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
 from src.timeout.useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
+from src.timeout.useCases.determineTimeoutTargetUseCase import DetermineTimeoutTargetUseCase
 from src.timeout.useCases.determineTm36SplashTargetUseCase import DetermineTm36SplashTargetUseCase
-from src.timeout.useCases.determineVoreTargetUseCase import DetermineVoreTargetUseCase
 from src.transparent.transparentApiService import TransparentApiService
 from src.transparent.transparentApiServiceInterface import TransparentApiServiceInterface
 from src.transparent.transparentXmlMapper import TransparentXmlMapper
@@ -630,6 +639,8 @@ from src.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import 
 from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from src.twitch.globalTwitchConstants import GlobalTwitchConstants
+from src.twitch.ircReconnectHelper.twitchIrcReconnectHelper import TwitchIrcReconnectHelper
+from src.twitch.ircReconnectHelper.twitchIrcReconnectHelperInterface import TwitchIrcReconnectHelperInterface
 from src.twitch.ircTagsParser.twitchIrcTagsParser import TwitchIrcTagsParser
 from src.twitch.ircTagsParser.twitchIrcTagsParserInterface import TwitchIrcTagsParserInterface
 from src.twitch.isLive.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
@@ -798,26 +809,15 @@ match generalSettingsSnapshot.requireDatabaseType():
     case _:
         raise RuntimeError(f'Unknown/misconfigured DatabaseType: \"{generalSettingsSnapshot.requireDatabaseType()}\"')
 
-networkClientProvider: NetworkClientProvider
-match generalSettingsSnapshot.requireNetworkClientType():
-    case NetworkClientType.AIOHTTP:
-        aioHttpCookieJarProvider = AioHttpCookieJarProvider(
-            eventLoop = eventLoop,
-        )
+aioHttpCookieJarProvider = AioHttpCookieJarProvider(
+    eventLoop = eventLoop,
+)
 
-        networkClientProvider = AioHttpClientProvider(
-            eventLoop = eventLoop,
-            cookieJarProvider = aioHttpCookieJarProvider,
-            timber = timber,
-        )
-
-    case NetworkClientType.REQUESTS:
-        networkClientProvider = RequestsClientProvider(
-            timber = timber,
-        )
-
-    case _:
-        raise RuntimeError(f'Unknown/misconfigured NetworkClientType: \"{generalSettingsSnapshot.requireNetworkClientType()}\"')
+networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
+    eventLoop = eventLoop,
+    cookieJarProvider = aioHttpCookieJarProvider,
+    timber = timber,
+)
 
 authRepository = AuthRepository(
     authJsonReader = JsonFileReader(
@@ -970,7 +970,14 @@ twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHel
     backgroundTaskHelper = backgroundTaskHelper,
     verified = True,
     timber = timber,
-    usersRepository = usersRepository
+    usersRepository = usersRepository,
+)
+
+twitchIrcReconnectHelper: TwitchIrcReconnectHelperInterface = TwitchIrcReconnectHelper(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber,
+    userIdsRepository = userIdsRepository,
+    usersRepository = usersRepository,
 )
 
 twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface = TwitchPredictionWebsocketUtils(
@@ -1016,16 +1023,14 @@ cutenessUtils: CutenessUtilsInterface = CutenessUtils()
 ## Funtoon initialization section ##
 ####################################
 
-funtoonUserIdProvider: FuntoonUserIdProviderInterface = FuntoonUserIdProvider()
-
 funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     userIdsRepository = userIdsRepository,
     seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/funtoonTokensRepositorySeedFile.json'
-    )
+        fileName = '../config/funtoonTokensRepositorySeedFile.json',
+    ),
 )
 
 funtoonJsonMapper: FuntoonJsonMapperInterface = FuntoonJsonMapper()
@@ -1033,7 +1038,7 @@ funtoonJsonMapper: FuntoonJsonMapperInterface = FuntoonJsonMapper()
 funtoonApiService: FuntoonApiServiceInterface = FuntoonApiService(
     funtoonJsonMapper = funtoonJsonMapper,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
 funtoonHelper: FuntoonHelperInterface = FuntoonHelper(
@@ -1046,13 +1051,13 @@ funtoonHelper: FuntoonHelperInterface = FuntoonHelper(
 emojiRepository: EmojiRepositoryInterface = EmojiRepository(
     emojiJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = 'emojiRepository.json'
+        fileName = 'emojiRepository.json',
     ),
-    timber = timber
+    timber = timber,
 )
 
 emojiHelper: EmojiHelperInterface = EmojiHelper(
-    emojiRepository = emojiRepository
+    emojiRepository = emojiRepository,
 )
 
 twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface = TwitchChannelEditorsRepository(
@@ -1153,7 +1158,6 @@ twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFr
 
 timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = TimeoutImmuneUserIdsRepository(
     cynanBotUserIdsProvider = cynanBotUserIdsProvider,
-    funtoonUserIdProvider = funtoonUserIdProvider,
     officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     timber = timber,
     twitchFriendsUserIdProvider = twitchFriendsUserIdRepository,
@@ -1269,6 +1273,28 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = SoundPlayerMan
 )
 
 
+###################################################
+## Chatter Preferred Name initialization section ##
+###################################################
+
+chatterPreferredNameSettings: ChatterPreferredNameSettingsInterface = ChatterPreferredNameSettings(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/chatterPreferredNameSettings.json',
+    ),
+)
+
+chatterPreferredNameRepository: ChatterPreferredNameRepositoryInterface = ChatterPreferredNameRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+)
+
+chatterPreferredNameHelper: ChatterPreferredNameHelperInterface = ChatterPreferredNameHelper(
+    chatterPreferredNameRepository = chatterPreferredNameRepository,
+    chatterPreferredNameSettings = chatterPreferredNameSettings,
+)
+
+
 ##################################################
 ## TTS mapper and parser initialization section ##
 ##################################################
@@ -1353,7 +1379,9 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
     ttsJsonMapper = ttsJsonMapper,
 )
 
-ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder()
+ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder(
+    chatterPreferredNameHelper = chatterPreferredNameHelper,
+)
 
 ttsDirectoryProvider: TtsDirectoryProviderInterface = TtsDirectoryProvider()
 
@@ -2395,6 +2423,33 @@ voicemailPointRedemption = VoicemailPointRedemption(
 )
 
 
+########################################
+## Pixels Dice initialization section ##
+########################################
+
+pixelsDiceEventHandler: PixelsDiceEventListener = PixelsDiceEventHandler(
+    administratorProvider = administratorProvider,
+    timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
+)
+
+pixelsDiceSettings: PixelsDiceSettingsInterface = PixelsDiceSettings(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/pixelsDiceSettings.json',
+    ),
+)
+
+pixelsDiceStateMapper: PixelsDiceStateMapperInterface = PixelsDiceStateMapper()
+
+pixelsDiceMachine: PixelsDiceMachineInterface = PixelsDiceMachine(
+    backgroundTaskHelper = backgroundTaskHelper,
+    pixelsDiceStateMapper = pixelsDiceStateMapper,
+    pixelsDiceSettings = pixelsDiceSettings,
+    timber = timber,
+)
+
+
 ##############################################
 ## Chatter Inventory initialization section ##
 ##############################################
@@ -2450,7 +2505,6 @@ determineBananaTargetUseCase = DetermineBananaTargetUseCase(
     timeoutActionSettings = timeoutActionSettings,
     twitchMessageStringUtils = twitchMessageStringUtils,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
 )
 
 determineGrenadeTargetUseCase = DetermineGrenadeTargetUseCase(
@@ -2458,6 +2512,14 @@ determineGrenadeTargetUseCase = DetermineGrenadeTargetUseCase(
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    twitchTokensUtils = twitchTokensUtils,
+    userIdsRepository = userIdsRepository,
+)
+
+determineTimeoutTargetUseCase = DetermineTimeoutTargetUseCase(
+    timber = timber,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    twitchMessageStringUtils = twitchMessageStringUtils,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
 )
@@ -2471,14 +2533,6 @@ determineTm36SplashTargetUseCase = DetermineTm36SplashTargetUseCase(
     userIdsRepository = userIdsRepository,
 )
 
-determineVoreTargetUseCase = DetermineVoreTargetUseCase(
-    timber = timber,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
-    twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
-)
-
 timeoutIdGenerator: TimeoutIdGeneratorInterface = TimeoutIdGenerator()
 
 anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = AnivCopyMessageTimeoutScoreRepository(
@@ -2487,7 +2541,6 @@ anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInte
 )
 
 timeoutActionMachine: TimeoutActionMachineInterface = TimeoutActionMachine(
-    activeChattersRepository = activeChattersRepository,
     anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
     asplodieStatsRepository = asplodieStatsRepository,
     backgroundTaskHelper = backgroundTaskHelper,
@@ -2497,10 +2550,11 @@ timeoutActionMachine: TimeoutActionMachineInterface = TimeoutActionMachine(
     determineAirStrikeTargetsUseCase = determineAirStrikeTargetsUseCase,
     determineBananaTargetUseCase = determineBananaTargetUseCase,
     determineGrenadeTargetUseCase = determineGrenadeTargetUseCase,
+    determineTimeoutTargetUseCase = determineTimeoutTargetUseCase,
     determineTm36SplashTargetUseCase = determineTm36SplashTargetUseCase,
-    determineVoreTargetUseCase = determineVoreTargetUseCase,
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
+    pixelsDiceMachine = pixelsDiceMachine,
     timber = timber,
     timeoutIdGenerator = timeoutIdGenerator,
     trollmojiHelper = trollmojiHelper,
@@ -2542,6 +2596,15 @@ chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface = Chatte
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
+)
+
+chatterItemEventHandler: AbsChatterItemEventHandler = ChatterItemEventHandler(
+    backgroundTaskHelper = backgroundTaskHelper,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
+    soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 itemRequestMessageParser = ItemRequestMessageParser(
@@ -2726,7 +2789,7 @@ crowdControlMessagePresenter: CrowdControlMessagePresenterInterface = CrowdContr
     trollmojiHelper = trollmojiHelper
 )
 
-crowdControlMessageHandler = CrowdControlMessageHandler(
+crowdControlMessageListener: CrowdControlMessageListener = CrowdControlMessageHandler(
     crowdControlMessagePresenter = crowdControlMessagePresenter,
     twitchChatMessenger = twitchChatMessenger,
 )
@@ -2793,7 +2856,9 @@ crowdControlActionHandler: CrowdControlActionHandler = BizhawkActionHandler(
 ## Cheer Actions initialization section ##
 ##########################################
 
-cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper()
+cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper(
+    chatterInventoryMapper = chatterInventoryMapper,
+)
 
 cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = CheerActionSettingsRepository(
     settingsJsonReader = JsonFileReader(
@@ -2810,10 +2875,9 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 )
 
 airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheerActionHelper(
-    timber = timber,
-    timeoutActionMachine = timeoutActionMachine,
-    timeoutActionSettings = timeoutActionSettings,
-    timeoutIdGenerator = timeoutIdGenerator,
+    chatterInventoryIdGenerator = chatterInventoryIdGenerator,
+    chatterInventorySettings = chatterInventorySettings,
+    useChatterItemHelper = useChatterItemHelper,
 )
 
 beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface = BeanChanceCheerActionHelper(
@@ -2822,6 +2886,12 @@ beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface = BeanChanceCh
     timber = timber,
     trollmojiHelper = trollmojiHelper,
     twitchChatMessenger = twitchChatMessenger,
+)
+
+itemUseCheerActionHelper: ItemUseCheerActionHelperInterface = ItemUseCheerActionHelper(
+    chatterInventoryIdGenerator = chatterInventoryIdGenerator,
+    chatterInventorySettings = chatterInventorySettings,
+    useChatterItemHelper = useChatterItemHelper,
 )
 
 soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface = SoundAlertCheerActionHelper(
@@ -2844,6 +2914,17 @@ voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheer
     useChatterItemHelper = useChatterItemHelper,
 )
 
+cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+    adgeCheerActionHelper = None,
+    beanChanceCheerActionHelper = beanChanceCheerActionHelper,
+    cheerActionsRepository = cheerActionsRepository,
+    crowdControlCheerActionHelper = crowdControlCheerActionHelper,
+    itemUseCheerActionHelper = itemUseCheerActionHelper,
+    soundAlertCheerActionHelper = soundAlertCheerActionHelper,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository,
+)
 
 
 #############################################
@@ -2853,8 +2934,8 @@ voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheer
 starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = StarWarsQuotesRepository(
     quotesJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = 'starWarsQuotesRepository.json'
-    )
+        fileName = 'starWarsQuotesRepository.json',
+    ),
 )
 
 
@@ -2863,13 +2944,13 @@ starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = StarWarsQuotesRepo
 ##################################
 
 jishoJsonMapper: JishoJsonMapperInterface = JishoJsonMapper(
-    timber = timber
+    timber = timber,
 )
 
 jishoApiService: JishoApiServiceInterface = JishoApiService(
     jishoJsonMapper = jishoJsonMapper,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
 jishoPresenter: JishoPresenterInterface = JishoPresenter()
@@ -2877,7 +2958,7 @@ jishoPresenter: JishoPresenterInterface = JishoPresenter()
 jishoHelper: JishoHelperInterface = JishoHelper(
     jishoApiService = jishoApiService,
     jishoPresenter = jishoPresenter,
-    timber = timber
+    timber = timber,
 )
 
 
@@ -2912,10 +2993,11 @@ chatLoggerChatAction = ChatLoggerChatAction(
 )
 
 cheerActionsWizard: CheerActionsWizardInterface = CheerActionsWizard(
-    timber = timber
+    timber = timber,
 )
 
 cheerActionsWizardChatAction = CheerActionsWizardChatAction(
+    chatterInventoryMapper = chatterInventoryMapper,
     cheerActionJsonMapper = cheerActionJsonMapper,
     cheerActionsRepository = cheerActionsRepository,
     cheerActionsWizard = cheerActionsWizard,
@@ -2938,6 +3020,7 @@ recurringActionsWizardChatAction = RecurringActionsWizardChatAction(
 saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
     anivUserIdsRepository = anivUserIdsRepository,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+    timber = timber,
 )
 
 soundAlertChatAction = SoundAlertChatAction(
@@ -2947,34 +3030,40 @@ soundAlertChatAction = SoundAlertChatAction(
     timber = timber
 )
 
+
+#########################################
+## Sup Streamer initialization section ##
+#########################################
+
 supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 supStreamerHelper: SupStreamerHelperInterface = SupStreamerHelper()
 
 supStreamerChatAction: SupStreamerChatAction = SupStreamerChatAction(
+    chatterPreferredNameHelper = chatterPreferredNameHelper,
     streamAlertsManager = streamAlertsManager,
     supStreamerHelper = supStreamerHelper,
     supStreamerRepository = supStreamerRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchTokensRepository = twitchTokensRepository
+    twitchTokensRepository = twitchTokensRepository,
 )
 
 ttsChatterRepository: TtsChatterRepositoryInterface = TtsChatterRepository(
     backingDatabase = backingDatabase,
-    timber = timber
+    timber = timber,
 )
 
 ttsChatterSettingsRepository: TtsChatterSettingsRepositoryInterface = TtsChatterSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/ttsChatterSettingsRepository.json'
-    )
+        fileName = '../config/ttsChatterSettingsRepository.json',
+    ),
 )
 
 ttsChatterChatAction = TtsChatterChatAction(
@@ -3027,13 +3116,13 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 
 casualGamePollPointRedemption: CasualGamePollPointRedemption | None = CasualGamePollPointRedemption(
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 cutenessPointRedemption: CutenessPointRedemption | None = CutenessPointRedemption(
     cutenessRepository = cutenessRepository,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None = ChatterPreferredTtsPointRedemption(
@@ -3041,47 +3130,48 @@ chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None = 
     chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
     chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 decTalkSongPointRedemption: DecTalkSongPointRedemption | None = DecTalkSongPointRedemption(
     eventLoop = eventLoop,
     streamAlertsManager = streamAlertsManager,
-    timber = timber
+    timber = timber,
 )
 
 pkmnBattlePointRedemption: PkmnBattlePointRedemption | None = PkmnBattlePointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 pkmnCatchPointRedemption: PkmnCatchPointRedemption | None = PkmnCatchPointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 pkmnEvolvePointRedemption: PkmnEvolvePointRedemption | None = PkmnEvolvePointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 pkmnShinyPointRedemption: PkmnShinyPointRedemption | None = PkmnShinyPointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 soundAlertPointRedemption: SoundAlertPointRedemption | None = SoundAlertPointRedemption(
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-    streamAlertsManager = streamAlertsManager
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
 )
 
 superTriviaGamePointRedemption: SuperTriviaGamePointRedemption | None = SuperTriviaGamePointRedemption(
@@ -3105,7 +3195,7 @@ triviaGamePointRedemption: TriviaGamePointRedemption | None = TriviaGamePointRed
 ttsChatterPointRedemption: TtsChatterPointRedemption | None = TtsChatterPointRedemption(
     timber = timber,
     ttsChatterRepository = ttsChatterRepository,
-    twitchUtils = twitchUtils
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 
@@ -3183,33 +3273,6 @@ redemptionCounterPointRedemption = RedemptionCounterPointRedemption(
     timber = timber,
     trollmojiHelper = trollmojiHelper,
     twitchChatMessenger = twitchChatMessenger,
-)
-
-
-########################################
-## Pixels Dice initialization section ##
-########################################
-
-pixelsDiceEventHandler: PixelsDiceEventListener = PixelsDiceEventHandler(
-    administratorProvider = administratorProvider,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
-pixelsDiceSettings: PixelsDiceSettingsInterface = PixelsDiceSettings(
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/pixelsDiceSettings.json',
-    ),
-)
-
-pixelsDiceStateMapper: PixelsDiceStateMapperInterface = PixelsDiceStateMapper()
-
-pixelsDiceMachine: PixelsDiceMachineInterface = PixelsDiceMachine(
-    backgroundTaskHelper = backgroundTaskHelper,
-    pixelsDiceStateMapper = pixelsDiceStateMapper,
-    pixelsDiceSettings = pixelsDiceSettings,
-    timber = timber,
 )
 
 
@@ -3344,6 +3407,7 @@ cynanBot = CynanBot(
     chatterInventoryItemUseMachine = chatterInventoryItemUseMachine,
     chatterInventoryMapper = chatterInventoryMapper,
     chatterInventorySettings = chatterInventorySettings,
+    chatterItemEventHandler = chatterItemEventHandler,
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
     chatterPreferredTtsRepository = chatterPreferredTtsRepository,
@@ -3360,7 +3424,7 @@ cynanBot = CynanBot(
     crowdControlAutomator = crowdControlAutomator,
     crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlMachine = crowdControlMachine,
-    crowdControlMessageHandler = crowdControlMessageHandler,
+    crowdControlMessageListener = crowdControlMessageListener,
     crowdControlSettingsRepository = crowdControlSettingsRepository,
     crowdControlUserInputUtils = crowdControlUserInputUtils,
     cutenessPresenter = cutenessPresenter,
@@ -3442,6 +3506,7 @@ cynanBot = CynanBot(
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
+    twitchIrcReconnectHelper = twitchIrcReconnectHelper,
     twitchMessageStringUtils = twitchMessageStringUtils,
     twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,

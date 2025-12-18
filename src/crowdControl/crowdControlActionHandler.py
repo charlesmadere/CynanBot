@@ -10,13 +10,13 @@ class CrowdControlActionHandler(ABC):
     @abstractmethod
     async def handleButtonPressAction(
         self,
-        action: ButtonPressCrowdControlAction
+        action: ButtonPressCrowdControlAction,
     ) -> CrowdControlActionHandleResult:
         pass
 
     @abstractmethod
     async def handleGameShuffleAction(
         self,
-        action: GameShuffleCrowdControlAction
+        action: GameShuffleCrowdControlAction,
     ) -> CrowdControlActionHandleResult:
         pass

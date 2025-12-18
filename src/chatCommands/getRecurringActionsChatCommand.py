@@ -1,3 +1,5 @@
+from typing import Final
+
 from frozenlist import FrozenList
 
 from .absChatCommand import AbsChatCommand
@@ -5,8 +7,8 @@ from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..recurringActions.actions.recurringAction import RecurringAction
 from ..recurringActions.recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -17,9 +19,9 @@ class GetRecurringActionsChatCommand(AbsChatCommand):
         administratorProvider: AdministratorProviderInterface,
         recurringActionsRepository: RecurringActionsRepositoryInterface,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         usersRepository: UsersRepositoryInterface,
-        delimiter: str = ', '
+        delimiter: str = ', ',
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -27,19 +29,19 @@ class GetRecurringActionsChatCommand(AbsChatCommand):
             raise TypeError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__delimiter: str = delimiter
+        self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
+        self.__recurringActionsRepository: Final[RecurringActionsRepositoryInterface] = recurringActionsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
+        self.__delimiter: Final[str] = delimiter
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -52,13 +54,13 @@ class GetRecurringActionsChatCommand(AbsChatCommand):
 
         recurringActions = await self.__recurringActionsRepository.getAllRecurringActions(
             twitchChannel = user.handle,
-            twitchChannelId = userId
+            twitchChannelId = userId,
         )
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = await self.__toStr(recurringActions),
-            replyMessageId = await ctx.getMessageId()
+        self.__twitchChatMessenger.send(
+            text = await self.__toStr(recurringActions),
+            twitchChannelId = await ctx.getTwitchChannelId(),
+            replyMessageId = await ctx.getMessageId(),
         )
 
         self.__timber.log('GetRecurringActionsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

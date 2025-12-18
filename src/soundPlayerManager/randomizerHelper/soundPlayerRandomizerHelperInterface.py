@@ -9,7 +9,7 @@ class SoundPlayerRandomizerHelperInterface(Clearable, ABC):
     @abstractmethod
     async def chooseRandomFromDirectorySoundAlert(
         self,
-        directoryPath: str | None
+        directoryPath: str | None,
     ) -> str | None:
         pass
 

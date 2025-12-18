@@ -265,17 +265,17 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             self.__timber.log('CompositeTtsManager', f'Will not play the given TTS event as there is one already an ongoing! ({event=})')
             return False
 
-        ttsProvider = await self.__determineTtsProvider(event)
-        ttsManager = self.__ttsProviderToManagerMap.get(ttsProvider, None)
+        provider = await self.__determineTtsProvider(event)
+        manager = self.__ttsProviderToManagerMap.get(provider, None)
 
-        if ttsProvider is TtsProvider.SHOTGUN_TTS:
+        if provider is TtsProvider.SHOTGUN_TTS:
             return await self.__handleShotgunTtsEvent(event)
-        elif ttsManager is None:
+        elif manager is None:
             self.__currentTtsManager = None
             return False
         else:
-            self.__currentTtsManager = ttsManager
-            self.__backgroundTaskHelper.createTask(ttsManager.playTtsEvent(event))
+            self.__currentTtsManager = manager
+            self.__backgroundTaskHelper.createTask(manager.playTtsEvent(event))
             return True
 
     async def stopTtsEvent(self):

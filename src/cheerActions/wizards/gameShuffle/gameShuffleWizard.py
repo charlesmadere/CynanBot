@@ -36,7 +36,7 @@ class GameShuffleWizard(AbsWizard):
         return self.__gigaShuffleChance
 
     def printOut(self) -> str:
-        return f'{self.__bits=}, {self.__gigaShuffleChance}'
+        return f'{self.__bits=}, {self.__gigaShuffleChance=}'
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()

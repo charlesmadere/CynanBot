@@ -1,9 +1,10 @@
 from dataclasses import dataclass
+from typing import Awaitable, Callable
 
-from ..listeners.pixelsDiceRollRequestCallback import PixelsDiceRollRequestCallback
+from .diceRollResult import DiceRollResult
 
 
 @dataclass(frozen = True)
 class DiceRollRequest:
-    callback: PixelsDiceRollRequestCallback
+    callback: Callable[[DiceRollResult], Awaitable[None]]
     twitchChannelId: str

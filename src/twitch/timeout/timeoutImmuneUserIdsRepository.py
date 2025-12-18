@@ -1,10 +1,10 @@
 import traceback
+from typing import Final
 
 from .timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ..friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from ..officialAccounts.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ...funtoon.funtoonUserIdProviderInterface import FuntoonUserIdProviderInterface
 from ...misc import utils as utils
 from ...misc.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInterface
 from ...storage.linesReaderInterface import LinesReaderInterface
@@ -17,7 +17,6 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
     def __init__(
         self,
         cynanBotUserIdsProvider: CynanBotUserIdsProviderInterface,
-        funtoonUserIdProvider: FuntoonUserIdProviderInterface,
         officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface,
         timber: TimberInterface,
         twitchFriendsUserIdProvider: TwitchFriendsUserIdRepositoryInterface,
@@ -27,8 +26,6 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
     ):
         if not isinstance(cynanBotUserIdsProvider, CynanBotUserIdsProviderInterface):
             raise TypeError(f'cynanBotUserIdsProvider argument is malformed: \"{cynanBotUserIdsProvider}\"')
-        elif not isinstance(funtoonUserIdProvider, FuntoonUserIdProviderInterface):
-            raise TypeError(f'funtoonUserIdProvider argument is malformed: \"{funtoonUserIdProvider}\"')
         elif not isinstance(officialTwitchAccountUserIdProvider, OfficialTwitchAccountUserIdProviderInterface):
             raise TypeError(f'officialTwitchAccountUserIdProvider argument is malformed: \"{officialTwitchAccountUserIdProvider}\"')
         elif not isinstance(timber, TimberInterface):
@@ -42,14 +39,13 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         elif otherImmuneUserIdsLinesReader is not None and not isinstance(otherImmuneUserIdsLinesReader, LinesReaderInterface):
             raise TypeError(f'immuneUserIdsLinesReader argument is malformed: \"{otherImmuneUserIdsLinesReader}\"')
 
-        self.__cynanBotUserIdsProvider: CynanBotUserIdsProviderInterface = cynanBotUserIdsProvider
-        self.__funtoonUserIdProvider: FuntoonUserIdProviderInterface = funtoonUserIdProvider
-        self.__officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = officialTwitchAccountUserIdProvider
-        self.__timber: TimberInterface = timber
-        self.__twitchFriendsUserIdProvider: TwitchFriendsUserIdRepositoryInterface = twitchFriendsUserIdProvider
-        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__otherImmuneUserIdsLinesReader: LinesReaderInterface | None = otherImmuneUserIdsLinesReader
+        self.__cynanBotUserIdsProvider: Final[CynanBotUserIdsProviderInterface] = cynanBotUserIdsProvider
+        self.__officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderInterface] = officialTwitchAccountUserIdProvider
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchFriendsUserIdProvider: Final[TwitchFriendsUserIdRepositoryInterface] = twitchFriendsUserIdProvider
+        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__otherImmuneUserIdsLinesReader: Final[LinesReaderInterface | None] = otherImmuneUserIdsLinesReader
 
         self.__immuneUserIds: frozenset[str] | None = None
         self.__otherImmuneUserIds: frozenset[str] | None = None
@@ -125,7 +121,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         if utils.isValidStr(cynanBotTtsUserId):
             newUserIds.add(cynanBotTtsUserId)
 
-        funtoonUserId = await self.__funtoonUserIdProvider.getFuntoonUserId()
+        funtoonUserId = await self.__twitchFriendsUserIdProvider.getFuntoonUserId()
         if utils.isValidStr(funtoonUserId):
             newUserIds.add(funtoonUserId)
 

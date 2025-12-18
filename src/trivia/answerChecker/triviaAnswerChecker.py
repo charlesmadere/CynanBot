@@ -683,29 +683,31 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'saul'
         if word in { 'bastian', 'seb', 'sebby', 'bast' }:
             yield 'sebastian'
+        if word in { 'seann', 'shaun', 'shaugn', 'shawn', 'shean' }:
+            yield 'sean'
         if word in { 'si', 'sy', 'sylas' }:
             yield 'silas'
         if word in { 'sol', 'solly' 'sully' }:
             yield 'solomon'
-        if word in { 'steph', 'stephan', 'steven', 'stevenson', 'stevie' }:
-            yield 'steve'
+        if word in { 'steph', 'stephan', 'steven', 'stevensen', 'stevenson', 'stevie' }:
             yield 'stephen'
+            yield 'steve'
             yield 'steven'
         if word in { 'si', 'sly', 'sy', 'syl', 'vester', 'vet', 'vessie' }:
             yield 'sylvester'
-        if word in { 'terry' }:
+        if word in { 'terry', 'terance', 'terrance', 'terrence' }:
             yield 'terence'
-        if word in { 'theo', 'ted', 'teddy' }:
+        if word in { 'theo', 'ted', 'teddie', 'teddy' }:
             yield 'theodore'
         if word in { 'terry', 'tess', 'tessie', 'tessa', 'thirza', 'thursa', 'tracy' }:
             yield 'theresa'
-        if word in { 'tim', 'timmy' }:
+        if word in { 'tim', 'timmy', 'timmothy' }:
             yield 'timothy'
-        if word in { 'thom', 'tom', 'tommy', 'tony' }:
+        if word in { 'thom', 'tom', 'tomas', 'tomm', 'tomy', 'tommy', 'tony' }:
             yield 'thomas'
         if word == 'toby':
             yield 'tobias'
-        if word in { 'anthony', 'toni' }:
+        if word in { 'anthony', 'antony', 'toni' }:
             yield 'tony'
         if word == 'ulie':
             yield 'ulysses'
@@ -737,6 +739,16 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'zedediah'
         if word == 'zeke':
             yield 'ezekiel'
+
+        # important people of history
+        if word in { 'gandi', 'gandy' }:
+            yield 'gandhi'
+        if word in { 'gangis', 'gengis', 'gingis' }:
+            yield 'genghis khan'
+        if word in { 'sokrates', 'socratese' }:
+            yield 'socrates'
+        if word in { 'tut', 'tutankhamen', 'tutenkhamen' }:
+            yield 'tutankhamun'
 
         # geographical features/streets
         if word in { 'aly', 'ally' }:
@@ -1083,11 +1095,12 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'frames per second'
         if word == 'ftp':
             yield 'file transfer protocol'
-        if word == 'goog':
+        if word in { 'goog', 'googl' }:
             yield 'google'
         if word == 'gps':
             yield 'global positioning system'
-        if word == 'gpu':
+        if word in { 'gpu', 'graphic', 'graphical' }:
+            yield 'graphics card'
             yield 'graphics processing unit'
         if word == 'hd':
             yield 'high definition'
@@ -1105,6 +1118,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'internet protocol'
         if word in { 'ms', 'msft' }:
             yield 'microsoft'
+        if word in { 'net', 'network' }:
+            yield 'internet'
         if word == 'op':
             yield 'operand'
             yield 'operation'
@@ -1128,6 +1143,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'sd':
             yield 'standard definition'
         if word == 'sec':
+            yield 'secure'
             yield 'security'
         if word == 'sftp':
             yield 'secure file transfer protocol'
@@ -1136,8 +1152,17 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'scale independent pixels'
         if word == 'ssd':
             yield 'solid state drive'
+        if word in { 'ssl', 'tls' }:
+            yield 'secure sockets layer'
+            yield 'transport layer security'
+        if word == 'ssh':
+            yield 'secure shell'
         if word == 'txt':
             yield 'text'
+        if word in { 'gui', 'ui' }:
+            yield 'graphical interface'
+            yield 'graphical user interface'
+            yield 'user interface'
         if word == 'uri':
             yield 'uniform resource identifier'
         if word == 'url':
@@ -1145,6 +1170,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'vhs':
             yield 'video home system'
         if word == 'www':
+            yield 'internet'
+            yield 'web'
             yield 'world wide web'
 
         # units and measurements (imperial and metric)
@@ -1484,10 +1511,6 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'deceleration'
         if word == 'dna':
             yield 'deoxyribonucleic acid'
-        if word == 'est':
-            yield 'establish'
-            yield 'established'
-            yield 'estimate'
         if word == 'capital':
             yield 'capitol'
         if word == 'co':
@@ -1507,9 +1530,12 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'est':
             yield 'estimate'
             yield 'estimated'
+            yield 'estimation'
             yield 'established'
         if word == 'eta':
             yield 'estimated time of arrival'
+        if word == 'extract':
+            yield 'abstract'
         if word == 'fi':
             yield 'fiction'
         if word == 'fl':
@@ -1527,6 +1553,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'generator'
         if word == 'grey':
             yield 'gray'
+        if word in { 'kan', 'kahn' }:
+            yield 'khan'
         if word == 'lang':
             yield 'language'
         if word == 'mom':
@@ -1535,6 +1563,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'number'
         if word == 'ocd':
             yield 'obsessive compulsive disorder'
+        if word in { 'olympic', 'olympics' }:
+            yield 'olympic games'
         if word == 'parcel':
             yield 'delivery'
             yield 'mail'

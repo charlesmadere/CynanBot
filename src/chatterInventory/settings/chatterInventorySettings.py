@@ -33,7 +33,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         ),
         defaultBananaItemDetails: BananaItemDetails = BananaItemDetails(
             randomChanceEnabled = True,
-            durationSeconds = 60,
+            durationSeconds = 90, # 1 minute 30 seconds
         ),
         defaultGashaponItemDetails: GashaponItemDetails = GashaponItemDetails(
             pullRates = frozendict({
@@ -44,6 +44,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
                 ChatterItemType.GASHAPON: 0.0,
                 ChatterItemType.GRENADE: 0.0,
                 ChatterItemType.TM_36: 0.0,
+                ChatterItemType.VORE: 0.0,
             }),
             iterations = 3,
         ),
@@ -60,12 +61,8 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         ),
         defaultEnabledItemTypes: frozenset[ChatterItemType] = frozenset({
             ChatterItemType.AIR_STRIKE,
-            ChatterItemType.ANIMAL_PET,
             ChatterItemType.BANANA,
-            ChatterItemType.CASSETTE_TAPE,
-            ChatterItemType.GASHAPON,
             ChatterItemType.GRENADE,
-            ChatterItemType.TM_36,
         }),
     ):
         if not isinstance(chatterInventoryMapper, ChatterInventoryMapperInterface):

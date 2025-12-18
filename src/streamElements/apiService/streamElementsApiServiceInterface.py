@@ -10,6 +10,6 @@ class StreamElementsApiServiceInterface(ABC):
         self,
         text: str,
         userKey: str,
-        voice: StreamElementsVoice
+        voice: StreamElementsVoice,
     ) -> bytes:
         pass

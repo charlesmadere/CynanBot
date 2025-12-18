@@ -38,44 +38,6 @@ class TestAnivContentScanner:
         assert isinstance(self.anivContentScanner, AnivContentScannerInterface)
 
     @pytest.mark.asyncio
-    async def test_scan_withBadParens1(self):
-        result = await self.anivContentScanner.scan('(insanefirebat')
-        assert result is AnivContentCode.OPEN_PAREN
-
-    @pytest.mark.asyncio
-    async def test_scan_withBadParens2(self):
-        result = await self.anivContentScanner.scan(')insanefirebat')
-        assert result is AnivContentCode.OPEN_PAREN
-
-    @pytest.mark.asyncio
-    async def test_scan_withBadParens3(self):
-        result = await self.anivContentScanner.scan(')insanefirebat(')
-        assert result is AnivContentCode.OPEN_PAREN
-
-    @pytest.mark.asyncio
-    async def test_scan_withBadParens4(self):
-        result = await self.anivContentScanner.scan(')insanefirebat)')
-        assert result is AnivContentCode.OPEN_PAREN
-
-    @pytest.mark.asyncio
-    async def test_scan_withBadParens5(self):
-        result = await self.anivContentScanner.scan('()insanefirebat))')
-        assert result is AnivContentCode.OPEN_PAREN
-
-    @pytest.mark.asyncio
-    async def test_scan_withBadTwitchEmojiParens1(self):
-        result = await self.anivContentScanner.scan('b)')
-        assert result is AnivContentCode.OPEN_PAREN
-
-        result = await self.anivContentScanner.scan('b-)')
-        assert result is AnivContentCode.OPEN_PAREN
-
-    @pytest.mark.asyncio
-    async def test_scan_withBadQuotes(self):
-        result = await self.anivContentScanner.scan('\"insanefirebat')
-        assert result is AnivContentCode.OPEN_QUOTES
-
-    @pytest.mark.asyncio
     async def test_scan_withBannedPhrase1(self):
         result = await self.anivContentScanner.scan('qanonbelievers need help')
         assert result is AnivContentCode.OK

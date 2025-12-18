@@ -8,6 +8,6 @@ class TwitchEmotesHelperInterface(Clearable, ABC):
     @abstractmethod
     async def fetchViableSubscriptionEmoteNames(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> frozenset[str]:
         pass

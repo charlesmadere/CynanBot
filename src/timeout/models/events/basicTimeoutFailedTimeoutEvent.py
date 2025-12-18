@@ -3,15 +3,15 @@ from dataclasses import dataclass
 from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.basicTimeoutAction import BasicTimeoutAction
-from ..basicTimeoutTarget import BasicTimeoutTarget
+from ..timeoutTarget import TimeoutTarget
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
 @dataclass(frozen = True)
 class BasicTimeoutFailedTimeoutEvent(AbsTimeoutEvent):
     originatingAction: BasicTimeoutAction
-    target: BasicTimeoutTarget
     eventId: str
+    timeoutTarget: TimeoutTarget
     timeoutResult: TwitchTimeoutResult
 
     def getEventId(self) -> str:

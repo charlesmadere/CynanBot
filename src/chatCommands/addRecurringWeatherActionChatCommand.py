@@ -1,11 +1,13 @@
+from typing import Final
+
 from .absChatCommand import AbsChatCommand
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..recurringActions.actions.recurringActionType import RecurringActionType
 from ..recurringActions.recurringActionsWizardInterface import RecurringActionsWizardInterface
 from ..recurringActions.wizards.weather.weatherStep import WeatherStep
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -16,8 +18,8 @@ class AddRecurringWeatherActionChatCommand(AbsChatCommand):
         administratorProvider: AdministratorProviderInterface,
         recurringActionsWizard: RecurringActionsWizardInterface,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface
+        twitchChatMessenger: TwitchChatMessengerInterface,
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -25,16 +27,16 @@ class AddRecurringWeatherActionChatCommand(AbsChatCommand):
             raise TypeError(f'recurringActionsWizard argument is malformed: \"{recurringActionsWizard}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__recurringActionsWizard: RecurringActionsWizardInterface = recurringActionsWizard
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
+        self.__recurringActionsWizard: Final[RecurringActionsWizardInterface] = recurringActionsWizard
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -50,7 +52,7 @@ class AddRecurringWeatherActionChatCommand(AbsChatCommand):
         wizard = await self.__recurringActionsWizard.start(
             recurringActionType = RecurringActionType.WEATHER,
             twitchChannel = user.handle,
-            twitchChannelId = userId
+            twitchChannelId = userId,
         )
 
         step = wizard.currentStep
@@ -60,10 +62,10 @@ class AddRecurringWeatherActionChatCommand(AbsChatCommand):
 
         minimumRecurringActionTimingMinutes = RecurringActionType.WEATHER.minimumRecurringActionTimingMinutes
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = f'ⓘ Please specify the number of minutes between recurring Weather prompts (most people choose 60 - 120 minutes, minimum is {minimumRecurringActionTimingMinutes})',
-            replyMessageId = await ctx.getMessageId()
+        self.__twitchChatMessenger.send(
+            text = f'ⓘ Please specify the number of minutes between recurring Weather prompts (most people choose 60 - 120 minutes, minimum is {minimumRecurringActionTimingMinutes})',
+            twitchChannelId = await ctx.getTwitchChannelId(),
+            replyMessageId = await ctx.getMessageId(),
         )
 
         self.__timber.log('AddRecurringWeatherActionChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

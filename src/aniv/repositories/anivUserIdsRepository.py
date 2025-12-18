@@ -19,6 +19,8 @@ class AnivUserIdsRepository(AnivUserIdsRepositoryInterface):
 
         self.__twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = twitchFriendsUserIdRepository
 
+        self.__cache: frozendict[WhichAnivUser, str | None] | None = None
+
     async def determineAnivUser(
         self,
         chatterUserId: str | None,
@@ -41,16 +43,29 @@ class AnivUserIdsRepository(AnivUserIdsRepositoryInterface):
     async def getAcacUserId(self) -> str | None:
         return await self.__twitchFriendsUserIdRepository.getAcacUserId()
 
+    async def getAlbeeevUserId(self) -> str | None:
+        return await self.__twitchFriendsUserIdRepository.getAlbeeevUserId()
+
     async def getAllUsers(self) -> frozendict[WhichAnivUser, str | None]:
+        cache = self.__cache
+
+        if cache is not None:
+            return cache
+
         acacUserId = await self.getAcacUserId()
+        albeeevUserId = await self.getAlbeeevUserId()
         aneevUserId = await self.getAneevUserId()
         anivUserId = await self.getAnivUserId()
 
-        return frozendict({
+        allUsers: frozendict[WhichAnivUser, str | None] = frozendict({
             WhichAnivUser.ACAC: acacUserId,
+            WhichAnivUser.ALBEEEV: albeeevUserId,
             WhichAnivUser.ANEEV: aneevUserId,
             WhichAnivUser.ANIV: anivUserId,
         })
+
+        self.__cache = allUsers
+        return allUsers
 
     async def getAnivUserId(self) -> str | None:
         return await self.__twitchFriendsUserIdRepository.getAnivUserId()

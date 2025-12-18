@@ -10,13 +10,13 @@ class CrowdControlButtonPressCheerAction(AbsCheerAction):
         isEnabled: bool,
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     @property

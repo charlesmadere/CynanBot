@@ -107,7 +107,7 @@ class VoicemailPointRedemption(AbsChannelPointRedemption):
             return False
 
         twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
-            twitchChannelId = await twitchChannel.getTwitchChannelId(),
+            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
         )
 
         targetedUserData = await self.__determineTargetedUser(

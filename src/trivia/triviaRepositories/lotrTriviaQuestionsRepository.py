@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absTriviaQuestionRepository import AbsTriviaQuestionRepository
 from .lordOfTheRings.lotrDatabaseQuestionStorageInterface import LotrDatabaseQuestionStorageInterface
 from ..additionalAnswers.additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
@@ -10,6 +12,7 @@ from ..questions.triviaSource import TriviaSource
 from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaFetchOptions import TriviaFetchOptions
+from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
 
@@ -25,7 +28,7 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
     ):
         super().__init__(
-            triviaSettingsRepository = triviaSettingsRepository
+            triviaSettingsRepository = triviaSettingsRepository,
         )
 
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
@@ -39,11 +42,11 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
             raise TypeError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
 
-        self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = additionalTriviaAnswersRepository
-        self.__lotrDatabaseQuestionStorage: LotrDatabaseQuestionStorageInterface = lotrDatabaseQuestionStorage
-        self.__timber: TimberInterface = timber
-        self.__triviaAnswerCompiler: TriviaAnswerCompilerInterface = triviaAnswerCompiler
-        self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
+        self.__additionalTriviaAnswersRepository: Final[AdditionalTriviaAnswersRepositoryInterface] = additionalTriviaAnswersRepository
+        self.__lotrDatabaseQuestionStorage: Final[LotrDatabaseQuestionStorageInterface] = lotrDatabaseQuestionStorage
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaAnswerCompiler: Final[TriviaAnswerCompilerInterface] = triviaAnswerCompiler
+        self.__triviaQuestionCompiler: Final[TriviaQuestionCompilerInterface] = triviaQuestionCompiler
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
@@ -53,7 +56,12 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         lotrTriviaQuestion = await self.__lotrDatabaseQuestionStorage.fetchTriviaQuestion()
 
-        category = 'Lord of the Rings'
+        category = lotrTriviaQuestion.category
+
+        if not utils.isValidStr(category):
+            category = 'Lord of the Rings'
+
+        category = await self.__triviaQuestionCompiler.compileCategory(category)
         question = await self.__triviaQuestionCompiler.compileQuestion(lotrTriviaQuestion.question)
 
         allWords: frozenset[str] | None = None

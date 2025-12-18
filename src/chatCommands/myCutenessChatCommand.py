@@ -1,12 +1,13 @@
 from datetime import timedelta
+from typing import Final
 
 from .absChatCommand import AbsChatCommand
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..cuteness.cutenessUtilsInterface import CutenessUtilsInterface
 from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -17,10 +18,10 @@ class MyCutenessChatCommand(AbsChatCommand):
         cutenessRepository: CutenessRepositoryInterface,
         cutenessUtils: CutenessUtilsInterface,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         usersRepository: UsersRepositoryInterface,
         delimiter: str = ', ',
-        cooldown: timedelta = timedelta(seconds = 2)
+        cooldown: timedelta = timedelta(seconds = 2),
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -28,8 +29,8 @@ class MyCutenessChatCommand(AbsChatCommand):
             raise TypeError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not isinstance(delimiter, str):
@@ -37,13 +38,13 @@ class MyCutenessChatCommand(AbsChatCommand):
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
-        self.__cutenessUtils: CutenessUtilsInterface = cutenessUtils
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__delimiter: str = delimiter
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
+        self.__cutenessRepository: Final[CutenessRepositoryInterface] = cutenessRepository
+        self.__cutenessUtils: Final[CutenessUtilsInterface] = cutenessUtils
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
+        self.__delimiter: Final[str] = delimiter
+        self.__lastMessageTimes: Final[TimedDict] = TimedDict(cooldown)
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -62,10 +63,10 @@ class MyCutenessChatCommand(AbsChatCommand):
 
         message = self.__cutenessUtils.getCutenessHistory(result, self.__delimiter)
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = message,
-            replyMessageId = await ctx.getMessageId()
+        self.__twitchChatMessenger.send(
+            text = message,
+            twitchChannelId = await ctx.getTwitchChannelId(),
+            replyMessageId = await ctx.getMessageId(),
         )
 
         self.__timber.log('MyCutenessChatCommand', f'Handled !mycuteness command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

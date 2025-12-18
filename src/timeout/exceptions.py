@@ -1,29 +1,22 @@
 from typing import Final
 
-from .models.bananaTimeoutTarget import BananaTimeoutTarget
 from .models.timeoutDiceRoll import TimeoutDiceRoll
 from .models.timeoutDiceRollFailureData import TimeoutDiceRollFailureData
-from .models.voreTimeoutTarget import VoreTimeoutTarget
+from .models.timeoutTarget import TimeoutTarget
 
 
 class BananaTimeoutDiceRollFailedException(Exception):
 
     def __init__(
         self,
-        timeoutTarget: BananaTimeoutTarget,
         diceRoll: TimeoutDiceRoll,
         diceRollFailureData: TimeoutDiceRollFailureData,
+        timeoutTarget: TimeoutTarget,
     ):
-        if not isinstance(timeoutTarget, BananaTimeoutTarget):
-            raise TypeError(f'timeoutTarget argument is malformed: \"{timeoutTarget}\"')
-        elif not isinstance(diceRoll, TimeoutDiceRoll):
-            raise TypeError(f'diceRoll argument is malformed: \"{diceRoll}\"')
-        elif not isinstance(diceRollFailureData, TimeoutDiceRollFailureData):
-            raise TypeError(f'diceRollFailureData argument is malformed: \"{diceRollFailureData}\"')
-
-        self.__timeoutTarget: Final[BananaTimeoutTarget] = timeoutTarget
+        super().__init__(diceRoll, diceRollFailureData, timeoutTarget)
         self.__diceRoll: Final[TimeoutDiceRoll] = diceRoll
         self.__diceRollFailureData: Final[TimeoutDiceRollFailureData] = diceRollFailureData
+        self.__timeoutTarget: Final[TimeoutTarget] = timeoutTarget
 
     @property
     def diceRoll(self) -> TimeoutDiceRoll:
@@ -34,7 +27,7 @@ class BananaTimeoutDiceRollFailedException(Exception):
         return self.__diceRollFailureData
 
     @property
-    def timeoutTarget(self) -> BananaTimeoutTarget:
+    def timeoutTarget(self) -> TimeoutTarget:
         return self.__timeoutTarget
 
 
@@ -42,15 +35,13 @@ class ImmuneTimeoutTargetException(Exception):
 
     def __init__(
         self,
-        timeoutTarget: VoreTimeoutTarget,
+        timeoutTarget: TimeoutTarget,
     ):
-        if not isinstance(timeoutTarget, VoreTimeoutTarget):
-            raise TypeError(f'timeoutTarget argument is malformed: \"{timeoutTarget}\"')
-
-        self.__timeoutTarget: Final[VoreTimeoutTarget] = timeoutTarget
+        super().__init__(timeoutTarget)
+        self.__timeoutTarget: Final[TimeoutTarget] = timeoutTarget
 
     @property
-    def timeoutTarget(self) -> VoreTimeoutTarget:
+    def timeoutTarget(self) -> TimeoutTarget:
         return self.__timeoutTarget
 
 

@@ -10,7 +10,7 @@ class MicrosoftSamTtsManagerProviderInterface(TtsManagerProviderInterface, ABC):
     @abstractmethod
     def constructNewInstance(
         self,
-        useSharedSoundPlayerManager: bool = True
+        useSharedSoundPlayerManager: bool = True,
     ) -> MicrosoftSamTtsManagerInterface | None:
         pass
 

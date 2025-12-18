@@ -13,6 +13,6 @@ class DecTalkHelperInterface(ABC):
         donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> DecTalkFileReference | None:
         pass

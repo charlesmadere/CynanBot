@@ -59,13 +59,13 @@ from ..ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \
     TtsMonsterTokensRepositoryInterface
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import \
     TwitchChannelEditorsRepositoryInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ..twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from ..twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..twitch.websocket.settings.twitchWebsocketSettingsRepositoryInterface import \
     TwitchWebsocketSettingsRepositoryInterface
 from ..users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelperInterface
@@ -130,7 +130,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
         twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface | None,
         twitchTokensRepository: TwitchTokensRepositoryInterface | None,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface | None,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
@@ -239,8 +239,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'twitchSubscriptionsRepository argument is malformed: \"{twitchSubscriptionsRepository}\"')
         elif twitchTokensRepository is not None and not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif twitchWebsocketSettingsRepository is not None and not isinstance(twitchWebsocketSettingsRepository, TwitchWebsocketSettingsRepositoryInterface):
             raise TypeError(f'twitchWebsocketSettingsRepository argument is malformed: \"{twitchWebsocketSettingsRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -258,7 +258,7 @@ class ClearCachesChatCommand(AbsChatCommand):
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__timber: Final[TimberInterface] = timber
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
         self.__clearables: Final[FrozenList[Clearable | None]] = FrozenList()
@@ -339,10 +339,10 @@ class ClearCachesChatCommand(AbsChatCommand):
             if clearable is not None:
                 await clearable.clearCaches()
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = 'ⓘ All caches cleared',
-            replyMessageId = await ctx.getMessageId()
+        self.__twitchChatMessenger.send(
+            text = 'ⓘ All caches cleared',
+            twitchChannelId = await ctx.getTwitchChannelId(),
+            replyMessageId = await ctx.getMessageId(),
         )
 
         self.__timber.log('ClearCachesChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

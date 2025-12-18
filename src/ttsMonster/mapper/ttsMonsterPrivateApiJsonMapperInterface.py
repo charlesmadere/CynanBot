@@ -12,49 +12,49 @@ class TtsMonsterPrivateApiJsonMapperInterface(ABC):
     @abstractmethod
     async def parseDonationPrefixConfig(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> TtsMonsterDonationPrefixConfig | None:
         pass
 
     @abstractmethod
     async def parseTtsData(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> TtsMonsterPrivateApiTtsData | None:
         pass
 
     @abstractmethod
     async def parseTtsResponse(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> TtsMonsterPrivateApiTtsResponse | None:
         pass
 
     @abstractmethod
     async def parseVoice(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> TtsMonsterVoice | None:
         pass
 
     @abstractmethod
     async def requireDonationPrefixConfig(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> TtsMonsterDonationPrefixConfig:
         pass
 
     @abstractmethod
     async def requireVoice(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> TtsMonsterVoice:
         pass
 
     @abstractmethod
     async def serializeDonationPrefixConfig(
         self,
-        donationPrefixConfig: TtsMonsterDonationPrefixConfig
+        donationPrefixConfig: TtsMonsterDonationPrefixConfig,
     ) -> str:
         pass
 
@@ -63,13 +63,13 @@ class TtsMonsterPrivateApiJsonMapperInterface(ABC):
         self,
         key: str,
         message: str,
-        userId: str
+        userId: str,
     ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     async def serializeVoice(
         self,
-        voice: TtsMonsterVoice
+        voice: TtsMonsterVoice,
     ) -> str:
         pass

@@ -1,4 +1,5 @@
 import json
+from typing import Final
 
 from lru import LRU
 
@@ -21,7 +22,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
         chatterPreferredTtsJsonMapper: ChatterPreferredTtsJsonMapperInterface,
         timber: TimberInterface,
         ttsJsonMapper: TtsJsonMapperInterface,
-        cacheSize: int = 64
+        cacheSize: int = 32,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -36,13 +37,13 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
         elif cacheSize < 1 or cacheSize > 256:
             raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__chatterPreferredTtsJsonMapper: ChatterPreferredTtsJsonMapperInterface = chatterPreferredTtsJsonMapper
-        self.__timber: TimberInterface = timber
-        self.__ttsJsonMapper : TtsJsonMapperInterface = ttsJsonMapper
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__chatterPreferredTtsJsonMapper: Final[ChatterPreferredTtsJsonMapperInterface] = chatterPreferredTtsJsonMapper
+        self.__timber: Final[TimberInterface] = timber
+        self.__ttsJsonMapper : Final[TtsJsonMapperInterface] = ttsJsonMapper
 
         self.__isDatabaseReady: bool = False
-        self.__cache: LRU[str, ChatterPreferredTts | None] = LRU(cacheSize)
+        self.__cache: Final[LRU[str, ChatterPreferredTts | None]] = LRU(cacheSize)
 
     async def clearCaches(self):
         self.__cache.clear()

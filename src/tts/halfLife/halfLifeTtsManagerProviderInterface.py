@@ -10,7 +10,7 @@ class HalfLifeTtsManagerProviderInterface(TtsManagerProviderInterface, ABC):
     @abstractmethod
     def constructNewInstance(
         self,
-        useSharedSoundPlayerManager: bool = True
+        useSharedSoundPlayerManager: bool = True,
     ) -> HalfLifeTtsManagerInterface | None:
         pass
 

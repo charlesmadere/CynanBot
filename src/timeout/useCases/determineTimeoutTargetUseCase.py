@@ -3,8 +3,8 @@ import traceback
 from typing import Final, Pattern
 
 from ..exceptions import UnknownTimeoutTargetException, ImmuneTimeoutTargetException
-from ..models.actions.voreTimeoutAction import VoreTimeoutAction
-from ..models.voreTimeoutTarget import VoreTimeoutTarget
+from ..models.actions.absTimeoutAction import AbsTimeoutAction
+from ..models.timeoutTarget import TimeoutTarget
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
@@ -14,7 +14,7 @@ from ...users.exceptions import NoSuchUserException
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
-class DetermineVoreTargetUseCase:
+class DetermineTimeoutTargetUseCase:
 
     def __init__(
         self,
@@ -45,9 +45,9 @@ class DetermineVoreTargetUseCase:
 
     async def __determineTargetUserName(
         self,
-        timeoutAction: VoreTimeoutAction,
+        timeoutAction: AbsTimeoutAction,
     ) -> str:
-        messageContainingTarget: str | None = timeoutAction.chatMessage
+        messageContainingTarget: str | None = timeoutAction.getChatMessage()
         if not utils.isValidStr(messageContainingTarget):
             raise UnknownTimeoutTargetException(f'Given empty/blank/malformed timeout target message ({timeoutAction=}) ({messageContainingTarget=})')
 
@@ -83,14 +83,14 @@ class DetermineVoreTargetUseCase:
                 twitchAccessToken = twitchAccessToken,
             )
         except NoSuchUserException as e:
-            self.__timber.log('DetermineVoreTargetUseCase', f'Failed to fetch user ID to use as a timeout target ({twitchChannelId=}) ({userName=})', e, traceback.format_exc())
+            self.__timber.log('DetermineTimeoutTargetUseCase', f'Failed to fetch user ID to use as a timeout target ({twitchChannelId=}) ({userName=})', e, traceback.format_exc())
             raise UnknownTimeoutTargetException(f'Failed to fetch user ID to use as a timeout target ({twitchChannelId=}) ({userName=})')
 
     async def invoke(
         self,
-        timeoutAction: VoreTimeoutAction,
-    ) -> VoreTimeoutTarget:
-        if not isinstance(timeoutAction, VoreTimeoutAction):
+        timeoutAction: AbsTimeoutAction,
+    ) -> TimeoutTarget:
+        if not isinstance(timeoutAction, AbsTimeoutAction):
             raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
 
         targetUserName = await self.__determineTargetUserName(
@@ -98,16 +98,16 @@ class DetermineVoreTargetUseCase:
         )
 
         targetUserId = await self.__fetchUserId(
-            twitchChannelId = timeoutAction.twitchChannelId,
+            twitchChannelId = timeoutAction.getTwitchChannelId(),
             userName = targetUserName,
         )
 
-        if targetUserId == timeoutAction.twitchChannelId:
-            targetUserId = timeoutAction.instigatorUserId
+        if targetUserId == timeoutAction.getTwitchChannelId():
+            targetUserId = timeoutAction.getInstigatorUserId()
 
-        timeoutTarget = VoreTimeoutTarget(
-            targetUserId = targetUserId,
-            targetUserName = targetUserName,
+        timeoutTarget = TimeoutTarget(
+            userId = targetUserId,
+            userName = targetUserName,
         )
 
         if await self.__timeoutImmuneUserIdsRepository.isImmune(targetUserId):

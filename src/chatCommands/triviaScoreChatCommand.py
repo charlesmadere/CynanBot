@@ -1,16 +1,15 @@
-from datetime import timedelta
+from typing import Final
 
 from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
-from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
 from ..trivia.score.triviaScoreRepositoryInterface import TriviaScoreRepositoryInterface
 from ..trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import ShinyTriviaOccurencesRepositoryInterface
 from ..trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
@@ -25,10 +24,9 @@ class TriviaScoreChatCommand(AbsChatCommand):
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface,
         triviaScoreRepository: TriviaScoreRepositoryInterface,
         triviaUtils: TriviaUtilsInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
-        cooldown: timedelta = timedelta(seconds = 2)
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -42,25 +40,22 @@ class TriviaScoreChatCommand(AbsChatCommand):
             raise TypeError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = shinyTriviaOccurencesRepository
-        self.__timber: TimberInterface = timber
-        self.__toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = toxicTriviaOccurencesRepository
-        self.__triviaScoreRepository: TriviaScoreRepositoryInterface = triviaScoreRepository
-        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
+        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
+        self.__shinyTriviaOccurencesRepository: Final[ShinyTriviaOccurencesRepositoryInterface] = shinyTriviaOccurencesRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__toxicTriviaOccurencesRepository: Final[ToxicTriviaOccurencesRepositoryInterface] = toxicTriviaOccurencesRepository
+        self.__triviaScoreRepository: Final[TriviaScoreRepositoryInterface] = triviaScoreRepository
+        self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -71,8 +66,6 @@ class TriviaScoreChatCommand(AbsChatCommand):
         elif not user.isTriviaGameEnabled and not user.isSuperTriviaGameEnabled:
             return
         elif not user.isTriviaScoreEnabled:
-            return
-        elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
             return
 
         userId = ctx.getAuthorId()
@@ -88,42 +81,43 @@ class TriviaScoreChatCommand(AbsChatCommand):
 
             if not utils.isValidStr(userId):
                 self.__timber.log('TriviaScoreChatCommand', f'Unable to find user ID for \"{userName}\" in the database')
-                await self.__twitchUtils.safeSend(
-                    messageable = ctx,
-                    message = f'⚠ Unable to find trivia score info for \"{userName}\"',
-                    replyMessageId = await ctx.getMessageId()
+
+                self.__twitchChatMessenger.send(
+                    text = f'⚠ Unable to find trivia score info for \"{userName}\"',
+                    twitchChannelId = await ctx.getTwitchChannelId(),
+                    replyMessageId = await ctx.getMessageId(),
                 )
                 return
 
         shinyResult = await self.__shinyTriviaOccurencesRepository.fetchDetails(
             twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
-            userId = userId
+            userId = userId,
         )
 
         toxicResult = await self.__toxicTriviaOccurencesRepository.fetchDetails(
             twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
-            userId = userId
+            userId = userId,
         )
 
         triviaResult = await self.__triviaScoreRepository.fetchTriviaScore(
             twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
-            userId = userId
+            userId = userId,
         )
 
         message = await self.__triviaUtils.getTriviaScoreMessage(
             shinyResult = shinyResult,
             userName = userName,
             toxicResult = toxicResult,
-            triviaResult = triviaResult
+            triviaResult = triviaResult,
         )
 
-        await self.__twitchUtils.safeSend(
-            messageable = ctx,
-            message = message,
-            replyMessageId = await ctx.getMessageId()
+        self.__twitchChatMessenger.send(
+            text = message,
+            twitchChannelId = await ctx.getTwitchChannelId(),
+            replyMessageId = await ctx.getMessageId(),
         )
 
         self.__timber.log('TriviaScoreChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

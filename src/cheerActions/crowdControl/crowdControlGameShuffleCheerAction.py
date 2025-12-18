@@ -1,3 +1,5 @@
+from typing import Final
+
 from ..absCheerAction import AbsCheerAction
 from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ..cheerActionType import CheerActionType
@@ -12,13 +14,13 @@ class CrowdControlGameShuffleCheerAction(AbsCheerAction):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         bits: int,
         gigaShuffleChance: int | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             isEnabled = isEnabled,
             streamStatusRequirement = streamStatusRequirement,
             bits = bits,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if gigaShuffleChance is not None and not utils.isValidInt(gigaShuffleChance):
@@ -26,7 +28,7 @@ class CrowdControlGameShuffleCheerAction(AbsCheerAction):
         elif gigaShuffleChance is not None and (gigaShuffleChance < 0 or gigaShuffleChance > 100):
             raise ValueError(f'gigaShuffleChance argument is out of bounds: {gigaShuffleChance}')
 
-        self.__gigaShuffleChance: int | None = gigaShuffleChance
+        self.__gigaShuffleChance: Final[int | None] = gigaShuffleChance
 
     @property
     def actionType(self) -> CheerActionType:

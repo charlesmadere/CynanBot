@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Final
 
 from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..crowdControl.actions.buttonPressCrowdControlAction import ButtonPressCrowdControlAction
@@ -24,7 +25,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
         crowdControlMachine: CrowdControlMachineInterface,
         crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface,
         timber: TimberInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface
+        timeZoneRepository: TimeZoneRepositoryInterface,
     ):
         if not isinstance(crowdControlIdGenerator, CrowdControlIdGeneratorInterface):
             raise TypeError(f'crowdControlIdGenerator argument is malformed: \"{crowdControlIdGenerator}\"')
@@ -39,17 +40,17 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
-        self.__crowdControlIdGenerator: CrowdControlIdGeneratorInterface = crowdControlIdGenerator
-        self.__crowdControlInputTypeMapper: CrowdControlInputTypeMapperInterface = crowdControlInputTypeMapper
-        self.__crowdControlMachine: CrowdControlMachineInterface = crowdControlMachine
-        self.__crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface = crowdControlUserInputUtils
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
+        self.__crowdControlIdGenerator: Final[CrowdControlIdGeneratorInterface] = crowdControlIdGenerator
+        self.__crowdControlInputTypeMapper: Final[CrowdControlInputTypeMapperInterface] = crowdControlInputTypeMapper
+        self.__crowdControlMachine: Final[CrowdControlMachineInterface] = crowdControlMachine
+        self.__crowdControlUserInputUtils: Final[CrowdControlUserInputUtilsInterface] = crowdControlUserInputUtils
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
 
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
+        twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> bool:
         twitchUser = twitchChannelPointsMessage.twitchUser
         if not twitchUser.isCrowdControlEnabled:

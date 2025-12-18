@@ -31,7 +31,7 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
@@ -89,7 +89,7 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         async def playSoundFile():
             await self.__soundPlayerManager.playSoundFile(
                 filePath = fileReference.filePath,
-                volume = volume
+                volume = volume,
             )
 
             self.__isLoadingOrPlaying = False
