@@ -1614,7 +1614,7 @@ class CynanBot(
         await self.__removeTtsChatterCommand.handleChatCommand(context)
 
     @commands.command(name = 'setpreferredname', aliases = [ 'setname' ])
-    async def command_setchatterpreferredtts(self, ctx: Context):
+    async def command_setchatterpreferredname(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__setChatterPreferredNameCommand.handleChatCommand(context)
 
