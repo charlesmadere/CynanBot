@@ -933,7 +933,7 @@ class CynanBot(
             self.__setChatterPreferredNameCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__getChatterPreferredNameCommand: AbsChatCommand = GetChatterPreferredNameChatCommand(chatterPreferredNameHelper, chatterPreferredNameSettings, timber, twitchChatMessenger)
-            self.__removeChatterPreferredNameCommand: AbsChatCommand = RemoveChatterPreferredNameChatCommand(administratorProvider, chatterPreferredNameRepository, chatterPreferredNameSettings, timber, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
+            self.__removeChatterPreferredNameCommand: AbsChatCommand = RemoveChatterPreferredNameChatCommand(chatterPreferredNameRepository, chatterPreferredNameSettings, timber, twitchChatMessenger)
             self.__setChatterPreferredNameCommand: AbsChatCommand = SetChatterPreferredNameChatCommand(administratorProvider, chatterPreferredNameHelper, chatterPreferredNameSettings, timber, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
 
         if chatterPreferredTtsHelper is None or chatterPreferredTtsPresenter is None or chatterPreferredTtsRepository is None or chatterPreferredTtsSettingsRepository is None or chatterPreferredTtsUserMessageHelper is None or ttsJsonMapper is None:
@@ -941,8 +941,8 @@ class CynanBot(
             self.__removeChatterPreferredTtsCommand: AbsChatCommand = StubChatCommand()
             self.__setChatterPreferredTtsCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__getChatterPreferredTtsCommand: AbsChatCommand = GetChatterPreferredTtsChatCommand(chatterPreferredTtsPresenter, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, timber, twitchTokensUtils, twitchChatMessenger, userIdsRepository, usersRepository)
-            self.__removeChatterPreferredTtsCommand: AbsChatCommand = RemoveChatterPreferredTtsChatCommand(chatterPreferredTtsPresenter, chatterPreferredTtsRepository, timber, twitchChatMessenger, usersRepository)
+            self.__getChatterPreferredTtsCommand: AbsChatCommand = GetChatterPreferredTtsChatCommand(chatterPreferredTtsPresenter, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, timber, twitchChatMessenger)
+            self.__removeChatterPreferredTtsCommand: AbsChatCommand = RemoveChatterPreferredTtsChatCommand(chatterPreferredTtsPresenter, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, timber, twitchChatMessenger, usersRepository)
             self.__setChatterPreferredTtsCommand: AbsChatCommand = SetChatterPreferredTtsChatCommand(administratorProvider, chatterPreferredTtsHelper, chatterPreferredTtsPresenter, chatterPreferredTtsSettingsRepository, timber, ttsJsonMapper, authRepository, twitchTokensUtils, twitchChatMessenger, userIdsRepository, usersRepository)
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or cutenessUtils is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameControllersRepository is None or triviaGameGlobalControllersRepository is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaIdGenerator is None or triviaQuestionOccurrencesRepository is None or triviaScoreRepository is None or triviaSettingsRepository is None or triviaUtils is None:

@@ -46,12 +46,11 @@ class GetChatterPreferredNameChatCommand(AbsChatCommand):
                 twitchChannelId = await ctx.getTwitchChannelId(),
                 replyMessageId = await ctx.getMessageId(),
             )
-            return
+        else:
+            self.__twitchChatMessenger.send(
+                text = f'ⓘ Your preferred name: {preferredNameData.preferredName}',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
+            )
 
-        self.__twitchChatMessenger.send(
-            text = f'ⓘ Your preferred name: {preferredNameData.preferredName}',
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            replyMessageId = await ctx.getMessageId(),
-        )
-
-        self.__timber.log('GetChatterPreferredNameChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('GetChatterPreferredNameChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()}')
