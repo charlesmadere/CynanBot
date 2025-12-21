@@ -91,10 +91,6 @@ class TestUserJsonConstants:
         result = UserJsonConstant.MASTODON_URL.jsonKey
         assert result == 'mastodonUrl'
 
-    def test_jsonKey_withMaximumGrenadesWithinCooldown(self):
-        result = UserJsonConstant.MAXIMUM_GRENADES_WITHIN_COOLDOWN.jsonKey
-        assert result == 'maximumGrenadesWithinCooldown'
-
     def test_jsonKey_withNotifyOfHypeTrainProgressEnabled(self):
         result = UserJsonConstant.NOTIFY_OF_HYPE_TRAIN_PROGRESS_ENABLED.jsonKey
         assert result == 'notifyOfHypeTrainProgressEnabled'
