@@ -89,7 +89,6 @@ class User(UserInterface):
         anivMessageCopyMaxAgeSeconds: int | None,
         anivMessageCopyTimeoutMinSeconds: int | None,
         anivMessageCopyTimeoutMaxSeconds: int | None,
-        maximumGrenadesWithinCooldown: int | None,
         maximumTtsCheerAmount: int | None,
         minimumRaidViewersForNotification: int | None,
         minimumTtsCheerAmount: int | None,
@@ -270,8 +269,6 @@ class User(UserInterface):
             raise TypeError(f'anivMessageCopyTimeoutMinSeconds argument is malformed: \"{anivMessageCopyTimeoutMinSeconds}\"')
         elif anivMessageCopyTimeoutMaxSeconds is not None and not utils.isValidInt(anivMessageCopyTimeoutMaxSeconds):
             raise TypeError(f'anivMessageCopyTimeoutMaxSeconds argument is malformed: \"{anivMessageCopyTimeoutMaxSeconds}\"')
-        elif maximumGrenadesWithinCooldown is not None and not utils.isValidInt(maximumGrenadesWithinCooldown):
-            raise TypeError(f'maximumGrenadesWithinCooldown argument is malformed: \"{maximumGrenadesWithinCooldown}\"')
         elif maximumTtsCheerAmount is not None and not utils.isValidInt(maximumTtsCheerAmount):
             raise TypeError(f'maximumTtsCheerAmount argument is malformed: \"{maximumTtsCheerAmount}\"')
         elif minimumRaidViewersForNotification is not None and not utils.isValidInt(minimumRaidViewersForNotification):
@@ -441,7 +438,6 @@ class User(UserInterface):
         self.__anivMessageCopyMaxAgeSeconds: int | None = anivMessageCopyMaxAgeSeconds
         self.__anivMessageCopyTimeoutMinSeconds: int | None = anivMessageCopyTimeoutMinSeconds
         self.__anivMessageCopyTimeoutMaxSeconds: int | None = anivMessageCopyTimeoutMaxSeconds
-        self.__maximumGrenadesWithinCooldown: int | None = maximumGrenadesWithinCooldown
         self.__maximumTtsCheerAmount: int | None = maximumTtsCheerAmount
         self.__minimumRaidViewersForNotification: int | None = minimumRaidViewersForNotification
         self.__minimumTtsCheerAmount: int | None = minimumTtsCheerAmount
@@ -621,10 +617,6 @@ class User(UserInterface):
     @property
     def mastodonUrl(self) -> str | None:
         return self.__mastodonUrl
-
-    @property
-    def maximumGrenadesWithinCooldown(self) -> int | None:
-        return self.__maximumGrenadesWithinCooldown
 
     @property
     def maximumTtsCheerAmount(self) -> int | None:

@@ -273,10 +273,6 @@ class UsersRepository(UsersRepositoryInterface):
             decTalkSongBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('decTalkSongBoosterPacks')
             decTalkSongBoosterPacks = self.__decTalkSongBoosterPackParser.parseBoosterPacks(decTalkSongBoosterPacksJson)
 
-        maximumGrenadesWithinCooldown: int | None = None
-        if UserJsonConstant.MAXIMUM_GRENADES_WITHIN_COOLDOWN.jsonKey in userJson and utils.isValidInt(userJson.get(UserJsonConstant.MAXIMUM_GRENADES_WITHIN_COOLDOWN.jsonKey)):
-            maximumGrenadesWithinCooldown = utils.getIntFromDict(userJson, UserJsonConstant.MAXIMUM_GRENADES_WITHIN_COOLDOWN.jsonKey)
-
         maximumTtsCheerAmount: int | None = None
         minimumTtsCheerAmount: int | None = None
         if isTtsEnabled:
@@ -467,7 +463,6 @@ class UsersRepository(UsersRepositoryInterface):
             anivMessageCopyMaxAgeSeconds = anivMessageCopyMaxAgeSeconds,
             anivMessageCopyTimeoutMinSeconds = anivMessageCopyTimeoutMinSeconds,
             anivMessageCopyTimeoutMaxSeconds = anivMessageCopyTimeoutMaxSeconds,
-            maximumGrenadesWithinCooldown = maximumGrenadesWithinCooldown,
             maximumTtsCheerAmount = maximumTtsCheerAmount,
             minimumRaidViewersForNotification = minimumRaidViewersForNotification,
             minimumTtsCheerAmount = minimumTtsCheerAmount,
