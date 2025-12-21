@@ -113,6 +113,10 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         newUserIds: set[str] = set()
         newUserIds.add(await self.__getTwitchUserId())
 
+        boatWaifuUserId = await self.__twitchFriendsUserIdProvider.getBoatWaifuUserId()
+        if utils.isValidStr(boatWaifuUserId):
+            newUserIds.add(boatWaifuUserId)
+
         cynanBotUserId = await self.__cynanBotUserIdsProvider.getCynanBotUserId()
         if utils.isValidStr(cynanBotUserId):
             newUserIds.add(cynanBotUserId)
@@ -124,6 +128,14 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         funtoonUserId = await self.__twitchFriendsUserIdProvider.getFuntoonUserId()
         if utils.isValidStr(funtoonUserId):
             newUserIds.add(funtoonUserId)
+
+        guwuBotUserId = await self.__twitchFriendsUserIdProvider.getGuwuBotUserId()
+        if utils.isValidStr(guwuBotUserId):
+            newUserIds.add(guwuBotUserId)
+
+        kazekiiBotUserId = await self.__twitchFriendsUserIdProvider.getKazekiiBotUserId()
+        if utils.isValidStr(kazekiiBotUserId):
+            newUserIds.add(kazekiiBotUserId)
 
         kiawaBotUserId = await self.__twitchFriendsUserIdProvider.getKiawaBotUserId()
         if utils.isValidStr(kiawaBotUserId):
