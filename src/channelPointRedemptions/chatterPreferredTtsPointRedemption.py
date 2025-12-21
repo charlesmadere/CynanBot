@@ -44,7 +44,7 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
-        self.__randomRegEx: Final[Pattern] = re.compile(r'^\s*random(?:ize)?\s*$', re.IGNORECASE)
+        self.__randomRegEx: Final[Pattern] = re.compile(r'^\s*\"?random(?:ize)?\"?\s*$', re.IGNORECASE)
 
     async def handlePointRedemption(
         self,
@@ -88,10 +88,14 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
             )
             return True
 
-        printOut = await self.__chatterPreferredTtsPresenter.printOut(preferredTts)
+        printOut = await self.__chatterPreferredTtsPresenter.printOut(
+            preferredTts = preferredTts,
+        )
+
         self.__twitchChatMessenger.send(
             text = f'ⓘ @{twitchChannelPointsMessage.userName} here\'s your new preferred TTS: {printOut}',
             twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
         )
+
         self.__timber.log('ChatterPreferredTtsPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
         return True
