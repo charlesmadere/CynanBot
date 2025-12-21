@@ -6,6 +6,7 @@ from ..chatterPreferredName.settings.chatterPreferredNameSettingsInterface impor
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
+from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
 class GetChatterPreferredNameChatCommand(AbsChatCommand):
@@ -16,6 +17,7 @@ class GetChatterPreferredNameChatCommand(AbsChatCommand):
         chatterPreferredNameSettings: ChatterPreferredNameSettingsInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(chatterPreferredNameHelper, ChatterPreferredNameHelperInterface):
             raise TypeError(f'chatterPreferredNameHelper argument is malformed: \"{chatterPreferredNameHelper}\"')
@@ -25,14 +27,21 @@ class GetChatterPreferredNameChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = chatterPreferredNameHelper
         self.__chatterPreferredNameSettings: Final[ChatterPreferredNameSettingsInterface] = chatterPreferredNameSettings
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
         if not await self.__chatterPreferredNameSettings.isEnabled():
+            return
+
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        if not user.isChatterPreferredNameEnabled:
             return
 
         preferredNameData = await self.__chatterPreferredNameHelper.get(

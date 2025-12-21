@@ -370,6 +370,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def isChatterPreferredNameEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isChatterPreferredTtsEnabled(self) -> bool:
         pass
 

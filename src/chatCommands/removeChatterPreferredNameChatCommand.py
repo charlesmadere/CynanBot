@@ -7,6 +7,7 @@ from ..chatterPreferredName.settings.chatterPreferredNameSettingsInterface impor
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
+from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
 class RemoveChatterPreferredNameChatCommand(AbsChatCommand):
@@ -17,6 +18,7 @@ class RemoveChatterPreferredNameChatCommand(AbsChatCommand):
         chatterPreferredNameSettings: ChatterPreferredNameSettingsInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(chatterPreferredNameRepository, ChatterPreferredNameRepositoryInterface):
             raise TypeError(f'chatterPreferredNameRepository argument is malformed: \"{chatterPreferredNameRepository}\"')
@@ -26,14 +28,21 @@ class RemoveChatterPreferredNameChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__chatterPreferredNameRepository: Final[ChatterPreferredNameRepositoryInterface] = chatterPreferredNameRepository
         self.__chatterPreferredNameSettings: Final[ChatterPreferredNameSettingsInterface] = chatterPreferredNameSettings
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
         if not await self.__chatterPreferredNameSettings.isEnabled():
+            return
+
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        if not user.isChatterPreferredNameEnabled:
             return
 
         preferredNameData = await self.__chatterPreferredNameRepository.remove(

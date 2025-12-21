@@ -45,6 +45,7 @@ class User(UserInterface):
         isChatBandEnabled: bool,
         isChatLoggingEnabled: bool,
         isChatterInventoryEnabled: bool,
+        isChatterPreferredNameEnabled: bool,
         isChatterPreferredTtsEnabled: bool,
         isCrowdControlEnabled: bool,
         isCutenessEnabled: bool,
@@ -181,6 +182,8 @@ class User(UserInterface):
             raise TypeError(f'isChatLoggingEnabled argument is malformed: \"{isChatLoggingEnabled}\"')
         elif not utils.isValidBool(isChatterInventoryEnabled):
             raise TypeError(f'isChatterInventoryEnabled argument is malformed: \"{isChatterInventoryEnabled}\"')
+        elif not utils.isValidBool(isChatterPreferredNameEnabled):
+            raise TypeError(f'isChatterPreferredNameEnabled argument is malformed: \"{isChatterPreferredNameEnabled}\"')
         elif not utils.isValidBool(isChatterPreferredTtsEnabled):
             raise TypeError(f'isChatterPreferredTtsEnabled argument is malformed: \"{isChatterPreferredTtsEnabled}\"')
         elif not utils.isValidBool(isCrowdControlEnabled):
@@ -394,7 +397,8 @@ class User(UserInterface):
         self.__isChatBandEnabled: bool = isChatBandEnabled
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
         self.__isChatterInventoryEnabled: Final[bool] = isChatterInventoryEnabled
-        self.__isChatterPreferredTtsEnabled: bool = isChatterPreferredTtsEnabled
+        self.__isChatterPreferredNameEnabled: Final[bool] = isChatterPreferredNameEnabled
+        self.__isChatterPreferredTtsEnabled: Final[bool] = isChatterPreferredTtsEnabled
         self.__isCrowdControlEnabled: bool = isCrowdControlEnabled
         self.__isCutenessEnabled: bool = isCutenessEnabled
         self.__isDecTalkSongsEnabled: bool = isDecTalkSongsEnabled
@@ -785,6 +789,10 @@ class User(UserInterface):
     @property
     def isChatterInventoryEnabled(self) -> bool:
         return self.__isChatterInventoryEnabled
+
+    @property
+    def isChatterPreferredNameEnabled(self) -> bool:
+        return self.__isChatterPreferredNameEnabled
 
     @property
     def isChatterPreferredTtsEnabled(self) -> bool:

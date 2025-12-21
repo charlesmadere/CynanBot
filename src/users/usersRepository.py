@@ -181,6 +181,7 @@ class UsersRepository(UsersRepositoryInterface):
         isChatBandEnabled = utils.getBoolFromDict(userJson, 'chatBandEnabled', False)
         isChatLoggingEnabled = utils.getBoolFromDict(userJson, 'chatLoggingEnabled', False)
         isChatterInventoryEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHATTER_INVENTORY_ENABLED.jsonKey, False)
+        isChatterPreferredNameEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHATTER_PREFERRED_NAME_ENABLED.jsonKey, False)
         isChatterPreferredTtsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHATTER_PREFERRED_TTS_ENABLED.jsonKey, False)
         isCrowdControlEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CROWD_CONTROL_ENABLED.jsonKey, False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
@@ -422,6 +423,7 @@ class UsersRepository(UsersRepositoryInterface):
             isChatBandEnabled = isChatBandEnabled,
             isChatLoggingEnabled = isChatLoggingEnabled,
             isChatterInventoryEnabled = isChatterInventoryEnabled,
+            isChatterPreferredNameEnabled = isChatterPreferredNameEnabled,
             isChatterPreferredTtsEnabled = isChatterPreferredTtsEnabled,
             isCrowdControlEnabled = isCrowdControlEnabled,
             isCutenessEnabled = isCutenessEnabled,
