@@ -117,7 +117,7 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
             return
 
         oldPreferredNameData = await self.__chatterPreferredNameHelper.get(
-            chatterUserId = ctx.getAuthorId(),
+            chatterUserId = lookupUser.userId,
             twitchChannelId = twitchChannelId,
         )
 
