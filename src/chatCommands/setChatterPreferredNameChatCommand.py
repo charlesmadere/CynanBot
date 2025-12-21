@@ -71,6 +71,9 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
             return
 
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        if not user.isChatterPreferredNameEnabled:
+            return
+
         twitchChannelId = await ctx.getTwitchChannelId()
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
@@ -100,7 +103,7 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
             self.__timber.log('SetChatterPreferredNameChatCommand', f'Invalid user name argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
             self.__twitchChatMessenger.send(
                 text = f'⚠ Username and preferred name is necessary for this command. Example: !setpreferredname {twitchHandle} John Smith',
-                twitchChannelId = await ctx.getTwitchChannelId(),
+                twitchChannelId = twitchChannelId,
                 replyMessageId = await ctx.getMessageId(),
             )
             return
@@ -108,7 +111,7 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
             self.__timber.log('SetChatterPreferredNameChatCommand', f'Unknown user name argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to find info for user \"{lookupUser.userName}\". A username and preferred name is necessary for this command. Example: !setpreferredname {twitchHandle} John Smith',
-                twitchChannelId = await ctx.getTwitchChannelId(),
+                twitchChannelId = twitchChannelId,
                 replyMessageId = await ctx.getMessageId(),
             )
             return
@@ -142,7 +145,7 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ New preferred name set for @{lookupUser.userName} — {newPreferredNameData.preferredName} {oldPreferredNameSuffix}',
-            twitchChannelId = await ctx.getTwitchChannelId(),
+            twitchChannelId = twitchChannelId,
             replyMessageId = await ctx.getMessageId(),
         )
 

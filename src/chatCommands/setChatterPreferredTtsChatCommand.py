@@ -80,7 +80,7 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-        self.__randomRegEx: Final[Pattern] = re.compile(r'^\s*random\s*$', re.IGNORECASE)
+        self.__randomRegEx: Final[Pattern] = re.compile(r'^\s*?\"?random?\"?\s*$', re.IGNORECASE)
 
     async def __getExampleTtsProvider(self, user: UserInterface) -> str:
         return await self.__ttsJsonMapper.asyncSerializeProvider(
@@ -95,10 +95,10 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
         if not user.isChatterPreferredTtsEnabled:
             return
 
-        userId = await ctx.getTwitchChannelId()
+        twitchChannelId = await ctx.getTwitchChannelId()
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
-        if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
+        if twitchChannelId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('SetChatterPreferredTtsChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
             return
 
@@ -111,13 +111,13 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
 
             self.__twitchChatMessenger.send(
                 text = f'⚠ Username and preferred TTS voice is necessary for this command. Example: !setpreferredtts {twitchHandle} {exampleTtsProvider}',
-                twitchChannelId = await ctx.getTwitchChannelId(),
+                twitchChannelId = twitchChannelId,
                 replyMessageId = await ctx.getMessageId(),
             )
             return
 
         lookupUser = await self.__lookupUser(
-            twitchChannelId = await ctx.getTwitchChannelId(),
+            twitchChannelId = twitchChannelId,
             userName = splits[1],
         )
 
@@ -125,7 +125,7 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
             self.__timber.log('SetChatterPreferredTtsChatCommand', f'Invalid user name argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
             self.__twitchChatMessenger.send(
                 text = f'⚠ Username and preferred TTS voice is necessary for this command. Example: !setpreferredtts {twitchHandle} {exampleTtsProvider}',
-                twitchChannelId = await ctx.getTwitchChannelId(),
+                twitchChannelId = twitchChannelId,
                 replyMessageId = await ctx.getMessageId(),
             )
             return
@@ -133,7 +133,7 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
             self.__timber.log('SetChatterPreferredTtsChatCommand', f'Unknown user name argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to find info for user \"{lookupUser.userName}\". A username and preferred TTS voice is necessary for this command. Example: !setpreferredtts {twitchHandle} {exampleTtsProvider}',
-                twitchChannelId = await ctx.getTwitchChannelId(),
+                twitchChannelId = twitchChannelId,
                 replyMessageId = await ctx.getMessageId(),
             )
             return
@@ -145,19 +145,19 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
             if self.__randomRegEx.fullmatch(userMessage):
                 preferredTts = await self.__chatterPreferredTtsHelper.applyRandomPreferredTts(
                     chatterUserId = lookupUser.userId,
-                    twitchChannelId = await ctx.getTwitchChannelId(),
+                    twitchChannelId = twitchChannelId,
                 )
             else:
                 preferredTts = await self.__chatterPreferredTtsHelper.applyUserMessagePreferredTts(
                     chatterUserId = lookupUser.userId,
-                    twitchChannelId = await ctx.getTwitchChannelId(),
+                    twitchChannelId = twitchChannelId,
                     userMessage = userMessage,
                 )
         except (FailedToChooseRandomTtsException, NoEnabledTtsProvidersException, UnableToParseUserMessageIntoTtsException) as e:
             self.__timber.log('SetChatterPreferredTtsChatCommand', f'Failed to set preferred TTS given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({lookupUser=}) ({userMessage=}): {e}', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to set preferred TTS for @{lookupUser.userName}! Please check your input and try again.',
-                twitchChannelId = await ctx.getTwitchChannelId(),
+                twitchChannelId = twitchChannelId,
                 replyMessageId = await ctx.getMessageId(),
             )
             return
@@ -165,16 +165,18 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
             self.__timber.log('SetChatterPreferredTtsChatCommand', f'The TTS Provider given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}  is not enabled ({lookupUser=}) ({userMessage=}): {e}', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ The TTS provider requested for @{lookupUser.userName} is not available! Please try a different TTS provider.',
-                twitchChannelId = await ctx.getTwitchChannelId(),
+                twitchChannelId = twitchChannelId,
                 replyMessageId = await ctx.getMessageId(),
             )
             return
 
-        printOut = await self.__chatterPreferredTtsPresenter.printOut(preferredTts)
+        printOut = await self.__chatterPreferredTtsPresenter.printOut(
+            preferredTts = preferredTts,
+        )
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ New preferred TTS set for @{lookupUser.userName} — {printOut}',
-            twitchChannelId = await ctx.getTwitchChannelId(),
+            twitchChannelId = twitchChannelId,
             replyMessageId = await ctx.getMessageId(),
         )
 
@@ -189,7 +191,6 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
             return None
 
         userName = utils.removePreceedingAt(userName)
-
         if not utils.strContainsAlphanumericCharacters(userName):
             return None
 
