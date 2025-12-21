@@ -36,6 +36,8 @@ class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption):
         twitchChannelPointsMessage: TwitchChannelPointsMessage,
     ) -> bool:
         twitchUser = twitchChannelPointsMessage.twitchUser
+        if not twitchUser.isChatterPreferredNameEnabled:
+            return False
 
         try:
             preferredNameData = await self.__chatterPreferredTtsHelper.set(

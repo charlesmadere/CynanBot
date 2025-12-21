@@ -80,7 +80,7 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-        self.__randomRegEx: Final[Pattern] = re.compile(r'^\s*?\"?random?\"?\s*$', re.IGNORECASE)
+        self.__randomRegEx: Final[Pattern] = re.compile(r'^\s*\"?random(?:ize)?\"?\s*$', re.IGNORECASE)
 
     async def __getExampleTtsProvider(self, user: UserInterface) -> str:
         return await self.__ttsJsonMapper.asyncSerializeProvider(
