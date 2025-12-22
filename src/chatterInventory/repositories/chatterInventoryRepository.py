@@ -82,7 +82,7 @@ class ChatterInventoryRepository(ChatterInventoryRepositoryInterface):
                 WHERE chatteruserid = $1 and twitchchannelid = $2
                 LIMIT 1
             ''',
-            chatterUserId, twitchChannelId
+            chatterUserId, twitchChannelId,
         )
 
         inventoryJson: dict[str, int | None] | None = None
@@ -176,7 +176,7 @@ class ChatterInventoryRepository(ChatterInventoryRepositoryInterface):
                 VALUES ($1, $2, $3)
                 ON CONFLICT (chatteruserid, twitchchannelid) DO UPDATE SET inventory = EXCLUDED.inventory
             ''',
-            chatterUserId, inventoryJsonString, twitchChannelId
+            chatterUserId, inventoryJsonString, twitchChannelId,
         )
 
         await connection.close()

@@ -36,6 +36,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         theCatComputerUserId: str | None = '1326985885',
         volwrathUserId: str | None = '40463997',
         zanianUserId: str | None = '57704009',
+        zoiiBotUserId: str | None = '188093207',
     ):
         if acacUserId is not None and not isinstance(acacUserId, str):
             raise TypeError(f'acacUserId argument is malformed: \"{acacUserId}\"')
@@ -95,6 +96,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'volwrathUserId argument is malformed: \"{volwrathUserId}\"')
         elif zanianUserId is not None and not isinstance(zanianUserId, str):
             raise TypeError(f'zanianUserId argument is malformed: \"{zanianUserId}\"')
+        elif zoiiBotUserId is not None and not isinstance(zoiiBotUserId, str):
+            raise TypeError(f'zoiiBotUserId argument is malformed: \"{zoiiBotUserId}\"')
 
         self.__acacUserId: Final[str | None] = acacUserId
         self.__albeeesUserId: Final[str | None] = albeeesUserId
@@ -125,6 +128,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         self.__theCatComputerUserId: Final[str | None] = theCatComputerUserId
         self.__volwrathUserId: Final[str | None] = volwrathUserId
         self.__zanianUserId: Final[str | None] = zanianUserId
+        self.__zoiiBotUserId: Final[str | None] = zoiiBotUserId
 
     async def getAcacUserId(self) -> str | None:
         return self.__acacUserId
@@ -212,3 +216,6 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
 
     async def getZanianUserId(self) -> str | None:
         return self.__zanianUserId
+
+    async def getZoiiBotUserId(self) -> str | None:
+        return self.__zoiiBotUserId

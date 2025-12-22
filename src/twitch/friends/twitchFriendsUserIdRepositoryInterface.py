@@ -119,3 +119,7 @@ class TwitchFriendsUserIdRepositoryInterface(
     @abstractmethod
     async def getZanianUserId(self) -> str | None:
         pass
+
+    @abstractmethod
+    async def getZoiiBotUserId(self) -> str | None:
+        pass
