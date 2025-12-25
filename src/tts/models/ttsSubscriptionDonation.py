@@ -2,7 +2,6 @@ import locale
 from dataclasses import dataclass
 
 from .ttsDonation import TtsDonation
-from .ttsDonationType import TtsDonationType
 from ...twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier
 
 
@@ -13,10 +12,6 @@ class TtsSubscriptionDonation(TtsDonation):
     durationMonths: int | None
     numberOfGiftedSubs: int | None
     tier: TwitchSubscriberTier
-
-    @property
-    def donationType(self) -> TtsDonationType:
-        return TtsDonationType.SUBSCRIPTION
 
     @property
     def numberOfGiftedSubsStr(self) -> str:
