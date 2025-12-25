@@ -1,11 +1,6 @@
-from abc import ABC, abstractmethod
-
-from .ttsDonationType import TtsDonationType
+from abc import ABC
 
 
 class TtsDonation(ABC):
 
-    @property
-    @abstractmethod
-    def donationType(self) -> TtsDonationType:
-        pass
+    pass

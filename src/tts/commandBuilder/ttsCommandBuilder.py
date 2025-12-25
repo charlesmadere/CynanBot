@@ -2,7 +2,6 @@ from typing import Final
 
 from .ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from ..models.ttsCheerDonation import TtsCheerDonation
-from ..models.ttsDonationType import TtsDonationType
 from ..models.ttsEvent import TtsEvent
 from ..models.ttsSubscriptionDonation import TtsSubscriptionDonation
 from ...chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
@@ -56,7 +55,7 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
     ) -> str | None:
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
-        elif not isinstance(donation, TtsCheerDonation) or donation.donationType is not TtsDonationType.CHEER:
+        elif not isinstance(donation, TtsCheerDonation):
             raise TypeError(f'donation argument is malformed: \"{donation}\"')
 
         eventUserName = await self.__fetchEventUserName(
@@ -96,7 +95,7 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
     ) -> str:
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
-        elif not isinstance(donation, TtsSubscriptionDonation) or donation.donationType is not TtsDonationType.SUBSCRIPTION:
+        elif not isinstance(donation, TtsSubscriptionDonation):
             raise TypeError(f'donation argument is malformed: \"{donation}\"')
 
         eventUserName = await self.__fetchEventUserName(
