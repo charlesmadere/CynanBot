@@ -44,7 +44,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
 
         if raidData.user.defaultTtsProvider is TtsProvider.GOOGLE:
             if viewers >= 100:
-                return f'Hey everyone coming in from {fromUserName}\'s stream! Welcome in!! Wow, that\'s a ton of chatters. Thanks so much for the raid!'
+                return f'Hey everyone coming in from {fromUserName}\'s stream! Welcome in!! Wow, {viewers} is a ton of chatters. Thanks so much for the raid!'
 
             elif viewers >= 75:
                 return f'Hey y\'all from {fromUserName}\'s stream! Thanks for the raid of {viewers}. Sup everyone! And welcome in!'
