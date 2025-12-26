@@ -20,7 +20,7 @@ class TwitchMessageStringUtils(TwitchMessageStringUtilsInterface):
             re.compile(r'(^|\s+)doodlecheer\d+', re.IGNORECASE),
             re.compile(r'(^|\s+)muxy\d+', re.IGNORECASE),
             re.compile(r'(^|\s+)streamlabs\d+', re.IGNORECASE),
-            re.compile(r'(^|\s+)uni\d+', re.IGNORECASE)
+            re.compile(r'(^|\s+)uni\d+', re.IGNORECASE),
         ])
         self.__cheerRegExes.freeze()
 

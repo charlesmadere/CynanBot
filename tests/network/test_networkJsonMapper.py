@@ -77,3 +77,20 @@ class TestNetworkJsonMapper:
             result = await self.jsonMapper.parseClientTypeAsync(' ')
 
         assert result is None
+
+    def test_serializeClientType_withAioHttp(self):
+        result = self.jsonMapper.serializeClientType(NetworkClientType.AIOHTTP)
+        assert result == 'aiohttp'
+
+    def test_serializeClientType_withAll(self):
+        results: set[str] = set()
+
+        for clientType in NetworkClientType:
+            result = self.jsonMapper.serializeClientType(clientType)
+            results.add(result)
+
+        assert len(results) == len(NetworkClientType)
+
+    def test_serializeClientType_withRequests(self):
+        result = self.jsonMapper.serializeClientType(NetworkClientType.REQUESTS)
+        assert result == 'requests'

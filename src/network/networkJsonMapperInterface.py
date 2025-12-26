@@ -9,20 +9,20 @@ class NetworkJsonMapperInterface(ABC):
     @abstractmethod
     def parseClientType(
         self,
-        clientType: str | Any | None
+        clientType: str | Any | None,
     ) -> NetworkClientType:
         pass
 
     @abstractmethod
     async def parseClientTypeAsync(
         self,
-        clientType: str | Any | None
+        clientType: str | Any | None,
     ) -> NetworkClientType:
         pass
 
     @abstractmethod
     def serializeClientType(
         self,
-        clientType: NetworkClientType
+        clientType: NetworkClientType,
     ) -> str:
         pass

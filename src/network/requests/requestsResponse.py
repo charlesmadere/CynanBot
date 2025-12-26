@@ -18,7 +18,7 @@ class RequestsResponse(NetworkResponse):
         self,
         response: Response,
         url: str,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(response, Response):
             raise TypeError(f'response argument is malformed: \"{response}\"')

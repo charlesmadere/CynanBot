@@ -19,7 +19,7 @@ class AioHttpResponse(NetworkResponse):
         self,
         response: aiohttp.ClientResponse,
         url: str,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(response, aiohttp.ClientResponse):
             raise TypeError(f'response argument is malformed: \"{response}\"')

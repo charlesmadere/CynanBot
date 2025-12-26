@@ -11,7 +11,7 @@ class NetworkHandle(ABC):
     async def delete(
         self,
         url: str,
-        headers: dict[str, Any] | None = None
+        headers: dict[str, Any] | None = None,
     ) -> NetworkResponse:
         pass
 
@@ -19,7 +19,7 @@ class NetworkHandle(ABC):
     async def get(
         self,
         url: str,
-        headers: dict[str, Any] | None = None
+        headers: dict[str, Any] | None = None,
     ) -> NetworkResponse:
         pass
 
@@ -33,6 +33,6 @@ class NetworkHandle(ABC):
         self,
         url: str,
         headers: dict[str, Any] | None = None,
-        json: dict[str, Any] | None = None
+        json: dict[str, Any] | None = None,
     ) -> NetworkResponse:
         pass

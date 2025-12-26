@@ -15,7 +15,7 @@ class AioHttpHandle(NetworkHandle):
     def __init__(
         self,
         clientSession: aiohttp.ClientSession,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(clientSession, aiohttp.ClientSession):
             raise TypeError(f'clientSession argument is malformed: \"{clientSession}\"')
@@ -28,14 +28,14 @@ class AioHttpHandle(NetworkHandle):
     async def delete(
         self,
         url: str,
-        headers: dict[str, Any] | None = None
+        headers: dict[str, Any] | None = None,
     ) -> NetworkResponse:
         response: aiohttp.ClientResponse | None = None
 
         try:
             response = await self.__clientSession.delete(
                 url = url,
-                headers = headers
+                headers = headers,
             )
         except Exception as e:
             self.__timber.log('AioHttpHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP DELETE ({url=}) ({headers=}): {e}', e)
@@ -48,20 +48,20 @@ class AioHttpHandle(NetworkHandle):
         return AioHttpResponse(
             response = response,
             url = url,
-            timber = self.__timber
+            timber = self.__timber,
         )
 
     async def get(
         self,
         url: str,
-        headers: dict[str, Any] | None = None
+        headers: dict[str, Any] | None = None,
     ) -> NetworkResponse:
         response: aiohttp.ClientResponse | None = None
 
         try:
             response = await self.__clientSession.get(
                 url = url,
-                headers = headers
+                headers = headers,
             )
         except Exception as e:
             self.__timber.log('AioHttpHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP GET ({url=}) ({headers=}): {e}', e)
@@ -74,7 +74,7 @@ class AioHttpHandle(NetworkHandle):
         return AioHttpResponse(
             response = response,
             url = url,
-            timber = self.__timber
+            timber = self.__timber,
         )
 
     @property
@@ -85,7 +85,7 @@ class AioHttpHandle(NetworkHandle):
         self,
         url: str,
         headers: dict[str, Any] | None = None,
-        json: dict[str, Any] | None = None
+        json: dict[str, Any] | None = None,
     ) -> NetworkResponse:
         response: aiohttp.ClientResponse | None = None
 
@@ -93,7 +93,7 @@ class AioHttpHandle(NetworkHandle):
             response = await self.__clientSession.post(
                 url = url,
                 headers = headers,
-                json = json
+                json = json,
             )
         except Exception as e:
             self.__timber.log('AioHttpHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP POST ({url=}) ({headers=}) ({json=}): {e}', e)
@@ -106,5 +106,5 @@ class AioHttpHandle(NetworkHandle):
         return AioHttpResponse(
             response = response,
             url = url,
-            timber = self.__timber
+            timber = self.__timber,
         )
