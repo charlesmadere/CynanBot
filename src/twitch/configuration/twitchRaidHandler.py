@@ -3,6 +3,7 @@ from typing import Final
 from ..absTwitchRaidHandler import AbsTwitchRaidHandler
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ...chatLogger.chatLoggerInterface import ChatLoggerInterface
+from ...chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
@@ -20,17 +21,21 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
     def __init__(
         self,
         chatLogger: ChatLoggerInterface,
+        chatterPreferredNameHelper: ChatterPreferredNameHelperInterface | None,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
     ):
         if not isinstance(chatLogger, ChatLoggerInterface):
             raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
+        elif chatterPreferredNameHelper is not None and not isinstance(chatterPreferredNameHelper, ChatterPreferredNameHelperInterface):
+            raise TypeError(f'chatterPreferredNameHelper argument is malformed: \"{chatterPreferredNameHelper}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
+        self.__chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface | None] = chatterPreferredNameHelper
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
 
@@ -41,6 +46,15 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
 
         viewers = raidData.viewers
         fromUserName = raidData.raidUserName
+
+        if self.__chatterPreferredNameHelper is not None:
+            preferredNameData = await self.__chatterPreferredNameHelper.get(
+                chatterUserId = raidData.raidUserId,
+                twitchChannelId = raidData.twitchChannelId,
+            )
+
+            if preferredNameData is not None:
+                fromUserName = preferredNameData.preferredName
 
         if raidData.user.defaultTtsProvider is TtsProvider.GOOGLE:
             if viewers >= 100:
