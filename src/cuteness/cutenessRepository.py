@@ -1,3 +1,5 @@
+from typing import Final
+
 from frozenlist import FrozenList
 
 from .cutenessChampionsResult import CutenessChampionsResult
@@ -25,7 +27,7 @@ class CutenessRepository(CutenessRepositoryInterface):
         userIdsRepository: UserIdsRepositoryInterface,
         historyLeaderboardSize: int = 3,
         historySize: int = 5,
-        leaderboardSize: int = 10
+        leaderboardSize: int = 10,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -44,11 +46,11 @@ class CutenessRepository(CutenessRepositoryInterface):
         elif leaderboardSize < 3 or leaderboardSize > 10:
             raise ValueError(f'leaderboardSize argument is out of bounds: {leaderboardSize}')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__historyLeaderboardSize: int = historyLeaderboardSize
-        self.__historySize: int = historySize
-        self.__leaderboardSize: int = leaderboardSize
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__historyLeaderboardSize: Final[int] = historyLeaderboardSize
+        self.__historySize: Final[int] = historySize
+        self.__leaderboardSize: Final[int] = leaderboardSize
 
         self.__isDatabaseReady: bool = False
 
