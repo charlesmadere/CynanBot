@@ -3293,7 +3293,7 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     voicemailPointRedemption = voicemailPointRedemption,
 )
 
-twitchChatHandler: AbsTwitchChatHandler = TwitchChatHandler(
+twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
     backgroundTaskHelper = backgroundTaskHelper,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
@@ -3303,7 +3303,7 @@ twitchChatHandler: AbsTwitchChatHandler = TwitchChatHandler(
     triviaGameMachine = triviaGameMachine,
 )
 
-twitchCheerHandler: AbsTwitchCheerHandler = TwitchCheerHandler(
+twitchCheerHandler: Final[AbsTwitchCheerHandler] = TwitchCheerHandler(
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
     streamAlertsManager = streamAlertsManager,
@@ -3312,24 +3312,24 @@ twitchCheerHandler: AbsTwitchCheerHandler = TwitchCheerHandler(
     triviaGameMachine = triviaGameMachine,
 )
 
-twitchFollowHandler: AbsTwitchFollowHandler = TwitchFollowHandler(
+twitchFollowHandler: Final[AbsTwitchFollowHandler] = TwitchFollowHandler(
     timber = timber,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
 )
 
-twitchHypeTrainHandler: AbsTwitchHypeTrainHandler = TwitchHypeTrainHandler(
+twitchHypeTrainHandler: Final[AbsTwitchHypeTrainHandler] = TwitchHypeTrainHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-twitchPollHandler: AbsTwitchPollHandler = TwitchPollHandler(
+twitchPollHandler: Final[AbsTwitchPollHandler] = TwitchPollHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-twitchPredictionHandler: AbsTwitchPredictionHandler = TwitchPredictionHandler(
+twitchPredictionHandler: Final[AbsTwitchPredictionHandler] = TwitchPredictionHandler(
     activeChattersRepository = activeChattersRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
@@ -3338,13 +3338,14 @@ twitchPredictionHandler: AbsTwitchPredictionHandler = TwitchPredictionHandler(
     websocketConnectionServer = websocketConnectionServer,
 )
 
-twitchRaidHandler: AbsTwitchRaidHandler = TwitchRaidHandler(
+twitchRaidHandler: Final[AbsTwitchRaidHandler] = TwitchRaidHandler(
     chatLogger = chatLogger,
+    chatterPreferredNameHelper = chatterPreferredNameHelper,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
 )
 
-twitchSubscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHandler(
+twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscriptionHandler(
     officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     streamAlertsManager = streamAlertsManager,
     timber = timber,

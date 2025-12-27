@@ -8,7 +8,7 @@ class NetworkJsonMapper(NetworkJsonMapperInterface):
 
     def parseClientType(
         self,
-        clientType: str | Any | None
+        clientType: str | Any | None,
     ) -> NetworkClientType:
         if not isinstance(clientType, str):
             raise TypeError(f'clientType argument is malformed: \"{clientType}\"')
@@ -22,13 +22,13 @@ class NetworkJsonMapper(NetworkJsonMapperInterface):
 
     async def parseClientTypeAsync(
         self,
-        clientType: str | Any | None
+        clientType: str | Any | None,
     ) -> NetworkClientType:
         return self.parseClientType(clientType)
 
     def serializeClientType(
         self,
-        clientType: NetworkClientType
+        clientType: NetworkClientType,
     ) -> str:
         if not isinstance(clientType, NetworkClientType):
             raise TypeError(f'clientType argument is malformed: \"{clientType}\"')

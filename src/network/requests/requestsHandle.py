@@ -17,7 +17,7 @@ class RequestsHandle(NetworkHandle):
     def __init__(
         self,
         timber: TimberInterface,
-        timeoutSeconds: int = 8
+        timeoutSeconds: int = 30,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -32,7 +32,7 @@ class RequestsHandle(NetworkHandle):
     async def delete(
         self,
         url: str,
-        headers: dict[str, Any] | None = None
+        headers: dict[str, Any] | None = None,
     ) -> NetworkResponse:
         response: Response | None = None
 
@@ -40,7 +40,7 @@ class RequestsHandle(NetworkHandle):
             response = requests.delete(
                 url = url,
                 headers = headers,
-                timeout = self.__timeoutSeconds
+                timeout = self.__timeoutSeconds,
             )
         except Exception as e:
             self.__timber.log('RequestsHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP DELETE \"{url}\" with headers \"{headers}\": {e}', e)
@@ -53,13 +53,13 @@ class RequestsHandle(NetworkHandle):
         return RequestsResponse(
             response = response,
             url = url,
-            timber = self.__timber
+            timber = self.__timber,
         )
 
     async def get(
         self,
         url: str,
-        headers: dict[str, Any] | None = None
+        headers: dict[str, Any] | None = None,
     ) -> NetworkResponse:
         response: Response | None = None
 
@@ -67,7 +67,7 @@ class RequestsHandle(NetworkHandle):
             response = requests.get(
                 url = url,
                 headers = headers,
-                timeout = self.__timeoutSeconds
+                timeout = self.__timeoutSeconds,
             )
         except Exception as e:
             self.__timber.log('RequestsHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP GET \"{url}\" with headers \"{headers}\": {e}', e)
@@ -80,7 +80,7 @@ class RequestsHandle(NetworkHandle):
         return RequestsResponse(
             response = response,
             url = url,
-            timber = self.__timber
+            timber = self.__timber,
         )
 
     @property
@@ -91,7 +91,7 @@ class RequestsHandle(NetworkHandle):
         self,
         url: str,
         headers: dict[str, Any] | None = None,
-        json: dict[str, Any] | None = None
+        json: dict[str, Any] | None = None,
     ) -> NetworkResponse:
         response: Response | None = None
 
@@ -100,7 +100,7 @@ class RequestsHandle(NetworkHandle):
                 url = url,
                 headers = headers,
                 json = json,
-                timeout = self.__timeoutSeconds
+                timeout = self.__timeoutSeconds,
             )
         except Exception as e:
             self.__timber.log('RequestsHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP POST \"{url}\" with headers \"{headers}\" and json \"{json}\": {e}', e)
@@ -113,5 +113,5 @@ class RequestsHandle(NetworkHandle):
         return RequestsResponse(
             response = response,
             url = url,
-            timber = self.__timber
+            timber = self.__timber,
         )

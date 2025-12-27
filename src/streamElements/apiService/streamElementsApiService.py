@@ -38,7 +38,7 @@ class StreamElementsApiService(StreamElementsApiServiceInterface):
         elif not isinstance(voice, StreamElementsVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
 
-        self.__timber.log('StreamElementsApiService', f'Fetching speech... ({text=})')
+        self.__timber.log('StreamElementsApiService', f'Fetching speech... ({voice=}) ({text=})')
         clientSession = await self.__networkClientProvider.get()
         text = urllib.parse.quote_plus(text).strip()
 
@@ -47,18 +47,18 @@ class StreamElementsApiService(StreamElementsApiServiceInterface):
                 url = f'https://api.streamelements.com/kappa/v2/speech?voice={voice.urlValue}&text={text}&key={userKey}',
             )
         except GenericNetworkException as e:
-            self.__timber.log('StreamElementsApiService', f'Encountered network error when fetching speech ({voice=}) ({text=}) ({userKey=}): {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'StreamElementsApiService encountered network error when fetching speech ({voice=}) ({text=}) ({userKey=}): {e}')
+            self.__timber.log('StreamElementsApiService', f'Encountered network error when fetching speech ({voice=}) ({text=}): {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'StreamElementsApiService encountered network error when fetching speech ({voice=}) ({text=}): {e}')
 
         responseStatusCode = response.statusCode
         speechBytes = await response.read()
         await response.close()
 
         if responseStatusCode != 200:
-            self.__timber.log('StreamElementsApiService', f'Encountered non-200 HTTP status code when fetching speech ({voice=}) ({text=}) ({userKey=}) ({response=}) ({responseStatusCode=})')
-            raise GenericNetworkException(f'StreamElementsApiService encountered non-200 HTTP status code when fetching speech ({voice=}) ({text=}) ({userKey=}) ({response=}) ({responseStatusCode=})')
+            self.__timber.log('StreamElementsApiService', f'Encountered non-200 HTTP status code when fetching speech ({voice=}) ({text=}) ({response=}) ({responseStatusCode=})')
+            raise GenericNetworkException(f'StreamElementsApiService encountered non-200 HTTP status code when fetching speech ({voice=}) ({text=}) ({response=}) ({responseStatusCode=})')
         elif speechBytes is None:
-            self.__timber.log('StreamElementsApiService', f'Unable to fetch speech bytes ({voice=}) ({text=}) ({userKey=}) ({response=}) ({responseStatusCode=})')
-            raise GenericNetworkException(f'StreamElementsApiService unable to fetch speech bytes ({voice=}) ({text=}) ({userKey=}) ({response=}) ({responseStatusCode=})')
+            self.__timber.log('StreamElementsApiService', f'Unable to fetch speech bytes ({voice=}) ({text=}) ({response=}) ({responseStatusCode=})')
+            raise GenericNetworkException(f'StreamElementsApiService unable to fetch speech bytes ({voice=}) ({text=}) ({response=}) ({responseStatusCode=})')
 
         return speechBytes

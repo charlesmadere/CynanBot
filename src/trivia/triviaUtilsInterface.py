@@ -27,7 +27,7 @@ class TriviaUtilsInterface(ABC):
         userNameThatRedeemed: str,
         twitchUser: UserInterface,
         specialTriviaStatus: SpecialTriviaStatus | None = None,
-        delimiter: str = '; '
+        delimiter: str = '; ',
     ) -> str:
         pass
 
@@ -39,7 +39,7 @@ class TriviaUtilsInterface(ABC):
         userNameThatRedeemed: str,
         wrongAnswerEmote: str | None,
         specialTriviaStatus: SpecialTriviaStatus | None = None,
-        delimiter: str = '; '
+        delimiter: str = '; ',
     ) -> str:
         pass
 
@@ -49,7 +49,7 @@ class TriviaUtilsInterface(ABC):
         question: AbsTriviaQuestion,
         emote: str,
         userNameThatRedeemed: str,
-        specialTriviaStatus: SpecialTriviaStatus | None = None
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
     ) -> str:
         pass
 
@@ -61,7 +61,7 @@ class TriviaUtilsInterface(ABC):
         outOfTimeEmote: str | None,
         userNameThatRedeemed: str,
         specialTriviaStatus: SpecialTriviaStatus | None = None,
-        delimiter: str = '; '
+        delimiter: str = '; ',
     ) -> str:
         pass
 
@@ -76,7 +76,7 @@ class TriviaUtilsInterface(ABC):
         userName: str,
         twitchUser: UserInterface,
         specialTriviaStatus: SpecialTriviaStatus | None = None,
-        delimiter: str = '; '
+        delimiter: str = '; ',
     ) -> str:
         pass
 
@@ -91,7 +91,7 @@ class TriviaUtilsInterface(ABC):
         emote: str,
         outOfTimeEmote: str | None,
         specialTriviaStatus: SpecialTriviaStatus | None = None,
-        delimiter: str = '; '
+        delimiter: str = '; ',
     ) -> str:
         pass
 
@@ -104,7 +104,7 @@ class TriviaUtilsInterface(ABC):
         emote: str,
         twitchUser: UserInterface,
         specialTriviaStatus: SpecialTriviaStatus | None = None,
-        delimiter: str = ' '
+        delimiter: str = ' ',
     ) -> str:
         pass
 
@@ -115,7 +115,7 @@ class TriviaUtilsInterface(ABC):
         emote: str,
         twitchUser: UserInterface,
         bucketDelimiter: str = '; ',
-        delimiter: str = ', '
+        delimiter: str = ', ',
     ) -> str | None:
         pass
 
@@ -160,7 +160,7 @@ class TriviaUtilsInterface(ABC):
         shinyResult: ShinyTriviaResult,
         userName: str,
         toxicResult: ToxicTriviaResult,
-        triviaResult: TriviaScoreResult
+        triviaResult: TriviaScoreResult,
     ) -> str:
         pass
 
@@ -168,6 +168,6 @@ class TriviaUtilsInterface(ABC):
     async def isPrivilegedTriviaUser(
         self,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> bool:
         pass
