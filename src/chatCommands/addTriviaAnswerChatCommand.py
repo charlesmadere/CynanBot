@@ -129,7 +129,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
                 triviaId = reference.triviaId,
                 userId = ctx.getAuthorId(),
                 triviaQuestionType = reference.triviaType,
-                triviaSource = reference.triviaSource
+                triviaSource = reference.triviaSource,
             )
 
             additionalAnswers = self.__answerDelimiter.join(result.answerStrings)

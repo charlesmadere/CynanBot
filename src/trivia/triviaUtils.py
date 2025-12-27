@@ -1,6 +1,6 @@
 import locale
 from collections import defaultdict
-from typing import Collection
+from typing import Collection, Final
 
 from frozenlist import FrozenList
 
@@ -59,15 +59,15 @@ class TriviaUtils(TriviaUtilsInterface):
         elif not utils.isValidStr(celebratoryEmote):
             raise TypeError(f'celebratoryEmote argument is malformed: \"{celebratoryEmote}\"')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface = bannedTriviaGameControllersRepository
-        self.__timber: TimberInterface = timber
-        self.__triviaGameControllersRepository: TriviaGameControllersRepositoryInterface = triviaGameControllersRepository
-        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface = triviaGameGlobalControllersRepository
-        self.__triviaQuestionPresenter: TriviaQuestionPresenterInterface = triviaQuestionPresenter
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__celebratoryEmote: str = celebratoryEmote
+        self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
+        self.__bannedTriviaGameControllersRepository: Final[BannedTriviaGameControllersRepositoryInterface] = bannedTriviaGameControllersRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaGameControllersRepository: Final[TriviaGameControllersRepositoryInterface] = triviaGameControllersRepository
+        self.__triviaGameGlobalControllersRepository: Final[TriviaGameGlobalControllersRepositoryInterface] = triviaGameGlobalControllersRepository
+        self.__triviaQuestionPresenter: Final[TriviaQuestionPresenterInterface] = triviaQuestionPresenter
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__celebratoryEmote: Final[str] = celebratoryEmote
 
     async def getClearedSuperTriviaQueueMessage(self, numberOfGamesRemoved: int) -> str:
         if not utils.isValidInt(numberOfGamesRemoved):
@@ -87,7 +87,7 @@ class TriviaUtils(TriviaUtilsInterface):
         userNameThatRedeemed: str,
         twitchUser: UserInterface,
         specialTriviaStatus: SpecialTriviaStatus | None = None,
-        delimiter: str = '; '
+        delimiter: str = '; ',
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
@@ -628,7 +628,7 @@ class TriviaUtils(TriviaUtilsInterface):
         shinyResult: ShinyTriviaResult,
         userName: str,
         toxicResult: ToxicTriviaResult,
-        triviaResult: TriviaScoreResult
+        triviaResult: TriviaScoreResult,
     ) -> str:
         if not isinstance(shinyResult, ShinyTriviaResult):
             raise TypeError(f'shinyResult argument is malformed: \"{shinyResult}\"')
