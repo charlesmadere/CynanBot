@@ -1,51 +1,52 @@
 import asyncio
 from asyncio import AbstractEventLoop
+from typing import Final
 
-from .jisho.jishoApiService import JishoApiService
-from .jisho.jishoApiServiceInterface import JishoApiServiceInterface
-from .jisho.jishoJsonMapper import JishoJsonMapper
-from .jisho.jishoJsonMapperInterface import JishoJsonMapperInterface
-from .jisho.jishoPresenter import JishoPresenter
-from .jisho.jishoPresenterInterface import JishoPresenterInterface
-from .language.jishoHelper import JishoHelper
-from .language.jishoHelperInterface import JishoHelperInterface
-from .network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
-from .network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
-from .network.networkClientProvider import NetworkClientProvider
-from .timber.timberInterface import TimberInterface
-from .timber.timberStub import TimberStub
+from src.jisho.jishoApiService import JishoApiService
+from src.jisho.jishoApiServiceInterface import JishoApiServiceInterface
+from src.jisho.jishoJsonMapper import JishoJsonMapper
+from src.jisho.jishoJsonMapperInterface import JishoJsonMapperInterface
+from src.jisho.jishoPresenter import JishoPresenter
+from src.jisho.jishoPresenterInterface import JishoPresenterInterface
+from src.language.jishoHelper import JishoHelper
+from src.language.jishoHelperInterface import JishoHelperInterface
+from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
+from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
+from src.network.networkClientProvider import NetworkClientProvider
+from src.timber.timberInterface import TimberInterface
+from src.timber.timberStub import TimberStub
 
-eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+eventLoop: Final[AbstractEventLoop] = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
 
-timber: TimberInterface = TimberStub()
+timber: Final[TimberInterface] = TimberStub()
 
 aioHttpCookieJarProvider = AioHttpCookieJarProvider(
     eventLoop = eventLoop
 )
 
-networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
+networkClientProvider: Final[NetworkClientProvider] = AioHttpClientProvider(
     eventLoop = eventLoop,
     cookieJarProvider = aioHttpCookieJarProvider,
-    timber = timber
+    timber = timber,
 )
 
-jishoJsonMapper: JishoJsonMapperInterface = JishoJsonMapper(
-    timber = timber
+jishoJsonMapper: Final[JishoJsonMapperInterface] = JishoJsonMapper(
+    timber = timber,
 )
 
-jishoApiService: JishoApiServiceInterface = JishoApiService(
+jishoApiService: Final[JishoApiServiceInterface] = JishoApiService(
     jishoJsonMapper = jishoJsonMapper,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
-jishoPresenter: JishoPresenterInterface = JishoPresenter()
+jishoPresenter: Final[JishoPresenterInterface] = JishoPresenter()
 
-jishoHelper: JishoHelperInterface = JishoHelper(
+jishoHelper: Final[JishoHelperInterface] = JishoHelper(
     jishoApiService = jishoApiService,
     jishoPresenter = jishoPresenter,
-    timber = timber
+    timber = timber,
 )
 
 async def main():

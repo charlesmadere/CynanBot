@@ -40,11 +40,16 @@ class StreamElementsApiService(StreamElementsApiServiceInterface):
 
         self.__timber.log('StreamElementsApiService', f'Fetching speech... ({voice=}) ({text=})')
         clientSession = await self.__networkClientProvider.get()
-        text = urllib.parse.quote_plus(text).strip()
+
+        queryString = urllib.parse.urlencode({
+            'key': userKey,
+            'voice': voice.urlValue,
+            'text': text,
+        })
 
         try:
             response = await clientSession.get(
-                url = f'https://api.streamelements.com/kappa/v2/speech?voice={voice.urlValue}&text={text}&key={userKey}',
+                url = f'https://api.streamelements.com/kappa/v2/speech?{queryString}',
             )
         except GenericNetworkException as e:
             self.__timber.log('StreamElementsApiService', f'Encountered network error when fetching speech ({voice=}) ({text=}): {e}', e, traceback.format_exc())

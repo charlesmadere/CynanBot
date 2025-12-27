@@ -1,3 +1,5 @@
+from typing import Final
+
 from frozenlist import FrozenList
 
 from .jishoJlptLevel import JishoJlptLevel
@@ -10,14 +12,14 @@ class JishoPresenter(JishoPresenterInterface):
 
     def __init__(
         self,
-        definitionsMaxSize: int = 3
+        definitionsMaxSize: int = 3,
     ):
         if not utils.isValidInt(definitionsMaxSize):
             raise TypeError(f'definitionsMaxSize argument is malformed: \"{definitionsMaxSize}\"')
         elif definitionsMaxSize < 1 or definitionsMaxSize > utils.getIntMaxSafeSize():
             raise ValueError(f'definitionsMaxSize argument is out of bounds: \"{definitionsMaxSize}\"')
 
-        self.__definitionsMaxSize: int = definitionsMaxSize
+        self.__definitionsMaxSize: Final[int] = definitionsMaxSize
 
     async def __jlptToString(self, jlptLevel: JishoJlptLevel) -> str:
         match jlptLevel:
@@ -31,7 +33,7 @@ class JishoPresenter(JishoPresenterInterface):
     async def toStrings(
         self,
         includeRomaji: bool,
-        jishoResponse: JishoResponse
+        jishoResponse: JishoResponse,
     ) -> FrozenList[str]:
         if not utils.isValidBool(includeRomaji):
             raise TypeError(f'includeRomaji argument is malformed: \"{includeRomaji}\"')

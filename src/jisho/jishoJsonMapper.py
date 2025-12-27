@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from frozenlist import FrozenList
 
@@ -20,11 +20,11 @@ class JishoJsonMapper(JishoJsonMapperInterface):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__timber: TimberInterface = timber
+        self.__timber: Final[TimberInterface] = timber
 
     async def parseAttribution(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> JishoAttribution | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
@@ -64,12 +64,12 @@ class JishoJsonMapper(JishoJsonMapperInterface):
             jmnedict = jmnedict,
             dbpediaUrl = dbpediaUrl,
             jmdictUrl = jmdictUrl,
-            jmnedictUrl = jmnedictUrl
+            jmnedictUrl = jmnedictUrl,
         )
 
     async def parseData(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> JishoData | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
@@ -140,12 +140,12 @@ class JishoJsonMapper(JishoJsonMapperInterface):
             jlptLevels = frozenJlptLevels,
             senses = senses,
             attribution = attribution,
-            slug = slug
+            slug = slug,
         )
 
     async def parseJapaneseWord(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> JishoJapaneseWord | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
@@ -163,12 +163,12 @@ class JishoJsonMapper(JishoJsonMapperInterface):
 
         return JishoJapaneseWord(
             reading = reading,
-            word = word
+            word = word,
         )
 
     async def parseJlptLevel(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> JishoJlptLevel | None:
         if not utils.isValidStr(jsonString):
             return None
@@ -187,7 +187,7 @@ class JishoJsonMapper(JishoJsonMapperInterface):
 
     async def parseMeta(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> JishoMeta | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
@@ -195,12 +195,12 @@ class JishoJsonMapper(JishoJsonMapperInterface):
         status = utils.getIntFromDict(jsonContents, 'status')
 
         return JishoMeta(
-            status = status
+            status = status,
         )
 
     async def parseResponse(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> JishoResponse | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
@@ -211,7 +211,7 @@ class JishoJsonMapper(JishoJsonMapperInterface):
             return None
 
         dataArray: list[dict[str, Any] | None] | None = jsonContents.get('data')
-        data: list[JishoData] = list()
+        data: FrozenList[JishoData] = FrozenList()
 
         if isinstance(dataArray, list) and len(dataArray) >= 1:
             for index, dataEntryJson in enumerate(dataArray):
@@ -222,14 +222,16 @@ class JishoJsonMapper(JishoJsonMapperInterface):
                 else:
                     data.append(dataEntry)
 
+        data.freeze()
+
         return JishoResponse(
             data = data,
-            meta = meta
+            meta = meta,
         )
 
     async def parseSense(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> JishoSense | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
@@ -287,5 +289,5 @@ class JishoJsonMapper(JishoJsonMapperInterface):
         return JishoSense(
             englishDefinitions = englishDefinitions,
             partsOfSpeech = partsOfSpeech,
-            tags = tags
+            tags = tags,
         )

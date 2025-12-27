@@ -1,4 +1,5 @@
 import locale
+from typing import Final
 
 from .cutenessEntry import CutenessEntry
 from ..misc import utils as utils
@@ -11,7 +12,7 @@ class CutenessLeaderboardEntry(CutenessEntry):
         cuteness: int,
         rank: int,
         userId: str,
-        userName: str
+        userName: str,
     ):
         super().__init__(
             cuteness = cuteness,
@@ -24,7 +25,7 @@ class CutenessLeaderboardEntry(CutenessEntry):
         elif rank < 1 or rank > utils.getIntMaxSafeSize():
             raise ValueError(f'rank argument is out of bounds: {rank}')
 
-        self.__rank: int = rank
+        self.__rank: Final[int] = rank
 
     @property
     def rank(self) -> int:

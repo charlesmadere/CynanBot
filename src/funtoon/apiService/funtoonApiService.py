@@ -1,5 +1,5 @@
 import traceback
-from typing import Any
+from typing import Any, Final
 
 from .funtoonApiServiceInterface import FuntoonApiServiceInterface
 from ..funtoonTriviaQuestion import FuntoonTriviaQuestion
@@ -16,7 +16,7 @@ class FuntoonApiService(FuntoonApiServiceInterface):
         self,
         funtoonJsonMapper: FuntoonJsonMapperInterface,
         networkClientProvider: NetworkClientProvider,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(funtoonJsonMapper, FuntoonJsonMapperInterface):
             raise TypeError(f'funtoonJsonMapper argument is malformed: \"{funtoonJsonMapper}\"')
@@ -25,9 +25,9 @@ class FuntoonApiService(FuntoonApiServiceInterface):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__funtoonJsonMapper: FuntoonJsonMapperInterface = funtoonJsonMapper
-        self.__networkClientProvider: NetworkClientProvider = networkClientProvider
-        self.__timber: TimberInterface = timber
+        self.__funtoonJsonMapper: Final[FuntoonJsonMapperInterface] = funtoonJsonMapper
+        self.__networkClientProvider: Final[NetworkClientProvider] = networkClientProvider
+        self.__timber: Final[TimberInterface] = timber
 
     async def banTriviaQuestion(self, triviaId: str) -> bool:
         if not utils.isValidStr(triviaId):
@@ -39,7 +39,7 @@ class FuntoonApiService(FuntoonApiServiceInterface):
         try:
             response = await clientSession.get(f'https://funtoon.party/api/trivia/review/{triviaId}')
         except GenericNetworkException as e:
-            self.__timber.log('FuntoonApiService', f'Encountered network error when banning trivia question ({triviaId=}): {e}', e, traceback.format_exc())
+            self.__timber.log('FuntoonApiService', f'Encountered network error when banning trivia question ({triviaId=})', e, traceback.format_exc())
             raise GenericNetworkException(f'FuntoonApiService encountered network error when banning trivia question ({triviaId=}): {e}')
 
         responseStatusCode = response.statusCode
@@ -58,7 +58,7 @@ class FuntoonApiService(FuntoonApiServiceInterface):
         event: str,
         funtoonToken: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> bool:
         if data is not None and not isinstance(data, dict) and not isinstance(data, str):
             raise TypeError(f'data argument is malformed: \"{data}\"')
@@ -74,7 +74,7 @@ class FuntoonApiService(FuntoonApiServiceInterface):
         jsonPayload: dict[str, Any] = {
             'channel': twitchChannel,
             'data': data,
-            'event': event
+            'event': event,
         }
 
         self.__timber.log('FuntoonApiService', f'Sending custom event... ({data=}) ({event=}) ({funtoonToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({jsonPayload=})')
@@ -85,12 +85,12 @@ class FuntoonApiService(FuntoonApiServiceInterface):
                 url = 'https://funtoon.party/api/events/custom',
                 headers = {
                     'Authorization': funtoonToken,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                json = jsonPayload
+                json = jsonPayload,
             )
         except GenericNetworkException as e:
-            self.__timber.log('FuntoonApiService', f'Encountered network error when sending custom event ({data=}) ({event=}) ({funtoonToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({jsonPayload=}): {e}', e, traceback.format_exc())
+            self.__timber.log('FuntoonApiService', f'Encountered network error when sending custom event ({data=}) ({event=}) ({funtoonToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({jsonPayload=})', e, traceback.format_exc())
             return False
 
         responseStatusCode = response.statusCode
@@ -109,7 +109,7 @@ class FuntoonApiService(FuntoonApiServiceInterface):
         try:
             response = await clientSession.get('https://funtoon.party/api/trivia/random')
         except GenericNetworkException as e:
-            self.__timber.log('FuntoonApiService', f'Encountered network error when fetching random trivia question: {e}', e, traceback.format_exc())
+            self.__timber.log('FuntoonApiService', f'Encountered network error when fetching random trivia question', e, traceback.format_exc())
             raise GenericNetworkException(f'FuntoonApiService encountered network error when fetching random trivia question: {e}')
 
         responseStatusCode = response.statusCode
