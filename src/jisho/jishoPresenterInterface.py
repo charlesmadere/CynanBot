@@ -11,6 +11,6 @@ class JishoPresenterInterface(ABC):
     async def toStrings(
         self,
         includeRomaji: bool,
-        jishoResponse: JishoResponse
+        jishoResponse: JishoResponse,
     ) -> FrozenList[str]:
         pass

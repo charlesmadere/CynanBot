@@ -1,5 +1,5 @@
 import traceback
-
+from typing import Final
 from frozenlist import FrozenList
 
 from .jishoHelperInterface import JishoHelperInterface
@@ -16,7 +16,7 @@ class JishoHelper(JishoHelperInterface):
         self,
         jishoApiService: JishoApiServiceInterface,
         jishoPresenter: JishoPresenterInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(jishoApiService, JishoApiServiceInterface):
             raise TypeError(f'jishoApiService argument is malformed: \"{jishoApiService}\"')
@@ -25,9 +25,9 @@ class JishoHelper(JishoHelperInterface):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__jishoApiService: JishoApiServiceInterface = jishoApiService
-        self.__jishoPresenter: JishoPresenterInterface = jishoPresenter
-        self.__timber: TimberInterface = timber
+        self.__jishoApiService: Final[JishoApiServiceInterface] = jishoApiService
+        self.__jishoPresenter: Final[JishoPresenterInterface] = jishoPresenter
+        self.__timber: Final[TimberInterface] = timber
 
     async def search(self, query: str) -> FrozenList[str]:
         if not utils.isValidStr(query):
@@ -41,5 +41,5 @@ class JishoHelper(JishoHelperInterface):
 
         return await self.__jishoPresenter.toStrings(
             includeRomaji = False,
-            jishoResponse = response
+            jishoResponse = response,
         )
