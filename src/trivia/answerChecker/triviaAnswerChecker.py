@@ -603,8 +603,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'kenneth'
         if word in { 'larry', 'lawrie' }:
             yield 'lawrence'
-        if word in { 'leo', 'leon', 'len', 'lenny', 'lineau' }:
-            yield 'leonard'
+        if word in { 'leo', 'leon', 'len', 'lenny', 'leonard', 'lineau', 'lionard', 'lionardo' }:
+            yield 'leonardo'
         if word in { 'leo', 'polde' }:
             yield 'leopold'
         if word == 'roy':
@@ -631,7 +631,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'michael'
         if word in { 'milt', 'miltie' }:
             yield 'milton'
-        if word in { 'mose', 'moss' }:
+        if word in { 'mose', 'moss', 'mosses' }:
             yield 'moses'
         if word in { 'nat', 'nate', 'nathan', 'natty', 'than' }:
             yield 'nathaniel'
@@ -749,6 +749,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'socrates'
         if word in { 'tut', 'tutankhamen', 'tutenkhamen' }:
             yield 'tutankhamun'
+        if word in { 'washinton' }:
+            yield 'washington'
 
         # geographical features/streets
         if word in { 'aly', 'ally' }:
