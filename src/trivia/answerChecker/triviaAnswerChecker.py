@@ -635,7 +635,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'moses'
         if word in { 'nat', 'nate', 'nathan', 'natty', 'than' }:
             yield 'nathaniel'
-        if word in { 'claas', 'claes', 'nicolas', 'nick', 'nicky', 'klaus' }:
+        if word in { 'claas', 'claes', 'nicolas', 'nich', 'nick', 'nicky', 'klaus' }:
             yield 'nicholas'
         if word in { 'noa', 'noe' }:
             yield 'noah'
