@@ -1,6 +1,6 @@
 aiofiles==25.1.0
 aiohttp==3.13.2
-aiosqlite==0.22.0
+aiosqlite==0.22.1
 asyncpg==0.31.0
 charset-normalizer==3.4.4
 cryptography==46.0.3
