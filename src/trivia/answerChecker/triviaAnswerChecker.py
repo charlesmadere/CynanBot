@@ -627,7 +627,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'melinda'
         if word in { 'lisa', 'lissa', 'mel', 'milly', 'missy' }:
             yield 'melissa'
-        if word in { 'micheal', 'mike' }:
+        if word in { 'mich', 'micheal', 'mike' }:
             yield 'michael'
         if word in { 'milt', 'miltie' }:
             yield 'milton'
