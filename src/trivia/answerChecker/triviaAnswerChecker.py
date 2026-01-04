@@ -427,6 +427,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'augustus'
         if word in { 'bab', 'babs', 'barby', 'bobbie' }:
             yield 'barbara'
+        if word == 'baggin':
+            yield 'baggins'
         if word in { 'barney', 'barnie', 'barns' }:
             yield 'barnabas'
         if word in { 'bart', 'bartel', 'bat', 'mees', 'meus' }:
