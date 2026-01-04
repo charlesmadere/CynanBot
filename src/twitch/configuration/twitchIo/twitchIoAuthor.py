@@ -4,6 +4,7 @@ from twitchio import Chatter, PartialChatter
 
 from ..twitchAuthor import TwitchAuthor
 from ..twitchConfigurationType import TwitchConfigurationType
+from ....misc import utils as utils
 
 
 class TwitchIoAuthor(TwitchAuthor):
@@ -52,7 +53,13 @@ class TwitchIoAuthor(TwitchAuthor):
         if not isinstance(badges, dict) or len(badges) == 0:
             return False
 
-        return 'lead_moderator' in badges
+        leadModerator = utils.getIntFromDict(
+            d = badges,
+            key = 'lead_moderator',
+            fallback = utils.getIntMinSafeSize(),
+        )
+
+        return utils.isValidInt(leadModerator) and leadModerator == 1
 
     @property
     def isMod(self) -> bool:
