@@ -152,7 +152,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseChannelEditorsResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChannelEditorsResponse | None:
         pass
 

@@ -11,24 +11,24 @@ class TwitchSubscriptionsRepositoryInterface(Clearable, ABC):
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> TwitchSubscriptionStatus | None:
         pass
 
     @abstractmethod
-    async def fetchSubscriptionStatus(
+    async def fetchChatterSubscription(
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> TwitchSubscriptionStatus | None:
         pass
 
     @abstractmethod
-    async def isSubscribed(
+    async def isChatterSubscribed(
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> bool:
         pass

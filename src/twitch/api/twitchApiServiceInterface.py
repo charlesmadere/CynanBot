@@ -65,7 +65,7 @@ class TwitchApiServiceInterface(ABC):
         self,
         broadcasterId: str,
         chatterUserId: str,
-        twitchAccessToken: str
+        twitchAccessToken: str,
     ) -> TwitchBroadcasterSubscription:
         pass
 
@@ -73,7 +73,7 @@ class TwitchApiServiceInterface(ABC):
     async def fetchChannelEditors(
         self,
         broadcasterId: str,
-        twitchAccessToken: str
+        twitchAccessToken: str,
     ) -> TwitchChannelEditorsResponse:
         pass
 

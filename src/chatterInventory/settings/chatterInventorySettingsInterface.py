@@ -30,6 +30,10 @@ class ChatterInventorySettingsInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getDaysBetweenGashaponRewards(self) -> int:
+        pass
+
+    @abstractmethod
     async def getEnabledItemTypes(self) -> frozenset[ChatterItemType]:
         pass
 

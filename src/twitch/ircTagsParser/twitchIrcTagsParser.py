@@ -16,7 +16,7 @@ class TwitchIrcTagsParser(TwitchIrcTagsParserInterface):
 
     async def __parseSubscriberStringToBool(
         self,
-        subscriberString: str | Any | None
+        subscriberString: str | Any | None,
     ) -> bool:
         if not utils.isValidStr(subscriberString):
             return False
@@ -36,7 +36,7 @@ class TwitchIrcTagsParser(TwitchIrcTagsParserInterface):
 
     async def parseTwitchIrcTags(
         self,
-        rawIrcTags: dict[Any, Any] | Any | None
+        rawIrcTags: dict[Any, Any] | Any | None,
     ) -> TwitchIrcTags:
         if not isinstance(rawIrcTags, dict) or len(rawIrcTags) == 0:
             raise TwitchIrcTagsAreMalformedException(f'rawIrcTags argument is malformed: \"{rawIrcTags}\"')
@@ -77,5 +77,5 @@ class TwitchIrcTagsParser(TwitchIrcTagsParserInterface):
             sourceMessageId = sourceMessageId,
             sourceTwitchChannelId = sourceTwitchChannelId,
             twitchChannelId = roomId,
-            userId = userId
+            userId = userId,
         )

@@ -13,7 +13,7 @@ class AccessLevelCheckingHelper(AccessLevelCheckingHelperInterface):
         self,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface,
-        twitchTokensRepository: TwitchTokensRepositoryInterface
+        twitchTokensRepository: TwitchTokensRepositoryInterface,
     ):
         if not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
@@ -29,7 +29,7 @@ class AccessLevelCheckingHelper(AccessLevelCheckingHelperInterface):
     async def checkStatus(
         self,
         requiredAccessLevel: AccessLevel,
-        twitchMessage: TwitchMessage
+        twitchMessage: TwitchMessage,
     ) -> bool:
         # TODO More checking can be done to allow for restricted access for higher subscription tiers
         # TODO a ranking system to simplify managing access would be helpful to reduce the amount of checks needed
@@ -63,7 +63,7 @@ class AccessLevelCheckingHelper(AccessLevelCheckingHelperInterface):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
         twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-            twitchChannelId = await message.getTwitchChannelId()
+            twitchChannelId = await message.getTwitchChannelId(),
         )
 
         if not utils.isValidStr(twitchAccessToken):
@@ -72,7 +72,7 @@ class AccessLevelCheckingHelper(AccessLevelCheckingHelperInterface):
         return await self.__twitchFollowingStatusRepository.isFollowing(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = await message.getTwitchChannelId(),
-            userId = message.getAuthorId()
+            userId = message.getAuthorId(),
         )
 
     async def __isSubscribed(self, message: TwitchMessage) -> bool:
@@ -80,14 +80,14 @@ class AccessLevelCheckingHelper(AccessLevelCheckingHelperInterface):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
         twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-            twitchChannelId = await message.getTwitchChannelId()
+            twitchChannelId = await message.getTwitchChannelId(),
         )
 
         if not utils.isValidStr(twitchAccessToken):
             return False
 
-        return await self.__twitchSubscriptionsRepository.isSubscribed(
+        return await self.__twitchSubscriptionsRepository.isChatterSubscribed(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = await message.getTwitchChannelId(),
-            userId = message.getAuthorId()
+            userId = message.getAuthorId(),
         )

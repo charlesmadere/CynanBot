@@ -10,6 +10,6 @@ class AccessLevelCheckingHelperInterface(ABC):
     async def checkStatus(
         self,
         requiredAccessLevel: AccessLevel,
-        twitchMessage: TwitchMessage
+        twitchMessage: TwitchMessage,
     ) -> bool:
         pass

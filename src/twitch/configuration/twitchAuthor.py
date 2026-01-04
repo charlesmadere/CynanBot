@@ -19,6 +19,11 @@ class TwitchAuthor(ABC):
 
     @property
     @abstractmethod
+    def isLeadMod(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isMod(self) -> bool:
         pass
 
