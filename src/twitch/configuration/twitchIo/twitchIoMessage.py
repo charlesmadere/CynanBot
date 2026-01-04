@@ -72,7 +72,7 @@ class TwitchIoMessage(TwitchMessage):
         rawIrcTags: dict[Any, Any] | Any | None = self.__message.tags
 
         tags = await self.__twitchIrcTagsParser.parseTwitchIrcTags(
-            rawIrcTags = rawIrcTags
+            rawIrcTags = rawIrcTags,
         )
 
         self.__tags = tags

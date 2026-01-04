@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Any, Final
 
 from twitchio import Chatter, PartialChatter
 
@@ -18,7 +18,7 @@ class TwitchIoAuthor(TwitchAuthor):
         self.__author: Final[Chatter | PartialChatter] = author
 
     def getDisplayName(self) -> str:
-        displayName: str | None = self.__author.display_name # type: ignore
+        displayName: str | Any | None = self.__author.display_name # type: ignore
 
         if not isinstance(displayName, str):
             raise RuntimeError(f'displayName value is missing! ({displayName=}) ({self.__author=})')
@@ -26,7 +26,7 @@ class TwitchIoAuthor(TwitchAuthor):
         return displayName
 
     def getId(self) -> str:
-        authorId: str | None = self.__author.id # type: ignore
+        authorId: str | Any | None = self.__author.id # type: ignore
 
         if not isinstance(authorId, str):
             raise RuntimeError(f'authorId value is missing! ({authorId=}) ({self.__author=})')
@@ -34,7 +34,7 @@ class TwitchIoAuthor(TwitchAuthor):
         return authorId
 
     def getName(self) -> str:
-        authorName: str | None = self.__author.name
+        authorName: str | Any | None = self.__author.name
 
         if not isinstance(authorName, str):
             raise RuntimeError(f'authorName value is missing! ({authorName=}) ({self.__author=})')
@@ -42,17 +42,26 @@ class TwitchIoAuthor(TwitchAuthor):
         return authorName
 
     @property
+    def isLeadMod(self) -> bool:
+        badges: dict | Any | None = self.__author.badges
+
+        if not isinstance(badges, dict) or len(badges) == 0:
+            return False
+
+        return 'lead_moderator' in badges
+
+    @property
     def isMod(self) -> bool:
-        isMod: bool | None = self.__author.is_mod # type: ignore
+        isMod: bool | Any | None = self.__author.is_mod # type: ignore
 
         if not isinstance(isMod, bool):
             raise RuntimeError(f'isMod value is missing! ({isMod=}) ({self.__author=})')
 
-        return isMod
+        return isMod or self.isLeadMod
 
     @property
     def isVip(self) -> bool:
-        isVip: bool | None = self.__author.is_vip # type: ignore
+        isVip: bool | Any | None = self.__author.is_vip # type: ignore
 
         if not isinstance(isVip, bool):
             raise RuntimeError(f'isVip value is missing! ({isVip=}) ({self.__author=})')

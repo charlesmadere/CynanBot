@@ -9,6 +9,6 @@ class TwitchIrcTagsParserInterface(ABC):
     @abstractmethod
     async def parseTwitchIrcTags(
         self,
-        rawIrcTags: dict[Any, Any] | Any | None
+        rawIrcTags: dict[Any, Any] | Any | None,
     ) -> TwitchIrcTags:
         pass
