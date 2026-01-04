@@ -46,6 +46,11 @@ class TwitchMessage(ABC):
 
     @property
     @abstractmethod
+    def isAuthorLeadMod(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isAuthorMod(self) -> bool:
         pass
 

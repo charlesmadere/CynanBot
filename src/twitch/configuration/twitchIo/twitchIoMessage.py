@@ -86,6 +86,10 @@ class TwitchIoMessage(TwitchMessage):
         return self.__channel.getTwitchChannelName()
 
     @property
+    def isAuthorLeadMod(self) -> bool:
+        return self.__author.isLeadMod
+
+    @property
     def isAuthorMod(self) -> bool:
         return self.__author.isMod
 
