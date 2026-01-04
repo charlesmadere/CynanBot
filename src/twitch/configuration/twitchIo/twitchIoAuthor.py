@@ -43,6 +43,10 @@ class TwitchIoAuthor(TwitchAuthor):
 
     @property
     def isLeadMod(self) -> bool:
+        if not isinstance(self.__author, Chatter):
+            # unfortunately, the stupid PartialChatter class has no badge information
+            return False
+
         badges: dict | Any | None = self.__author.badges
 
         if not isinstance(badges, dict) or len(badges) == 0:
