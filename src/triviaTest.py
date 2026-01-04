@@ -1,5 +1,6 @@
 import asyncio
 from asyncio import AbstractEventLoop
+from typing import Final
 
 from .contentScanner.bannedWordsRepository import BannedWordsRepository
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
@@ -162,7 +163,7 @@ from .twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocket
 from .users.userIdsRepository import UserIdsRepository
 from .users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
-eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+eventLoop: Final[AbstractEventLoop] = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
 
 backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(eventLoop = eventLoop)
@@ -204,10 +205,10 @@ twitchApiService: TwitchApiServiceInterface = TwitchApiService(
 
 officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = OfficialTwitchAccountUserIdProvider()
 
-userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
+userIdsRepository: Final[UserIdsRepositoryInterface] = UserIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchApiService = twitchApiService
+    twitchApiService = twitchApiService,
 )
 
 twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository(
