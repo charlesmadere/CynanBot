@@ -871,6 +871,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'antigua and barbuda'
         if word == 'arctic':
             yield 'arctic ocean'
+        if word == 'asia':
+            yield 'asian'
         if word == 'atlantic':
             yield 'atlantic ocean'
         if word == 'bosnia':
@@ -893,7 +895,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word in { 'euro', 'eu' }:
             yield 'europe'
             yield 'european union'
-        if word == 'gb':
+        if word in { 'gb', 'britain', 'uk' }:
             yield 'great britain'
         if word == 'holland':
             yield 'netherlands'
@@ -902,9 +904,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'ivory coast':
             yield 'cote d ivoire'
             yield 'cote divoire'
-        if word in { 'ja', 'jap', 'japon', 'jp', 'jpn', 'nihon', 'nippon' }:
+        if word in { 'ja', 'jap', 'japanese', 'japon', 'jp', 'jpn', 'nihon', 'nippon' }:
             yield 'japan'
-        if word == 'kr':
+        if word in { 'kr', 'korean' }:
             yield 'korea'
         if word in { 'macedonia', 'n macedonia' }:
             yield 'macedonia'
