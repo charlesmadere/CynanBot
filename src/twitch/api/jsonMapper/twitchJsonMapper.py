@@ -422,7 +422,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseChannelEditorsResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChannelEditorsResponse | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None

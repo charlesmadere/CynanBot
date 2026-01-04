@@ -283,7 +283,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         self,
         broadcasterId: str,
         chatterUserId: str,
-        twitchAccessToken: str
+        twitchAccessToken: str,
     ) -> TwitchBroadcasterSubscription:
         if not utils.isValidStr(broadcasterId):
             raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
@@ -301,11 +301,11 @@ class TwitchApiService(TwitchApiServiceInterface):
                 url = f'https://api.twitch.tv/helix/subscriptions?broadcaster_id={broadcasterId}&user_id={chatterUserId}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
-                    'Client-Id': twitchClientId
-                }
+                    'Client-Id': twitchClientId,
+                },
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchApiService', f'Encountered network error when fetching broadcaster subscription ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchApiService', f'Encountered network error when fetching broadcaster subscription ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=})', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching broadcaster subscription ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}): {e}')
 
         jsonResponse = await response.json()
@@ -316,7 +316,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching broadcaster subscription ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
             raise TwitchStatusCodeException(
                 statusCode = responseStatusCode,
-                message = f'TwitchApiService encountered non-200 HTTP status code when fetching broadcaster subscription ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})'
+                message = f'TwitchApiService encountered non-200 HTTP status code when fetching broadcaster subscription ({broadcasterId=}) ({chatterUserId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})',
             )
 
         broadcasterSubscription = await self.__twitchJsonMapper.parseBroadcasterSubscription(jsonResponse)
@@ -330,7 +330,7 @@ class TwitchApiService(TwitchApiServiceInterface):
     async def fetchChannelEditors(
         self,
         broadcasterId: str,
-        twitchAccessToken: str
+        twitchAccessToken: str,
     ) -> TwitchChannelEditorsResponse:
         if not utils.isValidStr(broadcasterId):
             raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
@@ -346,11 +346,11 @@ class TwitchApiService(TwitchApiServiceInterface):
                 url = f'https://api.twitch.tv/helix/channels/editors?broadcaster_id={broadcasterId}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
-                    'Client-Id': twitchClientId
-                }
+                    'Client-Id': twitchClientId,
+                },
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchApiService', f'Encountered network error when fetching channel editors ({broadcasterId=}) ({twitchAccessToken=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchApiService', f'Encountered network error when fetching channel editors ({broadcasterId=}) ({twitchAccessToken=})', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching channel editors ({broadcasterId=}) ({twitchAccessToken=}): {e}')
 
         responseStatusCode = response.statusCode
@@ -361,7 +361,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching channel editors ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
             raise TwitchStatusCodeException(
                 statusCode = responseStatusCode,
-                message = f'TwitchApiService encountered non-200 HTTP status code when fetching channel editors ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})'
+                message = f'TwitchApiService encountered non-200 HTTP status code when fetching channel editors ({broadcasterId=}) ({twitchAccessToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})',
             )
 
         twitchChannelEditorsResponse = await self.__twitchJsonMapper.parseChannelEditorsResponse(jsonResponse)

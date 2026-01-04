@@ -92,13 +92,13 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
                 twitchAccessToken = twitchAccessToken,
             )
 
-            subscriptionStatus = await self.__twitchSubscriptionsRepository.fetchSubscriptionStatus(
+            subscriptionStatus = await self.__twitchSubscriptionsRepository.fetchChatterSubscription(
                 twitchAccessToken = twitchAccessToken,
                 twitchChannelId = twitchChannelId,
                 userId = twitchId,
             )
         except (GenericNetworkException, TwitchJsonException, TwitchStatusCodeException) as e:
-            self.__timber.log('TwitchEmotesHelper', f'Encountered network error when fetching either broadcaster subscription or emotes ({twitchChannelId=}) ({emotesResponse=}) ({subscriptionStatus=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchEmotesHelper', f'Encountered network error when fetching either subscription status or emotes ({twitchChannelId=}) ({emotesResponse=}) ({subscriptionStatus=})', e, traceback.format_exc())
 
         viableEmoteNames = await self.__processTwitchResponseIntoViableSubscriptionEmotes(
             emotesResponse = emotesResponse,

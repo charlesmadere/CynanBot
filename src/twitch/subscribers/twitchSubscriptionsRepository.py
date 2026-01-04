@@ -4,6 +4,7 @@ import traceback
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from typing import Final
 
 from lru import LRU
 
@@ -32,7 +33,7 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         cacheSize: int = 64,
-        cacheTimeToLive: timedelta = timedelta(hours = 3)
+        cacheTimeToLive: timedelta = timedelta(hours = 3),
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -47,12 +48,12 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         elif not isinstance(cacheTimeToLive, timedelta):
             raise TypeError(f'cacheTimeToLive argument is malformed: \"{cacheTimeToLive}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
-        self.__cacheTimeToLive: timedelta = cacheTimeToLive
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
+        self.__cacheTimeToLive: Final[timedelta] = cacheTimeToLive
 
-        self.__caches: dict[str, LRU[str, TwitchSubscriptionsRepository.Entry | None]] = defaultdict(lambda: LRU(cacheSize))
+        self.__caches: Final[dict[str, LRU[str, TwitchSubscriptionsRepository.Entry | None]]] = defaultdict(lambda: LRU(cacheSize))
 
     async def clearCaches(self):
         self.__caches.clear()
@@ -62,7 +63,7 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> TwitchSubscriptionStatus | None:
         if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
@@ -77,10 +78,10 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         if subscriptionEntry is not None and subscriptionEntry.fetchTime + self.__cacheTimeToLive >= now:
             return subscriptionEntry.subscriptionStatus
 
-        userSubscription = await self.__fetchBroadcasterSubscriptionsFromTwitchApi(
+        userSubscription = await self.__fetchBroadcasterSubscriptionFromTwitch(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
         if userSubscription is None:
@@ -95,21 +96,21 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
             gifterLogin = userSubscription.gifterLogin,
             gifterName = userSubscription.gifterName,
             userId = userId,
-            tier = userSubscription.tier
+            tier = userSubscription.tier,
         )
 
         self.__caches[twitchChannelId][userId] = TwitchSubscriptionsRepository.Entry(
             fetchTime = now,
-            subscriptionStatus = subscriptionStatus
+            subscriptionStatus = subscriptionStatus,
         )
 
         return subscriptionStatus
 
-    async def fetchSubscriptionStatus(
+    async def fetchChatterSubscription(
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> TwitchSubscriptionStatus | None:
         if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
@@ -124,10 +125,10 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         if subscriptionEntry is not None and subscriptionEntry.fetchTime + self.__cacheTimeToLive >= now:
             return subscriptionEntry.subscriptionStatus
 
-        userSubscription = await self.__fetchFromTwitchApi(
+        userSubscription = await self.__fetchChatterSubscriptionFromTwitch(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
         if userSubscription is None:
@@ -142,53 +143,53 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
             gifterLogin = userSubscription.gifterLogin,
             gifterName = userSubscription.gifterName,
             userId = userId,
-            tier = userSubscription.tier
+            tier = userSubscription.tier,
         )
 
         self.__caches[twitchChannelId][userId] = TwitchSubscriptionsRepository.Entry(
             fetchTime = now,
-            subscriptionStatus = subscriptionStatus
+            subscriptionStatus = subscriptionStatus,
         )
 
         return subscriptionStatus
 
-    async def __fetchBroadcasterSubscriptionsFromTwitchApi(
+    async def __fetchBroadcasterSubscriptionFromTwitch(
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str
-    ) -> TwitchBroadcasterSubscription | TwitchUserSubscription | None:
+        userId: str,
+    ) -> TwitchBroadcasterSubscription | None:
         try:
             return await self.__twitchApiService.fetchBroadcasterSubscription(
                 broadcasterId = twitchChannelId,
                 chatterUserId = userId,
-                twitchAccessToken = twitchAccessToken
+                twitchAccessToken = twitchAccessToken,
             )
         except (GenericNetworkException, TwitchJsonException, TwitchStatusCodeException) as e:
-            self.__timber.log('TwitchSubscriptionsRepository', f'Failed to fetch Twitch subscription status from Twitch API ({twitchAccessToken=}) ({twitchChannelId=}) ({userId=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchSubscriptionsRepository', f'Failed to fetch Twitch broadcaster subscription from Twitch API ({twitchChannelId=}) ({userId=})', e, traceback.format_exc())
             return None
 
-    async def __fetchFromTwitchApi(
+    async def __fetchChatterSubscriptionFromTwitch(
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> TwitchBroadcasterSubscription | TwitchUserSubscription | None:
         try:
             return await self.__twitchApiService.fetchUserSubscription(
                 broadcasterId = twitchChannelId,
                 chatterUserId = userId,
-                twitchAccessToken = twitchAccessToken
+                twitchAccessToken = twitchAccessToken,
             )
         except (GenericNetworkException, TwitchJsonException, TwitchStatusCodeException) as e:
-            self.__timber.log('TwitchSubscriptionsRepository', f'Failed to fetch Twitch subscription status from Twitch API ({twitchAccessToken=}) ({twitchChannelId=}) ({userId=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchSubscriptionsRepository', f'Failed to fetch Twitch user subscription from Twitch API ({twitchChannelId=}) ({userId=})', e, traceback.format_exc())
             return None
 
-    async def isSubscribed(
+    async def isChatterSubscribed(
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> bool:
         if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
@@ -197,10 +198,10 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        subscriptionStatus = await self.fetchBroadcasterSubscription(
+        subscriptionStatus = await self.fetchChatterSubscription(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
         return subscriptionStatus is not None

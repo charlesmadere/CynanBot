@@ -52,6 +52,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             maxDurationSeconds = 48,
             minDurationSeconds = 32,
         ),
+        defaultDaysBetweenGashaponRewards: int = 28,
         defaultTm36ItemDetails: Tm36ItemDetails = Tm36ItemDetails(
             maxDurationSeconds = 300, # 5 minutes
             minDurationSeconds = 1800, # 30 minutes
@@ -79,6 +80,10 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             raise TypeError(f'defaultGashaponItemDetails argument is malformed: \"{defaultGashaponItemDetails}\"')
         elif not isinstance(defaultGrenadeItemDetails, GrenadeItemDetails):
             raise TypeError(f'grenadeItemDetails argument is malformed: \"{defaultGrenadeItemDetails}\"')
+        elif not utils.isValidInt(defaultDaysBetweenGashaponRewards):
+            raise TypeError(f'defaultDaysBetweenGashaponRewards argument is malformed: \"{defaultDaysBetweenGashaponRewards}\"')
+        elif defaultDaysBetweenGashaponRewards < 1 or defaultDaysBetweenGashaponRewards > utils.getIntMaxSafeSize():
+            raise ValueError(f'defaultDaysBetweenGashaponRewards argument is out of bounds: {defaultDaysBetweenGashaponRewards}')
         elif not isinstance(defaultTm36ItemDetails, Tm36ItemDetails):
             raise TypeError(f'defaultTm36ItemDetails argument is malformed: \"{defaultTm36ItemDetails}\"')
         elif not isinstance(defaultVoreItemDetails, VoreItemDetails):
@@ -93,6 +98,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         self.__defaultBananaItemDetails: Final[BananaItemDetails] = defaultBananaItemDetails
         self.__defaultGashaponItemDetails: Final[GashaponItemDetails] = defaultGashaponItemDetails
         self.__defaultGrenadeItemDetails: Final[GrenadeItemDetails] = defaultGrenadeItemDetails
+        self.__defaultDaysBetweenGashaponRewards: Final[int] = defaultDaysBetweenGashaponRewards
         self.__defaultTm36ItemDetails: Final[Tm36ItemDetails] = defaultTm36ItemDetails
         self.__defaultVoreItemDetails: Final[VoreItemDetails] = defaultVoreItemDetails
         self.__defaultEnabledItemTypes: Final[frozenset[ChatterItemType]] = defaultEnabledItemTypes
@@ -135,6 +141,14 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             return self.__defaultBananaItemDetails
         else:
             return itemDetails
+
+    async def getDaysBetweenGashaponRewards(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(
+            d = jsonContents,
+            key = 'daysBetweenGashaponRewards',
+            fallback = self.__defaultDaysBetweenGashaponRewards,
+        )
 
     async def getEnabledItemTypes(self) -> frozenset[ChatterItemType]:
         jsonContents = await self.__readJson()
