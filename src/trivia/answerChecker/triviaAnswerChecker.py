@@ -324,6 +324,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'physician assistant'
         if word == 'phd':
             yield 'philosophiae doctor'
+        if word == 'rn':
+            yield 'registered nurse'
         if word == 'sr':
             yield 'senior'
         if word == 'st':
@@ -376,7 +378,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'adelbert'
         if word in { 'al', 'rich', 'richie' }:
             yield 'aldrich'
-        if word in { 'alex', 'al', 'eleck', 'sandy' }:
+        if word in { 'alex', 'al', 'alexis', 'alexandre', 'alexandria', 'eleck', 'lex', 'sandy' }:
             yield 'alexander'
         if word in { 'alex', 'alla', 'sandy' }:
             yield 'alexandra'
@@ -662,11 +664,11 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'ralph'
         if word in { 'ray', 'raymie' 'remy' }:
             yield 'raymond'
-        if word in { 'reba', 'becca', 'becky', 'beck' }:
+        if word in { 'reba', 'rebeca', 'becca', 'becky', 'beck' }:
             yield 'rebecca'
         if word in { 'rube' }:
             yield 'reuben'
-        if word in { 'dick', 'rich', 'rick', 'rickey', 'rickie', 'ricky' }:
+        if word in { 'dick', 'ricardo', 'rich', 'rick', 'rickey', 'rickie', 'ricky' }:
             yield 'richard'
         if word in { 'rfk' }:
             yield 'robert francis kennedy'
@@ -1071,7 +1073,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'compact disc'
         if word == 'cmyk':
             yield 'cyan magenta yellow black'
-        if word in { 'comp', 'laptop', 'pc' }:
+        if word in { 'comp', 'laptop', 'pc', 'server' }:
             yield 'computer'
         if word == 'cpu':
             yield 'central processing unit'
