@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ..models.giveGashaponRewardResult import GiveGashaponRewardResult
+from ..models.gashaponResults.absGashaponResult import AbsGashaponResult
 
 
 class GashaponRewardHelperInterface(ABC):
@@ -10,5 +10,5 @@ class GashaponRewardHelperInterface(ABC):
         self,
         chatterUserId: str,
         twitchChannelId: str,
-    ) -> GiveGashaponRewardResult:
+    ) -> AbsGashaponResult:
         pass

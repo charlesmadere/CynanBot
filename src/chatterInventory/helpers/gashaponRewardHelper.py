@@ -3,7 +3,14 @@ from typing import Final
 
 from .gashaponRewardHelperInterface import GashaponRewardHelperInterface
 from ..models.chatterItemType import ChatterItemType
-from ..models.giveGashaponRewardResult import GiveGashaponRewardResult
+from ..models.gashaponResults.absGashaponResult import AbsGashaponResult
+from ..models.gashaponResults.chatterInventoryDisabledGashaponResult import ChatterInventoryDisabledGashaponResult
+from ..models.gashaponResults.gashaponItemDisabledGashaponResult import GashaponItemDisabledGashaponResult
+from ..models.gashaponResults.gashaponRewardedGashaponResult import GashaponRewardedGashaponResult
+from ..models.gashaponResults.notFollowingGashaponResult import NotFollowingGashaponResult
+from ..models.gashaponResults.notReadyGashaponResult import NotReadyGashaponResult
+from ..models.gashaponResults.notSubscribedGashaponResult import NotSubscribedGashaponResult
+from ..repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
 from ..repositories.gashaponRewardHistoryRepositoryInterface import GashaponRewardHistoryRepositoryInterface
 from ..settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -18,6 +25,7 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
 
     def __init__(
         self,
+        chatterInventoryRepository: ChatterInventoryRepositoryInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
         gashaponRewardHistoryRepository: GashaponRewardHistoryRepositoryInterface,
         timber: TimberInterface,
@@ -26,7 +34,9 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
         twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
     ):
-        if not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
+        if not isinstance(chatterInventoryRepository, ChatterInventoryRepositoryInterface):
+            raise TypeError(f'chatterInventoryRepository argument is malformed: \"{chatterInventoryRepository}\"')
+        elif not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
         elif not isinstance(gashaponRewardHistoryRepository, GashaponRewardHistoryRepositoryInterface):
             raise TypeError(f'gashaponRewardHistoryRepository argument is malformed: \"{gashaponRewardHistoryRepository}\"')
@@ -41,6 +51,7 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
 
+        self.__chatterInventoryRepository: Final[ChatterInventoryRepositoryInterface] = chatterInventoryRepository
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface] = gashaponRewardHistoryRepository
         self.__timber: Final[TimberInterface] = timber
@@ -53,16 +64,16 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
         self,
         chatterUserId: str,
         twitchChannelId: str,
-    ) -> GiveGashaponRewardResult:
+    ) -> AbsGashaponResult:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         if not await self.__chatterInventorySettings.isEnabled():
-            return GiveGashaponRewardResult.CHATTER_INVENTORY_DISABLED
+            return ChatterInventoryDisabledGashaponResult()
         elif ChatterItemType.GASHAPON not in await self.__chatterInventorySettings.getEnabledItemTypes():
-            return GiveGashaponRewardResult.GASHAPON_ITEM_DISABLED
+            return GashaponItemDisabledGashaponResult()
 
         twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
             twitchChannelId = twitchChannelId,
@@ -73,44 +84,48 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
             twitchChannelId = twitchChannelId,
             userId = chatterUserId,
         ):
-            return GiveGashaponRewardResult.NOT_FOLLOWING
+            return NotFollowingGashaponResult(
+                chatterUserId = chatterUserId,
+                twitchChannelId = twitchChannelId,
+            )
         elif not await self.__twitchSubscriptionsRepository.isChatterSubscribed(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
             userId = chatterUserId,
         ):
-            return GiveGashaponRewardResult.NOT_SUBSCRIBED
-        elif await self.__hasRecentlyReceivedGashaponReward(
-            chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId,
-        ):
-            return GiveGashaponRewardResult.NOT_READY
-
-        # TODO
-        return GiveGashaponRewardResult.GASHAPON_ITEM_DISABLED
-
-    async def __hasRecentlyReceivedGashaponReward(
-        self,
-        chatterUserId: str,
-        twitchChannelId: str,
-    ) -> bool:
-        if not utils.isValidStr(chatterUserId):
-            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+            return NotSubscribedGashaponResult(
+                chatterUserId = chatterUserId,
+                twitchChannelId = twitchChannelId,
+            )
 
         rewardHistory = await self.__gashaponRewardHistoryRepository.getHistory(
             chatterUserId = chatterUserId,
             twitchChannelId = twitchChannelId,
         )
 
-        if rewardHistory is None:
-            return False
+        if rewardHistory is not None:
+            daysBetweenGashaponRewards = timedelta(
+                days = await self.__chatterInventorySettings.getDaysBetweenGashaponRewards(),
+            )
 
-        daysBetweenGashaponRewards = timedelta(
-            days = await self.__chatterInventorySettings.getDaysBetweenGashaponRewards(),
+            now = datetime.now(self.__timeZoneRepository.getDefault())
+
+            if rewardHistory.mostRecentReward + daysBetweenGashaponRewards > now:
+                return NotReadyGashaponResult(
+                    mostRecentGashapon = rewardHistory.mostRecentReward,
+                    chatterUserId = chatterUserId,
+                    twitchChannelId = twitchChannelId,
+                )
+
+        chatterInventory = await self.__chatterInventoryRepository.update(
+            itemType = ChatterItemType.GASHAPON,
+            changeAmount = 1,
+            chatterUserId = chatterUserId,
+            twitchChannelId = twitchChannelId,
         )
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
-
-        return rewardHistory.mostRecentReward + daysBetweenGashaponRewards <= now
+        return GashaponRewardedGashaponResult(
+            chatterInventory = chatterInventory,
+            chatterUserId = chatterUserId,
+            twitchChannelId = twitchChannelId,
+        )
