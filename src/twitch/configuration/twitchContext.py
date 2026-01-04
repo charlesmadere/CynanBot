@@ -42,6 +42,11 @@ class TwitchContext(TwitchMessageable):
 
     @property
     @abstractmethod
+    def isAuthorLeadMod(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isAuthorMod(self) -> bool:
         pass
 

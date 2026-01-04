@@ -69,6 +69,10 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
         return self.__context.channel.name
 
     @property
+    def isAuthorLeadMod(self) -> bool:
+        return self.__author.isLeadMod
+
+    @property
     def isAuthorMod(self) -> bool:
         return self.__author.isMod
 
