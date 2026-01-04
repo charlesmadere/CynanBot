@@ -846,7 +846,7 @@ twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     twitchJsonMapper = twitchJsonMapper
 )
 
-userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
+userIdsRepository: Final[UserIdsRepositoryInterface] = UserIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService,

@@ -644,10 +644,10 @@ twitchApiService: TwitchApiServiceInterface = TwitchApiService(
 
 officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = OfficialTwitchAccountUserIdProvider()
 
-userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
+userIdsRepository: Final[UserIdsRepositoryInterface] = UserIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchApiService = twitchApiService
+    twitchApiService = twitchApiService,
 )
 
 twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository(
