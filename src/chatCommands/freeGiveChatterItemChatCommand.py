@@ -162,8 +162,8 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
                     twitchChannelId = twitchChannelId,
                 ),
             )
-        except:
-            self.__timber.log('FreeGiveChatterItemChatCommand', f'Failed to fetch user ID for the given chatter username ({chatterUserName=}) ({splits=})')
+        except Exception as e:
+            self.__timber.log('FreeGiveChatterItemChatCommand', f'Failed to fetch user ID for the given chatter username ({chatterUserName=}) ({splits=})', e, traceback.format_exc())
             return None
 
         itemTypeString = splits[2]

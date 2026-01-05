@@ -104,15 +104,15 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
         )
 
         if rewardHistory is not None:
-            daysBetweenGashaponRewards = timedelta(
-                days = await self.__chatterInventorySettings.getDaysBetweenGashaponRewards(),
-            )
-
             now = datetime.now(self.__timeZoneRepository.getDefault())
+            daysBetweenGashaponRewards = await self.__chatterInventorySettings.getDaysBetweenGashaponRewards()
+            nextGashaponAvailability = rewardHistory.mostRecentReward + timedelta(days = daysBetweenGashaponRewards)
 
-            if rewardHistory.mostRecentReward + daysBetweenGashaponRewards > now:
+            if now < nextGashaponAvailability:
                 return NotReadyGashaponResult(
                     mostRecentGashapon = rewardHistory.mostRecentReward,
+                    nextGashaponAvailability = nextGashaponAvailability,
+                    daysBetweenGashaponRewards = daysBetweenGashaponRewards,
                     chatterUserId = chatterUserId,
                     twitchChannelId = twitchChannelId,
                 )
@@ -124,8 +124,16 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
             twitchChannelId = twitchChannelId,
         )
 
-        return GashaponRewardedGashaponResult(
+        await self.__gashaponRewardHistoryRepository.noteRewardGiven(
+            chatterUserId = chatterUserId,
+            twitchChannelId = twitchChannelId,
+        )
+
+        rewardResult = GashaponRewardedGashaponResult(
             chatterInventory = chatterInventory,
             chatterUserId = chatterUserId,
             twitchChannelId = twitchChannelId,
         )
+
+        self.__timber.log('GashaponRewardHelper', f'Gashapon rewarded ({rewardResult=})')
+        return rewardResult
