@@ -117,6 +117,11 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
                     twitchChannelId = twitchChannelId,
                 )
 
+        await self.__gashaponRewardHistoryRepository.noteRewardGiven(
+            chatterUserId = chatterUserId,
+            twitchChannelId = twitchChannelId,
+        )
+
         chatterInventory = await self.__chatterInventoryRepository.update(
             itemType = ChatterItemType.GASHAPON,
             changeAmount = 1,
