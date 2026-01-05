@@ -129,8 +129,11 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
             twitchChannelId = twitchChannelId,
         )
 
-        return GashaponRewardedGashaponResult(
+        rewardResult = GashaponRewardedGashaponResult(
             chatterInventory = chatterInventory,
             chatterUserId = chatterUserId,
             twitchChannelId = twitchChannelId,
         )
+
+        self.__timber.log('GashaponRewardHelper', f'Gashapon rewarded ({rewardResult=})')
+        return rewardResult
