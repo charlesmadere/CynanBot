@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.trivia.misc.triviaSourceParser import TriviaSourceParser
@@ -7,7 +9,7 @@ from src.trivia.questions.triviaSource import TriviaSource
 
 class TestTriviaSourceParser:
 
-    parser: TriviaSourceParserInterface = TriviaSourceParser()
+    parser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 
     @pytest.mark.asyncio
     async def test_parse_withBongo(self):

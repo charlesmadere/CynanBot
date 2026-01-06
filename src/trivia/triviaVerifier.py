@@ -1,3 +1,5 @@
+from typing import Final
+
 from .banned.triviaBanHelperInterface import TriviaBanHelperInterface
 from .content.triviaContentCode import TriviaContentCode
 from .content.triviaContentScannerInterface import \
@@ -19,7 +21,7 @@ class TriviaVerifier(TriviaVerifierInterface):
         timber: TimberInterface,
         triviaBanHelper: TriviaBanHelperInterface,
         triviaContentScanner: TriviaContentScannerInterface,
-        triviaHistoryRepository: TriviaHistoryRepositoryInterface
+        triviaHistoryRepository: TriviaHistoryRepositoryInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -30,15 +32,15 @@ class TriviaVerifier(TriviaVerifierInterface):
         elif not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
             raise TypeError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__triviaBanHelper: TriviaBanHelperInterface = triviaBanHelper
-        self.__triviaContentScanner: TriviaContentScannerInterface = triviaContentScanner
-        self.__triviaHistoryRepository: TriviaHistoryRepositoryInterface = triviaHistoryRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaBanHelper: Final[TriviaBanHelperInterface] = triviaBanHelper
+        self.__triviaContentScanner: Final[TriviaContentScannerInterface] = triviaContentScanner
+        self.__triviaHistoryRepository: Final[TriviaHistoryRepositoryInterface] = triviaHistoryRepository
 
     async def checkContent(
         self,
         question: AbsTriviaQuestion | None,
-        triviaFetchOptions: TriviaFetchOptions
+        triviaFetchOptions: TriviaFetchOptions,
     ) -> TriviaContentCode:
         if question is None:
             return TriviaContentCode.IS_NONE
@@ -56,7 +58,7 @@ class TriviaVerifier(TriviaVerifierInterface):
 
         if await self.__triviaBanHelper.isBanned(
             triviaId = question.triviaId,
-            triviaSource = question.triviaSource
+            triviaSource = question.triviaSource,
         ):
             return TriviaContentCode.IS_BANNED
 
@@ -70,7 +72,7 @@ class TriviaVerifier(TriviaVerifierInterface):
         self,
         question: AbsTriviaQuestion,
         emote: str,
-        triviaFetchOptions: TriviaFetchOptions
+        triviaFetchOptions: TriviaFetchOptions,
     ) -> TriviaContentCode:
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
@@ -83,7 +85,7 @@ class TriviaVerifier(TriviaVerifierInterface):
             question = question,
             emote = emote,
             twitchChannel = triviaFetchOptions.twitchChannel,
-            twitchChannelId = triviaFetchOptions.twitchChannelId
+            twitchChannelId = triviaFetchOptions.twitchChannelId,
         )
 
         if contentCode is not TriviaContentCode.OK:

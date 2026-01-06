@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 import aiofiles
 import aiofiles.ospath
@@ -46,10 +47,10 @@ class GlacialTriviaQuestionRepository(
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        triviaDatabaseFile: str = '../db/glacialTriviaQuestionsDatabase.sqlite'
+        triviaDatabaseFile: str = '../db/glacialTriviaQuestionsDatabase.sqlite',
     ):
         super().__init__(
-            triviaSettingsRepository = triviaSettingsRepository
+            triviaSettingsRepository = triviaSettingsRepository,
         )
 
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
@@ -67,13 +68,13 @@ class GlacialTriviaQuestionRepository(
         elif not utils.isValidStr(triviaDatabaseFile):
             raise TypeError(f'triviaDatabaseFile argument is malformed: \"{triviaDatabaseFile}\"')
 
-        self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = additionalTriviaAnswersRepository
-        self.__timber: TimberInterface = timber
-        self.__triviaAnswerCompiler: TriviaAnswerCompilerInterface = triviaAnswerCompiler
-        self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
-        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__triviaDatabaseFile: str = triviaDatabaseFile
+        self.__additionalTriviaAnswersRepository: Final[AdditionalTriviaAnswersRepositoryInterface] = additionalTriviaAnswersRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaAnswerCompiler: Final[TriviaAnswerCompilerInterface] = triviaAnswerCompiler
+        self.__triviaQuestionCompiler: Final[TriviaQuestionCompilerInterface] = triviaQuestionCompiler
+        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__triviaDatabaseFile: Final[str] = triviaDatabaseFile
 
         self.__areTablesCreated: bool = False
         self.__hasQuestionSetAvailable: bool | None = None
@@ -466,7 +467,7 @@ class GlacialTriviaQuestionRepository(
 
     async def fetchAllQuestionAnswerTriviaQuestions(
         self,
-        fetchOptions: TriviaFetchOptions
+        fetchOptions: TriviaFetchOptions,
     ) -> FrozenList[QuestionAnswerTriviaQuestion]:
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
@@ -614,7 +615,11 @@ class GlacialTriviaQuestionRepository(
         self.__hasQuestionSetAvailable = hasQuestionSetAvailable
         return hasQuestionSetAvailable
 
-    async def remove(self, triviaId: str, originalTriviaSource: TriviaSource):
+    async def remove(
+        self,
+        triviaId: str,
+        originalTriviaSource: TriviaSource,
+    ):
         if not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not isinstance(originalTriviaSource, TriviaSource):

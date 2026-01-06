@@ -1,3 +1,5 @@
+import locale
+import math
 from datetime import datetime
 from typing import Final
 
@@ -12,6 +14,7 @@ from ..chatterInventory.models.gashaponResults.notFollowingGashaponResult import
 from ..chatterInventory.models.gashaponResults.notReadyGashaponResult import NotReadyGashaponResult
 from ..chatterInventory.models.gashaponResults.notSubscribedGashaponResult import NotSubscribedGashaponResult
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ..misc import utils as utils
 from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
@@ -107,11 +110,18 @@ class GetGashaponItemChatCommand(AbsChatCommand):
     ):
         now = datetime.now(self.__timeZoneRepository.getDefault())
         remainingTime = gashaponResult.nextGashaponAvailability - now
+        totalRemainingSeconds = int(math.floor(remainingTime.total_seconds()))
+        remainingDays = int(math.floor(float(totalRemainingSeconds) / float(24 * 60 * 60)))
+        availableWhen: str
 
-        # TODO
+        if remainingDays >= 3:
+            remainingDaysString = locale.format_string("%d", remainingDays, grouping = True)
+            availableWhen = f'{remainingDaysString} days'
+        else:
+            availableWhen = utils.secondsToDurationMessage(totalRemainingSeconds)
 
         self.__twitchChatMessenger.send(
-            text = f'⚠ Sorry, you can\'t receive another gashapon yet! Your next gashapon will be available on ',
+            text = f'⚠ Sorry, you can\'t receive your gashapon yet! Your next gashapon will be available in {availableWhen}',
             twitchChannelId = await ctx.getTwitchChannelId(),
             replyMessageId = await ctx.getMessageId(),
         )

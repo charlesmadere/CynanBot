@@ -1,3 +1,5 @@
+from typing import Final
+
 from .banTriviaQuestionResult import BanTriviaQuestionResult
 from .bannedTriviaIdsRepositoryInterface import BannedTriviaIdsRepositoryInterface
 from .triviaBanHelperInterface import TriviaBanHelperInterface
@@ -15,7 +17,7 @@ class TriviaBanHelper(TriviaBanHelperInterface):
         bannedTriviaIdsRepository: BannedTriviaIdsRepositoryInterface,
         funtoonHelper: FuntoonHelperInterface,
         glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
     ):
         if not isinstance(bannedTriviaIdsRepository, BannedTriviaIdsRepositoryInterface):
             raise TypeError(f'bannedTriviaIdsRepository argument is malformed: \"{bannedTriviaIdsRepository}\"')
@@ -26,16 +28,16 @@ class TriviaBanHelper(TriviaBanHelperInterface):
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
 
-        self.__bannedTriviaIdsRepository: BannedTriviaIdsRepositoryInterface = bannedTriviaIdsRepository
-        self.__funtoonHelper: FuntoonHelperInterface = funtoonHelper
-        self.__glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = glacialTriviaQuestionRepository
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
+        self.__bannedTriviaIdsRepository: Final[BannedTriviaIdsRepositoryInterface] = bannedTriviaIdsRepository
+        self.__funtoonHelper: Final[FuntoonHelperInterface] = funtoonHelper
+        self.__glacialTriviaQuestionRepository: Final[GlacialTriviaQuestionRepositoryInterface] = glacialTriviaQuestionRepository
+        self.__triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = triviaSettingsRepository
 
     async def ban(
         self,
         triviaId: str,
         userId: str,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> BanTriviaQuestionResult:
         if not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
@@ -46,7 +48,7 @@ class TriviaBanHelper(TriviaBanHelperInterface):
 
         await self.__glacialTriviaQuestionRepository.remove(
             triviaId = triviaId,
-            originalTriviaSource = triviaSource
+            originalTriviaSource = triviaSource,
         )
 
         if triviaSource is TriviaSource.FUNTOON:
@@ -56,10 +58,14 @@ class TriviaBanHelper(TriviaBanHelperInterface):
             return await self.__bannedTriviaIdsRepository.ban(
                 triviaId = triviaId,
                 userId = userId,
-                triviaSource = triviaSource
+                triviaSource = triviaSource,
             )
 
-    async def isBanned(self, triviaId: str, triviaSource: TriviaSource) -> bool:
+    async def isBanned(
+        self,
+        triviaId: str,
+        triviaSource: TriviaSource,
+    ) -> bool:
         if not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not isinstance(triviaSource, TriviaSource):
@@ -70,13 +76,13 @@ class TriviaBanHelper(TriviaBanHelperInterface):
 
         return await self.__bannedTriviaIdsRepository.isBanned(
             triviaId = triviaId,
-            triviaSource = triviaSource
+            triviaSource = triviaSource,
         )
 
     async def unban(
         self,
         triviaId: str,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> BanTriviaQuestionResult:
         if not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
@@ -85,5 +91,5 @@ class TriviaBanHelper(TriviaBanHelperInterface):
 
         return await self.__bannedTriviaIdsRepository.unban(
             triviaId = triviaId,
-            triviaSource = triviaSource
+            triviaSource = triviaSource,
         )

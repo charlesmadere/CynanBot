@@ -980,7 +980,7 @@ class CynanBot(
             self.__superTriviaCommand: AbsChatCommand = SuperTriviaChatCommand(generalSettingsRepository, timber, triviaGameBuilder, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchChatMessenger, usersRepository)
             self.__triviaInfoCommand: AbsChatCommand = TriviaInfoChatCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, timeZoneRepository, triviaEmoteGenerator, triviaHistoryRepository, triviaQuestionOccurrencesRepository, triviaUtils, twitchChatMessenger, usersRepository)
             self.__triviaScoreCommand: AbsChatCommand = TriviaScoreChatCommand(generalSettingsRepository, shinyTriviaOccurencesRepository, timber, toxicTriviaOccurencesRepository, triviaScoreRepository, triviaUtils, twitchChatMessenger, userIdsRepository, usersRepository)
-            self.__unbanTriviaQuestionChatCommand: AbsChatCommand = UnbanTriviaQuestionChatCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__unbanTriviaQuestionChatCommand: AbsChatCommand = UnbanTriviaQuestionChatCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchChatMessenger, usersRepository)
 
         if cutenessPresenter is None or cutenessRepository is None or cutenessUtils is None or triviaUtils is None:
             self.__cutenessCommand: AbsChatCommand = StubChatCommand()

@@ -11,18 +11,22 @@ class TriviaBanHelperInterface(ABC):
         self,
         triviaId: str,
         userId: str,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> BanTriviaQuestionResult:
         pass
 
     @abstractmethod
-    async def isBanned(self, triviaId: str, triviaSource: TriviaSource) -> bool:
+    async def isBanned(
+        self,
+        triviaId: str,
+        triviaSource: TriviaSource,
+    ) -> bool:
         pass
 
     @abstractmethod
     async def unban(
         self,
         triviaId: str,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> BanTriviaQuestionResult:
         pass

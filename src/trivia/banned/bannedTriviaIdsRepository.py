@@ -4,6 +4,7 @@ from .banTriviaQuestionResult import BanTriviaQuestionResult
 from .bannedTriviaIdsRepositoryInterface import \
     BannedTriviaIdsRepositoryInterface
 from .bannedTriviaQuestion import BannedTriviaQuestion
+from ..misc.triviaSourceParserInterface import TriviaSourceParserInterface
 from ..questions.triviaSource import TriviaSource
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
@@ -18,14 +19,18 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
+        triviaSourceParser: TriviaSourceParserInterface,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaSourceParser, TriviaSourceParserInterface):
+            raise TypeError(f'triviaSourceParser argument is malformed: \"{triviaSourceParser}\"')
 
         self.__backingDatabase: Final[BackingDatabase] = backingDatabase
         self.__timber: Final[TimberInterface] = timber
+        self.__triviaSourceParser: Final[TriviaSourceParserInterface] = triviaSourceParser
 
         self.__isDatabaseReady: bool = False
 
@@ -33,7 +38,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
         self,
         triviaId: str,
         userId: str,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> BanTriviaQuestionResult:
         if not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
@@ -44,7 +49,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
 
         info = await self.getInfo(
             triviaId = triviaId,
-            triviaSource = triviaSource
+            triviaSource = triviaSource,
         )
 
         if info is not None:
@@ -74,7 +79,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
     async def getInfo(
         self,
         triviaId: str,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> BannedTriviaQuestion | None:
         if not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
@@ -101,7 +106,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
             triviaId = record[0],
             userId = record[2],
             userName = record[3],
-            triviaSource = TriviaSource.fromStr(record[1])
+            triviaSource = await self.__triviaSourceParser.parse(record[1]),
         )
 
     async def __initDatabaseTable(self):
@@ -149,7 +154,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
 
         info = await self.getInfo(
             triviaId = triviaId,
-            triviaSource = triviaSource
+            triviaSource = triviaSource,
         )
 
         if info is None:
@@ -170,7 +175,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
 
         info = await self.getInfo(
             triviaId = triviaId,
-            triviaSource = triviaSource
+            triviaSource = triviaSource,
         )
 
         if info is None:

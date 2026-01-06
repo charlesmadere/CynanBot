@@ -42,7 +42,6 @@ class User(UserInterface):
         isCasualGamePollEnabled: bool,
         isChannelPredictionChartEnabled: bool,
         isChatBackMessagesEnabled: bool,
-        isChatBandEnabled: bool,
         isChatLoggingEnabled: bool,
         isChatterInventoryEnabled: bool,
         isChatterPreferredNameEnabled: bool,
@@ -175,8 +174,6 @@ class User(UserInterface):
             raise TypeError(f'isChannelPredictionChartEnabled argument is malformed: \"{isChannelPredictionChartEnabled}\"')
         elif not utils.isValidBool(isChatBackMessagesEnabled):
             raise TypeError(f'isChatBackMessagesEnabled argument is malformed: \"{isChatBackMessagesEnabled}\"')
-        elif not utils.isValidBool(isChatBandEnabled):
-            raise TypeError(f'isChatBandEnabled argument is malformed: \"{isChatBandEnabled}\"')
         elif not utils.isValidBool(isChatLoggingEnabled):
             raise TypeError(f'isChatLoggingEnabled argument is malformed: \"{isChatLoggingEnabled}\"')
         elif not utils.isValidBool(isChatterInventoryEnabled):
@@ -391,7 +388,6 @@ class User(UserInterface):
         self.__isCasualGamePollEnabled: bool = isCasualGamePollEnabled
         self.__isChannelPredictionChartEnabled: bool = isChannelPredictionChartEnabled
         self.__isChatBackMessagesEnabled: bool = isChatBackMessagesEnabled
-        self.__isChatBandEnabled: bool = isChatBandEnabled
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
         self.__isChatterInventoryEnabled: Final[bool] = isChatterInventoryEnabled
         self.__isChatterPreferredNameEnabled: Final[bool] = isChatterPreferredNameEnabled
@@ -769,10 +765,6 @@ class User(UserInterface):
     @property
     def isChatBackMessagesEnabled(self) -> bool:
         return self.__isChatBackMessagesEnabled
-
-    @property
-    def isChatBandEnabled(self) -> bool:
-        return self.__isChatBandEnabled
 
     @property
     def isChatLoggingEnabled(self) -> bool:

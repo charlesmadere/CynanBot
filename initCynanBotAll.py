@@ -1965,7 +1965,7 @@ toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = Toxi
     timeZoneRepository = timeZoneRepository
 )
 
-triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
+triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 
 triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
     settingsJsonReader = JsonFileReader(
@@ -1995,9 +1995,10 @@ additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = 
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
-bannedTriviaIdsRepository: BannedTriviaIdsRepositoryInterface = BannedTriviaIdsRepository(
+bannedTriviaIdsRepository: Final[BannedTriviaIdsRepositoryInterface] = BannedTriviaIdsRepository(
     backingDatabase = backingDatabase,
-    timber = timber
+    timber = timber,
+    triviaSourceParser = triviaSourceParser,
 )
 shinyTriviaHelper = ShinyTriviaHelper(
     cutenessRepository = cutenessRepository,
