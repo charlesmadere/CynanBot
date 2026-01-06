@@ -1,8 +1,6 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
-from src.chatBand.chatBandInstrumentSoundsRepository import ChatBandInstrumentSoundsRepository
-from src.chatBand.chatBandInstrumentSoundsRepositoryInterface import ChatBandInstrumentSoundsRepositoryInterface
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
@@ -48,11 +46,6 @@ generalSettingsRepository = GeneralSettingsRepository(
     soundPlayerJsonMapper = soundPlayerJsonMapper,
     storageJsonMapper = storageJsonMapper,
     defaultSoundPlayerType = SoundPlayerType.AUDIO_PLAYER
-)
-
-chatBandInstrumentSoundsRepository: ChatBandInstrumentSoundsRepositoryInterface = ChatBandInstrumentSoundsRepository(
-    backgroundTaskHelper = backgroundTaskHelper,
-    timber = timber
 )
 
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(

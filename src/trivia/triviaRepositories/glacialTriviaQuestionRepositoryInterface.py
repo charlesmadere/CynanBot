@@ -14,12 +14,16 @@ class GlacialTriviaQuestionRepositoryInterface(TriviaQuestionRepositoryInterface
     @abstractmethod
     async def fetchAllQuestionAnswerTriviaQuestions(
         self,
-        fetchOptions: TriviaFetchOptions
+        fetchOptions: TriviaFetchOptions,
     ) -> FrozenList[QuestionAnswerTriviaQuestion]:
         pass
 
     @abstractmethod
-    async def remove(self, triviaId: str, originalTriviaSource: TriviaSource):
+    async def remove(
+        self,
+        triviaId: str,
+        originalTriviaSource: TriviaSource,
+    ):
         pass
 
     @abstractmethod

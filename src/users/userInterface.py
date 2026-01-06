@@ -350,11 +350,6 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def isChatBandEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
     def isChatLoggingEnabled(self) -> bool:
         pass
 

@@ -178,7 +178,6 @@ class UsersRepository(UsersRepositoryInterface):
         isCasualGamePollEnabled = utils.getBoolFromDict(userJson, 'casualGamePollEnabled', False)
         isChannelPredictionChartEnabled = utils.getBoolFromDict(userJson, 'channelPredictionChartEnabled', False)
         isChatBackMessagesEnabled = utils.getBoolFromDict(userJson, 'chatBackMessagesEnabled', False)
-        isChatBandEnabled = utils.getBoolFromDict(userJson, 'chatBandEnabled', False)
         isChatLoggingEnabled = utils.getBoolFromDict(userJson, 'chatLoggingEnabled', False)
         isChatterInventoryEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHATTER_INVENTORY_ENABLED.jsonKey, False)
         isChatterPreferredNameEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHATTER_PREFERRED_NAME_ENABLED.jsonKey, False)
@@ -416,7 +415,6 @@ class UsersRepository(UsersRepositoryInterface):
             isCasualGamePollEnabled = isCasualGamePollEnabled,
             isChannelPredictionChartEnabled = isChannelPredictionChartEnabled,
             isChatBackMessagesEnabled = isChatBackMessagesEnabled,
-            isChatBandEnabled = isChatBandEnabled,
             isChatLoggingEnabled = isChatLoggingEnabled,
             isChatterInventoryEnabled = isChatterInventoryEnabled,
             isChatterPreferredNameEnabled = isChatterPreferredNameEnabled,
