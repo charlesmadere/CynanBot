@@ -669,8 +669,6 @@ from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
 from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 from src.twitch.twitchPredictionWebsocketUtils import TwitchPredictionWebsocketUtils
 from src.twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
-from src.twitch.twitchUtils import TwitchUtils
-from src.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilder import TwitchWebsocketConditionBuilder
 from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilderInterface import \
     TwitchWebsocketConditionBuilderInterface
@@ -1127,20 +1125,9 @@ twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = TwitchTimeoutRemod
 
 twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
 
-twitchUtils: TwitchUtilsInterface = TwitchUtils(
-    backgroundTaskHelper = backgroundTaskHelper,
-    sentMessageLogger = sentMessageLogger,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    twitchApiService = twitchApiService,
-    twitchHandleProvider = authRepository,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
-)
-
 globalTwitchConstants = GlobalTwitchConstants()
 
-twitchChatMessenger: TwitchChatMessengerInterface = TwitchChatMessenger(
+twitchChatMessenger: Final[TwitchChatMessengerInterface] = TwitchChatMessenger(
     backgroundTaskHelper = backgroundTaskHelper,
     globalTwitchConstants = globalTwitchConstants,
     sentMessageLogger = sentMessageLogger,
@@ -3511,7 +3498,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,
-    twitchUtils = twitchUtils,
     twitchWebsocketClient = twitchWebsocketClient,
     twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
     useChatterItemHelper = useChatterItemHelper,
