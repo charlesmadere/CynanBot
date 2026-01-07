@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absChatCommand import AbsChatCommand
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..recurringActions.actions.recurringActionType import RecurringActionType
@@ -8,8 +10,8 @@ from ..recurringActions.recurringActionsWizardInterface import \
 from ..recurringActions.wizards.weather.weatherStep import WeatherStep
 from ..recurringActions.wizards.weather.weatherWizard import WeatherWizard
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -21,8 +23,8 @@ class SetWeatherRecurringActionCommand(AbsChatCommand):
         recurringActionsRepository: RecurringActionsRepositoryInterface,
         recurringActionsWizard: RecurringActionsWizardInterface,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface
+        twitchChatMessenger: TwitchChatMessengerInterface,
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -32,23 +34,33 @@ class SetWeatherRecurringActionCommand(AbsChatCommand):
             raise TypeError(f'recurringActionsWizard argument is malformed: \"{recurringActionsWizard}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
-        self.__recurringActionsWizard: RecurringActionsWizardInterface = recurringActionsWizard
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
+        self.__recurringActionsRepository: Final[RecurringActionsRepositoryInterface] = recurringActionsRepository
+        self.__recurringActionsWizard: Final[RecurringActionsWizardInterface] = recurringActionsWizard
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def __beginWizardGuidance(self, ctx: TwitchContext, wizard: WeatherWizard):
         if wizard.currentStep is WeatherStep.ALERTS_ONLY:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify if weather reports should only show if your region has a critical alert or warning')
+            self.__twitchChatMessenger.send(
+                text = f'ⓘ Please specify if weather reports should only show if your region has a critical alert or warning',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
+            )
+
         elif wizard.currentStep is WeatherStep.MINUTES_BETWEEN:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify the number of minutes between each weather report')
+            self.__twitchChatMessenger.send(
+                text = f'ⓘ Please specify the number of minutes between each weather report',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
+            )
+
         else:
             self.__timber.log('SetWeatherRecurringActionCommand', f'Received invalid wizard step ({wizard=}) ({ctx.getAuthorName()=}) ({ctx.getAuthorId()=}) ({ctx.getTwitchChannelName()=})')
 
@@ -64,7 +76,7 @@ class SetWeatherRecurringActionCommand(AbsChatCommand):
         wizard = await self.__recurringActionsWizard.start(
             recurringActionType = RecurringActionType.WEATHER,
             twitchChannel = user.handle,
-            twitchChannelId = await ctx.getTwitchChannelId()
+            twitchChannelId = await ctx.getTwitchChannelId(),
         )
 
         if not isinstance(wizard, WeatherWizard):
@@ -74,5 +86,5 @@ class SetWeatherRecurringActionCommand(AbsChatCommand):
 
         await self.__beginWizardGuidance(
             ctx = ctx,
-            wizard = wizard
+            wizard = wizard,
         )
