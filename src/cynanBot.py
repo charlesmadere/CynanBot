@@ -839,7 +839,7 @@ class CynanBot(
         self.__discordCommand: AbsChatCommand = DiscordChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__loremIpsumCommand: AbsChatCommand = LoremIpsumChatCommand(administratorProvider, timber, twitchChatMessenger, usersRepository)
         self.__removeUserCommand: AbsChatCommand = RemoveUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__setTwitchCodeCommand: AbsChatCommand = SetTwitchCodeChatCommand(administratorProvider, timber, twitchTokensRepository, twitchUtils, usersRepository)
+        self.__setTwitchCodeCommand: AbsChatCommand = SetTwitchCodeChatCommand(administratorProvider, timber, twitchTokensRepository, twitchChatMessenger, usersRepository)
         self.__skipTtsCommand: AbsChatCommand = SkipTtsChatCommand(administratorProvider, compositeTtsManagerProvider, timber, twitchChannelEditorsRepository)
         self.__timeCommand: AbsChatCommand = TimeChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__twitchUserInfoCommand: AbsChatCommand = TwitchUserInfoChatCommand(administratorProvider, timber, twitchApiService, twitchChatMessenger, authRepository, twitchTokensRepository, userIdsRepository, usersRepository)
@@ -852,7 +852,7 @@ class CynanBot(
         if beanStatsPresenter is None or beanStatsRepository is None:
             self.__beanStatsCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__beanStatsCommand: AbsChatCommand = BeanStatsChatCommand(beanStatsPresenter, beanStatsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
+            self.__beanStatsCommand: AbsChatCommand = BeanStatsChatCommand(beanStatsPresenter, beanStatsRepository, timber, twitchChatMessenger, userIdsRepository, usersRepository)
 
         if chatterInventoryHelper is None or chatterInventoryIdGenerator is None or chatterInventoryItemUseMachine is None or chatterInventoryMapper is None or chatterInventorySettings is None or useChatterItemHelper is None:
             self.__chatterInventoryCommand: AbsChatCommand = StubChatCommand()
@@ -998,7 +998,7 @@ class CynanBot(
         if funtoonTokensRepository is None:
             self.__setFuntoonTokenCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__setFuntoonTokenCommand: AbsChatCommand = SetFuntoonTokenChatCommand(administratorProvider, funtoonTokensRepository, timber, twitchUtils, usersRepository)
+            self.__setFuntoonTokenCommand: AbsChatCommand = SetFuntoonTokenChatCommand(administratorProvider, funtoonTokensRepository, timber, twitchChatMessenger, usersRepository)
 
         if jishoHelper is None:
             self.__jishoCommand: AbsChatCommand = StubChatCommand()
@@ -1014,8 +1014,8 @@ class CynanBot(
             self.__pkMonCommand: AbsChatCommand = StubChatCommand()
             self.__pkMoveCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__pkMonCommand: AbsChatCommand = PkMonChatCommand(pokepediaRepository, timber, twitchUtils, usersRepository)
-            self.__pkMoveCommand: AbsChatCommand = PkMoveChatCommand(pokepediaRepository, timber, twitchUtils, usersRepository)
+            self.__pkMonCommand: AbsChatCommand = PkMonChatCommand(pokepediaRepository, timber, twitchChatMessenger, usersRepository)
+            self.__pkMoveCommand: AbsChatCommand = PkMoveChatCommand(pokepediaRepository, timber, twitchChatMessenger, usersRepository)
 
         if starWarsQuotesRepository is None:
             self.__swQuoteCommand: AbsChatCommand = StubChatCommand()

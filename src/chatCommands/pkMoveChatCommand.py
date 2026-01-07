@@ -1,12 +1,13 @@
 import traceback
+from typing import Final
 
 from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
 from ..network.exceptions import GenericNetworkException
 from ..pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -16,22 +17,22 @@ class PkMoveChatCommand(AbsChatCommand):
         self,
         pokepediaRepository: PokepediaRepositoryInterface,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface
+        twitchChatMessenger: TwitchChatMessengerInterface,
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(pokepediaRepository, PokepediaRepositoryInterface):
             raise TypeError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__pokepediaRepository: PokepediaRepositoryInterface = pokepediaRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__pokepediaRepository: Final[PokepediaRepositoryInterface] = pokepediaRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -41,7 +42,11 @@ class PkMoveChatCommand(AbsChatCommand):
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            await self.__twitchUtils.safeSend(ctx, '⚠ A Pokémon move name is necessary for the !pkmove command. Example: !pkmove fire spin')
+            self.__twitchChatMessenger.send(
+                text = '⚠ A Pokémon move name is necessary for the !pkmove command. Example: !pkmove fire spin',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
+            )
             return
 
         name = ' '.join(splits[1:])
@@ -50,13 +55,17 @@ class PkMoveChatCommand(AbsChatCommand):
             move = await self.__pokepediaRepository.searchMoves(name)
 
             for string in move.toStrList():
-                await self.__twitchUtils.safeSend(
-                    messageable = ctx,
-                    message = string,
-                    replyMessageId = await ctx.getMessageId()
+                self.__twitchChatMessenger.send(
+                    text = string,
+                    twitchChannelId = await ctx.getTwitchChannelId(),
+                    replyMessageId = await ctx.getMessageId(),
                 )
         except (GenericNetworkException, RuntimeError, ValueError) as e:
             self.__timber.log('PkMoveChatCommand', f'Error retrieving Pokemon move ({name=}): {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon move: \"{name}\"')
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Error retrieving Pokémon move: \"{name}\"',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
+            )
 
         self.__timber.log('PkMoveChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')

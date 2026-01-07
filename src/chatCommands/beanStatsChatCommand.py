@@ -1,10 +1,12 @@
+from typing import Final
+
 from .absChatCommand import AbsChatCommand
 from ..beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
 from ..beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
@@ -16,9 +18,9 @@ class BeanStatsChatCommand(AbsChatCommand):
         beanStatsPresenter: BeanStatsPresenterInterface,
         beanStatsRepository: BeanStatsRepositoryInterface,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface
+        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(beanStatsPresenter, BeanStatsPresenterInterface):
             raise TypeError(f'beanStatsPresenter argument is malformed: \"{beanStatsPresenter}\"')
@@ -26,19 +28,19 @@ class BeanStatsChatCommand(AbsChatCommand):
             raise TypeError(f'beanStatsRepository argument is malformed: \"{beanStatsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__beanStatsPresenter: BeanStatsPresenterInterface = beanStatsPresenter
-        self.__beanStatsRepository: BeanStatsRepositoryInterface = beanStatsRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__beanStatsPresenter: Final[BeanStatsPresenterInterface] = beanStatsPresenter
+        self.__beanStatsRepository: Final[BeanStatsRepositoryInterface] = beanStatsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -58,10 +60,10 @@ class BeanStatsChatCommand(AbsChatCommand):
             userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 
             if not utils.isValidStr(userId):
-                await self.__twitchUtils.safeSend(
-                    messageable = ctx,
-                    message = f'⚠ Unable to find bean stats score for \"{userName}\"',
-                    replyMessageId = await ctx.getMessageId()
+                self.__twitchChatMessenger.send(
+                    text = f'⚠ Unable to find bean stats score for \"{userName}\"',
+                    twitchChannelId = await ctx.getTwitchChannelId(),
+                    replyMessageId = await ctx.getMessageId(),
                 )
                 return
 
@@ -69,22 +71,22 @@ class BeanStatsChatCommand(AbsChatCommand):
             chatterUserId = userId,
             chatterUserName = userName,
             twitchChannel = user.handle,
-            twitchChannelId = await ctx.getTwitchChannelId()
+            twitchChannelId = await ctx.getTwitchChannelId(),
         )
 
         if beanStats is None:
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = f'ⓘ @{userName} has no bean stats',
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = f'ⓘ @{userName} has no bean stats',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
             )
         else:
             printOut = await self.__beanStatsPresenter.toString(beanStats)
 
-            await self.__twitchUtils.safeSend(
-                messageable = ctx,
-                message = printOut,
-                replyMessageId = await ctx.getMessageId()
+            self.__twitchChatMessenger.send(
+                text = printOut,
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
             )
 
-        self.__timber.log('BeanStatsChatCommand', f'Handled !beanstats for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('BeanStatsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
