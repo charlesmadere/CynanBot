@@ -12,6 +12,7 @@ from .glacialTriviaQuestionRepositoryInterface import GlacialTriviaQuestionRepos
 from ..additionalAnswers.additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
 from ..compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
 from ..compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
+from ..misc.triviaSourceParserInterface import TriviaSourceParserInterface
 from ..questionAnswerTriviaConditions import QuestionAnswerTriviaConditions
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
@@ -35,7 +36,7 @@ from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 class GlacialTriviaQuestionRepository(
     AbsTriviaQuestionRepository,
-    GlacialTriviaQuestionRepositoryInterface
+    GlacialTriviaQuestionRepositoryInterface,
 ):
 
     def __init__(
@@ -45,6 +46,7 @@ class GlacialTriviaQuestionRepository(
         triviaAnswerCompiler: TriviaAnswerCompilerInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaSourceParser: TriviaSourceParserInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         triviaDatabaseFile: str = '../db/glacialTriviaQuestionsDatabase.sqlite',
@@ -61,6 +63,8 @@ class GlacialTriviaQuestionRepository(
             raise TypeError(f'triviaAnswerCompiler argument is malformed: \"{triviaAnswerCompiler}\"')
         elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
             raise TypeError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
+        elif not isinstance(triviaSourceParser, TriviaSourceParserInterface):
+            raise TypeError(f'triviaSourceParser argument is malformed: \"{triviaSourceParser}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -72,6 +76,7 @@ class GlacialTriviaQuestionRepository(
         self.__timber: Final[TimberInterface] = timber
         self.__triviaAnswerCompiler: Final[TriviaAnswerCompilerInterface] = triviaAnswerCompiler
         self.__triviaQuestionCompiler: Final[TriviaQuestionCompilerInterface] = triviaQuestionCompiler
+        self.__triviaSourceParser: Final[TriviaSourceParserInterface] = triviaSourceParser
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__triviaDatabaseFile: Final[str] = triviaDatabaseFile
@@ -82,7 +87,7 @@ class GlacialTriviaQuestionRepository(
 
     async def __buildCompiledCorrectAnswersForQuestionAnswerTrivia(
         self,
-        correctAnswers: list[str]
+        correctAnswers: list[str],
     ) -> list[str]:
         compiledCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(correctAnswers)
 
@@ -95,7 +100,7 @@ class GlacialTriviaQuestionRepository(
     async def __checkIfQuestionIsAlreadyStored(
         self,
         question: AbsTriviaQuestion,
-        connection: Connection
+        connection: Connection,
     ) -> bool:
         cursor = await connection.execute(
             '''
@@ -105,7 +110,7 @@ class GlacialTriviaQuestionRepository(
                     LIMIT 1
                 )
             ''',
-            (question.triviaSource.toStr(), question.triviaId, )
+            (question.triviaSource.toStr(), question.triviaId, ),
         )
 
         row = await cursor.fetchone()
@@ -162,7 +167,7 @@ class GlacialTriviaQuestionRepository(
 
     async def __fetchAllQuestionAnswerTriviaQuestions(
         self,
-        fetchOptions: TriviaFetchOptions
+        fetchOptions: TriviaFetchOptions,
     ) -> FrozenList[QuestionAnswerTriviaQuestion] | None:
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
@@ -189,7 +194,7 @@ class GlacialTriviaQuestionRepository(
         for row in rows:
             category = await self.__triviaQuestionCompiler.compileCategory(row[0])
             categoryId: str | None = row[1]
-            originalTriviaSource = TriviaSource.fromStr(row[2])
+            originalTriviaSource = await self.__triviaSourceParser.parse(row[2])
             question = await self.__triviaQuestionCompiler.compileQuestion(row[3])
             triviaDifficulty = TriviaDifficulty.fromStr(row[4])
             triviaId: str = row[5]
@@ -198,7 +203,7 @@ class GlacialTriviaQuestionRepository(
                 connection = connection,
                 triviaId = triviaId,
                 triviaType = TriviaQuestionType.QUESTION_ANSWER,
-                originalTriviaSource = originalTriviaSource
+                originalTriviaSource = originalTriviaSource,
             )
 
             correctAnswers = await self.__triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
@@ -215,7 +220,7 @@ class GlacialTriviaQuestionRepository(
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = originalTriviaSource,
-                triviaSource = self.triviaSource
+                triviaSource = self.triviaSource,
             ))
 
         await connection.close()
@@ -225,7 +230,7 @@ class GlacialTriviaQuestionRepository(
 
     async def __fetchAnyTriviaQuestion(
         self,
-        fetchOptions: TriviaFetchOptions
+        fetchOptions: TriviaFetchOptions,
     ) -> AbsTriviaQuestion | None:
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
@@ -249,7 +254,7 @@ class GlacialTriviaQuestionRepository(
 
         category = await self.__triviaQuestionCompiler.compileCategory(row[0])
         categoryId: str | None = row[1]
-        originalTriviaSource = TriviaSource.fromStr(row[2])
+        originalTriviaSource = await self.__triviaSourceParser.parse(row[2])
         question = await self.__triviaQuestionCompiler.compileQuestion(row[3])
         triviaDifficulty = TriviaDifficulty.fromStr(row[4])
         triviaId: str = row[5]
@@ -269,7 +274,7 @@ class GlacialTriviaQuestionRepository(
                 multipleChoiceResponses = await self.__fetchTriviaQuestionMultipleChoiceResponses(
                     connection = connection,
                     triviaId = triviaId,
-                    originalTriviaSource = originalTriviaSource
+                    originalTriviaSource = originalTriviaSource,
                 )
 
                 await connection.close()
@@ -283,7 +288,7 @@ class GlacialTriviaQuestionRepository(
                     triviaId = triviaId,
                     triviaDifficulty = triviaDifficulty,
                     originalTriviaSource = originalTriviaSource,
-                    triviaSource = self.triviaSource
+                    triviaSource = self.triviaSource,
                 )
 
             case TriviaQuestionType.QUESTION_ANSWER:
@@ -301,7 +306,7 @@ class GlacialTriviaQuestionRepository(
                     triviaId = triviaId,
                     triviaDifficulty = triviaDifficulty,
                     originalTriviaSource = originalTriviaSource,
-                    triviaSource = self.triviaSource
+                    triviaSource = self.triviaSource,
                 )
 
             case TriviaQuestionType.TRUE_FALSE:
@@ -315,7 +320,7 @@ class GlacialTriviaQuestionRepository(
                     triviaId = triviaId,
                     triviaDifficulty = triviaDifficulty,
                     originalTriviaSource = originalTriviaSource,
-                    triviaSource = self.triviaSource
+                    triviaSource = self.triviaSource,
                 )
 
             case _:
@@ -325,7 +330,7 @@ class GlacialTriviaQuestionRepository(
 
     async def __fetchMultipleChoiceOrTrueFalseTriviaQuestion(
         self,
-        fetchOptions: TriviaFetchOptions
+        fetchOptions: TriviaFetchOptions,
     ) -> AbsTriviaQuestion | None:
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
@@ -351,7 +356,7 @@ class GlacialTriviaQuestionRepository(
 
         category = await self.__triviaQuestionCompiler.compileCategory(row[0])
         categoryId: str | None = row[1]
-        originalTriviaSource = TriviaSource.fromStr(row[2])
+        originalTriviaSource = await self.__triviaSourceParser.parse(row[2])
         question = await self.__triviaQuestionCompiler.compileQuestion(row[3])
         triviaDifficulty = TriviaDifficulty.fromStr(row[4])
         triviaId: str = row[5]
@@ -361,7 +366,7 @@ class GlacialTriviaQuestionRepository(
             connection = connection,
             triviaId = triviaId,
             triviaType = triviaType,
-            originalTriviaSource = originalTriviaSource
+            originalTriviaSource = originalTriviaSource,
         )
 
         match triviaType:
@@ -369,7 +374,7 @@ class GlacialTriviaQuestionRepository(
                 multipleChoiceResponses = await self.__fetchTriviaQuestionMultipleChoiceResponses(
                     connection = connection,
                     triviaId = triviaId,
-                    originalTriviaSource = originalTriviaSource
+                    originalTriviaSource = originalTriviaSource,
                 )
 
                 await connection.close()
@@ -383,7 +388,7 @@ class GlacialTriviaQuestionRepository(
                     triviaId = triviaId,
                     triviaDifficulty = triviaDifficulty,
                     originalTriviaSource = originalTriviaSource,
-                    triviaSource = self.triviaSource
+                    triviaSource = self.triviaSource,
                 )
 
             case TriviaQuestionType.TRUE_FALSE:
@@ -397,7 +402,7 @@ class GlacialTriviaQuestionRepository(
                     triviaId = triviaId,
                     triviaDifficulty = triviaDifficulty,
                     originalTriviaSource = originalTriviaSource,
-                    triviaSource = self.triviaSource
+                    triviaSource = self.triviaSource,
                 )
 
             case _:
@@ -408,7 +413,7 @@ class GlacialTriviaQuestionRepository(
 
     async def __fetchQuestionAnswerTriviaQuestion(
         self,
-        fetchOptions: TriviaFetchOptions
+        fetchOptions: TriviaFetchOptions,
     ) -> QuestionAnswerTriviaQuestion | None:
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
@@ -434,7 +439,7 @@ class GlacialTriviaQuestionRepository(
 
         category = await self.__triviaQuestionCompiler.compileCategory(row[0])
         categoryId: str | None = row[1]
-        originalTriviaSource = TriviaSource.fromStr(row[2])
+        originalTriviaSource = await self.__triviaSourceParser.parse(row[2])
         question = await self.__triviaQuestionCompiler.compileQuestion(row[3])
         triviaDifficulty = TriviaDifficulty.fromStr(row[4])
         triviaId: str = row[5]
@@ -443,7 +448,7 @@ class GlacialTriviaQuestionRepository(
             connection = connection,
             triviaId = triviaId,
             triviaType = TriviaQuestionType.QUESTION_ANSWER,
-            originalTriviaSource = originalTriviaSource
+            originalTriviaSource = originalTriviaSource,
         )
 
         await connection.close()
@@ -462,7 +467,7 @@ class GlacialTriviaQuestionRepository(
             triviaId = triviaId,
             triviaDifficulty = triviaDifficulty,
             originalTriviaSource = originalTriviaSource,
-            triviaSource = self.triviaSource
+            triviaSource = self.triviaSource,
         )
 
     async def fetchAllQuestionAnswerTriviaQuestions(
@@ -508,14 +513,14 @@ class GlacialTriviaQuestionRepository(
         connection: Connection,
         triviaId: str,
         triviaType: TriviaQuestionType,
-        originalTriviaSource: TriviaSource
+        originalTriviaSource: TriviaSource,
     ) -> list[str]:
         cursor = await connection.execute(
             '''
                 SELECT answer FROM glacialAnswers
                 WHERE originalTriviaSource = $1 AND triviaId = $2
             ''',
-            (originalTriviaSource.toStr(), triviaId, )
+            (originalTriviaSource.toStr(), triviaId, ),
         )
 
         rows = await cursor.fetchall()
@@ -538,7 +543,7 @@ class GlacialTriviaQuestionRepository(
             currentAnswers = correctAnswers,
             triviaId = triviaId,
             triviaQuestionType = triviaType,
-            triviaSource = originalTriviaSource
+            triviaSource = originalTriviaSource,
         ):
             self.__timber.log('GlacialTriviaQuestionRepository', f'Added additional answers to question ({triviaId=})')
 
@@ -548,14 +553,14 @@ class GlacialTriviaQuestionRepository(
         self,
         connection: Connection,
         triviaId: str,
-        originalTriviaSource: TriviaSource
+        originalTriviaSource: TriviaSource,
     ) -> list[str]:
         cursor = await connection.execute(
             '''
                 SELECT response FROM glacialResponses
                 WHERE originalTriviaSource = $1 AND triviaId = $2
             ''',
-            (originalTriviaSource.toStr(), triviaId, )
+            (originalTriviaSource.toStr(), triviaId, ),
         )
 
         rows = await cursor.fetchall()
@@ -601,13 +606,13 @@ class GlacialTriviaQuestionRepository(
             multipleChoiceOrTrueFalse = await self.__fetchMultipleChoiceOrTrueFalseTriviaQuestion(TriviaFetchOptions(
                 twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId,
-                questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED
+                questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED,
             ))
 
             questionAnswer = await self.__fetchQuestionAnswerTriviaQuestion(TriviaFetchOptions(
                 twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId,
-                questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
+                questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED,
             ))
 
             hasQuestionSetAvailable = multipleChoiceOrTrueFalse is not None and questionAnswer is not None
@@ -632,7 +637,7 @@ class GlacialTriviaQuestionRepository(
                 DELETE FROM glacialAnswers
                 WHERE originalTriviaSource = $1 AND triviaId = $2
             ''',
-            (originalTriviaSource.toStr(), triviaId, )
+            (originalTriviaSource.toStr(), triviaId, ),
         )
         await cursor.close()
 
@@ -641,7 +646,7 @@ class GlacialTriviaQuestionRepository(
                 DELETE FROM glacialQuestions
                 WHERE originalTriviaSource = $1 AND triviaId = $2
             ''',
-            (originalTriviaSource.toStr(), triviaId, )
+            (originalTriviaSource.toStr(), triviaId, ),
         )
         await cursor.close()
 
@@ -650,7 +655,7 @@ class GlacialTriviaQuestionRepository(
                 DELETE FROM glacialResponses
                 WHERE originalTriviaSource = $1 AND triviaId = $2
             ''',
-            (originalTriviaSource.toStr(), triviaId, )
+            (originalTriviaSource.toStr(), triviaId, ),
         )
         await cursor.close()
 
@@ -672,7 +677,7 @@ class GlacialTriviaQuestionRepository(
 
         if await self.__checkIfQuestionIsAlreadyStored(
             question = question,
-            connection = connection
+            connection = connection,
         ):
             await connection.close()
             self.__timber.log('GlacialTriviaQuestionRepository', f'The given question already exists in the glacial trivia question database ({question=})')
@@ -680,23 +685,23 @@ class GlacialTriviaQuestionRepository(
 
         await self.__storeBaseTriviaQuestionData(
             question = question,
-            connection = connection
+            connection = connection,
         )
 
         if question.triviaType is TriviaQuestionType.MULTIPLE_CHOICE and isinstance(question, MultipleChoiceTriviaQuestion):
             await self.__storeMultipleChoiceTriviaQuestion(
                 connection = connection,
-                question = question
+                question = question,
             )
         elif question.triviaType is TriviaQuestionType.QUESTION_ANSWER and isinstance(question, QuestionAnswerTriviaQuestion):
             await self.__storeQuestionAnswerTriviaQuestion(
                 connection = connection,
-                question = question
+                question = question,
             )
         elif question.triviaType is TriviaQuestionType.TRUE_FALSE and isinstance(question, TrueFalseTriviaQuestion):
             await self.__storeTrueFalseTriviaQuestion(
                 connection = connection,
-                question = question
+                question = question,
             )
         else:
             await connection.close()
@@ -713,7 +718,7 @@ class GlacialTriviaQuestionRepository(
     async def __storeBaseTriviaQuestionData(
         self,
         question: AbsTriviaQuestion,
-        connection: Connection
+        connection: Connection,
     ):
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
@@ -725,13 +730,13 @@ class GlacialTriviaQuestionRepository(
                 INSERT INTO glacialQuestions (category, categoryId, originalTriviaSource, question, triviaDifficulty, triviaId, triviaType)
                 VALUES ($1, $2, $3, $4, $5, $6, $7)
             ''',
-            (question.category, question.categoryId, question.triviaSource.toStr(), question.question, question.triviaDifficulty.toStr(), question.triviaId, question.triviaType.toStr(), )
+            (question.category, question.categoryId, question.triviaSource.toStr(), question.question, question.triviaDifficulty.toStr(), question.triviaId, question.triviaType.toStr(), ),
         )
 
     async def __storeMultipleChoiceTriviaQuestion(
         self,
         connection: Connection,
-        question: MultipleChoiceTriviaQuestion
+        question: MultipleChoiceTriviaQuestion,
     ):
         if not isinstance(connection, Connection):
             raise TypeError(f'connection argument is malformed: \"{connection}\"')
@@ -746,7 +751,7 @@ class GlacialTriviaQuestionRepository(
                     INSERT INTO glacialAnswers (answer, originalTriviaSource, triviaId)
                     VALUES ($1, $2, $3)
                 ''',
-                (correctAnswer, question.triviaSource.toStr(), question.triviaId, )
+                (correctAnswer, question.triviaSource.toStr(), question.triviaId, ),
             )
 
         for response in question.responses:
@@ -755,13 +760,13 @@ class GlacialTriviaQuestionRepository(
                     INSERT INTO glacialResponses (response, originalTriviaSource, triviaId)
                     VALUES ($1, $2, $3)
                 ''',
-                (response, question.triviaSource.toStr(), question.triviaId, )
+                (response, question.triviaSource.toStr(), question.triviaId, ),
             )
 
     async def __storeQuestionAnswerTriviaQuestion(
         self,
         connection: Connection,
-        question: QuestionAnswerTriviaQuestion
+        question: QuestionAnswerTriviaQuestion,
     ):
         if not isinstance(connection, Connection):
             raise TypeError(f'connection argument is malformed: \"{connection}\"')
@@ -776,13 +781,13 @@ class GlacialTriviaQuestionRepository(
                     INSERT INTO glacialAnswers (answer, originalTriviaSource, triviaId)
                     VALUES ($1, $2, $3)
                 ''',
-                (answer, question.triviaSource.toStr(), question.triviaId, )
+                (answer, question.triviaSource.toStr(), question.triviaId, ),
             )
 
     async def __storeTrueFalseTriviaQuestion(
         self,
         connection: Connection,
-        question: TrueFalseTriviaQuestion
+        question: TrueFalseTriviaQuestion,
     ):
         if not isinstance(connection, Connection):
             raise TypeError(f'connection argument is malformed: \"{connection}\"')
@@ -798,7 +803,7 @@ class GlacialTriviaQuestionRepository(
                 INSERT INTO glacialAnswers (answer, originalTriviaSource, triviaId)
                 VALUES ($1, $2, $3)
             ''',
-            (correctAnswer, question.triviaSource.toStr(), question.triviaId, )
+            (correctAnswer, question.triviaSource.toStr(), question.triviaId, ),
         )
 
     @property
@@ -806,7 +811,7 @@ class GlacialTriviaQuestionRepository(
         return {
             TriviaQuestionType.MULTIPLE_CHOICE,
             TriviaQuestionType.QUESTION_ANSWER,
-            TriviaQuestionType.TRUE_FALSE
+            TriviaQuestionType.TRUE_FALSE,
         }
 
     @property

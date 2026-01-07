@@ -1359,8 +1359,9 @@ glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = Glac
     triviaAnswerCompiler = triviaAnswerCompiler,
     triviaQuestionCompiler = triviaQuestionCompiler,
     triviaSettingsRepository = triviaSettingsRepository,
+    triviaSourceParser = triviaSourceParser,
     twitchHandleProvider = authRepository,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
 lotrDatabaseQuestionStorage: LotrDatabaseQuestionStorageInterface = LotrDatabaseQuestionStorage(
