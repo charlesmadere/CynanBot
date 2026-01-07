@@ -99,7 +99,7 @@ class GetGashaponItemChatCommand(AbsChatCommand):
             )
 
         else:
-            self.__timber.log('GetGashaponItemChatCommand', f'Received unhandled gashapon result ({gashaponResult=}) when handling command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+            self.__timber.log('GetGashaponItemChatCommand', f'Received unhandled gashapon result when handling command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({gashaponResult=})')
 
         self.__timber.log('GetGashaponItemChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 

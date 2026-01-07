@@ -9,13 +9,13 @@ class TriviaQuestionTypeParserInterface(ABC):
     @abstractmethod
     async def parse(
         self,
-        triviaQuestionType: str | Any | None
+        triviaQuestionType: str | Any | None,
     ) -> TriviaQuestionType:
         pass
 
     @abstractmethod
     async def serialize(
         self,
-        triviaQuestionType: TriviaQuestionType
+        triviaQuestionType: TriviaQuestionType,
     ) -> str:
         pass
