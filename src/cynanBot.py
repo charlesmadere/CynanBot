@@ -261,7 +261,6 @@ from .twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from .twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
 from .twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 from .twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
-from .twitch.twitchUtilsInterface import TwitchUtilsInterface
 from .twitch.twitchWebsocketDataBundleHandler import TwitchWebsocketDataBundleHandler
 from .twitch.websocket.settings.twitchWebsocketSettingsRepositoryInterface import \
     TwitchWebsocketSettingsRepositoryInterface
@@ -436,7 +435,6 @@ class CynanBot(
         twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        twitchUtils: TwitchUtilsInterface,
         twitchWebsocketClient: TwitchWebsocketClientInterface | None,
         twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface | None,
         useChatterItemHelper: UseChatterItemHelperInterface | None,
@@ -750,8 +748,6 @@ class CynanBot(
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif twitchWebsocketClient is not None and not isinstance(twitchWebsocketClient, TwitchWebsocketClientInterface):
             raise TypeError(f'twitchWebsocketClient argument is malformed: \"{twitchWebsocketClient}\"')
         elif twitchWebsocketSettingsRepository is not None and not isinstance(twitchWebsocketSettingsRepository, TwitchWebsocketSettingsRepositoryInterface):
@@ -820,7 +816,6 @@ class CynanBot(
         self.__twitchIrcReconnectHelper: Final[TwitchIrcReconnectHelperInterface] = twitchIrcReconnectHelper
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
         self.__twitchWebsocketClient: Final[TwitchWebsocketClientInterface | None] = twitchWebsocketClient
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
@@ -838,7 +833,7 @@ class CynanBot(
         self.__cynanSourceCommand: AbsChatCommand = CynanSourceChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__discordCommand: AbsChatCommand = DiscordChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__loremIpsumCommand: AbsChatCommand = LoremIpsumChatCommand(administratorProvider, timber, twitchChatMessenger, usersRepository)
-        self.__removeUserCommand: AbsChatCommand = RemoveUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
+        self.__removeUserCommand: AbsChatCommand = RemoveUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, twitchTokensRepository, userIdsRepository, usersRepository)
         self.__setTwitchCodeCommand: AbsChatCommand = SetTwitchCodeChatCommand(administratorProvider, timber, twitchTokensRepository, twitchChatMessenger, usersRepository)
         self.__skipTtsCommand: AbsChatCommand = SkipTtsChatCommand(administratorProvider, compositeTtsManagerProvider, timber, twitchChannelEditorsRepository)
         self.__timeCommand: AbsChatCommand = TimeChatCommand(timber, twitchChatMessenger, usersRepository)
@@ -914,9 +909,9 @@ class CynanBot(
             self.__addRecurringWordOfTheDayActionCommand: AbsChatCommand = AddRecurringWordOfTheDayActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchChatMessenger, usersRepository)
             self.__getRecurringActionsCommand: AbsChatCommand = GetRecurringActionsChatCommand(administratorProvider, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
             self.__removeRecurringCutenessActionCommand: AbsChatCommand = RemoveRecurringCutenessActionChatCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
-            self.__removeRecurringSuperTriviaActionCommand: AbsChatCommand = RemoveRecurringSuperTriviaActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
-            self.__removeRecurringWeatherActionCommand: AbsChatCommand = RemoveRecurringWeatherActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
-            self.__removeRecurringWordOfTheDayActionCommand: AbsChatCommand = RemoveRecurringWordOfTheDayActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
+            self.__removeRecurringSuperTriviaActionCommand: AbsChatCommand = RemoveRecurringSuperTriviaActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
+            self.__removeRecurringWeatherActionCommand: AbsChatCommand = RemoveRecurringWeatherActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
+            self.__removeRecurringWordOfTheDayActionCommand: AbsChatCommand = RemoveRecurringWordOfTheDayActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
 
         if bannedTriviaGameControllersRepository is None or triviaUtils is None:
             self.__addBannedTriviaControllerCommand: AbsChatCommand = StubChatCommand()
@@ -1203,7 +1198,6 @@ class CynanBot(
         self.__chatLogger.start()
         self.__streamAlertsManager.start()
         self.__twitchChatMessenger.start()
-        self.__twitchUtils.start()
 
         if self.__twitchChannelPointRedemptionHandler is not None:
             self.__twitchChannelPointRedemptionHandler.setTwitchChannelProvider(self)

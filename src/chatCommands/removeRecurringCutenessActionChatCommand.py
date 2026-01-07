@@ -71,7 +71,9 @@ class RemoveRecurringCutenessActionChatCommand(AbsChatCommand):
             )
             return
 
-        await self.__recurringActionsHelper.disableRecurringAction(recurringAction)
+        await self.__recurringActionsHelper.disableRecurringAction(
+            recurringAction = recurringAction,
+        )
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ Recurring cuteness action has been disabled',
