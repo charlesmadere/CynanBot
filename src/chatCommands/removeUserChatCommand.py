@@ -4,9 +4,9 @@ from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
+from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..twitch.twitchUtilsInterface import TwitchUtilsInterface
 from ..users.addOrRemoveUserActionType import AddOrRemoveUserActionType
 from ..users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
@@ -20,8 +20,8 @@ class RemoveUserChatCommand(AbsChatCommand):
         addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface,
         administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
     ):
@@ -31,10 +31,10 @@ class RemoveUserChatCommand(AbsChatCommand):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -43,8 +43,8 @@ class RemoveUserChatCommand(AbsChatCommand):
         self.__addOrRemoveUserDataHelper: Final[AddOrRemoveUserDataHelperInterface] = addOrRemoveUserDataHelper
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__timber: Final[TimberInterface] = timber
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__twitchUtils: Final[TwitchUtilsInterface] = twitchUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
@@ -59,18 +59,30 @@ class RemoveUserChatCommand(AbsChatCommand):
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             self.__timber.log('RemoveUserChatCommand', f'Not enough arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !adduser command: \"{splits}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.handle}')
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.handle}',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
+            )
             return
 
         userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('RemoveUserChatCommand', f'Invalid username argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !removeuser command: \"{splits}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.handle}')
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.handle}',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
+            )
             return
 
         if not await self.__usersRepository.containsUserAsync(userName):
             self.__timber.log('RemoveUserChatCommand', f'Username argument (\"{userName}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} does not already exist as a user')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove \"{userName}\" as this user does not already exist!')
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Unable to remove \"{userName}\" as this user does not already exist!',
+                twitchChannelId = await ctx.getTwitchChannelId(),
+                replyMessageId = await ctx.getMessageId(),
+            )
             return
 
         await self.__twitchTokensRepository.removeUser(twitchChannel = userName)
@@ -82,5 +94,10 @@ class RemoveUserChatCommand(AbsChatCommand):
             userName = userName,
         )
 
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ To remove user \"{userName}\" ({userId}), please respond with `!confirm`')
+        self.__twitchChatMessenger.send(
+            text = f'ⓘ To remove user \"{userName}\" ({userId}), please respond with `!confirm`',
+            twitchChannelId = await ctx.getTwitchChannelId(),
+            replyMessageId = await ctx.getMessageId(),
+        )
+
         self.__timber.log('RemoveUserChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
