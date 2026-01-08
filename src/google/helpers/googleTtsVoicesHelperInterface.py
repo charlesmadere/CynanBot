@@ -18,13 +18,13 @@ class GoogleTtsVoicesHelperInterface(ABC):
     @abstractmethod
     async def getVoiceForLanguage(
         self,
-        languageEntry: LanguageEntry
+        languageEntry: LanguageEntry,
     ) -> GoogleVoicePreset | None:
         pass
 
     @abstractmethod
     async def getVoicesForLanguage(
         self,
-        languageEntry: LanguageEntry
+        languageEntry: LanguageEntry,
     ) -> frozenset[GoogleVoicePreset]:
         pass

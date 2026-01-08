@@ -11,5 +11,9 @@ class ChatterPreferredTtsSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getHighTierTtsProviders(self) -> frozenset[TtsProvider]:
+        pass
+
+    @abstractmethod
     async def isEnabled(self) -> bool:
         pass

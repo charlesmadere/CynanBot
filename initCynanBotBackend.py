@@ -593,7 +593,7 @@ userIdsRepository: Final[UserIdsRepositoryInterface] = UserIdsRepository(
     twitchApiService = twitchApiService,
 )
 
-twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository(
+twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = TwitchTokensRepository(
     backgroundTaskHelper = backgroundTaskHelper,
     backingDatabase = backingDatabase,
     timber = timber,
@@ -630,10 +630,10 @@ twitchTokensUtils: TwitchTokensUtilsInterface = TwitchTokensUtils(
     twitchTokensRepository = twitchTokensRepository
 )
 
-twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface = TwitchSubscriptionsRepository(
+twitchSubscriptionsRepository: Final[TwitchSubscriptionsRepositoryInterface] = TwitchSubscriptionsRepository(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
-    twitchApiService = twitchApiService
+    twitchApiService = twitchApiService,
 )
 
 twitchEmotesHelper: TwitchEmotesHelperInterface = TwitchEmotesHelper(

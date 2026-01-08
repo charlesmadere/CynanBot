@@ -21,12 +21,14 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
 
     async def getVoiceForLanguage(
         self,
-        languageEntry: LanguageEntry
+        languageEntry: LanguageEntry,
     ) -> GoogleVoicePreset | None:
         if not isinstance(languageEntry, LanguageEntry):
             raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
 
-        voices = await self.getVoicesForLanguage(languageEntry)
+        voices = await self.getVoicesForLanguage(
+            languageEntry = languageEntry,
+        )
 
         if len(voices) == 0:
             return None
@@ -35,12 +37,12 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
 
     async def getVoicesForLanguage(
         self,
-        languageEntry: LanguageEntry
+        languageEntry: LanguageEntry,
     ) -> frozenset[GoogleVoicePreset]:
         if not isinstance(languageEntry, LanguageEntry):
             raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
 
-        voicePresets: set[GoogleVoicePreset]
+        voicePresets: set[GoogleVoicePreset] = set()
 
         match languageEntry:
             case LanguageEntry.AFRIKAANS:

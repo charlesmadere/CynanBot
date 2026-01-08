@@ -174,7 +174,7 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         twitchAccessToken: str,
         twitchChannelId: str,
         userId: str,
-    ) -> TwitchBroadcasterSubscription | TwitchUserSubscription | None:
+    ) -> TwitchUserSubscription | None:
         try:
             return await self.__twitchApiService.fetchUserSubscription(
                 broadcasterId = twitchChannelId,

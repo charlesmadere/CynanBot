@@ -82,6 +82,9 @@ class TestChatterPreferredTtsUserMessageHelper:
         result = await self.helper.parseUserMessage('commodore-sam')
         assert isinstance(result, CommodoreSamTtsProperties)
 
+        result = await self.helper.parseUserMessage('\"commodore-sam\"')
+        assert isinstance(result, CommodoreSamTtsProperties)
+
     @pytest.mark.asyncio
     async def test_parseUserMessage_withDecTalkStrings(self):
         result = await self.helper.parseUserMessage('dectalk')
@@ -100,6 +103,10 @@ class TestChatterPreferredTtsUserMessageHelper:
         assert isinstance(result, DecTalkTtsProperties)
         assert result.voice is None
 
+        result = await self.helper.parseUserMessage('\"dec-talk\"')
+        assert isinstance(result, DecTalkTtsProperties)
+        assert result.voice is None
+
     @pytest.mark.asyncio
     async def test_parseUserMessage_withDecTalkAndHarry(self):
         result = await self.helper.parseUserMessage('dectalk harry')
@@ -115,6 +122,10 @@ class TestChatterPreferredTtsUserMessageHelper:
         assert result.voice is DecTalkVoice.HARRY
 
         result = await self.helper.parseUserMessage('dec-talk harry')
+        assert isinstance(result, DecTalkTtsProperties)
+        assert result.voice is DecTalkVoice.HARRY
+
+        result = await self.helper.parseUserMessage('\"dec-talk harry\"')
         assert isinstance(result, DecTalkTtsProperties)
         assert result.voice is DecTalkVoice.HARRY
 
@@ -157,6 +168,10 @@ class TestChatterPreferredTtsUserMessageHelper:
         assert result.voice is DecTalkVoice.PAUL
 
         result = await self.helper.parseUserMessage('dec-talk: paul')
+        assert isinstance(result, DecTalkTtsProperties)
+        assert result.voice is DecTalkVoice.PAUL
+
+        result = await self.helper.parseUserMessage('\"dec-talk: paul\"')
         assert isinstance(result, DecTalkTtsProperties)
         assert result.voice is DecTalkVoice.PAUL
 
@@ -389,6 +404,9 @@ class TestChatterPreferredTtsUserMessageHelper:
         assert isinstance(result, MicrosoftSamTtsProperties)
 
         result = await self.helper.parseUserMessage('microsoft-sam')
+        assert isinstance(result, MicrosoftSamTtsProperties)
+
+        result = await self.helper.parseUserMessage('\"microsoft-sam\"')
         assert isinstance(result, MicrosoftSamTtsProperties)
 
         result = await self.helper.parseUserMessage('ms sam')

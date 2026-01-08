@@ -648,7 +648,7 @@ userIdsRepository: Final[UserIdsRepositoryInterface] = UserIdsRepository(
     twitchApiService = twitchApiService,
 )
 
-twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository(
+twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = TwitchTokensRepository(
     backgroundTaskHelper = backgroundTaskHelper,
     backingDatabase = backingDatabase,
     timber = timber,
@@ -685,10 +685,10 @@ twitchTokensUtils: TwitchTokensUtilsInterface = TwitchTokensUtils(
     twitchTokensRepository = twitchTokensRepository
 )
 
-twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface = TwitchSubscriptionsRepository(
+twitchSubscriptionsRepository: Final[TwitchSubscriptionsRepositoryInterface] = TwitchSubscriptionsRepository(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
-    twitchApiService = twitchApiService
+    twitchApiService = twitchApiService,
 )
 
 twitchEmotesHelper: TwitchEmotesHelperInterface = TwitchEmotesHelper(
@@ -1144,36 +1144,38 @@ chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterf
     ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
 )
 
-googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = GoogleTtsVoicesHelper()
+googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = GoogleTtsVoicesHelper()
 
-chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface = ChatterPreferredTtsHelper(
+chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = ChatterPreferredTtsHelper(
     chatterPreferredTtsRepository = chatterPreferredTtsRepository,
     chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
     chatterPreferredTtsUserMessageHelper = chatterPreferredTtsUserMessageHelper,
     googleTtsVoicesHelper = googleTtsVoicesHelper,
-    timber = timber
+    timber = timber,
+    twitchSubscriptionsRepository = twitchSubscriptionsRepository,
+    twitchTokensRepository = twitchTokensRepository,
 )
 
-chatterPreferredTtsPresenter: ChatterPreferredTtsPresenter = ChatterPreferredTtsPresenter()
+chatterPreferredTtsPresenter: Final[ChatterPreferredTtsPresenter] = ChatterPreferredTtsPresenter()
 
 
 ################################
 ## TTS initialization section ##
 ################################
 
-ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
+ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = TtsSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/ttsSettingsRepository.json'
+        fileName = '../config/ttsSettingsRepository.json',
     ),
     ttsJsonMapper = ttsJsonMapper,
 )
 
-ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder(
+ttsCommandBuilder: Final[TtsCommandBuilderInterface] = TtsCommandBuilder(
     chatterPreferredNameHelper = chatterPreferredNameHelper,
 )
 
-ttsDirectoryProvider: TtsDirectoryProviderInterface = TtsDirectoryProvider()
+ttsDirectoryProvider: Final[TtsDirectoryProviderInterface] = TtsDirectoryProvider()
 
 
 ########################################
