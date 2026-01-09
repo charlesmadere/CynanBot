@@ -52,7 +52,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
     async def get(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ChatterPreferredTts | None:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
@@ -69,7 +69,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
                 WHERE chatteruserid = $1 AND twitchchannelid = $2
                 LIMIT 1
             ''',
-            chatterUserId, twitchChannelId
+            chatterUserId, twitchChannelId,
         )
 
         await connection.close()
@@ -85,20 +85,20 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
             return None
 
         provider = await self.__ttsJsonMapper.asyncRequireProvider(
-            ttsProvider = preferredTtsProviderString
+            ttsProvider = preferredTtsProviderString,
         )
 
         configurationJson = json.loads(configurationJsonString)
 
         properties = await self.__chatterPreferredTtsJsonMapper.parseTtsProperties(
             configurationJson = configurationJson,
-            provider = provider
+            provider = provider,
         )
 
         preferredTts = ChatterPreferredTts(
             properties = properties,
             chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         self.__cache[f'{twitchChannelId}:{chatterUserId}'] = preferredTts
@@ -150,7 +150,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
     async def remove(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ChatterPreferredTts | None:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
@@ -159,7 +159,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
 
         preferredTts = await self.get(
             chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if preferredTts is None:
@@ -186,13 +186,13 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
             raise TypeError(f'preferredTts argument is malformed: \"{preferredTts}\"')
 
         configurationJson = await self.__chatterPreferredTtsJsonMapper.serializeTtsProperties(
-            ttsProperties = preferredTts.properties
+            ttsProperties = preferredTts.properties,
         )
 
         configurationJsonString = json.dumps(configurationJson, sort_keys = True)
 
         preferredTtsProvider = await self.__ttsJsonMapper.asyncSerializeProvider(
-            ttsProvider = preferredTts.properties.provider
+            ttsProvider = preferredTts.properties.provider,
         )
 
         connection = await self.__getDatabaseConnection()
@@ -202,7 +202,7 @@ class ChatterPreferredTtsRepository(ChatterPreferredTtsRepositoryInterface):
                 VALUES ($1, $2, $3, $4)
                 ON CONFLICT (chatteruserid, twitchchannelid) DO UPDATE SET configurationjson = EXCLUDED.configurationjson, provider = EXCLUDED.provider
             ''',
-            preferredTts.chatterUserId, configurationJsonString, preferredTtsProvider, preferredTts.twitchChannelId
+            preferredTts.chatterUserId, configurationJsonString, preferredTtsProvider, preferredTts.twitchChannelId,
         )
 
         await connection.close()

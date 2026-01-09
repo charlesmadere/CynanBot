@@ -74,14 +74,14 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
                     userMessage = userMessage,
                 )
         except (FailedToChooseRandomTtsException, NoEnabledTtsProvidersException, UnableToParseUserMessageIntoTtsException) as e:
-            self.__timber.log('ChatterPreferredTtsPointRedemption', f'Failed to set preferred TTS given by {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({twitchChannelPointsMessage=}) ({userMessage=}): {e}', e, traceback.format_exc())
+            self.__timber.log('ChatterPreferredTtsPointRedemption', f'Failed to set preferred TTS given by {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({twitchChannelPointsMessage=}) ({userMessage=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ @{twitchChannelPointsMessage.userName} unable to set your preferred TTS! Please check your input and try again.',
                 twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
             )
             return True
         except TtsProviderIsNotEnabledException as e:
-            self.__timber.log('ChatterPreferredTtsPointRedemption', f'The TTS Provider requested by {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} is not enabled ({userMessage=}): {e}', e, traceback.format_exc())
+            self.__timber.log('ChatterPreferredTtsPointRedemption', f'The TTS Provider requested by {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} is not enabled ({userMessage=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ @{twitchChannelPointsMessage.userName} the TTS provider you requested is not available! Please try a different TTS provider.',
                 twitchChannelId = twitchChannelPointsMessage.twitchChannelId,

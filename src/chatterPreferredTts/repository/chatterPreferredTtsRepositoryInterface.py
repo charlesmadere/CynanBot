@@ -10,7 +10,7 @@ class ChatterPreferredTtsRepositoryInterface(Clearable, ABC):
     async def get(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ChatterPreferredTts | None:
         pass
 
@@ -18,7 +18,7 @@ class ChatterPreferredTtsRepositoryInterface(Clearable, ABC):
     async def remove(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ChatterPreferredTts | None:
         pass
 

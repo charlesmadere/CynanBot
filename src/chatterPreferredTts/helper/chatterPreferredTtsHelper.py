@@ -30,6 +30,9 @@ from ...streamElements.models.streamElementsVoice import StreamElementsVoice
 from ...timber.timberInterface import TimberInterface
 from ...tts.models.ttsProvider import TtsProvider
 from ...ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
+from ...twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier
+from ...twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
+from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 
 
 class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
@@ -41,6 +44,8 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface,
         googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface,
         timber: TimberInterface,
+        twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface,
+        twitchTokensRepository: TwitchTokensRepositoryInterface,
     ):
         if not isinstance(chatterPreferredTtsRepository, ChatterPreferredTtsRepositoryInterface):
             raise TypeError(f'chatterPreferredTtsRepository argument is malformed: \"{chatterPreferredTtsRepository}\"')
@@ -52,12 +57,18 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
             raise TypeError(f'googleTtsVoicesHelper argument is malformed: \"{googleTtsVoicesHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchSubscriptionsRepository, TwitchSubscriptionsRepositoryInterface):
+            raise TypeError(f'twitchSubscriptionsRepository argument is malformed: \"{twitchSubscriptionsRepository}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
+            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
 
         self.__chatterPreferredTtsRepository: Final[ChatterPreferredTtsRepositoryInterface] = chatterPreferredTtsRepository
         self.__chatterPreferredTtsSettingsRepository: Final[ChatterPreferredTtsSettingsRepositoryInterface] = chatterPreferredTtsSettingsRepository
         self.__chatterPreferredTtsUserMessageHelper: Final[ChatterPreferredTtsUserMessageHelperInterface] = chatterPreferredTtsUserMessageHelper
         self.__googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = googleTtsVoicesHelper
         self.__timber: Final[TimberInterface] = timber
+        self.__twitchSubscriptionsRepository: Final[TwitchSubscriptionsRepositoryInterface] = twitchSubscriptionsRepository
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
 
     async def applyRandomPreferredTts(
         self,
@@ -72,7 +83,9 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         enabledTtsProviders: FrozenList[TtsProvider] = FrozenList()
 
         for ttsProvider in TtsProvider:
-            if ttsProvider in await self.__chatterPreferredTtsSettingsRepository.getEnabledTtsProviders():
+            if ttsProvider in await self.__chatterPreferredTtsSettingsRepository.getHighTierTtsProviders():
+                continue
+            elif ttsProvider in await self.__chatterPreferredTtsSettingsRepository.getEnabledTtsProviders():
                 enabledTtsProviders.append(ttsProvider)
 
         enabledTtsProviders.freeze()
@@ -158,6 +171,18 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         elif properties.provider not in await self.__chatterPreferredTtsSettingsRepository.getEnabledTtsProviders():
             raise TtsProviderIsNotEnabledException(f'The TtsProvider specified in the given user message is not enabled ({properties=}) ({chatterUserId=}) ({twitchChannelId=}) ({userMessage=})')
 
+        if properties.provider in await self.__chatterPreferredTtsSettingsRepository.getHighTierTtsProviders():
+            subscriberTier = await self.__fetchUserSubscriberTier(
+                properties = properties,
+                chatterUserId = chatterUserId,
+                twitchChannelId = twitchChannelId,
+            )
+
+            if subscriberTier is TwitchSubscriberTier.TIER_THREE:
+                self.__timber.log('ChatterPreferredTtsHelper', f'Confirmed user\'s permissions for the given high tier TtsProvider ({properties=}) ({chatterUserId=}) ({twitchChannelId=}) ({subscriberTier=})')
+            else:
+                raise TtsProviderIsNotEnabledException(f'The given TtsProvider is high tier, but the user does not have the required permissions ({properties=}) ({chatterUserId=}) ({twitchChannelId=}) ({userMessage=}) ({subscriberTier=})')
+
         preferredTts = ChatterPreferredTts(
             properties = properties,
             chatterUserId = chatterUserId,
@@ -170,6 +195,31 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
 
         self.__timber.log('ChatterPreferredTtsHelper', f'Assigned TTS from user message ({preferredTts=}) ({properties=}) ({chatterUserId=}) ({twitchChannelId=}) ({userMessage=})')
         return preferredTts
+
+    async def __fetchUserSubscriberTier(
+        self,
+        properties: AbsTtsProperties,
+        chatterUserId: str,
+        twitchChannelId: str,
+    ) -> TwitchSubscriberTier | None:
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+            twitchChannelId = twitchChannelId,
+        )
+
+        if not utils.isValidStr(twitchAccessToken):
+            self.__timber.log('ChatterPreferredTtsHelper', f'The given TtsProvider is high tier, but we don\'t have a Twitch access token to check the user\'s permission status ({properties=}) ({chatterUserId=}) ({twitchChannelId=})')
+            return None
+
+        subscriptionStatus = await self.__twitchSubscriptionsRepository.fetchChatterSubscription(
+            twitchAccessToken = twitchAccessToken,
+            twitchChannelId = twitchChannelId,
+            userId = chatterUserId,
+        )
+
+        if subscriptionStatus is None:
+            return None
+        else:
+            return subscriptionStatus.tier
 
     async def __chooseCommodoreSamProperties(self) -> CommodoreSamTtsProperties:
         return CommodoreSamTtsProperties()
@@ -262,5 +312,14 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
             return None
         elif preferredTts.provider not in await self.__chatterPreferredTtsSettingsRepository.getEnabledTtsProviders():
             return None
-        else:
-            return preferredTts
+        elif preferredTts.provider in await self.__chatterPreferredTtsSettingsRepository.getHighTierTtsProviders():
+            subscriberTier = await self.__fetchUserSubscriberTier(
+                properties = preferredTts.properties,
+                chatterUserId = chatterUserId,
+                twitchChannelId = twitchChannelId,
+            )
+
+            if subscriberTier is not TwitchSubscriberTier.TIER_THREE:
+                return None
+
+        return preferredTts
