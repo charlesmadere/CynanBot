@@ -7,7 +7,7 @@ from ..models.twitchBanResponse import TwitchBanResponse
 from ..models.twitchBanResponseEntry import TwitchBanResponseEntry
 from ..models.twitchBannedUserResponse import TwitchBannedUserResponse
 from ..models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
-from ..models.twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubscriptionResponse
+from ..models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
 from ..models.twitchChannelEditor import TwitchChannelEditor
 from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
@@ -124,15 +124,15 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseBroadcasterSubscription(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchBroadcasterSubscription | None:
         pass
 
     @abstractmethod
-    async def parseBroadcasterSubscriptionResponse(
+    async def parseBroadcasterSubscriptionsResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchBroadcasterSubscriptionResponse | None:
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchBroadcasterSubscriptionsResponse | None:
         pass
 
     @abstractmethod
@@ -236,7 +236,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseCheerMetadata(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchCheerMetadata | None:
         pass
 
@@ -390,7 +390,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parsePaginationResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,s
     ) -> TwitchPaginationResponse | None:
         pass
 
@@ -488,7 +488,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseSendChatMessageResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchSendChatMessageResponse | None:
         pass
 
@@ -530,7 +530,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseSubscriberTier(
         self,
-        subscriberTier: str | Any | None
+        subscriberTier: str | Any | None,
     ) -> TwitchSubscriberTier | None:
         pass
 
@@ -649,7 +649,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def requireSubscriberTier(
         self,
-        subscriberTier: str | Any | None
+        subscriberTier: str | Any | None,
     ) -> TwitchSubscriberTier:
         pass
 

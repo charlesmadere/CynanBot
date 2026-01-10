@@ -210,10 +210,10 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
             self.__timber.log('ChatterPreferredTtsHelper', f'The given TtsProvider is high tier, but we don\'t have a Twitch access token to check the user\'s permission status ({properties=}) ({chatterUserId=}) ({twitchChannelId=})')
             return None
 
-        subscriptionStatus = await self.__twitchSubscriptionsRepository.fetchChatterSubscription(
+        subscriptionStatus = await self.__twitchSubscriptionsRepository.fetchSubscription(
+            chatterUserId = chatterUserId,
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
-            userId = chatterUserId,
         )
 
         if subscriptionStatus is None:

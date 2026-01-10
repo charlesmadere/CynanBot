@@ -86,8 +86,8 @@ class AccessLevelCheckingHelper(AccessLevelCheckingHelperInterface):
         if not utils.isValidStr(twitchAccessToken):
             return False
 
-        return await self.__twitchSubscriptionsRepository.isChatterSubscribed(
+        return await self.__twitchSubscriptionsRepository.isSubscribed(
+            chatterUserId = message.getAuthorId(),
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = await message.getTwitchChannelId(),
-            userId = message.getAuthorId(),
         )

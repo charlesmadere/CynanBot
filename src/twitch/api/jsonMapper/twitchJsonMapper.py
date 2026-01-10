@@ -12,7 +12,7 @@ from ..models.twitchBanResponseEntry import TwitchBanResponseEntry
 from ..models.twitchBannedUser import TwitchBannedUser
 from ..models.twitchBannedUserResponse import TwitchBannedUserResponse
 from ..models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
-from ..models.twitchBroadcasterSubscriptionResponse import TwitchBroadcasterSubscriptionResponse
+from ..models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
 from ..models.twitchChannelEditor import TwitchChannelEditor
 from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
@@ -299,16 +299,16 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             reason = reason,
             userId = userId,
             userLogin = userLogin,
-            userName = userName
+            userName = userName,
         )
 
         return TwitchBannedUserResponse(
-            bannedUser = bannedUser
+            bannedUser = bannedUser,
         )
 
     async def parseBroadcasterSubscription(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchBroadcasterSubscription | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -362,29 +362,39 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userId = userId,
             userLogin = userLogin,
             userName = userName,
-            tier = tier
+            tier = tier,
         )
 
-    async def parseBroadcasterSubscriptionResponse(
+    async def parseBroadcasterSubscriptionsResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchBroadcasterSubscriptionResponse | None:
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchBroadcasterSubscriptionsResponse | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
-        subscription: TwitchBroadcasterSubscription | None = None
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        data: FrozenList[TwitchBroadcasterSubscription] = FrozenList()
 
-        if isinstance(data, list) and len(data) >= 1:
-            subscription = await self.parseBroadcasterSubscription(data[0])
+        if isinstance(dataArray, list) and len(dataArray) >= 1:
+            for index, dataItem in enumerate(dataArray):
+                broadcasterSubscription = await self.parseBroadcasterSubscription(dataItem)
 
-        points = utils.getIntFromDict(jsonResponse, 'points', fallback = 0)
-        total = utils.getIntFromDict(jsonResponse, 'total', fallback = 0)
+                if broadcasterSubscription is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"data\" element ({jsonResponse=})')
+                else:
+                    data.append(broadcasterSubscription)
 
-        return TwitchBroadcasterSubscriptionResponse(
+        data.freeze()
+
+        points = utils.getIntFromDict(jsonResponse, 'points')
+        total = utils.getIntFromDict(jsonResponse, 'total')
+        pagination = await self.parsePaginationResponse(jsonResponse.get('pagination'))
+
+        return TwitchBroadcasterSubscriptionsResponse(
+            data = data,
             points = points,
             total = total,
-            subscription = subscription
+            pagination = pagination,
         )
 
     async def parseBroadcasterType(
@@ -710,7 +720,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseCheerMetadata(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchCheerMetadata | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1270,7 +1280,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parsePaginationResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchPaginationResponse | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1571,7 +1581,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseSendChatMessageResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchSendChatMessageResponse | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1591,7 +1601,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         return TwitchSendChatMessageResponse(
             isSent = isSent,
             messageId = messageId,
-            dropReason = dropReason
+            dropReason = dropReason,
         )
 
     async def parseStartCommercialDetails(
@@ -1707,7 +1717,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseSubscriberTier(
         self,
-        subscriberTier: str | Any | None
+        subscriberTier: str | Any | None,
     ) -> TwitchSubscriberTier | None:
         if not utils.isValidStr(subscriberTier):
             return None
@@ -2174,7 +2184,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def requireSubscriberTier(
         self,
-        subscriberTier: str | Any | None
+        subscriberTier: str | Any | None,
     ) -> TwitchSubscriberTier:
         result = await self.parseSubscriberTier(subscriberTier)
 
