@@ -7,28 +7,27 @@ from ...misc.clearable import Clearable
 class TwitchSubscriptionsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
-    async def fetchBroadcasterSubscription(
+    async def fetchSelfSubscription(
         self,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str,
     ) -> TwitchSubscriptionStatus | None:
         pass
 
     @abstractmethod
-    async def fetchChatterSubscription(
+    async def fetchSubscription(
         self,
+        chatterUserId: str,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str,
     ) -> TwitchSubscriptionStatus | None:
         pass
 
     @abstractmethod
-    async def isChatterSubscribed(
+    async def isSubscribed(
         self,
+        chatterUserId: str,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userId: str,
     ) -> bool:
         pass

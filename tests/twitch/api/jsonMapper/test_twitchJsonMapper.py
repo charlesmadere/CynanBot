@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, Final
 
 import pytest
 from frozenlist import FrozenList
@@ -57,11 +57,11 @@ from src.twitch.api.models.twitchWebsocketTransportMethod import TwitchWebsocket
 
 class TestTwitchJsonMapper:
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+    timeZoneRepository: Final[TimeZoneRepositoryInterface] = TimeZoneRepository()
 
-    jsonMapper: TwitchJsonMapperInterface = TwitchJsonMapper(
+    jsonMapper: Final[TwitchJsonMapperInterface] = TwitchJsonMapper(
         timber = timber,
         timeZoneRepository = timeZoneRepository
     )
@@ -279,7 +279,7 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseBannedUserResponse_withDataButNoBannedUser(self):
         jsonResponse: dict[str, Any] = {
-            'data': [ ]
+            'data': [ ],
         }
 
         result = await self.jsonMapper.parseBannedUserResponse(jsonResponse)
@@ -294,6 +294,26 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseBannedUserResponse_withNone(self):
         result = await self.jsonMapper.parseBannedUserResponse(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBroadcasterSubscription_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseBroadcasterSubscription(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBroadcasterSubscription_withNone(self):
+        result = await self.jsonMapper.parseBroadcasterSubscription(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBroadcasterSubscriptionsResponse_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseBroadcasterSubscriptionsResponse(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBroadcasterSubscriptionsResponse_withNone(self):
+        result = await self.jsonMapper.parseBroadcasterSubscriptionsResponse(None)
         assert result is None
 
     @pytest.mark.asyncio
@@ -1114,7 +1134,7 @@ class TestTwitchJsonMapper:
         assert result.cursor == 'abc123'
 
     @pytest.mark.asyncio
-    async def test_parsePaginationResponse_withEmptyCursor(self):
+    async def test_parsePaginationResponse_withEmptyCursorString(self):
         cursor = ''
 
         result = await self.jsonMapper.parsePaginationResponse({
@@ -1138,17 +1158,17 @@ class TestTwitchJsonMapper:
         cursor: str | None = None
 
         result = await self.jsonMapper.parsePaginationResponse({
-            'cursor': cursor
+            'cursor': cursor,
         })
 
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_parsePaginationResponse_withWhitespaceCursor(self):
+    async def test_parsePaginationResponse_withWhitespaceCursorString(self):
         cursor = ' '
 
         result = await self.jsonMapper.parsePaginationResponse({
-            'cursor': cursor
+            'cursor': cursor,
         })
 
         assert result is None

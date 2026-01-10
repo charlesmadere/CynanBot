@@ -1,3 +1,5 @@
+from typing import Final
+
 from .twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from .twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..exceptions import TwitchAccessTokenMissingException
@@ -10,15 +12,15 @@ class TwitchTokensUtils(TwitchTokensUtilsInterface):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
-        twitchTokensRepository: TwitchTokensRepositoryInterface
+        twitchTokensRepository: TwitchTokensRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
+        self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
 
     async def getAccessTokenOrFallback(self, twitchChannel: str) -> str | None:
         if not utils.isValidStr(twitchChannel):

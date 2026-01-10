@@ -560,7 +560,7 @@ networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
     timber = timber,
 )
 
-authRepository = AuthRepository(
+authRepository: Final[AuthRepository] = AuthRepository(
     authJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/authRepository.json',
@@ -625,15 +625,17 @@ contentScanner: ContentScannerInterface = ContentScanner(
     timber = timber
 )
 
-twitchTokensUtils: TwitchTokensUtilsInterface = TwitchTokensUtils(
+twitchTokensUtils: Final[TwitchTokensUtilsInterface] = TwitchTokensUtils(
     administratorProvider = administratorProvider,
-    twitchTokensRepository = twitchTokensRepository
+    twitchTokensRepository = twitchTokensRepository,
 )
 
 twitchSubscriptionsRepository: Final[TwitchSubscriptionsRepositoryInterface] = TwitchSubscriptionsRepository(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
+    twitchHandleProvider = authRepository,
+    userIdsRepository = userIdsRepository,
 )
 
 twitchEmotesHelper: TwitchEmotesHelperInterface = TwitchEmotesHelper(
