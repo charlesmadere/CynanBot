@@ -9,7 +9,7 @@ class UserIdsRepositoryInterface(Clearable, ABC):
     async def fetchUserId(
         self,
         userName: str,
-        twitchAccessToken: str | None = None
+        twitchAccessToken: str | None = None,
     ) -> str | None:
         pass
 
@@ -17,7 +17,7 @@ class UserIdsRepositoryInterface(Clearable, ABC):
     async def fetchUserIdAsInt(
         self,
         userName: str,
-        twitchAccessToken: str | None = None
+        twitchAccessToken: str | None = None,
     ) -> int | None:
         pass
 
@@ -25,7 +25,7 @@ class UserIdsRepositoryInterface(Clearable, ABC):
     async def fetchUserName(
         self,
         userId: str,
-        twitchAccessToken: str | None = None
+        twitchAccessToken: str | None = None,
     ) -> str | None:
         pass
 
@@ -33,7 +33,7 @@ class UserIdsRepositoryInterface(Clearable, ABC):
     async def requireUserId(
         self,
         userName: str,
-        twitchAccessToken: str | None = None
+        twitchAccessToken: str | None = None,
     ) -> str:
         pass
 
@@ -41,7 +41,7 @@ class UserIdsRepositoryInterface(Clearable, ABC):
     async def requireUserIdAsInt(
         self,
         userName: str,
-        twitchAccessToken: str | None = None
+        twitchAccessToken: str | None = None,
     ) -> int:
         pass
 
@@ -49,7 +49,7 @@ class UserIdsRepositoryInterface(Clearable, ABC):
     async def requireUserName(
         self,
         userId: str,
-        twitchAccessToken: str | None = None
+        twitchAccessToken: str | None = None,
     ) -> str:
         pass
 

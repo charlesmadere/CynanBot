@@ -12,7 +12,7 @@ from .models.twitchEventSubRequest import TwitchEventSubRequest
 from .models.twitchEventSubResponse import TwitchEventSubResponse
 from .models.twitchFollower import TwitchFollower
 from .models.twitchLiveUserDetails import TwitchLiveUserDetails
-from .models.twitchModUser import TwitchModUser
+from .models.twitchModeratorsResponse import TwitchModeratorsResponse
 from .models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
 from .models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
@@ -132,8 +132,8 @@ class TwitchApiServiceInterface(ABC):
         self,
         broadcasterId: str,
         twitchAccessToken: str,
-        userId: str
-    ) -> TwitchModUser | None:
+        userId: str,
+    ) -> TwitchModeratorsResponse:
         pass
 
     @abstractmethod
@@ -144,7 +144,7 @@ class TwitchApiServiceInterface(ABC):
     async def fetchUserDetailsWithUserId(
         self,
         twitchAccessToken: str,
-        userId: str
+        userId: str,
     ) -> TwitchUserDetails | None:
         pass
 
@@ -165,7 +165,7 @@ class TwitchApiServiceInterface(ABC):
         self,
         broadcasterId: str,
         moderatorId: str,
-        twitchAccessToken: str
+        twitchAccessToken: str,
     ) -> bool:
         pass
 
@@ -173,7 +173,7 @@ class TwitchApiServiceInterface(ABC):
     async def sendChatAnnouncement(
         self,
         twitchAccessToken: str,
-        announcementRequest: TwitchSendChatAnnouncementRequest
+        announcementRequest: TwitchSendChatAnnouncementRequest,
     ) -> bool:
         pass
 
@@ -181,7 +181,7 @@ class TwitchApiServiceInterface(ABC):
     async def sendChatMessage(
         self,
         twitchAccessToken: str,
-        chatRequest: TwitchSendChatMessageRequest
+        chatRequest: TwitchSendChatMessageRequest,
     ) -> TwitchSendChatMessageResponse:
         pass
 
@@ -190,7 +190,7 @@ class TwitchApiServiceInterface(ABC):
         self,
         length: int,
         broadcasterId: str,
-        twitchAccessToken: str
+        twitchAccessToken: str,
     ) -> TwitchStartCommercialResponse:
         pass
 
@@ -198,7 +198,7 @@ class TwitchApiServiceInterface(ABC):
     async def unbanUser(
         self,
         twitchAccessToken: str,
-        unbanRequest: TwitchUnbanRequest
+        unbanRequest: TwitchUnbanRequest,
     ) -> bool:
         pass
 

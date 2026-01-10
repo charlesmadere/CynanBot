@@ -8,7 +8,6 @@ from .twitchTimeoutResult import TwitchTimeoutResult
 from ..activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..api.models.twitchBanRequest import TwitchBanRequest
 from ..api.models.twitchBannedUser import TwitchBannedUser
-from ..api.models.twitchModUser import TwitchModUser
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..globalTwitchConstants import GlobalTwitchConstants
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
@@ -109,19 +108,21 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         elif not utils.isValidStr(userIdToTimeout):
             raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
 
-        moderatorInfo: TwitchModUser | None
-
         try:
-            moderatorInfo = await self.__twitchApiService.fetchModerator(
+            moderatorsResponse = await self.__twitchApiService.fetchModerator(
                 broadcasterId = twitchChannelId,
                 twitchAccessToken = twitchChannelAccessToken,
                 userId = userIdToTimeout,
             )
         except Exception as e:
-            self.__timber.log('TwitchTimeoutHelper', f'Failed to fetch Twitch moderator info for the given user ID ({twitchChannelId=}) ({userIdToTimeout=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchTimeoutHelper', f'Failed to fetch Twitch moderator info for the given user ID ({twitchChannelId=}) ({userIdToTimeout=})', e, traceback.format_exc())
             return False
 
-        return moderatorInfo is not None
+        for moderatorUser in moderatorsResponse.data:
+            if moderatorUser.userId == userIdToTimeout:
+                return True
+
+        return False
 
     async def __removeMod(
         self,

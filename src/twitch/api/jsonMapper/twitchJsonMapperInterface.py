@@ -43,6 +43,8 @@ from ..models.twitchEventSubResponse import TwitchEventSubResponse
 from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
 from ..models.twitchHypeTrainType import TwitchHypeTrainType
+from ..models.twitchModeratorUser import TwitchModeratorUser
+from ..models.twitchModeratorsResponse import TwitchModeratorsResponse
 from ..models.twitchNoticeType import TwitchNoticeType
 from ..models.twitchOutcome import TwitchOutcome
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
@@ -368,6 +370,20 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseModeratorsResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchModeratorsResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseModeratorUser(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchModeratorUser | None:
+        pass
+
+    @abstractmethod
     async def parseNoticeType(
         self,
         noticeType: str | Any | None,
@@ -552,14 +568,14 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseThemeMode(
         self,
-        themeMode: str | Any | None
+        themeMode: str | Any | None,
     ) -> TwitchThemeMode | None:
         pass
 
     @abstractmethod
     async def parseTokensDetails(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchTokensDetails | None:
         pass
 
