@@ -5,7 +5,8 @@ from ..models.twitchApiScope import TwitchApiScope
 from ..models.twitchBanRequest import TwitchBanRequest
 from ..models.twitchBanResponse import TwitchBanResponse
 from ..models.twitchBanResponseEntry import TwitchBanResponseEntry
-from ..models.twitchBannedUserResponse import TwitchBannedUserResponse
+from ..models.twitchBannedUser import TwitchBannedUser
+from ..models.twitchBannedUsersReponse import TwitchBannedUsersResponse
 from ..models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from ..models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
@@ -115,10 +116,17 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
-    async def parseBannedUserResponse(
+    async def parseBannedUser(
         self,
-        jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchBannedUserResponse | None:
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchBannedUser | None:
+        pass
+
+    @abstractmethod
+    async def parseBannedUsersResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchBannedUsersResponse | None:
         pass
 
     @abstractmethod
@@ -138,7 +146,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseBroadcasterType(
         self,
-        broadcasterType: str | Any | None
+        broadcasterType: str | Any | None,
     ) -> TwitchBroadcasterType:
         pass
 
@@ -390,7 +398,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parsePaginationResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None,s
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchPaginationResponse | None:
         pass
 

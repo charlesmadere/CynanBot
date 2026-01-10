@@ -52,7 +52,7 @@ class StreamElementsApiService(StreamElementsApiServiceInterface):
                 url = f'https://api.streamelements.com/kappa/v2/speech?{queryString}',
             )
         except GenericNetworkException as e:
-            self.__timber.log('StreamElementsApiService', f'Encountered network error when fetching speech ({voice=}) ({text=}): {e}', e, traceback.format_exc())
+            self.__timber.log('StreamElementsApiService', f'Encountered network error when fetching speech ({voice=}) ({text=})', e, traceback.format_exc())
             raise GenericNetworkException(f'StreamElementsApiService encountered network error when fetching speech ({voice=}) ({text=}): {e}')
 
         responseStatusCode = response.statusCode

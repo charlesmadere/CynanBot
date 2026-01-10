@@ -7,6 +7,7 @@ from .twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from .twitchTimeoutResult import TwitchTimeoutResult
 from ..activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..api.models.twitchBanRequest import TwitchBanRequest
+from ..api.models.twitchBannedUser import TwitchBannedUser
 from ..api.models.twitchModUser import TwitchModUser
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..globalTwitchConstants import GlobalTwitchConstants
@@ -70,25 +71,29 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
 
         try:
-            bannedUserResponse = await self.__twitchApiService.fetchBannedUser(
+            bannedUsersResponse = await self.__twitchApiService.fetchBannedUsers(
                 broadcasterId = twitchChannelId,
-                chatterUserId = userIdToTimeout,
                 twitchAccessToken = twitchChannelAccessToken,
+                userId = userIdToTimeout,
             )
         except Exception as e:
-            self.__timber.log('TwitchTimeoutHelper', f'Failed to verify if the given user ID can be timed out ({twitchChannelAccessToken=}) ({twitchChannelId=}) ({userIdToTimeout=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchTimeoutHelper', f'Failed to verify if the given user ID can be timed out ({twitchChannelId=}) ({userIdToTimeout=})', e, traceback.format_exc())
             return False
 
-        if bannedUserResponse is None or bannedUserResponse.bannedUser is None:
+        userToTimeout: TwitchBannedUser | None = None
+
+        for bannedUser in bannedUsersResponse.data:
+            if bannedUser.userId == userIdToTimeout:
+                userToTimeout = bannedUser
+                break
+
+        if userToTimeout is None:
             return False
-
-        bannedUser = bannedUserResponse.bannedUser
-
-        if bannedUser.expiresAt is None:
-            self.__timber.log('TwitchTimeoutHelper', f'The given user ID will not be timed out as this user is permanently banned: ({bannedUserResponse=}) ({twitchChannelId=}) ({userIdToTimeout=})')
+        elif userToTimeout.expiresAt is None:
+            self.__timber.log('TwitchTimeoutHelper', f'The given user ID will not be timed out as this user is permanently banned: ({bannedUsersResponse=}) ({twitchChannelId=}) ({userIdToTimeout=})')
             return True
         else:
-            self.__timber.log('TwitchTimeoutHelper', f'The given user ID will not be timed out as this user is already timed out: ({bannedUserResponse=}) ({twitchChannelId=}) ({userIdToTimeout=})')
+            self.__timber.log('TwitchTimeoutHelper', f'The given user ID will not be timed out as this user is already timed out: ({bannedUsersResponse=}) ({twitchChannelId=}) ({userIdToTimeout=})')
             return True
 
     async def __isMod(

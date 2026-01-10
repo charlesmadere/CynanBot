@@ -10,7 +10,7 @@ from ..models.twitchBanRequest import TwitchBanRequest
 from ..models.twitchBanResponse import TwitchBanResponse
 from ..models.twitchBanResponseEntry import TwitchBanResponseEntry
 from ..models.twitchBannedUser import TwitchBannedUser
-from ..models.twitchBannedUserResponse import TwitchBannedUserResponse
+from ..models.twitchBannedUsersReponse import TwitchBannedUsersResponse
 from ..models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from ..models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
@@ -254,43 +254,32 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userId = userId
         )
 
-    async def parseBannedUserResponse(
+    async def parseBannedUser(
         self,
-        jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchBannedUserResponse | None:
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchBannedUser | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
-
-        if not isinstance(data, list):
-            return None
-        elif len(data) == 0:
-            return TwitchBannedUserResponse()
-
-        dataEntry: dict[str, Any] | Any | None = data[0]
-        if not isinstance(dataEntry, dict) or len(dataEntry) == 0:
-            return None
-
-        createdAt = utils.getDateTimeFromDict(dataEntry, 'created_at')
+        createdAt = utils.getDateTimeFromDict(jsonResponse, 'created_at')
 
         expiresAt: datetime | None = None
-        if 'expires_at' in dataEntry and utils.isValidStr(dataEntry.get('expires_at')):
-            expiresAt = utils.getDateTimeFromDict(dataEntry, 'expires_at')
+        if 'expires_at' in jsonResponse and utils.isValidStr(jsonResponse.get('expires_at')):
+            expiresAt = utils.getDateTimeFromDict(jsonResponse, 'expires_at')
 
-        moderatorId = utils.getStrFromDict(dataEntry, 'moderator_id')
-        moderatorLogin = utils.getStrFromDict(dataEntry, 'moderator_login')
-        moderatorName = utils.getStrFromDict(dataEntry, 'moderator_name')
+        moderatorId = utils.getStrFromDict(jsonResponse, 'moderator_id')
+        moderatorLogin = utils.getStrFromDict(jsonResponse, 'moderator_login')
+        moderatorName = utils.getStrFromDict(jsonResponse, 'moderator_name')
 
         reason: str | None = None
-        if 'reason' in dataEntry and utils.isValidStr(dataEntry.get('reason')):
-            reason = utils.getStrFromDict(dataEntry, 'reason')
+        if 'reason' in jsonResponse and utils.isValidStr(jsonResponse.get('reason')):
+            reason = utils.getStrFromDict(jsonResponse, 'reason')
 
-        userId = utils.getStrFromDict(dataEntry, 'user_id')
-        userLogin = utils.getStrFromDict(dataEntry, 'user_login')
-        userName = utils.getStrFromDict(dataEntry, 'user_name')
+        userId = utils.getStrFromDict(jsonResponse, 'user_id')
+        userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
+        userName = utils.getStrFromDict(jsonResponse, 'user_name')
 
-        bannedUser = TwitchBannedUser(
+        return TwitchBannedUser(
             createdAt = createdAt,
             expiresAt = expiresAt,
             moderatorId = moderatorId,
@@ -302,8 +291,32 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userName = userName,
         )
 
-        return TwitchBannedUserResponse(
-            bannedUser = bannedUser,
+    async def parseBannedUsersResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchBannedUsersResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        data: FrozenList[TwitchBannedUser] = FrozenList()
+
+        if isinstance(dataArray, list) and len(dataArray) >= 1:
+            for index, dataItem in enumerate(dataArray):
+                bannedUser = await self.parseBannedUser(dataItem)
+
+                if bannedUser is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"data\" element ({jsonResponse=})')
+                else:
+                    data.append(bannedUser)
+
+        data.freeze()
+
+        pagination = await self.parsePaginationResponse(jsonResponse.get('pagination'))
+
+        return TwitchBannedUsersResponse(
+            data = data,
+            pagination = pagination,
         )
 
     async def parseBroadcasterSubscription(
@@ -386,8 +399,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         data.freeze()
 
-        points = utils.getIntFromDict(jsonResponse, 'points')
-        total = utils.getIntFromDict(jsonResponse, 'total')
+        points = utils.getIntFromDict(jsonResponse, 'points', fallback = 0)
+        total = utils.getIntFromDict(jsonResponse, 'total', fallback = 0)
         pagination = await self.parsePaginationResponse(jsonResponse.get('pagination'))
 
         return TwitchBroadcasterSubscriptionsResponse(
@@ -399,7 +412,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseBroadcasterType(
         self,
-        broadcasterType: str | Any | None
+        broadcasterType: str | Any | None,
     ) -> TwitchBroadcasterType:
         if not utils.isValidStr(broadcasterType):
             return TwitchBroadcasterType.NORMAL
@@ -1157,7 +1170,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         return TwitchFollowersResponse(
             followers = frozenFollowers,
             total = total,
-            pagination = pagination
+            pagination = pagination,
         )
 
     async def parseHypeTrainType(
