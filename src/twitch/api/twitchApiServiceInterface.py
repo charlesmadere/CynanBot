@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from .models.twitchBanRequest import TwitchBanRequest
 from .models.twitchBanResponse import TwitchBanResponse
 from .models.twitchBannedUserResponse import TwitchBannedUserResponse
-from .models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
+from .models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from .models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from .models.twitchChattersRequest import TwitchChattersRequest
 from .models.twitchChattersResponse import TwitchChattersResponse
@@ -44,6 +44,15 @@ class TwitchApiServiceInterface(ABC):
         pass
 
     @abstractmethod
+    async def checkUserSubscription(
+        self,
+        broadcasterId: str,
+        twitchAccessToken: str,
+        userId: str,
+    ) -> TwitchUserSubscription:
+        pass
+
+    @abstractmethod
     async def createEventSubSubscription(
         self,
         twitchAccessToken: str,
@@ -56,17 +65,17 @@ class TwitchApiServiceInterface(ABC):
         self,
         broadcasterId: str,
         chatterUserId: str,
-        twitchAccessToken: str
+        twitchAccessToken: str,
     ) -> TwitchBannedUserResponse:
         pass
 
     @abstractmethod
-    async def fetchBroadcasterSubscription(
+    async def fetchBroadcasterSubscriptions(
         self,
         broadcasterId: str,
-        chatterUserId: str,
         twitchAccessToken: str,
-    ) -> TwitchBroadcasterSubscription:
+        userId: str,
+    ) -> TwitchBroadcasterSubscriptionsResponse:
         pass
 
     @abstractmethod
@@ -143,17 +152,8 @@ class TwitchApiServiceInterface(ABC):
     async def fetchUserDetailsWithUserName(
         self,
         twitchAccessToken: str,
-        userName: str
+        userName: str,
     ) -> TwitchUserDetails | None:
-        pass
-
-    @abstractmethod
-    async def fetchUserSubscription(
-        self,
-        broadcasterId: str,
-        chatterUserId: str,
-        twitchAccessToken: str
-    ) -> TwitchUserSubscription:
         pass
 
     @abstractmethod
