@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from .models.twitchBanRequest import TwitchBanRequest
 from .models.twitchBanResponse import TwitchBanResponse
-from .models.twitchBannedUserResponse import TwitchBannedUserResponse
+from .models.twitchBannedUsersReponse import TwitchBannedUsersResponse
 from .models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from .models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from .models.twitchChattersRequest import TwitchChattersRequest
@@ -61,12 +61,12 @@ class TwitchApiServiceInterface(ABC):
         pass
 
     @abstractmethod
-    async def fetchBannedUser(
+    async def fetchBannedUsers(
         self,
         broadcasterId: str,
-        chatterUserId: str,
         twitchAccessToken: str,
-    ) -> TwitchBannedUserResponse:
+        userId: str,
+    ) -> TwitchBannedUsersResponse:
         pass
 
     @abstractmethod

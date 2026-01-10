@@ -277,23 +277,23 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_parseBannedUserResponse_withDataButNoBannedUser(self):
-        jsonResponse: dict[str, Any] = {
-            'data': [ ],
-        }
-
-        result = await self.jsonMapper.parseBannedUserResponse(jsonResponse)
-        assert result is not None
-        assert result.bannedUser is None
-
-    @pytest.mark.asyncio
-    async def test_parseBannedUserResponse_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseBannedUserResponse(dict())
+    async def test_parseBannedUser_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseBannedUser(dict())
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_parseBannedUserResponse_withNone(self):
-        result = await self.jsonMapper.parseBannedUserResponse(None)
+    async def test_parseBannedUser_withNone(self):
+        result = await self.jsonMapper.parseBannedUser(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBannedUsersResponse_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseBannedUsersResponse(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBannedUsersResponse_withNone(self):
+        result = await self.jsonMapper.parseBannedUsersResponse(None)
         assert result is None
 
     @pytest.mark.asyncio

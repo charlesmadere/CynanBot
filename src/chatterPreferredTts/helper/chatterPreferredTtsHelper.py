@@ -80,20 +80,20 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        enabledTtsProviders: FrozenList[TtsProvider] = FrozenList()
+        randomChoiceEnabledTtsProviders: FrozenList[TtsProvider] = FrozenList()
 
         for ttsProvider in TtsProvider:
             if ttsProvider in await self.__chatterPreferredTtsSettingsRepository.getHighTierTtsProviders():
                 continue
             elif ttsProvider in await self.__chatterPreferredTtsSettingsRepository.getEnabledTtsProviders():
-                enabledTtsProviders.append(ttsProvider)
+                randomChoiceEnabledTtsProviders.append(ttsProvider)
 
-        enabledTtsProviders.freeze()
+        randomChoiceEnabledTtsProviders.freeze()
 
-        if len(enabledTtsProviders) == 0:
-            raise NoEnabledTtsProvidersException(f'Can\'t randomly apply a preferred TTS as there are no TTS Providers enabled ({enabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=})')
+        if len(randomChoiceEnabledTtsProviders) == 0:
+            raise NoEnabledTtsProvidersException(f'Can\'t randomly apply a preferred TTS as there are no random choice TTS Providers available ({randomChoiceEnabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=})')
 
-        ttsProvider = random.choice(enabledTtsProviders)
+        ttsProvider = random.choice(randomChoiceEnabledTtsProviders)
         properties: AbsTtsProperties | None = None
 
         match ttsProvider:
@@ -131,10 +131,10 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
                 properties = None
 
             case _:
-                raise ValueError(f'The given TTS Provider is unknown ({properties=}) ({ttsProvider=}) ({enabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=})')
+                raise ValueError(f'The given TTS Provider is unknown ({properties=}) ({ttsProvider=}) ({randomChoiceEnabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=})')
 
-        if properties is None or properties.provider not in enabledTtsProviders:
-            raise FailedToChooseRandomTtsException(f'Failed to choose a random preferred TTS ({properties=}) ({ttsProvider=}) ({enabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=})')
+        if properties is None or properties.provider not in randomChoiceEnabledTtsProviders:
+            raise FailedToChooseRandomTtsException(f'Failed to choose a random preferred TTS ({properties=}) ({ttsProvider=}) ({randomChoiceEnabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=})')
 
         preferredTts = ChatterPreferredTts(
             properties = properties,
