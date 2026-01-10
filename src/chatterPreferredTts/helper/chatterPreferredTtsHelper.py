@@ -172,16 +172,13 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
             raise TtsProviderIsNotEnabledException(f'The TtsProvider specified in the given user message is not enabled ({properties=}) ({chatterUserId=}) ({twitchChannelId=}) ({userMessage=})')
 
         if properties.provider in await self.__chatterPreferredTtsSettingsRepository.getHighTierTtsProviders():
-            subscriberTier = await self.__fetchUserSubscriberTier(
-                properties = properties,
+            if await self.__isHighTierEligibleChatter(
                 chatterUserId = chatterUserId,
                 twitchChannelId = twitchChannelId,
-            )
-
-            if subscriberTier is TwitchSubscriberTier.TIER_THREE:
-                self.__timber.log('ChatterPreferredTtsHelper', f'Confirmed user\'s permissions for the given high tier TtsProvider ({properties=}) ({chatterUserId=}) ({twitchChannelId=}) ({subscriberTier=})')
+            ):
+                self.__timber.log('ChatterPreferredTtsHelper', f'Confirmed user\'s permissions for the given high tier TtsProvider ({properties=}) ({chatterUserId=}) ({twitchChannelId=})')
             else:
-                raise TtsProviderIsNotEnabledException(f'The given TtsProvider is high tier, but the user does not have the required permissions ({properties=}) ({chatterUserId=}) ({twitchChannelId=}) ({userMessage=}) ({subscriberTier=})')
+                raise TtsProviderIsNotEnabledException(f'The given TtsProvider is high tier, but the user does not have the required permissions ({properties=}) ({chatterUserId=}) ({twitchChannelId=})')
 
         preferredTts = ChatterPreferredTts(
             properties = properties,
@@ -195,31 +192,6 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
 
         self.__timber.log('ChatterPreferredTtsHelper', f'Assigned TTS from user message ({preferredTts=}) ({properties=}) ({chatterUserId=}) ({twitchChannelId=}) ({userMessage=})')
         return preferredTts
-
-    async def __fetchUserSubscriberTier(
-        self,
-        properties: AbsTtsProperties,
-        chatterUserId: str,
-        twitchChannelId: str,
-    ) -> TwitchSubscriberTier | None:
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-            twitchChannelId = twitchChannelId,
-        )
-
-        if not utils.isValidStr(twitchAccessToken):
-            self.__timber.log('ChatterPreferredTtsHelper', f'The given TtsProvider is high tier, but we don\'t have a Twitch access token to check the user\'s permission status ({properties=}) ({chatterUserId=}) ({twitchChannelId=})')
-            return None
-
-        subscriptionStatus = await self.__twitchSubscriptionsRepository.fetchSubscription(
-            chatterUserId = chatterUserId,
-            twitchAccessToken = twitchAccessToken,
-            twitchChannelId = twitchChannelId,
-        )
-
-        if subscriptionStatus is None:
-            return None
-        else:
-            return subscriptionStatus.tier
 
     async def __chooseCommodoreSamProperties(self) -> CommodoreSamTtsProperties:
         return CommodoreSamTtsProperties()
@@ -313,13 +285,31 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         elif preferredTts.provider not in await self.__chatterPreferredTtsSettingsRepository.getEnabledTtsProviders():
             return None
         elif preferredTts.provider in await self.__chatterPreferredTtsSettingsRepository.getHighTierTtsProviders():
-            subscriberTier = await self.__fetchUserSubscriberTier(
-                properties = preferredTts.properties,
+            if not await self.__isHighTierEligibleChatter(
                 chatterUserId = chatterUserId,
                 twitchChannelId = twitchChannelId,
-            )
-
-            if subscriberTier is not TwitchSubscriberTier.TIER_THREE:
+            ):
                 return None
 
         return preferredTts
+
+    async def __isHighTierEligibleChatter(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str,
+    ) -> bool:
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+            twitchChannelId = twitchChannelId,
+        )
+
+        if not utils.isValidStr(twitchAccessToken):
+            self.__timber.log('ChatterPreferredTtsHelper', f'Unable to check the given user\'s high tier TTS permissions, as no Twitch access token is available ({chatterUserId=}) ({twitchChannelId=}) ({twitchAccessToken=})')
+            return False
+
+        subscriptionStatus = await self.__twitchSubscriptionsRepository.fetchSubscription(
+            chatterUserId = chatterUserId,
+            twitchAccessToken = twitchAccessToken,
+            twitchChannelId = twitchChannelId,
+        )
+
+        return subscriptionStatus is not None and subscriptionStatus.tier is TwitchSubscriberTier.TIER_THREE
