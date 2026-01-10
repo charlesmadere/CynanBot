@@ -47,6 +47,8 @@ from ..models.twitchEventSubResponse import TwitchEventSubResponse
 from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
 from ..models.twitchHypeTrainType import TwitchHypeTrainType
+from ..models.twitchModeratorUser import TwitchModeratorUser
+from ..models.twitchModeratorsResponse import TwitchModeratorsResponse
 from ..models.twitchNoticeType import TwitchNoticeType
 from ..models.twitchOutcome import TwitchOutcome
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
@@ -1187,6 +1189,51 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'regular': return TwitchHypeTrainType.REGULAR
             case 'treasure': return TwitchHypeTrainType.TREASURE
             case _: return None
+
+    async def parseModeratorsResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchModeratorsResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        data: FrozenList[TwitchModeratorUser] = FrozenList()
+
+        if isinstance(data, list) and len(data) >= 1:
+            for index, dataItem in enumerate(dataArray):
+                moderatorUser = await self.parseModeratorUser(dataItem)
+
+                if moderatorUser is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"data\" data ({jsonResponse=})')
+                else:
+                    data.append(moderatorUser)
+
+        data.freeze()
+
+        pagination = await self.parsePaginationResponse(jsonResponse.get('pagination'))
+
+        return TwitchModeratorsResponse(
+            data = data,
+            pagination = pagination,
+        )
+
+    async def parseModeratorUser(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchModeratorUser | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        userId = utils.getStrFromDict(jsonResponse, 'user_id')
+        userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
+        userName = utils.getStrFromDict(jsonResponse, 'user_name')
+
+        return TwitchModeratorUser(
+            userId = userId,
+            userLogin = userLogin,
+            userName = userName,
+        )
 
     async def parseNoticeType(
         self,

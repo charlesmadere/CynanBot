@@ -43,6 +43,8 @@ from ..models.twitchEventSubResponse import TwitchEventSubResponse
 from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
 from ..models.twitchHypeTrainType import TwitchHypeTrainType
+from ..models.twitchModeratorUser import TwitchModeratorUser
+from ..models.twitchModeratorsResponse import TwitchModeratorsResponse
 from ..models.twitchNoticeType import TwitchNoticeType
 from ..models.twitchOutcome import TwitchOutcome
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
@@ -365,6 +367,20 @@ class TwitchJsonMapperInterface(ABC):
         self,
         hypeTrainType: str | Any | None
     ) -> TwitchHypeTrainType | None:
+        pass
+
+    @abstractmethod
+    async def parseModeratorsResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchModeratorsResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseModeratorUser(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchModeratorUser | None:
         pass
 
     @abstractmethod
