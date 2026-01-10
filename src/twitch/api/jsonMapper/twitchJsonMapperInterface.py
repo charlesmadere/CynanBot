@@ -568,14 +568,14 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseThemeMode(
         self,
-        themeMode: str | Any | None
+        themeMode: str | Any | None,
     ) -> TwitchThemeMode | None:
         pass
 
     @abstractmethod
     async def parseTokensDetails(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchTokensDetails | None:
         pass
 

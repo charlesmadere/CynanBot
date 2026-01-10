@@ -1852,7 +1852,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseThemeMode(
         self,
-        themeMode: str | Any | None
+        themeMode: str | Any | None,
     ) -> TwitchThemeMode | None:
         if not utils.isValidStr(themeMode):
             return None
@@ -1866,13 +1866,13 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseTokensDetails(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchTokensDetails | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
         expirationTime = await self.__calculateExpirationTime(
-            expiresInSeconds = utils.getIntFromDict(jsonResponse, 'expires_in', fallback = -1)
+            expiresInSeconds = utils.getIntFromDict(jsonResponse, 'expires_in', fallback = -1),
         )
 
         accessToken: str | None = None
@@ -1890,7 +1890,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         return TwitchTokensDetails(
             expirationTime = expirationTime,
             accessToken = accessToken,
-            refreshToken = refreshToken
+            refreshToken = refreshToken,
         )
 
     async def parseTransport(

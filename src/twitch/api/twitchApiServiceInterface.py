@@ -144,7 +144,7 @@ class TwitchApiServiceInterface(ABC):
     async def fetchUserDetailsWithUserId(
         self,
         twitchAccessToken: str,
-        userId: str
+        userId: str,
     ) -> TwitchUserDetails | None:
         pass
 
