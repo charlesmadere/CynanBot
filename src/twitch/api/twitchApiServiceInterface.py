@@ -10,7 +10,7 @@ from .models.twitchChattersResponse import TwitchChattersResponse
 from .models.twitchEmotesResponse import TwitchEmotesResponse
 from .models.twitchEventSubRequest import TwitchEventSubRequest
 from .models.twitchEventSubResponse import TwitchEventSubResponse
-from .models.twitchFollower import TwitchFollower
+from .models.twitchFollowersResponse import TwitchFollowersResponse
 from .models.twitchLiveUserDetails import TwitchLiveUserDetails
 from .models.twitchModeratorsResponse import TwitchModeratorsResponse
 from .models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
@@ -116,7 +116,7 @@ class TwitchApiServiceInterface(ABC):
         broadcasterId: str,
         twitchAccessToken: str,
         userId: str,
-    ) -> TwitchFollower | None:
+    ) -> TwitchFollowersResponse | None:
         pass
 
     @abstractmethod

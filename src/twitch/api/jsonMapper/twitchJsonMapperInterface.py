@@ -353,7 +353,7 @@ class TwitchJsonMapperInterface(ABC):
     async def parseFollower(
         self,
         jsonResponse: dict[str, Any] | Any | None,
-    ) -> TwitchFollower:
+    ) -> TwitchFollower | None:
         pass
 
     @abstractmethod
@@ -758,14 +758,14 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def serializeSendChatAnnouncementRequest(
         self,
-        announcementRequest: TwitchSendChatAnnouncementRequest
+        announcementRequest: TwitchSendChatAnnouncementRequest,
     ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     async def serializeSendChatMessageRequest(
         self,
-        chatRequest: TwitchSendChatMessageRequest
+        chatRequest: TwitchSendChatMessageRequest,
     ) -> dict[str, Any]:
         pass
 
@@ -779,21 +779,21 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def serializeSubscriptionType(
         self,
-        subscriptionType: TwitchWebsocketSubscriptionType
+        subscriptionType: TwitchWebsocketSubscriptionType,
     ) -> str:
         pass
 
     @abstractmethod
     async def serializeTransport(
         self,
-        transport: TwitchWebsocketTransport
+        transport: TwitchWebsocketTransport,
     ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     async def serializeTransportMethod(
         self,
-        transportMethod: TwitchWebsocketTransportMethod
+        transportMethod: TwitchWebsocketTransportMethod,
     ) -> str:
         pass
 

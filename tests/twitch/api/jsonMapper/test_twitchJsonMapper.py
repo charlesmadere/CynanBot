@@ -2617,7 +2617,7 @@ class TestTwitchJsonMapper:
             broadcasterId = 'abc123',
             message = 'Hello, World!',
             moderatorId = 'def456',
-            color = TwitchChatAnnouncementColor.PURPLE
+            color = TwitchChatAnnouncementColor.PURPLE,
         )
 
         result = await self.jsonMapper.serializeSendChatAnnouncementRequest(request)
@@ -2633,7 +2633,7 @@ class TestTwitchJsonMapper:
             broadcasterId = 'abc123',
             message = 'Hello, World!',
             moderatorId = 'def456',
-            color = None
+            color = None,
         )
 
         result = await self.jsonMapper.serializeSendChatAnnouncementRequest(request)
@@ -2649,7 +2649,7 @@ class TestTwitchJsonMapper:
             broadcasterId = 'abc123',
             message = 'Hello, World!',
             replyParentMessageId = None,
-            senderId = 'def456'
+            senderId = 'def456',
         )
 
         result = await self.jsonMapper.serializeSendChatMessageRequest(request)
@@ -2666,7 +2666,7 @@ class TestTwitchJsonMapper:
             broadcasterId = 'abc123',
             message = 'Hello, World!',
             replyParentMessageId = 'xyz',
-            senderId = 'def456'
+            senderId = 'def456',
         )
 
         result = await self.jsonMapper.serializeSendChatMessageRequest(request)

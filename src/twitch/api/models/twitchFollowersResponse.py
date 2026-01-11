@@ -6,8 +6,10 @@ from .twitchFollower import TwitchFollower
 from .twitchPaginationResponse import TwitchPaginationResponse
 
 
+# This class intends to directly correspond to Twitch's "Get Channel Followers" API:
+# https://dev.twitch.tv/docs/api/reference#get-channel-followers
 @dataclass(frozen = True)
 class TwitchFollowersResponse:
-    followers: FrozenList[TwitchFollower]
+    data: FrozenList[TwitchFollower]
     total: int
     pagination: TwitchPaginationResponse | None

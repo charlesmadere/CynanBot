@@ -895,21 +895,20 @@ twitchSubscriptionsRepository: Final[TwitchSubscriptionsRepositoryInterface] = T
     userIdsRepository = userIdsRepository,
 )
 
-twitchEmotesHelper: TwitchEmotesHelperInterface = TwitchEmotesHelper(
+twitchEmotesHelper: Final[TwitchEmotesHelperInterface] = TwitchEmotesHelper(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
-twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = TwitchFollowingStatusRepository(
+twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface] = TwitchFollowingStatusRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService,
-    userIdsRepository = userIdsRepository
 )
 
 anivJsonMapper: AnivJsonMapperInterface = AnivJsonMapper()

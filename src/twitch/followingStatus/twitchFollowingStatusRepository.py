@@ -7,7 +7,6 @@ from lru import LRU
 
 from .twitchFollowingStatus import TwitchFollowingStatus
 from .twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
-from ..api.models.twitchFollower import TwitchFollower
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
@@ -15,7 +14,6 @@ from ...storage.backingDatabase import BackingDatabase
 from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
 from ...timber.timberInterface import TimberInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
@@ -25,7 +23,6 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
         cacheSize: int = 64,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
@@ -34,8 +31,6 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidInt(cacheSize):
             raise TypeError(f'cacheSize argument is malformed: \"{cacheSize}\"')
         elif cacheSize < 1 or cacheSize > utils.getIntMaxSafeSize():
@@ -44,7 +39,6 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         self.__backingDatabase: Final[BackingDatabase] = backingDatabase
         self.__timber: Final[TimberInterface] = timber
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
         self.__isDatabaseReady: bool = False
         self.__caches: Final[dict[str, LRU[str, TwitchFollowingStatus | None]]] = defaultdict(lambda: LRU(cacheSize))
@@ -72,7 +66,6 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
             return followingStatus
 
         followingStatus = await self.__fetchFromDatabase(
-            twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
             userId = userId,
         )
@@ -102,19 +95,17 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
 
     async def __fetchFromDatabase(
         self,
-        twitchAccessToken: str,
         twitchChannelId: str,
         userId: str,
     ) -> TwitchFollowingStatus | None:
         connection = await self.__getDatabaseConnection()
         record = await connection.execute(
             '''
-                SELECT twitchfollowingstatus.datetime, userids.username FROM twitchfollowingstatus
-                INNER JOIN userids ON twitchfollowingstatus.twitchchannelid = userids.userid
-                WHERE twitchfollowingstatus.twitchchannelid = $1 AND twitchfollowingstatus.userid = $2
+                SELECT datetime FROM twitchfollowingstatus
+                WHERE twitchchannelid = $1 AND userid = $2
                 LIMIT 1
             ''',
-            twitchChannelId, userId
+            twitchChannelId, userId,
         )
 
         await connection.close()
@@ -122,17 +113,10 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         if record is None or len(record) == 0:
             return None
 
-        userName = await self.__userIdsRepository.requireUserName(
-            userId = userId,
-            twitchAccessToken = twitchAccessToken,
-        )
-
         return TwitchFollowingStatus(
             followedAt = datetime.fromisoformat(record[0]),
-            twitchChannel = record[1],
             twitchChannelId = twitchChannelId,
             userId = userId,
-            userName = userName,
         )
 
     async def __fetchFromTwitchApi(
@@ -141,37 +125,25 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         twitchChannelId: str,
         userId: str,
     ) -> TwitchFollowingStatus | None:
-        twitchChannel = await self.__userIdsRepository.requireUserName(
-            userId = twitchChannelId,
-            twitchAccessToken = twitchAccessToken,
-        )
-
-        userName = await self.__userIdsRepository.requireUserName(
-            userId = userId,
-            twitchAccessToken = twitchAccessToken,
-        )
-
-        twitchFollower: TwitchFollower | None = None
-
         try:
-            twitchFollower = await self.__twitchApiService.fetchFollower(
+            response = await self.__twitchApiService.fetchFollower(
                 broadcasterId = twitchChannelId,
                 twitchAccessToken = twitchAccessToken,
                 userId = userId,
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchFollowingStatusRepository', f'Failed to fetch Twitch follower from Twitch API ({twitchAccessToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({userId=}): {e}', e, traceback.format_exc())
-
-        if twitchFollower is None:
+            self.__timber.log('TwitchFollowingStatusRepository', f'Failed to fetch Twitch follower from Twitch API ({twitchChannelId=}) ({userId=})', e, traceback.format_exc())
             return None
-        else:
-            return TwitchFollowingStatus(
-                followedAt = twitchFollower.followedAt,
-                twitchChannel = twitchChannel,
-                twitchChannelId = twitchChannelId,
-                userId = userId,
-                userName = userName,
-            )
+
+        for follower in response.data:
+            if follower.userId == userId:
+                return TwitchFollowingStatus(
+                    followedAt = follower.followedAt,
+                    twitchChannelId = twitchChannelId,
+                    userId = userId,
+                )
+
+        return None
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()
@@ -256,7 +228,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
                     DELETE FROM twitchfollowingstatus
                     WHERE twitchchannelid = $1 AND userid = $2
                 ''',
-                twitchChannelId, userId
+                twitchChannelId, userId,
             )
         else:
             await connection.execute(
@@ -265,7 +237,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
                     VALUES ($1, $2, $3)
                     ON CONFLICT (twitchchannelid, userid) DO UPDATE SET datetime = EXCLUDED.datetime
                 ''',
-                followedAt.isoformat(), twitchChannelId, userId
+                followedAt.isoformat(), twitchChannelId, userId,
             )
 
         await connection.close()
