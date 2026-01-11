@@ -79,6 +79,7 @@ from ..models.twitchSubscriberTier import TwitchSubscriberTier
 from ..models.twitchThemeMode import TwitchThemeMode
 from ..models.twitchTokensDetails import TwitchTokensDetails
 from ..models.twitchUserSubscription import TwitchUserSubscription
+from ..models.twitchUserSubscriptionsResponse import TwitchUserSubscriptionsResponse
 from ..models.twitchUserType import TwitchUserType
 from ..models.twitchValidationResponse import TwitchValidationResponse
 from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
@@ -328,42 +329,32 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
-
-        if not isinstance(data, list) or len(data) == 0:
-            return None
-
-        dataEntry: dict[str, Any] | Any | None = data[0]
-        if not isinstance(dataEntry, dict) or len(dataEntry) == 0:
-            return None
-
-        isGift = utils.getBoolFromDict(dataEntry, 'is_gift')
-
-        broadcasterId = utils.getStrFromDict(dataEntry, 'broadcaster_id')
-        broadcasterLogin = utils.getStrFromDict(dataEntry, 'broadcaster_login')
-        broadcasterName = utils.getStrFromDict(dataEntry, 'broadcaster_name')
+        isGift = utils.getBoolFromDict(jsonResponse, 'is_gift')
+        broadcasterId = utils.getStrFromDict(jsonResponse, 'broadcaster_id')
+        broadcasterLogin = utils.getStrFromDict(jsonResponse, 'broadcaster_login')
+        broadcasterName = utils.getStrFromDict(jsonResponse, 'broadcaster_name')
 
         gifterId: str | None = None
-        if 'gifter_id' in dataEntry and utils.isValidStr(dataEntry.get('gifter_id')):
-            gifterId = utils.getStrFromDict(dataEntry, 'gifter_id')
+        if 'gifter_id' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_id')):
+            gifterId = utils.getStrFromDict(jsonResponse, 'gifter_id')
 
         gifterLogin: str | None = None
-        if 'gifter_login' in dataEntry and utils.isValidStr(dataEntry.get('gifter_login')):
-            gifterLogin = utils.getStrFromDict(dataEntry, 'gifter_login')
+        if 'gifter_login' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_login')):
+            gifterLogin = utils.getStrFromDict(jsonResponse, 'gifter_login')
 
         gifterName: str | None = None
-        if 'gifter_name' in dataEntry and utils.isValidStr(dataEntry.get('gifter_name')):
-            gifterName = utils.getStrFromDict(dataEntry, 'gifter_name')
+        if 'gifter_name' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_name')):
+            gifterName = utils.getStrFromDict(jsonResponse, 'gifter_name')
 
         planName: str | None = None
-        if 'plan_name' in dataEntry and utils.isValidStr(dataEntry.get('plan_name')):
-            planName = utils.getStrFromDict(dataEntry, 'plan_name')
+        if 'plan_name' in jsonResponse and utils.isValidStr(jsonResponse.get('plan_name')):
+            planName = utils.getStrFromDict(jsonResponse, 'plan_name')
 
-        userId = utils.getStrFromDict(dataEntry, 'user_id')
-        userLogin = utils.getStrFromDict(dataEntry, 'user_login')
-        userName = utils.getStrFromDict(dataEntry, 'user_name')
+        userId = utils.getStrFromDict(jsonResponse, 'user_id')
+        userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
+        userName = utils.getStrFromDict(jsonResponse, 'user_name')
 
-        tier = await self.requireSubscriberTier(utils.getStrFromDict(dataEntry, 'tier'))
+        tier = await self.requireSubscriberTier(utils.getStrFromDict(jsonResponse, 'tier'))
 
         return TwitchBroadcasterSubscription(
             isGift = isGift,
@@ -1095,7 +1086,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseEventSubResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchEventSubResponse | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1129,7 +1120,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseFollower(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchFollower:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             raise TypeError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
@@ -1143,12 +1134,12 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             followedAt = followedAt,
             userId = userId,
             userLogin = userLogin,
-            userName = userName
+            userName = userName,
         )
 
     async def parseFollowersResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchFollowersResponse | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1177,7 +1168,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseHypeTrainType(
         self,
-        hypeTrainType: str | Any | None
+        hypeTrainType: str | Any | None,
     ) -> TwitchHypeTrainType | None:
         if not utils.isValidStr(hypeTrainType):
             return None
@@ -1953,37 +1944,29 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseUserSubscription(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchUserSubscription | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
-        if not isinstance(data, list) or len(data) == 0:
-            return None
-
-        dataEntry: dict[str, Any] | Any | None = data[0]
-        if not isinstance(dataEntry, dict) or len(dataEntry) == 0:
-            return None
-
-        isGift = utils.getBoolFromDict(dataEntry, 'is_gift', fallback = False)
-        broadcasterId = utils.getStrFromDict(dataEntry, 'broadcaster_id')
-        broadcasterLogin = utils.getStrFromDict(dataEntry, 'broadcaster_login')
-        broadcasterName = utils.getStrFromDict(dataEntry, 'broadcaster_name')
+        isGift = utils.getBoolFromDict(jsonResponse, 'is_gift', fallback = False)
+        broadcasterId = utils.getStrFromDict(jsonResponse, 'broadcaster_id')
+        broadcasterLogin = utils.getStrFromDict(jsonResponse, 'broadcaster_login')
+        broadcasterName = utils.getStrFromDict(jsonResponse, 'broadcaster_name')
 
         gifterId: str | None = None
-        if 'gifter_id' in dataEntry and utils.isValidStr(dataEntry.get('gifter_id')):
-            gifterId = utils.getStrFromDict(dataEntry, 'gifter_id')
+        if 'gifter_id' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_id')):
+            gifterId = utils.getStrFromDict(jsonResponse, 'gifter_id')
 
         gifterLogin: str | None = None
-        if 'gifter_login' in dataEntry and utils.isValidStr(dataEntry.get('gifter_login')):
-            gifterLogin = utils.getStrFromDict(dataEntry, 'gifter_login')
+        if 'gifter_login' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_login')):
+            gifterLogin = utils.getStrFromDict(jsonResponse, 'gifter_login')
 
         gifterName: str | None = None
-        if 'gifter_name' in dataEntry and utils.isValidStr(dataEntry.get('gifter_name')):
-            gifterName = utils.getStrFromDict(dataEntry, 'gifter_name')
+        if 'gifter_name' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_name')):
+            gifterName = utils.getStrFromDict(jsonResponse, 'gifter_name')
 
-        tier = await self.requireSubscriberTier(utils.getStrFromDict(dataEntry, 'tier'))
+        tier = await self.requireSubscriberTier(utils.getStrFromDict(jsonResponse, 'tier'))
 
         return TwitchUserSubscription(
             isGift = isGift,
@@ -1993,7 +1976,32 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             gifterId = gifterId,
             gifterLogin = gifterLogin,
             gifterName = gifterName,
-            tier = tier
+            tier = tier,
+        )
+
+    async def parseUserSubscriptionsResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchUserSubscriptionsResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        data: FrozenList[TwitchUserSubscription] = FrozenList()
+
+        if isinstance(dataArray, list) and len(dataArray) >= 1:
+            for index, dataJson in enumerate(dataArray):
+                userSubscription = await self.parseUserSubscription(dataJson)
+
+                if userSubscription is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} within \"data\" ({userSubscription=}) ({jsonResponse=})')
+                else:
+                    data.append(userSubscription)
+
+        data.freeze()
+
+        return TwitchUserSubscriptionsResponse(
+            data = data,
         )
 
     async def parseUserType(
@@ -2443,7 +2451,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def serializeSubscriberTier(
         self,
-        subscriberTier: TwitchSubscriberTier
+        subscriberTier: TwitchSubscriberTier,
     ) -> str:
         if not isinstance(subscriberTier, TwitchSubscriberTier):
             raise TypeError(f'subscriberTier argument is malformed: \"{subscriberTier}\"')

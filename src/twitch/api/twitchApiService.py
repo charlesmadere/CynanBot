@@ -28,7 +28,7 @@ from .models.twitchStartCommercialResponse import TwitchStartCommercialResponse
 from .models.twitchTokensDetails import TwitchTokensDetails
 from .models.twitchUnbanRequest import TwitchUnbanRequest
 from .models.twitchUserDetails import TwitchUserDetails
-from .models.twitchUserSubscription import TwitchUserSubscription
+from .models.twitchUserSubscriptionsResponse import TwitchUserSubscriptionsResponse
 from .models.twitchValidationResponse import TwitchValidationResponse
 from .twitchApiServiceInterface import TwitchApiServiceInterface
 from ..exceptions import (TwitchErrorException, TwitchJsonException,
@@ -190,7 +190,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         broadcasterId: str,
         twitchAccessToken: str,
         userId: str,
-    ) -> TwitchUserSubscription:
+    ) -> TwitchUserSubscriptionsResponse:
         if not utils.isValidStr(broadcasterId):
             raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
         elif not utils.isValidStr(twitchAccessToken):
@@ -202,9 +202,14 @@ class TwitchApiService(TwitchApiServiceInterface):
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
         clientSession = await self.__networkClientProvider.get()
 
+        queryString = urllib.parse.urlencode({
+            'broadcaster_id': broadcasterId,
+            'user_id': userId,
+        })
+
         try:
             response = await clientSession.get(
-                url = f'https://api.twitch.tv/helix/subscriptions/user?broadcaster_id={broadcasterId}&user_id={userId}',
+                url = f'https://api.twitch.tv/helix/subscriptions/user?{queryString}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
                     'Client-Id': twitchClientId,
@@ -225,13 +230,13 @@ class TwitchApiService(TwitchApiServiceInterface):
                 message = f'TwitchApiService encountered non-200 HTTP status code when checking user subscription ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})',
             )
 
-        userSubscription = await self.__twitchJsonMapper.parseUserSubscription(jsonResponse)
+        userSubscriptionsResponse = await self.__twitchJsonMapper.parseUserSubscriptionsResponse(jsonResponse)
 
-        if userSubscription is None:
+        if userSubscriptionsResponse is None:
             self.__timber.log('TwitchApiService', f'Unable to parse JSON response when checking user subscription ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
             raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when checking user subscription ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
 
-        return userSubscription
+        return userSubscriptionsResponse
 
     async def createEventSubSubscription(
         self,
@@ -243,7 +248,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         elif not isinstance(eventSubRequest, TwitchEventSubRequest):
             raise TypeError(f'eventSubRequest argument is malformed: \"{eventSubRequest}\"')
 
-        self.__timber.log('TwitchApiService', f'Creating EventSub subscription... ({twitchAccessToken=}) ({eventSubRequest=})')
+        self.__timber.log('TwitchApiService', f'Creating EventSub subscription... ({eventSubRequest=})')
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
         clientSession = await self.__networkClientProvider.get()
 
@@ -258,25 +263,25 @@ class TwitchApiService(TwitchApiServiceInterface):
                 json = await self.__twitchJsonMapper.serializeEventSubRequest(eventSubRequest),
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchApiService', f'Encountered network error when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=})): {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {e}')
+            self.__timber.log('TwitchApiService', f'Encountered network error when creating EventSub subscription ({eventSubRequest=}))', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when creating EventSub subscription ({eventSubRequest=}): {e}')
 
         responseStatusCode = response.statusCode
         jsonResponse = await response.json()
         await response.close()
 
         if responseStatusCode != 202:
-            self.__timber.log('TwitchApiService', f'Encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            self.__timber.log('TwitchApiService', f'Encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({eventSubRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
             raise TwitchStatusCodeException(
                 statusCode = responseStatusCode,
-                message = f'TwitchApiService encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})'
+                message = f'TwitchApiService encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({eventSubRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})'
             )
 
         eventSubResponse = await self.__twitchJsonMapper.parseEventSubResponse(jsonResponse)
 
         if eventSubResponse is None:
-            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({eventSubResponse=})')
-            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({eventSubResponse=})')
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when creating EventSub subscription ({eventSubRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({eventSubResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when creating EventSub subscription ({eventSubRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({eventSubResponse=})')
 
         return eventSubResponse
 

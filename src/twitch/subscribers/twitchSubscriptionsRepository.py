@@ -127,7 +127,7 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         twitchChannelId: str,
     ) -> TwitchUserSubscription | None:
         try:
-            return await self.__twitchApiService.checkUserSubscription(
+            userSubscriptionsResponse = await self.__twitchApiService.checkUserSubscription(
                 broadcasterId = twitchChannelId,
                 twitchAccessToken = twitchAccessToken,
                 userId = selfUserId,
@@ -135,6 +135,12 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         except (GenericNetworkException, TwitchJsonException, TwitchStatusCodeException) as e:
             self.__timber.log('TwitchSubscriptionsRepository', f'Failed to fetch self subscription from Twitch API ({selfUserId=}) ({twitchChannelId=})', e, traceback.format_exc())
             return None
+
+        for userSubscription in userSubscriptionsResponse.data:
+            if userSubscription.broadcasterId == twitchChannelId:
+                return userSubscription
+
+        return None
 
     async def fetchSubscription(
         self,

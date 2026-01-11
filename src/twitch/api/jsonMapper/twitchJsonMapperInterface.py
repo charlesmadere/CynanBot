@@ -75,6 +75,7 @@ from ..models.twitchSubscriberTier import TwitchSubscriberTier
 from ..models.twitchThemeMode import TwitchThemeMode
 from ..models.twitchTokensDetails import TwitchTokensDetails
 from ..models.twitchUserSubscription import TwitchUserSubscription
+from ..models.twitchUserSubscriptionsResponse import TwitchUserSubscriptionsResponse
 from ..models.twitchUserType import TwitchUserType
 from ..models.twitchValidationResponse import TwitchValidationResponse
 from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
@@ -344,28 +345,28 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseEventSubResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchEventSubResponse | None:
         pass
 
     @abstractmethod
     async def parseFollower(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchFollower:
         pass
 
     @abstractmethod
     async def parseFollowersResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchFollowersResponse | None:
         pass
 
     @abstractmethod
     async def parseHypeTrainType(
         self,
-        hypeTrainType: str | Any | None
+        hypeTrainType: str | Any | None,
     ) -> TwitchHypeTrainType | None:
         pass
 
@@ -596,8 +597,15 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseUserSubscription(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchUserSubscription | None:
+        pass
+
+    @abstractmethod
+    async def parseUserSubscriptionsResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchUserSubscriptionsResponse | None:
         pass
 
     @abstractmethod
@@ -764,7 +772,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def serializeSubscriberTier(
         self,
-        subscriberTier: TwitchSubscriberTier
+        subscriberTier: TwitchSubscriberTier,
     ) -> str:
         pass
 
