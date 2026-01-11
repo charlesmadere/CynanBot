@@ -20,7 +20,7 @@ from .models.twitchStartCommercialResponse import TwitchStartCommercialResponse
 from .models.twitchTokensDetails import TwitchTokensDetails
 from .models.twitchUnbanRequest import TwitchUnbanRequest
 from .models.twitchUserDetails import TwitchUserDetails
-from .models.twitchUserSubscription import TwitchUserSubscription
+from .models.twitchUserSubscriptionsResponse import TwitchUserSubscriptionsResponse
 from .models.twitchValidationResponse import TwitchValidationResponse
 
 
@@ -49,7 +49,7 @@ class TwitchApiServiceInterface(ABC):
         broadcasterId: str,
         twitchAccessToken: str,
         userId: str,
-    ) -> TwitchUserSubscription:
+    ) -> TwitchUserSubscriptionsResponse:
         pass
 
     @abstractmethod

@@ -12,6 +12,7 @@ from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.models.twitchApiScope import TwitchApiScope
 from src.twitch.api.models.twitchBanRequest import TwitchBanRequest
+from src.twitch.api.models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from src.twitch.api.models.twitchBroadcasterType import TwitchBroadcasterType
 from src.twitch.api.models.twitchChannelEditor import TwitchChannelEditor
 from src.twitch.api.models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
@@ -295,6 +296,54 @@ class TestTwitchJsonMapper:
     async def test_parseBannedUsersResponse_withNone(self):
         result = await self.jsonMapper.parseBannedUsersResponse(None)
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBroadcasterSubscription(self):
+        broadcasterSubscription = TwitchBroadcasterSubscription(
+            isGift = False,
+            broadcasterId = '111111111',
+            broadcasterLogin = 'smcharles',
+            broadcasterName = 'smCharles',
+            gifterId = None,
+            gifterLogin = None,
+            gifterName = None,
+            planName = 'Beer Mug',
+            userId = '222222222',
+            userLogin = 'stashiocat',
+            userName = 'stashiocat',
+            tier = TwitchSubscriberTier.TIER_THREE,
+        )
+
+        jsonResponse: dict[str, Any] = {
+            'broadcaster_id': broadcasterSubscription.broadcasterId,
+            'broadcaster_login': broadcasterSubscription.broadcasterLogin,
+            'broadcaster_name': broadcasterSubscription.broadcasterName,
+            'gifter_id': broadcasterSubscription.gifterId,
+            'gifter_login': broadcasterSubscription.gifterLogin,
+            'gifter_name': broadcasterSubscription.gifterName,
+            'is_gift': broadcasterSubscription.isGift,
+            'plan_name': broadcasterSubscription.planName,
+            'tier': await self.jsonMapper.serializeSubscriberTier(broadcasterSubscription.tier),
+            'user_id': broadcasterSubscription.userId,
+            'user_login': broadcasterSubscription.userLogin,
+            'user_name': broadcasterSubscription.userName,
+        }
+
+        result = await self.jsonMapper.parseBroadcasterSubscription(jsonResponse)
+        assert isinstance(result, TwitchBroadcasterSubscription)
+        assert result == broadcasterSubscription
+        assert result.isGift == broadcasterSubscription.isGift
+        assert result.broadcasterId == broadcasterSubscription.broadcasterId
+        assert result.broadcasterLogin == broadcasterSubscription.broadcasterLogin
+        assert result.broadcasterName == broadcasterSubscription.broadcasterName
+        assert result.gifterId == broadcasterSubscription.gifterId
+        assert result.gifterLogin == broadcasterSubscription.gifterLogin
+        assert result.gifterName == broadcasterSubscription.gifterName
+        assert result.planName == broadcasterSubscription.planName
+        assert result.userId == broadcasterSubscription.userId
+        assert result.userLogin == broadcasterSubscription.userLogin
+        assert result.userName == broadcasterSubscription.userName
+        assert result.tier == broadcasterSubscription.tier
 
     @pytest.mark.asyncio
     async def test_parseBroadcasterSubscription_withEmptyDictionary(self):
@@ -1664,6 +1713,26 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseTransportMethod_withWhitespaceString(self):
         result = await self.jsonMapper.parseTransportMethod(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUserSubscription_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseUserSubscription(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUserSubscription_withNone(self):
+        result = await self.jsonMapper.parseUserSubscription(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUserSubscriptionsResponse_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseUserSubscriptionsResponse(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUserSubscriptionsResponse_withNone(self):
+        result = await self.jsonMapper.parseUserSubscriptionsResponse(None)
         assert result is None
 
     @pytest.mark.asyncio
