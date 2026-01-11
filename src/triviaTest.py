@@ -453,7 +453,7 @@ twitchEmotesHelper: TwitchEmotesHelperInterface = TwitchEmotesHelper(
     twitchHandleProvider = authRepository,
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
 trollmojiHelper: TrollmojiHelperInterface = TrollmojiHelper(

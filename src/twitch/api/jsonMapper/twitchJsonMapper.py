@@ -693,7 +693,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseChattersResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChattersResponse | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1121,9 +1121,9 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
     async def parseFollower(
         self,
         jsonResponse: dict[str, Any] | Any | None,
-    ) -> TwitchFollower:
+    ) -> TwitchFollower | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            raise TypeError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+            return None
 
         followedAt = utils.getDateTimeFromDict(jsonResponse, 'followed_at')
         userId = utils.getStrFromDict(jsonResponse, 'user_id')
@@ -1144,24 +1144,25 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        followers: list[TwitchFollower] = list()
-        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        data: FrozenList[TwitchFollower] = FrozenList()
 
-        if isinstance(data, list) and len(data) >= 1:
-            for followerJson in data:
-                follower = await self.parseFollower(followerJson)
-                followers.append(follower)
+        if isinstance(dataArray, list) and len(dataArray) >= 1:
+            for index, dataItem in enumerate(dataArray):
+                follower = await self.parseFollower(dataItem)
 
-            followers.sort(key = lambda follower: follower.followedAt, reverse = True)
+                if follower is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"data\" data ({jsonResponse=})')
+                else:
+                    data.append(follower)
 
-        frozenFollowers: FrozenList[TwitchFollower] = FrozenList(followers)
-        frozenFollowers.freeze()
+        data.freeze()
 
         total = utils.getIntFromDict(jsonResponse, 'total', fallback = 0)
         pagination = await self.parsePaginationResponse(jsonResponse.get('pagination'))
 
         return TwitchFollowersResponse(
-            followers = frozenFollowers,
+            data = data,
             total = total,
             pagination = pagination,
         )
@@ -2416,24 +2417,23 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def serializeSendChatAnnouncementRequest(
         self,
-        announcementRequest: TwitchSendChatAnnouncementRequest
+        announcementRequest: TwitchSendChatAnnouncementRequest,
     ) -> dict[str, Any]:
         if not isinstance(announcementRequest, TwitchSendChatAnnouncementRequest):
             raise TypeError(f'announcementRequest argument is malformed: \"{announcementRequest}\"')
 
         dictionary: dict[str, Any] = {
-            'message': announcementRequest.message
+            'message': announcementRequest.message,
         }
 
         if announcementRequest.color is not None:
-            color = await self.serializeChatAnnouncementColor(announcementRequest.color)
-            dictionary['color'] = color
+            dictionary['color'] = await self.serializeChatAnnouncementColor(announcementRequest.color)
 
         return dictionary
 
     async def serializeSendChatMessageRequest(
         self,
-        chatRequest: TwitchSendChatMessageRequest
+        chatRequest: TwitchSendChatMessageRequest,
     ) -> dict[str, Any]:
         if not isinstance(chatRequest, TwitchSendChatMessageRequest):
             raise TypeError(f'chatRequest argument is malformed: \"{chatRequest}\"')
@@ -2465,7 +2465,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def serializeSubscriptionType(
         self,
-        subscriptionType: TwitchWebsocketSubscriptionType
+        subscriptionType: TwitchWebsocketSubscriptionType,
     ) -> str:
         if not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
@@ -2522,13 +2522,13 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def serializeTransport(
         self,
-        transport: TwitchWebsocketTransport
+        transport: TwitchWebsocketTransport,
     ) -> dict[str, Any]:
         if not isinstance(transport, TwitchWebsocketTransport):
             raise TypeError(f'transport argument is malformed: \"{transport}\"')
 
         dictionary: dict[str, Any] = {
-            'method': await self.serializeTransportMethod(transport.method)
+            'method': await self.serializeTransportMethod(transport.method),
         }
 
         match transport.method:
@@ -2549,7 +2549,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def serializeTransportMethod(
         self,
-        transportMethod: TwitchWebsocketTransportMethod
+        transportMethod: TwitchWebsocketTransportMethod,
     ) -> str:
         if not isinstance(transportMethod, TwitchWebsocketTransportMethod):
             raise TypeError(f'transportMethod argument is malformed: \"{transportMethod}\"')
