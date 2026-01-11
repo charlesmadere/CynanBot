@@ -189,7 +189,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
                 ),
             )
         except (GenericNetworkException, TwitchJsonException, TwitchStatusCodeException) as e:
-            self.__timber.log('ActiveChattersRepository', f'Failed fetching currently connected chatters ({twitchChannelId=}) ({first=}): {e}', e, traceback.format_exc())
+            self.__timber.log('ActiveChattersRepository', f'Failed fetching currently connected chatters ({twitchChannelId=}) ({first=})', e, traceback.format_exc())
             return entry.chatters
 
         index = 0
@@ -202,7 +202,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             entry.chatters.append(ActiveChatter(
                 mostRecentChat = mostRecentChat,
                 chatterUserId = chatter.userId,
-                chatterUserName = chatter.userLogin
+                chatterUserName = chatter.userLogin,
             ))
 
             index += 1
@@ -257,7 +257,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
 
             return await self.__fetchCurrentConnectedChatters(
                 entry = entry,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
 
     async def isActiveIn(

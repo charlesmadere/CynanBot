@@ -90,7 +90,7 @@ class TwitchApiServiceInterface(ABC):
     async def fetchChatters(
         self,
         twitchAccessToken: str,
-        chattersRequest: TwitchChattersRequest
+        chattersRequest: TwitchChattersRequest,
     ) -> TwitchChattersResponse:
         pass
 
@@ -98,7 +98,7 @@ class TwitchApiServiceInterface(ABC):
     async def fetchChannelEmotes(
         self,
         broadcasterId: str,
-        twitchAccessToken: str
+        twitchAccessToken: str,
     ) -> TwitchEmotesResponse:
         pass
 
