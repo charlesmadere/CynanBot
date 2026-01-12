@@ -17,7 +17,7 @@ class TrollmojiHelper(TrollmojiHelperInterface):
         timeZoneRepository: TimeZoneRepositoryInterface,
         trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface,
         twitchEmotesHelper: TwitchEmotesHelperInterface,
-        cacheTimeBuffer: timedelta = timedelta(hours = 3)
+        cacheTimeBuffer: timedelta = timedelta(hours = 3),
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -50,7 +50,7 @@ class TrollmojiHelper(TrollmojiHelperInterface):
 
         return await self.getEmote(
             emoteText = bombEmote.emoteText,
-            twitchEmoteChannelId = bombEmote.twitchChannelId
+            twitchEmoteChannelId = bombEmote.twitchChannelId,
         )
 
     async def getBombEmoteOrBackup(self) -> str:
@@ -69,13 +69,13 @@ class TrollmojiHelper(TrollmojiHelperInterface):
 
         return await self.getEmote(
             emoteText = dinkDonkEmote.emoteText,
-            twitchEmoteChannelId = dinkDonkEmote.twitchChannelId
+            twitchEmoteChannelId = dinkDonkEmote.twitchChannelId,
         )
 
     async def getEmote(
         self,
         emoteText: str | None,
-        twitchEmoteChannelId: str
+        twitchEmoteChannelId: str,
     ) -> str | None:
         if emoteText is not None and not isinstance(emoteText, str):
             raise TypeError(f'emoteText argument is malformed: \"{emoteText}\"')
@@ -96,7 +96,7 @@ class TrollmojiHelper(TrollmojiHelperInterface):
                 return None
 
         viableEmoteNames = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
-            twitchChannelId = twitchEmoteChannelId
+            twitchChannelId = twitchEmoteChannelId,
         )
 
         emoteIsAvailable = emoteText in viableEmoteNames
@@ -118,7 +118,7 @@ class TrollmojiHelper(TrollmojiHelperInterface):
 
         return await self.getEmote(
             emoteText = explodedEmote.emoteText,
-            twitchEmoteChannelId = explodedEmote.twitchChannelId
+            twitchEmoteChannelId = explodedEmote.twitchChannelId,
         )
 
     async def getExplodedEmoteOrBackup(self) -> str:
@@ -137,7 +137,7 @@ class TrollmojiHelper(TrollmojiHelperInterface):
 
         return await self.getEmote(
             emoteText = gottemEmote.emoteText,
-            twitchEmoteChannelId = gottemEmote.twitchChannelId
+            twitchEmoteChannelId = gottemEmote.twitchChannelId,
         )
 
     async def getGottemEmoteOrBackup(self) -> str:
@@ -156,7 +156,7 @@ class TrollmojiHelper(TrollmojiHelperInterface):
 
         return await self.getEmote(
             emoteText = hypeEmote.emoteText,
-            twitchEmoteChannelId = hypeEmote.twitchChannelId
+            twitchEmoteChannelId = hypeEmote.twitchChannelId,
         )
 
     async def getHypeEmoteOrBackup(self) -> str:
@@ -175,7 +175,7 @@ class TrollmojiHelper(TrollmojiHelperInterface):
 
         return await self.getEmote(
             emoteText = shrugEmote.emoteText,
-            twitchEmoteChannelId = shrugEmote.twitchChannelId
+            twitchEmoteChannelId = shrugEmote.twitchChannelId,
         )
 
     async def getThumbsDownEmote(self) -> str | None:
@@ -186,7 +186,7 @@ class TrollmojiHelper(TrollmojiHelperInterface):
 
         return await self.getEmote(
             emoteText = thumbsDownEmote.emoteText,
-            twitchEmoteChannelId = thumbsDownEmote.twitchChannelId
+            twitchEmoteChannelId = thumbsDownEmote.twitchChannelId,
         )
 
     async def getThumbsDownEmoteOrBackup(self) -> str:
@@ -205,7 +205,7 @@ class TrollmojiHelper(TrollmojiHelperInterface):
 
         return await self.getEmote(
             emoteText = thumbsUpEmote.emoteText,
-            twitchEmoteChannelId = thumbsUpEmote.twitchChannelId
+            twitchEmoteChannelId = thumbsUpEmote.twitchChannelId,
         )
 
     async def getThumbsUpEmoteOrBackup(self) -> str:
