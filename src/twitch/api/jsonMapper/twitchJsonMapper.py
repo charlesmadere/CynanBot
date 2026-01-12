@@ -70,6 +70,7 @@ from ..models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncemen
 from ..models.twitchSendChatDropReason import TwitchSendChatDropReason
 from ..models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from ..models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
+from ..models.twitchSendChatMessageResponseEntry import TwitchSendChatMessageResponseEntry
 from ..models.twitchStartCommercialDetails import TwitchStartCommercialDetails
 from ..models.twitchStartCommercialResponse import TwitchStartCommercialResponse
 from ..models.twitchStreamType import TwitchStreamType
@@ -1620,11 +1621,16 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        code = utils.getStrFromDict(jsonResponse, 'code')
+        code: str | None = None
+        if 'code' in jsonResponse and utils.isValidStr(jsonResponse.get('code')):
+            code = utils.getStrFromDict(jsonResponse, 'code')
 
         message: str | None = None
         if 'message' in jsonResponse and utils.isValidStr(jsonResponse.get('message')):
             message = utils.getStrFromDict(jsonResponse, 'message')
+
+        if not utils.isValidStr(code) and not utils.isValidStr(message):
+            return None
 
         return TwitchSendChatDropReason(
             code = code,
@@ -1638,19 +1644,36 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
-        if not isinstance(data, list) or len(data) == 0:
-            return None
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        data: FrozenList[TwitchSendChatMessageResponseEntry] = FrozenList()
 
-        dataEntry: dict[str, Any] | Any | None = data[0]
-        if not isinstance(dataEntry, dict) or len(dataEntry) == 0:
-            return None
+        if isinstance(dataArray, list) and len(dataArray) >= 1:
+            for index, dataItem in enumerate(dataArray):
+                responseEntry = await self.parseSendChatMessageResponseEntry(dataItem)
 
-        isSent = utils.getBoolFromDict(dataEntry, 'is_sent', fallback = False)
-        messageId = utils.getStrFromDict(dataEntry, 'message_id')
-        dropReason = await self.parseSendChatDropReason(dataEntry.get('drop_reason'))
+                if responseEntry is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"data\" data ({jsonResponse=})')
+                else:
+                    data.append(responseEntry)
+
+        data.freeze()
 
         return TwitchSendChatMessageResponse(
+            data = data,
+        )
+
+    async def parseSendChatMessageResponseEntry(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchSendChatMessageResponseEntry | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        isSent = utils.getBoolFromDict(jsonResponse, 'is_sent', fallback = False)
+        messageId = utils.getStrFromDict(jsonResponse, 'message_id')
+        dropReason = await self.parseSendChatDropReason(jsonResponse.get('drop_reason'))
+
+        return TwitchSendChatMessageResponseEntry(
             isSent = isSent,
             messageId = messageId,
             dropReason = dropReason,
@@ -2340,7 +2363,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def serializeChatAnnouncementColor(
         self,
-        announcementColor: TwitchChatAnnouncementColor
+        announcementColor: TwitchChatAnnouncementColor,
     ) -> str:
         if not isinstance(announcementColor, TwitchChatAnnouncementColor):
             raise TypeError(f'announcementColor argument is malformed: \"{announcementColor}\"')
@@ -2398,7 +2421,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def serializeEventSubRequest(
         self,
-        eventSubRequest: TwitchEventSubRequest
+        eventSubRequest: TwitchEventSubRequest,
     ) -> dict[str, Any]:
         if not isinstance(eventSubRequest, TwitchEventSubRequest):
             raise TypeError(f'eventSubRequest argument is malformed: \"{eventSubRequest}\"')

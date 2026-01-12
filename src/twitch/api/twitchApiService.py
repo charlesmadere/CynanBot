@@ -86,9 +86,14 @@ class TwitchApiService(TwitchApiServiceInterface):
         clientSession = await self.__networkClientProvider.get()
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
 
+        queryString = urllib.parse.urlencode({
+            'broadcaster_id': broadcasterId,
+            'user_id': userId,
+        })
+
         try:
             response = await clientSession.post(
-                url = f'https://api.twitch.tv/helix/moderation/moderators?broadcaster_id={broadcasterId}&user_id={userId}',
+                url = f'https://api.twitch.tv/helix/moderation/moderators?{queryString}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
                     'Client-Id': twitchClientId,
@@ -121,9 +126,14 @@ class TwitchApiService(TwitchApiServiceInterface):
         clientSession = await self.__networkClientProvider.get()
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
 
+        queryString = urllib.parse.urlencode({
+            'broadcaster_id': banRequest.broadcasterUserId,
+            'moderator_id': banRequest.moderatorUserId,
+        })
+
         try:
             response = await clientSession.post(
-                url = f'https://api.twitch.tv/helix/moderation/bans?broadcaster_id={banRequest.broadcasterUserId}&moderator_id={banRequest.moderatorUserId}',
+                url = f'https://api.twitch.tv/helix/moderation/bans?{queryString}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
                     'Client-Id': twitchClientId,
@@ -1094,8 +1104,8 @@ class TwitchApiService(TwitchApiServiceInterface):
                 },
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchApiService', f'Encountered network error when sending chat announcement ({twitchAccessToken=}) ({announcementRequest=})', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when sending chat announcement ({twitchAccessToken=}) ({announcementRequest=}): {e}')
+            self.__timber.log('TwitchApiService', f'Encountered network error when sending chat announcement ({announcementRequest=})', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when sending chat announcement ({announcementRequest=}): {e}')
 
         responseStatusCode = response.statusCode
         await response.close()
@@ -1106,10 +1116,10 @@ class TwitchApiService(TwitchApiServiceInterface):
                 return True
 
             case _:
-                self.__timber.log('TwitchApiService', f'Encountered network error when sending chat announcement ({twitchAccessToken=}) ({announcementRequest=}) ({response=}) ({responseStatusCode=})')
+                self.__timber.log('TwitchApiService', f'Encountered network error when sending chat announcement ({announcementRequest=}) ({response=}) ({responseStatusCode=})')
                 raise TwitchStatusCodeException(
                     statusCode = responseStatusCode,
-                    message = f'TwitchApiService encountered network error when sending chat announcement ({twitchAccessToken=}) ({announcementRequest=}) ({response=}) ({responseStatusCode=})',
+                    message = f'TwitchApiService encountered network error when sending chat announcement ({announcementRequest=}) ({response=}) ({responseStatusCode=})',
                 )
 
     async def sendChatMessage(

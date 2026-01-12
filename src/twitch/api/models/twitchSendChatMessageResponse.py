@@ -1,10 +1,12 @@
 from dataclasses import dataclass
 
-from .twitchSendChatDropReason import TwitchSendChatDropReason
+from frozenlist import FrozenList
+
+from .twitchSendChatMessageResponseEntry import TwitchSendChatMessageResponseEntry
 
 
+# This class intends to directly correspond to Twitch's "Send Chat Message" API:
+# https://dev.twitch.tv/docs/api/reference/#send-chat-message
 @dataclass(frozen = True)
 class TwitchSendChatMessageResponse:
-    isSent: bool
-    messageId: str
-    dropReason: TwitchSendChatDropReason | None
+    data: FrozenList[TwitchSendChatMessageResponseEntry]

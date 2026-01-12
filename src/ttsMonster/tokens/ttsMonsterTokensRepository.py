@@ -19,7 +19,7 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        seedFileReader: JsonReaderInterface | None = None
+        seedFileReader: JsonReaderInterface | None = None,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -81,14 +81,14 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
             await self.set(
                 ttsMonsterKey = ttsMonsterKey,
                 ttsMonsterUserId = ttsMonsterUserId,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
 
         self.__timber.log('TtsMonsterTokensRepository', f'Finished reading in seed file \"{seedFileReader}\"')
 
     async def get(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> TtsMonsterTokens | None:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
@@ -103,7 +103,7 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
                 WHERE twitchchannelid = $1
                 LIMIT 1
             ''',
-            twitchChannelId
+            twitchChannelId,
         )
 
         await connection.close()
@@ -113,7 +113,7 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
             tokens = TtsMonsterTokens(
                 key = record[0],
                 twitchChannelId = twitchChannelId,
-                userId = record[1]
+                userId = record[1],
             )
 
         self.__cache[twitchChannelId] = tokens
@@ -163,7 +163,7 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
         self,
         ttsMonsterKey: str | None,
         ttsMonsterUserId: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         if ttsMonsterKey is not None and not isinstance(ttsMonsterKey, str):
             raise TypeError(f'ttsMonsterKey argument is malformed: \"{ttsMonsterKey}\"')
@@ -181,13 +181,13 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
                     VALUES ($1, $2, $3)
                     ON CONFLICT (twitchchannelid) DO UPDATE SET key = EXCLUDED.key, userid = EXCLUDED.userid
                 ''',
-                ttsMonsterKey, twitchChannelId, ttsMonsterUserId
+                ttsMonsterKey, twitchChannelId, ttsMonsterUserId,
             )
 
             tokens = TtsMonsterTokens(
                 key = ttsMonsterKey,
                 twitchChannelId = twitchChannelId,
-                userId = ttsMonsterUserId
+                userId = ttsMonsterUserId,
             )
 
             self.__cache[twitchChannelId] = tokens
@@ -198,7 +198,7 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
                     DELETE FROM ttsmonstertokens
                     WHERE twitchchannelid = $1
                 ''',
-                twitchChannelId
+                twitchChannelId,
             )
 
             self.__cache[twitchChannelId] = None

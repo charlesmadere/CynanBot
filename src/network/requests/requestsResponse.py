@@ -91,7 +91,7 @@ class RequestsResponse(NetworkResponse):
             'isClosed': self.__isClosed,
             'networkClientType': self.networkClientType,
             'response': self.__response,
-            'url': self.__url
+            'url': self.__url,
         }
 
     @property

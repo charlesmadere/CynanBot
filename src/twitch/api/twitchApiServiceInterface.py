@@ -39,7 +39,7 @@ class TwitchApiServiceInterface(ABC):
     async def banUser(
         self,
         twitchAccessToken: str,
-        banRequest: TwitchBanRequest
+        banRequest: TwitchBanRequest,
     ) -> TwitchBanResponse:
         pass
 

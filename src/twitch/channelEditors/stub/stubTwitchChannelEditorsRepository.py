@@ -9,7 +9,7 @@ class StubTwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface
 
     async def fetchEditorIds(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> frozenset[str]:
         # this method is intentionally empty
         return frozenset()
@@ -17,7 +17,7 @@ class StubTwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface
     async def isEditor(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> bool:
         # this method is intentionally empty
         return False

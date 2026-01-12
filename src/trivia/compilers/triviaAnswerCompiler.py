@@ -217,7 +217,9 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             if not utils.isValidStr(answer):
                 continue
 
-            cases = await self.__expandSpecialCases(answer)
+            cases = await self.__expandSpecialCases(
+                answer = answer,
+            )
 
             for case in cases:
                 if expandParentheses:
@@ -229,7 +231,10 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
                     possibilities = [ case ]
 
                 for possibility in possibilities:
-                    compiledAnswer = await self.compileTextAnswer(possibility)
+                    compiledAnswer = await self.compileTextAnswer(
+                        answer = possibility,
+                    )
+
                     compiledAnswers.add(self.__whiteSpaceRegEx.sub(' ', compiledAnswer).strip())
 
         return list(answer for answer in compiledAnswers if utils.isValidStr(answer))
@@ -245,7 +250,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             match = self.__groupedNumeralRegEx.fullmatch(split[i])
 
             if not match:
-                raise BadTriviaAnswerException(f'numbers cannot be expanded properly in trivia answer: \"{answer}\"')
+                raise BadTriviaAnswerException(f'numbers cannot be expanded properly in trivia answer ({answer=})')
 
             if not match.group(1):
                 # roman numerals

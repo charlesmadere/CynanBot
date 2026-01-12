@@ -265,7 +265,7 @@ class TtsMonsterPrivateApiJsonMapper(TtsMonsterPrivateApiJsonMapperInterface):
                 'key': key,
                 'message': message,
                 'userId': userId,
-            }
+            },
         }
 
     async def serializeVoice(

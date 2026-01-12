@@ -42,7 +42,10 @@ from src.twitch.api.models.twitchPredictionStatus import TwitchPredictionStatus
 from src.twitch.api.models.twitchRaid import TwitchRaid
 from src.twitch.api.models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from src.twitch.api.models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
+from src.twitch.api.models.twitchSendChatDropReason import TwitchSendChatDropReason
 from src.twitch.api.models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
+from src.twitch.api.models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
+from src.twitch.api.models.twitchSendChatMessageResponseEntry import TwitchSendChatMessageResponseEntry
 from src.twitch.api.models.twitchStartCommercialDetails import TwitchStartCommercialDetails
 from src.twitch.api.models.twitchStreamType import TwitchStreamType
 from src.twitch.api.models.twitchSub import TwitchSub
@@ -1465,6 +1468,143 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseRewardRedemptionStatus_withWhitespaceString(self):
         result = await self.jsonMapper.parseRewardRedemptionStatus(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSendChatDropReason1(self):
+        dropReason = TwitchSendChatDropReason(
+            code = '400',
+            message = 'Example Message',
+        )
+
+        result = await self.jsonMapper.parseSendChatDropReason({
+            'code': dropReason.code,
+            'message': dropReason.message,
+        })
+
+        assert isinstance(result, TwitchSendChatDropReason)
+        assert result == dropReason
+        assert result.code == dropReason.code
+        assert result.message == dropReason.message
+
+    @pytest.mark.asyncio
+    async def test_parseSendChatDropReason2(self):
+        dropReason = TwitchSendChatDropReason(
+            code = '400',
+            message = None,
+        )
+
+        result = await self.jsonMapper.parseSendChatDropReason({
+            'code': dropReason.code,
+            'message': dropReason.message,
+        })
+
+        assert isinstance(result, TwitchSendChatDropReason)
+        assert result == dropReason
+        assert result.code == dropReason.code
+        assert result.message == dropReason.message
+
+    @pytest.mark.asyncio
+    async def test_parseSendChatDropReason3(self):
+        dropReason = TwitchSendChatDropReason(
+            code = None,
+            message = 'Example Message',
+        )
+
+        result = await self.jsonMapper.parseSendChatDropReason({
+            'code': dropReason.code,
+            'message': dropReason.message,
+        })
+
+        assert isinstance(result, TwitchSendChatDropReason)
+        assert result == dropReason
+        assert result.code == dropReason.code
+        assert result.message == dropReason.message
+
+    @pytest.mark.asyncio
+    async def test_parseSendChatDropReason4(self):
+        result = await self.jsonMapper.parseSendChatDropReason({
+            'code': None,
+            'message': None,
+        })
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSendChatDropReason_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseSendChatDropReason(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSendChatDropReason_withNone(self):
+        result = await self.jsonMapper.parseSendChatDropReason(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSendChatMessageResponse(self):
+        sendChatMessageResponseEntry = TwitchSendChatMessageResponseEntry(
+            isSent = True,
+            messageId = 'abc123',
+            dropReason = None,
+        )
+
+        data: FrozenList[TwitchSendChatMessageResponseEntry] = FrozenList()
+        data.append(sendChatMessageResponseEntry)
+        data.freeze()
+
+        sendChatMessage = TwitchSendChatMessageResponse(
+            data = data,
+        )
+
+        result = await self.jsonMapper.parseSendChatMessageResponse({
+            'data': [
+                {
+                    'is_sent': sendChatMessageResponseEntry.isSent,
+                    'message_id': sendChatMessageResponseEntry.messageId,
+                    'drop_reason': sendChatMessageResponseEntry.dropReason,
+                },
+            ],
+        })
+
+        assert isinstance(result, TwitchSendChatMessageResponse)
+        assert result == sendChatMessage
+        assert result.data == sendChatMessage.data
+
+    @pytest.mark.asyncio
+    async def test_parseSendChatMessageResponse_withEmptyDataArray(self):
+        data: FrozenList[TwitchSendChatMessageResponseEntry] = FrozenList()
+        data.freeze()
+
+        sendChatMessage = TwitchSendChatMessageResponse(
+            data = data,
+        )
+
+        result = await self.jsonMapper.parseSendChatMessageResponse({
+            'data': [ ],
+        })
+
+        assert isinstance(result, TwitchSendChatMessageResponse)
+        assert result == sendChatMessage
+        assert result.data == sendChatMessage.data
+
+    @pytest.mark.asyncio
+    async def test_parseSendChatMessageResponse_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseSendChatMessageResponse(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSendChatMessageResponse_withNone(self):
+        result = await self.jsonMapper.parseSendChatMessageResponse(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSendChatMessageResponseEntry_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseSendChatMessageResponseEntry(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSendChatMessageResponseEntry_withNone(self):
+        result = await self.jsonMapper.parseSendChatMessageResponseEntry(None)
         assert result is None
 
     @pytest.mark.asyncio

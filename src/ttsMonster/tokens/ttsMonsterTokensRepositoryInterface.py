@@ -9,7 +9,7 @@ class TtsMonsterTokensRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def get(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> TtsMonsterTokens | None:
         pass
 
@@ -18,6 +18,6 @@ class TtsMonsterTokensRepositoryInterface(Clearable, ABC):
         self,
         ttsMonsterKey: str | None,
         ttsMonsterUserId: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         pass

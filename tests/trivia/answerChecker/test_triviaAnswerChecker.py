@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.storage.jsonStaticReader import JsonStaticReader
@@ -24,27 +26,27 @@ from src.trivia.triviaDifficulty import TriviaDifficulty
 
 class TestTriviaAnswerChecker:
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
+    triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 
-    triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+    triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = TriviaSettingsRepository(
         settingsJsonReader = JsonStaticReader(dict()),
-        triviaSourceParser = triviaSourceParser
+        triviaSourceParser = triviaSourceParser,
     )
 
-    triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
-        timber = timber
+    triviaAnswerCompiler: Final[TriviaAnswerCompilerInterface] = TriviaAnswerCompiler(
+        timber = timber,
     )
 
-    triviaQuestionCompiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(
-        timber = timber
+    triviaQuestionCompiler: Final[TriviaQuestionCompilerInterface] = TriviaQuestionCompiler(
+        timber = timber,
     )
 
-    triviaAnswerChecker: TriviaAnswerCheckerInterface = TriviaAnswerChecker(
+    triviaAnswerChecker: Final[TriviaAnswerCheckerInterface] = TriviaAnswerChecker(
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettingsRepository = triviaSettingsRepository,
     )
 
     @pytest.mark.asyncio
@@ -58,7 +60,7 @@ class TestTriviaAnswerChecker:
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = TriviaSource.BONGO
+            triviaSource = TriviaSource.BONGO,
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('a', question)
