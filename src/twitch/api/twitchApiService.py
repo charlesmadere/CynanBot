@@ -1094,8 +1094,8 @@ class TwitchApiService(TwitchApiServiceInterface):
                 },
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchApiService', f'Encountered network error when sending chat announcement ({twitchAccessToken=}) ({announcementRequest=})', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when sending chat announcement ({twitchAccessToken=}) ({announcementRequest=}): {e}')
+            self.__timber.log('TwitchApiService', f'Encountered network error when sending chat announcement ({announcementRequest=})', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when sending chat announcement ({announcementRequest=}): {e}')
 
         responseStatusCode = response.statusCode
         await response.close()
@@ -1106,10 +1106,10 @@ class TwitchApiService(TwitchApiServiceInterface):
                 return True
 
             case _:
-                self.__timber.log('TwitchApiService', f'Encountered network error when sending chat announcement ({twitchAccessToken=}) ({announcementRequest=}) ({response=}) ({responseStatusCode=})')
+                self.__timber.log('TwitchApiService', f'Encountered network error when sending chat announcement ({announcementRequest=}) ({response=}) ({responseStatusCode=})')
                 raise TwitchStatusCodeException(
                     statusCode = responseStatusCode,
-                    message = f'TwitchApiService encountered network error when sending chat announcement ({twitchAccessToken=}) ({announcementRequest=}) ({response=}) ({responseStatusCode=})',
+                    message = f'TwitchApiService encountered network error when sending chat announcement ({announcementRequest=}) ({response=}) ({responseStatusCode=})',
                 )
 
     async def sendChatMessage(
