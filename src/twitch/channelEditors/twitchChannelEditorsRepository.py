@@ -1,6 +1,7 @@
 import traceback
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from typing import Final
 
 from .twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from ..api.models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
@@ -25,7 +26,7 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        cacheTimeToLive: timedelta = timedelta(days = 1)
+        cacheTimeToLive: timedelta = timedelta(days = 1),
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -38,13 +39,13 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
         elif not isinstance(cacheTimeToLive, timedelta):
             raise TypeError(f'cacheTimeToLive argument is malformed: \"{cacheTimeToLive}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__cacheTimeToLive: timedelta = cacheTimeToLive
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__cacheTimeToLive: Final[timedelta] = cacheTimeToLive
 
-        self.__cache: dict[str, TwitchChannelEditorsRepository.ChannelEditorsData | None] = dict()
+        self.__cache: Final[dict[str, TwitchChannelEditorsRepository.ChannelEditorsData | None]] = dict()
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -52,7 +53,7 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
 
     async def __fetchEditorsData(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ChannelEditorsData:
         editorsData = self.__cache.get(twitchChannelId, None)
         now = datetime.now(self.__timeZoneRepository.getDefault())
@@ -67,32 +68,32 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
             return editorsData
 
         twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if utils.isValidStr(twitchAccessToken):
-            self.__timber.log('TwitchChannelEditorsRepository', f'Fetching channel editors... ({twitchChannelId=})')
+            self.__timber.log('TwitchChannelEditorsRepository', f'Fetching channel editors... ({twitchChannelId=}) ({editorsData=})')
 
             try:
                 channelEditorsResponse = await self.__twitchApiService.fetchChannelEditors(
                     broadcasterId = twitchChannelId,
-                    twitchAccessToken = twitchAccessToken
+                    twitchAccessToken = twitchAccessToken,
                 )
 
                 editorsData = await self.__mapEditorsResponseToEditorsData(
                     fetchedAt = now,
                     twitchChannelId = twitchChannelId,
-                    channelEditorsResponse = channelEditorsResponse
+                    channelEditorsResponse = channelEditorsResponse,
                 )
             except Exception as e:
-                self.__timber.log('TwitchChannelEditorsRepository', f'Failed to fetch channel editors ({twitchChannelId=}): {e}', e, traceback.format_exc())
+                self.__timber.log('TwitchChannelEditorsRepository', f'Failed to fetch channel editors ({twitchChannelId=}) ({editorsData=}): {e}', e, traceback.format_exc())
                 editorsData = None
 
         if editorsData is None:
             editorsData = TwitchChannelEditorsRepository.ChannelEditorsData(
                 fetchedAt = now,
                 editors = frozenset(),
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
 
         self.__cache[twitchChannelId] = editorsData
@@ -100,32 +101,38 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
 
     async def fetchEditorIds(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> frozenset[str]:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        editorsData = await self.__fetchEditorsData(twitchChannelId)
+        editorsData = await self.__fetchEditorsData(
+            twitchChannelId = twitchChannelId,
+        )
+
         return editorsData.editors
 
     async def isEditor(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> bool:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        editorIds = await self.fetchEditorIds(twitchChannelId)
+        editorIds = await self.fetchEditorIds(
+            twitchChannelId = twitchChannelId,
+        )
+
         return chatterUserId in editorIds
 
     async def __mapEditorsResponseToEditorsData(
         self,
         fetchedAt: datetime,
         twitchChannelId: str,
-        channelEditorsResponse: TwitchChannelEditorsResponse
+        channelEditorsResponse: TwitchChannelEditorsResponse,
     ) -> ChannelEditorsData:
         editorUserIds: set[str] = set()
 
@@ -135,5 +142,5 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
         return TwitchChannelEditorsRepository.ChannelEditorsData(
             fetchedAt = fetchedAt,
             editors = frozenset(editorUserIds),
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
