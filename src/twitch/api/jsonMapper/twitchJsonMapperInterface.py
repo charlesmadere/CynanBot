@@ -66,6 +66,7 @@ from ..models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncemen
 from ..models.twitchSendChatDropReason import TwitchSendChatDropReason
 from ..models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from ..models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
+from ..models.twitchSendChatMessageResponseEntry import TwitchSendChatMessageResponseEntry
 from ..models.twitchStartCommercialDetails import TwitchStartCommercialDetails
 from ..models.twitchStartCommercialResponse import TwitchStartCommercialResponse
 from ..models.twitchStreamType import TwitchStreamType
@@ -518,6 +519,13 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseSendChatMessageResponseEntry(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchSendChatMessageResponseEntry | None:
+        pass
+
+    @abstractmethod
     async def parseStartCommercialDetails(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -730,7 +738,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def serializeChatAnnouncementColor(
         self,
-        announcementColor: TwitchChatAnnouncementColor
+        announcementColor: TwitchChatAnnouncementColor,
     ) -> str:
         pass
 
@@ -751,7 +759,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def serializeEventSubRequest(
         self,
-        eventSubRequest: TwitchEventSubRequest
+        eventSubRequest: TwitchEventSubRequest,
     ) -> dict[str, Any]:
         pass
 

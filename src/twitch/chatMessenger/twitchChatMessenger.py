@@ -89,6 +89,20 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
         self.__messageQueue: Final[SimpleQueue[ChatMessage]] = SimpleQueue()
         self.__selfTwitchUserId: str | None = None
 
+    async def __checkIfChatMessageWasSuccessfullySent(
+        self,
+        sendChatMessageResponse: TwitchSendChatMessageResponse | None,
+    ) -> bool:
+        if not isinstance(sendChatMessageResponse, TwitchSendChatMessageResponse):
+            return False
+        elif len(sendChatMessageResponse.data) == 0:
+            return False
+
+        # It's a bit odd to only check the first element here, and just return "successful" if
+        # just that one is OK. However, frankly I don't really know what the other items are
+        # supposed to mean in this context. So for now, I think this is totally fine.
+        return sendChatMessageResponse.data[0].isSent
+
     async def __getSelfTwitchAccessToken(self) -> str:
         selfTwitchUserId = await self.__getSelfTwitchUserId()
 
@@ -239,7 +253,9 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
             except Exception as e:
                 self.__timber.log('TwitchChatMessenger', f'Failed to send chat message ({chatMessage=}) ({text=}) ({len(text)=}) ({sendAttempt=}) ({response=})', e, traceback.format_exc())
 
-            successfullySent = response is not None and response.isSent
+            successfullySent = await self.__checkIfChatMessageWasSuccessfullySent(
+                sendChatMessageResponse = response,
+            )
 
             if not successfullySent:
                 shouldRetry = sendAttempt == 0 and utils.isValidStr(chatMessage.replyMessageId)
