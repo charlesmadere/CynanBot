@@ -173,10 +173,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if not all(utils.isValidStr(cleanedAnswer) for cleanedAnswer in compiledUserAnswers):
             return TriviaAnswerCheckResult.INCORRECT
 
-        compiledCorrectAnswers = triviaQuestion.compiledCorrectAnswers
-        self.__timber.log('TriviaAnswerChecker', f'In depth question/answer debug information — ({answer=}) ({compiledUserAnswers=}) ({triviaQuestion.correctAnswers=}) ({compiledCorrectAnswers=}) ({extras=})')
+        self.__timber.log('TriviaAnswerChecker', f'In depth question/answer debug information ({answer=}) ({triviaQuestion=}) ({extras=}) ({compiledUserAnswers=})')
 
-        for compiledCorrectAnswer in compiledCorrectAnswers:
+        for compiledCorrectAnswer in triviaQuestion.compiledCorrectAnswers:
             for compiledUserAnswer in compiledUserAnswers:
                 expandedUserAnswers = await self.__triviaAnswerCompiler.expandNumerals(compiledUserAnswer)
 
