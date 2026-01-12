@@ -95,13 +95,12 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
     ) -> bool:
         if not isinstance(sendChatMessageResponse, TwitchSendChatMessageResponse):
             return False
-        elif len(sendChatMessageResponse.data) == 0:
-            return False
 
-        # It's a bit odd to only check the first element here, and just return "successful" if
-        # just that one is OK. However, frankly I don't really know what the other items are
-        # supposed to mean in this context. So for now, I think this is totally fine.
-        return sendChatMessageResponse.data[0].isSent
+        for response in sendChatMessageResponse.data:
+            if not response.isSent:
+                return False
+
+        return True
 
     async def __getSelfTwitchAccessToken(self) -> str:
         selfTwitchUserId = await self.__getSelfTwitchUserId()

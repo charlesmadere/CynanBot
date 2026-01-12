@@ -47,7 +47,7 @@ class FakeTtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
 
     async def get(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> TtsMonsterTokens | None:
         raise RuntimeError('Not implemented')
 
@@ -55,7 +55,7 @@ class FakeTtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
         self,
         ttsMonsterKey: str | None,
         ttsMonsterUserId: str | None,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         raise RuntimeError(f'Not implemented')
 

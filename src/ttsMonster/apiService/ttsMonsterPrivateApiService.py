@@ -51,7 +51,10 @@ class TtsMonsterPrivateApiService(TtsMonsterPrivateApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('TtsMonsterPrivateApiService', f'Encountered non-200 HTTP status code when generating TTS ({ttsUrl=}) ({response=}) ({responseStatusCode=})')
-            raise GenericNetworkException(f'TtsMonsterPrivateApiService encountered non-200 HTTP status code when generating TTS ({ttsUrl=}) ({response=}) ({responseStatusCode=})', responseStatusCode)
+            raise GenericNetworkException(
+                message = f'TtsMonsterPrivateApiService encountered non-200 HTTP status code when generating TTS ({ttsUrl=}) ({response=}) ({responseStatusCode=})',
+                statusCode = responseStatusCode,
+            )
         elif speechBytes is None:
             self.__timber.log('TtsMonsterPrivateApiService', f'Unable to fetch generated TTS bytes ({ttsUrl=}) ({response=}) ({responseStatusCode=})')
             raise GenericNetworkException(f'TtsMonsterPrivateApiService unable to fetch generated TTS bytes ({ttsUrl=}) ({response=}) ({responseStatusCode=})')
@@ -86,7 +89,7 @@ class TtsMonsterPrivateApiService(TtsMonsterPrivateApiServiceInterface):
                 json = jsonBody,
             )
         except GenericNetworkException as e:
-            self.__timber.log('TtsMonsterPrivateApiService', f'Encountered network error when generating TTS ({key=}) ({message=}) ({userId=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TtsMonsterPrivateApiService', f'Encountered network error when generating TTS ({key=}) ({message=}) ({userId=})', e, traceback.format_exc())
             raise GenericNetworkException(f'TtsMonsterPrivateApiService encountered network error when generating TTS ({key=}) ({message=}) ({userId=}): {e}')
 
         responseStatusCode = response.statusCode
@@ -95,7 +98,10 @@ class TtsMonsterPrivateApiService(TtsMonsterPrivateApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('TtsMonsterPrivateApiService', f'Encountered non-200 HTTP status code when generating TTS ({key=}) ({message=}) ({userId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
-            raise GenericNetworkException(f'TtsMonsterPrivateApiService encountered non-200 HTTP status code when generating TTS ({key=}) ({message=}) ({userId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})', responseStatusCode)
+            raise GenericNetworkException(
+                message = f'TtsMonsterPrivateApiService encountered non-200 HTTP status code when generating TTS ({key=}) ({message=}) ({userId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})',
+                statusCode = responseStatusCode,
+            )
 
         privateApiTtsResponse = await self.__ttsMonsterPrivateApiJsonMapper.parseTtsResponse(jsonResponse)
 
