@@ -13,6 +13,7 @@ from ..storage.backingDatabase import BackingDatabase
 from ..storage.databaseConnection import DatabaseConnection
 from ..storage.databaseType import DatabaseType
 from ..timber.timberInterface import TimberInterface
+from ..twitch.api.models.twitchUserDetails import TwitchUserDetails
 from ..twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 
 
@@ -64,7 +65,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
                 WHERE username = $1
                 LIMIT 1
             ''',
-            userName
+            userName,
         )
 
         userId: str | None = None
@@ -79,7 +80,9 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             self.__timber.log('UserIdsRepository', f'Can\'t lookup Twitch user ID for \"{userName}\" as no Twitch access token was specified')
             return None
 
-        self.__timber.log('UserIdsRepository', f'User ID for username \"{userName}\" wasn\'t found locally, so performing a network call to fetch instead ({twitchAccessToken=})...')
+        self.__timber.log('UserIdsRepository', f'User ID for username \"{userName}\" wasn\'t found locally, so performing a network call to fetch instead...')
+
+        userDetails: TwitchUserDetails | None
 
         try:
             userDetails = await self.__twitchApiService.fetchUserDetailsWithUserName(
@@ -87,11 +90,11 @@ class UserIdsRepository(UserIdsRepositoryInterface):
                 userName = userName,
             )
         except GenericNetworkException as e:
-            self.__timber.log('UserIdsRepository', f'Received a network error when fetching Twitch user ID for username \"{userName}\" ({twitchAccessToken=}): {e}', e, traceback.format_exc())
+            self.__timber.log('UserIdsRepository', f'Received a network error when fetching Twitch user ID for username \"{userName}\"', e, traceback.format_exc())
             return None
 
         if userDetails is None:
-            self.__timber.log('UserIdsRepository', f'Unable to retrieve Twitch user ID for username \"{userName}\" ({twitchAccessToken=})')
+            self.__timber.log('UserIdsRepository', f'Unable to retrieve Twitch user ID for username \"{userName}\" ({userDetails=})')
             return None
 
         await self.setUser(
@@ -122,7 +125,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         try:
             return int(userId)
         except (SyntaxError, TypeError, ValueError) as e:
-            self.__timber.log('UserIdsRepository', f'Encountered exception when attempting to convert userId (\"{userId}\") into int ({userName=}) ({twitchAccessToken=}): {e}')
+            self.__timber.log('UserIdsRepository', f'Encountered exception when attempting to convert userId into int ({userName=}) ({userId=})')
             raise e
 
     async def fetchUserName(
@@ -162,10 +165,12 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             self.__cache[userId] = userName
             return userName
         elif not utils.isValidStr(twitchAccessToken):
-            self.__timber.log('UserIdsRepository', f'Can\'t lookup Twitch username for \"{userId}\" as no Twitch access token was specified')
+            self.__timber.log('UserIdsRepository', f'Can\'t lookup Twitch username for user ID \"{userId}\" as no Twitch access token was specified')
             return None
 
-        self.__timber.log('UserIdsRepository', f'Username for user ID \"{userId}\" wasn\'t found locally, so performing a network call to fetch instead ({twitchAccessToken=})...')
+        self.__timber.log('UserIdsRepository', f'Username for user ID \"{userId}\" wasn\'t found locally, so performing a network call to fetch instead...')
+
+        userDetails: TwitchUserDetails | None
 
         try:
             userDetails = await self.__twitchApiService.fetchUserDetailsWithUserId(
@@ -173,11 +178,11 @@ class UserIdsRepository(UserIdsRepositoryInterface):
                 userId = userId,
             )
         except GenericNetworkException as e:
-            self.__timber.log('UserIdsRepository', f'Received a network error when fetching Twitch username for user ID \"{userId}\" ({twitchAccessToken=}): {e}', e, traceback.format_exc())
+            self.__timber.log('UserIdsRepository', f'Received a network error when fetching Twitch username for user ID \"{userId}\"', e, traceback.format_exc())
             return None
 
         if userDetails is None:
-            self.__timber.log('UserIdsRepository', f'Unable to retrieve Twitch username for user ID \"{userId}\" ({twitchAccessToken=})')
+            self.__timber.log('UserIdsRepository', f'Unable to retrieve Twitch username for user ID \"{userId}\" ({userDetails=})')
             return None
 
         self.__cache[userId] = userDetails.login
@@ -242,7 +247,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         )
 
         if not utils.isValidStr(userId):
-            raise NoSuchUserException(f'Unable to fetch Twitch user ID for username \"{userName}\" ({twitchAccessToken=})')
+            raise NoSuchUserException(f'Unable to fetch Twitch user ID for username \"{userName}\" ({userId=})')
 
         return userId
 
@@ -262,7 +267,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         )
 
         if not utils.isValidInt(userId):
-            raise NoSuchUserException(f'Unable to fetch Twitch user ID for username \"{userName}\" ({twitchAccessToken=})')
+            raise NoSuchUserException(f'Unable to fetch Twitch user ID for username \"{userName}\" ({userId=})')
 
         return userId
 
@@ -282,7 +287,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         )
 
         if not utils.isValidStr(userName):
-            raise NoSuchUserException(f'Unable to fetch Twitch user name for user ID \"{userId}\" ({twitchAccessToken=})')
+            raise NoSuchUserException(f'Unable to fetch Twitch user name for user ID \"{userId}\" ({userName=})')
 
         return userName
 
