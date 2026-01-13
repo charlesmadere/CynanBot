@@ -118,9 +118,8 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         )
 
         self.__globalOptionalWords: Final[frozenset[str]] = frozenset({
-            'cities', 'city', 'continent', 'counties', 'county', 'hemisphere', 'hemispheres', 'island', 'islands',
-            'isle', 'lake', 'lakes', 'mountain', 'mountains', 'ocean', 'oceans', 'parish', 'parishes', 'park',
-            'parks', 'pond', 'ponds', 'river', 'rivers', 'road', 'roads', 'sea', 'street', 'streets',
+            'city', 'continent', 'county', 'island', 'islands', 'isle', 'lake', 'mountain', 'mountains', 'ocean',
+            'park', 'pond', 'river', 'road', 'sea', 'street', 'town',
         })
 
     async def compileBoolAnswer(self, answer: str | None) -> bool:
