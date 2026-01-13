@@ -85,12 +85,6 @@ class AbsTriviaGameState(ABC):
     def gameId(self) -> str:
         return self.__gameId
 
-    def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
-        return self.__specialTriviaStatus
-
-    def getTriviaQuestion(self) -> AbsTriviaQuestion:
-        return self.__triviaQuestion
-
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
 
@@ -111,6 +105,10 @@ class AbsTriviaGameState(ABC):
     def secondsToLive(self) -> int:
         return self.__secondsToLive
 
+    @property
+    def specialTriviaStatus(self) -> SpecialTriviaStatus | None:
+        return self.__specialTriviaStatus
+
     def toDictionary(self) -> dict[str, Any]:
         return {
             'actionId': self.__actionId,
@@ -130,3 +128,7 @@ class AbsTriviaGameState(ABC):
     @abstractmethod
     def triviaGameType(self) -> TriviaGameType:
         pass
+
+    @property
+    def triviaQuestion(self) -> AbsTriviaQuestion:
+        return self.__triviaQuestion
