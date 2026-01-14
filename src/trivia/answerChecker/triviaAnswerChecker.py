@@ -291,6 +291,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield word[:-2] + 'a'
         elif word.endswith('ism'):
             yield word[:-3]
+        elif word.endswith('d') or word.endswith('n'):
+            yield word + 'e'
         if word[-1] != 's':
             yield word + 's'
 
