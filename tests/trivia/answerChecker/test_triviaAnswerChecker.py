@@ -1817,6 +1817,69 @@ class TestTriviaAnswerChecker:
         assert result is TriviaAnswerCheckResult.INCORRECT
 
     @pytest.mark.asyncio
+    async def test_checkAnswer_withQuestionAnswerQuestion_withMichaelCaine(self):
+        categoryText = 'Actors and Actresses'
+        questionText = 'This person is famous.'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText,
+        )
+
+        originalCorrectAnswers: list[str] = [ 'michael caine' ]
+        correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
+
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = originalCorrectAnswers,
+            allWords = allWords,
+        )
+
+        expandedCompiledCorrectAnswers: set[str] = set()
+        for compiledCorrectAnswer in compiledCorrectAnswers:
+            expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
+
+        question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = allWords,
+            compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
+            correctAnswers = correctAnswers,
+            originalCorrectAnswers = originalCorrectAnswers,
+            category = categoryText,
+            categoryId = None,
+            question = questionText,
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.FUNTOON,
+        )
+
+        result = await self.triviaAnswerChecker.checkAnswer(None, question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
+
+        result = await self.triviaAnswerChecker.checkAnswer('', question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
+
+        result = await self.triviaAnswerChecker.checkAnswer(' ', question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
+
+        result = await self.triviaAnswerChecker.checkAnswer('michael caine', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('michael cain', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('michael', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('mike', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('caine', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('cain', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+    @pytest.mark.asyncio
     async def test_checkAnswer_withQuestionAnswerQuestion_withOlympicGames(self):
         categoryText = 'International Sports'
         questionText = 'This is a big international sporting event with a logo that has rings.'
@@ -1849,7 +1912,7 @@ class TestTriviaAnswerChecker:
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = TriviaSource.FUNTOON
+            triviaSource = TriviaSource.FUNTOON,
         )
 
         result = await self.triviaAnswerChecker.checkAnswer(None, question)
