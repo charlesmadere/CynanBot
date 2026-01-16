@@ -157,7 +157,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseChannelEditor(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChannelEditor | None:
         pass
 
@@ -171,28 +171,28 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseChannelPointsVoting(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChannelPointsVoting | None:
         pass
 
     @abstractmethod
     async def parseChatBadge(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChatBadge | None:
         pass
 
     @abstractmethod
     async def parseChatMessage(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChatMessage | None:
         pass
 
     @abstractmethod
     async def parseChatMessageFragment(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChatMessageFragment | None:
         pass
 
@@ -465,7 +465,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseRaid(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchRaid | None:
         pass
 
@@ -654,7 +654,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def requireChatMessageFragmentType(
         self,
-        fragmentType: str | Any | None
+        fragmentType: str | Any | None,
     ) -> TwitchChatMessageFragmentType:
         pass
 

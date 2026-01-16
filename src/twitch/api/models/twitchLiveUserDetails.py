@@ -2,10 +2,11 @@ import locale
 from dataclasses import dataclass
 
 from .twitchStreamType import TwitchStreamType
+from ...localModels.twitchUserInterface import TwitchUserInterface
 
 
 @dataclass(frozen = True)
-class TwitchLiveUserDetails:
+class TwitchLiveUserDetails(TwitchUserInterface):
     isMature: bool
     viewerCount: int
     streamId: str
@@ -18,6 +19,15 @@ class TwitchLiveUserDetails:
     thumbnailUrl: str |  None = None
     title: str | None = None
     streamType: TwitchStreamType = TwitchStreamType.UNKNOWN
+
+    def getUserId(self) -> str:
+        return self.userId
+
+    def getUserLogin(self) -> str:
+        return self.userLogin
+
+    def getUserName(self) -> str:
+        return self.userName
 
     @property
     def viewerCountStr(self) -> str:
