@@ -105,7 +105,7 @@ class ChatterTimeoutHistoryRepository(ChatterTimeoutHistoryRepositoryInterface):
                 VALUES ($1, $2, $3, $4)
                 ON CONFLICT (chatteruserid, twitchchannelid) DO UPDATE SET totaldurationseconds = EXCLUDED.totaldurationseconds, history = EXCLUDED.history
             ''',
-            newTotalDurationSeconds, historyEntriesJson, chatterUserId, twitchChannelId
+            newTotalDurationSeconds, historyEntriesJson, chatterUserId, twitchChannelId,
         )
         await connection.close()
 
@@ -168,7 +168,7 @@ class ChatterTimeoutHistoryRepository(ChatterTimeoutHistoryRepositoryInterface):
                 WHERE chatteruserid = $1 AND twitchchannelid = $2
                 LIMIT 1
             ''',
-            chatterUserId, twitchChannelId
+            chatterUserId, twitchChannelId,
         )
 
         await connection.close()

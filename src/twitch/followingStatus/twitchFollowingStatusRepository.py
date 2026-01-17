@@ -9,7 +9,6 @@ from .twitchFollowingStatus import TwitchFollowingStatus
 from .twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ...misc import utils as utils
-from ...network.exceptions import GenericNetworkException
 from ...storage.backingDatabase import BackingDatabase
 from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
@@ -131,7 +130,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
                 twitchAccessToken = twitchAccessToken,
                 userId = userId,
             )
-        except GenericNetworkException as e:
+        except Exception as e:
             self.__timber.log('TwitchFollowingStatusRepository', f'Failed to fetch Twitch follower from Twitch API ({twitchChannelId=}) ({userId=})', e, traceback.format_exc())
             return None
 

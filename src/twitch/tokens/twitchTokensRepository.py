@@ -95,8 +95,8 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         try:
             tokensDetails = await self.__twitchApiService.fetchTokens(code = code)
         except GenericNetworkException as e:
-            self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to add user ({twitchChannel=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to add user ({twitchChannel=}) ({twitchChannelId=}): {e}')
+            self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to add user ({twitchChannel=}) ({twitchChannelId=}) ({code=})', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to add user ({twitchChannel=}) ({twitchChannelId=}) ({code=})')
 
         twitchChannelId = await self.__userIdsRepository.requireUserId(twitchChannel)
 
@@ -199,9 +199,9 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
                 code = utils.getStrFromDict(tokensDetailsJson, 'code')
 
                 try:
-                    tokensDetails = await self.__twitchApiService.fetchTokens(code)
+                    tokensDetails = await self.__twitchApiService.fetchTokens(code = code)
                 except GenericNetworkException as e:
-                    self.__timber.log('TwitchTokensRepository', f'Unable to fetch tokens for \"{twitchChannel}\" with code \"{code}\": {e}', e, traceback.format_exc())
+                    self.__timber.log('TwitchTokensRepository', f'Unable to fetch tokens ({twitchChannel=}) ({code=})', e, traceback.format_exc())
             else:
                 tokensDetails = TwitchTokensDetails(
                     expirationTime = await self.__createExpiredExpirationTime(),
@@ -522,7 +522,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
                     DELETE FROM twitchtokens
                     WHERE twitchchannelid = $1
                 ''',
-                twitchChannelId
+                twitchChannelId,
             )
 
             self.__cache.pop(twitchChannelId, None)
@@ -536,7 +536,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
                     VALUES ($1, $2, $3, $4)
                     ON CONFLICT (twitchchannelid) DO UPDATE SET expirationtime = EXCLUDED.expirationtime, accesstoken = EXCLUDED.accesstoken, refreshtoken = EXCLUDED.refreshtoken
                 ''',
-                expirationTime.isoformat(), tokensDetails.accessToken, tokensDetails.refreshToken, twitchChannelId
+                expirationTime.isoformat(), tokensDetails.accessToken, tokensDetails.refreshToken, twitchChannelId,
             )
 
             self.__cache[twitchChannelId] = tokensDetails
