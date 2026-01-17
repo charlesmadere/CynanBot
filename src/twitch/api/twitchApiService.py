@@ -229,8 +229,8 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when checking user subscription ({broadcasterId=}) ({userId=})', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when checking user subscription ({broadcasterId=}) ({userId=}): {e}')
 
-        jsonResponse = await response.json()
         responseStatusCode = response.statusCode
+        jsonResponse = await response.json()
         await response.close()
 
         if responseStatusCode != 200:
@@ -284,7 +284,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({eventSubRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
             raise TwitchStatusCodeException(
                 statusCode = responseStatusCode,
-                message = f'TwitchApiService encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({eventSubRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})'
+                message = f'TwitchApiService encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({eventSubRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})',
             )
 
         eventSubResponse = await self.__twitchJsonMapper.parseEventSubResponse(jsonResponse)
@@ -382,8 +382,8 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching broadcaster subscriptions ({broadcasterId=}) ({userId=})', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching broadcaster subscriptions ({broadcasterId=}) ({userId=}): {e}')
 
-        jsonResponse = await response.json()
         responseStatusCode = response.statusCode
+        jsonResponse = await response.json()
         await response.close()
 
         if responseStatusCode != 200:
@@ -664,7 +664,10 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=})')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=})')
+            raise TwitchStatusCodeException(
+                statusCode = responseStatusCode,
+                message = f'TwitchApiService encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=})',
+            )
 
         followersResponse = await self.__twitchJsonMapper.parseFollowersResponse(jsonResponse)
 
