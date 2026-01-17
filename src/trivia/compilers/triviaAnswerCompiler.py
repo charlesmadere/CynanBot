@@ -38,54 +38,54 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
         self.__timber: Final[TimberInterface] = timber
 
-        self.__ampersandRegEx: Pattern = re.compile(r'(^&\s+)|(\s+&\s+)|(\s+&$)', re.IGNORECASE)
-        self.__decadeRegEx: Pattern = re.compile(r'^((in\s+)?the\s+)?(\d{4})\'?s$', re.IGNORECASE)
-        self.__equationRegEx: Pattern = re.compile(r'([a-z])\s*=\s*(-?(?:\d*\.)?\d+)', re.IGNORECASE)
-        self.__firstMiddleLastNameRegEx: Pattern = re.compile(r'^\w+\s+(\w\.?)\s+\w+(\s+(i{0,3}|iv|vi{0,3}|i?x|jr\.?|junior|senior|sr\.?)\.?)?$', re.IGNORECASE)
+        self.__ampersandRegEx: Final[Pattern] = re.compile(r'(^&\s+)|(\s+&\s+)|(\s+&$)', re.IGNORECASE)
+        self.__decadeRegEx: Final[Pattern] = re.compile(r'^((in\s+)?the\s+)?(\d{4})\'?s$', re.IGNORECASE)
+        self.__equationRegEx: Final[Pattern] = re.compile(r'([a-z])\s*=\s*(-?(?:\d*\.)?\d+)', re.IGNORECASE)
+        self.__firstMiddleLastNameRegEx: Final[Pattern] = re.compile(r'^\w+\s+(\w\.?)\s+\w+(\s+(i{0,3}|iv|vi{0,3}|i?x|jr\.?|junior|senior|sr\.?)\.?)?$', re.IGNORECASE)
         self.__firstNameAndMiddleInitialGroupedMatchRegEx: Final[Pattern] = re.compile(r'^\(\w+\s+(\w\.?)\)\s+\w+(\s+(i{0,3}|iv|vi{0,3}|i?x|jr\.?|junior|senior|sr\.?)\.?)?$', re.IGNORECASE)
-        self.__hashRegEx: Pattern = re.compile(r'(#)')
-        self.__honoraryPrefixRegEx: Pattern = re.compile(r'^(bishop|brother|captain|chancellor|chief|colonel|corporal|csar|czar|dean|director|doctor|dr\.?|duke|earl|esq|esquire|executive|father|general|judge|king|lady|lieutenant|lord|madam|madame|master|minister|miss|missus|mister|mistress|mother|mr\.?|mrs\.?|ms\.?|mx\.?|officer|president|priest|prime minister|principal|private|professor|queen|rabbi|representative|reverend|saint|secretary|senator|senior|sister|sir|sire|teacher|tsar|tzar|warden)\s+', re.IGNORECASE)
-        self.__japaneseHonorarySuffixRegEx: Pattern = re.compile(r'(\s|-)(chan|kohai|kouhai|kun|sama|san|senpai|sensei|tan)$', re.IGNORECASE)
-        self.__multipleChoiceBasicAnswerRegEx: Pattern = re.compile(r'^\s*([a-z])\s*$', re.IGNORECASE)
-        self.__multipleChoiceBracedAnswerRegEx: Pattern = re.compile(r'^\s*\[([a-z])\]\s*$', re.IGNORECASE)
-        self.__multipleChoiceCleanAnswerRegEx: Pattern = re.compile(r'^\s*[a-z]\s*$', re.IGNORECASE)
-        self.__newLineRegEx: Pattern = re.compile(r'(\n)+', re.IGNORECASE)
-        self.__parenGroupRegEx: Pattern = re.compile(r'(\(.*?\))', re.IGNORECASE)
-        self.__phraseAnswerRegEx: Pattern = re.compile(r'[^A-Za-z0-9\-_ ]|(?<=\s)\s+', re.IGNORECASE)
-        self.__phraseDigitAnswerRegEx: Pattern = re.compile(r'[^A-Za-z0-9\-_/ ]|(?<=\s)\s+', re.IGNORECASE)
-        self.__possessivePronounPrefixRegEx: Pattern = re.compile(r'^(her|his|my|our|their|your)\s+', re.IGNORECASE)
-        self.__prefixRegEx: Pattern = re.compile(r'^(a|an|and|at|as|by|for|in|of|on|that|the|these|this|those|to|with((\s+that)|(\s+the)|(\s+these)|(\s+this)|(\s+those))?)\s+', re.IGNORECASE)
-        self.__simpleTimeDurationRegEx: Pattern = re.compile(r'^((\d+)\s+(second|minute|hour|day|month|year)s?)(\s+old)?$', re.IGNORECASE)
-        self.__tagRemovalRegEx: Pattern = re.compile(r'[<\[]\/?\w+[>\]]', re.IGNORECASE)
-        self.__thingIsPhraseRegEx: Pattern = re.compile(r'^(he\'?s?|it\'?s?|she\'?s?|they\'?(re)?|we\'?(re)?)\s+((are|is|was|were)\s+)?((a|an|are)\s+)?(\w+\s*\w*)$', re.IGNORECASE)
-        self.__thingsThatArePhraseRegEx: Pattern = re.compile(r'^(things\s+that\s+are)\s+(\w+(\s+)?(\w+)?)$', re.IGNORECASE)
-        self.__usDollarRegEx: Pattern = re.compile(r'^\$?((?!,$)[\d,.]+)(\s+\(?USD?\)?)?$', re.IGNORECASE)
-        self.__whiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
-        self.__wordDashWordRegEx: Pattern = re.compile(r'[\-_]', re.IGNORECASE)
-        self.__wordSlashWordRegEx: Pattern = re.compile(r'^([a-z]+)/([a-z]+)(/([a-z]+))?$', re.IGNORECASE)
-        self.__wordTheWordRegEx: Pattern = re.compile(r'^(\w+)\s+(a|an|the)\s+(\w+)$', re.IGNORECASE)
+        self.__hashRegEx: Final[Pattern] = re.compile(r'(#)')
+        self.__honoraryPrefixRegEx: Final[Pattern] = re.compile(r'^(bishop|brother|captain|chancellor|chief|colonel|corporal|csar|czar|dean|director|doctor|dr\.?|duke|earl|esq|esquire|executive|father|general|judge|king|lady|lieutenant|lord|madam|madame|master|minister|miss|missus|mister|mistress|mother|mr\.?|mrs\.?|ms\.?|mx\.?|officer|president|priest|prime minister|principal|private|professor|queen|rabbi|representative|reverend|saint|secretary|senator|senior|sister|sir|sire|teacher|tsar|tzar|warden)\s+', re.IGNORECASE)
+        self.__japaneseHonorarySuffixRegEx: Final[Pattern] = re.compile(r'(\s|-)(chan|kohai|kouhai|kun|sama|san|senpai|sensei|tan)$', re.IGNORECASE)
+        self.__multipleChoiceBasicAnswerRegEx: Final[Pattern] = re.compile(r'^\s*([a-z])\s*$', re.IGNORECASE)
+        self.__multipleChoiceBracedAnswerRegEx: Final[Pattern] = re.compile(r'^\s*\[([a-z])\]\s*$', re.IGNORECASE)
+        self.__multipleChoiceCleanAnswerRegEx: Final[Pattern] = re.compile(r'^\s*[a-z]\s*$', re.IGNORECASE)
+        self.__newLineRegEx: Final[Pattern] = re.compile(r'(\n)+', re.IGNORECASE)
+        self.__parenGroupRegEx: Final[Pattern] = re.compile(r'(\(.*?\))', re.IGNORECASE)
+        self.__phraseAnswerRegEx: Final[Pattern] = re.compile(r'[^A-Za-z0-9\-_ ]|(?<=\s)\s+', re.IGNORECASE)
+        self.__phraseDigitAnswerRegEx: Final[Pattern] = re.compile(r'[^A-Za-z0-9\-_/ ]|(?<=\s)\s+', re.IGNORECASE)
+        self.__possessivePronounPrefixRegEx: Final[Pattern] = re.compile(r'^(her|his|my|our|their|your)\s+', re.IGNORECASE)
+        self.__prefixRegEx: Final[Pattern] = re.compile(r'^(a|an|and|at|as|by|for|in|of|on|that|the|these|this|those|to|with((\s+that)|(\s+the)|(\s+these)|(\s+this)|(\s+those))?)\s+', re.IGNORECASE)
+        self.__simpleTimeDurationRegEx: Final[Pattern] = re.compile(r'^((\d+)\s+(second|minute|hour|day|month|year)s?)(\s+old)?$', re.IGNORECASE)
+        self.__tagRemovalRegEx: Final[Pattern] = re.compile(r'[<\[]\/?\w+[>\]]', re.IGNORECASE)
+        self.__thingIsPhraseRegEx: Final[Pattern] = re.compile(r'^(he\'?s?|it\'?s?|she\'?s?|they\'?(re)?|we\'?(re)?)\s+((are|is|was|were)\s+)?((a|an|are)\s+)?(\w+\s*\w*)$', re.IGNORECASE)
+        self.__thingsThatArePhraseRegEx: Final[Pattern] = re.compile(r'^(things\s+that\s+are)\s+(\w+(\s+)?(\w+)?)$', re.IGNORECASE)
+        self.__usDollarRegEx: Final[Pattern] = re.compile(r'^\$?((?!,$)[\d,.]+)(\s+\(?USD?\)?)?$', re.IGNORECASE)
+        self.__whiteSpaceRegEx: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
+        self.__wordDashWordRegEx: Final[Pattern] = re.compile(r'[\-_]', re.IGNORECASE)
+        self.__wordSlashWordRegEx: Final[Pattern] = re.compile(r'^([a-z]+)/([a-z]+)(/([a-z]+))?$', re.IGNORECASE)
+        self.__wordTheWordRegEx: Final[Pattern] = re.compile(r'^(\w+)\s+(a|an|the)\s+(\w+)$', re.IGNORECASE)
 
         # RegEx pattern for arabic and roman numerals, returning only one capturing group
-        self.__numeralRegEx: Pattern = re.compile(r'\b(\d+(?:st|nd|rd|th)?|[IVXLCDM]+(?:st|nd|rd|th)?)\b', re.IGNORECASE)
+        self.__numeralRegEx: Final[Pattern] = re.compile(r'\b(\d+(?:st|nd|rd|th)?|[IVXLCDM]+(?:st|nd|rd|th)?)\b', re.IGNORECASE)
 
         # RegEx patterns for arabic and roman numerals, returning separate capturing groups for digits and ordinals
-        self.__groupedNumeralRegEx: Pattern = re.compile(r'\b(?:(\d+)|([IVXLCDM]+))(st|nd|rd|th)?\b', re.IGNORECASE)
+        self.__groupedNumeralRegEx: Final[Pattern] = re.compile(r'\b(?:(\d+)|([IVXLCDM]+))(st|nd|rd|th)?\b', re.IGNORECASE)
 
         # RegEx pattern for finding every individual word in an answer, along with its parens if it has them
-        self.__findAllWordsWithOrWithoutParensRegEx: Pattern = re.compile(r'\(?\b[\w-]+\)?', re.IGNORECASE)
+        self.__findAllWordsWithOrWithoutParensRegEx: Final[Pattern] = re.compile(r'\(?\b[\w-]+\)?', re.IGNORECASE)
 
         # RegEx pattern for verifying if a word in an answer has parens
-        self.__wordIsFullySurroundedByParensRegEx: Pattern = re.compile(r'^\([\w-]+\)$', re.IGNORECASE)
+        self.__wordIsFullySurroundedByParensRegEx: Final[Pattern] = re.compile(r'^\([\w-]+\)$', re.IGNORECASE)
 
         # RegEx pattern for finding all words in an answer that are surrounded by parens
-        self.__findAllWordsWithParensRegEx: Pattern = re.compile(r'\([\w-]+\)', re.IGNORECASE)
+        self.__findAllWordsWithParensRegEx: Final[Pattern] = re.compile(r'\([\w-]+\)', re.IGNORECASE)
 
         # RegEx pattern for finding all words in an answer, regardless of their parens
-        self.__findAllWordsRegEx: Pattern = re.compile(r'\b[\w-]+', re.IGNORECASE)
+        self.__findAllWordsRegEx: Final[Pattern] = re.compile(r'\b[\w-]+', re.IGNORECASE)
 
-        self.__combiningDiacriticsRegEx: Pattern = re.compile(r'[\u0300-\u036f\u1ab0-\u1aff\u1dc0-\u1dff\u20d0-\u20ff\ufe20-\ufe2f]')
+        self.__combiningDiacriticsRegEx: Final[Pattern] = re.compile(r'[\u0300-\u036f\u1ab0-\u1aff\u1dc0-\u1dff\u20d0-\u20ff\ufe20-\ufe2f]')
 
-        self.__specialCharsRegEx: Pattern = re.compile(
+        self.__specialCharsRegEx: Final[Pattern] = re.compile(
             r"""
                 (?P<a>[ÅåǺǻḀḁẚĂăẶặẮắẰằẲẳẴẵȂȃâẬậẤấẦầẪẫẨẩẢảǍǎȺⱥȦȧǠǡẠạÄäǞǟÀàȀȁÁáĀāÃãĄąᶏɑᶐⱯɐɒᴀᴬᵃᵄᶛₐªÅ∀@₳ΑαАаⲀⲁⒶⓐ⒜🅰𝔄𝔞𝕬𝖆𝓐𝓪𝒜𝒶𝔸𝕒Ａａ🄰ค𝐀𝐚𝗔𝗮𝘈𝘢𝘼𝙖𝙰𝚊Λ卂ﾑȺᗩΔልДдꚈꚉꚀꚁꙢꙣꭿꋫλ🅐🅰️ꙢꙣꙘѦԬꙙѧԭӒӓҨҩ])|
                 (?P<b>[ΒβⲂⲃВвБб𐌁ᛒ𐌱ɓʙɃƀḂḃḄḅḆḇƁᵬᶀꞖꞗᴃᴯᴮᵇƂƃ␢฿₿♭𝐁𝐛𝔹𝕓𝕭𝖇𝑩𝒃🄱🅱️Ⓑⓑ🅑ᙠᗷҍ𝔅𝔟𝓑𝓫𝗕𝗯𝘽𝙗𝘉𝘣Ｂｂ⒝𝙱𝚋𝖡𝖻🇧๖乃𝑏ƄЬᏏᖯᑲ𝒷𝚩ꓐ𝜝𝛣𝝗𐊂𝞑ℬᏴ𐊡𝐵])|
@@ -260,7 +260,10 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
         return list(set(''.join(item) for item in utils.permuteSubArrays(split)))
 
-    async def __expandSpecialCases(self, answer: str) -> list[str]:
+    async def __expandSpecialCases(
+        self,
+        answer: str,
+    ) -> list[str]:
         specialCases = await self.__expandSpecialCasesDecade(answer)
         if specialCases is not None and len(specialCases) >= 1:
             return specialCases
@@ -318,7 +321,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             match.group(2),
             f'{match.group(1)} = {match.group(2)}',
             f'{match.group(1)} is {match.group(2)}',
-            f'{match.group(1)} equals {match.group(2)}'
+            f'{match.group(1)} equals {match.group(2)}',
         ]
 
     # Expands 'he is a vampire' to ['he is a vampire', 'vampire']
@@ -367,7 +370,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
         return [
             f'{match.group(1)} usd',
-            cleanedUsDollarAmount
+            cleanedUsDollarAmount,
         ]
 
     async def __expandSpecialCasesWordDashWord(self, answer: str) -> list[str] | None:
@@ -400,7 +403,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         specialCases: list[str] = [
             match.group(),
             match.group(1),
-            match.group(2)
+            match.group(2),
         ]
 
         if utils.isValidStr(thirdWord):

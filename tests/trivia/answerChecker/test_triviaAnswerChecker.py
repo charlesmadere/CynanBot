@@ -938,7 +938,7 @@ class TestTriviaAnswerChecker:
 
         allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
             category = categoryText,
-            question = questionText
+            question = questionText,
         )
 
         originalCorrectAnswers: list[str] = [ 'The New Math' ]
@@ -960,7 +960,7 @@ class TestTriviaAnswerChecker:
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = TriviaSource.J_SERVICE,
+            triviaSource = TriviaSource.FUNTOON,
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('new math', question)
