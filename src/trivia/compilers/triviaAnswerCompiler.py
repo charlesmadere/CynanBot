@@ -721,3 +721,20 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         else:
             self.__timber.log('TriviaAnswerCompiler', f'Patched words appearing in question as optional ({answer=}) ({patchedAnswer=}) ({patchedWords=}) ({modificationCount=}) ({allWordsInAnswerWithParensCount=}) ({allWordsInAnswerWithParensCount=}) ({allWords=}) ({allOptionalWords=})')
             return patchedAnswer
+
+    async def __removeWordsAppearingInQuestion(
+        self,
+        allWords: frozenset[str] | None,
+        answer: str,
+    ) -> str:
+        if allWords is None or len(allWords) == 0:
+            return answer
+
+        splits = utils.getCleanedSplits(answer)
+        rebuiltAnswer: list[str] = list()
+
+        for split in splits:
+            if split not in allWords:
+                rebuiltAnswer.append(split)
+
+        return ' '.join(rebuiltAnswer)
