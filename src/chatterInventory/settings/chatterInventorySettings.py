@@ -23,7 +23,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         chatterInventoryMapper: ChatterInventoryMapperInterface,
         settingsJsonReader: JsonReaderInterface,
         defaultAirStrikeItemDetails: AirStrikeItemDetails = AirStrikeItemDetails(
-            maxDurationSeconds = 75,
+            maxDurationSeconds = 64,
             minDurationSeconds = 50,
             maxTargets = 13,
             minTargets = 9,

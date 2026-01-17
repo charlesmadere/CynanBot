@@ -125,7 +125,7 @@ class ChatterTimeoutHistoryRepository(ChatterTimeoutHistoryRepositoryInterface):
     ) -> FrozenList[ChatterTimeoutHistoryEntry]:
         cleanedHistoryEntries: FrozenList[ChatterTimeoutHistoryEntry] = FrozenList()
 
-        if historyEntries is None:
+        if historyEntries is None or len(historyEntries) == 0:
             cleanedHistoryEntries.freeze()
             return cleanedHistoryEntries
 

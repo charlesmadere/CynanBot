@@ -323,19 +323,19 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         self,
         event: BananaTimeoutEvent,
     ):
-        message: str
+        chatMessage: str
         if event.diceRoll is not None and event.diceRollFailureData is not None:
             if event.isReverse:
-                message = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserName} dropped a banana but they tripped themselves up! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} but got a {event.diceRoll.roll})'
+                chatMessage = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserName} dropped a banana but they tripped themselves up! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} but got a {event.diceRoll.roll})'
             else:
-                message = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.timeoutTarget.userName}! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, needed greater than {event.diceRollFailureData.reverseRoll})'
+                chatMessage = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.timeoutTarget.userName}! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, needed greater than {event.diceRollFailureData.reverseRoll})'
         elif event.isReverse:
-            message = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserName} dropped a banana but they tripped themselves up! {event.ripBozoEmote}'
+            chatMessage = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserName} dropped a banana but they tripped themselves up! {event.ripBozoEmote}'
         else:
-            message = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.timeoutTarget.userName}! {event.ripBozoEmote}'
+            chatMessage = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.timeoutTarget.userName}! {event.ripBozoEmote}'
 
         self.__twitchChatMessenger.send(
-            text = message,
+            text = chatMessage,
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -349,7 +349,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
             ttsMessage: str
 
             if event.isReverse:
-                ttsMessage = f'Oh no! {event.instigatorUserName} got hit with a reverse! Rip bozo!'
+                ttsMessage = f'Oh no! {event.instigatorUserName} got hit with a reverse! What a dumb idiot! Rip bozo!'
             else:
                 ttsMessage = f'{event.instigatorUserName} timed out {event.timeoutTarget.userName} for {event.timeoutDuration.message}! Rip bozo!'
 

@@ -14,10 +14,6 @@ class TimeoutActionSettingsInterface(Clearable, ABC):
         pass
 
     @abstractmethod
-    async def getBullyTimeToLiveDays(self) -> int:
-        pass
-
-    @abstractmethod
     async def getDieSize(self) -> int:
         pass
 
