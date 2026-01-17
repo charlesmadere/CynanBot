@@ -43,6 +43,10 @@ class GuaranteedTimeoutUsersRepository(GuaranteedTimeoutUsersRepositoryInterface
         if utils.isValidStr(albeeesUserId):
             newUserIds.add(albeeesUserId)
 
+        albeeevUserId = await self.__twitchFriendsUserIdRepository.getAlbeeevUserId()
+        if utils.isValidStr(albeeevUserId):
+            newUserIds.add(albeeevUserId)
+
         aneevUserId = await self.__twitchFriendsUserIdRepository.getAneevUserId()
         if utils.isValidStr(aneevUserId):
             newUserIds.add(aneevUserId)
