@@ -154,7 +154,9 @@ class DetermineBananaTargetUseCase:
             diceRoll = diceRoll,
         )
 
-        if diceRoll.roll < diceRollFailureData.reverseRoll:
+        self.__timber.log('DetermineBananaTargetUseCase', f'Generated dice roll failure data ({timeoutAction=}) ({instigatorUserName=}) ({timeoutTarget=}) ({diceRoll=}) ({diceRollFailureData=})')
+
+        if diceRoll.roll <= diceRollFailureData.reverseRoll:
             return DetermineBananaTargetUseCase.ResultData(
                 timeoutTarget = TimeoutTarget(
                     userId = timeoutAction.instigatorUserId,

@@ -13,7 +13,6 @@ from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInter
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from ...network.exceptions import GenericNetworkException
 from ...timber.timberInterface import TimberInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
@@ -65,7 +64,10 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
 
         self.__isStarted: bool = False
 
-    async def __deleteFromRepository(self, remodAction: TwitchTimeoutRemodData):
+    async def __deleteFromRepository(
+        self,
+        remodAction: TwitchTimeoutRemodData,
+    ):
         if not isinstance(remodAction, TwitchTimeoutRemodData):
             raise TypeError(f'remodAction argument is malformed: \"{remodAction}\"')
 
@@ -110,15 +112,14 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
                 twitchAccessToken = twitchAccessToken,
             )
 
-            successfulRemod: bool
-
             try:
                 successfulRemod = await self.__twitchApiService.addModerator(
                     broadcasterId = remodAction.broadcasterUserId,
                     twitchAccessToken = twitchAccessToken,
                     userId = remodAction.userId,
                 )
-            except GenericNetworkException:
+            except Exception as e:
+                self.__timber.log('TwitchTimeoutRemodHelper', f'Encountered an exception when trying to re-mod user ({remodAction=}) ({userName=})', e, traceback.format_exc())
                 successfulRemod = False
 
             if successfulRemod:

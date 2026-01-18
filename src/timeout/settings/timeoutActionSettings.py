@@ -26,10 +26,6 @@ class TimeoutActionSettings(TimeoutActionSettingsInterface):
         jsonContents = await self.__readJson()
         return utils.getFloatFromDict(jsonContents, 'actionLoopCooldownSeconds', fallback = 0.25)
 
-    async def getBullyTimeToLiveDays(self) -> int:
-        jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'bullyTimeToLiveDays', fallback = 14)
-
     async def getDieSize(self) -> int:
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'dieSize', fallback = 20)
@@ -52,7 +48,7 @@ class TimeoutActionSettings(TimeoutActionSettingsInterface):
 
     async def getMaxBullyFailureProbability(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'maxBullyFailureProbability', fallback = 0.70)
+        return utils.getFloatFromDict(jsonContents, 'maxBullyFailureProbability', fallback = 0.56)
 
     async def getReverseProbability(self) -> float:
         jsonContents = await self.__readJson()

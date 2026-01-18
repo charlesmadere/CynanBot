@@ -3,10 +3,7 @@ from abc import ABC, abstractmethod
 from ...funtoon.funtoonUserIdProviderInterface import FuntoonUserIdProviderInterface
 
 
-class TwitchFriendsUserIdRepositoryInterface(
-    FuntoonUserIdProviderInterface,
-    ABC,
-):
+class TwitchFriendsUserIdRepositoryInterface(FuntoonUserIdProviderInterface, ABC):
 
     @abstractmethod
     async def getAcacUserId(self) -> str | None:

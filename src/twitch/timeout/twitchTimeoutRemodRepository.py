@@ -38,7 +38,10 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
 
         self.__isDatabaseReady: bool = False
 
-    async def add(self, data: TwitchTimeoutRemodData):
+    async def add(
+        self,
+        data: TwitchTimeoutRemodData,
+    ):
         if not isinstance(data, TwitchTimeoutRemodData):
             raise TypeError(f'data argument is malformed: \"{data}\"')
 
@@ -55,7 +58,11 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
         await connection.close()
         self.__timber.log('TwitchTimeoutRemodRepository', f'Added remod action ({data=})')
 
-    async def delete(self, broadcasterUserId: str, userId: str):
+    async def delete(
+        self,
+        broadcasterUserId: str,
+        userId: str,
+    ):
         if not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(userId):

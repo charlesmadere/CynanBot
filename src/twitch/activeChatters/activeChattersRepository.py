@@ -153,7 +153,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         for entry in self.__twitchChannelIdToActiveChatters.values():
             await self.__clean(
                 now = now,
-                activeChatters = entry.chatters
+                activeChatters = entry.chatters,
             )
 
         self.__timber.log('ActiveChattersRepository', 'Caches cleared')
@@ -221,7 +221,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
 
         await self.__clean(
             now = now,
-            activeChatters = activeChatters
+            activeChatters = activeChatters,
         )
 
         activeChattersDictionary: dict[str, ActiveChatter] = dict()

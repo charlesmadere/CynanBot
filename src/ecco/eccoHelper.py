@@ -37,8 +37,8 @@ class EccoHelper(EccoHelperInterface):
         try:
             timerDateTime = await self.__eccoApiService.fetchEccoTimerDateTime()
         except GenericNetworkException as e:
-            self.__timber.log('EccoHelper', f'Failed to fetch Ecco timer datetime value: {e}', e, traceback.format_exc())
-            raise EccoFailedToFetchTimeRemaining(f'Failed to fetch Ecco timer datetime value: {e}')
+            self.__timber.log('EccoHelper', f'Failed to fetch Ecco timer', e, traceback.format_exc())
+            raise EccoFailedToFetchTimeRemaining(f'Failed to fetch Ecco timer: {e}')
 
         now = datetime.now(self.__timeZoneRepository.getDefault())
         remainingSeconds = math.floor((timerDateTime - now).total_seconds())

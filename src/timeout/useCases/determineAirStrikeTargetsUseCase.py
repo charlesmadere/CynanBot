@@ -1,3 +1,4 @@
+import math
 import random
 import traceback
 from typing import Final
@@ -101,7 +102,20 @@ class DetermineAirStrikeTargetsUseCase:
         for immuneUserId in allImmuneUserIds:
             vulnerableChatters.pop(immuneUserId, None)
 
+        if len(vulnerableChatters) == 0:
+            emptyTimeoutTargetsList: FrozenList[TimeoutTarget] = FrozenList()
+            emptyTimeoutTargetsList.freeze()
+            return emptyTimeoutTargetsList
+
         airStrikeTargetCount = random.randint(timeoutAction.minTimeoutTargets, timeoutAction.maxTimeoutTargets)
+
+        if float(airStrikeTargetCount) / float(len(vulnerableChatters)) >= 0.75:
+            # Let's check to see if the number of air strike targets we are trying to hit is too
+            # close to the total number of current active chatters. This helps prevent situations
+            # where we could end up repeatedly timing out the same people, as there just aren't
+            # enough active chatters to increase the randomness.
+            airStrikeTargetCount = max(timeoutAction.minTimeoutTargets, int(math.floor(float(airStrikeTargetCount) * 0.75)))
+
         vulnerableChattersList: list[ActiveChatter] = list(vulnerableChatters.values())
 
         while len(timeoutTargets) < airStrikeTargetCount and len(vulnerableChattersList) >= 1:

@@ -1,9 +1,11 @@
 import locale
 from dataclasses import dataclass
 
+from ...localModels.twitchUserInterface import TwitchUserInterface
+
 
 @dataclass(frozen = True)
-class TwitchOutcomePredictor:
+class TwitchOutcomePredictor(TwitchUserInterface):
     channelPointsUsed: int
     channelPointsWon: int | None
     userId: str
@@ -14,6 +16,15 @@ class TwitchOutcomePredictor:
     def channelPointsWonStr(self) -> str:
         channelPointsWon = self.requireChannelPointsWon()
         return locale.format_string("%d", channelPointsWon, grouping = True)
+
+    def getUserId(self) -> str:
+        return self.userId
+
+    def getUserLogin(self) -> str:
+        return self.userLogin
+
+    def getUserName(self) -> str:
+        return self.userName
 
     def requireChannelPointsWon(self) -> int:
         if self.channelPointsWon is None:

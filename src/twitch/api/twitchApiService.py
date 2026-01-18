@@ -229,8 +229,8 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when checking user subscription ({broadcasterId=}) ({userId=})', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when checking user subscription ({broadcasterId=}) ({userId=}): {e}')
 
-        jsonResponse = await response.json()
         responseStatusCode = response.statusCode
+        jsonResponse = await response.json()
         await response.close()
 
         if responseStatusCode != 200:
@@ -284,7 +284,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({eventSubRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
             raise TwitchStatusCodeException(
                 statusCode = responseStatusCode,
-                message = f'TwitchApiService encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({eventSubRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})'
+                message = f'TwitchApiService encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({eventSubRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})',
             )
 
         eventSubResponse = await self.__twitchJsonMapper.parseEventSubResponse(jsonResponse)
@@ -382,8 +382,8 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching broadcaster subscriptions ({broadcasterId=}) ({userId=})', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching broadcaster subscriptions ({broadcasterId=}) ({userId=}): {e}')
 
-        jsonResponse = await response.json()
         responseStatusCode = response.statusCode
+        jsonResponse = await response.json()
         await response.close()
 
         if responseStatusCode != 200:
@@ -565,7 +565,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        self.__timber.log('TwitchApiService', f'Fetching EventSub subscriptions... ({twitchAccessToken=}) ({userId=})')
+        self.__timber.log('TwitchApiService', f'Fetching EventSub subscriptions... ({userId=})')
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
         clientSession = await self.__networkClientProvider.get()
 
@@ -591,22 +591,22 @@ class TwitchApiService(TwitchApiServiceInterface):
                     },
                 )
             except GenericNetworkException as e:
-                self.__timber.log('TwitchApiService', f'Encountered network error when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({pagination=}): {e}', e, traceback.format_exc())
-                raise GenericNetworkException(f'TwitchApiService encountered network error when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({pagination=}): {e}')
+                self.__timber.log('TwitchApiService', f'Encountered network error when fetching EventSub subscriptions ({userId=}) ({pagination=})', e, traceback.format_exc())
+                raise GenericNetworkException(f'TwitchApiService encountered network error when fetching EventSub subscriptions ({userId=}) ({pagination=}): {e}')
 
             responseStatusCode = response.statusCode
             jsonResponse = await response.json()
             await response.close()
 
             if responseStatusCode != 200:
-                self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({pagination=}) ({response=}): {responseStatusCode}')
-                raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({pagination=}) ({response=}): {responseStatusCode}')
+                self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching EventSub subscriptions ({userId=}) ({pagination=}) ({response=}): {responseStatusCode}')
+                raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching EventSub subscriptions ({userId=}) ({pagination=}) ({response=}): {responseStatusCode}')
 
             newEventSubResponse = await self.__twitchJsonMapper.parseEventSubResponse(jsonResponse)
 
             if newEventSubResponse is None:
-                self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({pagination=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({newEventSubResponse=})')
-                raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({pagination=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({newEventSubResponse=})')
+                self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching EventSub subscriptions ({userId=}) ({pagination=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({newEventSubResponse=})')
+                raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching EventSub subscriptions ({userId=}) ({pagination=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({newEventSubResponse=})')
 
             finalEventSubResponse = await self.__twitchJsonMapper.mergeEventSubResponses(
                 first = finalEventSubResponse,
@@ -619,8 +619,8 @@ class TwitchApiService(TwitchApiServiceInterface):
                 pagination = finalEventSubResponse.pagination
 
         if finalEventSubResponse is None:
-            self.__timber.log('TwitchApiService', f'Encountered network error when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({pagination=})')
-            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching EventSub subscriptions ({twitchAccessToken=}) ({userId=}) ({pagination=})')
+            self.__timber.log('TwitchApiService', f'Encountered network error when fetching EventSub subscriptions ({userId=}) ({pagination=})')
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching EventSub subscriptions ({userId=}) ({pagination=})')
 
         return finalEventSubResponse
 
@@ -664,7 +664,10 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=})')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=})')
+            raise TwitchStatusCodeException(
+                statusCode = responseStatusCode,
+                message = f'TwitchApiService encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=})',
+            )
 
         followersResponse = await self.__twitchJsonMapper.parseFollowersResponse(jsonResponse)
 
@@ -686,7 +689,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         elif len(twitchChannelIds) > 100:
             raise ValueError(f'twitchChannelIds argument has too many values (len is {len(twitchChannelIds)}, max is 100): \"{twitchChannelIds}\"')
 
-        self.__timber.log('TwitchApiService', f'Fetching live user details... ({twitchAccessToken=}) ({twitchChannelIds=})')
+        self.__timber.log('TwitchApiService', f'Fetching live user details... ({twitchChannelIds=})')
 
         userIdsStr = '&user_id='.join(twitchChannelIds)
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
@@ -701,22 +704,22 @@ class TwitchApiService(TwitchApiServiceInterface):
                 },
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchApiService', f'Encountered network error when fetching live user details ({twitchAccessToken=}) ({twitchChannelIds=}): {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching user details ({twitchAccessToken=}) ({twitchChannelIds=}): {e}')
+            self.__timber.log('TwitchApiService', f'Encountered network error when fetching live user details ({twitchChannelIds=})', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching live user details ({twitchChannelIds=}): {e}')
 
         responseStatusCode = response.statusCode
         jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching live user details ({twitchAccessToken=}) ({twitchChannelIds=}): {jsonResponse}')
-            raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching live user details ({twitchAccessToken=}) ({twitchChannelIds=}): {jsonResponse}')
+            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching live user details ({twitchChannelIds=}): {jsonResponse}')
+            raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching live user details ({twitchChannelIds=}): {jsonResponse}')
         elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
-            self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching live user details ({twitchAccessToken=}) ({twitchChannelIds=}): {jsonResponse}')
-            raise TwitchTokenIsExpiredException(f'TwitchApiService received an error ({responseStatusCode}) when fetching live user details ({twitchAccessToken=}) ({twitchChannelIds=}): {jsonResponse}')
+            self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching live user details ({twitchChannelIds=}): {jsonResponse}')
+            raise TwitchTokenIsExpiredException(f'TwitchApiService received an error ({responseStatusCode}) when fetching live user details ({twitchChannelIds=}): {jsonResponse}')
         elif responseStatusCode != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching live user details ({twitchAccessToken=}) ({twitchChannelIds=}): {responseStatusCode}')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching live user details ({twitchAccessToken=}) ({twitchChannelIds=}): {responseStatusCode}')
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching live user details ({twitchChannelIds=}): {responseStatusCode}')
+            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching live user details ({twitchChannelIds=}): {responseStatusCode}')
 
         data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
         users: list[TwitchLiveUserDetails] = list()
@@ -775,7 +778,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             )
         except GenericNetworkException as e:
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching moderator ({broadcasterId=}) ({userId=})', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching moderator ({broadcasterId=}) ({userId=}): {e}')
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching moderator ({broadcasterId=}) ({userId=}): {e}')
 
         responseStatusCode = response.statusCode
         jsonResponse = await response.json()
@@ -874,7 +877,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             )
         except GenericNetworkException as e:
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching user details ({userId=})', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching user details ({userId=}): {e}')
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching user details ({userId=}): {e}')
 
         responseStatusCode = response.statusCode
         jsonResponse: dict[str, Any] | Any | None = await response.json()
@@ -946,7 +949,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             )
         except GenericNetworkException as e:
             self.__timber.log('TwitchApiService', f'Encountered network error when fetching user details ({userName=})', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching user details ({userName=}): {e}')
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching user details ({userName=}): {e}')
 
         responseStatusCode = response.statusCode
         jsonResponse: dict[str, Any] | Any | None = await response.json()
@@ -987,7 +990,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             login = utils.getStrFromDict(entry, 'login'),
             userId = utils.getStrFromDict(entry, 'id'),
             broadcasterType = await self.__twitchJsonMapper.parseBroadcasterType(utils.getStrFromDict(entry, 'broadcaster_type')),
-            userType = await self.__twitchJsonMapper.parseUserType(utils.getStrFromDict(entry, 'type'))
+            userType = await self.__twitchJsonMapper.parseUserType(utils.getStrFromDict(entry, 'type')),
         )
 
     async def refreshTokens(self, twitchRefreshToken: str) -> TwitchTokensDetails:
@@ -1044,23 +1047,23 @@ class TwitchApiService(TwitchApiServiceInterface):
     async def removeModerator(
         self,
         broadcasterId: str,
-        moderatorId: str,
         twitchAccessToken: str,
+        userId: str,
     ) -> bool:
         if not utils.isValidStr(broadcasterId):
             raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
-        elif not utils.isValidStr(moderatorId):
-            raise TypeError(f'moderatorId argument is malformed: \"{moderatorId}\"')
         elif not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        self.__timber.log('TwitchApiService', f'Removing moderator... ({broadcasterId=}) ({moderatorId=})')
+        self.__timber.log('TwitchApiService', f'Removing moderator... ({broadcasterId=}) ({userId=})')
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
         clientSession = await self.__networkClientProvider.get()
 
         queryString = urllib.parse.urlencode({
             'broadcaster_id': broadcasterId,
-            'user_id': moderatorId,
+            'user_id': userId,
         })
 
         try:
@@ -1072,8 +1075,8 @@ class TwitchApiService(TwitchApiServiceInterface):
                 },
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchApiService', f'Encountered network error when removing moderator ({broadcasterId=}) ({moderatorId=})', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when removing moderator ({broadcasterId=}) ({moderatorId=}): {e}')
+            self.__timber.log('TwitchApiService', f'Encountered network error when removing moderator ({broadcasterId=}) ({userId=})', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when removing moderator ({broadcasterId=}) ({userId=}): {e}')
 
         responseStatusCode = response.statusCode
         await response.close()
@@ -1088,10 +1091,10 @@ class TwitchApiService(TwitchApiServiceInterface):
                 return False
 
             case _:
-                self.__timber.log('TwitchApiService', f'Encountered network error when removing moderator ({broadcasterId=}) ({moderatorId=}) ({response=}) ({responseStatusCode=})')
+                self.__timber.log('TwitchApiService', f'Encountered network error when removing moderator ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=})')
                 raise TwitchStatusCodeException(
                     statusCode = responseStatusCode,
-                    message = f'TwitchApiService encountered network error when removing moderator ({broadcasterId=}) ({moderatorId=}) ({response=}) ({responseStatusCode=})',
+                    message = f'TwitchApiService encountered network error when removing moderator ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=})',
                 )
 
     async def sendChatAnnouncement(
@@ -1104,7 +1107,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         elif not isinstance(announcementRequest, TwitchSendChatAnnouncementRequest):
             raise TypeError(f'announcementRequest argument is malformed: \"{announcementRequest}\"')
 
-        self.__timber.log('TwitchApiService', f'Sending chat announcement... ({twitchAccessToken=}) ({announcementRequest=})')
+        self.__timber.log('TwitchApiService', f'Sending chat announcement... ({announcementRequest=})')
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
         clientSession = await self.__networkClientProvider.get()
 

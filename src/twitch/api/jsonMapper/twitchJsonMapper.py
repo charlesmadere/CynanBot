@@ -422,7 +422,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseChannelEditor(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChannelEditor | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -467,7 +467,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseChannelPointsVoting(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChannelPointsVoting | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -482,7 +482,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseChatBadge(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChatBadge | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -503,7 +503,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseChatMessage(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChatMessage | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -515,11 +515,11 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not utils.isValidStr(text):
             return None
 
-        fragments: list[TwitchChatMessageFragment] = list()
-        fragmentsJson: list[dict[str, Any]] | Any | None = jsonResponse.get('fragments')
+        fragmentsArray: list[dict[str, Any]] | Any | None = jsonResponse.get('fragments')
+        fragments: FrozenList[TwitchChatMessageFragment] = FrozenList()
 
-        if isinstance(fragmentsJson, list) and len(fragmentsJson) >= 1:
-            for index, fragmentJson in enumerate(fragmentsJson):
+        if isinstance(fragmentsArray, list) and len(fragmentsArray) >= 1:
+            for index, fragmentJson in enumerate(fragmentsArray):
                 fragment = await self.parseChatMessageFragment(fragmentJson)
 
                 if fragment is None:
@@ -527,17 +527,14 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 else:
                     fragments.append(fragment)
 
-        frozenFragments: FrozenList[TwitchChatMessageFragment] = FrozenList(fragments)
-        frozenFragments.freeze()
-
         return TwitchChatMessage(
-            fragments = frozenFragments,
+            fragments = fragments,
             text = text,
         )
 
     async def parseChatMessageFragment(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChatMessageFragment | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1457,7 +1454,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseRaid(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchRaid | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1477,7 +1474,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             profileImageUrl = profileImageUrl,
             userId = userId,
             userLogin = userLogin,
-            userName = userName
+            userName = userName,
         )
 
     async def parseResub(
@@ -2221,7 +2218,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def requireChatMessageFragmentType(
         self,
-        fragmentType: str | Any | None
+        fragmentType: str | Any | None,
     ) -> TwitchChatMessageFragmentType:
         result = await self.parseChatMessageFragmentType(fragmentType)
 

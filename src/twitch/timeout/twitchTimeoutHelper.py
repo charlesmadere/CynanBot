@@ -140,11 +140,11 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         try:
             return await self.__twitchApiService.removeModerator(
                 broadcasterId = twitchChannelId,
-                moderatorId = userIdToTimeout,
                 twitchAccessToken = twitchChannelAccessToken,
+                userId = userIdToTimeout,
             )
         except Exception as e:
-            self.__timber.log('TwitchTimeoutHelper', f'Failed to remove Twitch moderator for the given user ID ({twitchChannelId=}) ({userIdToTimeout=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchTimeoutHelper', f'Failed to remove Twitch moderator for the given user ID ({twitchChannelId=}) ({userIdToTimeout=})', e, traceback.format_exc())
             return False
 
     async def timeout(
@@ -180,7 +180,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         )
 
         if not utils.isValidStr(userNameToTimeout):
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were unable to find a username for the given user ID ({twitchChannelId=}) ({userIdToTimeout=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were unable to find a username for the given user ID ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
             return TwitchTimeoutResult.INVALID_USER_NAME
         elif userIdToTimeout == twitchChannelId:
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout the streamer themselves ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
