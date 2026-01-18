@@ -75,9 +75,11 @@ from ..models.twitchSubGift import TwitchSubGift
 from ..models.twitchSubscriberTier import TwitchSubscriberTier
 from ..models.twitchThemeMode import TwitchThemeMode
 from ..models.twitchTokensDetails import TwitchTokensDetails
+from ..models.twitchUser import TwitchUser
 from ..models.twitchUserSubscription import TwitchUserSubscription
 from ..models.twitchUserSubscriptionsResponse import TwitchUserSubscriptionsResponse
 from ..models.twitchUserType import TwitchUserType
+from ..models.twitchUsersResponse import TwitchUsersResponse
 from ..models.twitchValidationResponse import TwitchValidationResponse
 from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
@@ -603,6 +605,20 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseUser(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchUser | None:
+        pass
+
+    @abstractmethod
+    async def parseUsersResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchUsersResponse | None:
+        pass
+
+    @abstractmethod
     async def parseUserSubscription(
         self,
         jsonResponse: dict[str, Any] | Any | None,
@@ -619,7 +635,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseUserType(
         self,
-        userType: str | Any | None
+        userType: str | Any | None,
     ) -> TwitchUserType:
         pass
 
