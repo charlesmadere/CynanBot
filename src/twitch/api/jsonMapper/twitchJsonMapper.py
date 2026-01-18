@@ -79,9 +79,11 @@ from ..models.twitchSubGift import TwitchSubGift
 from ..models.twitchSubscriberTier import TwitchSubscriberTier
 from ..models.twitchThemeMode import TwitchThemeMode
 from ..models.twitchTokensDetails import TwitchTokensDetails
+from ..models.twitchUser import TwitchUser
 from ..models.twitchUserSubscription import TwitchUserSubscription
 from ..models.twitchUserSubscriptionsResponse import TwitchUserSubscriptionsResponse
 from ..models.twitchUserType import TwitchUserType
+from ..models.twitchUsersResponse import TwitchUsersResponse
 from ..models.twitchValidationResponse import TwitchValidationResponse
 from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
@@ -1945,12 +1947,12 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             conduitId = conduitId,
             secret = secret,
             sessionId = sessionId,
-            method = method
+            method = method,
         )
 
     async def parseTransportMethod(
         self,
-        transportMethod: str | Any | None
+        transportMethod: str | Any | None,
     ) -> TwitchWebsocketTransportMethod | None:
         if not utils.isValidStr(transportMethod):
             return None
@@ -1962,6 +1964,76 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'webhook': return TwitchWebsocketTransportMethod.WEBHOOK
             case 'websocket': return TwitchWebsocketTransportMethod.WEBSOCKET
             case _: return None
+
+    async def parseUser(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchUser | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        createdAt = utils.getDateTimeFromDict(jsonResponse, 'created_at')
+
+        description: str | None = None
+        if 'description' in jsonResponse and utils.isValidStr(jsonResponse.get('description')):
+            description = utils.getStrFromDict(jsonResponse, 'description', clean = True)
+
+        displayName = utils.getStrFromDict(jsonResponse, 'display_name')
+
+        email: str | None = None
+        if 'email' in jsonResponse and utils.isValidStr(jsonResponse.get('email')):
+            email = utils.getStrFromDict(jsonResponse, 'email')
+
+        profileImageUrl: str | None = None
+        if 'profile_image_url' in jsonResponse and utils.isValidUrl(jsonResponse.get('profile_image_url')):
+            profileImageUrl = utils.getStrFromDict(jsonResponse, 'profile_image_url')
+
+        offlineImageUrl: str | None = None
+        if 'offline_image_url' in jsonResponse and utils.isValidUrl(jsonResponse.get('offline_image_url')):
+            offlineImageUrl = utils.getStrFromDict(jsonResponse, 'offline_image_url')
+
+        userId = utils.getStrFromDict(jsonResponse, 'id')
+        userLogin = utils.getStrFromDict(jsonResponse, 'login')
+        broadcasterType = await self.parseBroadcasterType(jsonResponse.get('broadcaster_type'))
+        userType = await self.parseUserType(jsonResponse.get('type'))
+
+        return TwitchUser(
+            createdAt = createdAt,
+            description = description,
+            displayName = displayName,
+            email = email,
+            profileImageUrl = profileImageUrl,
+            offlineImageUrl = offlineImageUrl,
+            userId = userId,
+            userLogin = userLogin,
+            broadcasterType = broadcasterType,
+            userType = userType,
+        )
+
+    async def parseUsersResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchUsersResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        data: FrozenList[TwitchUser] = FrozenList()
+
+        if isinstance(dataArray, list) and len(dataArray) >= 1:
+            for index, dataJson in enumerate(dataArray):
+                user = await self.parseUser(dataJson)
+
+                if user is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} within \"data\" ({user=}) ({jsonResponse=})')
+                else:
+                    data.append(user)
+
+        data.freeze()
+
+        return TwitchUsersResponse(
+            data = data,
+        )
 
     async def parseUserSubscription(
         self,
@@ -2027,7 +2099,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseUserType(
         self,
-        userType: str | Any | None
+        userType: str | Any | None,
     ) -> TwitchUserType:
         if not utils.isValidStr(userType):
             return TwitchUserType.NORMAL
@@ -2038,7 +2110,9 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'admin': return TwitchUserType.ADMIN
             case 'global_mod': return TwitchUserType.GLOBAL_MOD
             case 'staff': return TwitchUserType.STAFF
-            case _: return TwitchUserType.NORMAL
+            case _:
+                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchUserType value: \"{userType}\"')
+                return TwitchUserType.NORMAL
 
     async def parseValidationResponse(
         self,

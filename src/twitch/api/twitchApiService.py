@@ -17,6 +17,9 @@ from .models.twitchChattersResponse import TwitchChattersResponse
 from .models.twitchEmotesResponse import TwitchEmotesResponse
 from .models.twitchEventSubRequest import TwitchEventSubRequest
 from .models.twitchEventSubResponse import TwitchEventSubResponse
+from .models.twitchFetchUserRequest import TwitchFetchUserRequest
+from .models.twitchFetchUserWithIdRequest import TwitchFetchUserWithIdRequest
+from .models.twitchFetchUserWithLoginRequest import TwitchFetchUserWithLoginRequest
 from .models.twitchFollowersResponse import TwitchFollowersResponse
 from .models.twitchLiveUserDetails import TwitchLiveUserDetails
 from .models.twitchModeratorsResponse import TwitchModeratorsResponse
@@ -27,8 +30,8 @@ from .models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from .models.twitchStartCommercialResponse import TwitchStartCommercialResponse
 from .models.twitchTokensDetails import TwitchTokensDetails
 from .models.twitchUnbanRequest import TwitchUnbanRequest
-from .models.twitchUserDetails import TwitchUserDetails
 from .models.twitchUserSubscriptionsResponse import TwitchUserSubscriptionsResponse
+from .models.twitchUsersResponse import TwitchUsersResponse
 from .models.twitchValidationResponse import TwitchValidationResponse
 from .twitchApiServiceInterface import TwitchApiServiceInterface
 from ..exceptions import (TwitchErrorException, TwitchJsonException,
@@ -849,23 +852,34 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         return tokensDetails
 
-    async def fetchUserDetailsWithUserId(
+    async def fetchUser(
         self,
         twitchAccessToken: str,
-        userId: str,
-    ) -> TwitchUserDetails | None:
+        fetchUserRequest: TwitchFetchUserRequest,
+    ) -> TwitchUsersResponse:
         if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+        elif not isinstance(fetchUserRequest, TwitchFetchUserRequest):
+            raise TypeError(f'fetchUserRequest argument is malformed: \"{fetchUserRequest}\"')
 
-        self.__timber.log('TwitchApiService', f'Fetching user details with user ID... ({userId=})')
+        queryString: str
+
+        if isinstance(fetchUserRequest, TwitchFetchUserWithIdRequest):
+            queryString = urllib.parse.urlencode({
+                'id': fetchUserRequest.userId,
+            })
+
+        elif isinstance(fetchUserRequest, TwitchFetchUserWithLoginRequest):
+            queryString = urllib.parse.urlencode({
+                'login': fetchUserRequest.userLogin,
+            })
+
+        else:
+            raise RuntimeError(f'unknown TwitchFetchUserRequest: \"{fetchUserRequest}\"')
+
+        self.__timber.log('TwitchApiService', f'Fetching user... ({fetchUserRequest=})')
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
         clientSession = await self.__networkClientProvider.get()
-
-        queryString = urllib.parse.urlencode({
-            'id': userId,
-        })
 
         try:
             response = await clientSession.get(
@@ -876,122 +890,27 @@ class TwitchApiService(TwitchApiServiceInterface):
                 },
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchApiService', f'Encountered network error when fetching user details ({userId=})', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching user details ({userId=}): {e}')
+            self.__timber.log('TwitchApiService', f'Encountered network error when fetching user ({fetchUserRequest=})', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching user ({fetchUserRequest=}): {e}')
 
         responseStatusCode = response.statusCode
-        jsonResponse: dict[str, Any] | Any | None = await response.json()
+        jsonResponse = await response.json()
         await response.close()
 
         if responseStatusCode != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user details ({userId=}) ({response=}) ({responseStatusCode=})')
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user ({fetchUserRequest=}) ({response=}) ({responseStatusCode=})')
             raise TwitchStatusCodeException(
                 statusCode = responseStatusCode,
-                message = f'TwitchApiService encountered non-200 HTTP status code when fetching user details ({userId=}) ({response=}) ({responseStatusCode=})',
+                message = f'TwitchApiService encountered non-200 HTTP status code when fetching user ({fetchUserRequest=}) ({response=}) ({responseStatusCode=})',
             )
-        elif not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching user details ({userId=}) ({response=}) ({jsonResponse=})')
-            raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching user details ({userId=}) ({response=}) ({jsonResponse=})')
-        elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
-            self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching user details ({userId=}) ({response=}) ({jsonResponse=})')
-            raise TwitchErrorException(f'TwitchApiService received an error of some kind when fetching user details ({userId=}) ({response=}) ({jsonResponse=})')
 
-        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        usersResponse = await self.__twitchJsonMapper.parseUsersResponse(jsonResponse)
 
-        if not isinstance(data, list) or len(data) == 0:
-            self.__timber.log('TwitchApiService', f'Received a null/empty \"data\" field in JSON response when fetching user details ({userId=}) ({response=}) ({jsonResponse=})')
-            return None
+        if usersResponse is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching user ({fetchUserRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({usersResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching user ({fetchUserRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({usersResponse=})')
 
-        entry: dict[str, Any] | None = None
-
-        for dataEntry in data:
-            if utils.getStrFromDict(dataEntry, 'id').lower() == userId:
-                entry = dataEntry
-                break
-
-        if entry is None:
-            self.__timber.log('TwitchApiService', f'Couldn\'t find entry with matching \"id\" field in JSON response when fetching user details ({userId=}): {jsonResponse}')
-            return None
-
-        return TwitchUserDetails(
-            displayName = utils.getStrFromDict(entry, 'display_name'),
-            login = utils.getStrFromDict(entry, 'login'),
-            userId = utils.getStrFromDict(entry, 'id'),
-            broadcasterType = await self.__twitchJsonMapper.parseBroadcasterType(utils.getStrFromDict(entry, 'broadcaster_type')),
-            userType = await self.__twitchJsonMapper.parseUserType(utils.getStrFromDict(entry, 'type'))
-        )
-
-    async def fetchUserDetailsWithUserName(
-        self,
-        twitchAccessToken: str,
-        userName: str,
-    ) -> TwitchUserDetails | None:
-        if not utils.isValidStr(twitchAccessToken):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(userName):
-            raise TypeError(f'userName argument is malformed: \"{userName}\"')
-
-        self.__timber.log('TwitchApiService', f'Fetching user details with username... ({userName=})')
-        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
-        clientSession = await self.__networkClientProvider.get()
-
-        queryString = urllib.parse.urlencode({
-            'login': userName,
-        })
-
-        try:
-            response = await clientSession.get(
-                url = f'https://api.twitch.tv/helix/users?{queryString}',
-                headers = {
-                    'Authorization': f'Bearer {twitchAccessToken}',
-                    'Client-Id': twitchClientId,
-                },
-            )
-        except GenericNetworkException as e:
-            self.__timber.log('TwitchApiService', f'Encountered network error when fetching user details ({userName=})', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching user details ({userName=}): {e}')
-
-        responseStatusCode = response.statusCode
-        jsonResponse: dict[str, Any] | Any | None = await response.json()
-        await response.close()
-
-        if responseStatusCode != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user details ({userName=}) ({response=}) ({responseStatusCode=})')
-            raise TwitchStatusCodeException(
-                statusCode = responseStatusCode,
-                message = f'TwitchApiService encountered non-200 HTTP status code when fetching user details ({userName=}) ({response=}) ({responseStatusCode=})',
-            )
-        elif not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching user details ({userName=}): {jsonResponse}')
-            raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching user details ({userName=}): {jsonResponse}')
-        elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
-            self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching user details ({userName=}): {jsonResponse}')
-            raise TwitchErrorException(f'TwitchApiService received an error of some kind when fetching user details ({userName=}): {jsonResponse}')
-
-        data: list[dict[str, Any]] | None = jsonResponse.get('data')
-
-        if not isinstance(data, list) or len(data) == 0:
-            self.__timber.log('TwitchApiService', f'Received a null/empty \"data\" field in JSON response when fetching user details ({userName=}): {jsonResponse}')
-            return None
-
-        entry: dict[str, Any] | None = None
-
-        for dataEntry in data:
-            if utils.getStrFromDict(dataEntry, 'login').casefold() == userName:
-                entry = dataEntry
-                break
-
-        if entry is None:
-            self.__timber.log('TwitchApiService', f'Couldn\'t find entry with matching \"login\" field in JSON response when fetching user details ({userName=}): {jsonResponse}')
-            return None
-
-        return TwitchUserDetails(
-            displayName = utils.getStrFromDict(entry, 'display_name'),
-            login = utils.getStrFromDict(entry, 'login'),
-            userId = utils.getStrFromDict(entry, 'id'),
-            broadcasterType = await self.__twitchJsonMapper.parseBroadcasterType(utils.getStrFromDict(entry, 'broadcaster_type')),
-            userType = await self.__twitchJsonMapper.parseUserType(utils.getStrFromDict(entry, 'type')),
-        )
+        return usersResponse
 
     async def refreshTokens(self, twitchRefreshToken: str) -> TwitchTokensDetails:
         if not utils.isValidStr(twitchRefreshToken):
