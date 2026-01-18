@@ -1,5 +1,5 @@
 import re
-from typing import Pattern
+from typing import Final, Pattern
 
 from .microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
 from .microsoftSamMessageVoiceParserInterface import MicrosoftSamMessageVoiceParserInterface
@@ -10,18 +10,18 @@ class MicrosoftSamMessageVoiceParser(MicrosoftSamMessageVoiceParserInterface):
 
     def __init__(
         self,
-        microsoftSamJsonParser: MicrosoftSamJsonParserInterface
+        microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
     ):
         if not isinstance(microsoftSamJsonParser, MicrosoftSamJsonParserInterface):
             raise TypeError(f'microsoftSamJsonParser argument is malformed: \"{microsoftSamJsonParser}\"')
 
-        self.__microsoftSamJsonParser: MicrosoftSamJsonParserInterface = microsoftSamJsonParser
+        self.__microsoftSamJsonParser: Final[MicrosoftSamJsonParserInterface] = microsoftSamJsonParser
 
-        self.__voiceRegEx: Pattern = re.compile(r'^(\s*(\w+):\s+)', re.IGNORECASE)
+        self.__voiceRegEx: Final[Pattern] = re.compile(r'^(\s*(\w+):\s+)', re.IGNORECASE)
 
     async def determineVoiceFromMessage(
         self,
-        message: str | None
+        message: str | None,
     ) -> MicrosoftSamMessageVoiceParserInterface.Result | None:
         if message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -46,5 +46,5 @@ class MicrosoftSamMessageVoiceParser(MicrosoftSamMessageVoiceParserInterface):
 
         return MicrosoftSamMessageVoiceParserInterface.Result(
             voice = microsoftSamVoice,
-            message = messageWithoutVoice
+            message = messageWithoutVoice,
         )

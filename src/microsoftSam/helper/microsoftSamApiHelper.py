@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from .microsoftSamApiHelperInterface import MicrosoftSamApiHelperInterface
 from ..apiService.microsoftSamApiServiceInterface import MicrosoftSamApiServiceInterface
@@ -13,20 +14,20 @@ class MicrosoftSamApiHelper(MicrosoftSamApiHelperInterface):
     def __init__(
         self,
         microsoftSamApiService: MicrosoftSamApiServiceInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(microsoftSamApiService, MicrosoftSamApiServiceInterface):
             raise TypeError(f'microsoftSamApiService argument is malformed: \"{microsoftSamApiService}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__microsoftSamApiService: MicrosoftSamApiServiceInterface = microsoftSamApiService
-        self.__timber: TimberInterface = timber
+        self.__microsoftSamApiService: Final[MicrosoftSamApiServiceInterface] = microsoftSamApiService
+        self.__timber: Final[TimberInterface] = timber
 
     async def getSpeech(
         self,
         voice: MicrosoftSamVoice,
-        message: str | None
+        message: str | None,
     ) -> bytes | None:
         if not isinstance(voice, MicrosoftSamVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
@@ -39,8 +40,8 @@ class MicrosoftSamApiHelper(MicrosoftSamApiHelperInterface):
         try:
             return await self.__microsoftSamApiService.getSpeech(
                 voice = voice,
-                message = message
+                text = message,
             )
         except GenericNetworkException as e:
-            self.__timber.log('MicrosoftSamApiHelper', f'Encountered network error when fetching speech ({voice=}) ({message=}): {e}', e, traceback.format_exc())
+            self.__timber.log('MicrosoftSamApiHelper', f'Encountered network error when fetching speech ({voice=}) ({message=})', e, traceback.format_exc())
             return None
