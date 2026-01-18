@@ -164,8 +164,8 @@ class TwitchApiServiceInterface(ABC):
     async def removeModerator(
         self,
         broadcasterId: str,
-        moderatorId: str,
         twitchAccessToken: str,
+        userId: str,
     ) -> bool:
         pass
 

@@ -1047,23 +1047,23 @@ class TwitchApiService(TwitchApiServiceInterface):
     async def removeModerator(
         self,
         broadcasterId: str,
-        moderatorId: str,
         twitchAccessToken: str,
+        userId: str,
     ) -> bool:
         if not utils.isValidStr(broadcasterId):
             raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
-        elif not utils.isValidStr(moderatorId):
-            raise TypeError(f'moderatorId argument is malformed: \"{moderatorId}\"')
         elif not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        self.__timber.log('TwitchApiService', f'Removing moderator... ({broadcasterId=}) ({moderatorId=})')
+        self.__timber.log('TwitchApiService', f'Removing moderator... ({broadcasterId=}) ({userId=})')
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
         clientSession = await self.__networkClientProvider.get()
 
         queryString = urllib.parse.urlencode({
             'broadcaster_id': broadcasterId,
-            'user_id': moderatorId,
+            'user_id': userId,
         })
 
         try:
@@ -1075,8 +1075,8 @@ class TwitchApiService(TwitchApiServiceInterface):
                 },
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchApiService', f'Encountered network error when removing moderator ({broadcasterId=}) ({moderatorId=})', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when removing moderator ({broadcasterId=}) ({moderatorId=}): {e}')
+            self.__timber.log('TwitchApiService', f'Encountered network error when removing moderator ({broadcasterId=}) ({userId=})', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when removing moderator ({broadcasterId=}) ({userId=}): {e}')
 
         responseStatusCode = response.statusCode
         await response.close()
@@ -1091,10 +1091,10 @@ class TwitchApiService(TwitchApiServiceInterface):
                 return False
 
             case _:
-                self.__timber.log('TwitchApiService', f'Encountered network error when removing moderator ({broadcasterId=}) ({moderatorId=}) ({response=}) ({responseStatusCode=})')
+                self.__timber.log('TwitchApiService', f'Encountered network error when removing moderator ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=})')
                 raise TwitchStatusCodeException(
                     statusCode = responseStatusCode,
-                    message = f'TwitchApiService encountered network error when removing moderator ({broadcasterId=}) ({moderatorId=}) ({response=}) ({responseStatusCode=})',
+                    message = f'TwitchApiService encountered network error when removing moderator ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=})',
                 )
 
     async def sendChatAnnouncement(
