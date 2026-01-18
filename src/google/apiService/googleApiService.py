@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from .googleApiServiceInterface import GoogleApiServiceInterface
 from ..accessToken.googleAccessToken import GoogleAccessToken
@@ -27,7 +28,7 @@ class GoogleApiService(GoogleApiServiceInterface):
         googleJwtBuilder: GoogleJwtBuilderInterface,
         networkClientProvider: NetworkClientProvider,
         timber: TimberInterface,
-        contentType: str = 'application/json; charset=utf-8'
+        contentType: str = 'application/json; charset=utf-8',
     ):
         if not isinstance(googleApiAccessTokenStorage, GoogleApiAccessTokenStorageInterface):
             raise TypeError(f'googleApiAccessTokenStorage argument is malformed: \"{googleApiAccessTokenStorage}\"')
@@ -44,13 +45,13 @@ class GoogleApiService(GoogleApiServiceInterface):
         elif not utils.isValidStr(contentType):
             raise TypeError(f'contentType argument is malformed: \"{contentType}\"')
 
-        self.__googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = googleApiAccessTokenStorage
-        self.__googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = googleCloudProjectCredentialsProvider
-        self.__googleJsonMapper: GoogleJsonMapperInterface = googleJsonMapper
-        self.__googleJwtBuilder: GoogleJwtBuilderInterface = googleJwtBuilder
-        self.__networkClientProvider: NetworkClientProvider = networkClientProvider
-        self.__timber: TimberInterface = timber
-        self.__contentType: str = contentType
+        self.__googleApiAccessTokenStorage: Final[GoogleApiAccessTokenStorageInterface] = googleApiAccessTokenStorage
+        self.__googleCloudProjectCredentialsProvider: Final[GoogleCloudProjectCredentialsProviderInterface] = googleCloudProjectCredentialsProvider
+        self.__googleJsonMapper: Final[GoogleJsonMapperInterface] = googleJsonMapper
+        self.__googleJwtBuilder: Final[GoogleJwtBuilderInterface] = googleJwtBuilder
+        self.__networkClientProvider: Final[NetworkClientProvider] = networkClientProvider
+        self.__timber: Final[TimberInterface] = timber
+        self.__contentType: Final[str] = contentType
 
     async def __fetchGoogleAccessToken(self) -> GoogleAccessToken:
         accessToken = await self.__googleApiAccessTokenStorage.getAccessToken()
@@ -67,11 +68,11 @@ class GoogleApiService(GoogleApiServiceInterface):
                 url = 'https://oauth2.googleapis.com/token',
                 json = {
                     'assertion': assertion,
-                    'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer'
-                }
+                    'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                },
             )
         except GenericNetworkException as e:
-            self.__timber.log('GoogleApiService', f'Encountered network error when fetching access token: {e}', e, traceback.format_exc())
+            self.__timber.log('GoogleApiService', f'Encountered network error when fetching access token', e, traceback.format_exc())
             raise GenericNetworkException(f'Encountered network error when fetching access token: {e}')
 
         responseStatusCode = response.statusCode
@@ -80,7 +81,10 @@ class GoogleApiService(GoogleApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('GoogleApiService', f'Encountered non-200 HTTP status code when fetching access token ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
-            raise GenericNetworkException(f'GoogleApiService encountered non-200 HTTP status code when fetching access token ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+            raise GenericNetworkException(
+                message = f'GoogleApiService encountered non-200 HTTP status code when fetching access token ({responseStatusCode=}) ({response=}) ({jsonResponse=})',
+                statusCode = responseStatusCode,
+            )
 
         accessToken = await self.__googleJsonMapper.parseAccessToken(jsonResponse)
         await self.__googleApiAccessTokenStorage.setAccessToken(accessToken)
@@ -116,12 +120,12 @@ class GoogleApiService(GoogleApiServiceInterface):
                     'Accept': self.__contentType,
                     'Authorization': f'Bearer {googleAccessToken.accessToken}',
                     'Content-Type': self.__contentType,
-                    'x-goog-user-project': googleProjectId
+                    'x-goog-user-project': googleProjectId,
                 },
                 json = await self.__googleJsonMapper.serializeSynthesizeRequest(request),
             )
         except GenericNetworkException as e:
-            self.__timber.log('GoogleApiService', f'Encountered network error when fetching text-to-speech ({request=}): {e}', e, traceback.format_exc())
+            self.__timber.log('GoogleApiService', f'Encountered network error when fetching text-to-speech ({request=})', e, traceback.format_exc())
             raise GenericNetworkException(f'GoogleApiService encountered network error when fetching text-to-speech ({request=}): {e}')
 
         responseStatusCode = response.statusCode
@@ -130,7 +134,10 @@ class GoogleApiService(GoogleApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('GoogleApiService', f'Encountered non-200 HTTP status code when fetching text-to-speech ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
-            raise GenericNetworkException(f'GoogleApiService encountered non-200 HTTP status code when fetching text-to-speech ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+            raise GenericNetworkException(
+                message = f'GoogleApiService encountered non-200 HTTP status code when fetching text-to-speech ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})',
+                statusCode = responseStatusCode,
+            )
 
         synthesisResponse = await self.__googleJsonMapper.parseTextSynthesisResponse(jsonResponse)
 
@@ -157,12 +164,12 @@ class GoogleApiService(GoogleApiServiceInterface):
                     'Accept': self.__contentType,
                     'Authorization': f'Bearer {googleAccessToken.accessToken}',
                     'Content-Type': self.__contentType,
-                    'x-goog-user-project': googleProjectId
+                    'x-goog-user-project': googleProjectId,
                 },
-                json = await self.__googleJsonMapper.serializeTranslationRequest(request)
+                json = await self.__googleJsonMapper.serializeTranslationRequest(request),
             )
         except GenericNetworkException as e:
-            self.__timber.log('GoogleApiService', f'Encountered network error when fetching translation ({request=}): {e}', e, traceback.format_exc())
+            self.__timber.log('GoogleApiService', f'Encountered network error when fetching translation ({request=})', e, traceback.format_exc())
             raise GenericNetworkException(f'GoogleApiService encountered network error when fetching translation ({request=}): {e}')
 
         responseStatusCode = response.statusCode
@@ -171,7 +178,10 @@ class GoogleApiService(GoogleApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('GoogleApiService', f'Encountered non-200 HTTP status code when fetching translation ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
-            raise GenericNetworkException(f'GoogleApiService encountered non-200 HTTP status code when fetching translation ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+            raise GenericNetworkException(
+                message = f'GoogleApiService encountered non-200 HTTP status code when fetching translation ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})',
+                statusCode = responseStatusCode,
+            )
 
         translateResponse = await self.__googleJsonMapper.parseTranslateTextResponse(jsonResponse)
 

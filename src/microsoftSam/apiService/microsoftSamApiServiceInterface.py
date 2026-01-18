@@ -9,6 +9,6 @@ class MicrosoftSamApiServiceInterface(ABC):
     async def getSpeech(
         self,
         voice: MicrosoftSamVoice,
-        message: str
+        text: str,
     ) -> bytes:
         pass

@@ -61,7 +61,10 @@ class StreamElementsApiService(StreamElementsApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('StreamElementsApiService', f'Encountered non-200 HTTP status code when fetching speech ({voice=}) ({text=}) ({response=}) ({responseStatusCode=})')
-            raise GenericNetworkException(f'StreamElementsApiService encountered non-200 HTTP status code when fetching speech ({voice=}) ({text=}) ({response=}) ({responseStatusCode=})')
+            raise GenericNetworkException(
+                message = f'StreamElementsApiService encountered non-200 HTTP status code when fetching speech ({voice=}) ({text=}) ({response=}) ({responseStatusCode=})',
+                statusCode = responseStatusCode,
+            )
         elif speechBytes is None:
             self.__timber.log('StreamElementsApiService', f'Unable to fetch speech bytes ({voice=}) ({text=}) ({response=}) ({responseStatusCode=})')
             raise GenericNetworkException(f'StreamElementsApiService unable to fetch speech bytes ({voice=}) ({text=}) ({response=}) ({responseStatusCode=})')

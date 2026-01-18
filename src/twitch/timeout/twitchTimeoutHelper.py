@@ -286,7 +286,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
                 ),
             )
         except Exception as e:
-            self.__timber.log('TwitchTimeoutHelper', f'Failed to timeout user ({reason=}) ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchTimeoutHelper', f'Failed to timeout user ({reason=}) ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})', e, traceback.format_exc())
             return False
 
         return True

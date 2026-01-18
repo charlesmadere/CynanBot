@@ -1333,7 +1333,7 @@ googleApiService: GoogleApiServiceInterface = GoogleApiService(
     googleJsonMapper = googleJsonMapper,
     googleJwtBuilder = googleJwtBuilder,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
 googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepository(
@@ -1489,18 +1489,18 @@ microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = Micros
     )
 )
 
-microsoftSamApiService: MicrosoftSamApiServiceInterface = MicrosoftSamApiService(
+microsoftSamApiService: Final[MicrosoftSamApiServiceInterface] = MicrosoftSamApiService(
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
-microsoftSamApiHelper: MicrosoftSamApiHelperInterface = MicrosoftSamApiHelper(
+microsoftSamApiHelper: Final[MicrosoftSamApiHelperInterface] = MicrosoftSamApiHelper(
     microsoftSamApiService = microsoftSamApiService,
-    timber = timber
+    timber = timber,
 )
 
-microsoftSamMessageVoiceParser: MicrosoftSamMessageVoiceParserInterface = MicrosoftSamMessageVoiceParser(
-    microsoftSamJsonParser = microsoftSamJsonParser
+microsoftSamMessageVoiceParser: Final[MicrosoftSamMessageVoiceParserInterface] = MicrosoftSamMessageVoiceParser(
+    microsoftSamJsonParser = microsoftSamJsonParser,
 )
 
 microsoftSamHelper: MicrosoftSamHelperInterface = MicrosoftSamHelper(

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Final
 
 from .googleAccessToken import GoogleAccessToken
 from .googleApiAccessTokenStorageInterface import GoogleApiAccessTokenStorageInterface
@@ -12,7 +13,7 @@ class GoogleApiAccessTokenStorage(GoogleApiAccessTokenStorageInterface):
         self,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        expireTimeBuffer: timedelta = timedelta(minutes = 3)
+        expireTimeBuffer: timedelta = timedelta(minutes = 3),
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -21,9 +22,9 @@ class GoogleApiAccessTokenStorage(GoogleApiAccessTokenStorageInterface):
         elif not isinstance(expireTimeBuffer, timedelta):
             raise TypeError(f'expireTimeBuffer argument is malformed: \"{expireTimeBuffer}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__expireTimeBuffer: timedelta = expireTimeBuffer
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__expireTimeBuffer: Final[timedelta] = expireTimeBuffer
 
         self.__accessToken: GoogleAccessToken | None = None
 

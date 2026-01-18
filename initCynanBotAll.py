@@ -1692,17 +1692,17 @@ microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = Micros
     ),
 )
 
-microsoftSamApiService: MicrosoftSamApiServiceInterface = MicrosoftSamApiService(
+microsoftSamApiService: Final[MicrosoftSamApiServiceInterface] = MicrosoftSamApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
 )
 
-microsoftSamApiHelper: MicrosoftSamApiHelperInterface = MicrosoftSamApiHelper(
+microsoftSamApiHelper: Final[MicrosoftSamApiHelperInterface] = MicrosoftSamApiHelper(
     microsoftSamApiService = microsoftSamApiService,
     timber = timber,
 )
 
-microsoftSamMessageVoiceParser: MicrosoftSamMessageVoiceParserInterface = MicrosoftSamMessageVoiceParser(
+microsoftSamMessageVoiceParser: Final[MicrosoftSamMessageVoiceParserInterface] = MicrosoftSamMessageVoiceParser(
     microsoftSamJsonParser = microsoftSamJsonParser,
 )
 

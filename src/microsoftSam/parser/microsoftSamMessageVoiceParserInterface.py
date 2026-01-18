@@ -14,6 +14,6 @@ class MicrosoftSamMessageVoiceParserInterface(ABC):
     @abstractmethod
     async def determineVoiceFromMessage(
         self,
-        message: str | None
+        message: str | None,
     ) -> Result | None:
         pass
