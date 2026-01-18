@@ -89,30 +89,23 @@ class JishoJsonMapper(JishoJsonMapperInterface):
                 else:
                     japaneseWords.append(japaneseWord)
 
-            japaneseWords.freeze()
+        japaneseWords.freeze()
 
         if len(japaneseWords) == 0:
             self.__timber.log('JishoJsonMapper', f'Encountered missing/invalid \"japanese\" field in JSON data: ({jsonContents=})')
             return None
 
         jlptArray: list[str] | Any | None = jsonContents.get('jlpt')
-        frozenJlptLevels: FrozenList[JishoJlptLevel] | None = None
+        jlptLevels: set[JishoJlptLevel] = set()
 
         if isinstance(jlptArray, list) and len(jlptArray) >= 1:
-            jlptLevels: list[JishoJlptLevel] = list()
-
             for index, jlptEntryString in enumerate(jlptArray):
                 jlptLevel = await self.parseJlptLevel(jlptEntryString)
 
                 if jlptLevel is None:
                     self.__timber.log('JishoJsonMapper', f'Unable to parse value at index {index} for \"jlpt\" data: ({jsonContents=})')
                 else:
-                    jlptLevels.append(jlptLevel)
-
-            if len(jlptLevels) >= 1:
-                jlptLevels.sort(key = lambda jlptLevel: jlptLevel.value)
-                frozenJlptLevels = FrozenList(jlptLevels)
-                frozenJlptLevels.freeze()
+                    jlptLevels.add(jlptLevel)
 
         sensesArray: list[dict[str, Any]] | Any | None = jsonContents.get('senses')
         senses: FrozenList[JishoSense] = FrozenList()
@@ -137,8 +130,8 @@ class JishoJsonMapper(JishoJsonMapperInterface):
         return JishoData(
             isCommon = isCommon,
             japanese = japaneseWords,
-            jlptLevels = frozenJlptLevels,
             senses = senses,
+            jlptLevels = frozenset(jlptLevels),
             attribution = attribution,
             slug = slug,
         )
@@ -253,38 +246,27 @@ class JishoJsonMapper(JishoJsonMapperInterface):
             return None
 
         partsOfSpeechArray: list[str | None] | Any | None = jsonContents.get('parts_of_speech')
-        partsOfSpeech: FrozenList[str] | None = None
+        partsOfSpeech: FrozenList[str] = FrozenList()
 
         if isinstance(partsOfSpeechArray, list) and len(partsOfSpeechArray) >= 1:
-            partsOfSpeech = FrozenList()
-
             for index, partOfSpeech in enumerate(partsOfSpeechArray):
                 if utils.isValidStr(partOfSpeech):
                     partsOfSpeech.append(partOfSpeech)
                 else:
                     self.__timber.log('JishoJsonMapper', f'Unable to parse value at index {index} for \"parts_of_speech\" data: ({jsonContents=})')
 
-            if len(partsOfSpeech) == 0:
-                partsOfSpeech = None
-            else:
-                partsOfSpeech.freeze()
-
+        partsOfSpeech.freeze()
         tagsArray: list[str | None] | None = jsonContents.get('tags')
-        tags: FrozenList[str] | None = None
+        tags: FrozenList[str] = FrozenList()
 
         if isinstance(tagsArray, list) and len(tagsArray) >= 1:
-            tags = FrozenList()
-
             for index, tag in enumerate(tagsArray):
                 if utils.isValidStr(tag):
                     tags.append(tag)
                 else:
                     self.__timber.log('JishoJsonMapper', f'Unable to parse value at index {index} for \"tags\" data: ({jsonContents=})')
 
-            if len(tags) == 0:
-                tags = None
-            else:
-                tags.freeze()
+        tags.freeze()
 
         return JishoSense(
             englishDefinitions = englishDefinitions,

@@ -55,7 +55,10 @@ class JishoApiService(JishoApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('JishoApiService', f'Encountered non-200 HTTP status code when fetching Jisho query ({keyword=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
-            raise GenericNetworkException(f'JishoApiService encountered non-200 HTTP status code when fetching Jisho query ({keyword=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+            raise GenericNetworkException(
+                message = f'JishoApiService encountered non-200 HTTP status code when fetching Jisho query ({keyword=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})',
+                statusCode = responseStatusCode,
+            )
 
         jishoResponse = await self.__jishoJsonMapper.parseResponse(jsonResponse)
 
