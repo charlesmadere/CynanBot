@@ -10,6 +10,7 @@ from .models.twitchChattersResponse import TwitchChattersResponse
 from .models.twitchEmotesResponse import TwitchEmotesResponse
 from .models.twitchEventSubRequest import TwitchEventSubRequest
 from .models.twitchEventSubResponse import TwitchEventSubResponse
+from .models.twitchFetchUserRequest import TwitchFetchUserRequest
 from .models.twitchFollowersResponse import TwitchFollowersResponse
 from .models.twitchLiveUserDetails import TwitchLiveUserDetails
 from .models.twitchModeratorsResponse import TwitchModeratorsResponse
@@ -19,8 +20,8 @@ from .models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from .models.twitchStartCommercialResponse import TwitchStartCommercialResponse
 from .models.twitchTokensDetails import TwitchTokensDetails
 from .models.twitchUnbanRequest import TwitchUnbanRequest
-from .models.twitchUserDetails import TwitchUserDetails
 from .models.twitchUserSubscriptionsResponse import TwitchUserSubscriptionsResponse
+from .models.twitchUsersResponse import TwitchUsersResponse
 from .models.twitchValidationResponse import TwitchValidationResponse
 
 
@@ -141,19 +142,11 @@ class TwitchApiServiceInterface(ABC):
         pass
 
     @abstractmethod
-    async def fetchUserDetailsWithUserId(
+    async def fetchUser(
         self,
         twitchAccessToken: str,
-        userId: str,
-    ) -> TwitchUserDetails | None:
-        pass
-
-    @abstractmethod
-    async def fetchUserDetailsWithUserName(
-        self,
-        twitchAccessToken: str,
-        userName: str,
-    ) -> TwitchUserDetails | None:
+        fetchUserRequest: TwitchFetchUserRequest,
+    ) -> TwitchUsersResponse:
         pass
 
     @abstractmethod

@@ -600,7 +600,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseTransportMethod(
         self,
-        transportMethod: str | Any | None
+        transportMethod: str | Any | None,
     ) -> TwitchWebsocketTransportMethod | None:
         pass
 

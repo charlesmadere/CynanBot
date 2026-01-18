@@ -1947,12 +1947,12 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             conduitId = conduitId,
             secret = secret,
             sessionId = sessionId,
-            method = method
+            method = method,
         )
 
     async def parseTransportMethod(
         self,
-        transportMethod: str | Any | None
+        transportMethod: str | Any | None,
     ) -> TwitchWebsocketTransportMethod | None:
         if not utils.isValidStr(transportMethod):
             return None
@@ -1976,7 +1976,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         description: str | None = None
         if 'description' in jsonResponse and utils.isValidStr(jsonResponse.get('description')):
-            description = utils.getStrFromDict(jsonResponse, 'description')
+            description = utils.getStrFromDict(jsonResponse, 'description', clean = True)
 
         displayName = utils.getStrFromDict(jsonResponse, 'display_name')
 

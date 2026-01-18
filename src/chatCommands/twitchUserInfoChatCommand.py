@@ -4,13 +4,14 @@ from .absChatCommand import AbsChatCommand
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
-from ..twitch.api.models.twitchUserDetails import TwitchUserDetails
+from ..twitch.api.models.twitchFetchUserWithLoginRequest import TwitchFetchUserWithLoginRequest
+from ..twitch.api.models.twitchUser import TwitchUser
+from ..twitch.api.models.twitchUsersResponse import TwitchUsersResponse
 from ..twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -24,7 +25,6 @@ class TwitchUserInfoChatCommand(AbsChatCommand):
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
@@ -39,8 +39,6 @@ class TwitchUserInfoChatCommand(AbsChatCommand):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -50,7 +48,6 @@ class TwitchUserInfoChatCommand(AbsChatCommand):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
@@ -98,19 +95,28 @@ class TwitchUserInfoChatCommand(AbsChatCommand):
             )
             return
 
-        userDetails: TwitchUserDetails | None = None
+        usersResponse: TwitchUsersResponse | None = None
+        twitchUser: TwitchUser | None = None
         exception: Exception | None = None
 
         try:
-            userDetails = await self.__twitchApiService.fetchUserDetailsWithUserName(
+            usersResponse = await self.__twitchApiService.fetchUser(
                 twitchAccessToken = twitchAccessToken,
-                userName = userName,
+                fetchUserRequest = TwitchFetchUserWithLoginRequest(
+                    userLogin = userName,
+                )
             )
         except Exception as e:
             exception = e
 
-        if userDetails is None or exception is not None:
-            self.__timber.log('TwitchInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the TwitchApiService call failed ({exception=})')
+        if usersResponse is not None:
+            for dataElement in usersResponse.data:
+                if dataElement.userLogin.casefold() == userName.casefold():
+                    twitchUser = dataElement
+                    break
+
+        if twitchUser is None or exception is not None:
+            self.__timber.log('TwitchInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the TwitchApiService call failed ({userName=}) ({usersResponse=}) ({twitchUser=}) ({exception=})')
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to retrieve Twitch info for \"{userName}\" as the Twitch API service call failed',
                 twitchChannelId = await ctx.getTwitchChannelId(),
@@ -118,12 +124,10 @@ class TwitchUserInfoChatCommand(AbsChatCommand):
             )
             return
 
-        await self.__userIdsRepository.setUser(
-            userId = userDetails.userId,
-            userName = userDetails.login,
+        userInfoStr = await self.__toStr(
+            twitchUser = twitchUser,
         )
 
-        userInfoStr = await self.__toStr(userDetails)
         self.__twitchChatMessenger.send(
             text = f'ⓘ Twitch info for {userName} — {userInfoStr}',
             twitchChannelId = await ctx.getTwitchChannelId(),
@@ -132,12 +136,12 @@ class TwitchUserInfoChatCommand(AbsChatCommand):
 
         self.__timber.log('TwitchInfoCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
 
-    async def __toStr(self, userInfo: TwitchUserDetails) -> str:
-        if not isinstance(userInfo, TwitchUserDetails):
-            raise TypeError(f'userInfo argument is malformed: \"{userInfo}\"')
+    async def __toStr(self, twitchUser: TwitchUser) -> str:
+        if not isinstance(twitchUser, TwitchUser):
+            raise TypeError(f'twitchUser argument is malformed: \"{twitchUser}\"')
 
-        broadcasterType = userInfo.broadcasterType
-        displayName = userInfo.displayName
-        userId = userInfo.userId
-        userType = userInfo.userType
+        broadcasterType = twitchUser.broadcasterType
+        displayName = twitchUser.displayName
+        userId = twitchUser.userId
+        userType = twitchUser.userType
         return f'broadcasterType:\"{broadcasterType}\", displayName:\"{displayName}\", userId:\"{userId}\", userType:\"{userType}\"'
