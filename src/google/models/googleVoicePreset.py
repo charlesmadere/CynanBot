@@ -513,4 +513,4 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
 
     @property
     def languageCode(self) -> str:
-        return "-".join(self.fullName.split("-")[:2])
+        return '-'.join(self.fullName.split('-')[:2])

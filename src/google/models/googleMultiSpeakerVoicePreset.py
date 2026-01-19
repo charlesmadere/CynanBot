@@ -19,7 +19,7 @@ class GoogleMultiSpeakerVoicePreset(AbsGoogleVoicePreset, Enum):
 
     @property
     def speakerCharacters(self) -> frozenset[str]:
-        speakerCharacters: set[str]
+        speakerCharacters: set[str] = set()
 
         match self:
             case GoogleMultiSpeakerVoicePreset.ENGLISH_US_STUDIO_MULTI_SPEAKER:
