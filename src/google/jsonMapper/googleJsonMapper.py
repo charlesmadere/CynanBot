@@ -318,6 +318,21 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             'text': markupTurn.text,
         }
 
+    async def __serializeMultiSpeakerTextSynthesisInput(
+        self,
+        synthesisInput: GoogleMultiSpeakerTextSynthesisInput,
+    ) -> dict[str, Any]:
+        if not isinstance(synthesisInput, GoogleMultiSpeakerTextSynthesisInput):
+            raise TypeError(f'synthesisInput argument is malformed: \"{synthesisInput}\"')
+
+        multiSpeakerMarkup = await self.serializeMultiSpeakerMarkup(
+            markup = synthesisInput.multiSpeakerMarkup,
+        )
+
+        return {
+            'multi_speaker_markup': multiSpeakerMarkup,
+        }
+
     async def serializeScope(
         self,
         scope: GoogleScope,
@@ -351,23 +366,6 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         scopeStrings.sort(key = lambda scopeString: scopeString.casefold())
         return ' '.join(scopeStrings)
 
-    async def serializeSynthesizeRequest(
-        self,
-        synthesizeRequest: GoogleTextSynthesizeRequest,
-    ) -> dict[str, Any]:
-        if not isinstance(synthesizeRequest, GoogleTextSynthesizeRequest):
-            raise TypeError(f'synthesizeRequest argument is malformed: \"{synthesizeRequest}\"')
-
-        audioConfig = await self.serializeVoiceAudioConfig(synthesizeRequest.audioConfig)
-        synthesisInput = await self.serializeTextSynthesisInput(synthesizeRequest.synthesisInput)
-        voice = await self.serializeVoiceSelectionParams(synthesizeRequest.voice)
-
-        return {
-            'audioConfig': audioConfig,
-            'input': synthesisInput,
-            'voice': voice,
-        }
-
     async def serializeTextSynthesisInput(
         self,
         synthesisInput: AbsGoogleTextSynthesisInput,
@@ -388,33 +386,45 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         else:
             raise ValueError(f'The given AbsGoogleTextSynthesisInput type is unknown: \"{synthesisInput}\"')
 
-    async def __serializeMultiSpeakerTextSynthesisInput(
+    async def serializeTextSynthesizeRequest(
         self,
-        synthesisInput: GoogleMultiSpeakerTextSynthesisInput,
+        synthesizeRequest: GoogleTextSynthesizeRequest,
     ) -> dict[str, Any]:
-        if not isinstance(synthesisInput, GoogleMultiSpeakerTextSynthesisInput):
-            raise TypeError(f'synthesisInput argument is malformed: \"{synthesisInput}\"')
+        if not isinstance(synthesizeRequest, GoogleTextSynthesizeRequest):
+            raise TypeError(f'synthesizeRequest argument is malformed: \"{synthesizeRequest}\"')
 
-        multiSpeakerMarkup = await self.serializeMultiSpeakerMarkup(synthesisInput.multiSpeakerMarkup)
+        audioConfig = await self.serializeVoiceAudioConfig(
+            voiceAudioConfig = synthesizeRequest.audioConfig,
+        )
+
+        synthesisInput = await self.serializeTextSynthesisInput(
+            synthesisInput = synthesizeRequest.synthesisInput,
+        )
+
+        voice = await self.serializeVoiceSelectionParams(
+            voiceSelectionParams = synthesizeRequest.voice,
+        )
 
         return {
-            'multi_speaker_markup': multiSpeakerMarkup,
+            'audioConfig': audioConfig,
+            'input': synthesisInput,
+            'voice': voice,
         }
 
     async def __serializeTextSynthesisInput(
         self,
-        synthesisInput: GoogleTextSynthesisInput
+        synthesisInput: GoogleTextSynthesisInput,
     ) -> dict[str, Any]:
         if not isinstance(synthesisInput, GoogleTextSynthesisInput):
             raise TypeError(f'synthesisInput argument is malformed: \"{synthesisInput}\"')
 
         return {
-            'text': synthesisInput.text
+            'text': synthesisInput.text,
         }
 
     async def serializeTranslationRequest(
         self,
-        translationRequest: GoogleTranslationRequest
+        translationRequest: GoogleTranslationRequest,
     ) -> dict[str, Any]:
         if not isinstance(translationRequest, GoogleTranslationRequest):
             raise TypeError(f'translationRequest argument is malformed: \"{translationRequest}\"')
@@ -422,11 +432,13 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         dictionary: dict[str, Any] = {
             'contents': list(translationRequest.contents),
             'mimeType': translationRequest.mimeType,
-            'targetLanguageCode': translationRequest.targetLanguageCode
+            'targetLanguageCode': translationRequest.targetLanguageCode,
         }
 
         if translationRequest.glossaryConfig is not None:
-            dictionary['glossaryConfig'] = await self.serializeGlossaryConfig(translationRequest.glossaryConfig)
+            dictionary['glossaryConfig'] = await self.serializeGlossaryConfig(
+                glossaryConfig = translationRequest.glossaryConfig,
+            )
 
         if utils.isValidStr(translationRequest.model):
             dictionary['model'] = translationRequest.model
@@ -436,31 +448,33 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
         if translationRequest.transliterationConfig is not None:
             dictionary['transliterationConfig'] = await self.serializeTransliterationConfig(
-                transliterationConfig = translationRequest.transliterationConfig
+                transliterationConfig = translationRequest.transliterationConfig,
             )
 
         return dictionary
 
     async def serializeTransliterationConfig(
         self,
-        transliterationConfig: GoogleTranslateTextTransliterationConfig
+        transliterationConfig: GoogleTranslateTextTransliterationConfig,
     ) -> dict[str, Any]:
         if not isinstance(transliterationConfig, GoogleTranslateTextTransliterationConfig):
             raise TypeError(f'transliterationConfig argument is malformed: \"{transliterationConfig}\"')
 
         return {
-            'enableTransliteration': transliterationConfig.enableTransliteration
+            'enableTransliteration': transliterationConfig.enableTransliteration,
         }
 
     async def serializeVoiceAudioConfig(
         self,
-        voiceAudioConfig: GoogleVoiceAudioConfig
+        voiceAudioConfig: GoogleVoiceAudioConfig,
     ) -> dict[str, Any]:
         if not isinstance(voiceAudioConfig, GoogleVoiceAudioConfig):
             raise TypeError(f'voiceAudioConfig argument is malformed: \"{voiceAudioConfig}\"')
 
         dictionary: dict[str, Any] = {
-            'audioEncoding': await self.serializeVoiceAudioEncoding(voiceAudioConfig.audioEncoding)
+            'audioEncoding': await self.serializeVoiceAudioEncoding(
+                voiceAudioEncoding = voiceAudioConfig.audioEncoding,
+            ),
         }
 
         if utils.isValidNum(voiceAudioConfig.pitch):
@@ -479,7 +493,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def serializeVoiceAudioEncoding(
         self,
-        voiceAudioEncoding: GoogleVoiceAudioEncoding
+        voiceAudioEncoding: GoogleVoiceAudioEncoding,
     ) -> str:
         if not isinstance(voiceAudioEncoding, GoogleVoiceAudioEncoding):
             raise TypeError(f'voiceAudioEncoding argument is malformed: \"{voiceAudioEncoding}\"')
@@ -497,7 +511,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def serializeVoiceGender(
         self,
-        voiceGender: GoogleVoiceGender
+        voiceGender: GoogleVoiceGender,
     ) -> str:
         if not isinstance(voiceGender, GoogleVoiceGender):
             raise TypeError(f'voiceGender argument is malformed: \"{voiceGender}\"')
@@ -510,7 +524,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def serializeVoicePreset(
         self,
-        voicePreset: AbsGoogleVoicePreset
+        voicePreset: AbsGoogleVoicePreset,
     ) -> str:
         if not isinstance(voicePreset, AbsGoogleVoicePreset):
             raise TypeError(f'voicePreset argument is malformed: \"{voicePreset}\"')
@@ -519,19 +533,21 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def serializeVoiceSelectionParams(
         self,
-        voiceSelectionParams: GoogleVoiceSelectionParams
+        voiceSelectionParams: GoogleVoiceSelectionParams,
     ) -> dict[str, Any]:
         if not isinstance(voiceSelectionParams, GoogleVoiceSelectionParams):
             raise TypeError(f'voiceSelectionParams argument is malformed: \"{voiceSelectionParams}\"')
 
         result: dict[str, Any] = {
-            'languageCode': voiceSelectionParams.languageCode
+            'languageCode': voiceSelectionParams.languageCode,
         }
 
         if utils.isValidStr(voiceSelectionParams.name):
             result['name'] = voiceSelectionParams.name
 
         if voiceSelectionParams.gender is not None:
-            result['ssmlGender'] = await self.serializeVoiceGender(voiceSelectionParams.gender)
+            result['ssmlGender'] = await self.serializeVoiceGender(
+                voiceGender = voiceSelectionParams.gender,
+            )
 
         return result

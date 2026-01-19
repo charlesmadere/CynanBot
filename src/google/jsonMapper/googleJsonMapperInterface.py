@@ -121,13 +121,6 @@ class GoogleJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
-    async def serializeSynthesizeRequest(
-        self,
-        synthesizeRequest: GoogleTextSynthesizeRequest,
-    ) -> dict[str, Any]:
-        pass
-
-    @abstractmethod
     async def serializeScope(
         self,
         scope: GoogleScope,
@@ -145,6 +138,13 @@ class GoogleJsonMapperInterface(ABC):
     async def serializeTextSynthesisInput(
         self,
         synthesisInput: AbsGoogleTextSynthesisInput,
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeTextSynthesizeRequest(
+        self,
+        synthesizeRequest: GoogleTextSynthesizeRequest,
     ) -> dict[str, Any]:
         pass
 
@@ -179,20 +179,20 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def serializeVoiceGender(
         self,
-        voiceGender: GoogleVoiceGender
+        voiceGender: GoogleVoiceGender,
     ) -> str:
         pass
 
     @abstractmethod
     async def serializeVoicePreset(
         self,
-        voicePreset: AbsGoogleVoicePreset
+        voicePreset: AbsGoogleVoicePreset,
     ) -> str:
         pass
 
     @abstractmethod
     async def serializeVoiceSelectionParams(
         self,
-        voiceSelectionParams: GoogleVoiceSelectionParams
+        voiceSelectionParams: GoogleVoiceSelectionParams,
     ) -> dict[str, Any]:
         pass
