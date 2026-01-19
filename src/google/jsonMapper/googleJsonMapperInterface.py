@@ -60,14 +60,14 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def parseVoiceAudioConfig(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> GoogleVoiceAudioConfig | None:
         pass
 
     @abstractmethod
     async def parseVoiceAudioEncoding(
         self,
-        jsonString: str | None
+        jsonString: str | Any | None,
     ) -> GoogleVoiceAudioEncoding | None:
         pass
 
@@ -88,21 +88,21 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def requireVoiceAudioEncoding(
         self,
-        jsonString: str | None
+        jsonString: str | Any | None,
     ) -> GoogleVoiceAudioEncoding:
         pass
 
     @abstractmethod
     async def requireVoicePreset(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> AbsGoogleVoicePreset:
         pass
 
     @abstractmethod
     async def serializeGlossaryConfig(
         self,
-        glossaryConfig: GoogleTranslateTextGlossaryConfig
+        glossaryConfig: GoogleTranslateTextGlossaryConfig,
     ) -> dict[str, Any]:
         pass
 
