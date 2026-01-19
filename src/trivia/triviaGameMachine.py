@@ -233,7 +233,9 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         activeChannelIdsSet.update(await self.__triviaGameStore.getTwitchChannelIdsWithActiveSuperGames())
         activeChannelIdsSet.update(await self.__superTriviaCooldownHelper.getTwitchChannelIdsInCooldown())
 
-        queuedSuperGames = await self.__queuedTriviaGameStore.popQueuedSuperGames(activeChannelIdsSet)
+        queuedSuperGames = await self.__queuedTriviaGameStore.popQueuedSuperGames(
+            activeChannelIds = activeChannelIdsSet,
+        )
 
         for queuedSuperGame in queuedSuperGames:
             remainingQueueSize = await self.__queuedTriviaGameStore.getQueuedSuperGamesSize(

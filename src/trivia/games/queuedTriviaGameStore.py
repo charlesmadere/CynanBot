@@ -1,6 +1,7 @@
 import queue
 import random
 from collections import defaultdict
+from typing import Final
 
 from frozenlist import FrozenList
 
@@ -21,7 +22,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
         timber: TimberInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        queueTimeoutSeconds: float = 3
+        queueTimeoutSeconds: float = 3,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -34,16 +35,16 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
-        self.__timber: TimberInterface = timber
-        self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaIdGenerator: Final[TriviaIdGeneratorInterface] = triviaIdGenerator
+        self.__triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = triviaSettingsRepository
 
-        self.__queuedSuperGames: dict[str, list[StartNewSuperTriviaGameAction]] = defaultdict(lambda: list())
+        self.__queuedSuperGames: Final[dict[str, list[StartNewSuperTriviaGameAction]]] = defaultdict(lambda: list())
 
     async def addSuperGames(
         self,
         isSuperTriviaGameCurrentlyInProgress: bool,
-        action: StartNewSuperTriviaGameAction
+        action: StartNewSuperTriviaGameAction,
     ) -> AddQueuedGamesResult:
         if not utils.isValidBool(isSuperTriviaGameCurrentlyInProgress):
             raise TypeError(f'isSuperTriviaGameCurrentlyInProgress argument is malformed: \"{isSuperTriviaGameCurrentlyInProgress}\"')
@@ -57,7 +58,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
             return AddQueuedGamesResult(
                 amountAdded = 0,
                 newQueueSize = oldQueueSize,
-                oldQueueSize = oldQueueSize
+                oldQueueSize = oldQueueSize,
             )
 
         action.consumeQueueAction()
@@ -67,7 +68,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
             return AddQueuedGamesResult(
                 amountAdded = 0,
                 newQueueSize = oldQueueSize,
-                oldQueueSize = oldQueueSize
+                oldQueueSize = oldQueueSize,
             )
 
         numberOfGames = action.numberOfGames
@@ -79,7 +80,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
                 return AddQueuedGamesResult(
                     amountAdded = 0,
                     newQueueSize = oldQueueSize,
-                    oldQueueSize = oldQueueSize
+                    oldQueueSize = oldQueueSize,
                 )
 
         amountAdded = 0
@@ -101,7 +102,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
                     actionId = await self.__triviaIdGenerator.generateActionId(),
                     twitchChannel = action.getTwitchChannel(),
                     twitchChannelId = action.getTwitchChannelId(),
-                    triviaFetchOptions = action.triviaFetchOptions
+                    triviaFetchOptions = action.triviaFetchOptions,
                 ))
 
                 amountAdded += 1
@@ -112,6 +113,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
             for item in queuedSuperGames:
                 if item.triviaFetchOptions.requiredTriviaSource is not None:
                     return True
+
             return False
 
         if shouldShuffle() and oldQueueSize > 0:
@@ -120,12 +122,12 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
         return AddQueuedGamesResult(
             amountAdded = amountAdded,
             newQueueSize = len(queuedSuperGames),
-            oldQueueSize = oldQueueSize
+            oldQueueSize = oldQueueSize,
         )
 
     async def clearQueuedSuperGames(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ClearQueuedGamesResult:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
@@ -137,12 +139,12 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
 
         return ClearQueuedGamesResult(
             amountRemoved = amountRemoved,
-            oldQueueSize = oldQueueSize
+            oldQueueSize = oldQueueSize,
         )
 
     async def getQueuedSuperGamesSize(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> int:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
@@ -154,7 +156,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
 
     async def popQueuedSuperGames(
         self,
-        activeChannelIds: set[str]
+        activeChannelIds: set[str],
     ) -> FrozenList[StartNewSuperTriviaGameAction]:
         superGames: FrozenList[StartNewSuperTriviaGameAction] = FrozenList()
 

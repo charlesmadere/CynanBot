@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absTriviaEvent import AbsTriviaEvent
 from .triviaEventType import TriviaEventType
 from ...misc import utils as utils
@@ -12,11 +14,11 @@ class FailedToFetchQuestionTriviaEvent(AbsTriviaEvent):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ):
         super().__init__(
             actionId = actionId,
-            eventId = eventId
+            eventId = eventId,
         )
 
         if not utils.isValidStr(twitchChannel):
@@ -28,10 +30,10 @@ class FailedToFetchQuestionTriviaEvent(AbsTriviaEvent):
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
-        self.__userId: str = userId
-        self.__userName: str = userName
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
+        self.__userId: Final[str] = userId
+        self.__userName: Final[str] = userName
 
     @property
     def triviaEventType(self) -> TriviaEventType:
