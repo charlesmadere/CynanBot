@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .bizhawkKey import BizhawkKey
 from .bizhawkKeyMapperInterface import BizhawkKeyMapperInterface
@@ -23,9 +23,9 @@ class BizhawkSettingsRepository(BizhawkSettingsRepositoryInterface):
         elif not isinstance(defaultGameShuffleKeyBind, BizhawkKey):
             raise TypeError(f'defaultGameShuffleKeyBind argument is malformed: \"{defaultGameShuffleKeyBind}\"')
 
-        self.__bizhawkKeyMapper: BizhawkKeyMapperInterface = bizhawkKeyMapper
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
-        self.__defaultGameShuffleKeyBind: BizhawkKey = defaultGameShuffleKeyBind
+        self.__bizhawkKeyMapper: Final[BizhawkKeyMapperInterface] = bizhawkKeyMapper
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
+        self.__defaultGameShuffleKeyBind: Final[BizhawkKey] = defaultGameShuffleKeyBind
 
         self.__cache: dict[str, Any] | None = None
 
@@ -34,7 +34,7 @@ class BizhawkSettingsRepository(BizhawkSettingsRepositoryInterface):
 
     async def getButtonKeyBind(
         self,
-        button: CrowdControlButton
+        button: CrowdControlButton,
     ) -> BizhawkKey | None:
         if not isinstance(button, CrowdControlButton):
             raise TypeError(f'button argument is malformed: \"{button}\"')
@@ -47,98 +47,98 @@ class BizhawkSettingsRepository(BizhawkSettingsRepositoryInterface):
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindButtonA',
-                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.X)
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.X),
                 )
 
             case CrowdControlButton.BUTTON_B:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindButtonB',
-                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.Z)
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.Z),
                 )
 
             case CrowdControlButton.BUTTON_C:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindButtonC',
-                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.C)
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.C),
                 )
 
             case CrowdControlButton.BUTTON_X:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindButtonX',
-                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.S)
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.S),
                 )
 
             case CrowdControlButton.BUTTON_Y:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindButtonY',
-                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.A)
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.A),
                 )
 
             case CrowdControlButton.BUTTON_Z:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindButtonZ',
-                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.D)
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.D),
                 )
 
             case CrowdControlButton.DPAD_DOWN:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindDpadDown',
-                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.ARROW_DOWN)
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.ARROW_DOWN),
                 )
 
             case CrowdControlButton.DPAD_LEFT:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindDpadLeft',
-                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.ARROW_LEFT)
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.ARROW_LEFT),
                 )
 
             case CrowdControlButton.DPAD_RIGHT:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindDpadRight',
-                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.ARROW_RIGHT)
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.ARROW_RIGHT),
                 )
 
             case CrowdControlButton.DPAD_UP:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindDpadUp',
-                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.ARROW_UP)
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.ARROW_UP),
                 )
 
             case CrowdControlButton.SELECT:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindSelect',
-                    fallback = ''
+                    fallback = '',
                 )
 
             case CrowdControlButton.START:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindStart',
-                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.ENTER)
+                    fallback = await self.__bizhawkKeyMapper.toString(BizhawkKey.ENTER),
                 )
 
             case CrowdControlButton.TRIGGER_LEFT:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindTriggerLeft',
-                    fallback = ''
+                    fallback = '',
                 )
 
             case CrowdControlButton.TRIGGER_RIGHT:
                 keyBindString = utils.getStrFromDict(
                     d = jsonContents,
                     key = 'keyBindTriggerRight',
-                    fallback = ''
+                    fallback = '',
                 )
 
         if not utils.isValidStr(keyBindString):
@@ -152,7 +152,7 @@ class BizhawkSettingsRepository(BizhawkSettingsRepositoryInterface):
         keyBindString = utils.getStrFromDict(
             d = jsonContents,
             key = 'keyBindGameShuffle',
-            fallback = await self.__bizhawkKeyMapper.toString(self.__defaultGameShuffleKeyBind)
+            fallback = await self.__bizhawkKeyMapper.toString(self.__defaultGameShuffleKeyBind),
         )
 
         if not utils.isValidStr(keyBindString):
@@ -166,7 +166,7 @@ class BizhawkSettingsRepository(BizhawkSettingsRepositoryInterface):
         return utils.getStrFromDict(
             d = jsonContents,
             key = 'processName',
-            fallback = 'EmuHawk'
+            fallback = 'EmuHawk',
         )
 
     async def __readJson(self) -> dict[str, Any]:
