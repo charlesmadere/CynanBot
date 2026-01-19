@@ -40,7 +40,7 @@ class EccoApiService(EccoApiServiceInterface):
         try:
             response = await clientSession.get(self.__websiteUrl)
         except GenericNetworkException as e:
-            self.__timber.log('EccoApiService', f'Encountered network error when fetching main Ecco website HTML: {e}', e, traceback.format_exc())
+            self.__timber.log('EccoApiService', f'Encountered network error when fetching main Ecco website HTML', e, traceback.format_exc())
             raise GenericNetworkException(f'EccoApiService encountered network error when fetching main Ecco website HTML: {e}')
 
         htmlString = await response.string()
@@ -55,7 +55,7 @@ class EccoApiService(EccoApiServiceInterface):
         try:
             response = await clientSession.get(scriptSource)
         except GenericNetworkException as e:
-            self.__timber.log('EccoApiService', f'Encountered network error when fetching Ecco script file ({scriptSource=}): {e}', e, traceback.format_exc())
+            self.__timber.log('EccoApiService', f'Encountered network error when fetching Ecco script file ({scriptSource=})', e, traceback.format_exc())
             raise GenericNetworkException(f'EccoApiService encountered network error when fetching Ecco script file ({scriptSource=}): {e}')
 
         scriptString = await response.string()
