@@ -11,6 +11,20 @@ from .api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscript
 class TwitchPredictionWebsocketUtilsInterface(ABC):
 
     @abstractmethod
+    async def outcomeColorToEventData(
+        self,
+        color: TwitchOutcomeColor,
+    ) -> dict[str, int]:
+        pass
+
+    @abstractmethod
+    async def outcomesToEventDataArray(
+        self,
+        outcomes: Collection[TwitchOutcome],
+    ) -> list[dict[str, Any]]:
+        pass
+
+    @abstractmethod
     async def websocketEventToEventDataDictionary(
         self,
         outcomes: FrozenList[TwitchOutcome],
@@ -21,22 +35,8 @@ class TwitchPredictionWebsocketUtilsInterface(ABC):
         pass
 
     @abstractmethod
-    async def outcomeColorToEventData(
-        self,
-        color: TwitchOutcomeColor
-    ) -> dict[str, int]:
-        pass
-
-    @abstractmethod
-    async def outcomesToEventDataArray(
-        self,
-        outcomes: Collection[TwitchOutcome]
-    ) -> list[dict[str, Any]]:
-        pass
-
-    @abstractmethod
     async def websocketSubscriptionTypeToString(
         self,
-        subscriptionType: TwitchWebsocketSubscriptionType
+        subscriptionType: TwitchWebsocketSubscriptionType,
     ) -> str:
         pass
