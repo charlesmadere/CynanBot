@@ -28,7 +28,7 @@ class GoogleTtsApiHelper(GoogleTtsApiHelperInterface):
 
     async def getSpeech(
         self,
-        request: GoogleTextSynthesizeRequest
+        request: GoogleTextSynthesizeRequest,
     ) -> bytes | None:
         if not isinstance(request, GoogleTextSynthesizeRequest):
             raise TypeError(f'request argument is malformed: \"{request}\"')

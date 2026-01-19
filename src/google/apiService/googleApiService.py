@@ -103,7 +103,10 @@ class GoogleApiService(GoogleApiServiceInterface):
 
         return googleProjectId
 
-    async def textToSpeech(self, request: GoogleTextSynthesizeRequest) -> GoogleTextSynthesisResponse:
+    async def textToSpeech(
+        self,
+        request: GoogleTextSynthesizeRequest,
+    ) -> GoogleTextSynthesisResponse:
         if not isinstance(request, GoogleTextSynthesizeRequest):
             raise TypeError(f'request argument is malformed: \"{request}\"')
 
@@ -147,7 +150,10 @@ class GoogleApiService(GoogleApiServiceInterface):
 
         return synthesisResponse
 
-    async def translate(self, request: GoogleTranslationRequest) -> GoogleTranslateTextResponse:
+    async def translate(
+        self,
+        request: GoogleTranslationRequest,
+    ) -> GoogleTranslateTextResponse:
         if not isinstance(request, GoogleTranslationRequest):
             raise TypeError(f'request argument is malformed: \"{request}\"')
 

@@ -8,6 +8,6 @@ class GoogleTtsApiHelperInterface(ABC):
     @abstractmethod
     async def getSpeech(
         self,
-        request: GoogleTextSynthesizeRequest
+        request: GoogleTextSynthesizeRequest,
     ) -> bytes | None:
         pass
