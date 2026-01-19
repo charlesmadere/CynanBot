@@ -222,7 +222,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def parseVoiceGender(
         self,
-        jsonString: str | None
+        jsonString: str | Any | None,
     ) -> GoogleVoiceGender | None:
         if not utils.isValidStr(jsonString):
             return None
@@ -237,7 +237,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def parseVoicePreset(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> AbsGoogleVoicePreset | None:
         if not utils.isValidStr(jsonString):
             return None

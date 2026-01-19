@@ -1,7 +1,4 @@
-from enum import Enum
-
-
-class AbsGoogleVoicePreset(Enum):
+class AbsGoogleVoicePreset:
 
     @property
     def fullName(self) -> str:

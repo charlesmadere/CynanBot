@@ -41,7 +41,7 @@ class TestGoogleVoicePreset:
             GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_D,
             GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_E,
             GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_F,
-            GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_G
+            GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_G,
         }
 
         languageCodes: set[str] = set()

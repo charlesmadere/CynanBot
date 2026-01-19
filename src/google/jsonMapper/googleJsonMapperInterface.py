@@ -74,14 +74,14 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def parseVoiceGender(
         self,
-        jsonString: str | None
+        jsonString: str | Any | None,
     ) -> GoogleVoiceGender | None:
         pass
 
     @abstractmethod
     async def parseVoicePreset(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> AbsGoogleVoicePreset | None:
         pass
 
