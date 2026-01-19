@@ -14,6 +14,6 @@ class GoogleTtsHelperInterface(ABC):
         donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> GoogleTtsFileReference | None:
         pass
