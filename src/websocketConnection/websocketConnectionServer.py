@@ -85,7 +85,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
                     await serverConnection.send(eventJson)
                     self.__timber.log('WebsocketConnectionServer', f'Successfully sent websocket event ({serverConnection=}) ({event=}) ({index=})')
                 except Exception as e:
-                    self.__timber.log('WebsocketConnectionServer', f'Failed to send websocket event ({serverConnection=}) ({event=}) ({index=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('WebsocketConnectionServer', f'Failed to send websocket event ({serverConnection=}) ({event=}) ({index=})', e, traceback.format_exc())
             else:
                 self.__timber.log('WebsocketConnectionServer', f'Discarded websocket event as it is too old ({serverConnection=}) ({event=}) ({index=})')
 
@@ -164,7 +164,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         try:
             self.__eventQueue.put(websocketEvent, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
-            self.__timber.log('WebsocketConnectionServer', f'Encountered queue.Full when submitting a new event ({websocketEvent=}) into the event queue (queue size: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
+            self.__timber.log('WebsocketConnectionServer', f'Encountered queue.Full when submitting a new event ({websocketEvent=}) into the event queue (queue size: {self.__eventQueue.qsize()})', e, traceback.format_exc())
 
     async def __websocketConnectionReceived(
         self,

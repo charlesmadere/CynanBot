@@ -25,8 +25,8 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
         timeZoneRepository: TimeZoneRepositoryInterface,
         googleScopes: frozenset[GoogleScope] = frozenset({
             GoogleScope.CLOUD_TEXT_TO_SPEECH,
-            GoogleScope.CLOUD_TRANSLATION
-        })
+            GoogleScope.CLOUD_TRANSLATION,
+        }),
     ):
         if not isinstance(googleCloudCredentialsProvider, GoogleCloudProjectCredentialsProviderInterface):
             raise TypeError(f'(googleCloudCredentialsProvider argument is malformed: \"{googleCloudCredentialsProvider}\"')
@@ -53,7 +53,7 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
 
         return {
             'kid': keyId,
-            'typ': 'JWT'
+            'typ': 'JWT',
         }
 
     async def buildJwt(self) -> str:
@@ -68,7 +68,7 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
             algorithm = 'RS256',
             key = privateKey,
             headers = headers,
-            payload = payload
+            payload = payload,
         )
 
     async def __buildPayloadDictionary(self) -> dict[str, Any]:
@@ -85,7 +85,7 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
             'exp': expirationTime,
             'iat': issuedTime,
             'iss': serviceAccountEmail,
-            'scope': await self.__buildScopesString()
+            'scope': await self.__buildScopesString(),
         }
 
     async def __buildScopesString(self) -> str:

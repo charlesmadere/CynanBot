@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 import pytest
 
@@ -13,16 +13,11 @@ from src.twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionW
 
 class TestTwitchPredictionWebsocketUtils:
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    utils: TwitchPredictionWebsocketUtilsInterface = TwitchPredictionWebsocketUtils(
+    utils: Final[TwitchPredictionWebsocketUtilsInterface] = TwitchPredictionWebsocketUtils(
         timber = timber,
     )
-
-    def test_sanity(self):
-        assert self.utils is not None
-        assert isinstance(self.utils, TwitchPredictionWebsocketUtils)
-        assert isinstance(self.utils, TwitchPredictionWebsocketUtilsInterface)
 
     @pytest.mark.asyncio
     async def test_outcomesToEventDataArray(self):
@@ -130,6 +125,11 @@ class TestTwitchPredictionWebsocketUtils:
         assert result['red'] == 255
         assert result['green'] == 99
         assert result['blue'] == 132
+
+    def test_sanity(self):
+        assert self.utils is not None
+        assert isinstance(self.utils, TwitchPredictionWebsocketUtils)
+        assert isinstance(self.utils, TwitchPredictionWebsocketUtilsInterface)
 
     @pytest.mark.asyncio
     async def test_websocketSubscriptionTypeToString_withChannelChatMessage(self):

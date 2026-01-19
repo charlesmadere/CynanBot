@@ -1,5 +1,6 @@
 import asyncio
 from asyncio import AbstractEventLoop
+from typing import Final
 
 from src.glacialTtsStorage.fileRetriever.glacialTtsFileRetriever import GlacialTtsFileRetriever
 from src.glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
@@ -65,25 +66,25 @@ class FakeGoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsPro
         raise RuntimeError('Not implemented')
 
 
-eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+eventLoop: Final[AbstractEventLoop] = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
 
-backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
-    eventLoop = eventLoop
+backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = BackgroundTaskHelper(
+    eventLoop = eventLoop,
 )
 
-timber: TimberInterface = TimberStub()
+timber: Final[TimberInterface] = TimberStub()
 
-timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+timeZoneRepository: Final[TimeZoneRepositoryInterface] = TimeZoneRepository()
 
 aioHttpCookieJarProvider = AioHttpCookieJarProvider(
-    eventLoop = eventLoop
+    eventLoop = eventLoop,
 )
 
-networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
+networkClientProvider: Final[NetworkClientProvider] = AioHttpClientProvider(
     eventLoop = eventLoop,
     cookieJarProvider = aioHttpCookieJarProvider,
-    timber = timber
+    timber = timber,
 )
 
 googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
@@ -152,7 +153,7 @@ googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtens
 
 googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = GoogleTtsVoicesHelper()
 
-googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
+googleTtsHelper: Final[GoogleTtsHelperInterface] = GoogleTtsHelper(
     eventLoop = eventLoop,
     glacialTtsFileRetriever = stubGlacialTtsFileRetriever,
     googleFileExtensionHelper = googleFileExtensionHelper,
@@ -160,10 +161,10 @@ googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
     googleSettingsRepository = googleSettingsRepository,
     googleTtsApiHelper = googleTtsApiHelper,
     googleTtsVoicesHelper = googleTtsVoicesHelper,
-    timber = timber
+    timber = timber,
 )
 
-twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFriendsUserIdRepository()
+twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = TwitchFriendsUserIdRepository()
 
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonStaticReader(dict())
@@ -185,8 +186,6 @@ async def main():
     if not isinstance(twitchChannelId, str):
         raise RuntimeError(f'twitchChannelId value is not set: \"{twitchChannelId}\"')
 
-    twitchChannel = 'smCharles'
-
     # translationResult = await googleApiService.translate(GoogleTranslationRequest(
     #     glossaryConfig = None,
     #     transliterationConfig = None,
@@ -206,18 +205,17 @@ async def main():
         allowMultiSpeaker = True,
         donationPrefix = None,
         message = message,
-        twitchChannel = twitchChannel,
-        twitchChannelId = twitchChannelId
+        twitchChannelId = twitchChannelId,
     )
 
     if fileReference is None:
         raise RuntimeError(f'expected a non None fileReference: \"{fileReference}\"')
 
-    print(f'text to speech results: ({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({fileReference=})')
+    print(f'text to speech results: ({message=}) ({twitchChannelId=}) ({fileReference=})')
 
     await soundPlayerManager.playSoundFile(
         filePath = fileReference.filePath,
-        volume = await googleSettingsRepository.getMediaPlayerVolume()
+        volume = await googleSettingsRepository.getMediaPlayerVolume(),
     )
 
     pass

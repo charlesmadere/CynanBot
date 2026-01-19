@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import Final
 
 from lru import LRU
@@ -39,7 +37,7 @@ class ChatterPreferredNameRepository(ChatterPreferredNameRepositoryInterface):
         self.__timber: Final[TimberInterface] = timber
 
         self.__isDatabaseReady: bool = False
-        self.__cache: LRU[str, ChatterPreferredNameData | None] = LRU(cacheSize)
+        self.__cache: Final[LRU[str, ChatterPreferredNameData | None]] = LRU(cacheSize)
 
     async def clearCaches(self):
         self.__cache.clear()

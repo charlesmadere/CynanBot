@@ -25,126 +25,126 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def parseAccessToken(
         self,
-        jsonContents: dict[str, Any] | None | Any
+        jsonContents: dict[str, Any] | Any | None,
     ) -> GoogleAccessToken | None:
         pass
 
     @abstractmethod
     async def parseTextSynthesisResponse(
         self,
-        jsonContents: dict[str, Any] | None | Any
+        jsonContents: dict[str, Any] | Any | None,
     ) -> GoogleTextSynthesisResponse | None:
         pass
 
     @abstractmethod
     async def parseTranslateTextGlossaryConfig(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | Any | None
     ) -> GoogleTranslateTextGlossaryConfig | None:
         pass
 
     @abstractmethod
     async def parseTranslateTextResponse(
         self,
-        jsonContents: dict[str, Any] | None | Any
+        jsonContents: dict[str, Any] | Any | None,
     ) -> GoogleTranslateTextResponse | None:
         pass
 
     @abstractmethod
     async def parseTranslation(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> GoogleTranslation | None:
         pass
 
     @abstractmethod
     async def parseVoiceAudioConfig(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> GoogleVoiceAudioConfig | None:
         pass
 
     @abstractmethod
     async def parseVoiceAudioEncoding(
         self,
-        jsonString: str | None
+        jsonString: str | Any | None,
     ) -> GoogleVoiceAudioEncoding | None:
         pass
 
     @abstractmethod
     async def parseVoiceGender(
         self,
-        jsonString: str | None
+        jsonString: str | Any | None,
     ) -> GoogleVoiceGender | None:
         pass
 
     @abstractmethod
     async def parseVoicePreset(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> AbsGoogleVoicePreset | None:
         pass
 
     @abstractmethod
     async def requireVoiceAudioEncoding(
         self,
-        jsonString: str | None
+        jsonString: str | Any | None,
     ) -> GoogleVoiceAudioEncoding:
         pass
 
     @abstractmethod
     async def requireVoicePreset(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> AbsGoogleVoicePreset:
         pass
 
     @abstractmethod
     async def serializeGlossaryConfig(
         self,
-        glossaryConfig: GoogleTranslateTextGlossaryConfig
+        glossaryConfig: GoogleTranslateTextGlossaryConfig,
     ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     async def serializeMultiSpeakerMarkupTurn(
         self,
-        markupTurn: GoogleMultiSpeakerMarkupTurn
+        markupTurn: GoogleMultiSpeakerMarkupTurn,
     ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     async def serializeMultiSpeakerMarkup(
         self,
-        markup: GoogleMultiSpeakerMarkup
-    ) -> dict[str, Any]:
-        pass
-
-    @abstractmethod
-    async def serializeSynthesizeRequest(
-        self,
-        synthesizeRequest: GoogleTextSynthesizeRequest
+        markup: GoogleMultiSpeakerMarkup,
     ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     async def serializeScope(
         self,
-        scope: GoogleScope
+        scope: GoogleScope,
     ) -> str:
         pass
 
     @abstractmethod
     async def serializeScopes(
         self,
-        scopes: Collection[GoogleScope]
+        scopes: Collection[GoogleScope],
     ) -> str:
         pass
 
     @abstractmethod
     async def serializeTextSynthesisInput(
         self,
-        synthesisInput: AbsGoogleTextSynthesisInput
+        synthesisInput: AbsGoogleTextSynthesisInput,
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeTextSynthesizeRequest(
+        self,
+        synthesizeRequest: GoogleTextSynthesizeRequest,
     ) -> dict[str, Any]:
         pass
 
@@ -179,20 +179,20 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def serializeVoiceGender(
         self,
-        voiceGender: GoogleVoiceGender
+        voiceGender: GoogleVoiceGender,
     ) -> str:
         pass
 
     @abstractmethod
     async def serializeVoicePreset(
         self,
-        voicePreset: AbsGoogleVoicePreset
+        voicePreset: AbsGoogleVoicePreset,
     ) -> str:
         pass
 
     @abstractmethod
     async def serializeVoiceSelectionParams(
         self,
-        voiceSelectionParams: GoogleVoiceSelectionParams
+        voiceSelectionParams: GoogleVoiceSelectionParams,
     ) -> dict[str, Any]:
         pass

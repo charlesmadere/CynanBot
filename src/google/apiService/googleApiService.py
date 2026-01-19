@@ -122,7 +122,7 @@ class GoogleApiService(GoogleApiServiceInterface):
                     'Content-Type': self.__contentType,
                     'x-goog-user-project': googleProjectId,
                 },
-                json = await self.__googleJsonMapper.serializeSynthesizeRequest(request),
+                json = await self.__googleJsonMapper.serializeTextSynthesizeRequest(request),
             )
         except GenericNetworkException as e:
             self.__timber.log('GoogleApiService', f'Encountered network error when fetching text-to-speech ({request=})', e, traceback.format_exc())

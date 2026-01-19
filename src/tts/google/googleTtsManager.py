@@ -154,7 +154,6 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
             allowMultiSpeaker = False,
             donationPrefix = donationPrefix,
             message = message,
-            twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId,
         )
 
