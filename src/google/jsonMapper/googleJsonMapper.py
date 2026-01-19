@@ -292,7 +292,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def serializeMultiSpeakerMarkup(
         self,
-        markup: GoogleMultiSpeakerMarkup
+        markup: GoogleMultiSpeakerMarkup,
     ) -> dict[str, Any]:
         if not isinstance(markup, GoogleMultiSpeakerMarkup):
             raise TypeError(f'markup argument is malformed: \"{markup}\"')
@@ -303,12 +303,12 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             turns.append(await self.serializeMultiSpeakerMarkupTurn(markupTurn))
 
         return {
-            'turns': turns
+            'turns': turns,
         }
 
     async def serializeMultiSpeakerMarkupTurn(
         self,
-        markupTurn: GoogleMultiSpeakerMarkupTurn
+        markupTurn: GoogleMultiSpeakerMarkupTurn,
     ) -> dict[str, Any]:
         if not isinstance(markupTurn, GoogleMultiSpeakerMarkupTurn):
             raise TypeError(f'markupTurn argument is malformed: \"{markupTurn}\"')
@@ -320,7 +320,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def serializeScope(
         self,
-        scope: GoogleScope
+        scope: GoogleScope,
     ) -> str:
         if not isinstance(scope, GoogleScope):
             raise TypeError(f'scope argument is malformed: \"{scope}\"')
@@ -353,7 +353,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def serializeSynthesizeRequest(
         self,
-        synthesizeRequest: GoogleTextSynthesizeRequest
+        synthesizeRequest: GoogleTextSynthesizeRequest,
     ) -> dict[str, Any]:
         if not isinstance(synthesizeRequest, GoogleTextSynthesizeRequest):
             raise TypeError(f'synthesizeRequest argument is malformed: \"{synthesizeRequest}\"')
@@ -370,21 +370,27 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def serializeTextSynthesisInput(
         self,
-        synthesisInput: AbsGoogleTextSynthesisInput
+        synthesisInput: AbsGoogleTextSynthesisInput,
     ) -> dict[str, Any]:
         if not isinstance(synthesisInput, AbsGoogleTextSynthesisInput):
             raise TypeError(f'synthesisInput argument is malformed: \"{synthesisInput}\"')
 
         if isinstance(synthesisInput, GoogleMultiSpeakerTextSynthesisInput):
-            return await self.__serializeMultiSpeakerTextSynthesisInput(synthesisInput)
+            return await self.__serializeMultiSpeakerTextSynthesisInput(
+                synthesisInput = synthesisInput,
+            )
+
         elif isinstance(synthesisInput, GoogleTextSynthesisInput):
-            return await self.__serializeTextSynthesisInput(synthesisInput)
+            return await self.__serializeTextSynthesisInput(
+                synthesisInput = synthesisInput,
+            )
+
         else:
             raise ValueError(f'The given AbsGoogleTextSynthesisInput type is unknown: \"{synthesisInput}\"')
 
     async def __serializeMultiSpeakerTextSynthesisInput(
         self,
-        synthesisInput: GoogleMultiSpeakerTextSynthesisInput
+        synthesisInput: GoogleMultiSpeakerTextSynthesisInput,
     ) -> dict[str, Any]:
         if not isinstance(synthesisInput, GoogleMultiSpeakerTextSynthesisInput):
             raise TypeError(f'synthesisInput argument is malformed: \"{synthesisInput}\"')
@@ -392,7 +398,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         multiSpeakerMarkup = await self.serializeMultiSpeakerMarkup(synthesisInput.multiSpeakerMarkup)
 
         return {
-            'multi_speaker_markup': multiSpeakerMarkup
+            'multi_speaker_markup': multiSpeakerMarkup,
         }
 
     async def __serializeTextSynthesisInput(

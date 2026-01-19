@@ -109,28 +109,28 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def serializeMultiSpeakerMarkupTurn(
         self,
-        markupTurn: GoogleMultiSpeakerMarkupTurn
+        markupTurn: GoogleMultiSpeakerMarkupTurn,
     ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     async def serializeMultiSpeakerMarkup(
         self,
-        markup: GoogleMultiSpeakerMarkup
+        markup: GoogleMultiSpeakerMarkup,
     ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     async def serializeSynthesizeRequest(
         self,
-        synthesizeRequest: GoogleTextSynthesizeRequest
+        synthesizeRequest: GoogleTextSynthesizeRequest,
     ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     async def serializeScope(
         self,
-        scope: GoogleScope
+        scope: GoogleScope,
     ) -> str:
         pass
 
@@ -144,7 +144,7 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def serializeTextSynthesisInput(
         self,
-        synthesisInput: AbsGoogleTextSynthesisInput
+        synthesisInput: AbsGoogleTextSynthesisInput,
     ) -> dict[str, Any]:
         pass
 
