@@ -548,16 +548,16 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 ## Core initialization section ##
 #################################
 
-eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+eventLoop: Final[AbstractEventLoop] = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
 
-backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
+backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = BackgroundTaskHelper(
     eventLoop = eventLoop,
 )
 
-timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+timeZoneRepository: Final[TimeZoneRepositoryInterface] = TimeZoneRepository()
 
-timber: TimberInterface = Timber(
+timber: Final[TimberInterface] = Timber(
     backgroundTaskHelper = backgroundTaskHelper,
     timeZoneRepository = timeZoneRepository,
 )
@@ -1697,9 +1697,9 @@ streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
 )
 
 
-##########################################################
-## Chatter Inventory and Timeout initialization section ##
-##########################################################
+####################################
+## Timeout initialization section ##
+####################################
 
 asplodieStatsPresenter: AsplodieStatsPresenter = AsplodieStatsPresenter()
 
@@ -2035,34 +2035,34 @@ if mostRecentAnivMessageRepository is not None:
 ## Crowd Control initialization section ##
 ##########################################
 
-crowdControlIdGenerator: CrowdControlIdGeneratorInterface = CrowdControlIdGenerator()
+crowdControlIdGenerator: Final[CrowdControlIdGeneratorInterface] = CrowdControlIdGenerator()
 
-crowdControlMessagePresenter: CrowdControlMessagePresenterInterface = CrowdControlMessagePresenter(
-    trollmojiHelper = trollmojiHelper
+crowdControlMessagePresenter: Final[CrowdControlMessagePresenterInterface] = CrowdControlMessagePresenter(
+    trollmojiHelper = trollmojiHelper,
 )
 
-crowdControlMessageListener: CrowdControlMessageListener = CrowdControlMessageHandler(
+crowdControlMessageListener: Final[CrowdControlMessageListener] = CrowdControlMessageHandler(
     crowdControlMessagePresenter = crowdControlMessagePresenter,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface = CrowdControlSettingsRepository(
+crowdControlSettingsRepository: Final[CrowdControlSettingsRepositoryInterface] = CrowdControlSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/crowdControlSettingsRepository.json'
-    )
+        fileName = '../config/crowdControlSettingsRepository.json',
+    ),
 )
 
-crowdControlMachine: CrowdControlMachineInterface = CrowdControlMachine(
+crowdControlMachine: Final[CrowdControlMachineInterface] = CrowdControlMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlSettingsRepository = crowdControlSettingsRepository,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-crowdControlAutomator: CrowdControlAutomatorInterface = CrowdControlAutomator(
+crowdControlAutomator: Final[CrowdControlAutomatorInterface] = CrowdControlAutomator(
     backgroundTaskHelper = backgroundTaskHelper,
     crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlMachine = crowdControlMachine,
@@ -2070,27 +2070,27 @@ crowdControlAutomator: CrowdControlAutomatorInterface = CrowdControlAutomator(
     timeZoneRepository = timeZoneRepository,
     twitchHandleProvider = authRepository,
     userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository
+    usersRepository = usersRepository,
 )
 
-crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface = CrowdControlUserInputUtils(
-    twitchMessageStringUtils = twitchMessageStringUtils
+crowdControlUserInputUtils: Final[CrowdControlUserInputUtilsInterface] = CrowdControlUserInputUtils(
+    twitchMessageStringUtils = twitchMessageStringUtils,
 )
 
-crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface = CrowdControlCheerActionHelper(
+crowdControlCheerActionHelper: Final[CrowdControlCheerActionHelperInterface] = CrowdControlCheerActionHelper(
     crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlMachine = crowdControlMachine,
     crowdControlSettingsRepository = crowdControlSettingsRepository,
     crowdControlUserInputUtils = crowdControlUserInputUtils,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-bizhawkKeyMapper: BizhawkKeyMapperInterface = BizhawkKeyMapper(
-    timber = timber
+bizhawkKeyMapper: Final[BizhawkKeyMapperInterface] = BizhawkKeyMapper(
+    timber = timber,
 )
 
-bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface = BizhawkSettingsRepository(
+bizhawkSettingsRepository: Final[BizhawkSettingsRepositoryInterface] = BizhawkSettingsRepository(
     bizhawkKeyMapper = bizhawkKeyMapper,
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
@@ -2098,7 +2098,7 @@ bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface = BizhawkSettingsR
     ),
 )
 
-crowdControlActionHandler: CrowdControlActionHandler = BizhawkActionHandler(
+crowdControlActionHandler: Final[CrowdControlActionHandler] = BizhawkActionHandler(
     bizhawkSettingsRepository = bizhawkSettingsRepository,
     timber = timber,
 )

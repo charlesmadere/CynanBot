@@ -74,7 +74,7 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
 
     async def __getMandoooEmote(
         self,
-        emoteText: str | None
+        emoteText: str | None,
     ) -> TrollmojiDetails | None:
         if not utils.isValidStr(emoteText):
             return None
@@ -90,7 +90,7 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
 
     async def __getSamusEmote(
         self,
-        emoteText: str | None
+        emoteText: str | None,
     ) -> TrollmojiDetails | None:
         if not utils.isValidStr(emoteText):
             return None

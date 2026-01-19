@@ -16,6 +16,7 @@ from ..settings.chatterInventorySettingsInterface import ChatterInventorySetting
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
+from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ...twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ...twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
 from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
@@ -30,6 +31,7 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
         gashaponRewardHistoryRepository: GashaponRewardHistoryRepositoryInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
+        trollmojiHelper: TrollmojiHelperInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
@@ -44,6 +46,8 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
+        elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
+            raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif not isinstance(twitchSubscriptionsRepository, TwitchSubscriptionsRepositoryInterface):
@@ -56,6 +60,7 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
         self.__gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface] = gashaponRewardHistoryRepository
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
         self.__twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface] = twitchFollowingStatusRepository
         self.__twitchSubscriptionsRepository: Final[TwitchSubscriptionsRepositoryInterface] = twitchSubscriptionsRepository
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
@@ -132,6 +137,7 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
         rewardResult = GashaponRewardedGashaponResult(
             chatterInventory = chatterInventory,
             chatterUserId = chatterUserId,
+            hypeEmote = await self.__trollmojiHelper.getHypeEmoteOrBackup(),
             twitchChannelId = twitchChannelId,
         )
 

@@ -66,6 +66,8 @@ from src.chatterInventory.configuration.absChatterItemEventHandler import AbsCha
 from src.chatterInventory.configuration.chatterItemEventHandler import ChatterItemEventHandler
 from src.chatterInventory.helpers.chatterInventoryHelper import ChatterInventoryHelper
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
+from src.chatterInventory.helpers.gashaponRewardHelper import GashaponRewardHelper
+from src.chatterInventory.helpers.gashaponRewardHelperInterface import GashaponRewardHelperInterface
 from src.chatterInventory.helpers.useChatterItemHelper import UseChatterItemHelper
 from src.chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from src.chatterInventory.idGenerator.chatterInventoryIdGenerator import ChatterInventoryIdGenerator
@@ -77,6 +79,9 @@ from src.chatterInventory.mappers.chatterInventoryMapperInterface import Chatter
 from src.chatterInventory.mappers.itemRequestMessageParser import ItemRequestMessageParser
 from src.chatterInventory.repositories.chatterInventoryRepository import ChatterInventoryRepository
 from src.chatterInventory.repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
+from src.chatterInventory.repositories.gashaponRewardHistoryRepository import GashaponRewardHistoryRepository
+from src.chatterInventory.repositories.gashaponRewardHistoryRepositoryInterface import \
+    GashaponRewardHistoryRepositoryInterface
 from src.chatterInventory.settings.chatterInventorySettings import ChatterInventorySettings
 from src.chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from src.chatterInventory.useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
@@ -752,16 +757,16 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 ## Core initialization section ##
 #################################
 
-eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+eventLoop: Final[AbstractEventLoop] = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
 
-backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
+backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = BackgroundTaskHelper(
     eventLoop = eventLoop,
 )
 
-timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+timeZoneRepository: Final[TimeZoneRepositoryInterface] = TimeZoneRepository()
 
-timber: TimberInterface = Timber(
+timber: Final[TimberInterface] = Timber(
     backgroundTaskHelper = backgroundTaskHelper,
     timeZoneRepository = timeZoneRepository,
 )
@@ -1929,11 +1934,11 @@ weatherRepository: WeatherRepositoryInterface = WeatherRepository(
 ## Trollmoji initialization section ##
 ######################################
 
-trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface = TrollmojiSettingsRepository(
+trollmojiSettingsRepository: Final[TrollmojiSettingsRepositoryInterface] = TrollmojiSettingsRepository(
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
 )
 
-trollmojiHelper: TrollmojiHelperInterface = TrollmojiHelper(
+trollmojiHelper: Final[TrollmojiHelperInterface] = TrollmojiHelper(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     trollmojiSettingsRepository = trollmojiSettingsRepository,
@@ -2330,9 +2335,9 @@ triviaEventHandler: AbsTriviaEventHandler = TriviaEventHandler(
 )
 
 
-##########################################################
-## Chatter Inventory and Timeout initialization section ##
-##########################################################
+####################################
+## Timeout initialization section ##
+####################################
 
 asplodieStatsPresenter: AsplodieStatsPresenter = AsplodieStatsPresenter()
 
@@ -2605,11 +2610,29 @@ chatterItemEventHandler: AbsChatterItemEventHandler = ChatterItemEventHandler(
     twitchChatMessenger = twitchChatMessenger,
 )
 
+gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface] = GashaponRewardHistoryRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+gashaponRewardHelper: Final[GashaponRewardHelperInterface] = GashaponRewardHelper(
+    chatterInventoryRepository = chatterInventoryRepository,
+    chatterInventorySettings = chatterInventorySettings,
+    gashaponRewardHistoryRepository = gashaponRewardHistoryRepository,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    trollmojiHelper = trollmojiHelper,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchSubscriptionsRepository = twitchSubscriptionsRepository,
+    twitchTokensRepository = twitchTokensRepository,
+)
+
 itemRequestMessageParser = ItemRequestMessageParser(
     chatterInventoryMapper = chatterInventoryMapper,
 )
 
-useChatterItemHelper: UseChatterItemHelperInterface = UseChatterItemHelper(
+useChatterItemHelper: Final[UseChatterItemHelperInterface] = UseChatterItemHelper(
     chatterInventoryIdGenerator = chatterInventoryIdGenerator,
     chatterInventoryItemUseMachine = chatterInventoryItemUseMachine,
     chatterInventorySettings = chatterInventorySettings,
@@ -2781,34 +2804,34 @@ translationHelper: TranslationHelperInterface = TranslationHelper(
 ## Crowd Control initialization section ##
 ##########################################
 
-crowdControlIdGenerator: CrowdControlIdGeneratorInterface = CrowdControlIdGenerator()
+crowdControlIdGenerator: Final[CrowdControlIdGeneratorInterface] = CrowdControlIdGenerator()
 
-crowdControlMessagePresenter: CrowdControlMessagePresenterInterface = CrowdControlMessagePresenter(
-    trollmojiHelper = trollmojiHelper
+crowdControlMessagePresenter: Final[CrowdControlMessagePresenterInterface] = CrowdControlMessagePresenter(
+    trollmojiHelper = trollmojiHelper,
 )
 
-crowdControlMessageListener: CrowdControlMessageListener = CrowdControlMessageHandler(
+crowdControlMessageListener: Final[CrowdControlMessageListener] = CrowdControlMessageHandler(
     crowdControlMessagePresenter = crowdControlMessagePresenter,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface = CrowdControlSettingsRepository(
+crowdControlSettingsRepository: Final[CrowdControlSettingsRepositoryInterface] = CrowdControlSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/crowdControlSettingsRepository.json'
-    )
+        fileName = '../config/crowdControlSettingsRepository.json',
+    ),
 )
 
-crowdControlMachine: CrowdControlMachineInterface = CrowdControlMachine(
+crowdControlMachine: Final[CrowdControlMachineInterface] = CrowdControlMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlSettingsRepository = crowdControlSettingsRepository,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-crowdControlAutomator: CrowdControlAutomatorInterface = CrowdControlAutomator(
+crowdControlAutomator: Final[CrowdControlAutomatorInterface] = CrowdControlAutomator(
     backgroundTaskHelper = backgroundTaskHelper,
     crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlMachine = crowdControlMachine,
@@ -2819,11 +2842,11 @@ crowdControlAutomator: CrowdControlAutomatorInterface = CrowdControlAutomator(
     usersRepository = usersRepository
 )
 
-crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface = CrowdControlUserInputUtils(
-    twitchMessageStringUtils = twitchMessageStringUtils
+crowdControlUserInputUtils: Final[CrowdControlUserInputUtilsInterface] = CrowdControlUserInputUtils(
+    twitchMessageStringUtils = twitchMessageStringUtils,
 )
 
-crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface = CrowdControlCheerActionHelper(
+crowdControlCheerActionHelper: Final[CrowdControlCheerActionHelperInterface] = CrowdControlCheerActionHelper(
     crowdControlIdGenerator = crowdControlIdGenerator,
     crowdControlMachine = crowdControlMachine,
     crowdControlSettingsRepository = crowdControlSettingsRepository,
@@ -2832,11 +2855,11 @@ crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface = CrowdCon
     timeZoneRepository = timeZoneRepository
 )
 
-bizhawkKeyMapper: BizhawkKeyMapperInterface = BizhawkKeyMapper(
-    timber = timber
+bizhawkKeyMapper: Final[BizhawkKeyMapperInterface] = BizhawkKeyMapper(
+    timber = timber,
 )
 
-bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface = BizhawkSettingsRepository(
+bizhawkSettingsRepository: Final[BizhawkSettingsRepositoryInterface] = BizhawkSettingsRepository(
     bizhawkKeyMapper = bizhawkKeyMapper,
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
@@ -2844,7 +2867,7 @@ bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface = BizhawkSettingsR
     ),
 )
 
-crowdControlActionHandler: CrowdControlActionHandler = BizhawkActionHandler(
+crowdControlActionHandler: Final[CrowdControlActionHandler] = BizhawkActionHandler(
     bizhawkSettingsRepository = bizhawkSettingsRepository,
     timber = timber,
 )
@@ -2941,19 +2964,19 @@ starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = StarWarsQuotesRepo
 ## Jisho initialization section ##
 ##################################
 
-jishoJsonMapper: JishoJsonMapperInterface = JishoJsonMapper(
+jishoJsonMapper: Final[JishoJsonMapperInterface] = JishoJsonMapper(
     timber = timber,
 )
 
-jishoApiService: JishoApiServiceInterface = JishoApiService(
+jishoApiService: Final[JishoApiServiceInterface] = JishoApiService(
     jishoJsonMapper = jishoJsonMapper,
     networkClientProvider = networkClientProvider,
     timber = timber,
 )
 
-jishoPresenter: JishoPresenterInterface = JishoPresenter()
+jishoPresenter: Final[JishoPresenterInterface] = JishoPresenter()
 
-jishoHelper: JishoHelperInterface = JishoHelper(
+jishoHelper: Final[JishoHelperInterface] = JishoHelper(
     jishoApiService = jishoApiService,
     jishoPresenter = jishoPresenter,
     timber = timber,

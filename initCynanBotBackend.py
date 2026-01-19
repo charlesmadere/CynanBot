@@ -493,16 +493,16 @@ locale.setlocale(locale.LC_ALL, '')
 ## Core initialization section ##
 #################################
 
-eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+eventLoop: Final[AbstractEventLoop] = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
 
-backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
+backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = BackgroundTaskHelper(
     eventLoop = eventLoop,
 )
 
-timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+timeZoneRepository: Final[TimeZoneRepositoryInterface] = TimeZoneRepository()
 
-timber: TimberInterface = Timber(
+timber: Final[TimberInterface] = Timber(
     backgroundTaskHelper = backgroundTaskHelper,
     timeZoneRepository = timeZoneRepository,
 )
@@ -1497,9 +1497,9 @@ triviaEventHandler: AbsTriviaEventHandler = TriviaEventHandler(
 )
 
 
-##########################################################
-## Chatter Inventory and Timeout initialization section ##
-##########################################################
+####################################
+## Timeout initialization section ##
+####################################
 
 asplodieStatsPresenter: AsplodieStatsPresenter = AsplodieStatsPresenter()
 

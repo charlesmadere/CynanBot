@@ -5,6 +5,7 @@ from typing import Final
 
 from .absChatCommand import AbsChatCommand
 from ..chatterInventory.helpers.gashaponRewardHelperInterface import GashaponRewardHelperInterface
+from ..chatterInventory.models.chatterItemType import ChatterItemType
 from ..chatterInventory.models.gashaponResults.chatterInventoryDisabledGashaponResult import \
     ChatterInventoryDisabledGashaponResult
 from ..chatterInventory.models.gashaponResults.gashaponItemDisabledGashaponResult import \
@@ -131,5 +132,15 @@ class GetGashaponItemChatCommand(AbsChatCommand):
         ctx: TwitchContext,
         gashaponResult: GashaponRewardedGashaponResult,
     ):
-        # TODO
-        pass
+        gashaponAmount = gashaponResult.inventory[ChatterItemType.GASHAPON]
+        suffixString = ''
+
+        if gashaponAmount > 1:
+            gashaponAmountString = locale.format_string("%d", gashaponAmount, grouping = True)
+            suffixString = f'You now have {gashaponAmountString} gashapons.'
+
+        self.__twitchChatMessenger.send(
+            text = f'{gashaponResult.hypeEmote} Congrats, gashapon get! {suffixString}',
+            twitchChannelId = await ctx.getTwitchChannelId(),
+            replyMessageId = await ctx.getMessageId(),
+        )
