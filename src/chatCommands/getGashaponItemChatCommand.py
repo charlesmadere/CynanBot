@@ -115,7 +115,7 @@ class GetGashaponItemChatCommand(AbsChatCommand):
         remainingDays = int(math.floor(float(totalRemainingSeconds) / float(24 * 60 * 60)))
         availableWhen: str
 
-        if remainingDays >= 3:
+        if remainingDays >= 5:
             remainingDaysString = locale.format_string("%d", remainingDays, grouping = True)
             availableWhen = f'{remainingDaysString} days'
         else:

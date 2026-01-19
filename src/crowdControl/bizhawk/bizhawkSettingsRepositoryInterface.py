@@ -10,7 +10,7 @@ class BizhawkSettingsRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def getButtonKeyBind(
         self,
-        button: CrowdControlButton
+        button: CrowdControlButton,
     ) -> BizhawkKey | None:
         pass
 

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .bizhawkKey import BizhawkKey
 from .bizhawkKeyMapperInterface import BizhawkKeyMapperInterface
@@ -12,7 +12,7 @@ class BizhawkKeyMapper(BizhawkKeyMapperInterface):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__timber: TimberInterface = timber
+        self.__timber: Final[TimberInterface] = timber
 
     async def fromString(self, string: str | Any | None) -> BizhawkKey | None:
         if not utils.isValidStr(string):

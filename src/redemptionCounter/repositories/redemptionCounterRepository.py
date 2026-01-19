@@ -17,7 +17,7 @@ class RedemptionCounterRepository(RedemptionCounterRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
-        cacheSize: int = 32
+        cacheSize: int = 32,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -43,7 +43,7 @@ class RedemptionCounterRepository(RedemptionCounterRepositoryInterface):
         connection: DatabaseConnection,
         chatterUserId: str,
         counterName: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> RedemptionCount:
         record = await connection.fetchRow(
             '''
@@ -51,7 +51,7 @@ class RedemptionCounterRepository(RedemptionCounterRepositoryInterface):
                 WHERE chatteruserid = $1 AND countername = $2 AND twitchchannelid = $3
                 LIMIT 1
             ''',
-            chatterUserId, counterName, twitchChannelId
+            chatterUserId, counterName, twitchChannelId,
         )
 
         redemptionCount: RedemptionCount
@@ -61,14 +61,14 @@ class RedemptionCounterRepository(RedemptionCounterRepositoryInterface):
                 count = 0,
                 chatterUserId = chatterUserId,
                 counterName = counterName,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
         else:
             redemptionCount = RedemptionCount(
                 count = record[0],
                 chatterUserId = chatterUserId,
                 counterName = counterName,
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
 
         return redemptionCount
@@ -77,7 +77,7 @@ class RedemptionCounterRepository(RedemptionCounterRepositoryInterface):
         self,
         chatterUserId: str,
         counterName: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> RedemptionCount:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
@@ -97,7 +97,7 @@ class RedemptionCounterRepository(RedemptionCounterRepositoryInterface):
             connection = connection,
             chatterUserId = chatterUserId,
             counterName = counterName,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         await connection.close()
@@ -114,7 +114,7 @@ class RedemptionCounterRepository(RedemptionCounterRepositoryInterface):
         incrementAmount: int,
         chatterUserId: str,
         counterName: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> RedemptionCount:
         if not utils.isValidInt(incrementAmount):
             raise TypeError(f'incrementAmount argument is malformed: \"{incrementAmount}\"')
@@ -133,14 +133,14 @@ class RedemptionCounterRepository(RedemptionCounterRepositoryInterface):
             connection = connection,
             chatterUserId = chatterUserId,
             counterName = counterName,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         newRedemptionCount = RedemptionCount(
             count = redemptionCount.count + incrementAmount,
             chatterUserId = chatterUserId,
             counterName = counterName,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         await connection.execute(
@@ -149,7 +149,7 @@ class RedemptionCounterRepository(RedemptionCounterRepositoryInterface):
                 VALUES ($1, $2, $3, $4)
                 ON CONFLICT (chatteruserid, countername, twitchchannelid) DO UPDATE SET count = EXCLUDED.count
             ''',
-            newRedemptionCount.count, chatterUserId, counterName, twitchChannelId
+            newRedemptionCount.count, chatterUserId, counterName, twitchChannelId,
         )
 
         await connection.close()
