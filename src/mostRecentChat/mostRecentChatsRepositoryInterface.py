@@ -10,7 +10,7 @@ class MostRecentChatsRepositoryInterface(Clearable, ABC):
     async def get(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> MostRecentChat | None:
         pass
 
@@ -18,6 +18,6 @@ class MostRecentChatsRepositoryInterface(Clearable, ABC):
     async def set(
         self,
         chatterUserId: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         pass
