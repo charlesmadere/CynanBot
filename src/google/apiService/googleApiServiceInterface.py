@@ -11,13 +11,13 @@ class GoogleApiServiceInterface(ABC):
     @abstractmethod
     async def textToSpeech(
         self,
-        request: GoogleTextSynthesizeRequest
+        request: GoogleTextSynthesizeRequest,
     ) -> GoogleTextSynthesisResponse:
         pass
 
     @abstractmethod
     async def translate(
         self,
-        request: GoogleTranslationRequest
+        request: GoogleTranslationRequest,
     ) -> GoogleTranslateTextResponse:
         pass
