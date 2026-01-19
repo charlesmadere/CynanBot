@@ -136,7 +136,7 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
                 WHERE twitchchannelid = $1
                 LIMIT 1
             ''',
-            twitchChannelId
+            twitchChannelId,
         )
 
         userKey: str | None = None
@@ -161,7 +161,7 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
                 DELETE FROM streamelementsuserkeys
                 WHERE twitchchannelid = $1
             ''',
-            twitchChannelId
+            twitchChannelId,
         )
 
         await connection.close()
@@ -206,7 +206,7 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
                 VALUES ($1, $2)
                 ON CONFLICT (twitchchannelid) DO UPDATE SET userkey = EXCLUDED.userkey
             ''',
-            userKey, twitchChannelId
+            userKey, twitchChannelId,
         )
 
         await connection.close()

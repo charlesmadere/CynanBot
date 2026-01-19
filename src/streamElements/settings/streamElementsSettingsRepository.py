@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .streamElementsSettingsRepositoryInterface import StreamElementsSettingsRepositoryInterface
 from ..models.streamElementsVoice import StreamElementsVoice
@@ -13,7 +13,7 @@ class StreamElementsSettingsRepository(StreamElementsSettingsRepositoryInterface
         self,
         settingsJsonReader: JsonReaderInterface,
         streamElementsJsonParser: StreamElementsJsonParserInterface,
-        defaultVoice: StreamElementsVoice = StreamElementsVoice.JOEY
+        defaultVoice: StreamElementsVoice = StreamElementsVoice.JOEY,
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
@@ -22,9 +22,9 @@ class StreamElementsSettingsRepository(StreamElementsSettingsRepositoryInterface
         elif not isinstance(defaultVoice, StreamElementsVoice):
             raise TypeError(f'defaultVoice argument is malformed: \"{defaultVoice}\"')
 
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
-        self.__streamElementsJsonParser: StreamElementsJsonParserInterface = streamElementsJsonParser
-        self.__defaultVoice: StreamElementsVoice = defaultVoice
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
+        self.__streamElementsJsonParser: Final[StreamElementsJsonParserInterface] = streamElementsJsonParser
+        self.__defaultVoice: Final[StreamElementsVoice] = defaultVoice
 
         self.__cache: dict[str, Any] | None = None
 
@@ -38,12 +38,12 @@ class StreamElementsSettingsRepository(StreamElementsSettingsRepositoryInterface
             d = jsonContents,
             key = 'default_voice',
             fallback = await self.__streamElementsJsonParser.serializeVoice(
-                voice = self.__defaultVoice
-            )
+                voice = self.__defaultVoice,
+            ),
         )
 
         return await self.__streamElementsJsonParser.requireVoice(
-            string = defaultVoice
+            string = defaultVoice,
         )
 
     async def getFileExtension(self) -> str:
