@@ -48,7 +48,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def parseAccessToken(
         self,
-        jsonContents: dict[str, Any] | None | Any
+        jsonContents: dict[str, Any] | Any | None,
     ) -> GoogleAccessToken | None:
         if jsonContents is None or len(jsonContents) == 0:
             return None
@@ -61,12 +61,12 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
         return GoogleAccessToken(
             expireTime = expireTime,
-            accessToken = accessToken
+            accessToken = accessToken,
         )
 
     async def parseTextSynthesisResponse(
         self,
-        jsonContents: dict[str, Any] | None | Any
+        jsonContents: dict[str, Any] | Any | None,
     ) -> GoogleTextSynthesisResponse | None:
         if jsonContents is None or len(jsonContents) == 0:
             return None
@@ -76,12 +76,12 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
         return GoogleTextSynthesisResponse(
             audioConfig = audioConfig,
-            audioContent = audioContent
+            audioContent = audioContent,
         )
 
     async def parseTranslateTextGlossaryConfig(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> GoogleTranslateTextGlossaryConfig | None:
         if jsonContents is None or len(jsonContents) == 0:
             return None
@@ -99,7 +99,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def parseTranslateTextResponse(
         self,
-        jsonContents: dict[str, Any] | None | Any
+        jsonContents: dict[str, Any] | Any | None,
     ) -> GoogleTranslateTextResponse | None:
         if jsonContents is None or len(jsonContents) == 0:
             return None
@@ -139,7 +139,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def parseTranslation(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> GoogleTranslation | None:
         if jsonContents is None or len(jsonContents) == 0:
             return None
@@ -162,7 +162,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             glossaryConfig = glossaryConfig,
             detectedLanguageCode = detectedLanguageCode,
             model = model,
-            translatedText = translatedText
+            translatedText = translatedText,
         )
 
     async def parseVoiceAudioConfig(
@@ -332,7 +332,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def serializeScopes(
         self,
-        scopes: Collection[GoogleScope]
+        scopes: Collection[GoogleScope],
     ) -> str:
         if not isinstance(scopes, Collection):
             raise TypeError(f'scopes argument is malformed: \"{scopes}\"')

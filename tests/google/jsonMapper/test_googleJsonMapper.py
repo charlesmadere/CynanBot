@@ -241,7 +241,7 @@ class TestGoogleJsonMapper:
     async def test_serializeScopes_withCloudTextToSpeechAndCloudTranslation(self):
         result = await self.mapper.serializeScopes([
             GoogleScope.CLOUD_TEXT_TO_SPEECH,
-            GoogleScope.CLOUD_TRANSLATION
+            GoogleScope.CLOUD_TRANSLATION,
         ])
 
         textToSpeech = await self.mapper.serializeScope(GoogleScope.CLOUD_TEXT_TO_SPEECH)

@@ -25,35 +25,35 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def parseAccessToken(
         self,
-        jsonContents: dict[str, Any] | None | Any
+        jsonContents: dict[str, Any] | Any | None,
     ) -> GoogleAccessToken | None:
         pass
 
     @abstractmethod
     async def parseTextSynthesisResponse(
         self,
-        jsonContents: dict[str, Any] | None | Any
+        jsonContents: dict[str, Any] | Any | None,
     ) -> GoogleTextSynthesisResponse | None:
         pass
 
     @abstractmethod
     async def parseTranslateTextGlossaryConfig(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | Any | None
     ) -> GoogleTranslateTextGlossaryConfig | None:
         pass
 
     @abstractmethod
     async def parseTranslateTextResponse(
         self,
-        jsonContents: dict[str, Any] | None | Any
+        jsonContents: dict[str, Any] | Any | None,
     ) -> GoogleTranslateTextResponse | None:
         pass
 
     @abstractmethod
     async def parseTranslation(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> GoogleTranslation | None:
         pass
 
@@ -137,7 +137,7 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def serializeScopes(
         self,
-        scopes: Collection[GoogleScope]
+        scopes: Collection[GoogleScope],
     ) -> str:
         pass
 
