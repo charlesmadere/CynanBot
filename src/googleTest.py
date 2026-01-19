@@ -153,7 +153,7 @@ googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtens
 
 googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = GoogleTtsVoicesHelper()
 
-googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
+googleTtsHelper: Final[GoogleTtsHelperInterface] = GoogleTtsHelper(
     eventLoop = eventLoop,
     glacialTtsFileRetriever = stubGlacialTtsFileRetriever,
     googleFileExtensionHelper = googleFileExtensionHelper,
@@ -161,10 +161,10 @@ googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
     googleSettingsRepository = googleSettingsRepository,
     googleTtsApiHelper = googleTtsApiHelper,
     googleTtsVoicesHelper = googleTtsVoicesHelper,
-    timber = timber
+    timber = timber,
 )
 
-twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFriendsUserIdRepository()
+twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = TwitchFriendsUserIdRepository()
 
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonStaticReader(dict())
@@ -186,8 +186,6 @@ async def main():
     if not isinstance(twitchChannelId, str):
         raise RuntimeError(f'twitchChannelId value is not set: \"{twitchChannelId}\"')
 
-    twitchChannel = 'smCharles'
-
     # translationResult = await googleApiService.translate(GoogleTranslationRequest(
     #     glossaryConfig = None,
     #     transliterationConfig = None,
@@ -207,18 +205,17 @@ async def main():
         allowMultiSpeaker = True,
         donationPrefix = None,
         message = message,
-        twitchChannel = twitchChannel,
         twitchChannelId = twitchChannelId,
     )
 
     if fileReference is None:
         raise RuntimeError(f'expected a non None fileReference: \"{fileReference}\"')
 
-    print(f'text to speech results: ({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({fileReference=})')
+    print(f'text to speech results: ({message=}) ({twitchChannelId=}) ({fileReference=})')
 
     await soundPlayerManager.playSoundFile(
         filePath = fileReference.filePath,
-        volume = await googleSettingsRepository.getMediaPlayerVolume()
+        volume = await googleSettingsRepository.getMediaPlayerVolume(),
     )
 
     pass

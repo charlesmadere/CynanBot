@@ -259,7 +259,6 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         allowMultiSpeaker: bool,
         donationPrefix: str | None,
         message: str | None,
-        twitchChannel: str,
         twitchChannelId: str,
     ) -> GoogleTtsFileReference | None:
         if voicePreset is not None and not isinstance(voicePreset, AbsGoogleVoicePreset):
@@ -270,8 +269,6 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             raise TypeError(f'donationPrefix argument is malformed: \"{donationPrefix}\"')
         elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 

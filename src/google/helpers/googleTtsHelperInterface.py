@@ -13,7 +13,6 @@ class GoogleTtsHelperInterface(ABC):
         allowMultiSpeaker: bool,
         donationPrefix: str | None,
         message: str | None,
-        twitchChannel: str,
         twitchChannelId: str,
     ) -> GoogleTtsFileReference | None:
         pass
