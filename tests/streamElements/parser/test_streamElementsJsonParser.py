@@ -20,6 +20,11 @@ class TestStreamElementsJsonParser:
         assert result is StreamElementsVoice.BRIAN
 
     @pytest.mark.asyncio
+    async def test_parseVoice_withEmma(self):
+        result = await self.parser.parseVoice('emma')
+        assert result is StreamElementsVoice.EMMA
+
+    @pytest.mark.asyncio
     async def test_parseVoice_withEmptyString(self):
         result = await self.parser.parseVoice('')
         assert result is None

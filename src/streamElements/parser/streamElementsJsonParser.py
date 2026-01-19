@@ -37,12 +37,12 @@ class StreamElementsJsonParser(StreamElementsJsonParserInterface):
             StreamElementsVoice.AMY: amy,
             StreamElementsVoice.BRIAN: brian,
             StreamElementsVoice.EMMA: emma,
-            StreamElementsVoice.JOEY: joey
+            StreamElementsVoice.JOEY: joey,
         })
 
     async def parseVoice(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> StreamElementsVoice | None:
         if not utils.isValidStr(string):
             return None
@@ -56,7 +56,7 @@ class StreamElementsJsonParser(StreamElementsJsonParserInterface):
 
     async def requireVoice(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> StreamElementsVoice:
         result = await self.parseVoice(string)
 
@@ -67,7 +67,7 @@ class StreamElementsJsonParser(StreamElementsJsonParserInterface):
 
     async def serializeVoice(
         self,
-        voice: StreamElementsVoice
+        voice: StreamElementsVoice,
     ) -> str:
         if not isinstance(voice, StreamElementsVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
