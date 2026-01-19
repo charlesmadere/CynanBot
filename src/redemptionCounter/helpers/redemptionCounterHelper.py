@@ -20,7 +20,7 @@ class RedemptionCounterHelper(RedemptionCounterHelperInterface):
         redemptionCounterSettings: RedemptionCounterSettingsInterface,
         timber: TimberInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface
+        userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(redemptionCounterRepository, RedemptionCounterRepositoryInterface):
             raise TypeError(f'redemptionCounterRepository argument is malformed: \"{redemptionCounterRepository}\"')
@@ -43,7 +43,7 @@ class RedemptionCounterHelper(RedemptionCounterHelperInterface):
         self,
         chatterUserId: str,
         counterName: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> PreparedRedemptionCount:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
@@ -58,11 +58,11 @@ class RedemptionCounterHelper(RedemptionCounterHelperInterface):
         redemptionCount = await self.__redemptionCounterRepository.get(
             chatterUserId = chatterUserId,
             counterName = counterName,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         return await self.__prepareRedemptionCount(
-            redemptionCount = redemptionCount
+            redemptionCount = redemptionCount,
         )
 
     async def increment(
@@ -70,7 +70,7 @@ class RedemptionCounterHelper(RedemptionCounterHelperInterface):
         incrementAmount: int,
         chatterUserId: str,
         counterName: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> PreparedRedemptionCount:
         if not utils.isValidInt(incrementAmount):
             raise TypeError(f'incrementAmount argument is malformed: \"{incrementAmount}\"')
@@ -90,16 +90,16 @@ class RedemptionCounterHelper(RedemptionCounterHelperInterface):
             incrementAmount = incrementAmount,
             chatterUserId = chatterUserId,
             counterName = counterName,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         return await self.__prepareRedemptionCount(
-            redemptionCount = redemptionCount
+            redemptionCount = redemptionCount,
         )
 
     async def __prepareRedemptionCount(
         self,
-        redemptionCount: RedemptionCount
+        redemptionCount: RedemptionCount,
     ) -> PreparedRedemptionCount:
         chatterUserName = await self.__userIdsRepository.fetchUserName(
             userId = redemptionCount.chatterUserId,
@@ -114,10 +114,10 @@ class RedemptionCounterHelper(RedemptionCounterHelperInterface):
             raise RedemptionCounterNoSuchUserException(
                 chatterUserId = redemptionCount.chatterUserId,
                 counterName = redemptionCount.counterName,
-                twitchChannelId = redemptionCount.twitchChannelId
+                twitchChannelId = redemptionCount.twitchChannelId,
             )
 
         return PreparedRedemptionCount(
             redemptionCount = redemptionCount,
-            chatterUserName = chatterUserName
+            chatterUserName = chatterUserName,
         )

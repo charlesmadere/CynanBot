@@ -65,10 +65,10 @@ class RedemptionCounterPointRedemption(AbsChannelPointRedemption):
                 twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
             )
         except RedemptionCounterIsDisabledException as e:
-            self.__timber.log('RedemptionCounterPointRedemption', f'Redemption Counter feature is currently disabled ({twitchChannelPointsMessage=}): {e}', e, traceback.format_exc())
+            self.__timber.log('RedemptionCounterPointRedemption', f'Redemption Counter feature is currently disabled ({twitchChannelPointsMessage=})', e, traceback.format_exc())
             return True
         except RedemptionCounterNoSuchUserException as e:
-            self.__timber.log('RedemptionCounterPointRedemption', f'Unable to find the user of the given user ID ({twitchChannelPointsMessage=}): {e}', e, traceback.format_exc())
+            self.__timber.log('RedemptionCounterPointRedemption', f'Unable to find the user of the given user ID ({twitchChannelPointsMessage=})', e, traceback.format_exc())
             return True
 
         prefixEmote = await self.__trollmojiHelper.getDinkDonkEmote()

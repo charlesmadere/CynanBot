@@ -10,7 +10,7 @@ class RedemptionCounterHelperInterface(ABC):
         self,
         chatterUserId: str,
         counterName: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> PreparedRedemptionCount:
         pass
 
@@ -20,6 +20,6 @@ class RedemptionCounterHelperInterface(ABC):
         incrementAmount: int,
         chatterUserId: str,
         counterName: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> PreparedRedemptionCount:
         pass

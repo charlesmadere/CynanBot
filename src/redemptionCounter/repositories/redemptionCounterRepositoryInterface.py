@@ -11,7 +11,7 @@ class RedemptionCounterRepositoryInterface(Clearable, ABC):
         self,
         chatterUserId: str,
         counterName: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> RedemptionCount:
         pass
 
@@ -21,6 +21,6 @@ class RedemptionCounterRepositoryInterface(Clearable, ABC):
         incrementAmount: int,
         chatterUserId: str,
         counterName: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> RedemptionCount:
         pass
