@@ -1,6 +1,7 @@
 import asyncio
 import queue
 from collections import defaultdict
+from datetime import datetime
 from queue import SimpleQueue
 from typing import Final
 
@@ -14,7 +15,6 @@ from .timberInterface import TimberInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from ..misc.simpleDateTime import SimpleDateTime
 
 
 class Timber(TimberInterface):
@@ -70,7 +70,7 @@ class Timber(TimberInterface):
         elif not isinstance(timberEntry, TimberEntry):
             raise TypeError(f'timberEntry argument is malformed: \"{timberEntry}\"')
 
-        logStatement = f'{timberEntry.logTime.getDateAndTimeStr(True)} — {timberEntry.tag} — {timberEntry.msg}'.strip()
+        logStatement = f'{timberEntry.getDateAndTimeStr()} — {timberEntry.tag} — {timberEntry.msg}'.strip()
 
         if utils.isValidStr(timberEntry.traceback):
             logStatement = f'{logStatement}\n{timberEntry.traceback}'.strip()
@@ -96,13 +96,11 @@ class Timber(TimberInterface):
         elif traceback is not None and not isinstance(traceback, str):
             raise TypeError(f'traceback argument is malformed: \"{traceback}\"')
 
-        logTime = SimpleDateTime(
-            timeZone = self.__timeZoneRepository.getDefault(),
-        )
+        dateTime = datetime.now(self.__timeZoneRepository.getDefault())
 
         timberEntry = TimberEntry(
+            dateTime = dateTime,
             exception = exception,
-            logTime = logTime,
             msg = msg,
             tag = tag,
             traceback = traceback,
@@ -128,6 +126,7 @@ class Timber(TimberInterface):
                     entry = self.__entryQueue.get_nowait()
                     entries.append(entry)
             except queue.Empty:
+                # this exception is intentionally ignored
                 pass
 
             entries.freeze()
@@ -153,14 +152,13 @@ class Timber(TimberInterface):
         errorStructure: dict[str, dict[str, list[TimberEntry]]] = defaultdict(lambda: defaultdict(lambda: list()))
 
         for entry in entries:
-            logTime = entry.logTime
-            timberDirectory = f'{self.__timberRootDirectory}/{logTime.getYearStr()}/{logTime.getMonthStr()}'
-            timberFile = f'{timberDirectory}/{logTime.getDayStr()}.log'
+            timberDirectory = f'{self.__timberRootDirectory}/{entry.getYearStr()}/{entry.getMonthStr()}'
+            timberFile = f'{timberDirectory}/{entry.getDayStr()}.log'
             structure[timberDirectory][timberFile].append(entry)
 
             if entry.exception is not None:
                 timberErrorDirectory = f'{timberDirectory}/errors'
-                timberErrorFile = f'{timberErrorDirectory}/{logTime.getDayStr()}.log'
+                timberErrorFile = f'{timberErrorDirectory}/{entry.getDayStr()}.log'
                 errorStructure[timberErrorDirectory][timberErrorFile].append(entry)
 
         for timberDirectory, timberFileToEntriesDict in structure.items():

@@ -2,6 +2,7 @@ import asyncio
 import queue
 import traceback
 from collections import defaultdict
+from datetime import datetime
 from queue import SimpleQueue
 from typing import Collection, Final
 
@@ -16,7 +17,6 @@ from .sentMessageLoggerInterface import SentMessageLoggerInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from ..misc.simpleDateTime import SimpleDateTime
 from ..timber.timberInterface import TimberInterface
 
 
@@ -28,7 +28,7 @@ class SentMessageLogger(SentMessageLoggerInterface):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         sleepTimeSeconds: float = 15,
-        logRootDirectory: str = '../logs/sentMessageLogger'
+        logRootDirectory: str = '../logs/sentMessageLogger',
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -56,7 +56,7 @@ class SentMessageLogger(SentMessageLoggerInterface):
         if not isinstance(message, SentMessage):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
-        prefix = f'{message.sendTime.getDateAndTimeStr(True)} — {message.messageMethod.toStr()} — '
+        prefix = f'{message.getDateAndTimeStr()} — {message.messageMethod.toStr()} — '
 
         error = ''
         if not message.successfullySent:
@@ -74,7 +74,8 @@ class SentMessageLogger(SentMessageLoggerInterface):
         numberOfSendAttempts: int,
         messageMethod: MessageMethod,
         msg: str,
-        twitchChannel: str
+        twitchChannel: str,
+        twitchChannelId: str,
     ):
         if not utils.isValidBool(successfullySent):
             raise TypeError(f'successfullySent argument is malformed: \"{successfullySent}\"')
@@ -90,6 +91,8 @@ class SentMessageLogger(SentMessageLoggerInterface):
             raise TypeError(f'msg argument is malformed: \"{msg}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         frozenExceptions: FrozenList[Exception] | None = None
 
@@ -97,21 +100,18 @@ class SentMessageLogger(SentMessageLoggerInterface):
             frozenExceptions = FrozenList(exceptions)
             frozenExceptions.freeze()
 
-        sendTime = SimpleDateTime(
-            timeZone = self.__timeZoneRepository.getDefault()
-        )
+        dateTime = datetime.now(self.__timeZoneRepository.getDefault())
 
-        sentMessage = SentMessage(
+        self.__messageQueue.put(SentMessage(
             successfullySent = successfullySent,
             exceptions = frozenExceptions,
+            dateTime = dateTime,
             numberOfSendAttempts = numberOfSendAttempts,
             messageMethod = messageMethod,
-            sendTime = sendTime,
             msg = msg,
-            twitchChannel = twitchChannel
-        )
-
-        self.__messageQueue.put(sentMessage)
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
+        ))
 
     def start(self):
         if self.__isStarted:
@@ -124,19 +124,20 @@ class SentMessageLogger(SentMessageLoggerInterface):
 
     async def __startMessageLoop(self):
         while True:
-            messages: list[SentMessage] = list()
+            messages: FrozenList[SentMessage] = FrozenList()
 
             try:
                 while not self.__messageQueue.empty():
                     message = self.__messageQueue.get_nowait()
                     messages.append(message)
             except queue.Empty as e:
-                self.__timber.log('SentMessageLogger', f'Encountered queue.Empty when building up messages list (queue size: {self.__messageQueue.qsize()}) (messages size: {len(messages)}): {e}', e, traceback.format_exc())
+                self.__timber.log('SentMessageLogger', f'Encountered queue.Empty when building up messages list (queue size: {self.__messageQueue.qsize()}) (messages size: {len(messages)})', e, traceback.format_exc())
 
+            messages.freeze()
             await self.__writeToLogFiles(messages)
             await asyncio.sleep(self.__sleepTimeSeconds)
 
-    async def __writeToLogFiles(self, messages: list[SentMessage]):
+    async def __writeToLogFiles(self, messages: FrozenList[SentMessage]):
         if len(messages) == 0:
             return
 
@@ -147,19 +148,18 @@ class SentMessageLogger(SentMessageLoggerInterface):
 
         for message in messages:
             twitchChannel = message.twitchChannel.lower()
-            sendTime = message.sendTime
-            messageDirectory = f'{self.__logRootDirectory}/{twitchChannel}/{sendTime.getYearStr()}/{sendTime.getMonthStr()}'
-            messageFile = f'{messageDirectory}/{sendTime.getDayStr()}.log'
+            messageDirectory = f'{self.__logRootDirectory}/{twitchChannel}/{message.getYearStr()}/{message.getMonthStr()}'
+            messageFile = f'{messageDirectory}/{message.getDayStr()}.log'
             structure[messageDirectory][messageFile].append(message)
 
         for messageDirectory, messageFileToMessagesDict in structure.items():
             if not await aiofiles.ospath.exists(
                 path = messageDirectory,
-                loop = self.__backgroundTaskHelper.eventLoop
+                loop = self.__backgroundTaskHelper.eventLoop,
             ):
                 await aiofiles.os.makedirs(
                     name = messageDirectory,
-                    loop = self.__backgroundTaskHelper.eventLoop
+                    loop = self.__backgroundTaskHelper.eventLoop,
                 )
 
             for messageFile, messagesList in messageFileToMessagesDict.items():
@@ -167,10 +167,13 @@ class SentMessageLogger(SentMessageLoggerInterface):
                     file = messageFile,
                     mode = 'a',
                     encoding = 'utf-8',
-                    loop = self.__backgroundTaskHelper.eventLoop
+                    loop = self.__backgroundTaskHelper.eventLoop,
                 ) as file:
                     for message in messagesList:
-                        logStatement = self.__getLogStatement(message)
+                        logStatement = self.__getLogStatement(
+                            message = message,
+                        )
+
                         await file.write(logStatement)
 
                     await file.flush()

@@ -1,20 +1,20 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from .absChatLog import AbsChatLog
-from ...misc.simpleDateTime import SimpleDateTime
 
 
 @dataclass(frozen = True)
 class MessageChatLog(AbsChatLog):
+    dateTime: datetime
     bits: int | None
-    dateTime: SimpleDateTime
     chatterUserId: str
     chatterUserLogin: str
     message: str
     twitchChannel: str
     twitchChannelId: str
 
-    def getDateTime(self) -> SimpleDateTime:
+    def getDateTime(self) -> datetime:
         return self.dateTime
 
     def getTwitchChannel(self) -> str:

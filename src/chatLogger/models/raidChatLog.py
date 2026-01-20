@@ -1,20 +1,20 @@
 import locale
 from dataclasses import dataclass
+from datetime import datetime
 
 from .absChatLog import AbsChatLog
-from ...misc.simpleDateTime import SimpleDateTime
 
 
 @dataclass(frozen = True)
 class RaidChatLog(AbsChatLog):
+    dateTime: datetime
     viewers: int
-    dateTime: SimpleDateTime
     raidUserId: str
     raidUserLogin: str
     twitchChannel: str
     twitchChannelId: str
 
-    def getDateTime(self) -> SimpleDateTime:
+    def getDateTime(self) -> datetime:
         return self.dateTime
 
     def getTwitchChannel(self) -> str:
