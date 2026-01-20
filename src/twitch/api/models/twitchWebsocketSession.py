@@ -4,7 +4,7 @@ from datetime import datetime
 from .twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchWebsocketSession:
     connectedAt: datetime
     keepAliveTimeoutSeconds: int | None

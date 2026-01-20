@@ -9,7 +9,7 @@ from ..users.userInterface import UserInterface
 
 class AbsTwitchChatHandler(ABC):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class ChatData:
         chatterUserId: str
         chatterUserLogin: str

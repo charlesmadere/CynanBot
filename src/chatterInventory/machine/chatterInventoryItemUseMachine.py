@@ -72,7 +72,7 @@ from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class TokensAndDetails:
         moderatorTwitchAccessToken: str
         moderatorUserId: str

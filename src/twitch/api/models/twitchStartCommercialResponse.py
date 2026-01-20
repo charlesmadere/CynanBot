@@ -5,6 +5,6 @@ from frozenlist import FrozenList
 from .twitchStartCommercialDetails import TwitchStartCommercialDetails
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchStartCommercialResponse:
     data: FrozenList[TwitchStartCommercialDetails]

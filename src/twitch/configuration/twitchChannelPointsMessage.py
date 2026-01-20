@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from ...users.userInterface import UserInterface
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchChannelPointsMessage:
     rewardCost: int
     eventId: str

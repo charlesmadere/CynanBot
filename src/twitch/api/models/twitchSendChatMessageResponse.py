@@ -7,6 +7,6 @@ from .twitchSendChatMessageResponseEntry import TwitchSendChatMessageResponseEnt
 
 # This class intends to directly correspond to Twitch's "Send Chat Message" API:
 # https://dev.twitch.tv/docs/api/reference/#send-chat-message
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchSendChatMessageResponse:
     data: FrozenList[TwitchSendChatMessageResponseEntry]

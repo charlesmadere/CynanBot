@@ -12,7 +12,7 @@ from ..users.userInterface import UserInterface
 
 class AbsTwitchPredictionHandler(ABC):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class PredictionData:
         outcomes: FrozenList[TwitchOutcome]
         eventId: str

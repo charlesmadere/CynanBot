@@ -13,7 +13,7 @@ from ..users.userInterface import UserInterface
 
 class AbsTwitchSubscriptionHandler(ABC):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class SubscriptionData:
         isAnonymous: bool | None
         isGift: bool | None

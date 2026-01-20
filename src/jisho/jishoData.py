@@ -8,7 +8,7 @@ from .jishoJlptLevel import JishoJlptLevel
 from .jishoSense import JishoSense
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class JishoData:
     isCommon: bool
     japanese: FrozenList[JishoJapaneseWord]

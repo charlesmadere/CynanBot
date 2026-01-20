@@ -6,7 +6,7 @@ from .twitchEventSubDetails import TwitchEventSubDetails
 from .twitchPaginationResponse import TwitchPaginationResponse
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchEventSubResponse:
     data: FrozenList[TwitchEventSubDetails]
     maxTotalCost: int

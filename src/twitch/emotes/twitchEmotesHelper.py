@@ -22,7 +22,7 @@ from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 class TwitchEmotesHelper(TwitchEmotesHelperInterface):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class Entry:
         fetchDateTime: datetime
         availableEmotes: frozenset[str]

@@ -7,7 +7,7 @@ from .pokepediaGeneration import PokepediaGeneration
 from ..misc import utils as utils
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class PokepediaMoveGeneration:
     accuracy: int | None
     power: int | None

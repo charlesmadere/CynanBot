@@ -8,7 +8,7 @@ from ..users.userInterface import UserInterface
 
 class AbsTwitchFollowHandler(ABC):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class FollowData:
         followedAt: datetime
         followerUserId: str

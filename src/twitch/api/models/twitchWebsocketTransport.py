@@ -7,7 +7,7 @@ from ....misc import utils as utils
 
 # This class intends to directly correspond to the "transport" field from Twitch's "Create
 # EventSub Subscription" API: https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchWebsocketTransport:
     connectedAt: datetime | None
     disconnectedAt: datetime | None

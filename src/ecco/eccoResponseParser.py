@@ -18,7 +18,7 @@ from ..timber.timberInterface import TimberInterface
 
 class EccoResponseParser(EccoResponseParserInterface):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class CleanedDateTimeInfo:
         dateTimeString: str
         timeZone: tzinfo

@@ -7,6 +7,6 @@ from .twitchConduitResponseEntry import TwitchConduitResponseEntry
 
 # This class intends to directly correspond to Twitch's "Create a conduit" API:
 # https://dev.twitch.tv/docs/eventsub/handling-conduit-events/#creating-a-conduit
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchConduitResponse:
     data: FrozenList[TwitchConduitResponseEntry]

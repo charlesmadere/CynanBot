@@ -33,7 +33,7 @@ from ...users.userInterface import UserInterface
 
 class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInterface):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class TimeoutRoll:
         randomNumber: float
         timeoutProbability: float

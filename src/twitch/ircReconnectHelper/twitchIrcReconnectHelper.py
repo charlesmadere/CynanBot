@@ -19,7 +19,7 @@ from ...users.usersRepositoryInterface import UsersRepositoryInterface
 
 class TwitchIrcReconnectHelper(TwitchIrcReconnectHelperInterface):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class TwitchUserData:
         userId: str
         userName: str

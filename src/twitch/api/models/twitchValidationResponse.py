@@ -4,7 +4,7 @@ from datetime import datetime
 from .twitchApiScope import TwitchApiScope
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchValidationResponse:
     expiresAt: datetime
     scopes: frozenset[TwitchApiScope]

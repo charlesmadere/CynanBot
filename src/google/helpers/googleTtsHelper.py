@@ -36,7 +36,7 @@ from ...tts.models.ttsProvider import TtsProvider
 
 class GoogleTtsHelper(GoogleTtsHelperInterface):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class GoogleSpeechRequestData:
         voicePreset: AbsGoogleVoicePreset
         messageSentences: FrozenList[str]

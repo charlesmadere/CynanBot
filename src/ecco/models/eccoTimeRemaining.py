@@ -4,7 +4,7 @@ from datetime import datetime
 from .absEccoTimeRemaining import AbsEccoTimeRemaining
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class EccoTimeRemaining(AbsEccoTimeRemaining):
     timerDateTime: datetime
     remainingSeconds: int

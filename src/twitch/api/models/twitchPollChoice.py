@@ -2,7 +2,7 @@ import locale
 from dataclasses import dataclass
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchPollChoice:
     channelPointsVotes: int
     votes: int

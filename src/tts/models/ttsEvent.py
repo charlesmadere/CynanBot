@@ -6,7 +6,7 @@ from .ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from .ttsRaidInfo import TtsRaidInfo
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TtsEvent:
     message: str | None
     twitchChannel: str

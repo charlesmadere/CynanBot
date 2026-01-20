@@ -5,7 +5,7 @@ from frozenlist import FrozenList
 from .twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchResubscriptionMessage:
     emotes: FrozenList[TwitchResubscriptionMessageEmote] | None
     text: str

@@ -6,7 +6,7 @@ from .twitchUserType import TwitchUserType
 from ...localModels.twitchUserInterface import TwitchUserInterface
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchUser(TwitchUserInterface):
     createdAt: datetime
     description: str | None

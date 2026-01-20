@@ -6,7 +6,7 @@ from .twitchChatter import TwitchChatter
 from .twitchPaginationResponse import TwitchPaginationResponse
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchChattersResponse:
     data: FrozenList[TwitchChatter]
     total: int

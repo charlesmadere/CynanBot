@@ -5,7 +5,7 @@ from .ttsDonation import TtsDonation
 from ...twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TtsSubscriptionDonation(TtsDonation):
     isAnonymous: bool
     cumulativeMonths: int | None

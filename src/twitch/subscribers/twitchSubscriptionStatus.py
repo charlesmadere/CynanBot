@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from ..api.models.twitchSubscriberTier import TwitchSubscriberTier
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchSubscriptionStatus:
     isGift: bool
     broadcasterId: str

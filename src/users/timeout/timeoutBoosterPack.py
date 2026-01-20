@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from .timeoutBoosterPackType import TimeoutBoosterPackType
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TimeoutBoosterPack:
     randomChanceEnabled: bool
     durationSeconds: int

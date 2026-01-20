@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from .googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class GoogleVoiceAudioConfig:
     pitch: float | None
     speakingRate: float | None

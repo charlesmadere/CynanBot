@@ -14,7 +14,7 @@ from ...timber.timberInterface import TimberInterface
 
 class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class ChannelEditorsData:
         fetchedAt: datetime
         editors: frozenset[str]

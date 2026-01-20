@@ -4,7 +4,7 @@ from typing import Any
 from frozendict import frozendict
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchIrcTags:
     rawTags: frozendict[Any, Any]
     isSubscribed: bool

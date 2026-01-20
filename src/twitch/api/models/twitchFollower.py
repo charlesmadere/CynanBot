@@ -4,7 +4,7 @@ from datetime import datetime
 from ...localModels.twitchUserInterface import TwitchUserInterface
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchFollower(TwitchUserInterface):
     followedAt: datetime
     userId: str

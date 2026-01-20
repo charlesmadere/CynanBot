@@ -5,6 +5,6 @@ from frozenlist import FrozenList
 from .deepLTranslationResponse import DeepLTranslationResponse
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class DeepLTranslationResponses:
     translations: FrozenList[DeepLTranslationResponse] | None = None

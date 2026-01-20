@@ -7,7 +7,7 @@ from .twitchUpdateConduitShardsRequestEntry import TwitchUpdateConduitShardsRequ
 
 # This class intends to directly correspond to Twitch's "Update Conduit Shards" API:
 # https://dev.twitch.tv/docs/api/reference/#update-conduit-shards
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchUpdateConduitShardsRequest:
     shards: FrozenList[TwitchUpdateConduitShardsRequestEntry]
     conduitId: str

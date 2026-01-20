@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TimberEntry:
     dateTime: datetime
     exception: Exception | None

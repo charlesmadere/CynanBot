@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from .twitchContributionType import TwitchContributionType
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchContribution:
     total: int
     userId: str

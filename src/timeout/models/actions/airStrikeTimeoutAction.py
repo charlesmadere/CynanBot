@@ -6,7 +6,7 @@ from ..timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ....users.userInterface import UserInterface
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class AirStrikeTimeoutAction(AbsTimeoutAction):
     timeoutDuration: AbsTimeoutDuration
     ignoreInventory: bool

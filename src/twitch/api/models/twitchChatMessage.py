@@ -5,7 +5,7 @@ from frozenlist import FrozenList
 from .twitchChatMessageFragment import TwitchChatMessageFragment
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchChatMessage:
     fragments: FrozenList[TwitchChatMessageFragment]
     text: str

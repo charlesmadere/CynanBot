@@ -27,7 +27,7 @@ from .twitchSubGift import TwitchSubGift
 from .twitchSubscriberTier import TwitchSubscriberTier
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchWebsocketEvent:
     isAnonymous: bool | None = None
     isChatterAnonymous: bool | None = None

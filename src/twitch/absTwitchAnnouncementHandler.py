@@ -7,7 +7,7 @@ from ..users.userInterface import UserInterface
 
 class AbsTwitchChannelPointRedemptionHandler(ABC):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class AnnouncementData:
         announcementMessage: str
         announcementUserId: str

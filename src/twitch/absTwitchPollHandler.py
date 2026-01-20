@@ -12,7 +12,7 @@ from ..users.userInterface import UserInterface
 
 class AbsTwitchPollHandler(ABC):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class PollData:
         choices: FrozenList[TwitchPollChoice]
         title: str
