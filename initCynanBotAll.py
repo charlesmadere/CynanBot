@@ -300,8 +300,6 @@ from src.misc.administratorProviderInterface import AdministratorProviderInterfa
 from src.misc.authRepository import AuthRepository
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from src.misc.cynanBotUserIdsProvider import CynanBotUserIdsProvider
-from src.misc.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInterface
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
@@ -841,12 +839,12 @@ twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJ
     twitchJsonMapper = twitchJsonMapper
 )
 
-twitchApiService: TwitchApiServiceInterface = TwitchApiService(
+twitchApiService: Final[TwitchApiServiceInterface] = TwitchApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchCredentialsProvider = authRepository,
-    twitchJsonMapper = twitchJsonMapper
+    twitchJsonMapper = twitchJsonMapper,
 )
 
 userIdsRepository: Final[UserIdsRepositoryInterface] = UserIdsRepository(
@@ -1145,14 +1143,11 @@ twitchChatMessenger: Final[TwitchChatMessengerInterface] = TwitchChatMessenger(
     userIdsRepository = userIdsRepository,
 )
 
-cynanBotUserIdsProvider: CynanBotUserIdsProviderInterface = CynanBotUserIdsProvider()
+officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderInterface] = OfficialTwitchAccountUserIdProvider()
 
-officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = OfficialTwitchAccountUserIdProvider()
-
-twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFriendsUserIdRepository()
+twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = TwitchFriendsUserIdRepository()
 
 timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = TimeoutImmuneUserIdsRepository(
-    cynanBotUserIdsProvider = cynanBotUserIdsProvider,
     officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     timber = timber,
     twitchFriendsUserIdProvider = twitchFriendsUserIdRepository,

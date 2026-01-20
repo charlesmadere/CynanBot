@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from .ttsDonation import TtsDonation
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TtsCheerDonation(TtsDonation):
     bits: int
 

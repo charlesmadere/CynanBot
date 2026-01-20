@@ -233,7 +233,9 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         activeChannelIdsSet.update(await self.__triviaGameStore.getTwitchChannelIdsWithActiveSuperGames())
         activeChannelIdsSet.update(await self.__superTriviaCooldownHelper.getTwitchChannelIdsInCooldown())
 
-        queuedSuperGames = await self.__queuedTriviaGameStore.popQueuedSuperGames(activeChannelIdsSet)
+        queuedSuperGames = await self.__queuedTriviaGameStore.popQueuedSuperGames(
+            activeChannelIds = activeChannelIdsSet,
+        )
 
         for queuedSuperGame in queuedSuperGames:
             remainingQueueSize = await self.__queuedTriviaGameStore.getQueuedSuperGamesSize(
@@ -680,6 +682,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.START_NEW_SUPER_GAME}: \"{action.triviaActionType}\"')
 
         now = datetime.now(self.__timeZoneRepository.getDefault())
+
         superTriviaFirstQuestionDelay = timedelta(
             seconds = await self.__triviaSettingsRepository.getSuperTriviaFirstQuestionDelaySeconds(),
         )

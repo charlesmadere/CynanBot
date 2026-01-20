@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from ...localModels.twitchUserInterface import TwitchUserInterface
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchOutcomePredictor(TwitchUserInterface):
     channelPointsUsed: int
     channelPointsWon: int | None

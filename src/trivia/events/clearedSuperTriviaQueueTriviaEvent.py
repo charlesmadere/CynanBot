@@ -1,4 +1,5 @@
 import locale
+from typing import Final
 
 from .absTriviaEvent import AbsTriviaEvent
 from .triviaEventType import TriviaEventType
@@ -37,11 +38,11 @@ class ClearedSuperTriviaQueueTriviaEvent(AbsTriviaEvent):
         elif not utils.isValidStr(twitchChatMessageId):
             raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
 
-        self.__numberOfGamesRemoved: int = numberOfGamesRemoved
-        self.__previousQueueSize: int = previousQueueSize
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
-        self.__twitchChatMessageId: str = twitchChatMessageId
+        self.__numberOfGamesRemoved: Final[int] = numberOfGamesRemoved
+        self.__previousQueueSize: Final[int] = previousQueueSize
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
+        self.__twitchChatMessageId: Final[str] = twitchChatMessageId
 
     @property
     def numberOfGamesRemoved(self) -> int:

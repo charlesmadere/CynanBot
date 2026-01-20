@@ -16,6 +16,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         bastionBlueUserId: str | None = '134639294',
         boatWaifuUserId: str | None = '563334759',
         charlesUserId: str | None = '74350217',
+        cynanBotUserId: str | None = '546457893',
+        cynanBotTtsUserId: str | None = '977636741',
         dylanStewUserId: str | None = '66822320',
         eddieUserId: str | None = '22587336',
         funtoonUserId: str | None = '477393386',
@@ -56,6 +58,10 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'boatWaifuUserId argument is malformed: \"{boatWaifuUserId}\"')
         elif charlesUserId is not None and not isinstance(charlesUserId, str):
             raise TypeError(f'charlesUserId argument is malformed: \"{charlesUserId}\"')
+        elif cynanBotUserId is not None and not isinstance(cynanBotUserId, str):
+            raise TypeError(f'cynanBotUserId argument is malformed: \"{cynanBotUserId}\"')
+        elif cynanBotTtsUserId is not None and not isinstance(cynanBotTtsUserId, str):
+            raise TypeError(f'cynanBotTtsUserId argument is malformed: \"{cynanBotTtsUserId}\"')
         elif dylanStewUserId is not None and not isinstance(dylanStewUserId, str):
             raise TypeError(f'dylanStewUserId argument is malformed: \"{dylanStewUserId}\"')
         elif eddieUserId is not None and not isinstance(eddieUserId, str):
@@ -108,6 +114,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         self.__bastionBlueUserId: Final[str | None] = bastionBlueUserId
         self.__boatWaifuUserId: Final[str | None] = boatWaifuUserId
         self.__charlesUserId: Final[str | None] = charlesUserId
+        self.__cynanBotUserId: Final[str | None] = cynanBotUserId
+        self.__cynanBotTtsUserId: Final[str | None] = cynanBotTtsUserId
         self.__dylanStewUserId: Final[str | None] = dylanStewUserId
         self.__eddieUserId: Final[str | None] = eddieUserId
         self.__funtoonUserId: Final[str | None] = funtoonUserId
@@ -156,6 +164,12 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
 
     async def getCharlesUserId(self) -> str | None:
         return self.__charlesUserId
+
+    async def getCynanBotUserId(self) -> str | None:
+        return self.__cynanBotUserId
+
+    async def getCynanBotTtsUserId(self) -> str | None:
+        return self.__cynanBotTtsUserId
 
     async def getDylanStewUserId(self) -> str | None:
         return self.__dylanStewUserId

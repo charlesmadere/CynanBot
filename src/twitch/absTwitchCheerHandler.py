@@ -7,7 +7,7 @@ from ..users.userInterface import UserInterface
 
 class AbsTwitchCheerHandler(ABC):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class CheerData:
         bits: int
         chatMessage: str

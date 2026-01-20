@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absTriviaAction import AbsTriviaAction
 from .triviaActionType import TriviaActionType
 from ..triviaFetchOptions import TriviaFetchOptions
@@ -46,15 +48,15 @@ class StartNewTriviaGameAction(AbsTriviaAction):
         elif not isinstance(triviaFetchOptions, TriviaFetchOptions):
             raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
-        self.__isShinyTriviaEnabled: bool = isShinyTriviaEnabled
-        self.__pointsForWinning: int = pointsForWinning
-        self.__shinyMultiplier: int = shinyMultiplier
-        self.__secondsToLive: int = secondsToLive
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
-        self.__userId: str = userId
-        self.__userName: str = userName
-        self.__triviaFetchOptions: TriviaFetchOptions = triviaFetchOptions
+        self.__isShinyTriviaEnabled: Final[bool] = isShinyTriviaEnabled
+        self.__pointsForWinning: Final[int] = pointsForWinning
+        self.__shinyMultiplier: Final[int] = shinyMultiplier
+        self.__secondsToLive: Final[int] = secondsToLive
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
+        self.__userId: Final[str] = userId
+        self.__userName: Final[str] = userName
+        self.__triviaFetchOptions: Final[TriviaFetchOptions] = triviaFetchOptions
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel

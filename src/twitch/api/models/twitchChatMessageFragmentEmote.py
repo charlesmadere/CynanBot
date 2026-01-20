@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from .twitchEmoteImageFormat import TwitchEmoteImageFormat
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchChatMessageFragmentEmote:
     formats: frozenset[TwitchEmoteImageFormat] | None
     emoteId: str

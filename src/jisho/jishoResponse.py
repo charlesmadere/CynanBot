@@ -6,7 +6,7 @@ from .jishoData import JishoData
 from .jishoMeta import JishoMeta
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class JishoResponse:
     data: FrozenList[JishoData]
     meta: JishoMeta

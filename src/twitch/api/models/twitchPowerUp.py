@@ -4,7 +4,7 @@ from .twitchPowerUpEmote import TwitchPowerUpEmote
 from .twitchPowerUpType import TwitchPowerUpType
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchPowerUp:
     messageEffectId: str | None
     powerUpEmote: TwitchPowerUpEmote | None

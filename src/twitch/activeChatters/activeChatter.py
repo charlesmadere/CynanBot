@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Any
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class ActiveChatter:
     mostRecentChat: datetime
     chatterUserId: str

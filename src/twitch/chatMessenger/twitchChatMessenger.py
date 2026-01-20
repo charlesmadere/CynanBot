@@ -269,6 +269,7 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
             messageMethod = MessageMethod.TWITCH_API,
             msg = text,
             twitchChannel = twitchChannel,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
     def start(self):

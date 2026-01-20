@@ -4,7 +4,7 @@ from ..soundPlayerManager.soundAlert import SoundAlert
 from ..tts.models.ttsEvent import TtsEvent
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class StreamAlert:
     soundAlert: SoundAlert | None
     twitchChannel: str

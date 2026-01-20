@@ -4,7 +4,7 @@ from datetime import datetime
 from .ttsMonsterVoice import TtsMonsterVoice
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TtsMonsterFileReference:
     storeDateTime: datetime
     allVoices: frozenset[TtsMonsterVoice]

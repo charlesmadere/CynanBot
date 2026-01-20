@@ -6,7 +6,7 @@ from .twitchOutcomeColor import TwitchOutcomeColor
 from .twitchOutcomePredictor import TwitchOutcomePredictor
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchOutcome:
     topPredictors: FrozenList[TwitchOutcomePredictor] | None
     channelPoints: int

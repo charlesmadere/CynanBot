@@ -5,6 +5,6 @@ from frozenlist import FrozenList
 from .googleMultiSpeakerMarkupTurn import GoogleMultiSpeakerMarkupTurn
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class GoogleMultiSpeakerMarkup:
     turns: FrozenList[GoogleMultiSpeakerMarkupTurn]

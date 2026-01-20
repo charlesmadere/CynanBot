@@ -5,7 +5,7 @@ from .twitchStreamType import TwitchStreamType
 from ...localModels.twitchUserInterface import TwitchUserInterface
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchLiveUserDetails(TwitchUserInterface):
     isMature: bool
     viewerCount: int

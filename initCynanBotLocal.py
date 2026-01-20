@@ -259,8 +259,6 @@ from src.misc.administratorProviderInterface import AdministratorProviderInterfa
 from src.misc.authRepository import AuthRepository
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from src.misc.cynanBotUserIdsProvider import CynanBotUserIdsProvider
-from src.misc.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInterface
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
@@ -632,15 +630,13 @@ twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJ
     twitchJsonMapper = twitchJsonMapper
 )
 
-twitchApiService: TwitchApiServiceInterface = TwitchApiService(
+twitchApiService: Final[TwitchApiServiceInterface] = TwitchApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchCredentialsProvider = authRepository,
-    twitchJsonMapper = twitchJsonMapper
+    twitchJsonMapper = twitchJsonMapper,
 )
-
-officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = OfficialTwitchAccountUserIdProvider()
 
 userIdsRepository: Final[UserIdsRepositoryInterface] = UserIdsRepository(
     backingDatabase = backingDatabase,
@@ -804,31 +800,6 @@ activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepo
 )
 
 
-#####################################
-## CynanBot initialization section ##
-#####################################
-
-cynanBotUserIdsProvider: CynanBotUserIdsProviderInterface = CynanBotUserIdsProvider()
-
-twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFriendsUserIdRepository()
-
-
-######################################
-## Trollmoji initialization section ##
-######################################
-
-trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface = TrollmojiSettingsRepository(
-    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository
-)
-
-trollmojiHelper: TrollmojiHelperInterface = TrollmojiHelper(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    trollmojiSettingsRepository = trollmojiSettingsRepository,
-    twitchEmotesHelper = twitchEmotesHelper
-)
-
-
 ####################################
 ## Funtoon initialization section ##
 ####################################
@@ -934,6 +905,10 @@ twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStrin
 
 globalTwitchConstants = GlobalTwitchConstants()
 
+officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderInterface] = OfficialTwitchAccountUserIdProvider()
+
+twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = TwitchFriendsUserIdRepository()
+
 twitchChatMessenger: TwitchChatMessengerInterface = TwitchChatMessenger(
     backgroundTaskHelper = backgroundTaskHelper,
     globalTwitchConstants = globalTwitchConstants,
@@ -947,7 +922,6 @@ twitchChatMessenger: TwitchChatMessengerInterface = TwitchChatMessenger(
 )
 
 timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = TimeoutImmuneUserIdsRepository(
-    cynanBotUserIdsProvider = cynanBotUserIdsProvider,
     officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     timber = timber,
     twitchFriendsUserIdProvider = twitchFriendsUserIdRepository,
@@ -1694,6 +1668,22 @@ streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     streamAlertsSettingsRepository = streamAlertsSettingsRepository,
     timber = timber,
+)
+
+
+######################################
+## Trollmoji initialization section ##
+######################################
+
+trollmojiSettingsRepository: Final[TrollmojiSettingsRepositoryInterface] = TrollmojiSettingsRepository(
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
+)
+
+trollmojiHelper: Final[TrollmojiHelperInterface] = TrollmojiHelper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    trollmojiSettingsRepository = trollmojiSettingsRepository,
+    twitchEmotesHelper = twitchEmotesHelper,
 )
 
 

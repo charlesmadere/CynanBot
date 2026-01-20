@@ -1,14 +1,14 @@
 import locale
 from dataclasses import dataclass
+from datetime import datetime
 
 from .absChatLog import AbsChatLog
-from ...misc.simpleDateTime import SimpleDateTime
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class CheerChatLog(AbsChatLog):
+    dateTime: datetime
     bits: int | None
-    dateTime: SimpleDateTime
     cheerUserId: str
     cheerUserLogin: str
     twitchChannel: str
@@ -18,7 +18,7 @@ class CheerChatLog(AbsChatLog):
     def bitsStr(self) -> str:
         return locale.format_string("%d", self.bits, grouping = True)
 
-    def getDateTime(self) -> SimpleDateTime:
+    def getDateTime(self) -> datetime:
         return self.dateTime
 
     def getTwitchChannel(self) -> str:

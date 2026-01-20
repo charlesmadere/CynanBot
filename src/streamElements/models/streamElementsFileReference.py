@@ -4,7 +4,7 @@ from datetime import datetime
 from .streamElementsVoice import StreamElementsVoice
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class StreamElementsFileReference:
     storeDateTime: datetime
     filePath: str

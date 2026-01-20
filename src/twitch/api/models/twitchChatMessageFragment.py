@@ -6,7 +6,7 @@ from .twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention
 from .twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchChatMessageFragment:
     text: str
     cheermote: TwitchChatMessageFragmentCheermote | None

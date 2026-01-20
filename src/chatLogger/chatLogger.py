@@ -2,6 +2,7 @@ import asyncio
 import queue
 import traceback
 from collections import defaultdict
+from datetime import datetime
 from queue import SimpleQueue
 from typing import Final
 
@@ -18,7 +19,6 @@ from .models.raidChatLog import RaidChatLog
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from ..misc.simpleDateTime import SimpleDateTime
 from ..timber.timberInterface import TimberInterface
 
 
@@ -29,7 +29,7 @@ class ChatLogger(ChatLoggerInterface):
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        sleepTimeSeconds: float = 8,
+        sleepTimeSeconds: float = 15,
         logRootDirectory: str = '../logs/chatLogger',
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
@@ -56,7 +56,7 @@ class ChatLogger(ChatLoggerInterface):
         if not isinstance(chatLog, AbsChatLog):
             raise TypeError(f'chatLog argument is malformed: \"{chatLog}\"')
 
-        logStatement = f'{chatLog.getDateTime().getDateAndTimeStr(True)} —'
+        logStatement = f'{chatLog.getDateAndTimeStr()} —'
 
         if isinstance(chatLog, CheerChatLog):
             logStatement = f'{logStatement} {chatLog.cheerUserLogin} ({chatLog.cheerUserId}) cheered {chatLog.bitsStr} bit(s)'
@@ -68,7 +68,7 @@ class ChatLogger(ChatLoggerInterface):
             logStatement = f'{logStatement} {chatLog.raidUserLogin} ({chatLog.raidUserId}) raided with {chatLog.viewersStr} viewer(s)'
 
         else:
-            raise RuntimeError(f'AbsChatLog is of an unknown type ({chatLog=})')
+            raise RuntimeError(f'Encountered unknown AbsChatLog type ({chatLog=})')
 
         return f'{logStatement.strip()}\n'
 
@@ -93,13 +93,11 @@ class ChatLogger(ChatLoggerInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        dateTime = SimpleDateTime(
-            timeZone = self.__timeZoneRepository.getDefault(),
-        )
+        dateTime = datetime.now(self.__timeZoneRepository.getDefault())
 
         self.__chatLogQueue.put(CheerChatLog(
-            bits = bits,
             dateTime = dateTime,
+            bits = bits,
             cheerUserId = cheerUserId,
             cheerUserLogin = cheerUserLogin,
             twitchChannel = twitchChannel,
@@ -130,13 +128,11 @@ class ChatLogger(ChatLoggerInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        dateTime = SimpleDateTime(
-            timeZone = self.__timeZoneRepository.getDefault(),
-        )
+        dateTime = datetime.now(self.__timeZoneRepository.getDefault())
 
         self.__chatLogQueue.put(MessageChatLog(
-            bits = bits,
             dateTime = dateTime,
+            bits = bits,
             chatterUserId = chatterUserId,
             chatterUserLogin = chatterUserLogin,
             message = message,
@@ -165,13 +161,11 @@ class ChatLogger(ChatLoggerInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        dateTime = SimpleDateTime(
-            timeZone = self.__timeZoneRepository.getDefault(),
-        )
+        dateTime = datetime.now(self.__timeZoneRepository.getDefault())
 
         self.__chatLogQueue.put(RaidChatLog(
-            viewers = viewers,
             dateTime = dateTime,
+            viewers = viewers,
             raidUserId = raidUserId,
             raidUserLogin = raidUserLogin,
             twitchChannel = twitchChannel,
@@ -196,7 +190,7 @@ class ChatLogger(ChatLoggerInterface):
                     chatLog = self.__chatLogQueue.get_nowait()
                     chatLogs.append(chatLog)
             except queue.Empty as e:
-                self.__timber.log('ChatLogger', f'Encountered queue.Empty when building up chatLogs list (queue size: {self.__chatLogQueue.qsize()}) (chatLogs size: {len(chatLogs)}): {e}', e, traceback.format_exc())
+                self.__timber.log('ChatLogger', f'Encountered queue.Empty when building up chatLogs list (queue size: {self.__chatLogQueue.qsize()}) (chatLogs size: {len(chatLogs)})', e, traceback.format_exc())
 
             chatLogs.freeze()
             await self.__writeToLogFiles(chatLogs)
@@ -213,9 +207,8 @@ class ChatLogger(ChatLoggerInterface):
 
         for chatLog in chatLogs:
             twitchChannel = chatLog.getTwitchChannel().lower()
-            dateTime = chatLog.getDateTime()
-            chatLogDirectory = f'{self.__logRootDirectory}/{twitchChannel}/{dateTime.getYearStr()}/{dateTime.getMonthStr()}'
-            chatLogFile = f'{chatLogDirectory}/{dateTime.getDayStr()}.log'
+            chatLogDirectory = f'{self.__logRootDirectory}/{twitchChannel}/{chatLog.getYearStr()}/{chatLog.getMonthStr()}'
+            chatLogFile = f'{chatLogDirectory}/{chatLog.getDayStr()}.log'
             structure[chatLogDirectory][chatLogFile].append(chatLog)
 
         for chatLogDirectory, chatLogFileToChatLogsDict in structure.items():

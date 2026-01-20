@@ -22,7 +22,7 @@ from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class Entry:
         fetchTime: datetime
         subscriptionStatus: TwitchSubscriptionStatus

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from ...tts.models.ttsProvider import TtsProvider
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TtsBoosterPack:
     isEnabled: bool
     cheerAmount: int

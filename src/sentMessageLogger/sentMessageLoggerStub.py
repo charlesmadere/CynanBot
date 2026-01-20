@@ -1,12 +1,11 @@
-from abc import ABC, abstractmethod
 from typing import Collection
 
 from .messageMethod import MessageMethod
+from .sentMessageLoggerInterface import SentMessageLoggerInterface
 
 
-class SentMessageLoggerInterface(ABC):
+class SentMessageLoggerStub(SentMessageLoggerInterface):
 
-    @abstractmethod
     def log(
         self,
         successfullySent: bool,
@@ -17,8 +16,9 @@ class SentMessageLoggerInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
     ):
+        # this method is intentionally empty
         pass
 
-    @abstractmethod
     def start(self):
+        # this method is intentionally empty
         pass

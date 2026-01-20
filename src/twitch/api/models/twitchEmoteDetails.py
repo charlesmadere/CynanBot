@@ -9,7 +9,7 @@ from .twitchSubscriberTier import TwitchSubscriberTier
 from .twitchThemeMode import TwitchThemeMode
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchEmoteDetails:
     images: frozendict[TwitchEmoteImageScale, str]
     formats: frozenset[TwitchEmoteImageFormat]

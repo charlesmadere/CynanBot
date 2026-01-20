@@ -13,7 +13,7 @@ from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveRes
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class BananaTimeoutEvent(AbsTimeoutEvent):
     asplodieStats: AsplodieStats
     originatingAction: BananaTimeoutAction

@@ -7,7 +7,7 @@ from .twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from .twitchWebsocketTransport import TwitchWebsocketTransport
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchWebsocketSubscription:
     createdAt: datetime
     cost: int

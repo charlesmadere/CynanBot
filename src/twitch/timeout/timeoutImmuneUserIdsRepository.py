@@ -6,7 +6,6 @@ from ..friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserId
 from ..officialAccounts.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...misc import utils as utils
-from ...misc.cynanBotUserIdsProviderInterface import CynanBotUserIdsProviderInterface
 from ...storage.linesReaderInterface import LinesReaderInterface
 from ...timber.timberInterface import TimberInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
@@ -16,7 +15,6 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
 
     def __init__(
         self,
-        cynanBotUserIdsProvider: CynanBotUserIdsProviderInterface,
         officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface,
         timber: TimberInterface,
         twitchFriendsUserIdProvider: TwitchFriendsUserIdRepositoryInterface,
@@ -24,9 +22,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         userIdsRepository: UserIdsRepositoryInterface,
         otherImmuneUserIdsLinesReader: LinesReaderInterface | None = None,
     ):
-        if not isinstance(cynanBotUserIdsProvider, CynanBotUserIdsProviderInterface):
-            raise TypeError(f'cynanBotUserIdsProvider argument is malformed: \"{cynanBotUserIdsProvider}\"')
-        elif not isinstance(officialTwitchAccountUserIdProvider, OfficialTwitchAccountUserIdProviderInterface):
+        if not isinstance(officialTwitchAccountUserIdProvider, OfficialTwitchAccountUserIdProviderInterface):
             raise TypeError(f'officialTwitchAccountUserIdProvider argument is malformed: \"{officialTwitchAccountUserIdProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -39,7 +35,6 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         elif otherImmuneUserIdsLinesReader is not None and not isinstance(otherImmuneUserIdsLinesReader, LinesReaderInterface):
             raise TypeError(f'immuneUserIdsLinesReader argument is malformed: \"{otherImmuneUserIdsLinesReader}\"')
 
-        self.__cynanBotUserIdsProvider: Final[CynanBotUserIdsProviderInterface] = cynanBotUserIdsProvider
         self.__officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderInterface] = officialTwitchAccountUserIdProvider
         self.__timber: Final[TimberInterface] = timber
         self.__twitchFriendsUserIdProvider: Final[TwitchFriendsUserIdRepositoryInterface] = twitchFriendsUserIdProvider
@@ -117,11 +112,11 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         if utils.isValidStr(boatWaifuUserId):
             newUserIds.add(boatWaifuUserId)
 
-        cynanBotUserId = await self.__cynanBotUserIdsProvider.getCynanBotUserId()
+        cynanBotUserId = await self.__twitchFriendsUserIdProvider.getCynanBotUserId()
         if utils.isValidStr(cynanBotUserId):
             newUserIds.add(cynanBotUserId)
 
-        cynanBotTtsUserId = await self.__cynanBotUserIdsProvider.getCynanBotTtsUserId()
+        cynanBotTtsUserId = await self.__twitchFriendsUserIdProvider.getCynanBotTtsUserId()
         if utils.isValidStr(cynanBotTtsUserId):
             newUserIds.add(cynanBotTtsUserId)
 

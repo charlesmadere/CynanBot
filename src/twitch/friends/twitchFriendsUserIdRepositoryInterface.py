@@ -1,9 +1,7 @@
 from abc import ABC, abstractmethod
 
-from ...funtoon.funtoonUserIdProviderInterface import FuntoonUserIdProviderInterface
 
-
-class TwitchFriendsUserIdRepositoryInterface(FuntoonUserIdProviderInterface, ABC):
+class TwitchFriendsUserIdRepositoryInterface(ABC):
 
     @abstractmethod
     async def getAcacUserId(self) -> str | None:
@@ -42,11 +40,23 @@ class TwitchFriendsUserIdRepositoryInterface(FuntoonUserIdProviderInterface, ABC
         pass
 
     @abstractmethod
+    async def getCynanBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getCynanBotTtsUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getDylanStewUserId(self) -> str | None:
         pass
 
     @abstractmethod
     async def getEddieUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getFuntoonUserId(self) -> str | None:
         pass
 
     @abstractmethod

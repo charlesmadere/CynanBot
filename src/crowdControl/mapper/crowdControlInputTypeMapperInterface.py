@@ -9,6 +9,6 @@ class CrowdControlInputTypeMapperInterface(ABC):
     @abstractmethod
     async def toButton(
         self,
-        inputType: CrowdControlInputType | None
+        inputType: CrowdControlInputType | None,
     ) -> CrowdControlButton | None:
         pass

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from ...localModels.twitchUserInterface import TwitchUserInterface
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchChatter(TwitchUserInterface):
     userId: str
     userLogin: str

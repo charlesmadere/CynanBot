@@ -4,7 +4,7 @@ from .questionAnswerTriviaConditions import QuestionAnswerTriviaConditions
 from .questions.triviaSource import TriviaSource
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TriviaFetchOptions:
     twitchChannel: str
     twitchChannelId: str

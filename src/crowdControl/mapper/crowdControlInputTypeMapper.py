@@ -7,7 +7,7 @@ class CrowdControlInputTypeMapper(CrowdControlInputTypeMapperInterface):
 
     async def toButton(
         self,
-        inputType: CrowdControlInputType | None
+        inputType: CrowdControlInputType | None,
     ) -> CrowdControlButton | None:
         if inputType is None:
             return None

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class DiceBluetoothInfo:
     diceAddress: str
     diceName: str

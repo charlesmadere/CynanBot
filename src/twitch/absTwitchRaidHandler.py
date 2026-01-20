@@ -7,7 +7,7 @@ from ..users.userInterface import UserInterface
 
 class AbsTwitchRaidHandler(ABC):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class RaidData:
         viewers: int
         raidUserId: str

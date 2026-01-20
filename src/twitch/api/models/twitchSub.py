@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from .twitchSubscriberTier import TwitchSubscriberTier
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchSub:
     isPrime: bool
     durationMonths: int

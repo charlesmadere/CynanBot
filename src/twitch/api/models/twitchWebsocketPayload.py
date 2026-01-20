@@ -5,7 +5,7 @@ from .twitchWebsocketSession import TwitchWebsocketSession
 from .twitchWebsocketSubscription import TwitchWebsocketSubscription
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchWebsocketPayload:
     event: TwitchWebsocketEvent | None
     session: TwitchWebsocketSession | None

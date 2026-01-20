@@ -18,7 +18,7 @@ from ...twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtils
 
 class DetermineBananaTargetUseCase:
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class ResultData:
         isReverse: bool
         diceRoll: TimeoutDiceRoll | None

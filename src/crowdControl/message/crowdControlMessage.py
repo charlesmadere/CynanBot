@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from ..actions.crowdControlAction import CrowdControlAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class CrowdControlMessage:
     originatingAction: CrowdControlAction
     messageId: str

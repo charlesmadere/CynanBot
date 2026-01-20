@@ -13,27 +13,27 @@ class QueuedTriviaGameStoreInterface(ABC):
     async def addSuperGames(
         self,
         isSuperTriviaGameCurrentlyInProgress: bool,
-        action: StartNewSuperTriviaGameAction
+        action: StartNewSuperTriviaGameAction,
     ) -> AddQueuedGamesResult:
         pass
 
     @abstractmethod
     async def clearQueuedSuperGames(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> ClearQueuedGamesResult:
         pass
 
     @abstractmethod
     async def getQueuedSuperGamesSize(
         self,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> int:
         pass
 
     @abstractmethod
     async def popQueuedSuperGames(
         self,
-        activeChannelIds: set[str]
+        activeChannelIds: set[str],
     ) -> FrozenList[StartNewSuperTriviaGameAction]:
         pass

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from .anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class PreparedAnivCopyMessageTimeoutScore:
     score: AnivCopyMessageTimeoutScore
     chatterUserName: str

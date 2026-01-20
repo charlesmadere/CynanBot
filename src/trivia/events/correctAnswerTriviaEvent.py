@@ -1,4 +1,5 @@
 import locale
+from typing import Final
 
 from .absTriviaEvent import AbsTriviaEvent
 from .triviaEventType import TriviaEventType
@@ -28,11 +29,11 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
         twitchChatMessageId: str,
         userId: str,
         userName: str,
-        triviaScoreResult: TriviaScoreResult
+        triviaScoreResult: TriviaScoreResult,
     ):
         super().__init__(
             actionId = actionId,
-            eventId = eventId
+            eventId = eventId,
         )
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
@@ -66,20 +67,20 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
         elif not isinstance(triviaScoreResult, TriviaScoreResult):
             raise TypeError(f'triviaScoreResult argument is malformed: \"{triviaScoreResult}\"')
 
-        self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion
-        self.__cutenessResult: IncrementedCutenessResult = cutenessResult
-        self.__pointsForWinning: int = pointsForWinning
-        self.__specialTriviaStatus: SpecialTriviaStatus | None = specialTriviaStatus
-        self.__answer: str = answer
-        self.__celebratoryTwitchEmote: str | None = celebratoryTwitchEmote
-        self.__emote: str = emote
-        self.__gameId: str = gameId
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
-        self.__twitchChatMessageId: str = twitchChatMessageId
-        self.__userId: str = userId
-        self.__userName: str = userName
-        self.__triviaScoreResult: TriviaScoreResult = triviaScoreResult
+        self.__triviaQuestion: Final[AbsTriviaQuestion] = triviaQuestion
+        self.__cutenessResult: Final[IncrementedCutenessResult] = cutenessResult
+        self.__pointsForWinning: Final[int] = pointsForWinning
+        self.__specialTriviaStatus: Final[SpecialTriviaStatus | None] = specialTriviaStatus
+        self.__answer: Final[str] = answer
+        self.__celebratoryTwitchEmote: Final[str | None] = celebratoryTwitchEmote
+        self.__emote: Final[str] = emote
+        self.__gameId: Final[str] = gameId
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
+        self.__twitchChatMessageId: Final[str] = twitchChatMessageId
+        self.__userId: Final[str] = userId
+        self.__userName: Final[str] = userName
+        self.__triviaScoreResult: Final[TriviaScoreResult] = triviaScoreResult
 
     @property
     def answer(self) -> str:

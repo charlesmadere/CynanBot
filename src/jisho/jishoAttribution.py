@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class JishoAttribution:
     dbpedia: bool | None = None
     jmdict: bool | None = None

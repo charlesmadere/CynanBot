@@ -6,7 +6,7 @@ from .googleTranslateTextGlossaryConfig import GoogleTranslateTextGlossaryConfig
 from .googleTranslateTextTransliterationConfig import GoogleTranslateTextTransliterationConfig
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class GoogleTranslationRequest:
     contents: FrozenList[str]
     glossaryConfig: GoogleTranslateTextGlossaryConfig | None

@@ -9,7 +9,7 @@ from ..users.userInterface import UserInterface
 
 class AbsTwitchHypeTrainHandler(ABC):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class HypeTrainData:
         isSharedTrain: bool
         level: int

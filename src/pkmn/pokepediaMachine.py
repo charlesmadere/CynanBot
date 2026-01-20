@@ -4,7 +4,7 @@ from .pokepediaGeneration import PokepediaGeneration
 from .pokepediaMachineType import PokepediaMachineType
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class PokepediaMachine:
     machineId: int
     machineNumber: int

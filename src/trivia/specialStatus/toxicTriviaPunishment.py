@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from ...cuteness.incrementedCutenessResult import IncrementedCutenessResult
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class ToxicTriviaPunishment:
     cutenessResult: IncrementedCutenessResult
     numberOfPunishments: int

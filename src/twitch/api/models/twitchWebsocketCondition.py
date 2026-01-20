@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from ....misc import utils as utils
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TwitchWebsocketCondition:
     broadcasterUserId: str | None = None
     broadcasterUserLogin: str | None = None
