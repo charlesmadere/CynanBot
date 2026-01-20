@@ -30,6 +30,7 @@ from src.google.jwtBuilder.googleJwtBuilder import GoogleJwtBuilder
 from src.google.jwtBuilder.googleJwtBuilderInterface import GoogleJwtBuilderInterface
 from src.google.settings.googleSettingsRepository import GoogleSettingsRepository
 from src.google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
+from src.language.languageEntry import LanguageEntry
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
@@ -198,10 +199,10 @@ async def main():
 
     # print(f'translation result: {translationResult}')
 
-    message = f'Welcome in everyone from Eddie\'s stream!! Thanks for the raid.'
+    message = f'Welcome in everyone from Eddie\'s stream! Thanks for the raid. ありがとうございます！'
 
     fileReference = await googleTtsHelper.generateTts(
-        voicePreset = None,
+        voicePreset = await googleTtsVoicesHelper.getVoiceForLanguage(LanguageEntry.SWEDISH),
         allowMultiSpeaker = True,
         donationPrefix = None,
         message = message,
