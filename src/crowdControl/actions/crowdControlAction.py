@@ -43,6 +43,7 @@ class CrowdControlAction(ABC):
 
         self.__handleAttempts: int = 0
 
+    @property
     def actionId(self) -> str:
         return self.__actionId
 
