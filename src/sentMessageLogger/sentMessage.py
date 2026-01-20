@@ -5,7 +5,7 @@ from typing import Collection
 from .messageMethod import MessageMethod
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class SentMessage:
     successfullySent: bool
     exceptions: Collection[Exception] | None

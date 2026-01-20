@@ -4,7 +4,7 @@ from datetime import datetime
 from .actions.recurringActionType import RecurringActionType
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class MostRecentRecurringAction:
     dateTime: datetime
     actionType: RecurringActionType

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from .redemptionCount import RedemptionCount
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class PreparedRedemptionCount:
     redemptionCount: RedemptionCount
     chatterUserName: str
