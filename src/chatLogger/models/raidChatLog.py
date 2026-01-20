@@ -5,7 +5,7 @@ from datetime import datetime
 from .absChatLog import AbsChatLog
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class RaidChatLog(AbsChatLog):
     dateTime: datetime
     viewers: int

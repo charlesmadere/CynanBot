@@ -4,6 +4,6 @@ from .absPixelsDiceEvent import AbsPixelsDiceEvent
 from ..diceBluetoothInfo import DiceBluetoothInfo
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class PixelsDiceClientDisconnectedEvent(AbsPixelsDiceEvent):
     previouslyConnectedDice: DiceBluetoothInfo | None
