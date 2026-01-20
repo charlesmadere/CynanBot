@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absTriviaAction import AbsTriviaAction
 from .triviaActionType import TriviaActionType
 from ..triviaFetchOptions import TriviaFetchOptions
@@ -23,7 +25,7 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
         actionId: str,
         twitchChannel: str,
         twitchChannelId: str,
-        triviaFetchOptions: TriviaFetchOptions
+        triviaFetchOptions: TriviaFetchOptions,
     ):
         super().__init__(actionId = actionId)
 
@@ -73,21 +75,21 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
             raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
         self.__isQueueActionConsumed: bool = isQueueActionConsumed
-        self.__isShinyTriviaEnabled: bool = isShinyTriviaEnabled
-        self.__isToxicTriviaEnabled: bool = isToxicTriviaEnabled
-        self.__numberOfGames: int = numberOfGames
-        self.__perUserAttempts: int = perUserAttempts
-        self.__pointsForWinning: int = pointsForWinning
-        self.__regularTriviaPointsForWinning: int = regularTriviaPointsForWinning
-        self.__secondsToLive: int = secondsToLive
-        self.__shinyMultiplier: int = shinyMultiplier
-        self.__toxicMultiplier: int = toxicMultiplier
-        self.__toxicTriviaPunishmentMultiplier: int = toxicTriviaPunishmentMultiplier
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
-        self.__triviaFetchOptions: TriviaFetchOptions = triviaFetchOptions
+        self.__isShinyTriviaEnabled: Final[bool] = isShinyTriviaEnabled
+        self.__isToxicTriviaEnabled: Final[bool] = isToxicTriviaEnabled
+        self.__numberOfGames: Final[int] = numberOfGames
+        self.__perUserAttempts: Final[int] = perUserAttempts
+        self.__pointsForWinning: Final[int] = pointsForWinning
+        self.__regularTriviaPointsForWinning: Final[int] = regularTriviaPointsForWinning
+        self.__secondsToLive: Final[int] = secondsToLive
+        self.__shinyMultiplier: Final[int] = shinyMultiplier
+        self.__toxicMultiplier: Final[int] = toxicMultiplier
+        self.__toxicTriviaPunishmentMultiplier: Final[int] = toxicTriviaPunishmentMultiplier
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
+        self.__triviaFetchOptions: Final[TriviaFetchOptions] = triviaFetchOptions
 
-        self.__creationTime = SimpleDateTime()
+        self.__creationTime: Final[SimpleDateTime] = SimpleDateTime()
 
     def consumeQueueAction(self):
         self.__isQueueActionConsumed = True

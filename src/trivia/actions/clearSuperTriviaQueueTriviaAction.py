@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absTriviaAction import AbsTriviaAction
 from .triviaActionType import TriviaActionType
 from ...misc import utils as utils
@@ -10,7 +12,7 @@ class ClearSuperTriviaQueueTriviaAction(AbsTriviaAction):
         actionId: str,
         twitchChannel: str,
         twitchChannelId: str,
-        twitchChatMessageId: str
+        twitchChatMessageId: str,
     ):
         super().__init__(actionId = actionId)
 
@@ -21,9 +23,9 @@ class ClearSuperTriviaQueueTriviaAction(AbsTriviaAction):
         elif not utils.isValidStr(twitchChatMessageId):
             raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
 
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
-        self.__twitchChatMessageId: str = twitchChatMessageId
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
+        self.__twitchChatMessageId: Final[str] = twitchChatMessageId
 
     @property
     def triviaActionType(self) -> TriviaActionType:

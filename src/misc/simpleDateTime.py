@@ -9,7 +9,7 @@ class SimpleDateTime:
     def __init__(
         self,
         now: datetime | None = None,
-        timeZone: tzinfo = timezone.utc
+        timeZone: tzinfo = timezone.utc,
     ):
         if now is not None and not isinstance(now, datetime):
             raise TypeError(f'now argument is malformed: \"{now}\"')

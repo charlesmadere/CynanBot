@@ -682,6 +682,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.START_NEW_SUPER_GAME}: \"{action.triviaActionType}\"')
 
         now = datetime.now(self.__timeZoneRepository.getDefault())
+
         superTriviaFirstQuestionDelay = timedelta(
             seconds = await self.__triviaSettingsRepository.getSuperTriviaFirstQuestionDelaySeconds(),
         )
