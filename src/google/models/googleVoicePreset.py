@@ -60,6 +60,11 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
     ENGLISH_GREAT_BRITAIN_CHIRP_D = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP_F = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP_O = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_ACHERNAR = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_AOEDE = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_AUTONOE = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_CALLIRRHOE = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_DESPINA = auto()
     ENGLISH_INDIA_STANDARD_A = auto()
     ENGLISH_INDIA_STANDARD_B = auto()
     ENGLISH_INDIA_STANDARD_C = auto()
@@ -153,6 +158,11 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
     JAPANESE_JAPAN_STANDARD_B = auto()
     JAPANESE_JAPAN_STANDARD_C = auto()
     JAPANESE_JAPAN_STANDARD_D = auto()
+    JAPANESE_JAPAN_CHIRP3_ACHERNAR = auto()
+    JAPANESE_JAPAN_CHIRP3_AOEDE = auto()
+    JAPANESE_JAPAN_CHIRP3_AUTONOE = auto()
+    JAPANESE_JAPAN_CHIRP3_CALLIRRHOE = auto()
+    JAPANESE_JAPAN_CHIRP3_DESPINA = auto()
     KANNADA_INDIA_STANDARD_A = auto()
     KANNADA_INDIA_STANDARD_B = auto()
     KANNADA_INDIA_STANDARD_C = auto()
@@ -236,6 +246,11 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
     SWEDISH_SWEDEN_STANDARD_E = auto()
     SWEDISH_SWEDEN_STANDARD_F = auto()
     SWEDISH_SWEDEN_STANDARD_G = auto()
+    SWEDISH_SWEDEN_CHIRP3_ACHERNAR = auto()
+    SWEDISH_SWEDEN_CHIRP3_AOEDE = auto()
+    SWEDISH_SWEDEN_CHIRP3_AUTONOE = auto()
+    SWEDISH_SWEDEN_CHIRP3_CALLIRRHOE = auto()
+    SWEDISH_SWEDEN_CHIRP3_DESPINA = auto()
     TAMIL_INDIA_STANDARD_A = auto()
     TAMIL_INDIA_STANDARD_B = auto()
     TAMIL_INDIA_STANDARD_C = auto()
@@ -314,6 +329,11 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_D: return 'en-GB-Chirp-HD-D'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_F: return 'en-GB-Chirp-HD-F'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_O: return 'en-GB-Chirp-HD-O'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ACHERNAR: return 'en-GB-Chirp3-HD-Achernar'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_AOEDE: return 'en-GB-Chirp3-HD-Aoede'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_AUTONOE: return 'en-GB-Chirp3-HD-Autonoe'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_CALLIRRHOE: return 'en-GB-Chirp3-HD-Callirrhoe'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_DESPINA: return 'en-GB-Chirp3-HD-Despina'
             case GoogleVoicePreset.ENGLISH_INDIA_STANDARD_A: return 'en-IN-Standard-A'
             case GoogleVoicePreset.ENGLISH_INDIA_STANDARD_B: return 'en-IN-Standard-B'
             case GoogleVoicePreset.ENGLISH_INDIA_STANDARD_C: return 'en-IN-Standard-C'
@@ -407,6 +427,11 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
             case GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_B: return 'ja-JP-Standard-B'
             case GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_C: return 'ja-JP-Standard-C'
             case GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_D: return 'ja-JP-Standard-D'
+            case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_ACHERNAR: return 'ja-JP-Chirp3-HD-Achernar'
+            case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AOEDE: return 'ja-JA-Chirp3-HD-Aoede'
+            case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AUTONOE: return 'ja-JP-Chirp3-HD-Autonoe'
+            case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_CALLIRRHOE: return 'ja-JP-Chirp3-HD-Callirrhoe'
+            case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_DESPINA: return 'ja-JP-Chirp3-HD-Despina'
             case GoogleVoicePreset.KANNADA_INDIA_STANDARD_A: return 'kn-IN-Standard-A'
             case GoogleVoicePreset.KANNADA_INDIA_STANDARD_B: return 'kn-IN-Standard-B'
             case GoogleVoicePreset.KANNADA_INDIA_STANDARD_C: return 'kn-IN-Standard-C'
@@ -490,6 +515,11 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_E: return 'sv-SE-Standard-E'
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_F: return 'sv-SE-Standard-F'
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_G: return 'sv-SE-Standard-G'
+            case GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_ACHERNAR: return 'sv-SE-Chirp3-HD-Achernar'
+            case GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_AOEDE: return 'sv-SE-Chirp3-HD-Aoede'
+            case GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_AUTONOE: return 'sv-SE-Chirp3-HD-Autonoe'
+            case GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_CALLIRRHOE: return 'sv-SE-Chirp3-HD-Callirrhoe'
+            case GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_DESPINA: return 'sv-SE-Chirp3-HD-Despina'
             case GoogleVoicePreset.TAMIL_INDIA_STANDARD_A: return 'ta-IN-Standard-A'
             case GoogleVoicePreset.TAMIL_INDIA_STANDARD_B: return 'ta-IN-Standard-B'
             case GoogleVoicePreset.TAMIL_INDIA_STANDARD_C: return 'ta-IN-Standard-C'

@@ -142,6 +142,11 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_D,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_F,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_O,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_AOEDE,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_AUTONOE,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_CALLIRRHOE,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_DESPINA,
                 }
 
             case LanguageEntry.FILIPINO:
@@ -268,6 +273,11 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
                     GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_B,
                     GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_C,
                     GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_D,
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AOEDE,
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AUTONOE,
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_CALLIRRHOE,
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_DESPINA,
                 }
 
             case LanguageEntry.KANNADA:
@@ -419,6 +429,11 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
                     GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_E,
                     GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_F,
                     GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_G,
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_AOEDE,
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_AUTONOE,
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_CALLIRRHOE,
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_DESPINA,
                 }
 
             case LanguageEntry.TAMIL:
