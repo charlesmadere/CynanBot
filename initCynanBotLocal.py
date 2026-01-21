@@ -54,6 +54,8 @@ from src.chatterInventory.configuration.absChatterItemEventHandler import AbsCha
 from src.chatterInventory.configuration.chatterItemEventHandler import ChatterItemEventHandler
 from src.chatterInventory.helpers.chatterInventoryHelper import ChatterInventoryHelper
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
+from src.chatterInventory.helpers.gashaponRewardHelper import GashaponRewardHelper
+from src.chatterInventory.helpers.gashaponRewardHelperInterface import GashaponRewardHelperInterface
 from src.chatterInventory.helpers.useChatterItemHelper import UseChatterItemHelper
 from src.chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from src.chatterInventory.idGenerator.chatterInventoryIdGenerator import ChatterInventoryIdGenerator
@@ -65,6 +67,9 @@ from src.chatterInventory.mappers.chatterInventoryMapperInterface import Chatter
 from src.chatterInventory.mappers.itemRequestMessageParser import ItemRequestMessageParser
 from src.chatterInventory.repositories.chatterInventoryRepository import ChatterInventoryRepository
 from src.chatterInventory.repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
+from src.chatterInventory.repositories.gashaponRewardHistoryRepository import GashaponRewardHistoryRepository
+from src.chatterInventory.repositories.gashaponRewardHistoryRepositoryInterface import \
+    GashaponRewardHistoryRepositoryInterface
 from src.chatterInventory.settings.chatterInventorySettings import ChatterInventorySettings
 from src.chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from src.chatterInventory.useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
@@ -1946,13 +1951,31 @@ chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface = Chatte
     userIdsRepository = userIdsRepository,
 )
 
-chatterItemEventHandler: AbsChatterItemEventHandler = ChatterItemEventHandler(
+chatterItemEventHandler: Final[AbsChatterItemEventHandler] = ChatterItemEventHandler(
     backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
+)
+
+gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface] = GashaponRewardHistoryRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+gashaponRewardHelper: Final[GashaponRewardHelperInterface] = GashaponRewardHelper(
+    chatterInventoryRepository = chatterInventoryRepository,
+    chatterInventorySettings = chatterInventorySettings,
+    gashaponRewardHistoryRepository = gashaponRewardHistoryRepository,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    trollmojiHelper = trollmojiHelper,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchSubscriptionsRepository = twitchSubscriptionsRepository,
+    twitchTokensRepository = twitchTokensRepository,
 )
 
 itemRequestMessageParser = ItemRequestMessageParser(
@@ -2542,6 +2565,7 @@ cynanBot: Final[CynanBot] = CynanBot(
     eccoHelper = None,
     funtoonHelper = funtoonHelper,
     funtoonTokensRepository = funtoonTokensRepository,
+    gashaponRewardHelper = gashaponRewardHelper,
     generalSettingsRepository = generalSettingsRepository,
     googleSettingsRepository = googleSettingsRepository,
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,

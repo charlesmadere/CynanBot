@@ -2183,6 +2183,7 @@ cynanBot: Final[CynanBot] = CynanBot(
     eccoHelper = eccoHelper,
     funtoonHelper = funtoonHelper,
     funtoonTokensRepository = funtoonTokensRepository,
+    gashaponRewardHelper = None,
     generalSettingsRepository = generalSettingsRepository,
     googleSettingsRepository = None,
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
