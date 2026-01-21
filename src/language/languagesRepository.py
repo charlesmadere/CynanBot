@@ -25,7 +25,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
 
     async def getAllWotdApiCodes(
         self,
-        delimiter: str = ', '
+        delimiter: str = ', ',
     ) -> str:
         if not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
@@ -42,7 +42,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
     async def getExampleLanguageEntry(
         self,
         hasIso6391Code: bool | None = None,
-        hasWotdApiCode: bool | None = None
+        hasWotdApiCode: bool | None = None,
     ) -> LanguageEntry:
         if hasIso6391Code is not None and not utils.isValidBool(hasIso6391Code):
             raise TypeError(f'hasIso6391Code argument is malformed: \"{hasIso6391Code}\"')
@@ -51,7 +51,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
 
         validEntries = await self.__getLanguageEntries(
             hasIso6391Code = hasIso6391Code,
-            hasWotdApiCode = hasWotdApiCode
+            hasWotdApiCode = hasWotdApiCode,
         )
 
         return random.choice(validEntries)
@@ -59,7 +59,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
     async def __getLanguageEntries(
         self,
         hasIso6391Code: bool | None = None,
-        hasWotdApiCode: bool | None = None
+        hasWotdApiCode: bool | None = None,
     ) -> list[LanguageEntry]:
         if hasIso6391Code is not None and not utils.isValidBool(hasIso6391Code):
             raise TypeError(f'hasIso6391Code argument is malformed: \"{hasIso6391Code}\"')
@@ -93,7 +93,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
         self,
         command: str,
         hasIso6391Code: bool | None = None,
-        hasWotdApiCode: bool | None = None
+        hasWotdApiCode: bool | None = None,
     ) -> LanguageEntry | None:
         if not utils.isValidStr(command):
             raise TypeError(f'command argument is malformed: \"{command}\"')
@@ -104,7 +104,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
 
         validEntries = await self.__getLanguageEntries(
             hasIso6391Code = hasIso6391Code,
-            hasWotdApiCode = hasWotdApiCode
+            hasWotdApiCode = hasWotdApiCode,
         )
 
         command = command.casefold()
@@ -118,7 +118,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
 
     async def getLanguageForIso6391Code(
         self,
-        iso6391Code: str
+        iso6391Code: str,
     ) -> LanguageEntry | None:
         if not utils.isValidStr(iso6391Code):
             raise TypeError(f'iso6391Code argument is malformed: \"{iso6391Code}\"')
@@ -131,13 +131,13 @@ class LanguagesRepository(LanguagesRepositoryInterface):
 
     async def getLanguageForWotdApiCode(
         self,
-        wotdApiCode: str
+        wotdApiCode: str,
     ) -> LanguageEntry | None:
         if not utils.isValidStr(wotdApiCode):
             raise TypeError(f'wotdApiCode argument is malformed: \"{wotdApiCode}\"')
 
         validEntries = await self.__getLanguageEntries(
-            hasWotdApiCode = True
+            hasWotdApiCode = True,
         )
 
         wotdApiCode = wotdApiCode.casefold()
@@ -152,7 +152,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
         self,
         command: str,
         hasIso6391Code: bool | None = None,
-        hasWotdApiCode: bool | None = None
+        hasWotdApiCode: bool | None = None,
     ) -> LanguageEntry:
         if not utils.isValidStr(command):
             raise TypeError(f'command argument is malformed: \"{command}\"')
@@ -164,32 +164,32 @@ class LanguagesRepository(LanguagesRepositoryInterface):
         languageEntry = await self.getLanguageForCommand(
             command = command,
             hasIso6391Code = hasIso6391Code,
-            hasWotdApiCode = hasWotdApiCode
+            hasWotdApiCode = hasWotdApiCode,
         )
 
         if languageEntry is None:
             raise NoLanguageEntryFoundForCommandException(
                 message = f'Unable to find LanguageEntry for command ({command=})',
-                command = command
+                command = command,
             )
 
         return languageEntry
 
     async def requireLanguageForWotdApiCode(
         self,
-        wotdApiCode: str
+        wotdApiCode: str,
     ) -> LanguageEntry:
         if not utils.isValidStr(wotdApiCode):
             raise TypeError(f'wotdApiCode argument is malformed: \"{wotdApiCode}\"')
 
         languageEntry = await self.getLanguageForWotdApiCode(
-            wotdApiCode = wotdApiCode
+            wotdApiCode = wotdApiCode,
         )
 
         if languageEntry is None:
             raise NoLanguageEntryFoundForWotdApiCodeException(
                 message = f'Unable to find LanguageEntry for wotdApiCode ({wotdApiCode=})',
-                wotdApiCode = wotdApiCode
+                wotdApiCode = wotdApiCode,
             )
 
         return languageEntry

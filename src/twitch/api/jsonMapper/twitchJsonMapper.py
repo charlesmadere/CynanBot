@@ -73,7 +73,9 @@ from ..models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from ..models.twitchSendChatMessageResponseEntry import TwitchSendChatMessageResponseEntry
 from ..models.twitchStartCommercialDetails import TwitchStartCommercialDetails
 from ..models.twitchStartCommercialResponse import TwitchStartCommercialResponse
+from ..models.twitchStream import TwitchStream
 from ..models.twitchStreamType import TwitchStreamType
+from ..models.twitchStreamsResponse import TwitchStreamsResponse
 from ..models.twitchSub import TwitchSub
 from ..models.twitchSubGift import TwitchSubGift
 from ..models.twitchSubscriberTier import TwitchSubscriberTier
@@ -766,7 +768,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data', None)
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
         if not isinstance(dataArray, list) or len(dataArray) == 0:
             return None
 
@@ -1703,7 +1705,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseStartCommercialResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchStartCommercialResponse | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1728,12 +1730,102 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         data.freeze()
 
         return TwitchStartCommercialResponse(
-            data = data
+            data = data,
+        )
+
+    async def parseStream(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchStream | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        startedAt = utils.getDateTimeFromDict(jsonResponse, 'started_at')
+
+        tagsArray: list[str | None] | Any | None = jsonResponse.get('tags')
+        tags: set[str] = set()
+
+        if isinstance(tagsArray, list) and len(tagsArray) >= 1:
+            for index, tag in enumerate(tagsArray):
+                if utils.isValidStr(tag):
+                    tags.add(tag)
+                else:
+                    self.__timber.log('TwitchJsonMapper', f'Encountered invalid string at index {index} ({tag=}) ({tagsArray=}) ({jsonResponse=})')
+
+        viewerCount = utils.getIntFromDict(jsonResponse, 'viewer_count', fallback = 0)
+
+        gameId: str | None = None
+        if 'game_id' in jsonResponse and utils.isValidStr(jsonResponse.get('game_id')):
+            gameId = utils.getStrFromDict(jsonResponse, 'game_id')
+
+        gameName: str | None = None
+        if 'game_name' in jsonResponse and utils.isValidStr(jsonResponse.get('game_name')):
+            gameName = utils.getStrFromDict(jsonResponse, 'game_name')
+
+        language: str | None = None
+        if 'language' in jsonResponse and utils.isValidStr(jsonResponse.get('language')):
+            language = utils.getStrFromDict(jsonResponse, 'language')
+
+        streamId = utils.getStrFromDict(jsonResponse, 'id')
+
+        thumbnailUrl: str | None = None
+        if 'thumbnail_url' in jsonResponse and utils.isValidUrl(jsonResponse.get('thumbnail_url')):
+            thumbnailUrl = utils.getStrFromDict(jsonResponse, 'thumbnail_url')
+
+        title: str | None = None
+        if 'title' in jsonResponse and utils.isValidStr(jsonResponse.get('title')):
+            title = utils.getStrFromDict(jsonResponse, 'title')
+
+        userId = utils.getStrFromDict(jsonResponse, 'user_id')
+        userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
+        userName = utils.getStrFromDict(jsonResponse, 'user_name')
+        streamType = await self.parseStreamType(jsonResponse.get('type'))
+
+        return TwitchStream(
+            startedAt = startedAt,
+            tags = frozenset(tags),
+            viewerCount = viewerCount,
+            gameId = gameId,
+            gameName = gameName,
+            language = language,
+            streamId = streamId,
+            thumbnailUrl = thumbnailUrl,
+            title = title,
+            userId = userId,
+            userLogin = userLogin,
+            userName = userName,
+            streamType = streamType,
+        )
+
+    async def parseStreamsResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchStreamsResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        data: FrozenList[TwitchStream] = FrozenList()
+
+        if isinstance(dataArray, list) and len(dataArray) >= 1:
+            for index, dataJson in enumerate(dataArray):
+                stream = await self.parseStream(dataJson)
+
+                if stream is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} ({stream=}) ({jsonResponse=})')
+                else:
+                    data.append(stream)
+
+        pagination = await self.parsePaginationResponse(jsonResponse.get('pagination'))
+
+        return TwitchStreamsResponse(
+            data = data,
+            pagination = pagination,
         )
 
     async def parseStreamType(
         self,
-        streamType: str | Any | None
+        streamType: str | Any | None,
     ) -> TwitchStreamType:
         if not utils.isValidStr(streamType):
             return TwitchStreamType.UNKNOWN
@@ -1742,7 +1834,9 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         match streamType:
             case 'live': return TwitchStreamType.LIVE
-            case _: return TwitchStreamType.UNKNOWN
+            case _:
+                self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchStreamType value: \"{streamType}\"')
+                return TwitchStreamType.UNKNOWN
 
     async def parseSub(
         self,
