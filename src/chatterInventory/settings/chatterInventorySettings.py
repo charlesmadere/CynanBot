@@ -54,8 +54,8 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         ),
         defaultDaysBetweenGashaponRewards: int = 28,
         defaultTm36ItemDetails: Tm36ItemDetails = Tm36ItemDetails(
-            maxDurationSeconds = 300, # 5 minutes
-            minDurationSeconds = 1800, # 30 minutes
+            maxDurationSeconds = 180, # 3 minutes
+            minDurationSeconds = 1200, # 20 minutes
         ),
         defaultVoreItemDetails: VoreItemDetails = VoreItemDetails(
             timeoutDurationSeconds = 86400, # 1 day
