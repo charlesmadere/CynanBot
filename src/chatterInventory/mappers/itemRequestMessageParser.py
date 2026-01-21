@@ -9,7 +9,7 @@ from ...misc import utils as utils
 
 class ItemRequestMessageParser:
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class Result:
         itemType: ChatterItemType
         argument: str | None

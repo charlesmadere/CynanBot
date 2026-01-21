@@ -5,7 +5,7 @@ from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.voreTimeoutAction import VoreTimeoutAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class NoVoreTargetAvailableTimeoutEvent(AbsTimeoutEvent):
     eventId: str
     instigatorUserName: str

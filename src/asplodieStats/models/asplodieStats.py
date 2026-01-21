@@ -3,7 +3,7 @@ import locale
 from dataclasses import dataclass
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class AsplodieStats:
     selfAsplodies: int
     totalAsplodies: int

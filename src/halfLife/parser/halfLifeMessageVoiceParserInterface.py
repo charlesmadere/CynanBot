@@ -6,7 +6,7 @@ from ..models.halfLifeVoice import HalfLifeVoice
 
 class HalfLifeMessageVoiceParserInterface(ABC):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class Result:
         message: str
         voice: HalfLifeVoice

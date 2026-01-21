@@ -20,7 +20,7 @@ from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 class SetChatterPreferredNameChatCommand(AbsChatCommand):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class LookupUserInfo:
         userId: str | None
         userName: str

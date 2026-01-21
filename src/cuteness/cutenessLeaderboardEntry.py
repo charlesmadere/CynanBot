@@ -17,7 +17,7 @@ class CutenessLeaderboardEntry(CutenessEntry):
         super().__init__(
             cuteness = cuteness,
             userId = userId,
-            userName = userName
+            userName = userName,
         )
 
         if not utils.isValidInt(rank):

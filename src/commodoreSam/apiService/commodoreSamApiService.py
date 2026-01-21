@@ -24,7 +24,7 @@ from ...tts.models.ttsProvider import TtsProvider
 
 class CommodoreSamApiService(CommodoreSamApiServiceInterface):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class CommodoreSamArguments:
         mouth: int | None
         pitch: int | None
@@ -32,7 +32,7 @@ class CommodoreSamApiService(CommodoreSamApiServiceInterface):
         throat: int | None
         fullArgumentString: str
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class FilePaths:
         commodoreSamPath: str
         fileName: str

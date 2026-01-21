@@ -5,7 +5,7 @@ from .chatterItemType import ChatterItemType
 from ...users.userInterface import UserInterface
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class UseChatterItemAction(AbsChatterItemAction):
     ignoreInventory: bool
     itemType: ChatterItemType

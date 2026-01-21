@@ -5,7 +5,7 @@ from .cutenessDate import CutenessDate
 from ..misc import utils as utils
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class CutenessResult:
     cutenessDate: CutenessDate
     cuteness: int | None

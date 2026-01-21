@@ -10,7 +10,7 @@ class MicrosoftTtsMessageVoiceParser(MicrosoftTtsMessageVoiceParserInterface):
 
     def __init__(
         self,
-        microsoftTtsJsonParser: MicrosoftTtsJsonParserInterface
+        microsoftTtsJsonParser: MicrosoftTtsJsonParserInterface,
     ):
         if not isinstance(microsoftTtsJsonParser, MicrosoftTtsJsonParserInterface):
             raise TypeError(f'microsoftTtsJsonParser argument is malformed: \"{microsoftTtsJsonParser}\"')
@@ -21,7 +21,7 @@ class MicrosoftTtsMessageVoiceParser(MicrosoftTtsMessageVoiceParserInterface):
 
     async def determineVoiceFromMessage(
         self,
-        message: str | None
+        message: str | None,
     ) -> MicrosoftTtsMessageVoiceParserInterface.Result | None:
         if not utils.isValidStr(message):
             return None
@@ -43,5 +43,5 @@ class MicrosoftTtsMessageVoiceParser(MicrosoftTtsMessageVoiceParserInterface):
 
         return MicrosoftTtsMessageVoiceParserInterface.Result(
             voice = microsoftTtsVoice,
-            message = messageWithoutVoice
+            message = messageWithoutVoice,
         )

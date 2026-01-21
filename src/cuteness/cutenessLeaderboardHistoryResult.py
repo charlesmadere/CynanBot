@@ -5,7 +5,7 @@ from frozenlist import FrozenList
 from .cutenessLeaderboardResult import CutenessLeaderboardResult
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class CutenessLeaderboardHistoryResult:
     twitchChannel: str
     twitchChannelId: str

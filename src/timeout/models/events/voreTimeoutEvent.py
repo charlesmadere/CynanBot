@@ -11,7 +11,7 @@ from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveRes
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class VoreTimeoutEvent(AbsTimeoutEvent):
     asplodieStats: AsplodieStats
     timeoutDuration: CalculatedTimeoutDuration

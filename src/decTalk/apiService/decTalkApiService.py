@@ -25,7 +25,7 @@ from ...tts.models.ttsProvider import TtsProvider
 
 class DecTalkApiService(DecTalkApiServiceInterface):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class FilePaths:
         decTalkPath: str
         fileName: str

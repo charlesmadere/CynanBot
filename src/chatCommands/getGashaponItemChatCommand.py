@@ -17,9 +17,11 @@ from ..chatterInventory.models.gashaponResults.notSubscribedGashaponResult impor
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
+from ..soundPlayerManager.soundAlert import SoundAlert
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
+from ..users.userInterface import UserInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -28,7 +30,7 @@ class GetGashaponItemChatCommand(AbsChatCommand):
     def __init__(
         self,
         gashaponRewardHelper: GashaponRewardHelperInterface,
-        soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
+        soundPlayerManagerProvider: SoundPlayerManagerProviderInterface | None,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
@@ -36,7 +38,7 @@ class GetGashaponItemChatCommand(AbsChatCommand):
     ):
         if not isinstance(gashaponRewardHelper, GashaponRewardHelperInterface):
             raise TypeError(f'gashaponRewardHelper argument is malformed: \"{gashaponRewardHelper}\"')
-        elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
+        elif soundPlayerManagerProvider is not None and not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -48,7 +50,7 @@ class GetGashaponItemChatCommand(AbsChatCommand):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__gashaponRewardHelper: Final[GashaponRewardHelperInterface] = gashaponRewardHelper
-        self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
+        self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface | None] = soundPlayerManagerProvider
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
@@ -77,6 +79,7 @@ class GetGashaponItemChatCommand(AbsChatCommand):
             await self.__handleRewardedGashaponResult(
                 ctx = ctx,
                 gashaponResult = gashaponResult,
+                user = user,
             )
 
         elif isinstance(gashaponResult, NotFollowingGashaponResult):
@@ -131,7 +134,12 @@ class GetGashaponItemChatCommand(AbsChatCommand):
         self,
         ctx: TwitchContext,
         gashaponResult: GashaponRewardedGashaponResult,
+        user: UserInterface,
     ):
+        if user.areSoundAlertsEnabled and self.__soundPlayerManagerProvider is not None:
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+            await soundPlayerManager.playSoundAlert(SoundAlert.GASHAPON)
+
         gashaponAmount = gashaponResult.inventory[ChatterItemType.GASHAPON]
         suffixString = ''
 

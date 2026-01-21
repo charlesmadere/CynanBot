@@ -6,7 +6,7 @@ from .chatterTimeoutHistory import ChatterTimeoutHistory
 from .chatterTimeoutHistoryEntry import ChatterTimeoutHistoryEntry
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class PreparedChatterTimeoutHistory:
     chatterTimeoutHistory: ChatterTimeoutHistory
     chatterUserName: str

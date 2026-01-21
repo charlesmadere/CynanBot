@@ -7,7 +7,7 @@ from .cutenessLeaderboardEntry import CutenessLeaderboardEntry
 from .cutenessResult import CutenessResult
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class CutenessLeaderboardResult:
     cutenessDate: CutenessDate
     specificLookupCutenessResult: CutenessResult | None = None

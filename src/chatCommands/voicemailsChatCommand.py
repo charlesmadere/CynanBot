@@ -23,7 +23,7 @@ from ..voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailS
 
 class VoicemailsChatCommand(AbsChatCommand):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class VoicemailLookupData:
         voicemails: FrozenList[PreparedVoicemailData]
         chatterUserId: str

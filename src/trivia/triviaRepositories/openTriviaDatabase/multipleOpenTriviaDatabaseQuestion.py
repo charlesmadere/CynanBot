@@ -1,3 +1,5 @@
+from typing import Final
+
 from frozenlist import FrozenList
 
 from .openTriviaDatabaseQuestion import OpenTriviaDatabaseQuestion
@@ -14,12 +16,12 @@ class MultipleOpenTriviaDatabaseQuestion(OpenTriviaDatabaseQuestion):
         category: str | None,
         correctAnswer: str,
         question: str,
-        difficulty: TriviaDifficulty
+        difficulty: TriviaDifficulty,
     ):
         super().__init__(
             category = category,
             question = question,
-            difficulty = difficulty
+            difficulty = difficulty,
         )
 
         if not isinstance(incorrectAnswers, FrozenList) or len(incorrectAnswers) == 0:
@@ -27,8 +29,8 @@ class MultipleOpenTriviaDatabaseQuestion(OpenTriviaDatabaseQuestion):
         elif not utils.isValidStr(correctAnswer):
             raise TypeError(f'correctAnswer argument is malformed: \"{correctAnswer}\"')
 
-        self.__incorrectAnswers: FrozenList[str] = incorrectAnswers
-        self.__correctAnswer: str = correctAnswer
+        self.__incorrectAnswers: Final[FrozenList[str]] = incorrectAnswers
+        self.__correctAnswer: Final[str] = correctAnswer
 
     @property
     def correctAnswer(self) -> str:

@@ -2596,7 +2596,7 @@ chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface = Chatte
     userIdsRepository = userIdsRepository,
 )
 
-chatterItemEventHandler: AbsChatterItemEventHandler = ChatterItemEventHandler(
+chatterItemEventHandler: Final[AbsChatterItemEventHandler] = ChatterItemEventHandler(
     backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
@@ -3439,6 +3439,7 @@ cynanBot: Final[CynanBot] = CynanBot(
     eccoHelper = eccoHelper,
     funtoonHelper = funtoonHelper,
     funtoonTokensRepository = funtoonTokensRepository,
+    gashaponRewardHelper = gashaponRewardHelper,
     generalSettingsRepository = generalSettingsRepository,
     googleSettingsRepository = googleSettingsRepository,
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,

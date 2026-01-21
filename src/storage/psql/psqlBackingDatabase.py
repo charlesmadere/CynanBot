@@ -15,7 +15,7 @@ from ...timber.timberInterface import TimberInterface
 
 class PsqlBackingDatabase(BackingDatabase):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class ConnectionPoolData:
         connectionPool: asyncpg.Pool
         wasConnectionPoolNewlyCreated: bool
@@ -24,7 +24,7 @@ class PsqlBackingDatabase(BackingDatabase):
         self,
         eventLoop: AbstractEventLoop,
         psqlCredentialsProvider: PsqlCredentialsProviderInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -55,7 +55,7 @@ class PsqlBackingDatabase(BackingDatabase):
 
         databaseConnection: DatabaseConnection = PsqlDatabaseConnection(
             connection = connection,
-            pool = connectionPoolData.connectionPool
+            pool = connectionPoolData.connectionPool,
         )
 
         if connectionPoolData.wasConnectionPoolNewlyCreated:
@@ -83,7 +83,7 @@ class PsqlBackingDatabase(BackingDatabase):
                 max_size = maxConnections,
                 password = password,
                 port = port,
-                user = user
+                user = user,
             )
 
             if not isinstance(connectionPool, asyncpg.Pool):
@@ -97,5 +97,5 @@ class PsqlBackingDatabase(BackingDatabase):
 
         return PsqlBackingDatabase.ConnectionPoolData(
             connectionPool = connectionPool,
-            wasConnectionPoolNewlyCreated = wasConnectionPoolNewlyCreated
+            wasConnectionPoolNewlyCreated = wasConnectionPoolNewlyCreated,
         )

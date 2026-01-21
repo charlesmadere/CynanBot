@@ -26,7 +26,7 @@ from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 class SetChatterPreferredTtsChatCommand(AbsChatCommand):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class LookupUserInfo:
         userId: str | None
         userName: str

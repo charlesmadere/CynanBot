@@ -4,7 +4,7 @@ from datetime import datetime
 from .microsoftSamVoice import MicrosoftSamVoice
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class MicrosoftSamFileReference:
     storeDateTime: datetime
     voice: MicrosoftSamVoice

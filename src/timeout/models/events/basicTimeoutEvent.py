@@ -8,7 +8,7 @@ from ..timeoutTarget import TimeoutTarget
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class BasicTimeoutEvent(AbsTimeoutEvent):
     originatingAction: BasicTimeoutAction
     timeoutDuration: CalculatedTimeoutDuration

@@ -5,7 +5,7 @@ from .absBannedWord import AbsBannedWord
 from .bannedWordType import BannedWordType
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class BannedWord(AbsBannedWord):
     word: str
 

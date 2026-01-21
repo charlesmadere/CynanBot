@@ -4,7 +4,7 @@ from datetime import datetime
 from .glacialTtsData import GlacialTtsData
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class GlacialTtsFileReference:
     glacialTtsData: GlacialTtsData
     fileName: str

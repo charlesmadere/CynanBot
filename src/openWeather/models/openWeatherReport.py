@@ -8,7 +8,7 @@ from .openWeatherDay import OpenWeatherDay
 from .openWeatherMoment import OpenWeatherMoment
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class OpenWeatherReport:
     latitude: float
     longitude: float

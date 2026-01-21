@@ -5,7 +5,7 @@ from ..itemDetails.grenadeItemDetails import GrenadeItemDetails
 from ..useChatterItemAction import UseChatterItemAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class UseGrenadeChatterItemEvent(AbsChatterItemEvent):
     itemDetails: GrenadeItemDetails
     eventId: str

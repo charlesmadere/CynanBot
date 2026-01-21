@@ -4,7 +4,7 @@ from typing import Awaitable, Callable
 from .diceRollResult import DiceRollResult
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class DiceRollRequest:
     callback: Callable[[DiceRollResult], Awaitable[None]]
     twitchChannelId: str

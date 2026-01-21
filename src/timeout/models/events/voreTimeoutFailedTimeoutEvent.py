@@ -7,7 +7,7 @@ from ..timeoutTarget import TimeoutTarget
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class VoreTimeoutFailedTimeoutEvent(AbsTimeoutEvent):
     eventId: str
     instigatorUserName: str

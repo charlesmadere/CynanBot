@@ -5,7 +5,7 @@ from frozendict import frozendict
 from ..chatterItemType import ChatterItemType
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class GashaponItemDetails:
     pullRates: frozendict[ChatterItemType, float]
     iterations: int

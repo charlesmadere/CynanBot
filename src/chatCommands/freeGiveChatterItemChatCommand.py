@@ -22,7 +22,7 @@ from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 class FreeGiveChatterItemChatCommand(AbsChatCommand):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class Arguments:
         itemType: ChatterItemType
         giveAmount: int

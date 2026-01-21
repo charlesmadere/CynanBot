@@ -18,7 +18,7 @@ from ...tts.models.ttsProvider import TtsProvider
 
 class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class FileReference:
         fileName: str
         filePath: str

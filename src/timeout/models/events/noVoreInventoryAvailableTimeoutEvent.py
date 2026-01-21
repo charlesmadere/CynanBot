@@ -6,7 +6,7 @@ from ..actions.voreTimeoutAction import VoreTimeoutAction
 from ..timeoutTarget import TimeoutTarget
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class NoVoreInventoryAvailableTimeoutEvent(AbsTimeoutEvent):
     eventId: str
     thumbsDownEmote: str

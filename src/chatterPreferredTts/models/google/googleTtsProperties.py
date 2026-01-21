@@ -5,7 +5,7 @@ from ....language.languageEntry import LanguageEntry
 from ....tts.models.ttsProvider import TtsProvider
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class GoogleTtsProperties(AbsTtsProperties):
     languageEntry: LanguageEntry | None
 

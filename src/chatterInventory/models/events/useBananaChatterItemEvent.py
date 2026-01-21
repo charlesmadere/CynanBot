@@ -5,7 +5,7 @@ from ..itemDetails.bananaItemDetails import BananaItemDetails
 from ..useChatterItemAction import UseChatterItemAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class UseBananaChatterItemEvent(AbsChatterItemEvent):
     itemDetails: BananaItemDetails
     eventId: str

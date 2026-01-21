@@ -5,7 +5,7 @@ from ..itemDetails.tm36ItemDetails import Tm36ItemDetails
 from ..useChatterItemAction import UseChatterItemAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class UseTm36ChatterItemEvent(AbsChatterItemEvent):
     eventId: str
     itemDetails: Tm36ItemDetails

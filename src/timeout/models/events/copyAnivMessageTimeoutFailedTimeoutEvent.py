@@ -7,7 +7,7 @@ from ....aniv.models.whichAnivUser import WhichAnivUser
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class CopyAnivMessageTimeoutFailedTimeoutEvent(AbsTimeoutEvent):
     originatingAction: CopyAnivMessageTimeoutAction
     anivUserName: str

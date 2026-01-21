@@ -8,7 +8,7 @@ from ..chatterItemType import ChatterItemType
 from ..useChatterItemAction import UseChatterItemAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class GashaponResultsChatterItemEvent(AbsChatterItemEvent):
     updatedInventory: ChatterInventoryData
     awardedItems: frozendict[ChatterItemType, int]

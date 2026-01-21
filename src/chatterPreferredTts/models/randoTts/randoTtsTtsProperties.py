@@ -4,7 +4,7 @@ from ..absTtsProperties import AbsTtsProperties
 from ....tts.models.ttsProvider import TtsProvider
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class RandoTtsTtsProperties(AbsTtsProperties):
 
     @property

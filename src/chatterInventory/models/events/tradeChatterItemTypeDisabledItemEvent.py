@@ -5,7 +5,7 @@ from ..absChatterItemAction import AbsChatterItemAction
 from ..tradeChatterItemAction import TradeChatterItemAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TradeChatterItemTypeDisabledItemEvent(AbsChatterItemEvent):
     eventId: str
     originatingAction: TradeChatterItemAction

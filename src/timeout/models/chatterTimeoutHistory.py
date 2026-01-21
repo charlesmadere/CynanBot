@@ -6,7 +6,7 @@ from frozenlist import FrozenList
 from .chatterTimeoutHistoryEntry import ChatterTimeoutHistoryEntry
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class ChatterTimeoutHistory:
     entries: FrozenList[ChatterTimeoutHistoryEntry]
     totalDurationSeconds: int

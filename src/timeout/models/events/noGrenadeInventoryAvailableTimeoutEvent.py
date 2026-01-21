@@ -5,7 +5,7 @@ from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.grenadeTimeoutAction import GrenadeTimeoutAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class NoGrenadeInventoryAvailableTimeoutEvent(AbsTimeoutEvent):
     originatingAction: GrenadeTimeoutAction
     eventId: str

@@ -7,7 +7,7 @@ from ..timeoutTarget import TimeoutTarget
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class GrenadeTimeoutFailedTimeoutEvent(AbsTimeoutEvent):
     originatingAction: GrenadeTimeoutAction
     eventId: str

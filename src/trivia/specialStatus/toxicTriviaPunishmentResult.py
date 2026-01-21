@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from .toxicTriviaPunishment import ToxicTriviaPunishment
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class ToxicTriviaPunishmentResult:
     totalPointsStolen: int
     toxicTriviaPunishments: list[ToxicTriviaPunishment]

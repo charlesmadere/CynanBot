@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import tzinfo
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class Location:
     latitude: float
     longitude: float

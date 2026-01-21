@@ -62,6 +62,7 @@ from .chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaC
 from .chatCommands.getChatterPreferredNameChatCommand import GetChatterPreferredNameChatCommand
 from .chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredTtsChatCommand
 from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
+from .chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from .chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
 from .chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
 from .chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
@@ -111,6 +112,7 @@ from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
 from .chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
 from .chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
+from .chatterInventory.helpers.gashaponRewardHelperInterface import GashaponRewardHelperInterface
 from .chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from .chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
 from .chatterInventory.machine.chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
@@ -355,6 +357,7 @@ class CynanBot(
         eccoHelper: EccoHelperInterface | None,
         funtoonHelper: FuntoonHelperInterface | None,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
+        gashaponRewardHelper: GashaponRewardHelperInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
         googleSettingsRepository: GoogleSettingsRepositoryInterface | None,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface | None,
@@ -588,6 +591,8 @@ class CynanBot(
             raise TypeError(f'eccoHelper argument is malformed: \"{eccoHelper}\"')
         elif funtoonHelper is not None and not isinstance(funtoonHelper, FuntoonHelperInterface):
             raise TypeError(f'funtoonHelper argument is malformed: \"{funtoonHelper}\"')
+        elif gashaponRewardHelper is not None and not isinstance(gashaponRewardHelper, GashaponRewardHelperInterface):
+            raise TypeError(f'gashaponRewardHelper argument is malformed: \"{gashaponRewardHelper}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif googleSettingsRepository is not None and not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
@@ -849,14 +854,16 @@ class CynanBot(
         else:
             self.__beanStatsCommand: AbsChatCommand = BeanStatsChatCommand(beanStatsPresenter, beanStatsRepository, timber, twitchChatMessenger, userIdsRepository, usersRepository)
 
-        if chatterInventoryHelper is None or chatterInventoryIdGenerator is None or chatterInventoryItemUseMachine is None or chatterInventoryMapper is None or chatterInventorySettings is None or useChatterItemHelper is None:
+        if chatterInventoryHelper is None or chatterInventoryIdGenerator is None or chatterInventoryItemUseMachine is None or chatterInventoryMapper is None or chatterInventorySettings is None or gashaponRewardHelper is None or useChatterItemHelper is None:
             self.__chatterInventoryCommand: AbsChatCommand = StubChatCommand()
             self.__freeGiveChatterItemCommand: AbsChatCommand = StubChatCommand()
+            self.__getGashaponItemChatCommand: AbsChatCommand = StubChatCommand()
             self.__giveChatterItemCommand: AbsChatCommand = StubChatCommand()
             self.__useChatterItemCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__chatterInventoryCommand: AbsChatCommand = ChatterInventoryChatCommand(chatterInventoryHelper, chatterInventorySettings, timber, twitchChatMessenger, usersRepository)
             self.__freeGiveChatterItemCommand: AbsChatCommand = FreeGiveChatterItemChatCommand(administratorProvider, chatterInventoryHelper, chatterInventoryMapper, chatterInventorySettings, timber, twitchChannelEditorsRepository, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository)
+            self.__getGashaponItemChatCommand: AbsChatCommand = GetGashaponItemChatCommand(gashaponRewardHelper, soundPlayerManagerProvider, timber, timeZoneRepository, twitchChatMessenger, usersRepository)
             self.__giveChatterItemCommand: AbsChatCommand = GiveChatterItemChatCommand(chatterInventoryIdGenerator, chatterInventoryItemUseMachine, chatterInventoryMapper, chatterInventorySettings, timber, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository)
             self.__useChatterItemCommand: AbsChatCommand = UseChatterItemChatCommand(chatterInventoryIdGenerator, timber, twitchChatMessenger, useChatterItemHelper, usersRepository)
 
@@ -1466,6 +1473,11 @@ class CynanBot(
     async def command_freegivechatteritem(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__freeGiveChatterItemCommand.handleChatCommand(context)
+
+    @commands.command(name = 'gasha', aliases = [ 'gacha' ])
+    async def command_gasha(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__getGashaponItemChatCommand.handleChatCommand(context)
 
     @commands.command(name = 'getbannedtriviacontrollers', aliases = [ 'bannedtriviacontrollers' ])
     async def command_getbannedtriviacontrollers(self, ctx: Context):
