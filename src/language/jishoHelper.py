@@ -1,5 +1,6 @@
 import traceback
 from typing import Final
+
 from frozenlist import FrozenList
 
 from .jishoHelperInterface import JishoHelperInterface
