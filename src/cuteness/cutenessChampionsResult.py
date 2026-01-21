@@ -5,7 +5,7 @@ from frozenlist import FrozenList
 from .cutenessLeaderboardEntry import CutenessLeaderboardEntry
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class CutenessChampionsResult:
     champions: FrozenList[CutenessLeaderboardEntry] | None
     twitchChannel: str

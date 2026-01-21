@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from ...voicemail.models.addVoicemailResult import AddVoicemailResult
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class CassetteTapeUseCaseResult:
     addVoicemailResult: AddVoicemailResult
     targetUserId: str

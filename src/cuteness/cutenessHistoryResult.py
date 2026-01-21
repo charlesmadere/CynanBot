@@ -7,7 +7,7 @@ from .cutenessHistoryEntry import CutenessHistoryEntry
 from ..misc import utils as utils
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class CutenessHistoryResult:
     userId: str
     userName: str

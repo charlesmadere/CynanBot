@@ -6,7 +6,7 @@ from frozenlist import FrozenList
 from .openWeatherMomentDescription import OpenWeatherMomentDescription
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class OpenWeatherMoment:
     dateTime: datetime
     sunrise: datetime

@@ -5,7 +5,7 @@ from ..chatterInventoryData import ChatterInventoryData
 from ..tradeChatterItemAction import TradeChatterItemAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TradeChatterItemEvent(AbsChatterItemEvent):
     fromChatterInventory: ChatterInventoryData
     toChatterInventory: ChatterInventoryData

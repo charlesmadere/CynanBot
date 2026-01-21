@@ -9,7 +9,7 @@ from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveRes
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class Tm36TimeoutEvent(AbsTimeoutEvent):
     timeoutDuration: CalculatedTimeoutDuration
     updatedInventory: ChatterItemGiveResult | None

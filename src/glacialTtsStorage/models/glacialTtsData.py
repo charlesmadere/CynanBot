@@ -4,7 +4,7 @@ from datetime import datetime
 from ...tts.models.ttsProvider import TtsProvider
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class GlacialTtsData:
     storeDateTime: datetime
     glacialId: str

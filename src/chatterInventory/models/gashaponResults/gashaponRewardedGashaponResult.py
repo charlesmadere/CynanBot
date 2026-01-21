@@ -7,7 +7,7 @@ from ..chatterInventoryData import ChatterInventoryData
 from ..chatterItemType import ChatterItemType
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class GashaponRewardedGashaponResult(AbsGashaponResult):
     chatterInventory: ChatterInventoryData
     chatterUserId: str

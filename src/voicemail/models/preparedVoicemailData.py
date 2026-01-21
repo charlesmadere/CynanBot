@@ -4,7 +4,7 @@ from datetime import datetime
 from .voicemailData import VoicemailData
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class PreparedVoicemailData:
     originatingUserName: str
     targetUserName: str

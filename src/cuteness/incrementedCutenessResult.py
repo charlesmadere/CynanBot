@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from .cutenessDate import CutenessDate
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class IncrementedCutenessResult:
     cutenessDate: CutenessDate
     newCuteness: int

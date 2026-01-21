@@ -5,7 +5,7 @@ from ....streamElements.models.streamElementsVoice import StreamElementsVoice
 from ....tts.models.ttsProvider import TtsProvider
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class StreamElementsTtsProperties(AbsTtsProperties):
     voice: StreamElementsVoice | None
 

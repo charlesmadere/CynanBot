@@ -6,7 +6,7 @@ from ..actions.voreTimeoutAction import VoreTimeoutAction
 from ..timeoutTarget import TimeoutTarget
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class VoreTargetIsImmuneTimeoutEvent(AbsTimeoutEvent):
     eventId: str
     timeoutTarget: TimeoutTarget

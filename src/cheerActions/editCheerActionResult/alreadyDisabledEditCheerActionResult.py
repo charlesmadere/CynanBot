@@ -4,7 +4,7 @@ from .editCheerActionResult import EditCheerActionResult
 from ..absCheerAction import AbsCheerAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class AlreadyDisabledEditCheerActionResult(EditCheerActionResult):
     cheerAction: AbsCheerAction
 

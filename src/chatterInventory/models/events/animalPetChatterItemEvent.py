@@ -6,7 +6,7 @@ from ..itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from ..useChatterItemAction import UseChatterItemAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class AnimalPetChatterItemEvent(AbsChatterItemEvent):
     itemDetails: AnimalPetItemDetails
     updatedInventory: ChatterInventoryData | None

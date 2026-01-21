@@ -8,7 +8,7 @@ from .openWeatherMomentDescription import OpenWeatherMomentDescription
 from .openWeatherTemperature import OpenWeatherTemperature
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class OpenWeatherDay:
     dateTime: datetime
     moonrise: datetime

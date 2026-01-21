@@ -5,7 +5,7 @@ from .triviaQuestionType import TriviaQuestionType
 from .triviaSource import TriviaSource
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TriviaQuestionReference:
     dateTime: datetime
     emote: str

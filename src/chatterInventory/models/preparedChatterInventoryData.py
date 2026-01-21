@@ -6,7 +6,7 @@ from .chatterInventoryData import ChatterInventoryData
 from .chatterItemType import ChatterItemType
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class PreparedChatterInventoryData:
     chatterInventory: ChatterInventoryData
     chatterUserName: str

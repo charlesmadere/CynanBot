@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Final
 
 from ...questions.triviaQuestionType import TriviaQuestionType
 from ...triviaDifficulty import TriviaDifficulty
@@ -11,7 +12,7 @@ class OpenTriviaDatabaseQuestion(ABC):
         self,
         category: str | None,
         question: str,
-        difficulty: TriviaDifficulty
+        difficulty: TriviaDifficulty,
     ):
         if category is not None and not isinstance(category, str):
             raise TypeError(f'category argument is malformed: \"{category}\"')
@@ -20,9 +21,9 @@ class OpenTriviaDatabaseQuestion(ABC):
         elif not isinstance(difficulty, TriviaDifficulty):
             raise TypeError(f'difficulty argument is malformed: \"{difficulty}\"')
 
-        self.__category: str | None = category
-        self.__question: str = question
-        self.__difficulty: TriviaDifficulty = difficulty
+        self.__category: Final[str | None] = category
+        self.__question: Final[str] = question
+        self.__difficulty: Final[TriviaDifficulty] = difficulty
 
     @property
     def category(self) -> str | None:

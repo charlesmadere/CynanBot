@@ -5,7 +5,7 @@ from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.airStrikeTimeoutAction import AirStrikeTimeoutAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class NoAirStrikeInventoryAvailableTimeoutEvent(AbsTimeoutEvent):
     originatingAction: AirStrikeTimeoutAction
     eventId: str

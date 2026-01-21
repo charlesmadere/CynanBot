@@ -6,7 +6,7 @@ from ..models.microsoftSamVoice import MicrosoftSamVoice
 
 class MicrosoftSamMessageVoiceParserInterface(ABC):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class Result:
         voice: MicrosoftSamVoice
         message: str

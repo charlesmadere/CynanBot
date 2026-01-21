@@ -4,7 +4,7 @@ from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class IncorrectLiveStatusTimeoutEvent(AbsTimeoutEvent):
     originatingAction: AbsTimeoutAction
     eventId: str

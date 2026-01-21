@@ -5,7 +5,7 @@ from ..itemDetails.airStrikeItemDetails import AirStrikeItemDetails
 from ..useChatterItemAction import UseChatterItemAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class UseAirStrikeChatterItemEvent(AbsChatterItemEvent):
     itemDetails: AirStrikeItemDetails
     eventId: str

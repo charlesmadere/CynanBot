@@ -7,7 +7,7 @@ from .willFryTriviaQuestionType import WillFryTriviaQuestionType
 from ...triviaDifficulty import TriviaDifficulty
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class WillFryTriviaQuestion:
     isNiche: bool
     incorrectAnswers: FrozenList[str]

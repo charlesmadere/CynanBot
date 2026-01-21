@@ -26,7 +26,7 @@ from ...tts.models.ttsProvider import TtsProvider
 
 class TtsMonsterHelper(TtsMonsterHelperInterface):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class MessageVoices:
         messageChunks: FrozenList[TtsMonsterMessageChunk] | None
         allVoices: frozenset[TtsMonsterVoice]

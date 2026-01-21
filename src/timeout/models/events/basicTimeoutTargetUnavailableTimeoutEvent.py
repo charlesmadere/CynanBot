@@ -5,7 +5,7 @@ from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.basicTimeoutAction import BasicTimeoutAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class BasicTimeoutTargetUnavailableTimeoutEvent(AbsTimeoutEvent):
     originatingAction: BasicTimeoutAction
     eventId: str

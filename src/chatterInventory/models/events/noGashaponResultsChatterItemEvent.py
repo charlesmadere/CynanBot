@@ -4,7 +4,7 @@ from .absChatterItemEvent import AbsChatterItemEvent
 from ..useChatterItemAction import UseChatterItemAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class NoGashaponResultsChatterItemEvent(AbsChatterItemEvent):
     eventId: str
     ripBozoEmote: str

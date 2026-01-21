@@ -5,7 +5,7 @@ from ....tts.models.ttsProvider import TtsProvider
 from ....ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TtsMonsterTtsProperties(AbsTtsProperties):
     voice: TtsMonsterVoice | None
 

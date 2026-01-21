@@ -6,7 +6,7 @@ from ..actions.tm36TimeoutAction import Tm36TimeoutAction
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class Tm36TimeoutFailedTimeoutEvent(AbsTimeoutEvent):
     eventId: str
     targetUserName: str

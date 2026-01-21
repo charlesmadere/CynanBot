@@ -5,7 +5,7 @@ from ....microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ....tts.models.ttsProvider import TtsProvider
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class MicrosoftSamTtsProperties(AbsTtsProperties):
     voice: MicrosoftSamVoice | None
 

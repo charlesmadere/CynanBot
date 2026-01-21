@@ -10,7 +10,7 @@ class StreamElementsMessageVoiceParser(StreamElementsMessageVoiceParserInterface
 
     def __init__(
         self,
-        streamElementsJsonParser: StreamElementsJsonParserInterface
+        streamElementsJsonParser: StreamElementsJsonParserInterface,
     ):
         if not isinstance(streamElementsJsonParser, StreamElementsJsonParserInterface):
             raise TypeError(f'streamElementsJsonParser argument is malformed: \"{streamElementsJsonParser}\"')
@@ -21,7 +21,7 @@ class StreamElementsMessageVoiceParser(StreamElementsMessageVoiceParserInterface
 
     async def determineVoiceFromMessage(
         self,
-        message: str | None
+        message: str | None,
     ) -> StreamElementsMessageVoiceParserInterface.Result | None:
         if message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -46,5 +46,5 @@ class StreamElementsMessageVoiceParser(StreamElementsMessageVoiceParserInterface
 
         return StreamElementsMessageVoiceParserInterface.Result(
             message = messageWithoutVoice,
-            voice = streamElementsVoice
+            voice = streamElementsVoice,
         )

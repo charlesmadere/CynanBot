@@ -21,7 +21,7 @@ from ...voicemail.settings.voicemailSettingsRepositoryInterface import Voicemail
 
 class CassetteTapeItemUseCase:
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class ParsedVoicemailRequest:
         cleanedMessage: str
         targetUserId: str

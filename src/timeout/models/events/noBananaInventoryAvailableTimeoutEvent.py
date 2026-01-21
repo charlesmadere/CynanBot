@@ -5,7 +5,7 @@ from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.bananaTimeoutAction import BananaTimeoutAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class NoBananaInventoryAvailableTimeoutEvent(AbsTimeoutEvent):
     originatingAction: BananaTimeoutAction
     eventId: str

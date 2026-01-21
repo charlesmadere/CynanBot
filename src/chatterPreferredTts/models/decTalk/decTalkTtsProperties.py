@@ -5,7 +5,7 @@ from ....decTalk.models.decTalkVoice import DecTalkVoice
 from ....tts.models.ttsProvider import TtsProvider
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class DecTalkTtsProperties(AbsTtsProperties):
     voice: DecTalkVoice | None
 

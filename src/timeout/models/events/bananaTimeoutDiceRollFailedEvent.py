@@ -8,7 +8,7 @@ from ..timeoutDiceRollFailureData import TimeoutDiceRollFailureData
 from ..timeoutTarget import TimeoutTarget
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class BananaTimeoutDiceRollFailedEvent(AbsTimeoutEvent):
     originatingAction: BananaTimeoutAction
     eventId: str

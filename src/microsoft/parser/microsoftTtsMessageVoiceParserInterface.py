@@ -6,7 +6,7 @@ from ..models.microsoftTtsVoice import MicrosoftTtsVoice
 
 class MicrosoftTtsMessageVoiceParserInterface(ABC):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class Result:
         voice: MicrosoftTtsVoice
         message: str
@@ -14,6 +14,6 @@ class MicrosoftTtsMessageVoiceParserInterface(ABC):
     @abstractmethod
     async def determineVoiceFromMessage(
         self,
-        message: str | None
+        message: str | None,
     ) -> Result | None:
         pass

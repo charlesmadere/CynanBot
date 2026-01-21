@@ -4,7 +4,7 @@ from datetime import datetime, tzinfo
 from .openWeatherAirPollutionIndex import OpenWeatherAirPollutionIndex
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class OpenWeatherAirPollutionReport:
     dateTime: datetime
     latitude: float

@@ -5,7 +5,7 @@ from frozendict import frozendict
 from .chatterItemType import ChatterItemType
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class ChatterInventoryData:
     inventory: frozendict[ChatterItemType, int]
     chatterUserId: str

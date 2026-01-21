@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class TimeoutTarget:
     userId: str
     userName: str

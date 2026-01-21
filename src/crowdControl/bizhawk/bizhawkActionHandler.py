@@ -22,13 +22,13 @@ from ...timber.timberInterface import TimberInterface
 
 class BizhawkActionHandler(CrowdControlActionHandler):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class BizhawkConnection:
         connection: Any
         processId: int
         name: str
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class BizhawkProcessInfo:
         processId: int
         name: str

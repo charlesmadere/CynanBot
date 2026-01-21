@@ -5,7 +5,7 @@ from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.tm36TimeoutAction import Tm36TimeoutAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class NoTm36InventoryAvailableTimeoutEvent(AbsTimeoutEvent):
     eventId: str
     targetUserName: str

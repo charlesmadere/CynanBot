@@ -1,12 +1,10 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 
 from ..absChatterItemAction import AbsChatterItemAction
 from ..chatterItemType import ChatterItemType
 from ....users.userInterface import UserInterface
 
 
-@dataclass(frozen = True)
 class AbsChatterItemEvent(ABC):
 
     @abstractmethod

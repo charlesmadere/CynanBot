@@ -15,7 +15,7 @@ class SqliteBackingDatabase(BackingDatabase):
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
-        backingDatabaseFile: str = '../db/database.sqlite'
+        backingDatabaseFile: str = '../db/database.sqlite',
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -32,5 +32,5 @@ class SqliteBackingDatabase(BackingDatabase):
     async def getConnection(self) -> DatabaseConnection:
         return SqliteDatabaseConnection(await aiosqlite.connect(
             database = self.__backingDatabaseFile,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ))

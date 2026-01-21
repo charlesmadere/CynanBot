@@ -5,7 +5,7 @@ from ..chatterInventoryData import ChatterInventoryData
 from ..useChatterItemAction import UseChatterItemAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class NotEnoughInventoryChatterItemEvent(AbsChatterItemEvent):
     chatterInventory: ChatterInventoryData
     eventId: str

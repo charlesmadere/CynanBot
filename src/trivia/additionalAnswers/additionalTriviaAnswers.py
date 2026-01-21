@@ -7,7 +7,7 @@ from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class AdditionalTriviaAnswers:
     answers: FrozenList[AdditionalTriviaAnswer]
     triviaId: str

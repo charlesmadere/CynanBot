@@ -5,7 +5,7 @@ from ..openWeather.models.openWeatherAirPollutionReport import OpenWeatherAirPol
 from ..openWeather.models.openWeatherReport import OpenWeatherReport
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class WeatherReport:
     location: Location
     airPollution: OpenWeatherAirPollutionReport | None

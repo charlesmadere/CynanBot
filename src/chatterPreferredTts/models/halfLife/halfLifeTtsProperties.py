@@ -5,7 +5,7 @@ from ....halfLife.models.halfLifeVoice import HalfLifeVoice
 from ....tts.models.ttsProvider import TtsProvider
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class HalfLifeTtsProperties(AbsTtsProperties):
     voice: HalfLifeVoice | None
 

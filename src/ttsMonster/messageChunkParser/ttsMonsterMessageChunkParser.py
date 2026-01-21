@@ -13,7 +13,7 @@ from ...misc import utils as utils
 
 class TtsMonsterMessageChunkParser(TtsMonsterMessageChunkParserInterface):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class WorkingMessageChunk:
         start: int
         end: int

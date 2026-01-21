@@ -4,7 +4,7 @@ from .absChatterItemEvent import AbsChatterItemEvent
 from ..absChatterItemAction import AbsChatterItemAction
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class DisabledFeatureChatterItemEvent(AbsChatterItemEvent):
     originatingAction: AbsChatterItemAction
     eventId: str

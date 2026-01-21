@@ -18,7 +18,7 @@ from ..voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailS
 
 class VoicemailPointRedemption(AbsChannelPointRedemption):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class TargetedUserData:
         cleanedMessage: str
         userId: str

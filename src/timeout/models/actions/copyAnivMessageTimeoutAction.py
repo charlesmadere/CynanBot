@@ -7,7 +7,7 @@ from ....aniv.models.whichAnivUser import WhichAnivUser
 from ....users.userInterface import UserInterface
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class CopyAnivMessageTimeoutAction(AbsTimeoutAction):
     timeoutDuration: AbsTimeoutDuration
     actionId: str

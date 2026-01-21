@@ -6,7 +6,7 @@ from ..actions.bananaTimeoutAction import BananaTimeoutAction
 from ..timeoutTarget import TimeoutTarget
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class BananaTargetIsImmuneTimeoutEvent(AbsTimeoutEvent):
     originatingAction: BananaTimeoutAction
     eventId: str

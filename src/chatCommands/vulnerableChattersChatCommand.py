@@ -14,7 +14,7 @@ from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 class VulnerableChattersChatCommand(AbsChatCommand):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class VulnerableChattersData:
         totalActiveChatters: int
         totalVulnerableChatters: int

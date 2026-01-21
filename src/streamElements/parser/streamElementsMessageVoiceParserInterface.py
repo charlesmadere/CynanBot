@@ -6,7 +6,7 @@ from ..models.streamElementsVoice import StreamElementsVoice
 
 class StreamElementsMessageVoiceParserInterface(ABC):
 
-    @dataclass(frozen = True)
+    @dataclass(frozen = True, slots = True)
     class Result:
         message: str
         voice: StreamElementsVoice
@@ -14,6 +14,6 @@ class StreamElementsMessageVoiceParserInterface(ABC):
     @abstractmethod
     async def determineVoiceFromMessage(
         self,
-        message: str | None
+        message: str | None,
     ) -> Result | None:
         pass

@@ -6,7 +6,7 @@ from ..useChatterItemAction import UseChatterItemAction
 from ....voicemail.models.addVoicemailResult import AddVoicemailResult
 
 
-@dataclass(frozen = True)
+@dataclass(frozen = True, slots = True)
 class UseCassetteTapeChatterItemEvent(AbsChatterItemEvent):
     addVoicemailResult: AddVoicemailResult
     updatedInventory: ChatterInventoryData | None
