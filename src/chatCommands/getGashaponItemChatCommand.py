@@ -17,9 +17,11 @@ from ..chatterInventory.models.gashaponResults.notSubscribedGashaponResult impor
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
+from ..soundPlayerManager.soundAlert import SoundAlert
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
+from ..users.userInterface import UserInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -77,6 +79,7 @@ class GetGashaponItemChatCommand(AbsChatCommand):
             await self.__handleRewardedGashaponResult(
                 ctx = ctx,
                 gashaponResult = gashaponResult,
+                user = user,
             )
 
         elif isinstance(gashaponResult, NotFollowingGashaponResult):
@@ -131,7 +134,12 @@ class GetGashaponItemChatCommand(AbsChatCommand):
         self,
         ctx: TwitchContext,
         gashaponResult: GashaponRewardedGashaponResult,
+        user: UserInterface,
     ):
+        if user.areSoundAlertsEnabled:
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+            await soundPlayerManager.playSoundAlert(SoundAlert.GASHAPON)
+
         gashaponAmount = gashaponResult.inventory[ChatterItemType.GASHAPON]
         suffixString = ''
 
