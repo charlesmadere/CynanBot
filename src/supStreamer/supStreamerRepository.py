@@ -67,7 +67,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
                 WHERE chatteruserid = $1 AND twitchchannelid = $2
                 LIMIT 1
             ''',
-            chatterUserId, twitchChannelId
+            chatterUserId, twitchChannelId,
         )
 
         await connection.close()
@@ -77,7 +77,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
             supStreamerChatter = SupStreamerChatter(
                 mostRecentSup = datetime.fromisoformat(record[0]),
                 twitchChannelId = twitchChannelId,
-                userId = chatterUserId
+                userId = chatterUserId,
             )
 
         cache[chatterUserId] = supStreamerChatter
@@ -139,7 +139,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
         self.__caches[twitchChannelId][chatterUserId] = SupStreamerChatter(
             mostRecentSup = mostRecentSup,
             twitchChannelId = twitchChannelId,
-            userId = chatterUserId
+            userId = chatterUserId,
         )
 
         connection = await self.__getDatabaseConnection()
@@ -149,7 +149,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
                 VALUES ($1, $2, $3)
                 ON CONFLICT (chatteruserid, twitchchannelid) DO UPDATE SET mostrecentsup = EXCLUDED.mostrecentsup
             ''',
-            chatterUserId, mostRecentSup.isoformat(), twitchChannelId
+            chatterUserId, mostRecentSup.isoformat(), twitchChannelId,
         )
 
         await connection.close()

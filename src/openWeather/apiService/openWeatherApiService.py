@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from .openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
 from .openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
@@ -20,7 +21,7 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
         networkClientProvider: NetworkClientProvider,
         openWeatherApiKeyProvider: OpenWeatherApiKeyProvider,
         openWeatherJsonMapper: OpenWeatherJsonMapperInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(networkClientProvider, NetworkClientProvider):
             raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
@@ -31,10 +32,10 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__networkClientProvider: NetworkClientProvider = networkClientProvider
-        self.__openWeatherApiKeyProvider: OpenWeatherApiKeyProvider = openWeatherApiKeyProvider
-        self.__openWeatherJsonMapper: OpenWeatherJsonMapperInterface = openWeatherJsonMapper
-        self.__timber: TimberInterface = timber
+        self.__networkClientProvider: Final[NetworkClientProvider] = networkClientProvider
+        self.__openWeatherApiKeyProvider: Final[OpenWeatherApiKeyProvider] = openWeatherApiKeyProvider
+        self.__openWeatherJsonMapper: Final[OpenWeatherJsonMapperInterface] = openWeatherJsonMapper
+        self.__timber: Final[TimberInterface] = timber
 
     async def fetchAirPollutionReport(self, location: Location) -> OpenWeatherAirPollutionReport:
         if not isinstance(location, Location):
@@ -49,7 +50,7 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
                 url = f'http://api.openweathermap.org/data/2.5/air_pollution?appid={openWeatherApiKey}&lat={location.latitude}&lon={location.longitude}'
             )
         except GenericNetworkException as e:
-            self.__timber.log('OpenWeatherApiService', f'Encountered network error when fetching weather ({location=}): {e}', e, traceback.format_exc())
+            self.__timber.log('OpenWeatherApiService', f'Encountered network error when fetching weather ({location=})', e, traceback.format_exc())
             raise GenericNetworkException(f'OpenWeatherApiService encountered network error when fetching weather ({location=}): {e}')
 
         responseStatusCode = response.statusCode
@@ -58,11 +59,14 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('OpenWeatherApiService', f'Encountered non-200 HTTP status code when fetching weather ({location=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
-            raise GenericNetworkException(f'OpenWeatherApiService encountered non-200 HTTP status code when fetching weather ({location=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+            raise GenericNetworkException(
+                message = f'OpenWeatherApiService encountered non-200 HTTP status code when fetching weather ({location=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})',
+                statusCode = responseStatusCode,
+            )
 
         airPollutionReport = await self.__openWeatherJsonMapper.parseAirPollutionReport(
             jsonContents = jsonResponse,
-            timeZone = location.timeZone
+            timeZone = location.timeZone,
         )
 
         if airPollutionReport is None:
@@ -84,7 +88,7 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
                 url = f'https://api.openweathermap.org/data/3.0/onecall?appid={openWeatherApiKey}&lang=en&lat={location.latitude}&lon={location.longitude}&exclude=minutely,hourly&units=metric'
             )
         except GenericNetworkException as e:
-            self.__timber.log('OpenWeatherApiService', f'Encountererd network error when fetching weather ({location=}): {e}', e, traceback.format_exc())
+            self.__timber.log('OpenWeatherApiService', f'Encountered network error when fetching weather ({location=})', e, traceback.format_exc())
             raise GenericNetworkException(f'OpenWeatherApiService encountered network error when fetching weather ({location=}): {e}')
 
         responseStatusCode = response.statusCode
@@ -93,7 +97,10 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('OpenWeatherApiService', f'Encountered non-200 HTTP status code when fetching weather ({location=})) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
-            raise GenericNetworkException(f'OpenWeatherApiService encountered non-200 HTTP status code when fetching weather ({location=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+            raise GenericNetworkException(
+                message = f'OpenWeatherApiService encountered non-200 HTTP status code when fetching weather ({location=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})',
+                statusCode = responseStatusCode,
+            )
 
         weatherReport = await self.__openWeatherJsonMapper.parseWeatherReport(jsonResponse)
 
