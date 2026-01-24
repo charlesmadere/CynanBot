@@ -231,25 +231,17 @@ cutenessRepository: CutenessRepositoryInterface = CutenessRepository(
     userIdsRepository = userIdsRepository
 )
 
-bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
+bannedWordsRepository: Final[BannedWordsRepositoryInterface] = BannedWordsRepository(
     bannedWordsLinesReader = LinesFileReader(
         eventLoop = eventLoop,
-        fileName = 'bannedWords.txt'
+        fileName = 'bannedWords.txt',
     ),
-    timber = timber
+    timber = timber,
 )
 
-contentScanner: ContentScannerInterface = ContentScanner(
+contentScanner: Final[ContentScannerInterface] = ContentScanner(
     bannedWordsRepository = bannedWordsRepository,
-    timber = timber
-)
-
-bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
-    bannedWordsLinesReader = LinesFileReader(
-        eventLoop = eventLoop,
-        fileName = 'bannedWords.txt'
-    ),
-    timber = timber
+    timber = timber,
 )
 
 triviaEmoteRepository: TriviaEmoteRepositoryInterface = TriviaEmoteRepository(
