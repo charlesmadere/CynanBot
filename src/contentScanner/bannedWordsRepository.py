@@ -1,6 +1,6 @@
 import re
 import traceback
-from typing import Pattern
+from typing import Final, Pattern
 
 from .absBannedWord import AbsBannedWord
 from .bannedPhrase import BannedPhrase
@@ -16,17 +16,17 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
     def __init__(
         self,
         bannedWordsLinesReader: LinesReaderInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(bannedWordsLinesReader, LinesReaderInterface):
             raise TypeError(f'bannedWordsLinesReader argument is malformed: \"{bannedWordsLinesReader}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__bannedWordsLinesReader: LinesReaderInterface = bannedWordsLinesReader
-        self.__timber: TimberInterface = timber
+        self.__bannedWordsLinesReader: Final[LinesReaderInterface] = bannedWordsLinesReader
+        self.__timber: Final[TimberInterface] = timber
 
-        self.__exactWordRegEx: Pattern = re.compile(r'^\"(.+)\"$', re.IGNORECASE)
+        self.__exactWordRegEx: Final[Pattern] = re.compile(r'^\"(.+)\"$', re.IGNORECASE)
         self.__cache: frozenset[AbsBannedWord] | None = None
 
     async def clearCaches(self):
@@ -35,7 +35,7 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
 
     def __createCleanedBannedWordsSetFromLines(
         self,
-        lines: list[str] | None
+        lines: list[str] | None,
     ) -> frozenset[AbsBannedWord]:
         if lines is not None and not isinstance(lines, list):
             raise TypeError(f'lines argument is malformed: \"{lines}\"')
