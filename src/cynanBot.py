@@ -1474,8 +1474,8 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__freeGiveChatterItemCommand.handleChatCommand(context)
 
-    @commands.command(name = 'gasha', aliases = [ 'gacha' ])
-    async def command_gasha(self, ctx: Context):
+    @commands.command(name = 'gashapon', aliases = [ 'gacha', 'gachapon', 'gasha' ])
+    async def command_gashapon(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getGashaponItemChatCommand.handleChatCommand(context)
 
