@@ -10,6 +10,7 @@ from .models.twitchChattersResponse import TwitchChattersResponse
 from .models.twitchEmotesResponse import TwitchEmotesResponse
 from .models.twitchEventSubRequest import TwitchEventSubRequest
 from .models.twitchEventSubResponse import TwitchEventSubResponse
+from .models.twitchFetchStreamsRequest import TwitchFetchStreamsRequest
 from .models.twitchFetchUserRequest import TwitchFetchUserRequest
 from .models.twitchFollowersResponse import TwitchFollowersResponse
 from .models.twitchLiveUserDetails import TwitchLiveUserDetails
@@ -18,6 +19,7 @@ from .models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncement
 from .models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from .models.twitchStartCommercialResponse import TwitchStartCommercialResponse
+from .models.twitchStreamsResponse import TwitchStreamsResponse
 from .models.twitchTokensDetails import TwitchTokensDetails
 from .models.twitchUnbanRequest import TwitchUnbanRequest
 from .models.twitchUserSubscriptionsResponse import TwitchUserSubscriptionsResponse
@@ -135,6 +137,14 @@ class TwitchApiServiceInterface(ABC):
         twitchAccessToken: str,
         userId: str,
     ) -> TwitchModeratorsResponse:
+        pass
+
+    @abstractmethod
+    async def fetchStreams(
+        self,
+        twitchAccessToken: str,
+        fetchStreamsRequest: TwitchFetchStreamsRequest,
+    ) -> TwitchStreamsResponse:
         pass
 
     @abstractmethod
