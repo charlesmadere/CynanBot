@@ -10,6 +10,7 @@ from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
 from ..models.itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from ..models.itemDetails.bananaItemDetails import BananaItemDetails
 from ..models.itemDetails.gashaponItemDetails import GashaponItemDetails
+from ..models.itemDetails.gashaponItemPullRate import GashaponItemPullRate
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 from ..models.itemDetails.tm36ItemDetails import Tm36ItemDetails
 from ..models.itemDetails.voreItemDetails import VoreItemDetails
@@ -130,30 +131,45 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         if not isinstance(itemDetailsJson, dict) or len(itemDetailsJson) == 0:
             return None
 
-        pullRatesJson: dict[str, float | int] | Any | None = itemDetailsJson.get('pullRates', None)
-        if not isinstance(pullRatesJson, dict) or len(pullRatesJson) == 0:
-            return None
+        pullRatesJson: dict[str, dict[str, Any]] | Any | None = itemDetailsJson.get('pullRates')
+        pullRates: dict[ChatterItemType, GashaponItemPullRate] = dict()
 
-        iterations = utils.getIntFromDict(itemDetailsJson, 'iterations', fallback = 1)
-        pullRates: dict[ChatterItemType, float] = dict()
-
-        for itemTypeString, pullRate in pullRatesJson.items():
-            itemType = await self.requireItemType(itemTypeString)
-
-            if utils.isValidNum(pullRate):
-                pullRate = max(min(pullRate, 1.0), 0.0)
-            else:
-                pullRate = 0.0
-
-            pullRates[itemType] = float(pullRate)
+        if isinstance(pullRatesJson, dict) and len(pullRatesJson) >= 1:
+            for itemTypeString, pullRateJson in pullRatesJson.items():
+                itemType = await self.requireItemType(itemTypeString)
+                pullRate = await self.requireGashaponItemPullRate(pullRateJson)
+                pullRates[itemType] = pullRate
 
         for itemType in ChatterItemType:
             if itemType not in pullRates:
-                pullRates[itemType] = 0.0
+                pullRates[itemType] = GashaponItemPullRate(
+                    pullRate = 0.0,
+                    iterations = 0,
+                    maximumPullAmount = 0,
+                    minimumPullAmount = 0,
+                )
 
         return GashaponItemDetails(
             pullRates = frozendict(pullRates),
+        )
+
+    async def parseGashaponItemPullRate(
+        self,
+        pullRateJson: dict[str, Any] | Any | None,
+    ) -> GashaponItemPullRate | None:
+        if not isinstance(pullRateJson, dict) or len(pullRateJson) == 0:
+            return None
+
+        pullRate = utils.getFloatFromDict(pullRateJson, 'pullRate')
+        iterations = utils.getIntFromDict(pullRateJson, 'iterations', fallback = 1)
+        maximumPullAmount = utils.getIntFromDict(pullRateJson, 'maximumPullAmount', fallback = 1)
+        minimumPullAmount = utils.getIntFromDict(pullRateJson, 'minimumPullAmount', fallback = 0)
+
+        return GashaponItemPullRate(
+            pullRate = pullRate,
             iterations = iterations,
+            maximumPullAmount = maximumPullAmount,
+            minimumPullAmount = minimumPullAmount,
         )
 
     async def parseGrenadeItemDetails(
@@ -233,9 +249,20 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
             timeoutDurationSeconds = timeoutDurationSeconds,
         )
 
+    async def requireGashaponItemPullRate(
+        self,
+        pullRateJson: dict[str, Any] | Any | None,
+    ) -> GashaponItemPullRate:
+        result = await self.parseGashaponItemPullRate(pullRateJson)
+
+        if result is None:
+            raise ValueError(f'Unable to parse \"{pullRateJson}\" into GashaponItemPullRate value!')
+
+        return result
+
     async def requireItemType(
         self,
-        itemType: str | Any | None
+        itemType: str | Any | None,
     ) -> ChatterItemType:
         result = await self.parseItemType(itemType)
 
@@ -246,7 +273,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
     async def serializeInventory(
         self,
-        inventory: dict[ChatterItemType, int] | frozendict[ChatterItemType, int]
+        inventory: dict[ChatterItemType, int] | frozendict[ChatterItemType, int],
     ) -> dict[str, int]:
         if not isinstance(inventory, dict):
             raise TypeError(f'inventory argument is malformed: \"{inventory}\"')
@@ -255,7 +282,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
         for itemType in ChatterItemType:
             itemTypeString = await self.serializeItemType(itemType)
-            itemTypeAmount = max(0, inventory.get(itemType, 0))
+            itemTypeAmount = int(max(0, inventory.get(itemType, 0)))
 
             if itemTypeAmount >= 1:
                 inventoryJson[itemTypeString] = itemTypeAmount
@@ -264,7 +291,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
     async def serializeItemType(
         self,
-        itemType: ChatterItemType
+        itemType: ChatterItemType,
     ) -> str:
         if not isinstance(itemType, ChatterItemType):
             raise TypeError(f'itemType argument is malformed: \"{itemType}\"')

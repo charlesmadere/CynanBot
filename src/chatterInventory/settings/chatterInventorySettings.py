@@ -9,6 +9,7 @@ from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
 from ..models.itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from ..models.itemDetails.bananaItemDetails import BananaItemDetails
 from ..models.itemDetails.gashaponItemDetails import GashaponItemDetails
+from ..models.itemDetails.gashaponItemPullRate import GashaponItemPullRate
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 from ..models.itemDetails.tm36ItemDetails import Tm36ItemDetails
 from ..models.itemDetails.voreItemDetails import VoreItemDetails
@@ -37,16 +38,55 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         ),
         defaultGashaponItemDetails: GashaponItemDetails = GashaponItemDetails(
             pullRates = frozendict({
-                ChatterItemType.AIR_STRIKE: 0.0,
-                ChatterItemType.ANIMAL_PET: 0.0,
-                ChatterItemType.BANANA: 0.0,
-                ChatterItemType.CASSETTE_TAPE: 0.0,
-                ChatterItemType.GASHAPON: 0.0,
-                ChatterItemType.GRENADE: 0.0,
-                ChatterItemType.TM_36: 0.0,
-                ChatterItemType.VORE: 0.0,
+                ChatterItemType.AIR_STRIKE: GashaponItemPullRate(
+                    pullRate = 0.25,
+                    iterations = 1,
+                    maximumPullAmount = 1,
+                    minimumPullAmount = 0,
+                ),
+                ChatterItemType.ANIMAL_PET: GashaponItemPullRate(
+                    pullRate = 0.9,
+                    iterations = 1,
+                    maximumPullAmount = 1,
+                    minimumPullAmount = 1,
+                ),
+                ChatterItemType.BANANA: GashaponItemPullRate(
+                    pullRate = 0.2,
+                    iterations = 1,
+                    maximumPullAmount = 2,
+                    minimumPullAmount = 0,
+                ),
+                ChatterItemType.CASSETTE_TAPE: GashaponItemPullRate(
+                    pullRate = 0.2,
+                    iterations = 1,
+                    maximumPullAmount = 1,
+                    minimumPullAmount = 0,
+                ),
+                ChatterItemType.GASHAPON: GashaponItemPullRate(
+                    pullRate = 0.01,
+                    iterations = 1,
+                    maximumPullAmount = 1,
+                    minimumPullAmount = 1,
+                ),
+                ChatterItemType.GRENADE: GashaponItemPullRate(
+                    pullRate = 0.75,
+                    iterations = 2,
+                    maximumPullAmount = 2,
+                    minimumPullAmount = 1,
+                ),
+                ChatterItemType.TM_36: GashaponItemPullRate(
+                    pullRate = 0.1,
+                    iterations = 1,
+                    maximumPullAmount = 1,
+                    minimumPullAmount = 0,
+                ),
+                ChatterItemType.VORE: GashaponItemPullRate(
+                    pullRate = 0.0,
+                    iterations = 0,
+                    maximumPullAmount = 0,
+                    minimumPullAmount = 0,
+                ),
             }),
-            iterations = 3,
         ),
         defaultGrenadeItemDetails: GrenadeItemDetails = GrenadeItemDetails(
             maxDurationSeconds = 48,
@@ -54,8 +94,8 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         ),
         defaultDaysBetweenGashaponRewards: int = 28,
         defaultTm36ItemDetails: Tm36ItemDetails = Tm36ItemDetails(
-            maxDurationSeconds = 300, # 5 minutes
-            minDurationSeconds = 1800, # 30 minutes
+            maxDurationSeconds = 180, # 3 minutes
+            minDurationSeconds = 1200, # 20 minutes
         ),
         defaultVoreItemDetails: VoreItemDetails = VoreItemDetails(
             timeoutDurationSeconds = 86400, # 1 day
@@ -107,14 +147,14 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
     async def areDiceRollsEnabled(self) -> bool:
         jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'diceRollsEnabled', True)
+        return utils.getBoolFromDict(jsonContents, 'diceRollsEnabled', fallback = False)
 
     async def clearCaches(self):
         self.__cache = None
 
     async def getAirStrikeItemDetails(self) -> AirStrikeItemDetails:
         jsonContents = await self.__readJson()
-        itemDetailsJson = jsonContents.get('airStrikeItemDetails', None)
+        itemDetailsJson = jsonContents.get('airStrikeItemDetails')
         itemDetails = await self.__chatterInventoryMapper.parseAirStrikeItemDetails(itemDetailsJson)
 
         if itemDetails is None:
@@ -124,7 +164,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
     async def getAnimalPetItemDetails(self) -> AnimalPetItemDetails:
         jsonContents = await self.__readJson()
-        itemDetailsJson = jsonContents.get('animalPetItemDetails', None)
+        itemDetailsJson = jsonContents.get('animalPetItemDetails')
         itemDetails = await self.__chatterInventoryMapper.parseAnimalPetItemDetails(itemDetailsJson)
 
         if itemDetails is None:
@@ -134,7 +174,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
     async def getBananaItemDetails(self) -> BananaItemDetails:
         jsonContents = await self.__readJson()
-        itemDetailsJson = jsonContents.get('bananaItemDetails', None)
+        itemDetailsJson = jsonContents.get('bananaItemDetails')
         itemDetails = await self.__chatterInventoryMapper.parseBananaItemDetails(itemDetailsJson)
 
         if itemDetails is None:
@@ -152,7 +192,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
     async def getEnabledItemTypes(self) -> frozenset[ChatterItemType]:
         jsonContents = await self.__readJson()
-        enabledItemTypesStrings: list[str] | None = jsonContents.get('enabledItemTypes', None)
+        enabledItemTypesStrings = jsonContents.get('enabledItemTypes')
 
         if enabledItemTypesStrings is None:
             return self.__defaultEnabledItemTypes
@@ -166,26 +206,30 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
     async def getGashaponItemDetails(self) -> GashaponItemDetails:
         jsonContents = await self.__readJson()
-        itemDetailsJson = jsonContents.get('gashaponItemDetails', None)
+        itemDetailsJson = jsonContents.get('gashaponItemDetails')
         itemDetails = await self.__chatterInventoryMapper.parseGashaponItemDetails(itemDetailsJson)
 
         if itemDetails is None:
             itemDetails = self.__defaultGashaponItemDetails
 
-        hydratedPullRates: dict[ChatterItemType, float] = dict(itemDetails.pullRates)
+        hydratedPullRates: dict[ChatterItemType, GashaponItemPullRate] = dict(itemDetails.pullRates)
 
         for itemType in ChatterItemType:
             if itemType not in hydratedPullRates:
-                hydratedPullRates[itemType] = 0.0
+                hydratedPullRates[itemType] = GashaponItemPullRate(
+                    pullRate = 0.0,
+                    iterations = 0,
+                    maximumPullAmount = 0,
+                    minimumPullAmount = 0,
+                )
 
         return GashaponItemDetails(
             pullRates = frozendict(hydratedPullRates),
-            iterations = itemDetails.iterations,
         )
 
     async def getGrenadeItemDetails(self) -> GrenadeItemDetails:
         jsonContents = await self.__readJson()
-        itemDetailsJson = jsonContents.get('grenadeItemDetails', None)
+        itemDetailsJson = jsonContents.get('grenadeItemDetails')
         itemDetails = await self.__chatterInventoryMapper.parseGrenadeItemDetails(itemDetailsJson)
 
         if itemDetails is None:
@@ -195,7 +239,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
     async def getTm36ItemDetails(self) -> Tm36ItemDetails:
         jsonContents = await self.__readJson()
-        itemDetailsJson = jsonContents.get('tm36ItemDetails', None)
+        itemDetailsJson = jsonContents.get('tm36ItemDetails')
         itemDetails = await self.__chatterInventoryMapper.parseTm36ItemDetails(itemDetailsJson)
 
         if itemDetails is None:
@@ -205,7 +249,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
     async def getVoreItemDetails(self) -> VoreItemDetails:
         jsonContents = await self.__readJson()
-        itemDetailsJson = jsonContents.get('voreItemDetails', None)
+        itemDetailsJson = jsonContents.get('voreItemDetails')
         itemDetails = await self.__chatterInventoryMapper.parseVoreItemDetails(itemDetailsJson)
 
         if itemDetails is None:
@@ -215,7 +259,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
     async def isEnabled(self) -> bool:
         jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'enabled', False)
+        return utils.getBoolFromDict(jsonContents, 'enabled', fallback = False)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:

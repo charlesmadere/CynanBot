@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.chatterInventory.mappers.chatterInventoryMapper import ChatterInventoryMapper
@@ -8,9 +10,9 @@ from src.chatterInventory.models.chatterItemType import ChatterItemType
 
 class TestItemRequestMessageParser:
 
-    chatterInventoryMapper: ChatterInventoryMapperInterface = ChatterInventoryMapper()
+    chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = ChatterInventoryMapper()
 
-    parser = ItemRequestMessageParser(
+    parser: Final[ItemRequestMessageParser] = ItemRequestMessageParser(
         chatterInventoryMapper = chatterInventoryMapper,
     )
 

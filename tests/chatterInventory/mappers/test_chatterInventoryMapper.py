@@ -1,4 +1,5 @@
 import random
+from typing import Final
 
 import pytest
 from frozendict import frozendict
@@ -9,6 +10,8 @@ from src.chatterInventory.models.chatterItemType import ChatterItemType
 from src.chatterInventory.models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
 from src.chatterInventory.models.itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from src.chatterInventory.models.itemDetails.bananaItemDetails import BananaItemDetails
+from src.chatterInventory.models.itemDetails.gashaponItemDetails import GashaponItemDetails
+from src.chatterInventory.models.itemDetails.gashaponItemPullRate import GashaponItemPullRate
 from src.chatterInventory.models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 from src.chatterInventory.models.itemDetails.tm36ItemDetails import Tm36ItemDetails
 from src.chatterInventory.models.itemDetails.voreItemDetails import VoreItemDetails
@@ -16,7 +19,7 @@ from src.chatterInventory.models.itemDetails.voreItemDetails import VoreItemDeta
 
 class TestChatterInventoryMapper:
 
-    mapper: ChatterInventoryMapperInterface = ChatterInventoryMapper()
+    mapper: Final[ChatterInventoryMapperInterface] = ChatterInventoryMapper()
 
     @pytest.mark.asyncio
     async def test_parseAirStrikeItemDetails(self):
@@ -103,6 +106,143 @@ class TestChatterInventoryMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseGashaponItemDetails(self):
+        airStrikePullRate = GashaponItemPullRate(
+            pullRate = 0.25,
+            iterations = 2,
+            maximumPullAmount = 2,
+            minimumPullAmount = 0,
+        )
+
+        animalPetPullRate = GashaponItemPullRate(
+            pullRate = 0.6,
+            iterations = 2,
+            maximumPullAmount = 2,
+            minimumPullAmount = 1,
+        )
+
+        bananaPullRate = GashaponItemPullRate(
+            pullRate = 0.5,
+            iterations = 2,
+            maximumPullAmount = 2,
+            minimumPullAmount = 0,
+        )
+
+        cassetteTapePullRate = GashaponItemPullRate(
+            pullRate = 0.2,
+            iterations = 1,
+            maximumPullAmount = 1,
+            minimumPullAmount = 0,
+        )
+
+        gashaponPullRate = GashaponItemPullRate(
+            pullRate = 0.01,
+            iterations = 1,
+            maximumPullAmount = 1,
+            minimumPullAmount = 1,
+        )
+
+        grenadePullRate = GashaponItemPullRate(
+            pullRate = 0.75,
+            iterations = 2,
+            maximumPullAmount = 2,
+            minimumPullAmount = 1,
+        )
+
+        tm36PullRate = GashaponItemPullRate(
+            pullRate = 0.2,
+            iterations = 1,
+            maximumPullAmount = 1,
+            minimumPullAmount = 0,
+        )
+
+        vorePullRate = GashaponItemPullRate(
+            pullRate = 0.0,
+            iterations = 0,
+            maximumPullAmount = 0,
+            minimumPullAmount = 0,
+        )
+
+        gashaponItemDetails = GashaponItemDetails(
+            pullRates = frozendict({
+                ChatterItemType.AIR_STRIKE: airStrikePullRate,
+                ChatterItemType.ANIMAL_PET: animalPetPullRate,
+                ChatterItemType.BANANA: bananaPullRate,
+                ChatterItemType.CASSETTE_TAPE: cassetteTapePullRate,
+                ChatterItemType.GASHAPON: gashaponPullRate,
+                ChatterItemType.GRENADE: grenadePullRate,
+                ChatterItemType.TM_36: tm36PullRate,
+                ChatterItemType.VORE: vorePullRate,
+            }),
+        )
+
+        result = await self.mapper.parseGashaponItemDetails({
+            'pullRates': {
+                await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE): {
+                    'pullRate': airStrikePullRate.pullRate,
+                    'iterations': airStrikePullRate.iterations,
+                    'maximumPullAmount': airStrikePullRate.maximumPullAmount,
+                    'minimumPullAmount': airStrikePullRate.minimumPullAmount,
+                },
+                await self.mapper.serializeItemType(ChatterItemType.ANIMAL_PET): {
+                    'pullRate': animalPetPullRate.pullRate,
+                    'iterations': animalPetPullRate.iterations,
+                    'maximumPullAmount': animalPetPullRate.maximumPullAmount,
+                    'minimumPullAmount': animalPetPullRate.minimumPullAmount,
+                },
+                await self.mapper.serializeItemType(ChatterItemType.BANANA): {
+                    'pullRate': bananaPullRate.pullRate,
+                    'iterations': bananaPullRate.iterations,
+                    'maximumPullAmount': bananaPullRate.maximumPullAmount,
+                    'minimumPullAmount': bananaPullRate.minimumPullAmount,
+                },
+                await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE): {
+                    'pullRate': cassetteTapePullRate.pullRate,
+                    'iterations': cassetteTapePullRate.iterations,
+                    'maximumPullAmount': cassetteTapePullRate.maximumPullAmount,
+                    'minimumPullAmount': cassetteTapePullRate.minimumPullAmount,
+                },
+                await self.mapper.serializeItemType(ChatterItemType.GASHAPON): {
+                    'pullRate': gashaponPullRate.pullRate,
+                    'iterations': gashaponPullRate.iterations,
+                    'maximumPullAmount': gashaponPullRate.maximumPullAmount,
+                    'minimumPullAmount': gashaponPullRate.minimumPullAmount,
+                },
+                await self.mapper.serializeItemType(ChatterItemType.GRENADE): {
+                    'pullRate': grenadePullRate.pullRate,
+                    'iterations': grenadePullRate.iterations,
+                    'maximumPullAmount': grenadePullRate.maximumPullAmount,
+                    'minimumPullAmount': grenadePullRate.minimumPullAmount,
+                },
+                await self.mapper.serializeItemType(ChatterItemType.TM_36): {
+                    'pullRate': tm36PullRate.pullRate,
+                    'iterations': tm36PullRate.iterations,
+                    'maximumPullAmount': tm36PullRate.maximumPullAmount,
+                    'minimumPullAmount': tm36PullRate.minimumPullAmount,
+                },
+                await self.mapper.serializeItemType(ChatterItemType.VORE): {
+                    'pullRate': vorePullRate.pullRate,
+                    'iterations': vorePullRate.iterations,
+                    'maximumPullAmount': vorePullRate.maximumPullAmount,
+                    'minimumPullAmount': vorePullRate.minimumPullAmount,
+                },
+            },
+        })
+
+        assert isinstance(result, GashaponItemDetails)
+        assert result == gashaponItemDetails
+
+        assert len(result.pullRates) == len(ChatterItemType)
+        assert result[ChatterItemType.AIR_STRIKE] == airStrikePullRate
+        assert result[ChatterItemType.ANIMAL_PET] == animalPetPullRate
+        assert result[ChatterItemType.BANANA] == bananaPullRate
+        assert result[ChatterItemType.CASSETTE_TAPE] == cassetteTapePullRate
+        assert result[ChatterItemType.GASHAPON] == gashaponPullRate
+        assert result[ChatterItemType.GRENADE] == grenadePullRate
+        assert result[ChatterItemType.TM_36] == tm36PullRate
+        assert result[ChatterItemType.VORE] == vorePullRate
+
+    @pytest.mark.asyncio
     async def test_parseGashaponItemDetails_withEmptyDictionary(self):
         result = await self.mapper.parseGashaponItemDetails(dict())
         assert result is None
@@ -110,6 +250,79 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_parseGashaponItemDetails_withNone(self):
         result = await self.mapper.parseGashaponItemDetails(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseGashaponItemPullRate(self):
+        itemPullRate = GashaponItemPullRate(
+            pullRate = 0.5,
+            iterations = 2,
+            maximumPullAmount = 3,
+            minimumPullAmount = 1,
+        )
+
+        result = await self.mapper.parseGashaponItemPullRate({
+            'pullRate': itemPullRate.pullRate,
+            'iterations': itemPullRate.iterations,
+            'maximumPullAmount': itemPullRate.maximumPullAmount,
+            'minimumPullAmount': itemPullRate.minimumPullAmount,
+        })
+
+        assert isinstance(result, GashaponItemPullRate)
+        assert result == itemPullRate
+        assert result.pullRate == itemPullRate.pullRate
+        assert result.iterations == itemPullRate.iterations
+        assert result.maximumPullAmount == itemPullRate.maximumPullAmount
+        assert result.minimumPullAmount == itemPullRate.minimumPullAmount
+
+    @pytest.mark.asyncio
+    async def test_parseGashaponItemPullRate2(self):
+        itemPullRate = GashaponItemPullRate(
+            pullRate = 0.125,
+            iterations = 1,
+            maximumPullAmount = 1,
+            minimumPullAmount = 0,
+        )
+
+        result = await self.mapper.parseGashaponItemPullRate({
+            'pullRate': itemPullRate.pullRate,
+        })
+
+        assert isinstance(result, GashaponItemPullRate)
+        assert result == itemPullRate
+        assert result.pullRate == itemPullRate.pullRate
+        assert result.iterations == itemPullRate.iterations
+        assert result.maximumPullAmount == itemPullRate.maximumPullAmount
+        assert result.minimumPullAmount == itemPullRate.minimumPullAmount
+
+    @pytest.mark.asyncio
+    async def test_parseGashaponItemPullRate_withEmptyDictionary(self):
+        result = await self.mapper.parseGashaponItemPullRate(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseGashaponItemPullRate_withMinimalJson(self):
+        itemPullRate = GashaponItemPullRate(
+            pullRate = 0.5,
+            iterations = 1,
+            maximumPullAmount = 1,
+            minimumPullAmount = 0,
+        )
+
+        result = await self.mapper.parseGashaponItemPullRate({
+            'pullRate': itemPullRate.pullRate,
+        })
+
+        assert isinstance(result, GashaponItemPullRate)
+        assert result == itemPullRate
+        assert result.pullRate == itemPullRate.pullRate
+        assert result.iterations == itemPullRate.iterations
+        assert result.maximumPullAmount == itemPullRate.maximumPullAmount
+        assert result.minimumPullAmount == itemPullRate.minimumPullAmount
+
+    @pytest.mark.asyncio
+    async def test_parseGashaponItemPullRate_withNone(self):
+        result = await self.mapper.parseGashaponItemPullRate(None)
         assert result is None
 
     @pytest.mark.asyncio
@@ -532,6 +745,67 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_parseVoreItemDetails_withNone(self):
         result = await self.mapper.parseVoreItemDetails(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireGashaponItemPullRate(self):
+        itemPullRate = GashaponItemPullRate(
+            pullRate = 0.75,
+            iterations = 1,
+            maximumPullAmount = 2,
+            minimumPullAmount = 0,
+        )
+
+        result = await self.mapper.requireGashaponItemPullRate({
+            'pullRate': itemPullRate.pullRate,
+            'iterations': itemPullRate.iterations,
+            'maximumPullAmount': itemPullRate.maximumPullAmount,
+            'minimumPullAmount': itemPullRate.minimumPullAmount,
+        })
+
+        assert isinstance(result, GashaponItemPullRate)
+        assert result == itemPullRate
+        assert result.pullRate == itemPullRate.pullRate
+        assert result.iterations == itemPullRate.iterations
+        assert result.maximumPullAmount == itemPullRate.maximumPullAmount
+        assert result.minimumPullAmount == itemPullRate.minimumPullAmount
+
+    @pytest.mark.asyncio
+    async def test_requireGashaponItemPullRate2(self):
+        itemPullRate = GashaponItemPullRate(
+            pullRate = 0.9,
+            iterations = 1,
+            maximumPullAmount = 1,
+            minimumPullAmount = 0,
+        )
+
+        result = await self.mapper.requireGashaponItemPullRate({
+            'pullRate': itemPullRate.pullRate,
+        })
+
+        assert isinstance(result, GashaponItemPullRate)
+        assert result == itemPullRate
+        assert result.pullRate == itemPullRate.pullRate
+        assert result.iterations == itemPullRate.iterations
+        assert result.maximumPullAmount == itemPullRate.maximumPullAmount
+        assert result.minimumPullAmount == itemPullRate.minimumPullAmount
+
+    @pytest.mark.asyncio
+    async def test_requireGashaponItemPullRate_withEmptyDictionary(self):
+        result: GashaponItemPullRate | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.mapper.requireGashaponItemPullRate(dict())
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireGashaponItemPullRate_withNone(self):
+        result: GashaponItemPullRate | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.mapper.requireGashaponItemPullRate(None)
+
         assert result is None
 
     @pytest.mark.asyncio

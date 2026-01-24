@@ -8,6 +8,7 @@ from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
 from ..models.itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from ..models.itemDetails.bananaItemDetails import BananaItemDetails
 from ..models.itemDetails.gashaponItemDetails import GashaponItemDetails
+from ..models.itemDetails.gashaponItemPullRate import GashaponItemPullRate
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
 from ..models.itemDetails.tm36ItemDetails import Tm36ItemDetails
 from ..models.itemDetails.voreItemDetails import VoreItemDetails
@@ -41,6 +42,13 @@ class ChatterInventoryMapperInterface(ABC):
         self,
         itemDetailsJson: dict[str, Any] | Any | None,
     ) -> GashaponItemDetails | None:
+        pass
+
+    @abstractmethod
+    async def parseGashaponItemPullRate(
+        self,
+        pullRateJson: dict[str, Any] | Any | None,
+    ) -> GashaponItemPullRate | None:
         pass
 
     @abstractmethod
@@ -79,22 +87,29 @@ class ChatterInventoryMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def requireGashaponItemPullRate(
+        self,
+        pullRateJson: dict[str, Any] | Any | None,
+    ) -> GashaponItemPullRate:
+        pass
+
+    @abstractmethod
     async def requireItemType(
         self,
-        itemType: str | Any | None
+        itemType: str | Any | None,
     ) -> ChatterItemType:
         pass
 
     @abstractmethod
     async def serializeInventory(
         self,
-        inventory: dict[ChatterItemType, int] | frozendict[ChatterItemType, int]
+        inventory: dict[ChatterItemType, int] | frozendict[ChatterItemType, int],
     ) -> dict[str, int]:
         pass
 
     @abstractmethod
     async def serializeItemType(
         self,
-        itemType: ChatterItemType
+        itemType: ChatterItemType,
     ) -> str:
         pass

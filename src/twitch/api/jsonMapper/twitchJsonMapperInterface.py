@@ -69,7 +69,9 @@ from ..models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from ..models.twitchSendChatMessageResponseEntry import TwitchSendChatMessageResponseEntry
 from ..models.twitchStartCommercialDetails import TwitchStartCommercialDetails
 from ..models.twitchStartCommercialResponse import TwitchStartCommercialResponse
+from ..models.twitchStream import TwitchStream
 from ..models.twitchStreamType import TwitchStreamType
+from ..models.twitchStreamsResponse import TwitchStreamsResponse
 from ..models.twitchSub import TwitchSub
 from ..models.twitchSubGift import TwitchSubGift
 from ..models.twitchSubscriberTier import TwitchSubscriberTier
@@ -537,14 +539,28 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseStartCommercialResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchStartCommercialResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseStream(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchStream | None:
+        pass
+
+    @abstractmethod
+    async def parseStreamsResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchStreamsResponse | None:
         pass
 
     @abstractmethod
     async def parseStreamType(
         self,
-        streamType: str | Any | None
+        streamType: str | Any | None,
     ) -> TwitchStreamType:
         pass
 

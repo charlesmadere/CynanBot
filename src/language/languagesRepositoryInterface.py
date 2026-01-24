@@ -8,7 +8,7 @@ class LanguagesRepositoryInterface(ABC):
     @abstractmethod
     async def getAllWotdApiCodes(
         self,
-        delimiter: str = ', '
+        delimiter: str = ', ',
     ) -> str:
         pass
 
@@ -16,7 +16,7 @@ class LanguagesRepositoryInterface(ABC):
     async def getExampleLanguageEntry(
         self,
         hasIso6391Code: bool | None = None,
-        hasWotdApiCode: bool | None = None
+        hasWotdApiCode: bool | None = None,
     ) -> LanguageEntry:
         pass
 
@@ -25,21 +25,21 @@ class LanguagesRepositoryInterface(ABC):
         self,
         command: str,
         hasIso6391Code: bool | None = None,
-        hasWotdApiCode: bool | None = None
+        hasWotdApiCode: bool | None = None,
     ) -> LanguageEntry | None:
         pass
 
     @abstractmethod
     async def getLanguageForIso6391Code(
         self,
-        iso6391Code: str
+        iso6391Code: str,
     ) -> LanguageEntry | None:
         pass
 
     @abstractmethod
     async def getLanguageForWotdApiCode(
         self,
-        wotdApiCode: str
+        wotdApiCode: str,
     ) -> LanguageEntry | None:
         pass
 
@@ -48,13 +48,13 @@ class LanguagesRepositoryInterface(ABC):
         self,
         command: str,
         hasIso6391Code: bool | None = None,
-        hasWotdApiCode: bool | None = None
+        hasWotdApiCode: bool | None = None,
     ) -> LanguageEntry:
         pass
 
     @abstractmethod
     async def requireLanguageForWotdApiCode(
         self,
-        wotdApiCode: str
+        wotdApiCode: str,
     ) -> LanguageEntry:
         pass
