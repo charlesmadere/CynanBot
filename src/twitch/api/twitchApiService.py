@@ -604,8 +604,11 @@ class TwitchApiService(TwitchApiServiceInterface):
             await response.close()
 
             if responseStatusCode != 200:
-                self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching EventSub subscriptions ({userId=}) ({pagination=}) ({response=}): {responseStatusCode}')
-                raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching EventSub subscriptions ({userId=}) ({pagination=}) ({response=}): {responseStatusCode}')
+                self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching EventSub subscriptions ({userId=}) ({pagination=}) ({response=}) ({responseStatusCode=})')
+                raise GenericNetworkException(
+                    message = f'TwitchApiService encountered non-200 HTTP status code when fetching EventSub subscriptions ({userId=}) ({pagination=}) ({response=}) ({responseStatusCode=})',
+                    statusCode = responseStatusCode,
+                )
 
             newEventSubResponse = await self.__twitchJsonMapper.parseEventSubResponse(jsonResponse)
 
