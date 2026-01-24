@@ -363,7 +363,9 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         chatterInventory: ChatterInventoryData | None,
         action: UseChatterItemAction,
     ):
-        if action.ignoreInventory:
+        enabledItemTypes = await self.__chatterInventorySettings.getEnabledItemTypes()
+
+        if action.ignoreInventory or len(enabledItemTypes) == 0:
             # this item type just doesn't make any sense in the context of a disabled/ignored inventory
             await self.__submitEvent(DisabledItemTypeChatterItemEvent(
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
@@ -372,21 +374,30 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             return
 
         itemDetails = await self.__chatterInventorySettings.getGashaponItemDetails()
-        enabledItemTypes = await self.__chatterInventorySettings.getEnabledItemTypes()
         awardedItems: dict[ChatterItemType, int] = defaultdict(lambda: 0)
         itemsWereAwarded = False
 
-        for _ in range(itemDetails.iterations):
-            for itemType in enabledItemTypes:
-                if itemType is ChatterItemType.GASHAPON:
-                    # for now, let's not allow a gashapon to award another gashapon
-                    continue
+        for itemType, pullRate in itemDetails.pullRates.items():
+            if itemType not in enabledItemTypes:
+                continue
+            elif itemType is ChatterItemType.GASHAPON:
+                # for now, let's not allow a gashapon to award another gashapon
+                continue
 
+            awardedAmount = int(max(0, pullRate.minimumPullAmount))
+
+            for _ in range(pullRate.iterations):
                 randomNumber = random.random()
 
-                if randomNumber < itemDetails.pullRates[itemType]:
-                    awardedItems[itemType] += 1
-                    itemsWereAwarded = True
+                if randomNumber >= pullRate.pullRate:
+                    awardedAmount += 1
+
+            awardedAmount = int(min(awardedAmount, pullRate.maximumPullAmount))
+
+            if not itemsWereAwarded and awardedAmount >= 1:
+                itemsWereAwarded = True
+
+            awardedItems[itemType] = awardedAmount
 
         if not itemsWereAwarded:
             await self.__submitEvent(NoGashaponResultsChatterItemEvent(
