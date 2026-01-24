@@ -1086,14 +1086,14 @@ class CynanBot(
             exception = e
 
         if user is None or exception is not None:
-            self.__timber.log('CynanBot', f'Failed to join channel, and also failed to retrieve a user for this channel ({channel=}) ({userId=}) ({user=}): {exception}', exception, traceback.format_exc())
+            self.__timber.log('CynanBot', f'Failed to join channel, and also failed to retrieve a user for this channel ({channel=}) ({userId=}) ({user=})', exception, traceback.format_exc())
             return
 
         self.__timber.log('CynanBot', f'Failed to join channel ({channel=}) ({userId=}) ({user=}), disabling this user...')
 
         await self.__usersRepository.setUserEnabled(
             handle = user.handle,
-            enabled = False
+            enabled = False,
         )
 
         self.__timber.log('CynanBot', f'Finished disabling user due to channel join failure ({channel=}) ({userId=}) ({user=})')
