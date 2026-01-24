@@ -1441,7 +1441,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
     )
 )
 
-triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface = TriviaTwitchEmoteHelper(
+triviaTwitchEmoteHelper: Final[TriviaTwitchEmoteHelperInterface] = TriviaTwitchEmoteHelper(
     trollmojiHelper = trollmojiHelper,
 )
 

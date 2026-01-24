@@ -21,7 +21,7 @@ class TrollmojiHelperInterface(Clearable, ABC):
     async def getEmote(
         self,
         emoteText: str | None,
-        twitchEmoteChannelId: str
+        twitchEmoteChannelId: str,
     ) -> str | None:
         pass
 
