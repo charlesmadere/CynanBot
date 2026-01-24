@@ -1,7 +1,7 @@
 import traceback
 import urllib.parse
 from datetime import datetime, timedelta
-from typing import Any, Final
+from typing import Final
 
 from frozenlist import FrozenList
 
@@ -24,7 +24,6 @@ from .models.twitchFetchUserRequest import TwitchFetchUserRequest
 from .models.twitchFetchUserWithIdRequest import TwitchFetchUserWithIdRequest
 from .models.twitchFetchUserWithLoginRequest import TwitchFetchUserWithLoginRequest
 from .models.twitchFollowersResponse import TwitchFollowersResponse
-from .models.twitchLiveUserDetails import TwitchLiveUserDetails
 from .models.twitchModeratorsResponse import TwitchModeratorsResponse
 from .models.twitchPaginationResponse import TwitchPaginationResponse
 from .models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
@@ -39,8 +38,7 @@ from .models.twitchUsersResponse import TwitchUsersResponse
 from .models.twitchValidationResponse import TwitchValidationResponse
 from .twitchApiServiceInterface import TwitchApiServiceInterface
 from ..exceptions import (TwitchErrorException, TwitchJsonException,
-                          TwitchPasswordChangedException, TwitchStatusCodeException,
-                          TwitchTokenIsExpiredException)
+                          TwitchPasswordChangedException, TwitchStatusCodeException)
 from ..twitchCredentialsProviderInterface import TwitchCredentialsProviderInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
@@ -683,75 +681,6 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching follower ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({followersResponse=})')
 
         return followersResponse
-
-    async def fetchLiveUserDetails(
-        self,
-        twitchAccessToken: str,
-        twitchChannelIds: list[str]
-    ) -> list[TwitchLiveUserDetails]:
-        if not utils.isValidStr(twitchAccessToken):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not isinstance(twitchChannelIds, list):
-            raise TypeError(f'twitchChannelIds argument is malformed: \"{twitchChannelIds}\"')
-        elif len(twitchChannelIds) > 100:
-            raise ValueError(f'twitchChannelIds argument has too many values (len is {len(twitchChannelIds)}, max is 100): \"{twitchChannelIds}\"')
-
-        self.__timber.log('TwitchApiService', f'Fetching live user details... ({twitchChannelIds=})')
-
-        userIdsStr = '&user_id='.join(twitchChannelIds)
-        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
-        clientSession = await self.__networkClientProvider.get()
-
-        try:
-            response = await clientSession.get(
-                url = f'https://api.twitch.tv/helix/streams?first=100&user_id={userIdsStr}',
-                headers = {
-                    'Authorization': f'Bearer {twitchAccessToken}',
-                    'Client-Id': twitchClientId,
-                },
-            )
-        except GenericNetworkException as e:
-            self.__timber.log('TwitchApiService', f'Encountered network error when fetching live user details ({twitchChannelIds=})', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching live user details ({twitchChannelIds=}): {e}')
-
-        responseStatusCode = response.statusCode
-        jsonResponse: dict[str, Any] | Any | None = await response.json()
-        await response.close()
-
-        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching live user details ({twitchChannelIds=}): {jsonResponse}')
-            raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching live user details ({twitchChannelIds=}): {jsonResponse}')
-        elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
-            self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching live user details ({twitchChannelIds=}): {jsonResponse}')
-            raise TwitchTokenIsExpiredException(f'TwitchApiService received an error ({responseStatusCode}) when fetching live user details ({twitchChannelIds=}): {jsonResponse}')
-        elif responseStatusCode != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching live user details ({twitchChannelIds=}): {responseStatusCode}')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching live user details ({twitchChannelIds=}): {responseStatusCode}')
-
-        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
-        users: list[TwitchLiveUserDetails] = list()
-
-        if not isinstance(data, list) or len(data) == 0:
-            return users
-
-        for dataEntry in data:
-            users.append(TwitchLiveUserDetails(
-                isMature = utils.getBoolFromDict(dataEntry, 'is_mature', fallback = False),
-                streamId = utils.getStrFromDict(dataEntry, 'id'),
-                userId = utils.getStrFromDict(dataEntry, 'user_id'),
-                userLogin = utils.getStrFromDict(dataEntry, 'user_login'),
-                userName = utils.getStrFromDict(dataEntry, 'user_name'),
-                viewerCount = utils.getIntFromDict(dataEntry, 'viewer_count', fallback = 0),
-                gameId = utils.getStrFromDict(dataEntry, 'game_id', fallback = ''),
-                gameName = utils.getStrFromDict(dataEntry, 'game_name', fallback = ''),
-                language = utils.getStrFromDict(dataEntry, 'language', fallback = ''),
-                thumbnailUrl = utils.getStrFromDict(dataEntry, 'thumbnail_url', fallback = ''),
-                title = utils.getStrFromDict(dataEntry, 'title', fallback = ''),
-                streamType = await self.__twitchJsonMapper.parseStreamType(utils.getStrFromDict(dataEntry, 'type'))
-            ))
-
-        users.sort(key = lambda user: user.userName.casefold())
-        return users
 
     async def fetchModerator(
         self,

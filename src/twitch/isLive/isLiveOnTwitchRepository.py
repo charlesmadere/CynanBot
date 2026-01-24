@@ -1,8 +1,11 @@
+import traceback
 from datetime import timedelta
+from typing import Final
 
 from frozendict import frozendict
 
 from .isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
+from ..api.models.twitchFetchStreamsWithIdsRequest import TwitchFetchStreamsWithIdsRequest
 from ..api.models.twitchStreamType import TwitchStreamType
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
@@ -20,7 +23,7 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        cacheTimeDelta: timedelta = timedelta(minutes = 10)
+        cacheTimeDelta: timedelta = timedelta(minutes = 10),
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -33,12 +36,12 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
         elif not isinstance(cacheTimeDelta, timedelta):
             raise TypeError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__timber: TimberInterface = timber
-        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
+        self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
 
-        self.__cache: TimedDict[bool] = TimedDict(cacheTimeDelta)
+        self.__cache: Final[TimedDict[bool]] = TimedDict(cacheTimeDelta)
 
     async def areLive(self, twitchChannelIds: set[str]) -> frozendict[str, bool]:
         if not isinstance(twitchChannelIds, set):
@@ -51,12 +54,12 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
 
         await self.__populateFromCache(
             twitchChannelIds = twitchChannelIds,
-            twitchChannelIdToLiveStatus = twitchChannelIdToLiveStatus
+            twitchChannelIdToLiveStatus = twitchChannelIdToLiveStatus,
         )
 
         await self.__fetchLiveUserDetails(
             twitchChannelIds = twitchChannelIds,
-            twitchChannelIdToLiveStatus = twitchChannelIdToLiveStatus
+            twitchChannelIdToLiveStatus = twitchChannelIdToLiveStatus,
         )
 
         return frozendict(twitchChannelIdToLiveStatus)
@@ -68,7 +71,7 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
     async def __fetchLiveUserDetails(
         self,
         twitchChannelIds: set[str],
-        twitchChannelIdToLiveStatus: dict[str, bool]
+        twitchChannelIdToLiveStatus: dict[str, bool],
     ):
         twitchChannelIdsToFetch: set[str] = set()
 
@@ -84,15 +87,21 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
         userId = await self.__administratorProvider.getAdministratorUserId()
         twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(userId)
 
-        liveUserDetails = await self.__twitchApiService.fetchLiveUserDetails(
-            twitchAccessToken = twitchAccessToken,
-            twitchChannelIds = list(twitchChannelIdsToFetch)
-        )
+        try:
+            streamsResponse = await self.__twitchApiService.fetchStreams(
+                twitchAccessToken = twitchAccessToken,
+                fetchStreamsRequest = TwitchFetchStreamsWithIdsRequest(
+                    userIds = frozenset(twitchChannelIdsToFetch),
+                ),
+            )
+        except Exception as e:
+            self.__timber.log('IsLiveOnTwitchRepository', f'Failed to fetch live user details ({twitchChannelIdsToFetch=})', e, traceback.format_exc())
+            return
 
-        for liveUserDetail in liveUserDetails:
-            isLive = liveUserDetail.streamType is TwitchStreamType.LIVE
-            twitchChannelIdToLiveStatus[liveUserDetail.userId] = isLive
-            self.__cache[liveUserDetail.userId] = isLive
+        for stream in streamsResponse.data:
+            isLive = stream.streamType is TwitchStreamType.LIVE
+            twitchChannelIdToLiveStatus[stream.userId] = isLive
+            self.__cache[stream.userId] = isLive
 
         for twitchChannelId in twitchChannelIds:
             if twitchChannelId not in twitchChannelIdToLiveStatus:
