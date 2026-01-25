@@ -9,6 +9,6 @@ class DeepLApiServiceInterface(ABC):
     @abstractmethod
     async def translate(
         self,
-        request: DeepLTranslationRequest
+        request: DeepLTranslationRequest,
     ) -> DeepLTranslationResponses:
         pass

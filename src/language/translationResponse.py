@@ -11,7 +11,7 @@ class TranslationResponse:
         translatedLanguage: LanguageEntry | None,
         originalText: str,
         translatedText: str,
-        translationApiSource: TranslationApiSource
+        translationApiSource: TranslationApiSource,
     ):
         if originalLanguage is not None and not utils.isValidStr(originalLanguage.iso6391Code):
             raise ValueError(f'originalLanguage argument must be either None or have an ISO 639-1 code: \"{originalLanguage}\"')
@@ -42,9 +42,6 @@ class TranslationResponse:
     def getTranslatedText(self) -> str:
         return self.__translatedText
 
-    def getTranslationApiSource(self) -> TranslationApiSource:
-        return self.__translationApiSource
-
     def toStr(self) -> str:
         prefixText = ''
         originalLanguage = self.__originalLanguage
@@ -71,3 +68,7 @@ class TranslationResponse:
                 prefixText = f'[ {originalLanguage.requireIso6391Code().upper()} ]'
 
         return f'{prefixText}{self.__translatedText}'
+
+    @property
+    def translationApiSource(self) -> TranslationApiSource:
+        return self.__translationApiSource

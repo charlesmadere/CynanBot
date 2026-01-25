@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from .deepLApiServiceInterface import DeepLApiServiceInterface
 from .deepLAuthKeyProviderInterface import DeepLAuthKeyProviderInterface
@@ -20,7 +21,7 @@ class DeepLApiService(DeepLApiServiceInterface):
         deepLJsonMapper: DeepLJsonMapperInterface,
         networkClientProvider: NetworkClientProvider,
         timber: TimberInterface,
-        contentType: str = 'application/json'
+        contentType: str = 'application/json',
     ):
         if not isinstance(deepLAuthKeyProvider, DeepLAuthKeyProviderInterface):
             raise TypeError(f'deepLAuthKeyProviderInterface argument is malformed: \"{deepLAuthKeyProvider}\"')
@@ -33,15 +34,15 @@ class DeepLApiService(DeepLApiServiceInterface):
         elif not utils.isValidStr(contentType):
             raise TypeError(f'contentType argument is malformed: \"{contentType}\"')
 
-        self.__deepLAuthKeyProvider: DeepLAuthKeyProviderInterface = deepLAuthKeyProvider
-        self.__deepLJsonMapper: DeepLJsonMapperInterface = deepLJsonMapper
-        self.__networkClientProvider: NetworkClientProvider = networkClientProvider
-        self.__timber: TimberInterface = timber
-        self.__contentType: str = contentType
+        self.__deepLAuthKeyProvider: Final[DeepLAuthKeyProviderInterface] = deepLAuthKeyProvider
+        self.__deepLJsonMapper: Final[DeepLJsonMapperInterface] = deepLJsonMapper
+        self.__networkClientProvider: Final[NetworkClientProvider] = networkClientProvider
+        self.__timber: Final[TimberInterface] = timber
+        self.__contentType: Final[str] = contentType
 
     async def translate(
         self,
-        request: DeepLTranslationRequest
+        request: DeepLTranslationRequest,
     ) -> DeepLTranslationResponses:
         if not isinstance(request, DeepLTranslationRequest):
             raise TypeError(f'request argument is malformed: \"{request}\"')
@@ -58,17 +59,13 @@ class DeepLApiService(DeepLApiServiceInterface):
                 url = 'https://api-free.deepl.com/v2/translate',
                 headers = {
                     'Authorization': f'DeepL-Auth-Key {deepLAuthKey}',
-                    'Content-Type': self.__contentType
+                    'Content-Type': self.__contentType,
                 },
-                json = await self.__deepLJsonMapper.serializeTranslationRequest(request)
+                json = await self.__deepLJsonMapper.serializeTranslationRequest(request),
             )
         except GenericNetworkException as e:
-            self.__timber.log('DeepLApiService', f'Encountered network error when fetching translation ({request=}): {e}', e, traceback.format_exc())
+            self.__timber.log('DeepLApiService', f'Encountered network error when fetching translation ({request=})', e, traceback.format_exc())
             raise GenericNetworkException(f'DeepLApiService encountered network error when fetching translation ({request=}): {e}')
-
-        if response is None:
-            self.__timber.log('DeepLApiService', f'Encountered unknown network error when fetching translation ({request=}) ({response=})')
-            raise GenericNetworkException(f'DeepLApiService encountered unknown network error when fetching translation ({request=}) ({response=})')
 
         responseStatusCode = response.statusCode
         jsonResponse = await response.json()
@@ -76,7 +73,10 @@ class DeepLApiService(DeepLApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('DeepLApiService', f'Encountered non-200 HTTP status code when fetching translation ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
-            raise GenericNetworkException(f'DeepLApiService encountered non-200 HTTP status code when fetching translation ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+            raise GenericNetworkException(
+                message = f'DeepLApiService encountered non-200 HTTP status code when fetching translation ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})',
+                statusCode = responseStatusCode,
+            )
 
         translationResponses = await self.__deepLJsonMapper.parseTranslationResponses(jsonResponse)
 

@@ -1,4 +1,5 @@
 import traceback
+import urllib.parse
 from typing import Final
 
 from .openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
@@ -41,13 +42,19 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
         if not isinstance(location, Location):
             raise TypeError(f'location argument is malformed: \"{location}\"')
 
-        self.__timber.log('OpenWeatherApiService', f'Fetching air quality index from OpenWeather... ({location=})')
+        self.__timber.log('OpenWeatherApiService', f'Fetching air pollution report from OpenWeather... ({location=})')
         clientSession = await self.__networkClientProvider.get()
         openWeatherApiKey = await self.__requireOpenWeatherApiKey()
 
+        queryString = urllib.parse.urlencode({
+            'appid': openWeatherApiKey,
+            'lat': location.latitude,
+            'lon': location.longitude,
+        })
+
         try:
             response = await clientSession.get(
-                url = f'http://api.openweathermap.org/data/2.5/air_pollution?appid={openWeatherApiKey}&lat={location.latitude}&lon={location.longitude}'
+                url = f'http://api.openweathermap.org/data/2.5/air_pollution?{queryString}'
             )
         except GenericNetworkException as e:
             self.__timber.log('OpenWeatherApiService', f'Encountered network error when fetching weather ({location=})', e, traceback.format_exc())
@@ -83,9 +90,18 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
         clientSession = await self.__networkClientProvider.get()
         openWeatherApiKey = await self.__requireOpenWeatherApiKey()
 
+        queryString = urllib.parse.urlencode({
+            'appid': openWeatherApiKey,
+            'exclude': 'minutely,hourly',
+            'lang': 'en',
+            'lat': location.latitude,
+            'lon': location.longitude,
+            'units': 'metric',
+        })
+
         try:
             response = await clientSession.get(
-                url = f'https://api.openweathermap.org/data/3.0/onecall?appid={openWeatherApiKey}&lang=en&lat={location.latitude}&lon={location.longitude}&exclude=minutely,hourly&units=metric'
+                url = f'https://api.openweathermap.org/data/3.0/onecall?{queryString}'
             )
         except GenericNetworkException as e:
             self.__timber.log('OpenWeatherApiService', f'Encountered network error when fetching weather ({location=})', e, traceback.format_exc())
