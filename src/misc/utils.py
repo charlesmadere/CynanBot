@@ -380,6 +380,14 @@ def intToBool(i: int) -> bool:
 def isValidBool(b: bool | Any | None) -> TypeGuard[bool]:
     return b is not None and isinstance(b, bool)
 
+VALID_EMAIL_REG_EX: Final[Pattern] = re.compile(r'^\w+@\w+\.\w+$', re.IGNORECASE)
+
+def isValidEmail(email: str | Any | None) -> TypeGuard[str]:
+    if not isValidStr(email):
+        return False
+
+    return VALID_EMAIL_REG_EX.fullmatch(email) is not None
+
 def isValidInt(i: float | Any | None) -> TypeGuard[int]:
     return isValidNum(i) and isinstance(i, int)
 

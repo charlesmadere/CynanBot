@@ -426,6 +426,38 @@ class TestUtils:
         result = utils.isValidBool(True)
         assert result == True
 
+    def test_isValidEmail_withBlankAddress(self):
+        result = utils.isValidEmail(' @ . net ')
+        assert result == False
+
+    def test_isValidEmail_withEmail1(self):
+        result = utils.isValidEmail('bill@microsoft.com')
+        assert result == True
+
+    def test_isValidEmail_withEmail2(self):
+        result = utils.isValidEmail('person@domain.org')
+        assert result == True
+
+    def test_isValidEmail_withEmptyString(self):
+        result = utils.isValidEmail('')
+        assert result == False
+
+    def test_isValidEmail_withNone(self):
+        result = utils.isValidEmail(None)
+        assert result == False
+
+    def test_isValidEmail_withRandomNoise1(self):
+        result = utils.isValidEmail('foa jofeua 9fu9  fjdsoi ')
+        assert result == False
+
+    def test_isValidEmail_withRandomNoise2(self):
+        result = utils.isValidEmail('a3843289def382bccc1291 ')
+        assert result == False
+
+    def test_isValidEmail_withWhitespaceString(self):
+        result = utils.isValidEmail(' ')
+        assert result == False
+
     def test_isValidInt_withNan(self):
         result = utils.isValidInt(math.nan)
         assert result == False

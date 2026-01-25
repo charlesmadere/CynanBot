@@ -2075,7 +2075,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         displayName = utils.getStrFromDict(jsonResponse, 'display_name')
 
         email: str | None = None
-        if 'email' in jsonResponse and utils.isValidStr(jsonResponse.get('email')):
+        if 'email' in jsonResponse and utils.isValidEmail(jsonResponse.get('email')):
             email = utils.getStrFromDict(jsonResponse, 'email')
 
         profileImageUrl: str | None = None
