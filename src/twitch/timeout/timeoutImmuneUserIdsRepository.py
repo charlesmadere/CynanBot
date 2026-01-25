@@ -3,8 +3,8 @@ from typing import Final
 
 from .timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ..friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
+from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..officialAccounts.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
-from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...misc import utils as utils
 from ...storage.linesReaderInterface import LinesReaderInterface
 from ...timber.timberInterface import TimberInterface

@@ -9,7 +9,7 @@ from ..google.googleCloudProjectCredentialsProviderInterface import GoogleCloudP
 from ..openWeather.apiService.openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
 from ..storage.jsonReaderInterface import JsonReaderInterface
 from ..twitch.credentialsProvider.twitchCredentialsProviderInterface import TwitchCredentialsProviderInterface
-from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 
 
 class AuthRepository(

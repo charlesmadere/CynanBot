@@ -8,8 +8,8 @@ from .crowdControl.crowdControlCheerActionHelperInterface import CrowdControlChe
 from .itemUse.itemUseCheerActionHelperInterface import ItemUseCheerActionHelperInterface
 from .soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from ..misc import utils as utils
+from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
 

@@ -64,9 +64,9 @@ from ...timeout.models.exactTimeoutDuration import ExactTimeoutDuration
 from ...timeout.models.randomLinearTimeoutDuration import RandomLinearTimeoutDuration
 from ...timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
+from ...twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 

@@ -8,7 +8,7 @@ from ..timber.timberInterface import TimberInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
-from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 

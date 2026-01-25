@@ -10,8 +10,8 @@ from ..twitch.api.models.twitchUsersResponse import TwitchUsersResponse
 from ..twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
+from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 

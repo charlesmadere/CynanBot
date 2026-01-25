@@ -10,8 +10,8 @@ from .activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..api.models.twitchChattersRequest import TwitchChattersRequest
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..exceptions import TwitchJsonException, TwitchStatusCodeException
+from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException

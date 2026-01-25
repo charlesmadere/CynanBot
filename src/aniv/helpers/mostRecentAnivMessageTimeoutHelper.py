@@ -24,9 +24,9 @@ from ...timeout.models.actions.copyAnivMessageTimeoutAction import CopyAnivMessa
 from ...timeout.models.randomExponentialTimeoutDuration import RandomExponentialTimeoutDuration
 from ...timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ...twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
+from ...twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
 

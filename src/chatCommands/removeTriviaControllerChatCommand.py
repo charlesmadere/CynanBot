@@ -9,8 +9,8 @@ from ..trivia.gameController.removeTriviaGameControllerResult import RemoveTrivi
 from ..trivia.gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
+from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..users.exceptions import NoSuchUserException
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface

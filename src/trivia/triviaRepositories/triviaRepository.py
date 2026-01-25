@@ -44,7 +44,7 @@ from ..triviaVerifierInterface import TriviaVerifierInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
-from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ...twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
