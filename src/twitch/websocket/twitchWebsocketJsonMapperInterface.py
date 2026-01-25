@@ -4,6 +4,7 @@ from typing import Any
 from .twitchWebsocketJsonLoggingLevel import TwitchWebsocketJsonLoggingLevel
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketEvent import TwitchWebsocketEvent
+from ..api.models.twitchWebsocketPayload import TwitchWebsocketPayload
 from ..api.models.twitchWebsocketSession import TwitchWebsocketSession
 from ..api.models.twitchWebsocketSubscription import TwitchWebsocketSubscription
 
@@ -29,6 +30,13 @@ class TwitchWebsocketJsonMapperInterface(ABC):
         self,
         eventJson: dict[str, Any] | Any | None,
     ) -> TwitchWebsocketEvent | None:
+        pass
+
+    @abstractmethod
+    async def parseWebsocketPayload(
+        self,
+        payloadJson: dict[str, Any] | Any | None,
+    ) -> TwitchWebsocketPayload | None:
         pass
 
     @abstractmethod
