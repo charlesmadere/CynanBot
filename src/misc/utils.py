@@ -118,7 +118,11 @@ def formatTimeShort(time, includeSeconds: bool = False) -> str:
     else:
         return time.strftime("%b %d %I:%M%p")
 
-def getBoolFromDict(d: dict[str, Any] | None, key: str, fallback: bool | None = None) -> bool:
+def getBoolFromDict(
+    d: dict[str, Any] | frozendict[str, Any] | None,
+    key: str,
+    fallback: bool | None = None,
+) -> bool:
     if d is not None and not isinstance(d, dict):
         raise TypeError(f'd argument is malformed: \"{d}\"')
     elif not isValidStr(key):
@@ -175,7 +179,7 @@ def getCleanedSplits(s: str | None) -> list[str]:
     return words
 
 def getDateTimeFromDict(
-    d: dict[str, Any] | None,
+    d: dict[str, Any] | frozendict[str, Any] | None,
     key: str,
     fallback: datetime | None = None
 ) -> datetime:
@@ -211,7 +215,11 @@ def getDateTimeFromDict(
 
     return value
 
-def getFloatFromDict(d: dict[str, Any] | None, key: str, fallback: float | None = None) -> float:
+def getFloatFromDict(
+    d: dict[str, Any] | frozendict[str, Any] | None,
+    key: str,
+    fallback: float | None = None,
+) -> float:
     if d is not None and not isinstance(d, dict):
         raise TypeError(f'd argument is malformed: \"{d}\"')
     elif not isValidStr(key):
@@ -327,9 +335,11 @@ def getStrFromDict(
     fallback: str | None = None,
     clean: bool = False,
     htmlUnescape: bool = False,
-    removeCarrots: bool = False
+    removeCarrots: bool = False,
 ) -> str:
-    if not isValidStr(key):
+    if d is not None and not isinstance(d, dict):
+        raise TypeError(f'd argument is malformed: \"{d}\"')
+    elif not isValidStr(key):
         raise TypeError(f'key argument is malformed: \"{key}\"')
     elif fallback is not None and not isinstance(fallback, str):
         raise TypeError(f'fallback argument is malformed: \"{fallback}\"')
