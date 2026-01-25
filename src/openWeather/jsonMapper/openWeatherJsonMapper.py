@@ -1,5 +1,5 @@
 from datetime import datetime, tzinfo
-from typing import Any
+from typing import Any, Final
 
 from frozendict import frozendict
 from frozenlist import FrozenList
@@ -24,16 +24,16 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface
+        timeZoneRepository: TimeZoneRepositoryInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__descriptionIdToEmoji: frozendict[str, str | None] = self.__createDescriptionIdToEmojiDictionary()
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__descriptionIdToEmoji: Final[frozendict[str, str | None]] = self.__createDescriptionIdToEmojiDictionary()
 
     def __createDescriptionIdToEmojiDictionary(self) -> frozendict[str, str | None]:
         dictionary: dict[str, str | None] = dict()
@@ -141,7 +141,7 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             latitude = latitude,
             longitude = longitude,
             airPollutionIndex = airPollutionIndex,
-            timeZone = timeZone
+            timeZone = timeZone,
         )
 
     async def parseAlert(
@@ -162,7 +162,7 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             start = start,
             description = description,
             event = event,
-            senderName = senderName
+            senderName = senderName,
         )
 
     async def parseDay(
@@ -229,7 +229,7 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             pressure = pressure,
             feelsLike = feelsLike,
             temperature = temperature,
-            summary = summary
+            summary = summary,
         )
 
     async def parseFeelsLike(
@@ -248,7 +248,7 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             day = day,
             evening = evening,
             morning = morning,
-            night = night
+            night = night,
         )
 
     async def parseMoment(
@@ -302,7 +302,7 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             windSpeed = windSpeed,
             descriptions = descriptions,
             humidity = humidity,
-            pressure = pressure
+            pressure = pressure,
         )
 
     async def parseMomentDescription(
@@ -323,7 +323,7 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             descriptionId = descriptionId,
             emoji = emoji,
             icon = icon,
-            main = main
+            main = main,
         )
 
     async def parseTemperature(
@@ -346,7 +346,7 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             maximum = maximum,
             minimum = minimum,
             morning = morning,
-            night = night
+            night = night,
         )
 
     async def parseWeatherReport(
@@ -410,5 +410,5 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             alerts = alerts,
             days = frozenDays,
             current = current,
-            timeZone = timeZone
+            timeZone = timeZone,
         )
