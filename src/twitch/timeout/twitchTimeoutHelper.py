@@ -10,7 +10,7 @@ from ..api.models.twitchBanRequest import TwitchBanRequest
 from ..api.models.twitchBannedUser import TwitchBannedUser
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..globalTwitchConstants import GlobalTwitchConstants
-from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface

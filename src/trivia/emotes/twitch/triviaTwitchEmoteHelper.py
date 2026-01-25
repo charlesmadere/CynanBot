@@ -8,7 +8,7 @@ class TriviaTwitchEmoteHelper(TriviaTwitchEmoteHelperInterface):
 
     def __init__(
         self,
-        trollmojiHelper: TrollmojiHelperInterface
+        trollmojiHelper: TrollmojiHelperInterface,
     ):
         if not isinstance(trollmojiHelper, TrollmojiHelperInterface):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')

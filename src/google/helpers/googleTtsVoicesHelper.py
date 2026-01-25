@@ -132,21 +132,23 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
 
             case LanguageEntry.ENGLISH:
                 voicePresets = {
-                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP_D,
-                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP_F,
-                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP_O,
-                    GoogleVoicePreset.ENGLISH_AUSTRALIA_STANDARD_A,
-                    GoogleVoicePreset.ENGLISH_AUSTRALIA_STANDARD_B,
-                    GoogleVoicePreset.ENGLISH_AUSTRALIA_STANDARD_C,
-                    GoogleVoicePreset.ENGLISH_AUSTRALIA_STANDARD_D,
-                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_D,
-                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_F,
-                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_O,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ACHIRD,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_AOEDE,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_AUTONOE,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_CALLIRRHOE,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_DESPINA,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ERINOME,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_FENRIR,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_GACRUX,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_IAPETUS,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_KORE,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_LAOMEDEIA,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_LEDA,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_PUCK,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_VINDEMIATRIX,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ZEPHYR,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ZUBENELGENUBI,
                 }
 
             case LanguageEntry.FILIPINO:

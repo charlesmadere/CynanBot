@@ -61,10 +61,22 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
     ENGLISH_GREAT_BRITAIN_CHIRP_F = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP_O = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP3_ACHERNAR = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_ACHIRD = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP3_AOEDE = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP3_AUTONOE = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP3_CALLIRRHOE = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP3_DESPINA = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_ERINOME = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_FENRIR = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_GACRUX = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_IAPETUS = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_KORE = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_LAOMEDEIA = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_LEDA = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_PUCK = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_VINDEMIATRIX = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_ZEPHYR = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_ZUBENELGENUBI = auto()
     ENGLISH_INDIA_STANDARD_A = auto()
     ENGLISH_INDIA_STANDARD_B = auto()
     ENGLISH_INDIA_STANDARD_C = auto()
@@ -330,10 +342,22 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_F: return 'en-GB-Chirp-HD-F'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP_O: return 'en-GB-Chirp-HD-O'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ACHERNAR: return 'en-GB-Chirp3-HD-Achernar'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ACHIRD: return 'en-GB-Chirp3-HD-Achird'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_AOEDE: return 'en-GB-Chirp3-HD-Aoede'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_AUTONOE: return 'en-GB-Chirp3-HD-Autonoe'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_CALLIRRHOE: return 'en-GB-Chirp3-HD-Callirrhoe'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_DESPINA: return 'en-GB-Chirp3-HD-Despina'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ERINOME: return 'en-GB-Chirp3-HD-Erinome'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_FENRIR: return 'en-GB-Chirp3-HD-Fenrir'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_GACRUX: return 'en-GB-Chirp3-HD-Gacrux'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_KORE: return 'en-GB-Chirp3-HD-Kore'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_IAPETUS: return 'en-GB-Chirp3-HD-Iapetus'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_LEDA: return 'en-GB-Chirp3-HD-Leda'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_LAOMEDEIA: return 'en-GB-Chirp3-HD-Laomedeia'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_PUCK: return 'en-GB-Chirp3-HD-Puck'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_VINDEMIATRIX: return 'en-GB-Chirp3-HD-Vindemiatrix'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ZEPHYR: return 'en-GB-Chirp3-HD-Zephyr'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ZUBENELGENUBI: return 'en-GB-Chirp3-HD-Zubenelgenubi'
             case GoogleVoicePreset.ENGLISH_INDIA_STANDARD_A: return 'en-IN-Standard-A'
             case GoogleVoicePreset.ENGLISH_INDIA_STANDARD_B: return 'en-IN-Standard-B'
             case GoogleVoicePreset.ENGLISH_INDIA_STANDARD_C: return 'en-IN-Standard-C'

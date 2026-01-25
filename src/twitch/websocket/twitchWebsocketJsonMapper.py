@@ -67,23 +67,6 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             case 'none': return TwitchWebsocketJsonLoggingLevel.NONE
             case _: raise ValueError(f'Unknown TwitchWebsocketJsonLoggingLevel value: \"{loggingLevel}\"')
 
-    async def __parsePayload(
-        self,
-        payloadJson: dict[str, Any] | None,
-    ) -> TwitchWebsocketPayload | None:
-        if not isinstance(payloadJson, dict) or len(payloadJson) == 0:
-            return None
-
-        event = await self.parseWebsocketEvent(payloadJson.get('event'))
-        session = await self.parseWebsocketSession(payloadJson.get('session'))
-        subscription = await self.parseWebsocketSubscription(payloadJson.get('subscription'))
-
-        return TwitchWebsocketPayload(
-            event = event,
-            session = session,
-            subscription = subscription,
-        )
-
     async def parseWebsocketDataBundle(
         self,
         dataBundleJson: dict[str, Any] | Any | None,
@@ -97,7 +80,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             self.__timber.log('TwitchWebsocketJsonMapper', f'Websocket message is missing \"metadata\" field ({metadata=}) ({dataBundleJson}=)')
             return None
 
-        payload = await self.__parsePayload(dataBundleJson.get('payload'))
+        payload = await self.parseWebsocketPayload(dataBundleJson.get('payload'))
 
         return TwitchWebsocketDataBundle(
             metadata = metadata,
@@ -568,6 +551,23 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             sub = sub,
             subGift = subGift,
             tier = tier,
+        )
+
+    async def parseWebsocketPayload(
+        self,
+        payloadJson: dict[str, Any] | Any | None,
+    ) -> TwitchWebsocketPayload | None:
+        if not isinstance(payloadJson, dict) or len(payloadJson) == 0:
+            return None
+
+        event = await self.parseWebsocketEvent(payloadJson.get('event'))
+        session = await self.parseWebsocketSession(payloadJson.get('session'))
+        subscription = await self.parseWebsocketSubscription(payloadJson.get('subscription'))
+
+        return TwitchWebsocketPayload(
+            event = event,
+            session = session,
+            subscription = subscription,
         )
 
     async def parseWebsocketSession(

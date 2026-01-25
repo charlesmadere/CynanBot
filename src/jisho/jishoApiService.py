@@ -67,6 +67,9 @@ class JishoApiService(JishoApiServiceInterface):
             raise GenericNetworkException(f'JishoApiService failed to parse JSON response into JishoResponse instance ({keyword=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({jishoResponse=})')
         elif jishoResponse.meta.status != 200:
             self.__timber.log('JishoApiService', f'Received JishoResponse with a bad metadata status code ({keyword=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({jishoResponse=})')
-            raise GenericNetworkException(f'JishoApiService received JishoResponse with a bad metadata status code ({keyword=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({jishoResponse=})')
+            raise GenericNetworkException(
+                message = f'JishoApiService received JishoResponse with a bad metadata status code ({keyword=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({jishoResponse=})',
+                statusCode = jishoResponse.meta.status,
+            )
 
         return jishoResponse

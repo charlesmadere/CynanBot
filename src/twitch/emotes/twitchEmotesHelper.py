@@ -9,10 +9,10 @@ from ..api.models.twitchEmotesResponse import TwitchEmotesResponse
 from ..api.models.twitchThemeMode import TwitchThemeMode
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..exceptions import TwitchStatusCodeException, TwitchJsonException
+from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..subscribers.twitchSubscriptionStatus import TwitchSubscriptionStatus
 from ..subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException

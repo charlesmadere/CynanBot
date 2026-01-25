@@ -14,8 +14,8 @@ from ..timeout.models.actions.basicTimeoutAction import BasicTimeoutAction
 from ..timeout.models.exactTimeoutDuration import ExactTimeoutDuration
 from ..timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ..twitch.configuration.twitchMessage import TwitchMessage
+from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
 

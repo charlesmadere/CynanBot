@@ -426,6 +426,38 @@ class TestUtils:
         result = utils.isValidBool(True)
         assert result == True
 
+    def test_isValidEmail_withBlankAddress(self):
+        result = utils.isValidEmail(' @ . net ')
+        assert result == False
+
+    def test_isValidEmail_withEmail1(self):
+        result = utils.isValidEmail('bill@microsoft.com')
+        assert result == True
+
+    def test_isValidEmail_withEmail2(self):
+        result = utils.isValidEmail('person@domain.org')
+        assert result == True
+
+    def test_isValidEmail_withEmptyString(self):
+        result = utils.isValidEmail('')
+        assert result == False
+
+    def test_isValidEmail_withNone(self):
+        result = utils.isValidEmail(None)
+        assert result == False
+
+    def test_isValidEmail_withRandomNoise1(self):
+        result = utils.isValidEmail('foa jofeua 9fu9  fjdsoi ')
+        assert result == False
+
+    def test_isValidEmail_withRandomNoise2(self):
+        result = utils.isValidEmail('a3843289def382bccc1291 ')
+        assert result == False
+
+    def test_isValidEmail_withWhitespaceString(self):
+        result = utils.isValidEmail(' ')
+        assert result == False
+
     def test_isValidInt_withNan(self):
         result = utils.isValidInt(math.nan)
         assert result == False
@@ -714,6 +746,20 @@ class TestUtils:
     def test_secondsToDurationMessage_with2Seconds(self):
         result = utils.secondsToDurationMessage(2)
         assert result == '2 seconds'
+
+    def test_secondsToDurationMessage_with10117SecondsAndIncludeMinutesAndSecondsIsFalse(self):
+        result = utils.secondsToDurationMessage(
+            secondsDuration = 10117,
+            includeMinutesAndSeconds = False,
+        )
+        assert result == '2 hours'
+
+    def test_secondsToDurationMessage_with10117SecondsAndIncludeMinutesAndSecondsIsTrue(self):
+        result = utils.secondsToDurationMessage(
+            secondsDuration = 10117,
+            includeMinutesAndSeconds = True,
+        )
+        assert result == '2 hours 48 minutes 37 seconds'
 
     def test_secondsToDurationMessage_with1Week(self):
         result = utils.secondsToDurationMessage(604800)

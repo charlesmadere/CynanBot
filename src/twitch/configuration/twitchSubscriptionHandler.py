@@ -7,9 +7,9 @@ from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
+from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..officialAccounts.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from ..tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert

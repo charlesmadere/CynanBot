@@ -118,7 +118,10 @@ class FuntoonApiService(FuntoonApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('FuntoonApiService', f'Encountered non-200 HTTP status code when fetching random trivia question ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
-            raise GenericNetworkException(f'FuntoonApiService encountered non-200 HTTP status code when fetching random trivia question ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+            raise GenericNetworkException(
+                message = f'FuntoonApiService encountered non-200 HTTP status code when fetching random trivia question ({responseStatusCode=}) ({response=}) ({jsonResponse=})',
+                statusCode = responseStatusCode,
+            )
 
         triviaQuestion = await self.__funtoonJsonMapper.parseTriviaQuestion(jsonResponse)
 

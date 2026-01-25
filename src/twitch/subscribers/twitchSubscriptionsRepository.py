@@ -12,7 +12,7 @@ from ..api.models.twitchBroadcasterSubscription import TwitchBroadcasterSubscrip
 from ..api.models.twitchUserSubscription import TwitchUserSubscription
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..exceptions import TwitchJsonException, TwitchStatusCodeException
-from ..twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException

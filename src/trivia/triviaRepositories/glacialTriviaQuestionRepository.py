@@ -30,7 +30,7 @@ from ..triviaExceptions import (BadTriviaTypeException,
 from ..triviaFetchOptions import TriviaFetchOptions
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
-from ...twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ...twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
