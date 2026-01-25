@@ -118,11 +118,19 @@ class GetGashaponItemChatCommand(AbsChatCommand):
         remainingDays = int(math.floor(float(totalRemainingSeconds) / float(24 * 60 * 60)))
         availableWhen: str
 
-        if remainingDays >= 5:
+        if remainingDays >= 7:
             remainingDaysString = locale.format_string("%d", remainingDays, grouping = True)
             availableWhen = f'{remainingDaysString} days'
+        elif remainingDays >= 3:
+            availableWhen = utils.secondsToDurationMessage(
+                secondsDuration = totalRemainingSeconds,
+                includeMinutesAndSeconds = False,
+            )
         else:
-            availableWhen = utils.secondsToDurationMessage(totalRemainingSeconds)
+            availableWhen = utils.secondsToDurationMessage(
+                secondsDuration = totalRemainingSeconds,
+                includeMinutesAndSeconds = True,
+            )
 
         self.__twitchChatMessenger.send(
             text = f'⚠ Sorry, you can\'t receive your gashapon yet! Your next gashapon will be available in {availableWhen}',

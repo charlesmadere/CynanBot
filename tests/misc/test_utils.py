@@ -747,6 +747,20 @@ class TestUtils:
         result = utils.secondsToDurationMessage(2)
         assert result == '2 seconds'
 
+    def test_secondsToDurationMessage_with10117SecondsAndIncludeMinutesAndSecondsIsFalse(self):
+        result = utils.secondsToDurationMessage(
+            secondsDuration = 10117,
+            includeMinutesAndSeconds = False,
+        )
+        assert result == '2 hours'
+
+    def test_secondsToDurationMessage_with10117SecondsAndIncludeMinutesAndSecondsIsTrue(self):
+        result = utils.secondsToDurationMessage(
+            secondsDuration = 10117,
+            includeMinutesAndSeconds = True,
+        )
+        assert result == '2 hours 48 minutes 37 seconds'
+
     def test_secondsToDurationMessage_with1Week(self):
         result = utils.secondsToDurationMessage(604800)
         assert result == '1 week'

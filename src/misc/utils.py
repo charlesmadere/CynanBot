@@ -491,11 +491,16 @@ DAY_IN_SECONDS: Final[int] = 86400
 WEEK_IN_SECONDS: Final[int] = 604800
 YEAR_IN_SECONDS: Final[int] = 31536000
 
-def secondsToDurationMessage(secondsDuration: int) -> str:
+def secondsToDurationMessage(
+    secondsDuration: int,
+    includeMinutesAndSeconds: bool = True,
+) -> str:
     if not isValidInt(secondsDuration):
         raise TypeError(f'secondsDuration argument is malformed: \"{secondsDuration}\"')
     elif secondsDuration < 0 or secondsDuration > getLongMaxSafeSize():
         raise ValueError(f'secondsDuration argument is out of bounds: {secondsDuration}')
+    elif not isValidBool(includeMinutesAndSeconds):
+        raise TypeError(f'includeMinutesAndSeconds argument is malformed: \"{includeMinutesAndSeconds}\"')
 
     if secondsDuration == 0:
         return '0 seconds'
@@ -535,12 +540,14 @@ def secondsToDurationMessage(secondsDuration: int) -> str:
     elif hours > 1: hoursString = f'{hours} hours'
 
     minutesString = ''
-    if minutes == 1: minutesString = f'{minutes} minute'
-    elif minutes > 1: minutesString = f'{minutes} minutes'
+    if includeMinutesAndSeconds:
+        if minutes == 1: minutesString = f'{minutes} minute'
+        elif minutes > 1: minutesString = f'{minutes} minutes'
 
     secondsString = ''
-    if seconds == 1: secondsString = f'{seconds} second'
-    elif seconds > 1: secondsString = f'{seconds} seconds'
+    if includeMinutesAndSeconds:
+        if seconds == 1: secondsString = f'{seconds} second'
+        elif seconds > 1: secondsString = f'{seconds} seconds'
 
     result = f'{yearsString} {weeksString} {daysString} {hoursString} {minutesString} {secondsString}'
     return EXTRA_WHITE_SPACE_REG_EX.sub(' ', result).strip()
