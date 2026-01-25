@@ -37,14 +37,16 @@ from .models.twitchUserSubscriptionsResponse import TwitchUserSubscriptionsRespo
 from .models.twitchUsersResponse import TwitchUsersResponse
 from .models.twitchValidationResponse import TwitchValidationResponse
 from .twitchApiServiceInterface import TwitchApiServiceInterface
-from ..exceptions import (TwitchErrorException, TwitchJsonException,
-                          TwitchPasswordChangedException, TwitchStatusCodeException)
-from ..twitchCredentialsProviderInterface import TwitchCredentialsProviderInterface
+from ..exceptions import (TwitchErrorException,
+                          TwitchJsonException,
+                          TwitchPasswordChangedException,
+                          TwitchStatusCodeException)
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...network.networkClientProvider import NetworkClientProvider
 from ...timber.timberInterface import TimberInterface
+from ...twitch.credentialsProvider.twitchCredentialsProviderInterface import TwitchCredentialsProviderInterface
 
 
 class TwitchApiService(TwitchApiServiceInterface):
