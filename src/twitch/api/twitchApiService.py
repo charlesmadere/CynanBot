@@ -639,7 +639,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         broadcasterId: str,
         twitchAccessToken: str,
         userId: str,
-    ) -> TwitchFollowersResponse | None:
+    ) -> TwitchFollowersResponse:
         if not utils.isValidStr(broadcasterId):
             raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
         elif not utils.isValidStr(twitchAccessToken):
