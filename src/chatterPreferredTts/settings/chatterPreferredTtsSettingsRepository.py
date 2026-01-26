@@ -1,4 +1,4 @@
-from typing import Any, Final
+from typing import Any, Collection, Final
 
 from .chatterPreferredTtsSettingsRepositoryInterface import ChatterPreferredTtsSettingsRepositoryInterface
 from ...misc import utils as utils
@@ -62,10 +62,12 @@ class ChatterPreferredTtsSettingsRepository(ChatterPreferredTtsSettingsRepositor
 
     async def __parseTtsProviders(
         self,
-        providersStrings: list[str] | None,
+        providersStrings: Collection[str] | None,
         fallbackProviders: frozenset[TtsProvider],
     ) -> frozenset[TtsProvider]:
-        if providersStrings is None:
+        if providersStrings is not None and not isinstance(providersStrings, Collection):
+            raise TypeError(f'providersStrings argument is malformed: \"{providersStrings}\"')
+        elif providersStrings is None:
             return fallbackProviders
 
         providers: set[TtsProvider] = set()

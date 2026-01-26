@@ -88,6 +88,8 @@ from src.chatterInventory.useCases.cassetteTapeItemUseCase import CassetteTapeIt
 from src.chatterPreferredName.helpers.chatterPreferredNameHelper import ChatterPreferredNameHelper
 from src.chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
 from src.chatterPreferredName.helpers.chatterPreferredNameStringCleaner import ChatterPreferredNameStringCleaner
+from src.chatterPreferredName.helpers.chatterPreferredNameStringCleanerInterface import \
+    ChatterPreferredNameStringCleanerInterface
 from src.chatterPreferredName.repositories.chatterPreferredNameRepository import ChatterPreferredNameRepository
 from src.chatterPreferredName.repositories.chatterPreferredNameRepositoryInterface import \
     ChatterPreferredNameRepositoryInterface
@@ -1274,7 +1276,7 @@ chatterPreferredNameSettings: Final[ChatterPreferredNameSettingsInterface] = Cha
     ),
 )
 
-chatterPreferredNameStringCleaner: Final[ChatterPreferredNameStringCleaner] = ChatterPreferredNameStringCleaner()
+chatterPreferredNameStringCleaner: Final[ChatterPreferredNameStringCleanerInterface] = ChatterPreferredNameStringCleaner()
 
 chatterPreferredNameRepository: Final[ChatterPreferredNameRepositoryInterface] = ChatterPreferredNameRepository(
     backingDatabase = backingDatabase,
