@@ -1,7 +1,7 @@
 from typing import Any, Final
 
 from .chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
-from .chatterPreferredNameStringCleaner import ChatterPreferredNameStringCleaner
+from .chatterPreferredNameStringCleanerInterface import ChatterPreferredNameStringCleanerInterface
 from ..exceptions import ChatterPreferredNameFeatureIsDisabledException, ChatterPreferredNameIsInvalidException
 from ..models.chatterPreferredNameData import ChatterPreferredNameData
 from ..repositories.chatterPreferredNameRepositoryInterface import ChatterPreferredNameRepositoryInterface
@@ -15,18 +15,18 @@ class ChatterPreferredNameHelper(ChatterPreferredNameHelperInterface):
         self,
         chatterPreferredNameRepository: ChatterPreferredNameRepositoryInterface,
         chatterPreferredNameSettings: ChatterPreferredNameSettingsInterface,
-        chatterPreferredNameStringCleaner: ChatterPreferredNameStringCleaner,
+        chatterPreferredNameStringCleaner: ChatterPreferredNameStringCleanerInterface,
     ):
         if not isinstance(chatterPreferredNameRepository, ChatterPreferredNameRepositoryInterface):
             raise TypeError(f'chatterPreferredNameRepository argument is malformed: \"{chatterPreferredNameRepository}\"')
         elif not isinstance(chatterPreferredNameSettings, ChatterPreferredNameSettingsInterface):
             raise TypeError(f'chatterPreferredNameSettings argument is malformed: \"{chatterPreferredNameSettings}\"')
-        elif not isinstance(chatterPreferredNameStringCleaner, ChatterPreferredNameStringCleaner):
+        elif not isinstance(chatterPreferredNameStringCleaner, ChatterPreferredNameStringCleanerInterface):
             raise TypeError(f'chatterPreferredNameStringCleaner argument is malformed: \"{chatterPreferredNameStringCleaner}\"')
 
         self.__chatterPreferredNameRepository: Final[ChatterPreferredNameRepositoryInterface] = chatterPreferredNameRepository
         self.__chatterPreferredNameSettings: Final[ChatterPreferredNameSettingsInterface] = chatterPreferredNameSettings
-        self.__chatterPreferredNameStringCleaner: Final[ChatterPreferredNameStringCleaner] = chatterPreferredNameStringCleaner
+        self.__chatterPreferredNameStringCleaner: Final[ChatterPreferredNameStringCleanerInterface] = chatterPreferredNameStringCleaner
 
     async def get(
         self,
@@ -60,8 +60,9 @@ class ChatterPreferredNameHelper(ChatterPreferredNameHelperInterface):
         if not await self.__chatterPreferredNameSettings.isEnabled():
             raise ChatterPreferredNameFeatureIsDisabledException()
 
-        preferredName = await self.__chatterPreferredNameStringCleaner.clean(
-            name = preferredName,
+        preferredName = await self.__chatterPreferredNameStringCleaner.deepClean(
+            preferredName = preferredName,
+            twitchChannelId = twitchChannelId,
         )
 
         if not utils.isValidStr(preferredName):

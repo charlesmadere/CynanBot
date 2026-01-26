@@ -3,11 +3,13 @@ from typing import Final
 import pytest
 
 from src.chatterPreferredName.helpers.chatterPreferredNameStringCleaner import ChatterPreferredNameStringCleaner
+from src.chatterPreferredName.helpers.chatterPreferredNameStringCleanerInterface import \
+    ChatterPreferredNameStringCleanerInterface
 
 
 class TestChatterPreferredNameStringCleaner:
 
-    cleaner: Final[ChatterPreferredNameStringCleaner] = ChatterPreferredNameStringCleaner()
+    cleaner: Final[ChatterPreferredNameStringCleanerInterface] = ChatterPreferredNameStringCleaner()
 
     @pytest.mark.asyncio
     async def test_clean_withCrazyString1(self):
@@ -62,7 +64,7 @@ class TestChatterPreferredNameStringCleaner:
     @pytest.mark.asyncio
     async def test_clean_withSentence1(self):
         result = await self.cleaner.clean('\"Here\'s a really long name! That\'ll be $10.00. A lot of these characters should\'ve been removed!\"')
-        assert result == 'Heres a really long name'
+        assert result == 'Heres a really long name Thatll'
 
     @pytest.mark.asyncio
     async def test_clean_withWhitespaceString(self):

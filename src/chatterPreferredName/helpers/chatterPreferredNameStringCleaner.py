@@ -1,14 +1,15 @@
 import re
 from typing import Any, Final, Pattern
 
+from .chatterPreferredNameStringCleanerInterface import ChatterPreferredNameStringCleanerInterface
 from ...misc import utils as utils
 
 
-class ChatterPreferredNameStringCleaner:
+class ChatterPreferredNameStringCleaner(ChatterPreferredNameStringCleanerInterface):
 
     def __init__(
         self,
-        maxLength: int = 24,
+        maxLength: int = 32,
     ):
         if not utils.isValidInt(maxLength):
             raise TypeError(f'maxLength argument is malformed: \"{maxLength}\"')
@@ -20,19 +21,34 @@ class ChatterPreferredNameStringCleaner:
         self.__invalidCharactersRegEx: Final[Pattern] = re.compile(r'[^\w\s]', re.IGNORECASE)
         self.__spaceReplacementCharactersRegEx: Final[Pattern] = re.compile(r'[_-]', re.IGNORECASE)
 
-    async def clean(self, name: str | Any | None) -> str | None:
-        if not isinstance(name, str):
+    async def clean(
+        self,
+        preferredName: str | Any | None,
+    ) -> str | None:
+        if not utils.isValidStr(preferredName):
             return None
 
-        name = utils.cleanStr(name)
-        name = self.__spaceReplacementCharactersRegEx.sub(' ', name).strip()
-        name = self.__invalidCharactersRegEx.sub('', name).strip()
-        name = utils.cleanStr(name)
+        cleanedPreferredName = utils.cleanStr(preferredName)
+        cleanedPreferredName = self.__spaceReplacementCharactersRegEx.sub(' ', cleanedPreferredName).strip()
+        cleanedPreferredName = self.__invalidCharactersRegEx.sub('', cleanedPreferredName).strip()
+        cleanedPreferredName = utils.cleanStr(cleanedPreferredName)
 
-        if len(name) > self.__maxLength:
-            name = utils.cleanStr(name[:self.__maxLength])
+        if len(cleanedPreferredName) > self.__maxLength:
+            cleanedPreferredName = utils.cleanStr(cleanedPreferredName[:self.__maxLength])
 
-        if utils.isValidStr(name):
-            return name
-        else:
+        if not utils.isValidStr(cleanedPreferredName):
             return None
+
+        return cleanedPreferredName
+
+    async def deepClean(
+        self,
+        preferredName: str | Any | None,
+        twitchChannelId: str,
+    ) -> str | None:
+        cleanedPreferredName = await self.clean(
+            preferredName = preferredName,
+        )
+
+        # TODO clean additionally based on the twitchChannelId
+        return cleanedPreferredName

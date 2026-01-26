@@ -15,7 +15,7 @@ class LocationsRepository(LocationsRepositoryInterface):
         self,
         locationsJsonReader: JsonReaderInterface,
         timber: TimberInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface
+        timeZoneRepository: TimeZoneRepositoryInterface,
     ):
         if not isinstance(locationsJsonReader, JsonReaderInterface):
             raise TypeError(f'locationsJsonReader argument is malformed: \"{locationsJsonReader}\"')
