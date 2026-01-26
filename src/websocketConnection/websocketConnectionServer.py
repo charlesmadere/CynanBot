@@ -72,7 +72,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
             return
 
         eventTimeToLive = timedelta(
-            seconds = await self.__websocketConnectionServerSettings.getEventTimeToLiveSeconds()
+            seconds = await self.__websocketConnectionServerSettings.getEventTimeToLiveSeconds(),
         )
 
         now = datetime.now(self.__timeZoneRepository.getDefault())
@@ -183,7 +183,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
                     event = self.__eventQueue.get_nowait()
                     events.append(event)
             except queue.Empty as e:
-                self.__timber.log('WebsocketConnectionServer', f'Encountered queue.Empty error when looping through events ({serverConnection=}) (qsize: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
+                self.__timber.log('WebsocketConnectionServer', f'Encountered queue.Empty error when looping through events ({serverConnection=}) (qsize: {self.__eventQueue.qsize()})', e, traceback.format_exc())
 
             events.freeze()
 
