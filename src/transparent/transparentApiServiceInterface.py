@@ -9,6 +9,6 @@ class TransparentApiServiceInterface(ABC):
     @abstractmethod
     async def fetchWordOfTheDay(
         self,
-        targetLanguage: LanguageEntry
+        targetLanguage: LanguageEntry,
     ) -> TransparentResponse:
         pass

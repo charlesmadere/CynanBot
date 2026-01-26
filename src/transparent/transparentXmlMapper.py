@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, Final
 
 from .transparentResponse import TransparentResponse
 from .transparentXmlMapperInterface import TransparentXmlMapperInterface
@@ -9,15 +9,18 @@ from ..misc import utils as utils
 
 class TransparentXmlMapper(TransparentXmlMapperInterface):
 
-    def __init__(self, timeZoneRepository: TimeZoneRepositoryInterface):
+    def __init__(
+        self,
+        timeZoneRepository: TimeZoneRepositoryInterface,
+    ):
         if not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
 
     async def parseTransparentResponse(
         self,
-        xmlContents: dict[str, Any] | Any | None
+        xmlContents: dict[str, Any] | Any | None,
     ) -> TransparentResponse | None:
         if not isinstance(xmlContents, dict) or len(xmlContents) == 0:
             return None
@@ -34,7 +37,7 @@ class TransparentXmlMapper(TransparentXmlMapperInterface):
             langName = utils.getStrFromDict(
                 d = xmlContents,
                 key = 'langname',
-                clean = True
+                clean = True,
             )
 
         notes: str | None = None
@@ -43,7 +46,7 @@ class TransparentXmlMapper(TransparentXmlMapperInterface):
                 d = xmlContents,
                 key = 'notes',
                 clean = True,
-                htmlUnescape = True
+                htmlUnescape = True,
             )
 
         phraseSoundUrl: str | None = None
@@ -57,7 +60,7 @@ class TransparentXmlMapper(TransparentXmlMapperInterface):
             transliteratedSentence = utils.getStrFromDict(
                 d = xmlContents,
                 key = 'wotd:transliteratedSentence',
-                clean = True
+                clean = True,
             )
 
         transliteratedWord: str | None = None
@@ -65,7 +68,7 @@ class TransparentXmlMapper(TransparentXmlMapperInterface):
             transliteratedWord = utils.getStrFromDict(
                 d = xmlContents,
                 key = 'wotd:transliteratedWord',
-                clean = True
+                clean = True,
             )
 
         wordSoundUrl: str | None = None
@@ -87,5 +90,5 @@ class TransparentXmlMapper(TransparentXmlMapperInterface):
             transliteratedWord = transliteratedWord,
             word = word,
             wordSoundUrl = wordSoundUrl,
-            wordType = wordType
+            wordType = wordType,
         )

@@ -1,5 +1,5 @@
 import traceback
-from typing import Any
+from typing import Any, Final
 
 from .exceptions import WotdApiCodeUnavailableException
 from .transparentApiServiceInterface import TransparentApiServiceInterface
@@ -27,13 +27,13 @@ class TransparentApiService(TransparentApiServiceInterface):
         elif not isinstance(transparentXmlMapper, TransparentXmlMapperInterface):
             raise TypeError(f'transparentXmlMapper argument is malformed: \"{transparentXmlMapper}\"')
 
-        self.__networkClientProvider: NetworkClientProvider = networkClientProvider
-        self.__timber: TimberInterface = timber
-        self.__transparentXmlMapper: TransparentXmlMapperInterface = transparentXmlMapper
+        self.__networkClientProvider: Final[NetworkClientProvider] = networkClientProvider
+        self.__timber: Final[TimberInterface] = timber
+        self.__transparentXmlMapper: Final[TransparentXmlMapperInterface] = transparentXmlMapper
 
     async def fetchWordOfTheDay(
         self,
-        targetLanguage: LanguageEntry
+        targetLanguage: LanguageEntry,
     ) -> TransparentResponse:
         if not isinstance(targetLanguage, LanguageEntry):
             raise TypeError(f'targetLanguage argument is malformed: \"{targetLanguage}\"')
@@ -45,7 +45,7 @@ class TransparentApiService(TransparentApiServiceInterface):
         if not utils.isValidStr(wotdApiCode):
             raise WotdApiCodeUnavailableException(
                 languageEntry = targetLanguage,
-                message = f'No WOTD API code is available for the given targetLanguage ({wotdApiCode=}) ({targetLanguage=})'
+                message = f'No WOTD API code is available for the given targetLanguage ({wotdApiCode=}) ({targetLanguage=})',
             )
 
         ################################################################################
@@ -55,7 +55,7 @@ class TransparentApiService(TransparentApiServiceInterface):
         try:
             response = await clientSession.get(f'https://wotd.transparent.com/rss/{wotdApiCode}-widget.xml?t=0')
         except GenericNetworkException as e:
-            self.__timber.log('TransparentApiService', f'Encountered network error when fetching word of the day ({targetLanguage=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TransparentApiService', f'Encountered network error when fetching word of the day ({targetLanguage=})', e, traceback.format_exc())
             raise GenericNetworkException(f'TransparentApiService encountered network error when fetching word of the day ({targetLanguage=}): {e}')
 
         responseStatusCode = response.statusCode
@@ -64,7 +64,10 @@ class TransparentApiService(TransparentApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('TransparentApiService', f'Encountered non-200 HTTP status code when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})')
-            raise GenericNetworkException(f'TransparentApiService encountered non-200 HTTP status code when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})')
+            raise GenericNetworkException(
+                message = f'TransparentApiService encountered non-200 HTTP status code when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})',
+                statusCode = responseStatusCode,
+            )
         elif not isinstance(xmlResponse, dict) or len(xmlResponse) == 0:
             self.__timber.log('TransparentApiService', f'Encountered missing/invalid XML data when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})')
             raise GenericNetworkException(f'TransparentApiService encountered missing/invalid XML data when fetching word of the day ({targetLanguage=}) ({responseStatusCode=}) ({response=}) ({xmlResponse=})')

@@ -906,7 +906,8 @@ transparentApiService: TransparentApiServiceInterface = TransparentApiService(
 
 wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository(
     timber = timber,
-    transparentApiService = transparentApiService
+    timeZoneRepository = timeZoneRepository,
+    transparentApiService = transparentApiService,
 )
 
 wordOfTheDayPresenter: WordOfTheDayPresenterInterface = WordOfTheDayPresenter()
