@@ -118,7 +118,7 @@ class TwitchApiServiceInterface(ABC):
         broadcasterId: str,
         twitchAccessToken: str,
         userId: str,
-    ) -> TwitchFollowersResponse | None:
+    ) -> TwitchFollowersResponse:
         pass
 
     @abstractmethod
