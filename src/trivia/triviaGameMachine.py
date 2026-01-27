@@ -329,7 +329,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 'twitchChannelId': action.getTwitchChannelId(),
                 'userId': action.getUserId(),
                 'userName': action.getUserName(),
-            }
+            },
         )
 
         if checkResult is TriviaAnswerCheckResult.INVALID_INPUT:
@@ -467,7 +467,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 'twitchChannelId': action.twitchChannelId,
                 'userId': action.userId,
                 'userName': action.userName,
-            }
+            },
         )
 
         # we're intentionally ONLY checking for TriviaAnswerCheckResult.CORRECT
