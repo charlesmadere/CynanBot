@@ -9,6 +9,6 @@ class TransparentXmlMapperInterface(ABC):
     @abstractmethod
     async def parseTransparentResponse(
         self,
-        xmlContents: dict[str, Any] | Any | None
+        xmlContents: dict[str, Any] | Any | None,
     ) -> TransparentResponse | None:
         pass

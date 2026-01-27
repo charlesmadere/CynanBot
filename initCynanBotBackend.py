@@ -906,7 +906,8 @@ transparentApiService: TransparentApiServiceInterface = TransparentApiService(
 
 wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository(
     timber = timber,
-    transparentApiService = transparentApiService
+    timeZoneRepository = timeZoneRepository,
+    transparentApiService = transparentApiService,
 )
 
 wordOfTheDayPresenter: WordOfTheDayPresenterInterface = WordOfTheDayPresenter()
@@ -1231,8 +1232,8 @@ bongoJsonParser: BongoJsonParserInterface = BongoJsonParser(
 )
 
 bongoApiService: BongoApiServiceInterface = BongoApiService(
-    networkClientProvider = networkClientProvider,
     bongoJsonParser = bongoJsonParser,
+    networkClientProvider = networkClientProvider,
     timber = timber
 )
 

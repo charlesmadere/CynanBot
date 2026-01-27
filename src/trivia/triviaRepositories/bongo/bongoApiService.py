@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from .bongoApiServiceInterface import BongoApiServiceInterface
 from .bongoJsonParserInterface import BongoJsonParserInterface
@@ -12,20 +13,20 @@ class BongoApiService(BongoApiServiceInterface):
 
     def __init__(
         self,
-        networkClientProvider: NetworkClientProvider,
         bongoJsonParser: BongoJsonParserInterface,
-        timber: TimberInterface
+        networkClientProvider: NetworkClientProvider,
+        timber: TimberInterface,
     ):
-        if not isinstance(networkClientProvider, NetworkClientProvider):
-            raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
-        elif not isinstance(bongoJsonParser, BongoJsonParserInterface):
+        if not isinstance(bongoJsonParser, BongoJsonParserInterface):
             raise TypeError(f'bongoJsonParser argument is malformed: \"{bongoJsonParser}\"')
+        elif not isinstance(networkClientProvider, NetworkClientProvider):
+            raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__networkClientProvider: NetworkClientProvider = networkClientProvider
-        self.__bongoJsonParser: BongoJsonParserInterface = bongoJsonParser
-        self.__timber: TimberInterface = timber
+        self.__bongoJsonParser: Final[BongoJsonParserInterface] = bongoJsonParser
+        self.__networkClientProvider: Final[NetworkClientProvider] = networkClientProvider
+        self.__timber: Final[TimberInterface] = timber
 
     async def fetchTriviaQuestion(self) -> BongoTriviaQuestion:
         self.__timber.log('BongoApiService', f'Fetching trivia question...')
@@ -34,7 +35,7 @@ class BongoApiService(BongoApiServiceInterface):
         try:
             response = await clientSession.get('https://beta-trivia.bongo.best/?limit=1')
         except GenericNetworkException as e:
-            self.__timber.log('BongoApiService', f'Encountered network error when fetching trivia question: {e}', e, traceback.format_exc())
+            self.__timber.log('BongoApiService', f'Encountered network error when fetching trivia question', e, traceback.format_exc())
             raise GenericNetworkException(f'BongoApiService encountered network error when fetching trivia question: {e}')
 
         responseStatusCode = response.statusCode
@@ -43,7 +44,10 @@ class BongoApiService(BongoApiServiceInterface):
 
         if responseStatusCode != 200:
             self.__timber.log('BongoApiService', f'Encountered non-200 HTTP status code when fetching trivia question ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
-            raise GenericNetworkException(f'BongoApiService encountered non-200 HTTP status code when fetching trivia question ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+            raise GenericNetworkException(
+                message = f'BongoApiService encountered non-200 HTTP status code when fetching trivia question ({responseStatusCode=}) ({response=}) ({jsonResponse=})',
+                statusCode = responseStatusCode,
+            )
 
         questions = await self.__bongoJsonParser.parseTriviaQuestions(jsonResponse)
 

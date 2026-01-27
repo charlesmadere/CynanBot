@@ -24,10 +24,10 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
         bongoApiService: BongoApiServiceInterface,
         timber: TimberInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
     ):
         super().__init__(
-            triviaSettingsRepository = triviaSettingsRepository
+            triviaSettingsRepository = triviaSettingsRepository,
         )
 
         if not isinstance(bongoApiService, BongoApiServiceInterface):
@@ -48,7 +48,7 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
         try:
             bongoTriviaQuestion = await self.__bongoApiService.fetchTriviaQuestion()
         except GenericNetworkException as e:
-            self.__timber.log('BongoTriviaQuestionRepository', f'Encountered network error: {e}', e, traceback.format_exc())
+            self.__timber.log('BongoTriviaQuestionRepository', f'Encountered network error', e, traceback.format_exc())
             raise GenericTriviaNetworkException(self.triviaSource, e)
 
         category = await self.__triviaQuestionCompiler.compileCategory(bongoTriviaQuestion.category)
@@ -63,22 +63,23 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 triviaId = bongoTriviaQuestion.triviaId,
                 triviaDifficulty = bongoTriviaQuestion.difficulty,
                 originalTriviaSource = None,
-                triviaSource = self.triviaSource
+                triviaSource = self.triviaSource,
             )
+
         elif isinstance(bongoTriviaQuestion, MultipleBongoTriviaQuestion):
             correctAnswer = await self.__triviaQuestionCompiler.compileResponse(
-                response = bongoTriviaQuestion.correctAnswer
+                response = bongoTriviaQuestion.correctAnswer,
             )
             correctAnswers: list[str] = list()
             correctAnswers.append(correctAnswer)
 
             incorrectAnswers = await self.__triviaQuestionCompiler.compileResponses(
-                responses = bongoTriviaQuestion.incorrectAnswers
+                responses = bongoTriviaQuestion.incorrectAnswers,
             )
 
             multipleChoiceResponses = await self._buildMultipleChoiceResponsesList(
                 correctAnswers = correctAnswers,
-                multipleChoiceResponses = incorrectAnswers
+                multipleChoiceResponses = incorrectAnswers,
             )
 
             return MultipleChoiceTriviaQuestion(
@@ -90,8 +91,9 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 triviaId = bongoTriviaQuestion.triviaId,
                 triviaDifficulty = bongoTriviaQuestion.difficulty,
                 originalTriviaSource = None,
-                triviaSource = self.triviaSource
+                triviaSource = self.triviaSource,
             )
+
         else:
             raise UnsupportedTriviaTypeException(f'Encountered unknown BongoTriviaQuestion instance: ({bongoTriviaQuestion=})')
 
