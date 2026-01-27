@@ -494,13 +494,13 @@ triviaGameMachine = TriviaGameMachine(
         backgroundTaskHelper = backgroundTaskHelper,
         bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
             bongoApiService = BongoApiService(
-                networkClientProvider = networkClientProvider,
                 bongoJsonParser = BongoJsonParser(
                     timber = timber,
                     triviaDifficultyParser = triviaDifficultyParser,
                     triviaQuestionTypeParser = triviaQuestionTypeParser
                 ),
-                timber = timber
+                networkClientProvider = networkClientProvider,
+                timber = timber,
             ),
             timber = timber,
             triviaQuestionCompiler = triviaQuestionCompiler,

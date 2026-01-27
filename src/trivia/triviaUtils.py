@@ -123,7 +123,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
             triviaQuestion = question,
-            delimiter = delimiter
+            delimiter = delimiter,
         )
 
         return f'{prefix} {celebratoryEmote} {infix} {celebratoryEmote} {correctAnswers}'.strip()
@@ -163,7 +163,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
             triviaQuestion = question,
-            delimiter = delimiter
+            delimiter = delimiter,
         )
 
         return f'{prefix} {correctAnswers}'.strip()
@@ -275,7 +275,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
             triviaQuestion = question,
-            delimiter = delimiter
+            delimiter = delimiter,
         )
 
         return f'{prefix} {correctAnswers}'.strip()
@@ -361,7 +361,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
             triviaQuestion = question,
-            delimiter = delimiter
+            delimiter = delimiter,
         )
 
         if not utils.isValidStr(celebratoryEmote):
@@ -413,7 +413,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
             triviaQuestion = question,
-            delimiter = delimiter
+            delimiter = delimiter,
         )
 
         return f'{prefix} {correctAnswers}'.strip()
@@ -462,7 +462,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         questionPrompt = await self.__triviaQuestionPresenter.getPrompt(
             triviaQuestion = triviaQuestion,
-            delimiter = delimiter
+            delimiter = delimiter,
         )
 
         return f'{emotePrompt} EVERYONE can play, !superanswer in {delaySecondsStr}s {cutenessPrompt} {questionPrompt}'.strip()
@@ -618,7 +618,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         questionPrompt = await self.__triviaQuestionPresenter.getPrompt(
             triviaQuestion = triviaQuestion,
-            delimiter = delimiter
+            delimiter = delimiter,
         )
 
         return f'{emotePrompt} @{userNameThatRedeemed} !answer in {delaySecondsStr}s {cutenessPrompt} {questionPrompt}'.strip()

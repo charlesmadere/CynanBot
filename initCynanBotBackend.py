@@ -1232,8 +1232,8 @@ bongoJsonParser: BongoJsonParserInterface = BongoJsonParser(
 )
 
 bongoApiService: BongoApiServiceInterface = BongoApiService(
-    networkClientProvider = networkClientProvider,
     bongoJsonParser = bongoJsonParser,
+    networkClientProvider = networkClientProvider,
     timber = timber
 )
 
