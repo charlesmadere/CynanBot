@@ -1126,7 +1126,22 @@ chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterf
     ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
 )
 
-googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = GoogleTtsVoicesHelper()
+googleJsonMapper: Final[GoogleJsonMapperInterface] = GoogleJsonMapper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+googleSettingsRepository: Final[GoogleSettingsRepositoryInterface] = GoogleSettingsRepository(
+    googleJsonMapper = googleJsonMapper,
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/googleSettingsRepository.json',
+    ),
+)
+
+googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = GoogleTtsVoicesHelper(
+    googleSettingsRepository = googleSettingsRepository,
+)
 
 chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = ChatterPreferredTtsHelper(
     chatterPreferredTtsRepository = chatterPreferredTtsRepository,
@@ -1297,11 +1312,6 @@ googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAcc
     timeZoneRepository = timeZoneRepository,
 )
 
-googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-)
-
 googleJwtBuilder: GoogleJwtBuilderInterface = GoogleJwtBuilder(
     googleCloudCredentialsProvider = authRepository,
     googleJsonMapper = googleJsonMapper,
@@ -1315,14 +1325,6 @@ googleApiService: GoogleApiServiceInterface = GoogleApiService(
     googleJwtBuilder = googleJwtBuilder,
     networkClientProvider = networkClientProvider,
     timber = timber,
-)
-
-googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepository(
-    googleJsonMapper = googleJsonMapper,
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/googleSettingsRepository.json',
-    ),
 )
 
 googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()

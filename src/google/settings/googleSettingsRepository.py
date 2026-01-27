@@ -13,7 +13,7 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
         self,
         googleJsonMapper: GoogleJsonMapperInterface,
         settingsJsonReader: JsonReaderInterface,
-        defaultVoiceAudioEncoding: GoogleVoiceAudioEncoding = GoogleVoiceAudioEncoding.MP3
+        defaultVoiceAudioEncoding: GoogleVoiceAudioEncoding = GoogleVoiceAudioEncoding.MP3,
     ):
         if not isinstance(googleJsonMapper, GoogleJsonMapperInterface):
             raise TypeError(f'googleJsonMapper argument is malformed: \"{googleJsonMapper}\"')
@@ -27,6 +27,10 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
         self.__defaultVoiceAudioEncoding: Final[GoogleVoiceAudioEncoding] = defaultVoiceAudioEncoding
 
         self.__cache: dict[str, Any] | None = None
+
+    async def areChirp3VoicesEnabled(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'chirp3VoicesEnabled', fallback = False)
 
     async def clearCaches(self):
         self.__cache = None

@@ -152,7 +152,9 @@ stubGlacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = StubGlacialTtsFi
 
 googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
 
-googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface = GoogleTtsVoicesHelper()
+googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = GoogleTtsVoicesHelper(
+    googleSettingsRepository = googleSettingsRepository,
+)
 
 googleTtsHelper: Final[GoogleTtsHelperInterface] = GoogleTtsHelper(
     eventLoop = eventLoop,

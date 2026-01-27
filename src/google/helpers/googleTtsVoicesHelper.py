@@ -1,12 +1,72 @@
 import random
+from typing import Final
 
 from .googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
 from ..models.googleMultiSpeakerVoicePreset import GoogleMultiSpeakerVoicePreset
 from ..models.googleVoicePreset import GoogleVoicePreset
+from ..settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...language.languageEntry import LanguageEntry
 
 
 class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
+
+    def __init__(
+        self,
+        googleSettingsRepository: GoogleSettingsRepositoryInterface,
+    ):
+        if not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
+            raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
+
+        self.__googleSettingsRepository: Final[GoogleSettingsRepositoryInterface] = googleSettingsRepository
+
+    async def getChirp3VoiceForLanguage(
+        self,
+        languageEntry: LanguageEntry,
+    ) -> GoogleVoicePreset | None:
+        if not isinstance(languageEntry, LanguageEntry):
+            raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
+
+        if not await self.__googleSettingsRepository.areChirp3VoicesEnabled():
+            return None
+
+        voices = await self.getChirp3VoicesForLanguage(
+            languageEntry = languageEntry,
+        )
+
+        if len(voices) == 0:
+            return None
+        else:
+            return random.choice(list(voices))
+
+    async def getChirp3VoicesForLanguage(
+        self,
+        languageEntry: LanguageEntry,
+    ) -> frozenset[GoogleVoicePreset]:
+        if not isinstance(languageEntry, LanguageEntry):
+            raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
+
+        voicePresets: set[GoogleVoicePreset] = set()
+
+        match languageEntry:
+            case LanguageEntry.JAPANESE:
+                voicePresets = {
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AOEDE,
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AUTONOE,
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_CALLIRRHOE,
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_DESPINA,
+                }
+
+            case LanguageEntry.SWEDISH:
+                voicePresets = {
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_AOEDE,
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_AUTONOE,
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_CALLIRRHOE,
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_DESPINA,
+                }
+
+        return frozenset(voicePresets)
 
     async def getEnglishMultiSpeakerVoice(self) -> GoogleMultiSpeakerVoicePreset:
         return GoogleMultiSpeakerVoicePreset.ENGLISH_US_STUDIO_MULTI_SPEAKER
