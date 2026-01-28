@@ -7,6 +7,10 @@ from ...misc.clearable import Clearable
 class GoogleSettingsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
+    async def areChirp3VoicesEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     async def getMediaPlayerVolume(self) -> int | None:
         pass
 

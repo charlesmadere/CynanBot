@@ -53,6 +53,23 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
     ENGLISH_AUSTRALIA_CHIRP_D = auto()
     ENGLISH_AUSTRALIA_CHIRP_F = auto()
     ENGLISH_AUSTRALIA_CHIRP_O = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_ACHERNAR = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_ACHIRD = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_AOEDE = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_AUTONOE = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_CALLIRRHOE = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_DESPINA = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_ERINOME = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_FENRIR = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_GACRUX = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_IAPETUS = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_KORE = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_LAOMEDEIA = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_LEDA = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_PUCK = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_VINDEMIATRIX = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_ZEPHYR = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_ZUBENELGENUBI = auto()
     ENGLISH_AUSTRALIA_STANDARD_A = auto()
     ENGLISH_AUSTRALIA_STANDARD_B = auto()
     ENGLISH_AUSTRALIA_STANDARD_C = auto()
@@ -170,6 +187,7 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
     JAPANESE_JAPAN_STANDARD_B = auto()
     JAPANESE_JAPAN_STANDARD_C = auto()
     JAPANESE_JAPAN_STANDARD_D = auto()
+    JAPANESE_JAPAN_CHIRP3_ACHIRD = auto()
     JAPANESE_JAPAN_CHIRP3_ACHERNAR = auto()
     JAPANESE_JAPAN_CHIRP3_AOEDE = auto()
     JAPANESE_JAPAN_CHIRP3_AUTONOE = auto()
@@ -248,6 +266,23 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
     SPANISH_US_CHIRP_D = auto()
     SPANISH_US_CHIRP_F = auto()
     SPANISH_US_CHIRP_O = auto()
+    SPANISH_US_CHIRP3_ACHERNAR = auto()
+    SPANISH_US_CHIRP3_ACHIRD = auto()
+    SPANISH_US_CHIRP3_AOEDE = auto()
+    SPANISH_US_CHIRP3_AUTONOE = auto()
+    SPANISH_US_CHIRP3_CALLIRRHOE = auto()
+    SPANISH_US_CHIRP3_DESPINA = auto()
+    SPANISH_US_CHIRP3_ERINOME = auto()
+    SPANISH_US_CHIRP3_FENRIR = auto()
+    SPANISH_US_CHIRP3_GACRUX = auto()
+    SPANISH_US_CHIRP3_IAPETUS = auto()
+    SPANISH_US_CHIRP3_KORE = auto()
+    SPANISH_US_CHIRP3_LAOMEDEIA = auto()
+    SPANISH_US_CHIRP3_LEDA = auto()
+    SPANISH_US_CHIRP3_PUCK = auto()
+    SPANISH_US_CHIRP3_VINDEMIATRIX = auto()
+    SPANISH_US_CHIRP3_ZEPHYR = auto()
+    SPANISH_US_CHIRP3_ZUBENELGENUBI = auto()
     SPANISH_US_STANDARD_A = auto()
     SPANISH_US_STANDARD_B = auto()
     SPANISH_US_STANDARD_C = auto()
@@ -258,6 +293,7 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
     SWEDISH_SWEDEN_STANDARD_E = auto()
     SWEDISH_SWEDEN_STANDARD_F = auto()
     SWEDISH_SWEDEN_STANDARD_G = auto()
+    SWEDISH_SWEDEN_CHIRP3_ACHIRD = auto()
     SWEDISH_SWEDEN_CHIRP3_ACHERNAR = auto()
     SWEDISH_SWEDEN_CHIRP3_AOEDE = auto()
     SWEDISH_SWEDEN_CHIRP3_AUTONOE = auto()
@@ -334,6 +370,23 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
             case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP_D: return 'en-AU-Chirp-HD-D'
             case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP_F: return 'en-AU-Chirp-HD-F'
             case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP_O: return 'en-AU-Chirp-HD-O'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ACHERNAR: return 'en-AU-Chirp3-HD-Achernar'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ACHIRD: return 'en-AU-Chirp3-HD-Achird'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_AOEDE: return 'en-AU-Chirp3-HD-Aoede'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_AUTONOE: return 'en-AU-Chirp3-HD-Autonoe'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_CALLIRRHOE: return 'en-AU-Chirp3-HD-Callirrhoe'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_DESPINA: return 'en-AU-Chirp3-HD-Despina'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ERINOME: return 'en-AU-Chirp3-HD-Erinome'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_FENRIR: return 'en-AU-Chirp3-HD-Fenrir'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_GACRUX: return 'en-AU-Chirp3-HD-Gacrux'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_KORE: return 'en-AU-Chirp3-HD-Kore'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_IAPETUS: return 'en-AU-Chirp3-HD-Iapetus'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_LAOMEDEIA: return 'en-AU-Chirp3-HD-Laomedeia'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_LEDA: return 'en-AU-Chirp3-HD-Leda'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_PUCK: return 'en-AU-Chirp3-HD-Puck'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_VINDEMIATRIX: return 'en-AU-Chirp3-HD-Vindemiatrix'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ZEPHYR: return 'en-AU-Chirp3-HD-Zephyr'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ZUBENELGENUBI: return 'en-AU-Chirp3-HD-Zubenelgenubi'
             case GoogleVoicePreset.ENGLISH_AUSTRALIA_STANDARD_A: return 'en-AU-Standard-A'
             case GoogleVoicePreset.ENGLISH_AUSTRALIA_STANDARD_B: return 'en-AU-Standard-B'
             case GoogleVoicePreset.ENGLISH_AUSTRALIA_STANDARD_C: return 'en-AU-Standard-C'
@@ -452,6 +505,7 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
             case GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_C: return 'ja-JP-Standard-C'
             case GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_D: return 'ja-JP-Standard-D'
             case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_ACHERNAR: return 'ja-JP-Chirp3-HD-Achernar'
+            case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_ACHIRD: return 'ja-JP-Chirp3-HD-Achird'
             case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AOEDE: return 'ja-JA-Chirp3-HD-Aoede'
             case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AUTONOE: return 'ja-JP-Chirp3-HD-Autonoe'
             case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_CALLIRRHOE: return 'ja-JP-Chirp3-HD-Callirrhoe'
@@ -529,6 +583,23 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
             case GoogleVoicePreset.SPANISH_US_CHIRP_D: return 'es-US-Chirp-HD-D'
             case GoogleVoicePreset.SPANISH_US_CHIRP_F: return 'es-US-Chirp-HD-F'
             case GoogleVoicePreset.SPANISH_US_CHIRP_O: return 'es-US-Chirp-HD-O'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_ACHERNAR: return 'es-US-Chirp3-HD-Achernar'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_ACHIRD: return 'es-US-Chirp3-HD-Achird'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_AOEDE: return 'es-US-Chirp3-HD-Aoede'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_AUTONOE: return 'es-US-Chirp3-HD-Autonoe'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_CALLIRRHOE: return 'es-US-Chirp3-HD-Callirrhoe'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_DESPINA: return 'es-US-Chirp3-HD-Despina'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_ERINOME: return 'es-US-Chirp3-HD-Erinome'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_FENRIR: return 'es-US-Chirp3-HD-Fenrir'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_GACRUX: return 'es-US-Chirp3-HD-Gacrux'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_KORE: return 'es-US-Chirp3-HD-Kore'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_IAPETUS: return 'es-US-Chirp3-HD-Iapetus'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_LAOMEDEIA: return 'es-US-Chirp3-HD-Laomedeia'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_LEDA: return 'es-US-Chirp3-HD-Leda'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_PUCK: return 'es-US-Chirp3-HD-Puck'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_VINDEMIATRIX: return 'es-US-Chirp3-HD-Vindemiatrix'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_ZEPHYR: return 'es-US-Chirp3-HD-Zephyr'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_ZUBENELGENUBI: return 'es-US-Chirp3-HD-Zubenelgenubi'
             case GoogleVoicePreset.SPANISH_US_STANDARD_A: return 'es-US-Standard-A'
             case GoogleVoicePreset.SPANISH_US_STANDARD_B: return 'es-US-Standard-B'
             case GoogleVoicePreset.SPANISH_US_STANDARD_C: return 'es-US-Standard-C'
@@ -540,6 +611,7 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_F: return 'sv-SE-Standard-F'
             case GoogleVoicePreset.SWEDISH_SWEDEN_STANDARD_G: return 'sv-SE-Standard-G'
             case GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_ACHERNAR: return 'sv-SE-Chirp3-HD-Achernar'
+            case GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_ACHIRD: return 'sv-SE-Chirp3-HD-Achird'
             case GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_AOEDE: return 'sv-SE-Chirp3-HD-Aoede'
             case GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_AUTONOE: return 'sv-SE-Chirp3-HD-Autonoe'
             case GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_CALLIRRHOE: return 'sv-SE-Chirp3-HD-Callirrhoe'

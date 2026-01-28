@@ -8,6 +8,13 @@ from ...language.languageEntry import LanguageEntry
 class GoogleTtsVoicesHelperInterface(ABC):
 
     @abstractmethod
+    async def getChirp3VoicesForLanguage(
+        self,
+        languageEntry: LanguageEntry,
+    ) -> frozenset[GoogleVoicePreset]:
+        pass
+
+    @abstractmethod
     async def getEnglishMultiSpeakerVoice(self) -> GoogleMultiSpeakerVoicePreset:
         pass
 

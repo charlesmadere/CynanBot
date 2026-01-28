@@ -1,18 +1,125 @@
 import random
+from typing import Final
 
 from .googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
 from ..models.googleMultiSpeakerVoicePreset import GoogleMultiSpeakerVoicePreset
 from ..models.googleVoicePreset import GoogleVoicePreset
+from ..settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...language.languageEntry import LanguageEntry
 
 
 class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
 
+    def __init__(
+        self,
+        googleSettingsRepository: GoogleSettingsRepositoryInterface,
+    ):
+        if not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
+            raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
+
+        self.__googleSettingsRepository: Final[GoogleSettingsRepositoryInterface] = googleSettingsRepository
+
+    async def getChirp3VoicesForLanguage(
+        self,
+        languageEntry: LanguageEntry,
+    ) -> frozenset[GoogleVoicePreset]:
+        if not isinstance(languageEntry, LanguageEntry):
+            raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
+
+        if not await self.__googleSettingsRepository.areChirp3VoicesEnabled():
+            return frozenset()
+
+        voicePresets: set[GoogleVoicePreset] = set()
+
+        match languageEntry:
+            case LanguageEntry.ENGLISH:
+                voicePresets = {
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ACHIRD,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_AOEDE,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_AUTONOE,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_CALLIRRHOE,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_DESPINA,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ERINOME,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_FENRIR,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_GACRUX,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_IAPETUS,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_KORE,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_LAOMEDEIA,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_LEDA,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_PUCK,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_VINDEMIATRIX,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ZEPHYR,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ZUBENELGENUBI,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ACHIRD,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_AOEDE,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_AUTONOE,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_CALLIRRHOE,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_DESPINA,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ERINOME,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_FENRIR,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_GACRUX,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_IAPETUS,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_KORE,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_LAOMEDEIA,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_LEDA,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_PUCK,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_VINDEMIATRIX,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ZEPHYR,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ZUBENELGENUBI,
+                }
+
+            case LanguageEntry.JAPANESE:
+                voicePresets = {
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_ACHIRD,
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AOEDE,
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AUTONOE,
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_CALLIRRHOE,
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_DESPINA,
+                }
+
+            case LanguageEntry.SPANISH:
+                voicePresets = {
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_ACHIRD,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_AOEDE,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_AUTONOE,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_CALLIRRHOE,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_DESPINA,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_ERINOME,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_FENRIR,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_GACRUX,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_IAPETUS,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_KORE,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_LAOMEDEIA,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_LEDA,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_PUCK,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_VINDEMIATRIX,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_ZEPHYR,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_ZUBENELGENUBI,
+                }
+
+            case LanguageEntry.SWEDISH:
+                voicePresets = {
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_ACHIRD,
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_AOEDE,
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_AUTONOE,
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_CALLIRRHOE,
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_DESPINA,
+                }
+
+        return frozenset(voicePresets)
+
     async def getEnglishMultiSpeakerVoice(self) -> GoogleMultiSpeakerVoicePreset:
         return GoogleMultiSpeakerVoicePreset.ENGLISH_US_STUDIO_MULTI_SPEAKER
 
     async def getEnglishVoice(self) -> GoogleVoicePreset:
-        voice = await self.getVoiceForLanguage(LanguageEntry.ENGLISH)
+        voice = await self.getVoiceForLanguage(
+            languageEntry = LanguageEntry.ENGLISH,
+        )
 
         if voice is None:
             raise RuntimeError(f'Failed to choose an english voice! ({voice=})')
@@ -25,6 +132,14 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
     ) -> GoogleVoicePreset | None:
         if not isinstance(languageEntry, LanguageEntry):
             raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
+
+        if await self.__googleSettingsRepository.areChirp3VoicesEnabled():
+            chirp3Voices = await self.getChirp3VoicesForLanguage(
+                languageEntry = languageEntry,
+            )
+
+            if len(chirp3Voices) >= 1:
+                return random.choice(list(chirp3Voices))
 
         voices = await self.getVoicesForLanguage(
             languageEntry = languageEntry,

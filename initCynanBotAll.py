@@ -1351,7 +1351,22 @@ chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterf
     ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
 )
 
-googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = GoogleTtsVoicesHelper()
+googleJsonMapper: Final[GoogleJsonMapperInterface] = GoogleJsonMapper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+googleSettingsRepository: Final[GoogleSettingsRepositoryInterface] = GoogleSettingsRepository(
+    googleJsonMapper = googleJsonMapper,
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/googleSettingsRepository.json',
+    ),
+)
+
+googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = GoogleTtsVoicesHelper(
+    googleSettingsRepository = googleSettingsRepository,
+)
 
 chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = ChatterPreferredTtsHelper(
     chatterPreferredTtsRepository = chatterPreferredTtsRepository,
@@ -1527,19 +1542,6 @@ googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = GoogleTtsMessageClea
 googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
-)
-
-googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-)
-
-googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepository(
-    googleJsonMapper = googleJsonMapper,
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/googleSettingsRepository.json',
-    ),
 )
 
 googleJwtBuilder: GoogleJwtBuilderInterface = GoogleJwtBuilder(
