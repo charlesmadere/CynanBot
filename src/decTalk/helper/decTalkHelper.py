@@ -57,7 +57,6 @@ class DecTalkHelper(DecTalkHelperInterface):
         voice: DecTalkVoice | None,
         donationPrefix: str | None,
         message: str | None,
-        twitchChannel: str,
         twitchChannelId: str,
     ) -> DecTalkFileReference | None:
         if voice is not None and not isinstance(voice, DecTalkVoice):
@@ -66,8 +65,6 @@ class DecTalkHelper(DecTalkHelperInterface):
             raise TypeError(f'donationPrefix argument is malformed: \"{donationPrefix}\"')
         elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 

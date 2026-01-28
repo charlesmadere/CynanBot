@@ -11,7 +11,6 @@ class StreamElementsHelperInterface(ABC):
         self,
         donationPrefix: str | None,
         message: str | None,
-        twitchChannel: str,
         twitchChannelId: str,
         voice: StreamElementsVoice | None,
     ) -> StreamElementsFileReference | None:

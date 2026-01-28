@@ -1,5 +1,6 @@
 import asyncio
 from asyncio import AbstractEventLoop
+from typing import Final
 
 from src.glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
 from src.glacialTtsStorage.stub.stubGlacialTtsFileRetriever import StubGlacialTtsFileRetriever
@@ -10,6 +11,11 @@ from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.networkClientProvider import NetworkClientProvider
+from src.soundPlayerManager.audioPlayer.audioPlayerSoundPlayerManager import AudioPlayerSoundPlayerManager
+from src.soundPlayerManager.settings.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
+from src.soundPlayerManager.settings.soundPlayerSettingsRepositoryInterface import \
+    SoundPlayerSettingsRepositoryInterface
+from src.soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from src.storage.jsonStaticReader import JsonStaticReader
 from src.streamElements.apiService.streamElementsApiService import StreamElementsApiService
 from src.streamElements.apiService.streamElementsApiServiceInterface import StreamElementsApiServiceInterface
@@ -135,20 +141,35 @@ streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
     timber = timber,
 )
 
+soundPlayerSettingsRepository: Final[SoundPlayerSettingsRepositoryInterface] = SoundPlayerSettingsRepository(
+    settingsJsonReader = JsonStaticReader(dict()),
+)
+
+soundPlayerManager: Final[SoundPlayerManagerInterface] = AudioPlayerSoundPlayerManager(
+    eventLoop = eventLoop,
+    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
 async def main():
     pass
 
-    message = 'Hello, World!'
+    message = 'RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR'
 
     fileReference = await streamElementsHelper.generateTts(
         donationPrefix = None,
         message = message,
-        twitchChannel = 'twitchChannel',
         twitchChannelId = 'twitchChannelId',
         voice = StreamElementsVoice.BRIAN,
     )
 
-    print(f'{message=} {fileReference=}')
+    print(f'text to speech results: ({message=}) ({fileReference=})')
+
+    await soundPlayerManager.playSoundFile(
+        filePath = fileReference.filePath,
+        volume = await streamElementsSettingsRepository.getMediaPlayerVolume(),
+    )
 
     pass
 
