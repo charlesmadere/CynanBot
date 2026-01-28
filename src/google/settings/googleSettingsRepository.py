@@ -30,7 +30,7 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
 
     async def areChirp3VoicesEnabled(self) -> bool:
         jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'chirp3VoicesEnabled', fallback = False)
+        return utils.getBoolFromDict(jsonContents, 'chirp3VoicesEnabled', fallback = True)
 
     async def clearCaches(self):
         self.__cache = None
