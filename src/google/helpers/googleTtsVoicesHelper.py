@@ -19,25 +19,6 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
 
         self.__googleSettingsRepository: Final[GoogleSettingsRepositoryInterface] = googleSettingsRepository
 
-    async def getChirp3VoiceForLanguage(
-        self,
-        languageEntry: LanguageEntry,
-    ) -> GoogleVoicePreset | None:
-        if not isinstance(languageEntry, LanguageEntry):
-            raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
-
-        if not await self.__googleSettingsRepository.areChirp3VoicesEnabled():
-            return None
-
-        voices = await self.getChirp3VoicesForLanguage(
-            languageEntry = languageEntry,
-        )
-
-        if len(voices) == 0:
-            return None
-        else:
-            return random.choice(list(voices))
-
     async def getChirp3VoicesForLanguage(
         self,
         languageEntry: LanguageEntry,
@@ -113,7 +94,9 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
         return GoogleMultiSpeakerVoicePreset.ENGLISH_US_STUDIO_MULTI_SPEAKER
 
     async def getEnglishVoice(self) -> GoogleVoicePreset:
-        voice = await self.getVoiceForLanguage(LanguageEntry.ENGLISH)
+        voice = await self.getVoiceForLanguage(
+            languageEntry = LanguageEntry.ENGLISH,
+        )
 
         if voice is None:
             raise RuntimeError(f'Failed to choose an english voice! ({voice=})')
@@ -126,6 +109,14 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
     ) -> GoogleVoicePreset | None:
         if not isinstance(languageEntry, LanguageEntry):
             raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
+
+        if await self.__googleSettingsRepository.areChirp3VoicesEnabled():
+            chirp3Voices = await self.getChirp3VoicesForLanguage(
+                languageEntry = languageEntry,
+            )
+
+            if len(chirp3Voices) >= 1:
+                return random.choice(list(chirp3Voices))
 
         voices = await self.getVoicesForLanguage(
             languageEntry = languageEntry,

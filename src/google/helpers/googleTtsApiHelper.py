@@ -1,7 +1,8 @@
 import base64
-import binascii
 import traceback
 from typing import Final
+
+import binascii
 
 from .googleTtsApiHelperInterface import GoogleTtsApiHelperInterface
 from ..apiService.googleApiServiceInterface import GoogleApiServiceInterface
