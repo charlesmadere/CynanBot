@@ -45,9 +45,50 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
         if not isinstance(languageEntry, LanguageEntry):
             raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
 
+        if not await self.__googleSettingsRepository.areChirp3VoicesEnabled():
+            return frozenset()
+
         voicePresets: set[GoogleVoicePreset] = set()
 
         match languageEntry:
+            case LanguageEntry.ENGLISH:
+                voicePresets = {
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ACHIRD,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_AOEDE,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_AUTONOE,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_CALLIRRHOE,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_DESPINA,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ERINOME,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_FENRIR,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_GACRUX,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_IAPETUS,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_KORE,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_LAOMEDEIA,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_LEDA,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_PUCK,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_VINDEMIATRIX,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ZEPHYR,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ZUBENELGENUBI,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ACHIRD,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_AOEDE,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_AUTONOE,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_CALLIRRHOE,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_DESPINA,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ERINOME,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_FENRIR,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_GACRUX,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_IAPETUS,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_KORE,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_LAOMEDEIA,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_LEDA,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_PUCK,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_VINDEMIATRIX,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ZEPHYR,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ZUBENELGENUBI,
+                }
+
             case LanguageEntry.JAPANESE:
                 voicePresets = {
                     GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_ACHERNAR,
