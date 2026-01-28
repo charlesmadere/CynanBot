@@ -73,15 +73,38 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
             case LanguageEntry.JAPANESE:
                 voicePresets = {
                     GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_ACHIRD,
                     GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AOEDE,
                     GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AUTONOE,
                     GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_CALLIRRHOE,
                     GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_DESPINA,
                 }
 
+            case LanguageEntry.SPANISH:
+                voicePresets = {
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_ACHIRD,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_AOEDE,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_AUTONOE,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_CALLIRRHOE,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_DESPINA,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_ERINOME,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_FENRIR,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_GACRUX,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_IAPETUS,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_KORE,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_LAOMEDEIA,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_LEDA,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_PUCK,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_VINDEMIATRIX,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_ZEPHYR,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_ZUBENELGENUBI,
+                }
+
             case LanguageEntry.SWEDISH:
                 voicePresets = {
                     GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_ACHIRD,
                     GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_AOEDE,
                     GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_AUTONOE,
                     GoogleVoicePreset.SWEDISH_SWEDEN_CHIRP3_CALLIRRHOE,
