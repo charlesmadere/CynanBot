@@ -60,5 +60,5 @@ class StreamElementsApiHelper(StreamElementsApiHelperInterface):
                 voice = voice,
             )
         except GenericNetworkException as e:
-            self.__timber.log('StreamElementsApiHelper', f'Encountered network error when fetching speech ({message=}) ({twitchChannelId=}) ({userKey=}): {e}', e, traceback.format_exc())
+            self.__timber.log('StreamElementsApiHelper', f'Encountered network error when fetching speech ({message=}) ({twitchChannelId=}) ({userKey=})', e, traceback.format_exc())
             return None

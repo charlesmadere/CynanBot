@@ -42,5 +42,5 @@ class MicrosoftTtsApiHelper(MicrosoftTtsApiHelperInterface):
                 message = message
             )
         except GenericNetworkException as e:
-            self.__timber.log('MicrosoftTtsApiHelper', f'Encountered network error when fetching speech ({voice=}) ({message=}): {e}', e, traceback.format_exc())
+            self.__timber.log('MicrosoftTtsApiHelper', f'Encountered network error when fetching speech ({voice=}) ({message=})', e, traceback.format_exc())
             return None
