@@ -50,7 +50,7 @@ class StreamElementsApiHelper(StreamElementsApiHelperInterface):
         )
 
         if not utils.isValidStr(userKey):
-            self.__timber.log('StreamElementsApiHelper', f'No Stream Elements user key available for this user: ({message=}) ({twitchChannelId=}) ({userKey=})')
+            self.__timber.log('StreamElementsApiHelper', f'No Stream Elements user key available for this user ({message=}) ({twitchChannelId=}) ({userKey=})')
             return None
 
         try:

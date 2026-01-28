@@ -59,7 +59,7 @@ class TtsMonsterPrivateApiHelper(TtsMonsterPrivateApiHelperInterface):
                 userId = tokens.userId,
             )
         except GenericNetworkException as e:
-            self.__timber.log('TtsMonsterPrivateApiHelper', f'Encountered network error when generating TTS ({message=}) ({twitchChannel=}) ({twitchChannelId=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TtsMonsterPrivateApiHelper', f'Encountered network error when generating TTS ({message=}) ({twitchChannel=}) ({twitchChannelId=})', e, traceback.format_exc())
             return None
 
         try:
@@ -67,7 +67,7 @@ class TtsMonsterPrivateApiHelper(TtsMonsterPrivateApiHelperInterface):
                 ttsUrl = ttsResponse.data.link,
             )
         except GenericNetworkException as e:
-            self.__timber.log('TtsMonsterPrivateApiHelper', f'Encountered network error when fetching generated TTS ({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({ttsResponse=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TtsMonsterPrivateApiHelper', f'Encountered network error when fetching generated TTS ({message=}) ({twitchChannel=}) ({twitchChannelId=}) ({ttsResponse=})', e, traceback.format_exc())
             return None
 
         return speechBytes
