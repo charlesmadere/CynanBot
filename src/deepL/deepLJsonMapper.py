@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from frozenlist import FrozenList
 
@@ -17,19 +17,19 @@ class DeepLJsonMapper(DeepLJsonMapperInterface):
     def __init__(
         self,
         languagesRepository: LanguagesRepositoryInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
-        self.__timber: TimberInterface = timber
+        self.__languagesRepository: Final[LanguagesRepositoryInterface] = languagesRepository
+        self.__timber: Final[TimberInterface] = timber
 
     async def parseTranslationResponse(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> DeepLTranslationResponse | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
@@ -46,53 +46,50 @@ class DeepLJsonMapper(DeepLJsonMapperInterface):
             if utils.isValidStr(detectedSourceLanguageString):
                 detectedSourceLanguage = await self.__languagesRepository.getLanguageForCommand(
                     command = detectedSourceLanguageString,
-                    hasIso6391Code = True
+                    hasIso6391Code = True,
                 )
 
                 if detectedSourceLanguage is None:
-                    self.__timber.log('DeepLJsonMapper', f'Encountered detectedSourceLanguage that has no corresponding LanguageEntry: \"{detectedSourceLanguageString}\"')
+                    self.__timber.log('DeepLJsonMapper', f'Encountered detectedSourceLanguage that has no corresponding LanguageEntry ({detectedSourceLanguageString=}) ({jsonContents=})')
 
         return DeepLTranslationResponse(
             detectedSourceLanguage = detectedSourceLanguage,
-            text = text
+            text = text,
         )
 
     async def parseTranslationResponses(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> DeepLTranslationResponses | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
-        translationsJson: list[dict[str, Any]] | Any | None = jsonContents.get('translations')
-        if not isinstance(translationsJson, list) or len(translationsJson) == 0:
-            return None
-
+        translationsArray: list[dict[str, Any]] | Any | None = jsonContents.get('translations')
         translations: FrozenList[DeepLTranslationResponse] = FrozenList()
 
-        for translationJson in translationsJson:
-            translationResponse = await self.parseTranslationResponse(translationJson)
+        if isinstance(translationsArray, list) and len(translationsArray) == 0:
+            for index, translationJson in enumerate(translationsArray):
+                translationResponse = await self.parseTranslationResponse(translationJson)
 
-            if translationResponse is not None:
-                translations.append(translationResponse)
-
-        if len(translations) == 0:
-            return None
+                if translationResponse is None:
+                    self.__timber.log('DeepLJsonMapper', f'Unable to parse value at index {index} for \"translations\" field in JSON data: ({jsonContents=})')
+                else:
+                    translations.append(translationResponse)
 
         translations.freeze()
 
         return DeepLTranslationResponses(
-            translations = translations
+            translations = translations,
         )
 
     async def serializeTranslationRequest(
         self,
-        request: DeepLTranslationRequest
+        request: DeepLTranslationRequest,
     ) -> dict[str, Any]:
         if not isinstance(request, DeepLTranslationRequest):
             raise TypeError(f'request argument is malformed: \"{request}\"')
 
         return {
             'target_lang': request.targetLanguage.requireIso6391Code(),
-            'text': [ request.text ]
+            'text': [ request.text ],
         }
