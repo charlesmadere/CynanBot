@@ -48,7 +48,7 @@ class MicrosoftTtsApiService(MicrosoftTtsApiServiceInterface):
                 json = json
             )
         except GenericNetworkException as e:
-            self.__timber.log('MicrosoftTtsApiService', f'Encountered network error when fetching speech ({voice=}) ({message=}): {e}', e, traceback.format_exc())
+            self.__timber.log('MicrosoftTtsApiService', f'Encountered network error when fetching speech ({voice=}) ({message=})', e, traceback.format_exc())
             raise GenericNetworkException(f'MicrosoftTtsApiService encountered network error when fetching speech ({voice=}) ({message=}): {e}')
 
         responseStatusCode = response.statusCode

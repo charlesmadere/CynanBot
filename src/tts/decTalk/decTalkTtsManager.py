@@ -147,7 +147,6 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
             voice = voice,
             donationPrefix = donationPrefix,
             message = message,
-            twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId,
         )
 

@@ -137,7 +137,6 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         return await self.__streamElementsHelper.generateTts(
             donationPrefix = donationPrefix,
             message = message,
-            twitchChannel = event.twitchChannel,
             twitchChannelId = event.twitchChannelId,
             voice = voice,
         )
