@@ -90,67 +90,67 @@ networkClientProvider: Final[NetworkClientProvider] = AioHttpClientProvider(
 
 googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = FakeGoogleCloudProjectCredentialsProvider()
 
-googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
+googleJsonMapper: Final[GoogleJsonMapperInterface] = GoogleJsonMapper(
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-googleJwtBuilder: GoogleJwtBuilderInterface = GoogleJwtBuilder(
+googleJwtBuilder: Final[GoogleJwtBuilderInterface] = GoogleJwtBuilder(
     googleCloudCredentialsProvider = googleCloudProjectCredentialsProvider,
     googleJsonMapper = googleJsonMapper,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-googleApiService: GoogleApiServiceInterface = GoogleApiService(
+googleApiService: Final[GoogleApiServiceInterface] = GoogleApiService(
     googleApiAccessTokenStorage = googleApiAccessTokenStorage,
     googleCloudProjectCredentialsProvider = googleCloudProjectCredentialsProvider,
     googleJsonMapper = googleJsonMapper,
     googleJwtBuilder = googleJwtBuilder,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
-googleSettingsRepository: GoogleSettingsRepositoryInterface = GoogleSettingsRepository(
+googleSettingsRepository: Final[GoogleSettingsRepositoryInterface] = GoogleSettingsRepository(
     googleJsonMapper = googleJsonMapper,
-    settingsJsonReader = JsonStaticReader(dict())
+    settingsJsonReader = JsonStaticReader(dict()),
 )
 
-googleTtsApiHelper: GoogleTtsApiHelperInterface = GoogleTtsApiHelper(
+googleTtsApiHelper: Final[GoogleTtsApiHelperInterface] = GoogleTtsApiHelper(
     googleApiService = googleApiService,
-    timber = timber
+    timber = timber,
 )
 
 glacialTtsDataMapper: GlacialTtsDataMapperInterface = GlacialTtsDataMapper()
 
 glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface = GlacialTtsIdGenerator()
 
-glacialTtsStorageRepository: GlacialTtsStorageRepositoryInterface = GlacialTtsStorageRepository(
+glacialTtsStorageRepository: Final[GlacialTtsStorageRepositoryInterface] = GlacialTtsStorageRepository(
     glacialTtsDataMapper = glacialTtsDataMapper,
     glacialTtsIdGenerator = glacialTtsIdGenerator,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-ttsDirectoryProvider: TtsDirectoryProviderInterface = TtsDirectoryProvider()
+ttsDirectoryProvider: Final[TtsDirectoryProviderInterface] = TtsDirectoryProvider()
 
-glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = GlacialTtsFileRetriever(
+glacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = GlacialTtsFileRetriever(
     eventLoop = eventLoop,
     glacialTtsStorageRepository = glacialTtsStorageRepository,
     timber = timber,
-    ttsDirectoryProvider = ttsDirectoryProvider
+    ttsDirectoryProvider = ttsDirectoryProvider,
 )
 
-stubGlacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = StubGlacialTtsFileRetriever(
+stubGlacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = StubGlacialTtsFileRetriever(
     timeZoneRepository = timeZoneRepository,
-    ttsDirectoryProvider = ttsDirectoryProvider
+    ttsDirectoryProvider = ttsDirectoryProvider,
 )
 
-googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
+googleFileExtensionHelper: Final[GoogleFileExtensionHelperInterface] = GoogleFileExtensionHelper()
 
 googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = GoogleTtsVoicesHelper(
     googleSettingsRepository = googleSettingsRepository,
@@ -169,15 +169,15 @@ googleTtsHelper: Final[GoogleTtsHelperInterface] = GoogleTtsHelper(
 
 twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = TwitchFriendsUserIdRepository()
 
-soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
-    settingsJsonReader = JsonStaticReader(dict())
+soundPlayerSettingsRepository: Final[SoundPlayerSettingsRepositoryInterface] = SoundPlayerSettingsRepository(
+    settingsJsonReader = JsonStaticReader(dict()),
 )
 
-soundPlayerManager: SoundPlayerManagerInterface = AudioPlayerSoundPlayerManager(
+soundPlayerManager: Final[SoundPlayerManagerInterface] = AudioPlayerSoundPlayerManager(
     eventLoop = eventLoop,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 
