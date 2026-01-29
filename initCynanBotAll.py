@@ -1404,18 +1404,18 @@ ttsDirectoryProvider: Final[TtsDirectoryProviderInterface] = TtsDirectoryProvide
 ## Glacial TTS initialization section ##
 ########################################
 
-glacialTtsDataMapper: GlacialTtsDataMapperInterface = GlacialTtsDataMapper()
+glacialTtsDataMapper: Final[GlacialTtsDataMapperInterface] = GlacialTtsDataMapper()
 
-glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface = GlacialTtsIdGenerator()
+glacialTtsIdGenerator: Final[GlacialTtsIdGeneratorInterface] = GlacialTtsIdGenerator()
 
-glacialTtsStorageRepository: GlacialTtsStorageRepositoryInterface = GlacialTtsStorageRepository(
+glacialTtsStorageRepository: Final[GlacialTtsStorageRepositoryInterface] = GlacialTtsStorageRepository(
     glacialTtsDataMapper = glacialTtsDataMapper,
     glacialTtsIdGenerator = glacialTtsIdGenerator,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = GlacialTtsFileRetriever(
+glacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = GlacialTtsFileRetriever(
     eventLoop = eventLoop,
     glacialTtsStorageRepository = glacialTtsStorageRepository,
     timber = timber,
@@ -1524,7 +1524,7 @@ unrestrictedDecTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface = Unre
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
 )
 
 
@@ -1532,25 +1532,25 @@ unrestrictedDecTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface = Unre
 ## Google initialization section ##
 ###################################
 
-googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
+googleFileExtensionHelper: Final[GoogleFileExtensionHelperInterface] = GoogleFileExtensionHelper()
 
-googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface = GoogleTtsMessageCleaner(
+googleTtsMessageCleaner: Final[GoogleTtsMessageCleanerInterface] = GoogleTtsMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository,
     twitchMessageStringUtils = twitchMessageStringUtils,
 )
 
-googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
+googleApiAccessTokenStorage: Final[GoogleApiAccessTokenStorageInterface] = GoogleApiAccessTokenStorage(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
 )
 
-googleJwtBuilder: GoogleJwtBuilderInterface = GoogleJwtBuilder(
+googleJwtBuilder: Final[GoogleJwtBuilderInterface] = GoogleJwtBuilder(
     googleCloudCredentialsProvider = authRepository,
     googleJsonMapper = googleJsonMapper,
     timeZoneRepository = timeZoneRepository,
 )
 
-googleApiService: GoogleApiServiceInterface = GoogleApiService(
+googleApiService: Final[GoogleApiServiceInterface] = GoogleApiService(
     googleApiAccessTokenStorage = googleApiAccessTokenStorage,
     googleCloudProjectCredentialsProvider = authRepository,
     googleJsonMapper = googleJsonMapper,
@@ -1559,12 +1559,12 @@ googleApiService: GoogleApiServiceInterface = GoogleApiService(
     timber = timber,
 )
 
-googleTtsApiHelper: GoogleTtsApiHelperInterface = GoogleTtsApiHelper(
+googleTtsApiHelper: Final[GoogleTtsApiHelperInterface] = GoogleTtsApiHelper(
     googleApiService = googleApiService,
     timber = timber,
 )
 
-googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
+googleTtsHelper: Final[GoogleTtsHelperInterface] = GoogleTtsHelper(
     eventLoop = eventLoop,
     glacialTtsFileRetriever = glacialTtsFileRetriever,
     googleFileExtensionHelper = googleFileExtensionHelper,
@@ -1575,7 +1575,7 @@ googleTtsHelper: GoogleTtsHelperInterface = GoogleTtsHelper(
     timber = timber,
 )
 
-googleTtsManagerProvider: GoogleTtsManagerProviderInterface = GoogleTtsManagerProvider(
+googleTtsManagerProvider: Final[GoogleTtsManagerProviderInterface] = GoogleTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     googleSettingsRepository = googleSettingsRepository,
     googleTtsHelper = googleTtsHelper,
