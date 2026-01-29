@@ -67,6 +67,7 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
     ENGLISH_AUSTRALIA_CHIRP3_LAOMEDEIA = auto()
     ENGLISH_AUSTRALIA_CHIRP3_LEDA = auto()
     ENGLISH_AUSTRALIA_CHIRP3_PUCK = auto()
+    ENGLISH_AUSTRALIA_CHIRP3_SADACHBIA = auto()
     ENGLISH_AUSTRALIA_CHIRP3_VINDEMIATRIX = auto()
     ENGLISH_AUSTRALIA_CHIRP3_ZEPHYR = auto()
     ENGLISH_AUSTRALIA_CHIRP3_ZUBENELGENUBI = auto()
@@ -91,6 +92,7 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
     ENGLISH_GREAT_BRITAIN_CHIRP3_LAOMEDEIA = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP3_LEDA = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP3_PUCK = auto()
+    ENGLISH_GREAT_BRITAIN_CHIRP3_SADACHBIA = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP3_VINDEMIATRIX = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP3_ZEPHYR = auto()
     ENGLISH_GREAT_BRITAIN_CHIRP3_ZUBENELGENUBI = auto()
@@ -280,6 +282,7 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
     SPANISH_US_CHIRP3_LAOMEDEIA = auto()
     SPANISH_US_CHIRP3_LEDA = auto()
     SPANISH_US_CHIRP3_PUCK = auto()
+    SPANISH_US_CHIRP3_SADACHBIA = auto()
     SPANISH_US_CHIRP3_VINDEMIATRIX = auto()
     SPANISH_US_CHIRP3_ZEPHYR = auto()
     SPANISH_US_CHIRP3_ZUBENELGENUBI = auto()
@@ -384,6 +387,7 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
             case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_LAOMEDEIA: return 'en-AU-Chirp3-HD-Laomedeia'
             case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_LEDA: return 'en-AU-Chirp3-HD-Leda'
             case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_PUCK: return 'en-AU-Chirp3-HD-Puck'
+            case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_SADACHBIA: return 'en-AU-Chirp3-HD-Sadachbia'
             case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_VINDEMIATRIX: return 'en-AU-Chirp3-HD-Vindemiatrix'
             case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ZEPHYR: return 'en-AU-Chirp3-HD-Zephyr'
             case GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ZUBENELGENUBI: return 'en-AU-Chirp3-HD-Zubenelgenubi'
@@ -408,6 +412,7 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_LEDA: return 'en-GB-Chirp3-HD-Leda'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_LAOMEDEIA: return 'en-GB-Chirp3-HD-Laomedeia'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_PUCK: return 'en-GB-Chirp3-HD-Puck'
+            case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_SADACHBIA: return 'en-GB-Chirp3-HD-Sadachbia'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_VINDEMIATRIX: return 'en-GB-Chirp3-HD-Vindemiatrix'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ZEPHYR: return 'en-GB-Chirp3-HD-Zephyr'
             case GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ZUBENELGENUBI: return 'en-GB-Chirp3-HD-Zubenelgenubi'
@@ -597,6 +602,7 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
             case GoogleVoicePreset.SPANISH_US_CHIRP3_LAOMEDEIA: return 'es-US-Chirp3-HD-Laomedeia'
             case GoogleVoicePreset.SPANISH_US_CHIRP3_LEDA: return 'es-US-Chirp3-HD-Leda'
             case GoogleVoicePreset.SPANISH_US_CHIRP3_PUCK: return 'es-US-Chirp3-HD-Puck'
+            case GoogleVoicePreset.SPANISH_US_CHIRP3_SADACHBIA: return 'es-US-Chirp3-HD-Sadachbia'
             case GoogleVoicePreset.SPANISH_US_CHIRP3_VINDEMIATRIX: return 'es-US-Chirp3-HD-Vindemiatrix'
             case GoogleVoicePreset.SPANISH_US_CHIRP3_ZEPHYR: return 'es-US-Chirp3-HD-Zephyr'
             case GoogleVoicePreset.SPANISH_US_CHIRP3_ZUBENELGENUBI: return 'es-US-Chirp3-HD-Zubenelgenubi'

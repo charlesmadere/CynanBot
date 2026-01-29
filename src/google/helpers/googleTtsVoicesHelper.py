@@ -48,6 +48,7 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
                     GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_LAOMEDEIA,
                     GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_LEDA,
                     GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_PUCK,
+                    GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_SADACHBIA,
                     GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_VINDEMIATRIX,
                     GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ZEPHYR,
                     GoogleVoicePreset.ENGLISH_AUSTRALIA_CHIRP3_ZUBENELGENUBI,
@@ -65,6 +66,7 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_LAOMEDEIA,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_LEDA,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_PUCK,
+                    GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_SADACHBIA,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_VINDEMIATRIX,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ZEPHYR,
                     GoogleVoicePreset.ENGLISH_GREAT_BRITAIN_CHIRP3_ZUBENELGENUBI,
@@ -96,6 +98,7 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
                     GoogleVoicePreset.SPANISH_US_CHIRP3_LAOMEDEIA,
                     GoogleVoicePreset.SPANISH_US_CHIRP3_LEDA,
                     GoogleVoicePreset.SPANISH_US_CHIRP3_PUCK,
+                    GoogleVoicePreset.SPANISH_US_CHIRP3_SADACHBIA,
                     GoogleVoicePreset.SPANISH_US_CHIRP3_VINDEMIATRIX,
                     GoogleVoicePreset.SPANISH_US_CHIRP3_ZEPHYR,
                     GoogleVoicePreset.SPANISH_US_CHIRP3_ZUBENELGENUBI,
@@ -390,11 +393,6 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
                     GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_B,
                     GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_C,
                     GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_D,
-                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_ACHERNAR,
-                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AOEDE,
-                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AUTONOE,
-                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_CALLIRRHOE,
-                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_DESPINA,
                 }
 
             case LanguageEntry.KANNADA:
