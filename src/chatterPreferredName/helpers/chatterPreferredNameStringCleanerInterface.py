@@ -10,11 +10,3 @@ class ChatterPreferredNameStringCleanerInterface(ABC):
         preferredName: str | Any | None,
     ) -> str | None:
         pass
-
-    @abstractmethod
-    async def deepClean(
-        self,
-        preferredName: str | Any | None,
-        twitchChannelId: str,
-    ) -> str | None:
-        pass

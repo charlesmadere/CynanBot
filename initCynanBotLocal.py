@@ -1064,6 +1064,8 @@ chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = Chatter
     chatterPreferredNameRepository = chatterPreferredNameRepository,
     chatterPreferredNameSettings = chatterPreferredNameSettings,
     chatterPreferredNameStringCleaner = chatterPreferredNameStringCleaner,
+    twitchApiService = twitchApiService,
+    twitchTokensUtils = twitchTokensUtils,
 )
 
 
