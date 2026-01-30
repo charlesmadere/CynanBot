@@ -289,8 +289,8 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.CHECK_ANSWER}: \"{action.triviaActionType}\"')
 
         state = await self.__triviaGameStore.getNormalGame(
-            twitchChannelId = action.getTwitchChannelId(),
-            userId = action.getUserId(),
+            twitchChannelId = action.twitchChannelId,
+            userId = action.userId,
         )
 
         if state is None:
@@ -298,14 +298,14 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 actionId = action.actionId,
                 answer = action.answer,
                 eventId = await self.__triviaIdGenerator.generateEventId(),
-                twitchChannel = action.getTwitchChannel(),
-                twitchChannelId = action.getTwitchChannelId(),
-                userId = action.getUserId(),
-                userName = action.getUserName(),
+                twitchChannel = action.twitchChannel,
+                twitchChannelId = action.twitchChannelId,
+                userId = action.userId,
+                userName = action.userName,
             ))
             return
 
-        if state.getUserId() != action.getUserId():
+        if state.getUserId() != action.userId:
             await self.__submitEvent(WrongUserCheckAnswerTriviaEvent(
                 triviaQuestion = state.triviaQuestion,
                 actionId = action.actionId,
@@ -313,10 +313,10 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 emote = state.emote,
                 eventId = await self.__triviaIdGenerator.generateEventId(),
                 gameId = state.gameId,
-                twitchChannel = action.getTwitchChannel(),
-                twitchChannelId = action.getTwitchChannelId(),
-                userId = action.getUserId(),
-                userName = action.getUserName(),
+                twitchChannel = action.twitchChannel,
+                twitchChannelId = action.twitchChannelId,
+                userId = action.userId,
+                userName = action.userName,
             ))
             return
 
@@ -325,10 +325,10 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             triviaQuestion = state.triviaQuestion,
             extras = {
                 'actionId': action.actionId,
-                'twitchChannel': action.getTwitchChannel(),
-                'twitchChannelId': action.getTwitchChannelId(),
-                'userId': action.getUserId(),
-                'userName': action.getUserName(),
+                'twitchChannel': action.twitchChannelId,
+                'twitchChannelId': action.twitchChannelId,
+                'userId': action.userId,
+                'userName': action.userName,
             },
         )
 
@@ -341,26 +341,26 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 emote = state.emote,
                 eventId = await self.__triviaIdGenerator.generateEventId(),
                 gameId = state.gameId,
-                twitchChannel = action.getTwitchChannel(),
-                twitchChannelId = action.getTwitchChannelId(),
+                twitchChannel = action.twitchChannel,
+                twitchChannelId = action.twitchChannelId,
                 twitchChatMessageId = action.twitchChatMessageId,
-                userId = action.getUserId(),
-                userName = action.getUserName(),
+                userId = action.userId,
+                userName = action.userName,
             ))
             return
 
         await self.__removeNormalTriviaGame(
-            twitchChannelId = action.getTwitchChannelId(),
-            userId = action.getUserId(),
+            twitchChannelId = action.twitchChannelId,
+            userId = action.userId,
         )
 
         if checkResult is TriviaAnswerCheckResult.INCORRECT:
             wrongAnswerEmote = await self.__triviaTwitchEmoteHelper.getWrongAnswerEmote()
 
             triviaScoreResult = await self.__triviaScoreRepository.incrementTriviaLosses(
-                twitchChannel = action.getTwitchChannel(),
-                twitchChannelId = action.getTwitchChannelId(),
-                userId = action.getUserId(),
+                twitchChannel = action.twitchChannel,
+                twitchChannelId = action.twitchChannelId,
+                userId = action.userId,
             )
 
             await self.__submitEvent(IncorrectAnswerTriviaEvent(
@@ -371,11 +371,11 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 emote = state.emote,
                 eventId = await self.__triviaIdGenerator.generateEventId(),
                 gameId = state.gameId,
-                twitchChannel = action.getTwitchChannel(),
-                twitchChannelId = action.getTwitchChannelId(),
+                twitchChannel = action.twitchChannel,
+                twitchChannelId = action.twitchChannelId,
                 twitchChatMessageId = action.twitchChatMessageId,
-                userId = action.getUserId(),
-                userName = action.getUserName(),
+                userId = action.userId,
+                userName = action.userName,
                 wrongAnswerEmote = wrongAnswerEmote,
                 triviaScoreResult = triviaScoreResult,
             ))
@@ -385,29 +385,29 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             await self.__shinyTriviaHelper.shinyTriviaWin(
                 twitchChannel = state.getTwitchChannel(),
                 twitchChannelId = state.getTwitchChannelId(),
-                userId = action.getUserId(),
-                userName = action.getUserName(),
+                userId = action.userId,
+                userName = action.userName,
             )
         elif state.isToxic():
             await self.__toxicTriviaHelper.toxicTriviaWin(
                 twitchChannel = state.getTwitchChannel(),
                 twitchChannelId = state.getTwitchChannelId(),
-                userId = action.getUserId(),
-                userName = action.getUserName(),
+                userId = action.userId,
+                userName = action.userName,
             )
 
         cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
             incrementAmount = state.pointsForWinning,
             twitchChannel = state.getTwitchChannel(),
             twitchChannelId = state.getTwitchChannelId(),
-            userId = action.getUserId(),
-            userName = action.getUserName(),
+            userId = action.userId,
+            userName = action.userName,
         )
 
         triviaScoreResult = await self.__triviaScoreRepository.incrementTriviaWins(
-            twitchChannel = action.getTwitchChannel(),
-            twitchChannelId = action.getTwitchChannelId(),
-            userId = action.getUserId(),
+            twitchChannel = action.twitchChannel,
+            twitchChannelId = action.twitchChannelId,
+            userId = action.userId,
         )
 
         celebratoryTwitchEmote = await self.__triviaTwitchEmoteHelper.getCelebratoryEmote()
@@ -423,11 +423,11 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             emote = state.emote,
             eventId = await self.__triviaIdGenerator.generateEventId(),
             gameId = state.gameId,
-            twitchChannel = action.getTwitchChannel(),
-            twitchChannelId = action.getTwitchChannelId(),
+            twitchChannel = action.twitchChannel,
+            twitchChannelId = action.twitchChannelId,
             twitchChatMessageId = action.twitchChatMessageId,
-            userId = action.getUserId(),
-            userName = action.getUserName(),
+            userId = action.userId,
+            userName = action.userName,
             triviaScoreResult = triviaScoreResult,
         ))
 

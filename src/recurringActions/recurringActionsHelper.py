@@ -1,3 +1,5 @@
+from typing import Final
+
 from .actions.cutenessRecurringAction import CutenessRecurringAction
 from .actions.recurringAction import RecurringAction
 from .actions.superTriviaRecurringAction import SuperTriviaRecurringAction
@@ -13,22 +15,22 @@ class RecurringActionsHelper(RecurringActionsHelperInterface):
     def __init__(
         self,
         recurringActionsRepository: RecurringActionsRepositoryInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
             raise TypeError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
-        self.__timber: TimberInterface = timber
+        self.__recurringActionsRepository: Final[RecurringActionsRepositoryInterface] = recurringActionsRepository
+        self.__timber: Final[TimberInterface] = timber
 
     async def __disableCutenessRecurringAction(self, recurringAction: CutenessRecurringAction):
         await self.__recurringActionsRepository.setRecurringAction(CutenessRecurringAction(
             enabled = False,
             twitchChannel = recurringAction.twitchChannel,
             twitchChannelId = recurringAction.twitchChannelId,
-            minutesBetween = recurringAction.minutesBetween
+            minutesBetween = recurringAction.minutesBetween,
         ))
 
     async def disableRecurringAction(self, recurringAction: RecurringAction | None) -> bool:
@@ -53,7 +55,7 @@ class RecurringActionsHelper(RecurringActionsHelperInterface):
         else:
             raise ValueError(f'unknown RecurringAction instance ({recurringAction=})')
 
-        self.__timber.log('RecurringActionsHelper', f'Finished disabling RecurringAction: \"{recurringAction}\"')
+        self.__timber.log('RecurringActionsHelper', f'Finished disabling RecurringAction ({recurringAction=})')
         return True
 
     async def __disableSuperTriviaRecurringAction(self, recurringAction: SuperTriviaRecurringAction):
@@ -61,7 +63,7 @@ class RecurringActionsHelper(RecurringActionsHelperInterface):
             enabled = False,
             twitchChannel = recurringAction.twitchChannel,
             twitchChannelId = recurringAction.twitchChannelId,
-            minutesBetween = recurringAction.minutesBetween
+            minutesBetween = recurringAction.minutesBetween,
         ))
 
     async def __disableWeatherRecurringAction(self, recurringAction: WeatherRecurringAction):
@@ -70,7 +72,7 @@ class RecurringActionsHelper(RecurringActionsHelperInterface):
             twitchChannel = recurringAction.twitchChannel,
             twitchChannelId = recurringAction.twitchChannelId,
             alertsOnly = recurringAction.isAlertsOnly,
-            minutesBetween = recurringAction.minutesBetween
+            minutesBetween = recurringAction.minutesBetween,
         ))
 
     async def __disableWordOfTheDayRecurringAction(self, recurringAction: WordOfTheDayRecurringAction):
@@ -79,5 +81,5 @@ class RecurringActionsHelper(RecurringActionsHelperInterface):
             twitchChannel = recurringAction.twitchChannel,
             twitchChannelId = recurringAction.twitchChannelId,
             minutesBetween = recurringAction.minutesBetween,
-            languageEntry = recurringAction.languageEntry
+            languageEntry = recurringAction.languageEntry,
         ))
