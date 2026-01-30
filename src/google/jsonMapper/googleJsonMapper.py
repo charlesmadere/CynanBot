@@ -53,14 +53,15 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
-        expiresIn = utils.getIntFromDict(jsonContents, 'expires_in')
-        expireTime = now + timedelta(seconds = expiresIn)
-
+        expiresInSeconds = utils.getIntFromDict(jsonContents, 'expires_in')
         accessToken = utils.getStrFromDict(jsonContents, 'access_token')
+
+        now = datetime.now(self.__timeZoneRepository.getDefault())
+        expireTime = now + timedelta(seconds = expiresInSeconds)
 
         return GoogleAccessToken(
             expireTime = expireTime,
+            expiresInSeconds = expiresInSeconds,
             accessToken = accessToken,
         )
 
@@ -104,33 +105,33 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
-        glossaryTranslations: FrozenList[GoogleTranslation] | None = None
-        glossaryTranslationsJson: list[dict[str, Any]] | Any | None = jsonContents.get('glossaryTranslations')
+        glossaryTranslationsArray: list[dict[str, Any]] | Any | None = jsonContents.get('glossaryTranslations')
+        glossaryTranslations: FrozenList[GoogleTranslation] = FrozenList()
 
-        if isinstance(glossaryTranslationsJson, list):
-            glossaryTranslations = FrozenList()
-
-            for glossaryTranslationJson in glossaryTranslationsJson:
+        if isinstance(glossaryTranslationsArray, list) and len(glossaryTranslationsArray) >= 1:
+            for index, glossaryTranslationJson in enumerate(glossaryTranslationsArray):
                 glossaryTranslation = await self.parseTranslation(glossaryTranslationJson)
 
-                if glossaryTranslation is not None:
+                if glossaryTranslation is None:
+                    self.__timber.log('GoogleJsonMapper', f'Unable to parse glossary translation at index {index} in glossary translations array! ({glossaryTranslationJson=}) ({jsonContents=})')
+                else:
                     glossaryTranslations.append(glossaryTranslation)
 
-            glossaryTranslations.freeze()
+        glossaryTranslations.freeze()
 
-        translations: FrozenList[GoogleTranslation] | None = None
-        translationsJson: list[dict[str, Any]] | Any | None = jsonContents.get('translations')
+        translationsArray: list[dict[str, Any]] | Any | None = jsonContents.get('translations')
+        translations: FrozenList[GoogleTranslation] = FrozenList()
 
-        if isinstance(translationsJson, list):
-            translations = FrozenList()
-
-            for translationJson in translationsJson:
+        if isinstance(translationsArray, list) and len(translationsArray) >= 1:
+            for index, translationJson in enumerate(translationsArray):
                 translation = await self.parseTranslation(translationJson)
 
-                if translation is not None:
+                if translation is None:
+                    self.__timber.log('GoogleJsonMapper', f'Unable to parse translation at index {index} in translations array! ({translationJson=}) ({jsonContents=})')
+                else:
                     translations.append(translation)
 
-            translations.freeze()
+        translations.freeze()
 
         return GoogleTranslateTextResponse(
             glossaryTranslations = glossaryTranslations,

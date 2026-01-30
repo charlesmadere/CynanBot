@@ -7,4 +7,4 @@ from .deepLTranslationResponse import DeepLTranslationResponse
 
 @dataclass(frozen = True, slots = True)
 class DeepLTranslationResponses:
-    translations: FrozenList[DeepLTranslationResponse] | None = None
+    translations: FrozenList[DeepLTranslationResponse]

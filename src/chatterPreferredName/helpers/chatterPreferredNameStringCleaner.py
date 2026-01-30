@@ -40,15 +40,3 @@ class ChatterPreferredNameStringCleaner(ChatterPreferredNameStringCleanerInterfa
             return None
 
         return cleanedPreferredName
-
-    async def deepClean(
-        self,
-        preferredName: str | Any | None,
-        twitchChannelId: str,
-    ) -> str | None:
-        cleanedPreferredName = await self.clean(
-            preferredName = preferredName,
-        )
-
-        # TODO clean additionally based on the twitchChannelId
-        return cleanedPreferredName
