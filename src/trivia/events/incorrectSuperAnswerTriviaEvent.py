@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absTriviaEvent import AbsTriviaEvent
 from .triviaEventType import TriviaEventType
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
@@ -19,11 +21,11 @@ class IncorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ):
         super().__init__(
             actionId = actionId,
-            eventId = eventId
+            eventId = eventId,
         )
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
@@ -45,15 +47,15 @@ class IncorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion
-        self.__specialTriviaStatus: SpecialTriviaStatus | None = specialTriviaStatus
-        self.__answer: str | None = answer
-        self.__emote: str = emote
-        self.__gameId: str = gameId
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
-        self.__userId: str = userId
-        self.__userName: str = userName
+        self.__triviaQuestion: Final[AbsTriviaQuestion] = triviaQuestion
+        self.__specialTriviaStatus: Final[SpecialTriviaStatus | None] = specialTriviaStatus
+        self.__answer: Final[str | None] = answer
+        self.__emote: Final[str] = emote
+        self.__gameId: Final[str] = gameId
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
+        self.__userId: Final[str] = userId
+        self.__userName: Final[str] = userName
 
     @property
     def answer(self) -> str | None:

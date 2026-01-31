@@ -1,3 +1,5 @@
+from typing import Final
+
 from .absTriviaEvent import AbsTriviaEvent
 from .triviaEventType import TriviaEventType
 from ...misc import utils as utils
@@ -14,11 +16,11 @@ class NewQueuedSuperTriviaGameEvent(AbsTriviaEvent):
         actionId: str,
         eventId: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             actionId = actionId,
-            eventId = eventId
+            eventId = eventId,
         )
 
         if not utils.isValidInt(numberOfGames):
@@ -42,12 +44,12 @@ class NewQueuedSuperTriviaGameEvent(AbsTriviaEvent):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        self.__numberOfGames: int = numberOfGames
-        self.__pointsForWinning: int = pointsForWinning
-        self.__secondsToLive: int = secondsToLive
-        self.__shinyMultiplier: int = shinyMultiplier
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
+        self.__numberOfGames: Final[int] = numberOfGames
+        self.__pointsForWinning: Final[int] = pointsForWinning
+        self.__secondsToLive: Final[int] = secondsToLive
+        self.__shinyMultiplier: Final[int] = shinyMultiplier
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
 
     @property
     def numberOfGames(self) -> int:
