@@ -1,5 +1,6 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
+from typing import Final
 
 from .settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
 from .superTriviaCooldownHelperInterface import SuperTriviaCooldownHelperInterface
@@ -12,18 +13,18 @@ class SuperTriviaCooldownHelper(SuperTriviaCooldownHelperInterface):
     def __init__(
         self,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
     ):
         if not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
 
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = triviaSettingsRepository
 
-        self.__values: dict[str, datetime] = defaultdict(
-            lambda: datetime.now(timeZoneRepository.getDefault()) - timedelta(weeks = 1)
+        self.__values: Final[dict[str, datetime]] = defaultdict(
+            lambda: datetime.now(timeZoneRepository.getDefault()) - timedelta(weeks = 1),
         )
 
     async def getTwitchChannelIdsInCooldown(self) -> frozenset[str]:

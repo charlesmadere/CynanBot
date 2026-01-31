@@ -43,18 +43,6 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
     def answer(self) -> str | None:
         return self.__answer
 
-    def getTwitchChannel(self) -> str:
-        return self.__twitchChannel
-
-    def getTwitchChannelId(self) -> str:
-        return self.__twitchChannelId
-
-    def getUserId(self) -> str:
-        return self.__userId
-
-    def getUserName(self) -> str:
-        return self.__userName
-
     def requireAnswer(self) -> str:
         answer = self.__answer
 
@@ -80,5 +68,21 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
         return TriviaActionType.CHECK_ANSWER
 
     @property
+    def twitchChannel(self) -> str:
+        return self.__twitchChannel
+
+    @property
+    def twitchChannelId(self) -> str:
+        return self.__twitchChannelId
+
+    @property
     def twitchChatMessageId(self) -> str:
         return self.__twitchChatMessageId
+
+    @property
+    def userId(self) -> str:
+        return self.__userId
+
+    @property
+    def userName(self) -> str:
+        return self.__userName

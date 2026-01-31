@@ -1,13 +1,15 @@
 import locale
 from dataclasses import dataclass
 
+from frozenlist import FrozenList
+
 from .toxicTriviaPunishment import ToxicTriviaPunishment
 
 
 @dataclass(frozen = True, slots = True)
 class ToxicTriviaPunishmentResult:
+    toxicTriviaPunishments: FrozenList[ToxicTriviaPunishment]
     totalPointsStolen: int
-    toxicTriviaPunishments: list[ToxicTriviaPunishment]
 
     @property
     def numberOfToxicTriviaPunishments(self) -> int:

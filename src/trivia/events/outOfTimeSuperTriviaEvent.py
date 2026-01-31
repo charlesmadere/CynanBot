@@ -23,11 +23,11 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
         gameId: str,
         outOfTimeEmote: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             actionId = actionId,
-            eventId = eventId
+            eventId = eventId,
         )
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):

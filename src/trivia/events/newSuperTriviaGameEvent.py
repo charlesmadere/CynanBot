@@ -1,4 +1,5 @@
 import locale
+from typing import Final
 
 from .absTriviaEvent import AbsTriviaEvent
 from .triviaEventType import TriviaEventType
@@ -20,11 +21,11 @@ class NewSuperTriviaGameEvent(AbsTriviaEvent):
         eventId: str,
         gameId: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ):
         super().__init__(
             actionId = actionId,
-            eventId = eventId
+            eventId = eventId,
         )
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
@@ -48,14 +49,14 @@ class NewSuperTriviaGameEvent(AbsTriviaEvent):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion
-        self.__pointsForWinning: int = pointsForWinning
-        self.__secondsToLive: int = secondsToLive
-        self.__specialTriviaStatus: SpecialTriviaStatus | None = specialTriviaStatus
-        self.__emote: str = emote
-        self.__gameId: str = gameId
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
+        self.__triviaQuestion: Final[AbsTriviaQuestion] = triviaQuestion
+        self.__pointsForWinning: Final[int] = pointsForWinning
+        self.__secondsToLive: Final[int] = secondsToLive
+        self.__specialTriviaStatus: Final[SpecialTriviaStatus | None] = specialTriviaStatus
+        self.__emote: Final[str] = emote
+        self.__gameId: Final[str] = gameId
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
 
     @property
     def emote(self) -> str:
