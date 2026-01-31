@@ -223,9 +223,12 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             key = lambda punishment: (punishment.punishedByPoints, punishment.userName.casefold()),
         )
 
+        frozenToxicTriviaPunishments: FrozenList[ToxicTriviaPunishment] = FrozenList(toxicTriviaPunishments)
+        frozenToxicTriviaPunishments.freeze()
+
         return ToxicTriviaPunishmentResult(
+            toxicTriviaPunishments = frozenToxicTriviaPunishments,
             totalPointsStolen = totalPointsStolen,
-            toxicTriviaPunishments = toxicTriviaPunishments,
         )
 
     async def __beginQueuedTriviaGames(self):
