@@ -1,3 +1,5 @@
+from typing import Final
+
 from .triviaEmoteRepositoryInterface import TriviaEmoteRepositoryInterface
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
@@ -11,7 +13,7 @@ class TriviaEmoteRepository(TriviaEmoteRepositoryInterface):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
         self.__isDatabaseReady: bool = False
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
@@ -29,7 +31,7 @@ class TriviaEmoteRepository(TriviaEmoteRepositoryInterface):
                 WHERE twitchchannelid = $1
                 LIMIT 1
             ''',
-            twitchChannelId
+            twitchChannelId,
         )
 
         emoteIndex: int | None = None
@@ -88,7 +90,7 @@ class TriviaEmoteRepository(TriviaEmoteRepositoryInterface):
                 VALUES ($1, $2)
                 ON CONFLICT (twitchchannelid) DO UPDATE SET emoteindex = EXCLUDED.emoteindex
             ''',
-            emoteIndex, twitchChannelId
+            emoteIndex, twitchChannelId,
         )
 
         await connection.close()
