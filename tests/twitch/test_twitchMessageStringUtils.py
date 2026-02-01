@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
@@ -6,7 +8,7 @@ from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtil
 
 class TestTwitchMessageStringUtils:
 
-    utils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
+    utils: Final[TwitchMessageStringUtilsInterface] = TwitchMessageStringUtils()
 
     @pytest.mark.asyncio
     async def test_getUserNameFromMessage_withEmptyString(self):
@@ -71,6 +73,87 @@ class TestTwitchMessageStringUtils:
     @pytest.mark.asyncio
     async def test_getUserNameFromCheerMessage_withWhitespaceString(self):
         result = await self.utils.getUserNameFromCheerMessage(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUserNameCommandMessage_withAtSignString(self):
+        result = await self.utils.parseUserNameCommandMessage('@')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUserNameCommandMessage_withCommandAndUserNameString1(self):
+        result = await self.utils.parseUserNameCommandMessage('!cuteness @smcharles')
+        assert result is not None
+        assert result.command == 'cuteness'
+        assert result.rawMessage == '!cuteness @smcharles'
+        assert result.remainingMessage is None
+        assert result.userName == 'smcharles'
+
+    @pytest.mark.asyncio
+    async def test_parseUserNameCommandMessage_withCommandAndUserNameString2(self):
+        result = await self.utils.parseUserNameCommandMessage('!givecuteness @stashiocat 500')
+        assert result is not None
+        assert result.command == 'givecuteness'
+        assert result.rawMessage == '!givecuteness @stashiocat 500'
+        assert result.remainingMessage == '500'
+        assert result.userName == 'stashiocat'
+
+    @pytest.mark.asyncio
+    async def test_parseUserNameCommandMessage_withCommandAndUserNameString3(self):
+        result = await self.utils.parseUserNameCommandMessage(' !triviascore    imyt  \n')
+        assert result is not None
+        assert result.command == 'triviascore'
+        assert result.rawMessage == '!triviascore imyt'
+        assert result.remainingMessage is None
+        assert result.userName == 'imyt'
+
+    @pytest.mark.asyncio
+    async def test_parseUserNameCommandMessage_withCommandAndUserNameString4(self):
+        result = await self.utils.parseUserNameCommandMessage(' !triviascore    dr_girl_friend  \n')
+        assert result is not None
+        assert result.command == 'triviascore'
+        assert result.rawMessage == '!triviascore dr_girl_friend'
+        assert result.remainingMessage is None
+        assert result.userName == 'dr_girl_friend'
+
+    @pytest.mark.asyncio
+    async def test_parseUserNameCommandMessage_withCommandOnly1(self):
+        result = await self.utils.parseUserNameCommandMessage('!test123')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUserNameCommandMessage_withCommandOnly2(self):
+        result = await self.utils.parseUserNameCommandMessage('!weather')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUserNameCommandMessage_withEmptyString(self):
+        result = await self.utils.parseUserNameCommandMessage('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUserNameCommandMessage_withExclamationMarkString(self):
+        result = await self.utils.parseUserNameCommandMessage('!')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUserNameCommandMessage_withNone(self):
+        result = await self.utils.parseUserNameCommandMessage(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUserNameCommandMessage_withRandomWord1(self):
+        result = await self.utils.parseUserNameCommandMessage('random')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUserNameCommandMessage_withRandomWord2(self):
+        result = await self.utils.parseUserNameCommandMessage('hello world')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseUserNameCommandMessage_withWhitespaceString(self):
+        result = await self.utils.parseUserNameCommandMessage(' ')
         assert result is None
 
     @pytest.mark.asyncio
