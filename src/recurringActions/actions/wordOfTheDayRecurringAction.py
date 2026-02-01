@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .recurringAction import RecurringAction
 from .recurringActionType import RecurringActionType
@@ -13,19 +13,19 @@ class WordOfTheDayRecurringAction(RecurringAction):
         twitchChannel: str,
         twitchChannelId: str,
         minutesBetween: int | None = None,
-        languageEntry: LanguageEntry | None = None
+        languageEntry: LanguageEntry | None = None,
     ):
         super().__init__(
             enabled = enabled,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            minutesBetween = minutesBetween
+            minutesBetween = minutesBetween,
         )
 
         if languageEntry is not None and not isinstance(languageEntry, LanguageEntry):
             raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
 
-        self.__languageEntry: LanguageEntry | None = languageEntry
+        self.__languageEntry: Final[LanguageEntry | None] = languageEntry
 
     @property
     def actionType(self) -> RecurringActionType:
@@ -50,5 +50,5 @@ class WordOfTheDayRecurringAction(RecurringAction):
             'languageEntry': self.__languageEntry,
             'minutesBetween': self.minutesBetween,
             'twitchChannel': self.twitchChannel,
-            'twitchChannelId': self.twitchChannelId
+            'twitchChannelId': self.twitchChannelId,
         }

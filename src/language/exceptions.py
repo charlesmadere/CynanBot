@@ -1,5 +1,7 @@
 from .languageEntry import LanguageEntry
 from .translationApiSource import TranslationApiSource
+from ..contentScanner.contentCode import ContentCode
+from ..transparent.transparentResponse import TransparentResponse
 
 
 class NoLanguageEntryFoundForCommandException(Exception):
@@ -76,3 +78,21 @@ class TranslationException(Exception):
             raise TypeError(f'translationApiSource argument is malformed: \"{translationApiSource}\"')
 
         super().__init__(message, translationApiSource)
+
+
+class WordOfTheDayHasBadContentException(Exception):
+
+    def __init__(
+        self,
+        contentCodes: frozenset[ContentCode],
+        languageEntry: LanguageEntry,
+        transparentResponse: TransparentResponse,
+    ):
+        if not isinstance(contentCodes, frozenset):
+            raise TypeError(f'contentCodes argument is malformed: \"{contentCodes}\"')
+        elif not isinstance(languageEntry, LanguageEntry):
+            raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
+        elif not isinstance(transparentResponse, TransparentResponse):
+            raise TypeError(f'transparentResponse argument is malformed: \"{transparentResponse}\"')
+
+        super().__init__(contentCodes, languageEntry, transparentResponse)

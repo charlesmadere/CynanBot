@@ -211,7 +211,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
     async def __processCutenessRecurringAction(
         self,
         user: UserInterface,
-        action: CutenessRecurringAction
+        action: CutenessRecurringAction,
     ) -> bool:
         if not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
@@ -223,13 +223,13 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         leaderboard = await self.__cutenessRepository.fetchCutenessLeaderboard(
             twitchChannel = user.handle,
-            twitchChannelId = action.twitchChannelId
+            twitchChannelId = action.twitchChannelId,
         )
 
         await self.__submitEvent(CutenessRecurringEvent(
             leaderboard = leaderboard,
             twitchChannel = user.handle,
-            twitchChannelId = action.twitchChannelId
+            twitchChannelId = action.twitchChannelId,
         ))
 
         return True
@@ -237,7 +237,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
     async def __processRecurringAction(
         self,
         user: UserInterface,
-        action: RecurringAction
+        action: RecurringAction,
     ):
         if not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
@@ -250,25 +250,26 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         if isinstance(action, CutenessRecurringAction):
             return await self.__processCutenessRecurringAction(
                 user = user,
-                action = action
+                action = action,
 
             )
+
         elif isinstance(action, SuperTriviaRecurringAction):
             return await self.__processSuperTriviaRecurringAction(
                 user = user,
-                action = action
+                action = action,
             )
 
         elif isinstance(action, WeatherRecurringAction):
             return await self.__processWeatherRecurringAction(
                 user = user,
-                action = action
+                action = action,
             )
 
         elif isinstance(action, WordOfTheDayRecurringAction):
             return await self.__processWordOfTheDayRecurringAction(
                 user = user,
-                action = action
+                action = action,
             )
 
         else:
@@ -277,7 +278,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
     async def __processSuperTriviaRecurringAction(
         self,
         user: UserInterface,
-        action: SuperTriviaRecurringAction
+        action: SuperTriviaRecurringAction,
     ) -> bool:
         if not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
@@ -286,7 +287,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         newTriviaGame = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.handle,
-            twitchChannelId = action.twitchChannelId
+            twitchChannelId = action.twitchChannelId,
         )
 
         if newTriviaGame is None:
@@ -294,7 +295,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         await self.__submitEvent(SuperTriviaRecurringEvent(
             twitchChannel = user.handle,
-            twitchChannelId = action.twitchChannelId
+            twitchChannelId = action.twitchChannelId,
         ))
 
         # delay to allow users to prepare for an incoming trivia question
@@ -306,7 +307,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
     async def __processWeatherRecurringAction(
         self,
         user: UserInterface,
-        action: WeatherRecurringAction
+        action: WeatherRecurringAction,
     ) -> bool:
         if not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
@@ -339,7 +340,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             alertsOnly = action.isAlertsOnly,
             twitchChannel = user.handle,
             twitchChannelId = action.twitchChannelId,
-            weatherReport = weatherReport
+            weatherReport = weatherReport,
         ))
 
         return True
@@ -347,7 +348,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
     async def __processWordOfTheDayRecurringAction(
         self,
         user: UserInterface,
-        action: WordOfTheDayRecurringAction
+        action: WordOfTheDayRecurringAction,
     ) -> bool:
         if not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
@@ -359,16 +360,18 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             return False
 
         try:
-            wordOfTheDayResponse = await self.__wordOfTheDayRepository.fetchWotd(languageEntry)
-        except GenericNetworkException as e:
-            self.__timber.log('RecurringActionsMachine', f'Encountered network error when fetching Word of the Day ({languageEntry=}) ({user=}) ({action=}): {e}', e, traceback.format_exc())
+            wordOfTheDayResponse = await self.__wordOfTheDayRepository.fetchWotd(
+                languageEntry = languageEntry,
+            )
+        except Exception as e:
+            self.__timber.log('RecurringActionsMachine', f'Encountered error when fetching Word of the Day ({languageEntry=}) ({user=}) ({action=})', e, traceback.format_exc())
             return False
 
         await self.__submitEvent(WordOfTheDayRecurringEvent(
             languageEntry = languageEntry,
             twitchChannel = user.handle,
             twitchChannelId = action.twitchChannelId,
-            wordOfTheDayResponse = wordOfTheDayResponse
+            wordOfTheDayResponse = wordOfTheDayResponse,
         ))
 
         return True
