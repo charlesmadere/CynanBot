@@ -24,7 +24,7 @@ class CutenessRepositoryInterface(ABC):
     async def fetchCutenessChampions(
         self,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CutenessChampionsResult:
         pass
 
@@ -34,7 +34,7 @@ class CutenessRepositoryInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ) -> CutenessHistoryResult:
         pass
 
@@ -45,7 +45,7 @@ class CutenessRepositoryInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ) -> IncrementedCutenessResult:
         pass
 
@@ -55,7 +55,7 @@ class CutenessRepositoryInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
         specificLookupUserId: str | None = None,
-        specificLookupUserName: str | None = None
+        specificLookupUserName: str | None = None,
     ) -> CutenessLeaderboardResult:
         pass
 
@@ -63,6 +63,6 @@ class CutenessRepositoryInterface(ABC):
     async def fetchCutenessLeaderboardHistory(
         self,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CutenessLeaderboardHistoryResult:
         pass
