@@ -9,6 +9,6 @@ class WordOfTheDayPresenterInterface(ABC):
     async def toString(
         self,
         includeRomaji: bool,
-        wordOfTheDay: WordOfTheDayResponse
+        wordOfTheDay: WordOfTheDayResponse,
     ) -> str:
         pass

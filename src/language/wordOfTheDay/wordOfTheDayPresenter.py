@@ -8,7 +8,7 @@ class WordOfTheDayPresenter(WordOfTheDayPresenterInterface):
     async def toString(
         self,
         includeRomaji: bool,
-        wordOfTheDay: WordOfTheDayResponse
+        wordOfTheDay: WordOfTheDayResponse,
     ) -> str:
         if not utils.isValidBool(includeRomaji):
             raise TypeError(f'includeRomaji argument is malformed: \"{includeRomaji}\"')

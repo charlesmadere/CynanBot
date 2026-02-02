@@ -1,4 +1,5 @@
 import locale
+from typing import Final
 
 from .absTriviaEvent import AbsTriviaEvent
 from .triviaEventType import TriviaEventType
@@ -55,16 +56,16 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion
-        self.__pointsForWinning: int = pointsForWinning
-        self.__remainingQueueSize: int = remainingQueueSize
-        self.__specialTriviaStatus: SpecialTriviaStatus | None = specialTriviaStatus
-        self.__toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None = toxicTriviaPunishmentResult
-        self.__emote: str = emote
-        self.__gameId: str = gameId
-        self.__outOfTimeEmote: str | None = outOfTimeEmote
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
+        self.__triviaQuestion: Final[AbsTriviaQuestion] = triviaQuestion
+        self.__pointsForWinning: Final[int] = pointsForWinning
+        self.__remainingQueueSize: Final[int] = remainingQueueSize
+        self.__specialTriviaStatus: Final[SpecialTriviaStatus | None] = specialTriviaStatus
+        self.__toxicTriviaPunishmentResult: Final[ToxicTriviaPunishmentResult | None] = toxicTriviaPunishmentResult
+        self.__emote: Final[str] = emote
+        self.__gameId: Final[str] = gameId
+        self.__outOfTimeEmote: Final[str | None] = outOfTimeEmote
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
 
     @property
     def emote(self) -> str:

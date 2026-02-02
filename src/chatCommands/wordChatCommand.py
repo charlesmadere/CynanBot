@@ -79,7 +79,7 @@ class WordChatCommand(AbsChatCommand):
                 hasWotdApiCode = True
             )
         except (NoLanguageEntryFoundForCommandException, NoLanguageEntryFoundForWotdApiCodeException, RuntimeError, TypeError, ValueError) as e:
-            self.__timber.log('WordCommand', f'Error retrieving LanguageEntry ({language=}): {e}', e, traceback.format_exc())
+            self.__timber.log('WordCommand', f'Error retrieving LanguageEntry ({language=})', e, traceback.format_exc())
             allWotdApiCodes = await self.__languagesRepository.getAllWotdApiCodes()
             self.__twitchChatMessenger.send(
                 text = f'⚠ The given language code is not supported by the !word command. Available languages: {allWotdApiCodes}',
@@ -93,7 +93,7 @@ class WordChatCommand(AbsChatCommand):
 
             wordOfTheDayString = await self.__wordOfTheDayPresenter.toString(
                 includeRomaji = False,
-                wordOfTheDay = wotd
+                wordOfTheDay = wotd,
             )
 
             self.__twitchChatMessenger.send(
@@ -102,7 +102,7 @@ class WordChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId(),
             )
         except Exception as e:
-            self.__timber.log('WordCommand', f'Error fetching Word Of The Day ({languageEntry=}): {e}', e, traceback.format_exc())
+            self.__timber.log('WordCommand', f'Error fetching Word Of The Day ({languageEntry=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ Error fetching Word Of The Day for \"{languageEntry.humanName}\"',
                 twitchChannelId = await ctx.getTwitchChannelId(),

@@ -904,7 +904,8 @@ transparentApiService: TransparentApiServiceInterface = TransparentApiService(
     transparentXmlMapper = transparentXmlMapper
 )
 
-wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository(
+wordOfTheDayRepository: Final[WordOfTheDayRepositoryInterface] = WordOfTheDayRepository(
+    contentScanner = contentScanner,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     transparentApiService = transparentApiService,

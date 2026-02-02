@@ -11,6 +11,7 @@ class TwitchMessageStringUtils(TwitchMessageStringUtilsInterface):
 
     def __init__(self):
         self.__extraWhiteSpaceRegEx: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
+        self.__userNameCommandRegEx: Final[Pattern] = re.compile(r'^\s*!(\w+)\s+@?(\w+)(?:\s+(.*))?$', re.IGNORECASE)
         self.__userNameRegEx: Final[Pattern] = re.compile(r'^\s*@?(\w+)\s*$', re.IGNORECASE)
         self.__userNameWithCheerRegEx: Final[Pattern] = re.compile(r'^\s*(\w+\d+)\s+@?(\w+)\s*$', re.IGNORECASE)
 
@@ -55,6 +56,37 @@ class TwitchMessageStringUtils(TwitchMessageStringUtilsInterface):
             return userName
         else:
             return None
+
+    async def parseUserNameCommandMessage(
+        self,
+        message: str | Any | None,
+    ) -> TwitchMessageStringUtilsInterface.ParsedUserNameCommandMessage | None:
+        if not utils.isValidStr(message):
+            return None
+
+        message = utils.cleanStr(message)
+        userNameCommandMatch = self.__userNameCommandRegEx.fullmatch(message)
+
+        if userNameCommandMatch is None:
+            return None
+
+        command: str | None = userNameCommandMatch.group(1)
+        userName: str | None = userNameCommandMatch.group(2)
+
+        if not utils.isValidStr(command) or not utils.isValidStr(userName):
+            return None
+
+        remainingMessage: str | None = userNameCommandMatch.group(3)
+
+        if utils.isValidStr(remainingMessage):
+            remainingMessage = utils.cleanStr(remainingMessage)
+
+        return TwitchMessageStringUtilsInterface.ParsedUserNameCommandMessage(
+            command = command,
+            rawMessage = message,
+            remainingMessage = remainingMessage,
+            userName = userName,
+        )
 
     async def removeCheerStrings(self, message: str, repl: str = ' ') -> str:
         if not isinstance(message, str):

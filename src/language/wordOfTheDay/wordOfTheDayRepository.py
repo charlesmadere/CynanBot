@@ -5,13 +5,17 @@ from typing import Final
 
 from .wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from .wordOfTheDayResponse import WordOfTheDayResponse
+from ..exceptions import WordOfTheDayHasBadContentException
 from ..languageEntry import LanguageEntry
 from ..romaji import to_romaji
+from ...contentScanner.contentCode import ContentCode
+from ...contentScanner.contentScannerInterface import ContentScannerInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...timber.timberInterface import TimberInterface
 from ...transparent.transparentApiServiceInterface import TransparentApiServiceInterface
+from ...transparent.transparentResponse import TransparentResponse
 
 
 class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):
@@ -24,6 +28,7 @@ class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):
 
     def __init__(
         self,
+        contentScanner: ContentScannerInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         transparentApiService: TransparentApiServiceInterface,
@@ -38,6 +43,7 @@ class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):
         elif not isinstance(cacheTimeToLive, timedelta):
             raise TypeError(f'cacheTimeToLive argument is malformed: \"{cacheTimeToLive}\"')
 
+        self.__contentScanner: Final[ContentScannerInterface] = contentScanner
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__transparentApiService: Final[TransparentApiServiceInterface] = transparentApiService
@@ -91,6 +97,11 @@ class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):
             self.__timber.log('WordOfTheDayRepository', f'Encountered network error when fetching Word Of The Day ({languageEntry=})', e, traceback.format_exc())
             raise GenericNetworkException(f'Encountered network error when fetching Word Of The Day ({languageEntry=}): {e}')
 
+        await self.__verifyWotdContent(
+            languageEntry = languageEntry,
+            transparentResponse = transparentResponse,
+        )
+
         romaji: str | None = None
         if languageEntry is LanguageEntry.JAPANESE:
             romaji = to_romaji(transparentResponse.transliteratedWord)
@@ -100,3 +111,27 @@ class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):
             romaji = romaji,
             transparentResponse = transparentResponse,
         )
+
+    async def __verifyWotdContent(
+        self,
+        languageEntry: LanguageEntry,
+        transparentResponse: TransparentResponse,
+    ):
+        fnPhraseContentCode = await self.__contentScanner.scan(transparentResponse.fnPhrase)
+        enPhraseContentCode = await self.__contentScanner.scan(transparentResponse.enPhrase)
+        translationContentCode = await self.__contentScanner.scan(transparentResponse.translation)
+        wordContentCode = await self.__contentScanner.scan(transparentResponse.word)
+
+        contentCodes: frozenset[ContentCode] = frozenset({
+            fnPhraseContentCode,
+            enPhraseContentCode,
+            translationContentCode,
+            wordContentCode,
+        })
+
+        if ContentCode.CONTAINS_BANNED_CONTENT in contentCodes or ContentCode.CONTAINS_URL in contentCodes:
+            raise WordOfTheDayHasBadContentException(
+                contentCodes = contentCodes,
+                languageEntry = languageEntry,
+                transparentResponse = transparentResponse,
+            )
