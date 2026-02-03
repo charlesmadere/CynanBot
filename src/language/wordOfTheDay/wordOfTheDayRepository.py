@@ -22,7 +22,7 @@ class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):
 
     @dataclass(frozen = True, slots = True)
     class Entry:
-        fetchDateTime: datetime
+        expiresAt: datetime
         languageEntry: LanguageEntry
         wordOfTheDayResponse: WordOfTheDayResponse
 
@@ -61,20 +61,18 @@ class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):
         elif not utils.isValidStr(languageEntry.wotdApiCode):
             raise ValueError(f'languageEntry argument is not supported for Word Of The Day: ({languageEntry=})')
 
-        cachedValue = self.__cache.get(languageEntry, None)
+        cachedEntry = self.__cache.get(languageEntry, None)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
 
-        if cachedValue is not None:
-            now = datetime.now(self.__timeZoneRepository.getDefault())
-
-            if cachedValue.fetchDateTime + self.__cacheTimeToLive >= now:
-                return cachedValue.wordOfTheDayResponse
+        if cachedEntry is not None and cachedEntry.expiresAt >= now:
+            return cachedEntry.wordOfTheDayResponse
 
         wordOfTheDayResponse = await self.__fetchWotd(
             languageEntry = languageEntry,
         )
 
         self.__cache[languageEntry] = WordOfTheDayRepository.Entry(
-            fetchDateTime = datetime.now(self.__timeZoneRepository.getDefault()),
+            expiresAt = now + self.__cacheTimeToLive,
             languageEntry = languageEntry,
             wordOfTheDayResponse = wordOfTheDayResponse,
         )
@@ -86,8 +84,6 @@ class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):
             raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
         elif not utils.isValidStr(languageEntry.wotdApiCode):
             raise ValueError(f'languageEntry argument is not supported for Word Of The Day: ({languageEntry=})')
-
-        self.__timber.log('WordOfTheDayRepository', f'Fetching Word Of The Day... ({languageEntry=})')
 
         try:
             transparentResponse = await self.__transparentApiService.fetchWordOfTheDay(

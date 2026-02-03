@@ -38,8 +38,7 @@ class TransparentApiService(TransparentApiServiceInterface):
         if not isinstance(targetLanguage, LanguageEntry):
             raise TypeError(f'targetLanguage argument is malformed: \"{targetLanguage}\"')
 
-        self.__timber.log('TransparentApiService', f'Fetching Word of the Day from Transparent... ({targetLanguage=})')
-        clientSession = await self.__networkClientProvider.get()
+        self.__timber.log('TransparentApiService', f'Fetching Word of the Day... ({targetLanguage=})')
 
         wotdApiCode = targetLanguage.wotdApiCode
         if not utils.isValidStr(wotdApiCode):
@@ -48,12 +47,16 @@ class TransparentApiService(TransparentApiServiceInterface):
                 message = f'No WOTD API code is available for the given targetLanguage ({wotdApiCode=}) ({targetLanguage=})',
             )
 
+        clientSession = await self.__networkClientProvider.get()
+
         ################################################################################
         ## retrieve word of the day from https://www.transparent.com/word-of-the-day/ ##
         ################################################################################
 
         try:
-            response = await clientSession.get(f'https://wotd.transparent.com/rss/{wotdApiCode}-widget.xml?t=0')
+            response = await clientSession.get(
+                url = f'https://wotd.transparent.com/rss/{wotdApiCode}-widget.xml?t=0',
+            )
         except GenericNetworkException as e:
             self.__timber.log('TransparentApiService', f'Encountered network error when fetching word of the day ({targetLanguage=})', e, traceback.format_exc())
             raise GenericNetworkException(f'TransparentApiService encountered network error when fetching word of the day ({targetLanguage=}): {e}')

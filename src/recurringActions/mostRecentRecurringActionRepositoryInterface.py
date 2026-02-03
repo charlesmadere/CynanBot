@@ -10,7 +10,7 @@ class MostRecentRecurringActionRepositoryInterface(ABC):
     async def getMostRecentRecurringAction(
         self,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> MostRecentRecurringAction | None:
         pass
 

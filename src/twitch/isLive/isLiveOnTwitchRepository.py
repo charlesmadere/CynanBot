@@ -1,6 +1,6 @@
 import traceback
 from datetime import timedelta
-from typing import Final
+from typing import Collection, Final
 
 from frozendict import frozendict
 
@@ -43,22 +43,26 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
 
         self.__cache: Final[TimedDict[bool]] = TimedDict(cacheTimeDelta)
 
-    async def areLive(self, twitchChannelIds: set[str]) -> frozendict[str, bool]:
-        if not isinstance(twitchChannelIds, set):
+    async def areLive(
+        self,
+        twitchChannelIds: Collection[str],
+    ) -> frozendict[str, bool]:
+        if not isinstance(twitchChannelIds, Collection):
             raise TypeError(f'twitchChannelIds argument is malformed: \"{twitchChannelIds}\"')
 
+        frozenTwitchChannelIds: frozenset[str] = frozenset(twitchChannelIds)
         twitchChannelIdToLiveStatus: dict[str, bool] = dict()
 
-        if len(twitchChannelIds) == 0:
+        if len(frozenTwitchChannelIds) == 0:
             return frozendict(twitchChannelIdToLiveStatus)
 
         await self.__populateFromCache(
-            twitchChannelIds = twitchChannelIds,
+            twitchChannelIds = frozenTwitchChannelIds,
             twitchChannelIdToLiveStatus = twitchChannelIdToLiveStatus,
         )
 
         await self.__fetchLiveUserDetails(
-            twitchChannelIds = twitchChannelIds,
+            twitchChannelIds = frozenTwitchChannelIds,
             twitchChannelIdToLiveStatus = twitchChannelIdToLiveStatus,
         )
 
@@ -70,7 +74,7 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
 
     async def __fetchLiveUserDetails(
         self,
-        twitchChannelIds: set[str],
+        twitchChannelIds: frozenset[str],
         twitchChannelIdToLiveStatus: dict[str, bool],
     ):
         twitchChannelIdsToFetch: set[str] = set()
@@ -120,7 +124,7 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
 
     async def __populateFromCache(
         self,
-        twitchChannelIds: set[str],
+        twitchChannelIds: frozenset[str],
         twitchChannelIdToLiveStatus: dict[str, bool]
     ):
         for twitchChannelId in twitchChannelIds:

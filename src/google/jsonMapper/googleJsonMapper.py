@@ -95,7 +95,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
         return GoogleTranslateTextGlossaryConfig(
             ignoreCase = ignoreCase,
-            glossary = glossary
+            glossary = glossary,
         )
 
     async def parseTranslateTextResponse(
@@ -199,8 +199,8 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             pitch = pitch,
             speakingRate = speakingRate,
             volumeGainDb = volumeGainDb,
-            sampleRateHertz = sampleRateHertz,
             audioEncoding = audioEncoding,
+            sampleRateHertz = sampleRateHertz,
         )
 
     async def parseVoiceAudioEncoding(

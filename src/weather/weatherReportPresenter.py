@@ -1,5 +1,6 @@
 import locale
 from datetime import datetime
+from typing import Final
 
 from .weatherReport import WeatherReport
 from .weatherReportPresenterInterface import WeatherReportPresenterInterface
@@ -14,7 +15,7 @@ class WeatherReportPresenter(WeatherReportPresenterInterface):
         self,
         maxAlerts: int = 1,
         maxConditions: int = 2,
-        maxTomorrowsConditions: int = 1
+        maxTomorrowsConditions: int = 1,
     ):
         if not utils.isValidInt(maxAlerts):
             raise TypeError(f'maxAlerts argument is malformed: \"{maxAlerts}\"')
@@ -29,9 +30,9 @@ class WeatherReportPresenter(WeatherReportPresenterInterface):
         elif maxTomorrowsConditions < 1 or maxTomorrowsConditions > utils.getIntMaxSafeSize():
             raise ValueError(f'maxTomorrowsConditions argument is out of bounds: {maxTomorrowsConditions}')
 
-        self.__maxAlerts: int = maxAlerts
-        self.__maxConditions: int = maxConditions
-        self.__maxTomorrowsConditions: int = maxTomorrowsConditions
+        self.__maxAlerts: Final[int] = maxAlerts
+        self.__maxConditions: Final[int] = maxConditions
+        self.__maxTomorrowsConditions: Final[int] = maxTomorrowsConditions
 
     async def __getAirQualityString(self, weather: WeatherReport) -> str:
         if weather.airPollution is None:

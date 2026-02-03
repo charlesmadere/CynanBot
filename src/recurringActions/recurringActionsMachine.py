@@ -391,7 +391,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
             action = await self.__findDueRecurringAction(
                 twitchChannelId = twitchChannelId,
-                user = user
+                user = user,
             )
 
             if action is not None:
@@ -401,7 +401,9 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         if len(userToRecurringAction) == 0 or len(twitchChannelIds) == 0:
             return
 
-        twitchChannelIdToLiveStatus = await self.__isLiveOnTwitchRepository.areLive(twitchChannelIds)
+        twitchChannelIdToLiveStatus = await self.__isLiveOnTwitchRepository.areLive(
+            twitchChannelIds = twitchChannelIds,
+        )
 
         for user, action in userToRecurringAction.items():
             if not twitchChannelIdToLiveStatus.get(action.twitchChannelId, False):
@@ -409,9 +411,11 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
             if await self.__processRecurringAction(
                 user = user,
-                action = action
+                action = action,
             ):
-                await self.__mostRecentRecurringActionsRepository.setMostRecentRecurringAction(action)
+                await self.__mostRecentRecurringActionsRepository.setMostRecentRecurringAction(
+                    action = action,
+                )
 
     async def __startActionRefreshLoop(self):
         while True:

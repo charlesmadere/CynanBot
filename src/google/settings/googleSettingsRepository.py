@@ -43,13 +43,13 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
 
         defaultAudioEncoding = await self.__googleJsonMapper.serializeVoiceAudioEncoding(
-            voiceAudioEncoding = self.__defaultVoiceAudioEncoding
+            voiceAudioEncoding = self.__defaultVoiceAudioEncoding,
         )
 
         audioEncodingString = utils.getStrFromDict(
             d = jsonContents,
             key = 'googleVoiceAudioEncoding',
-            fallback = defaultAudioEncoding
+            fallback = defaultAudioEncoding,
         )
 
         return await self.__googleJsonMapper.requireVoiceAudioEncoding(

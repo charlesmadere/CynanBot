@@ -7,5 +7,4 @@ class AbsGoogleVoicePreset:
 
     @property
     def languageCode(self) -> str:
-        # child classes must implement this method
-        raise NotImplementedError()
+        return '-'.join(self.fullName.split('-')[:2])
