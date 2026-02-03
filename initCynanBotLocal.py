@@ -848,11 +848,12 @@ emojiHelper: EmojiHelperInterface = EmojiHelper(
     emojiRepository = emojiRepository,
 )
 
-isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepository(
+isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = IsLiveOnTwitchRepository(
     administratorProvider = administratorProvider,
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
-    twitchTokensRepository = twitchTokensRepository
+    twitchTokensRepository = twitchTokensRepository,
 )
 
 twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface = TwitchChannelEditorsRepository(

@@ -37,7 +37,10 @@ class AdministratorProvider(AdministratorProviderInterface):
             return administratorUserId
 
         userName = await self.getAdministratorUserName()
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(userName)
+
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
+            twitchChannel = userName,
+        )
 
         administratorUserId = await self.__userIdsRepository.requireUserId(
             userName = userName,

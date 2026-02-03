@@ -9,6 +9,7 @@ from ..api.models.twitchFetchStreamsWithIdsRequest import TwitchFetchStreamsWith
 from ..api.models.twitchStreamType import TwitchStreamType
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.administratorProviderInterface import AdministratorProviderInterface
 from ...misc.timedDict import TimedDict
@@ -21,14 +22,17 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
         self,
         administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        cacheTimeDelta: timedelta = timedelta(minutes = 10),
+        cacheTimeDelta: timedelta = timedelta(minutes = 5),
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -38,6 +42,7 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
 
