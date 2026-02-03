@@ -219,11 +219,11 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             rewardCost = channelPointsMessage.rewardCost,
             eventId = channelPointsMessage.eventId,
             redemptionMessage = channelPointsMessage.redemptionMessage,
-            rewardId = channelPointsMessage.rewardId,
-            twitchChannelId = channelPointsMessage.twitchChannelId,
             redemptionUserId = channelPointsMessage.userId,
             redemptionUserLogin = channelPointsMessage.userLogin,
             redemptionUserName = channelPointsMessage.userName,
+            rewardId = channelPointsMessage.rewardId,
+            twitchChannelId = channelPointsMessage.twitchChannelId,
             twitchUser = user,
         )
 

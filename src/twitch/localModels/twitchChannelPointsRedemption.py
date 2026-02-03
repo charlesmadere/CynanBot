@@ -9,11 +9,11 @@ class TwitchChannelPointsRedemption(TwitchUserInterface):
     rewardCost: int
     eventId: str
     redemptionMessage: str | None
-    rewardId: str
-    twitchChannelId: str
     redemptionUserId: str
     redemptionUserLogin: str
     redemptionUserName: str
+    rewardId: str
+    twitchChannelId: str
     twitchUser: UserInterface
 
     def getUserId(self) -> str:
@@ -24,3 +24,7 @@ class TwitchChannelPointsRedemption(TwitchUserInterface):
 
     def getUserName(self) -> str:
         return self.redemptionUserName
+
+    @property
+    def twitchChannel(self) -> str:
+        return self.twitchUser.handle
