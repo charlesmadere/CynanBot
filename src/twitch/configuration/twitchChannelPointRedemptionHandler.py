@@ -197,9 +197,9 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__ttsChatterPointRedemption: AbsChannelPointRedemption = ttsChatterPointRedemption
 
         if voicemailPointRedemption is None:
-            self.__voicemailPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__voicemailPointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__voicemailPointRedemption: AbsChannelPointRedemption = voicemailPointRedemption
+            self.__voicemailPointRedemption: AbsChannelPointRedemption2 = voicemailPointRedemption
 
     async def __handleChannelPointsMessage(self, channelPointsMessage: TwitchChannelPointsMessage):
         if not isinstance(channelPointsMessage, TwitchChannelPointsMessage):
@@ -333,8 +333,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.isVoicemailEnabled and channelPointsMessage.rewardId == user.voicemailRewardId:
             if await self.__voicemailPointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage,
+                channelPointsRedemption = channelPointsRedemption,
             ):
                 return
 
