@@ -8,5 +8,5 @@ class GoogleVoiceAudioConfig:
     pitch: float | None
     speakingRate: float | None
     volumeGainDb: float | None
-    sampleRateHertz: int | None
     audioEncoding: GoogleVoiceAudioEncoding
+    sampleRateHertz: int | None

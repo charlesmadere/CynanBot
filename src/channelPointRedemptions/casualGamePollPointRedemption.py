@@ -1,16 +1,15 @@
 from datetime import timedelta
 from typing import Final
 
-from .absChannelPointRedemption import AbsChannelPointRedemption
+from .absChannelPointRedemption2 import AbsChannelPointRedemption2
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
+from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
-class CasualGamePollPointRedemption(AbsChannelPointRedemption):
+class CasualGamePollPointRedemption(AbsChannelPointRedemption2):
 
     def __init__(
         self,
@@ -31,10 +30,9 @@ class CasualGamePollPointRedemption(AbsChannelPointRedemption):
 
     async def handlePointRedemption(
         self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        channelPointsRedemption: TwitchChannelPointsRedemption,
     ) -> bool:
-        twitchUser = twitchChannelPointsMessage.twitchUser
+        twitchUser = channelPointsRedemption.twitchUser
         if not twitchUser.isCasualGamePollEnabled:
             return False
 
@@ -42,13 +40,13 @@ class CasualGamePollPointRedemption(AbsChannelPointRedemption):
         if not utils.isValidUrl(casualGamePollUrl):
             return False
 
-        if not self.__lastMessageTimes.isReadyAndUpdate(twitchChannelPointsMessage.twitchChannelId):
+        if not self.__lastMessageTimes.isReadyAndUpdate(channelPointsRedemption.twitchChannelId):
             return False
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ Here\'s the current list of casual games: {casualGamePollUrl}',
-            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            twitchChannelId = channelPointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log('CasualGamePollPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
+        self.__timber.log('CasualGamePollPointRedemption', f'Redeemed ({channelPointsRedemption=})')
         return True

@@ -48,7 +48,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
                 WHERE chatteruserid = $1 AND twitchchannelid = $2
                 LIMIT 1
             ''',
-            chatterUserId, twitchChannelId
+            chatterUserId, twitchChannelId,
         )
 
         await connection.close()
@@ -199,7 +199,7 @@ class AnivCopyMessageTimeoutScoreRepository(AnivCopyMessageTimeoutScoreRepositor
                 VALUES ($1, $2, $3, $4, $5, $6)
                 ON CONFLICT (chatteruserid, twitchchannelid) DO UPDATE SET mostrecentdodge = EXCLUDED.mostrecentdodge, mostrecenttimeout = EXCLUDED.mostrecenttimeout, dodgescore = EXCLUDED.dodgescore, timeoutscore = EXCLUDED.timeoutscore
             ''',
-            mostRecentDodge, mostRecentTimeout, score.dodgeScore, score.timeoutScore, score.chatterUserId, score.twitchChannelId
+            mostRecentDodge, mostRecentTimeout, score.dodgeScore, score.timeoutScore, score.chatterUserId, score.twitchChannelId,
         )
 
         await connection.close()

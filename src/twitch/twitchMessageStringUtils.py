@@ -73,7 +73,7 @@ class TwitchMessageStringUtils(TwitchMessageStringUtilsInterface):
         command: str | None = userNameCommandMatch.group(1)
         userName: str | None = userNameCommandMatch.group(2)
 
-        if not utils.isValidStr(command) or not utils.isValidStr(userName):
+        if not utils.isValidStr(command) or not utils.strContainsAlphanumericCharacters(userName):
             return None
 
         remainingMessage: str | None = userNameCommandMatch.group(3)

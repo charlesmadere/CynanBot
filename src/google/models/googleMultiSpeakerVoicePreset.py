@@ -14,10 +14,6 @@ class GoogleMultiSpeakerVoicePreset(AbsGoogleVoicePreset, Enum):
             case _: raise ValueError(f'Unknown GoogleMultiSpeakerVoicePreset value: \"{self}\"')
 
     @property
-    def languageCode(self) -> str:
-        return "-".join(self.fullName.split("-")[:2])
-
-    @property
     def speakerCharacters(self) -> frozenset[str]:
         speakerCharacters: set[str] = set()
 

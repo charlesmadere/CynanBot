@@ -77,7 +77,7 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
         twitchConnectionReadinessProvider = self.__twitchConnectionReadinessProvider
 
         if twitchConnectionReadinessProvider is None:
-            self.__timber.log('ChatterItemEventHandler', f'Received new chatter item event event, but it won\'t be handled, as the twitchChannelProvider and/or twitchConnectionReadinessProvider instances have not been set ({event=}) ({twitchConnectionReadinessProvider=})')
+            self.__timber.log('ChatterItemEventHandler', f'Received new chatter item event event, but it won\'t be handled, as the twitchConnectionReadinessProvider instance has not been set ({event=}) ({twitchConnectionReadinessProvider=})')
             return
 
         await twitchConnectionReadinessProvider.waitForReady()

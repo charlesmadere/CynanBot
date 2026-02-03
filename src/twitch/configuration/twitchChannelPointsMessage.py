@@ -11,5 +11,6 @@ class TwitchChannelPointsMessage:
     rewardId: str
     twitchChannelId: str
     userId: str
+    userLogin: str
     userName: str
     twitchUser: UserInterface

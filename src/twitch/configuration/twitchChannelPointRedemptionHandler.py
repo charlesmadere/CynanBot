@@ -10,7 +10,9 @@ from .twitchChannelPointsMessage import TwitchChannelPointsMessage
 from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 from ...channelPointRedemptions.absChannelPointRedemption import AbsChannelPointRedemption
+from ...channelPointRedemptions.absChannelPointRedemption2 import AbsChannelPointRedemption2
 from ...channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
 from ...channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from ...channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
@@ -23,6 +25,7 @@ from ...channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRe
 from ...channelPointRedemptions.redemptionCounterPointRedemption import RedemptionCounterPointRedemption
 from ...channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from ...channelPointRedemptions.stub.stubChannelPointRedemption import StubPointRedemption
+from ...channelPointRedemptions.stub.stubChannelPointRedemption2 import StubChannelPointRedemption2
 from ...channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
 from ...channelPointRedemptions.superTriviaLotrGamePointRedemption import SuperTriviaLotrGamePointRedemption
 from ...channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
@@ -119,9 +122,9 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
         if casualGamePollPointRedemption is None:
-            self.__casualGamePollPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__casualGamePollPointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__casualGamePollPointRedemption: AbsChannelPointRedemption = casualGamePollPointRedemption
+            self.__casualGamePollPointRedemption: AbsChannelPointRedemption2 = casualGamePollPointRedemption
 
         if chatterPreferredNamePointRedemption is None:
             self.__chatterPreferredNamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
@@ -194,22 +197,35 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__ttsChatterPointRedemption: AbsChannelPointRedemption = ttsChatterPointRedemption
 
         if voicemailPointRedemption is None:
-            self.__voicemailPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__voicemailPointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__voicemailPointRedemption: AbsChannelPointRedemption = voicemailPointRedemption
+            self.__voicemailPointRedemption: AbsChannelPointRedemption2 = voicemailPointRedemption
 
     async def __handleChannelPointsMessage(self, channelPointsMessage: TwitchChannelPointsMessage):
         if not isinstance(channelPointsMessage, TwitchChannelPointsMessage):
             raise TypeError(f'channelPointsMessage argument is malformed: \"{channelPointsMessage}\"')
 
-        user = channelPointsMessage.twitchUser
         twitchChannelProvider = self.__twitchChannelProvider
 
         if twitchChannelProvider is None:
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Abandoning handling of this channel point redemption as no TwitchChannelProvider has been set: \"{twitchChannelProvider}\"')
+            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Abandoning handling of this channel point redemption as no TwitchChannelProvider has been set ({twitchChannelProvider=}) ({channelPointsMessage=})')
             return
 
+        user = channelPointsMessage.twitchUser
         twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
+
+        # TODO eventually this will be moved elsewhere, but for now, it's fine here
+        channelPointsRedemption = TwitchChannelPointsRedemption(
+            rewardCost = channelPointsMessage.rewardCost,
+            eventId = channelPointsMessage.eventId,
+            redemptionMessage = channelPointsMessage.redemptionMessage,
+            redemptionUserId = channelPointsMessage.userId,
+            redemptionUserLogin = channelPointsMessage.userLogin,
+            redemptionUserName = channelPointsMessage.userName,
+            rewardId = channelPointsMessage.rewardId,
+            twitchChannelId = channelPointsMessage.twitchChannelId,
+            twitchUser = user,
+        )
 
         if user.areRedemptionCountersEnabled:
             await self.__redemptionCounterPointRedemption.handlePointRedemption(
@@ -219,8 +235,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.isCasualGamePollEnabled and channelPointsMessage.rewardId == user.casualGamePollRewardId:
             if await self.__casualGamePollPointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage,
+                channelPointsRedemption = channelPointsRedemption,
             ):
                 return
 
@@ -318,8 +333,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.isVoicemailEnabled and channelPointsMessage.rewardId == user.voicemailRewardId:
             if await self.__voicemailPointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage,
+                channelPointsRedemption = channelPointsRedemption,
             ):
                 return
 
@@ -374,6 +388,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             rewardId = reward.rewardId,
             twitchChannelId = twitchChannelId,
             userId = redemptionUserId,
+            userLogin = redemptionUserLogin,
             userName = redemptionUserLogin,
             twitchUser = user,
         )
@@ -405,7 +420,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
                 while not self.__channelPointsMessagesQueue.empty():
                     channelPointsMessages.append(self.__channelPointsMessagesQueue.get_nowait())
             except queue.Empty as e:
-                self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered queue.Empty when building up channelPointsMessages list (queue size: {self.__channelPointsMessagesQueue.qsize()}) (channelPointsMessages size: {len(channelPointsMessages)}): {e}', e, traceback.format_exc())
+                self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered queue.Empty when building up channelPointsMessages list (queue size: {self.__channelPointsMessagesQueue.qsize()}) (channelPointsMessages size: {len(channelPointsMessages)})', e, traceback.format_exc())
 
             channelPointsMessages.freeze()
 
@@ -413,7 +428,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
                 try:
                     await self.__handleChannelPointsMessage(channelPointsMessage)
                 except Exception as e:
-                    self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered unknown Exception when looping through channelPointsMessages (queue size: {self.__channelPointsMessagesQueue.qsize()}) ({channelPointsMessage=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered unknown Exception when looping through channelPointsMessages (queue size: {self.__channelPointsMessagesQueue.qsize()}) ({channelPointsMessage=})', e, traceback.format_exc())
 
             await asyncio.sleep(self.__queueSleepTimeSeconds)
 
@@ -424,4 +439,4 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         try:
             self.__channelPointsMessagesQueue.put(channelPointsMessage, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered queue.Full when submitting a new action ({channelPointsMessage}) into the action queue (queue size: {self.__channelPointsMessagesQueue.qsize()}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered queue.Full when submitting a new action ({channelPointsMessage}) into the action queue (queue size: {self.__channelPointsMessagesQueue.qsize()})', e, traceback.format_exc())

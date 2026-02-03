@@ -19,7 +19,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
         backingDatabase: BackingDatabase,
         recurringActionsJsonParser: RecurringActionsJsonParserInterface,
         timber: TimberInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface
+        timeZoneRepository: TimeZoneRepositoryInterface,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -44,7 +44,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
     async def getMostRecentRecurringAction(
         self,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> MostRecentRecurringAction | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -58,7 +58,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
                 WHERE twitchchannelid = $1
                 LIMIT 1
             ''',
-            twitchChannelId
+            twitchChannelId,
         )
 
         await connection.close()
@@ -73,7 +73,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
             actionType = actionType,
             dateTime = dateTime,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def __initDatabaseTable(self):
@@ -125,7 +125,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
                 VALUES ($1, $2, $3)
                 ON CONFLICT (twitchchannelid) DO UPDATE SET actiontype = EXCLUDED.actiontype, datetime = EXCLUDED.datetime
             ''',
-            actionTypeString, nowDateTime.isoformat(), action.twitchChannelId
+            actionTypeString, nowDateTime.isoformat(), action.twitchChannelId,
         )
 
         await connection.close()

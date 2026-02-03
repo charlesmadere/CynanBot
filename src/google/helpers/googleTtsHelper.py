@@ -220,8 +220,8 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             pitch = None,
             speakingRate = None,
             volumeGainDb = await self.__googleSettingsRepository.getVolumeGainDb(),
-            sampleRateHertz = None,
             audioEncoding = await self.__googleSettingsRepository.getVoiceAudioEncoding(),
+            sampleRateHertz = None,
         )
 
     async def __createGoogleVoiceSelectionParams(
