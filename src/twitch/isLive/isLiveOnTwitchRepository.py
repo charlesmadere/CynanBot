@@ -93,8 +93,15 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
         if len(twitchChannelIdsToFetch) == 0:
             return
 
-        userId = await self.__administratorProvider.getAdministratorUserId()
-        twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(userId)
+        administratorUserId = await self.__administratorProvider.getAdministratorUserId()
+
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+            twitchChannelId = administratorUserId,
+        )
+
+        if not utils.isValidStr(twitchAccessToken):
+            self.__timber.log('IsLiveOnTwitchRepository', f'No Twitch access token available to check for live user details ({twitchChannelIdsToFetch=}) ({administratorUserId=})')
+            return
 
         try:
             streamsResponse = await self.__twitchApiService.fetchStreams(
@@ -104,7 +111,7 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
                 ),
             )
         except Exception as e:
-            self.__timber.log('IsLiveOnTwitchRepository', f'Failed to fetch live user details ({twitchChannelIdsToFetch=})', e, traceback.format_exc())
+            self.__timber.log('IsLiveOnTwitchRepository', f'Failed to fetch live user details ({twitchChannelIdsToFetch=}) ({administratorUserId=})', e, traceback.format_exc())
             return
 
         for stream in streamsResponse.data:
@@ -130,7 +137,7 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
     async def __populateFromCache(
         self,
         twitchChannelIds: frozenset[str],
-        twitchChannelIdToLiveStatus: dict[str, bool]
+        twitchChannelIdToLiveStatus: dict[str, bool],
     ):
         for twitchChannelId in twitchChannelIds:
             isLive = self.__cache[twitchChannelId]
