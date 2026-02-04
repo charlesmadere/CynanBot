@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .recurringAction import RecurringAction
 from .recurringActionType import RecurringActionType
@@ -13,19 +13,19 @@ class WeatherRecurringAction(RecurringAction):
         twitchChannel: str,
         twitchChannelId: str,
         alertsOnly: bool = True,
-        minutesBetween: int | None = None
+        minutesBetween: int | None = None,
     ):
         super().__init__(
             enabled = enabled,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            minutesBetween = minutesBetween
+            minutesBetween = minutesBetween,
         )
 
         if not utils.isValidBool(alertsOnly):
             raise TypeError(f'alertsOnly argument is malformed: \"{alertsOnly}\"')
 
-        self.__alertsOnly: bool = alertsOnly
+        self.__alertsOnly: Final[bool] = alertsOnly
 
     @property
     def actionType(self) -> RecurringActionType:
@@ -42,5 +42,5 @@ class WeatherRecurringAction(RecurringAction):
             'enabled': self.isEnabled,
             'minutesBetween': self.minutesBetween,
             'twitchChannel': self.twitchChannel,
-            'twitchChannelId': self.twitchChannelId
+            'twitchChannelId': self.twitchChannelId,
         }

@@ -29,6 +29,7 @@ from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..network.exceptions import GenericNetworkException
+from ..openWeather.exceptions import OpenWeatherApiKeyUnavailableException
 from ..timber.timberInterface import TimberInterface
 from ..trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
@@ -324,13 +325,16 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         try:
             location = await self.__locationsRepository.getLocation(locationId)
         except NoSuchLocationException as e:
-            self.__timber.log('RecurringActionsMachine', f'Unable to get location ({locationId=}) ({user=}) ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('RecurringActionsMachine', f'Unable to get location ({locationId=}) ({user=}) ({action=})', e, traceback.format_exc())
             return False
 
         try:
             weatherReport = await self.__weatherRepository.fetchWeather(location)
+        except OpenWeatherApiKeyUnavailableException as e:
+            self.__timber.log('RecurringActionsMachine', f'No Open Weather API key available when fetching weather ({location=}) ({locationId=}) ({user=}) ({action=})', e, traceback.format_exc())
+            return False
         except GenericNetworkException as e:
-            self.__timber.log('RecurringActionsMachine', f'Encountered network error when fetching weather ({location=}) ({locationId=}) ({user=}) ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('RecurringActionsMachine', f'Encountered network error when fetching weather ({location=}) ({locationId=}) ({user=}) ({action=})', e, traceback.format_exc())
             return False
 
         if action.isAlertsOnly and len(weatherReport.report.alerts) == 0:
@@ -422,7 +426,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             try:
                 await self.__refreshActions()
             except Exception as e:
-                self.__timber.log('RecurringActionsMachine', f'Encountered unknown Exception when refreshing actions: {e}', e, traceback.format_exc())
+                self.__timber.log('RecurringActionsMachine', f'Encountered unknown Exception when refreshing actions', e, traceback.format_exc())
 
             await asyncio.sleep(self.__refreshSleepTimeSeconds)
 
@@ -443,13 +447,13 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
                     while not self.__eventQueue.empty():
                         events.append(self.__eventQueue.get_nowait())
                 except queue.Empty as e:
-                    self.__timber.log('RecurringActionsMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) (events size: {len(events)}): {e}', e, traceback.format_exc())
+                    self.__timber.log('RecurringActionsMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) (events size: {len(events)})', e, traceback.format_exc())
 
                 for event in events:
                     try:
                         await eventListener.onNewRecurringActionEvent(event)
                     except Exception as e:
-                        self.__timber.log('RecurringActionsMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) (event=\"{event}\"): {e}', e, traceback.format_exc())
+                        self.__timber.log('RecurringActionsMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({event=})', e, traceback.format_exc())
 
             await asyncio.sleep(self.__queueSleepTimeSeconds)
 
@@ -470,4 +474,4 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         try:
             self.__eventQueue.put(event, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
-            self.__timber.log('RecurringActionsMachine', f'Encountered queue.Full when submitting a new event ({event}) into the event queue (queue size: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
+            self.__timber.log('RecurringActionsMachine', f'Encountered queue.Full when submitting a new event ({event}) into the event queue (queue size: {self.__eventQueue.qsize()})', e, traceback.format_exc())

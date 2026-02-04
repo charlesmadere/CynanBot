@@ -2354,10 +2354,11 @@ guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = Gu
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
 )
 
-isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepository(
+isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = IsLiveOnTwitchRepository(
     administratorProvider = administratorProvider,
     timber = timber,
     twitchApiService = twitchApiService,
+    timeZoneRepository = timeZoneRepository,
     twitchTokensRepository = twitchTokensRepository,
 )
 

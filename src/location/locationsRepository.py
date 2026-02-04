@@ -56,7 +56,7 @@ class LocationsRepository(LocationsRepositoryInterface):
                     longitude = utils.getFloatFromDict(jsonLocationContents, 'lon'),
                     locationId = jsonLocationId,
                     name = utils.getStrFromDict(jsonLocationContents, 'name'),
-                    timeZone = timeZone
+                    timeZone = timeZone,
                 )
 
                 self.__cache[jsonLocationId.casefold()] = location

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Final
 
 from .recurringActionType import RecurringActionType
 from ...misc import utils as utils
@@ -12,7 +12,7 @@ class RecurringAction(ABC):
         enabled: bool,
         twitchChannel: str,
         twitchChannelId: str,
-        minutesBetween: int | None = None
+        minutesBetween: int | None = None,
     ):
         if not utils.isValidBool(enabled):
             raise TypeError(f'enabled argument is malformed: \"{enabled}\"')
@@ -25,10 +25,10 @@ class RecurringAction(ABC):
         elif minutesBetween is not None and (minutesBetween < 1 or minutesBetween > utils.getIntMaxSafeSize()):
             raise ValueError(f'minutesBetween argument is out of bounds: {minutesBetween}')
 
-        self.__enabled: bool = enabled
-        self.__twitchChannel: str = twitchChannel
-        self.__twitchChannelId: str = twitchChannelId
-        self.__minutesBetween: int | None = minutesBetween
+        self.__enabled: Final[bool] = enabled
+        self.__twitchChannel: Final[str] = twitchChannel
+        self.__twitchChannelId: Final[str] = twitchChannelId
+        self.__minutesBetween: Final[int | None] = minutesBetween
 
     @property
     @abstractmethod
