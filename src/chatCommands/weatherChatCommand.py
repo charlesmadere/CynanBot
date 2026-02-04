@@ -7,6 +7,7 @@ from ..location.exceptions import NoSuchLocationException
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
+from ..openWeather.exceptions import OpenWeatherApiKeyUnavailableException
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
@@ -59,36 +60,34 @@ class WeatherChatCommand(AbsChatCommand):
             return
 
         locationId = user.locationId
-
         if not utils.isValidStr(locationId):
-            self.__twitchChatMessenger.send(
-                text = f'⚠ No location ID is available',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-            )
+            self.__timber.log('WeatherCommand', f'No location ID found when fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
             return
 
         try:
             location = await self.__locationsRepository.getLocation(locationId)
         except NoSuchLocationException as e:
-            self.__timber.log('WeatherCommand', f'Unable to get location ID when fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({locationId=}): {e}', e, traceback.format_exc())
-            self.__twitchChatMessenger.send(
-                text = f'⚠ Error fetching weather',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
-            )
+            self.__timber.log('WeatherCommand', f'Unable to get location when fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({locationId=})', e, traceback.format_exc())
             return
 
         try:
-            weatherReport = await self.__weatherRepository.fetchWeather(location)
-            weatherReportString = await self.__weatherReportPresenter.toString(weatherReport)
+            weatherReport = await self.__weatherRepository.fetchWeather(
+                location = location,
+            )
+
+            weatherReportString = await self.__weatherReportPresenter.toString(
+                weather = weatherReport,
+            )
 
             self.__twitchChatMessenger.send(
                 text = weatherReportString,
                 twitchChannelId = await ctx.getTwitchChannelId(),
                 replyMessageId = await ctx.getMessageId(),
             )
+        except OpenWeatherApiKeyUnavailableException as e:
+            self.__timber.log('WeatherCommand', f'OpenWeather API key unavailable when fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({locationId=})', e, traceback.format_exc())
         except Exception as e:
-            self.__timber.log('WeatherCommand', f'Error fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({locationId=}): {e}', e, traceback.format_exc())
+            self.__timber.log('WeatherCommand', f'Error fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({locationId=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = '⚠ Error fetching weather',
                 twitchChannelId = await ctx.getTwitchChannelId(),

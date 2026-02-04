@@ -1,22 +1,33 @@
 import traceback
-from datetime import timedelta
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 from typing import Collection, Final
 
 from frozendict import frozendict
 
 from .isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from ..api.models.twitchFetchStreamsWithIdsRequest import TwitchFetchStreamsWithIdsRequest
+from ..api.models.twitchStream import TwitchStream
 from ..api.models.twitchStreamType import TwitchStreamType
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.administratorProviderInterface import AdministratorProviderInterface
-from ...misc.timedDict import TimedDict
 from ...timber.timberInterface import TimberInterface
 
 
 class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
+
+    @dataclass(frozen = True, slots = True)
+    class LiveStreamStatusEntry:
+        expiresAt: datetime
+        twitchChannelId: str
+        twitchStream: TwitchStream | None
+
+        @property
+        def isLive(self) -> bool:
+            return self.twitchStream is not None and self.twitchStream.streamType is TwitchStreamType.LIVE
 
     def __init__(
         self,
@@ -25,7 +36,7 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        cacheTimeDelta: timedelta = timedelta(minutes = 5),
+        cacheTimeToLive: timedelta = timedelta(minutes = 5),
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -37,16 +48,17 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(cacheTimeDelta, timedelta):
-            raise TypeError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
+        elif not isinstance(cacheTimeToLive, timedelta):
+            raise TypeError(f'cacheTimeToLive argument is malformed: \"{cacheTimeToLive}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__cacheTimeToLive: Final[timedelta] = cacheTimeToLive
 
-        self.__cache: Final[TimedDict[bool]] = TimedDict(cacheTimeDelta)
+        self.__cache: Final[dict[str, IsLiveOnTwitchRepository.LiveStreamStatusEntry | None]] = dict()
 
     async def areLive(
         self,
@@ -103,6 +115,8 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
             self.__timber.log('IsLiveOnTwitchRepository', f'No Twitch access token available to check for live user details ({twitchChannelIdsToFetch=}) ({administratorUserId=})')
             return
 
+        now = datetime.now(self.__timeZoneRepository.getDefault())
+
         try:
             streamsResponse = await self.__twitchApiService.fetchStreams(
                 twitchAccessToken = twitchAccessToken,
@@ -115,22 +129,29 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
             return
 
         for stream in streamsResponse.data:
-            isLive = stream.streamType is TwitchStreamType.LIVE
-            twitchChannelIdToLiveStatus[stream.userId] = isLive
-            self.__cache[stream.userId] = isLive
+            liveStreamStatusEntry = IsLiveOnTwitchRepository.LiveStreamStatusEntry(
+                expiresAt = now + self.__cacheTimeToLive,
+                twitchChannelId = stream.userId,
+                twitchStream = stream,
+            )
+
+            twitchChannelIdToLiveStatus[stream.userId] = liveStreamStatusEntry.isLive
+            self.__cache[stream.userId] = liveStreamStatusEntry
 
         for twitchChannelId in twitchChannelIds:
             if twitchChannelId not in twitchChannelIdToLiveStatus:
                 twitchChannelIdToLiveStatus[twitchChannelId] = False
-                self.__cache[twitchChannelId] = False
+                self.__cache[twitchChannelId] = IsLiveOnTwitchRepository.LiveStreamStatusEntry(
+                    expiresAt = now + self.__cacheTimeToLive,
+                    twitchChannelId = twitchChannelId,
+                    twitchStream = None,
+                )
 
     async def isLive(self, twitchChannelId: str) -> bool:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        twitchChannelIds: set[str] = set()
-        twitchChannelIds.add(twitchChannelId)
-
+        twitchChannelIds: frozenset[str] = frozenset({ twitchChannelId })
         twitchChannelIdsToLiveStatus = await self.areLive(twitchChannelIds)
         return twitchChannelIdsToLiveStatus.get(twitchChannelId, False) is True
 
@@ -139,8 +160,10 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
         twitchChannelIds: frozenset[str],
         twitchChannelIdToLiveStatus: dict[str, bool],
     ):
-        for twitchChannelId in twitchChannelIds:
-            isLive = self.__cache[twitchChannelId]
+        now = datetime.now(self.__timeZoneRepository.getDefault())
 
-            if utils.isValidBool(isLive):
-                twitchChannelIdToLiveStatus[twitchChannelId] = isLive
+        for twitchChannelId in twitchChannelIds:
+            cachedEntry = self.__cache.get(twitchChannelId, None)
+
+            if cachedEntry is not None and cachedEntry.expiresAt >= now:
+                twitchChannelIdToLiveStatus[twitchChannelId] = cachedEntry.isLive
