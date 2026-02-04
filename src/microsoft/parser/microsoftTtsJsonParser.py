@@ -160,12 +160,12 @@ class MicrosoftTtsJsonParser(MicrosoftTtsJsonParserInterface):
             MicrosoftTtsVoice.SYLVIE: sylvie,
             MicrosoftTtsVoice.THIERRY: thierry,
             MicrosoftTtsVoice.WILLIAM: william,
-            MicrosoftTtsVoice.ZIRA: zira
+            MicrosoftTtsVoice.ZIRA: zira,
         })
 
     async def parseVoice(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> MicrosoftTtsVoice | None:
         if not utils.isValidStr(string):
             return None
@@ -179,7 +179,7 @@ class MicrosoftTtsJsonParser(MicrosoftTtsJsonParserInterface):
 
     async def requireVoice(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> MicrosoftTtsVoice:
         result = await self.parseVoice(string)
 
@@ -190,7 +190,7 @@ class MicrosoftTtsJsonParser(MicrosoftTtsJsonParserInterface):
 
     async def serializeVoice(
         self,
-        voice: MicrosoftTtsVoice
+        voice: MicrosoftTtsVoice,
     ) -> str:
         if not isinstance(voice, MicrosoftTtsVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')

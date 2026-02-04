@@ -163,10 +163,22 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             self.__timber.log('CompositeTtsManager', f'This shotgun TTS event was unable to find any available TTS Providers ({chosenProviders=}) ({event=}) ({parameters=})')
             return False
 
-        self.__timber.log('CompositeTtsManager', f'This shotgun TTS event is using all available TTS Providers ({chosenProviders.keys()=}) ({event=}) ({parameters=})')
+        eventCopy = TtsEvent(
+            message = event.message,
+            twitchChannel = event.twitchChannel,
+            twitchChannelId = event.twitchChannelId,
+            userId = event.userId,
+            userName = event.userName,
+            donation = event.donation,
+            provider = TtsProvider.SHOTGUN_TTS,
+            providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
+            raidInfo = event.raidInfo,
+        )
+
+        self.__timber.log('CompositeTtsManager', f'This shotgun TTS event is using all available TTS Providers ({chosenProviders.keys()=}) ({event=}) ({eventCopy=}) ({parameters=})')
 
         for provider, manager in chosenProviders.items():
-            self.__backgroundTaskHelper.createTask(manager.playTtsEvent(event))
+            self.__backgroundTaskHelper.createTask(manager.playTtsEvent(eventCopy))
 
         return True
 
