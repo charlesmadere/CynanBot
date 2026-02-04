@@ -11,13 +11,13 @@ class CutenessRecurringAction(RecurringAction):
         enabled: bool,
         twitchChannel: str,
         twitchChannelId: str,
-        minutesBetween: int | None = None
+        minutesBetween: int | None = None,
     ):
         super().__init__(
             enabled = enabled,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            minutesBetween = minutesBetween
+            minutesBetween = minutesBetween,
         )
 
     @property
@@ -30,5 +30,5 @@ class CutenessRecurringAction(RecurringAction):
             'enabled': self.isEnabled,
             'minutesBetween': self.minutesBetween,
             'twitchChannel': self.twitchChannel,
-            'twitchChannelId': self.twitchChannelId
+            'twitchChannelId': self.twitchChannelId,
         }
