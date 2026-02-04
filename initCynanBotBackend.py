@@ -1078,10 +1078,9 @@ openWeatherApiService: OpenWeatherApiServiceInterface = OpenWeatherApiService(
 
 weatherReportPresenter: WeatherReportPresenterInterface = WeatherReportPresenter()
 
-weatherRepository: WeatherRepositoryInterface = WeatherRepository(
-    openWeatherApiKeyProvider = authRepository,
+weatherRepository: Final[WeatherRepositoryInterface] = WeatherRepository(
     openWeatherApiService = openWeatherApiService,
-    timber = timber
+    timber = timber,
 )
 
 
