@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .microsoftTtsSettingsRepositoryInterface import MicrosoftTtsSettingsRepositoryInterface
 from ..models.microsoftTtsVoice import MicrosoftTtsVoice
@@ -13,7 +13,7 @@ class MicrosoftTtsSettingsRepository(MicrosoftTtsSettingsRepositoryInterface):
         self,
         microsoftTtsJsonParser: MicrosoftTtsJsonParserInterface,
         settingsJsonReader: JsonReaderInterface,
-        defaultVoice: MicrosoftTtsVoice = MicrosoftTtsVoice.ZIRA
+        defaultVoice: MicrosoftTtsVoice = MicrosoftTtsVoice.ZIRA,
     ):
         if not isinstance(microsoftTtsJsonParser, MicrosoftTtsJsonParserInterface):
             raise TypeError(f'microsoftTtsJsonParser argument is malformed: \"{microsoftTtsJsonParser}\"')
@@ -22,9 +22,9 @@ class MicrosoftTtsSettingsRepository(MicrosoftTtsSettingsRepositoryInterface):
         elif not isinstance(defaultVoice, MicrosoftTtsVoice):
             raise TypeError(f'defaultVoice argument is malformed: \"{defaultVoice}\"')
 
-        self.__microsoftTtsJsonParser: MicrosoftTtsJsonParserInterface = microsoftTtsJsonParser
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
-        self.__defaultVoice: MicrosoftTtsVoice = defaultVoice
+        self.__microsoftTtsJsonParser: Final[MicrosoftTtsJsonParserInterface] = microsoftTtsJsonParser
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
+        self.__defaultVoice: Final[MicrosoftTtsVoice] = defaultVoice
 
         self.__cache: dict[str, Any] | None = None
 
@@ -34,13 +34,19 @@ class MicrosoftTtsSettingsRepository(MicrosoftTtsSettingsRepositoryInterface):
     async def getDefaultVoice(self) -> MicrosoftTtsVoice | None:
         jsonContents = await self.__readJson()
 
+        fallbackVoice = await self.__microsoftTtsJsonParser.serializeVoice(
+            voice = self.__defaultVoice,
+        )
+
         defaultVoice = utils.getStrFromDict(
             d = jsonContents,
             key = 'defaultVoice',
-            fallback = await self.__microsoftTtsJsonParser.serializeVoice(self.__defaultVoice)
+            fallback = fallbackVoice,
         )
 
-        return await self.__microsoftTtsJsonParser.requireVoice(defaultVoice)
+        return await self.__microsoftTtsJsonParser.requireVoice(
+            string = defaultVoice,
+        )
 
     async def getFileExtension(self) -> str:
         jsonContents = await self.__readJson()
