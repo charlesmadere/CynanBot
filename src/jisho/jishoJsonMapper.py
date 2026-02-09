@@ -99,7 +99,7 @@ class JishoJsonMapper(JishoJsonMapperInterface):
         frozenJlptLevels: FrozenList[JishoJlptLevel] = FrozenList()
 
         if isinstance(jlptLevelsArray, list) and len(jlptLevelsArray) >= 1:
-            jlptLevels: list[JishoJlptLevel] = list()
+            jlptLevelsSet: set[JishoJlptLevel] = set()
 
             for index, jlptLevelString in enumerate(jlptLevelsArray):
                 jlptLevel = await self.parseJlptLevel(jlptLevelString)
@@ -107,10 +107,11 @@ class JishoJsonMapper(JishoJsonMapperInterface):
                 if jlptLevel is None:
                     self.__timber.log('JishoJsonMapper', f'Unable to parse value at index {index} for \"jlpt\" data: ({jsonContents=})')
                 else:
-                    jlptLevels.append(jlptLevel)
+                    jlptLevelsSet.add(jlptLevel)
 
-            jlptLevels.sort(key = lambda level: level.value)
-            frozenJlptLevels.extend(jlptLevels)
+            jlptLevelsList: list[JishoJlptLevel] = list(jlptLevelsSet)
+            jlptLevelsList.sort(key = lambda level: level.value)
+            frozenJlptLevels.extend(jlptLevelsList)
 
         frozenJlptLevels.freeze()
         sensesArray: list[dict[str, Any]] | Any | None = jsonContents.get('senses')
