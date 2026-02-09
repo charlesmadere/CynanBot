@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.halfLife.models.halfLifeVoice import HalfLifeVoice
@@ -5,9 +7,9 @@ from src.halfLife.parser.halfLifeVoiceParser import HalfLifeVoiceParser
 from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParserInterface
 
 
-class TesthalfLifeJsonParser:
+class TestHalfLifeJsonParser:
 
-    parser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
+    parser: Final[HalfLifeVoiceParserInterface] = HalfLifeVoiceParser()
 
     @pytest.mark.asyncio
     async def test_parseVoice_withAll(self):

@@ -54,8 +54,8 @@ class JishoPresenter(JishoPresenterInterface):
             jishoJapanese = jishoData.japanese[0]
             jishoSense = jishoData.senses[0]
 
-            jlptLevel: str = ''
-            if jishoData.jlptLevels is not None and len(jishoData.jlptLevels) >= 1:
+            jlptLevel = ''
+            if len(jishoData.jlptLevels) >= 1:
                 jlptLevel = await self.__jlptToString(jishoData.jlptLevels[0])
 
             wordAndReading: str

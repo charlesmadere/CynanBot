@@ -15,5 +15,5 @@ class HalfLifeVoiceParserInterface(ABC):
         pass
 
     @abstractmethod
-    def serializeVoice(self, halfLifeVoice: HalfLifeVoice) -> str:
+    def serializeVoice(self, voice: HalfLifeVoice) -> str:
         pass
