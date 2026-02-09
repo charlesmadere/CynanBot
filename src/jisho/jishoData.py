@@ -12,7 +12,7 @@ from .jishoSense import JishoSense
 class JishoData:
     isCommon: bool
     japanese: FrozenList[JishoJapaneseWord]
+    jlptLevels: FrozenList[JishoJlptLevel]
     senses: FrozenList[JishoSense]
-    jlptLevels: frozenset[JishoJlptLevel]
     attribution: JishoAttribution | None
     slug: str
