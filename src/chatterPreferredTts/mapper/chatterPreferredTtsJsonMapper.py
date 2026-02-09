@@ -48,7 +48,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(halfLifeVoiceParser, HalfLifeVoiceParserInterface):
-            raise TypeError(f'halfLifeJsonParser argument is malformed: \"{halfLifeVoiceParser}\"')
+            raise TypeError(f'halfLifeVoiceParser argument is malformed: \"{halfLifeVoiceParser}\"')
         elif not isinstance(microsoftSamJsonParser, MicrosoftSamJsonParserInterface):
             raise TypeError(f'microsoftSamJsonParser argument is malformed: \"{microsoftSamJsonParser}\"')
         elif not isinstance(microsoftTtsJsonParser, MicrosoftTtsJsonParserInterface):
@@ -59,7 +59,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             raise TypeError(f'ttsMonsterPrivateApiJsonMapper argument is malformed: \"{ttsMonsterPrivateApiJsonMapper}\"')
 
         self.__decTalkVoiceMapper: Final[DecTalkVoiceMapperInterface] = decTalkVoiceMapper
-        self.__halfLifeJsonParser: Final[HalfLifeVoiceParserInterface] = halfLifeVoiceParser
+        self.__halfLifeVoiceParser: Final[HalfLifeVoiceParserInterface] = halfLifeVoiceParser
         self.__languagesRepository: Final[LanguagesRepositoryInterface] = languagesRepository
         self.__microsoftSamJsonParser: Final[MicrosoftSamJsonParserInterface] = microsoftSamJsonParser
         self.__microsoftTtsJsonParser: Final[MicrosoftTtsJsonParserInterface] = microsoftTtsJsonParser
@@ -116,7 +116,7 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
             voiceString: str | Any | None = configurationJson.get('halfLifeVoice', None)
 
             if utils.isValidStr(voiceString):
-                voice = self.__halfLifeJsonParser.parseVoice(
+                voice = self.__halfLifeVoiceParser.parseVoice(
                     voiceString = voiceString,
                 )
 
@@ -320,7 +320,9 @@ class ChatterPreferredTtsJsonMapper(ChatterPreferredTtsJsonMapperInterface):
         configurationJson: dict[str, Any] = dict()
 
         if ttsProperties.voice is not None:
-            configurationJson['halfLifeVoice'] = ttsProperties.voice.keyName
+            configurationJson['halfLifeVoice'] = self.__halfLifeVoiceParser.serializeVoice(
+                voice = ttsProperties.voice,
+            )
 
         return configurationJson
 
