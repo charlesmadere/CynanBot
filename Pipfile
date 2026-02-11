@@ -19,9 +19,9 @@ librosa = { version = "0.11.0", markers = "sys_platform == 'darwin' or sys_platf
 lru-dict = "1.4.1"
 lxml = "6.0.2"
 num2words = "0.5.14"
-polyleven = "0.9"
+polyleven = "0.11.0"
 psutil = "7.2.2"
-pyjwt = "2.10.1"
+pyjwt = "2.11.0"
 pytest = "9.0.2"
 pytest-asyncio = "1.3.0"
 python-vlc = { version = "3.0.21203", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
