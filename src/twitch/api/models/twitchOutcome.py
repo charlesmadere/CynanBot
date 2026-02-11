@@ -8,7 +8,7 @@ from .twitchOutcomePredictor import TwitchOutcomePredictor
 
 @dataclass(frozen = True, slots = True)
 class TwitchOutcome:
-    topPredictors: FrozenList[TwitchOutcomePredictor] | None
+    topPredictors: FrozenList[TwitchOutcomePredictor]
     channelPoints: int
     users: int
     outcomeId: str

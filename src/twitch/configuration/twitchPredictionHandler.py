@@ -29,6 +29,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
         websocketConnectionServer: WebsocketConnectionServerInterface,
+        maxTopPredictors: int = 3,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -42,6 +43,10 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
         elif not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
             raise TypeError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
+        elif not utils.isValidInt(maxTopPredictors):
+            raise TypeError(f'maxTopPredictors argument is malformed: \"{maxTopPredictors}\"')
+        elif maxTopPredictors < 1 or maxTopPredictors > utils.getIntMaxSafeSize():
+            raise ValueError(f'maxTopPredictors argument is out of bounds: {maxTopPredictors}')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
@@ -49,6 +54,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchPredictionWebsocketUtils: Final[TwitchPredictionWebsocketUtilsInterface | None] = twitchPredictionWebsocketUtils
         self.__websocketConnectionServer: Final[WebsocketConnectionServerInterface] = websocketConnectionServer
+        self.__maxTopPredictors: Final[int] = maxTopPredictors
 
     async def __notifyChatOfPredictionResults(self, predictionData: AbsTwitchPredictionHandler.PredictionData):
         outcomes = predictionData.outcomes
@@ -65,32 +71,26 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             return
 
         winningOutcome = [ outcome for outcome in outcomes if outcome.outcomeId == winningOutcomeId ][0]
-        topPredictors = winningOutcome.topPredictors
+        topPredictorsStrings: list[str] = list()
 
-        outcomeString = f'🗳️ The winning outcome is \"{winningOutcome.title}\"!'
+        for topPredictor in winningOutcome.topPredictors:
+            topPredictorsStrings.append(f'@{topPredictor.userName} ({topPredictor.channelPointsWonStr})')
 
-        if topPredictors is not None and len(topPredictors) >= 1:
-            topPredictorsString = ''
-            for index, topPredictor in enumerate(topPredictors):
-                predictorString = f'{topPredictor.userName} ({topPredictor.channelPointsWonStr})'
+        if len(topPredictorsStrings) > self.__maxTopPredictors:
+            topPredictorsStrings = topPredictorsStrings[:self.__maxTopPredictors]
 
-                if index == 0:
-                    topPredictorsString = predictorString
-                elif index + 1 == len(topPredictors):
-                    topPredictorsString = f'{topPredictorsString}, and {predictorString}'
-                else:
-                    topPredictorsString = f'{topPredictorsString}, {predictorString}'
+        predictorPluralization: str
+        if len(topPredictorsStrings) == 1:
+            predictorPluralization = 'Top predictor:'
+        else:
+            predictorPluralization = 'Top predictors:'
 
-            predictorPluralization: str
-            if len(topPredictors) == 1:
-                predictorPluralization = 'The top predictor was'
-            else:
-                predictorPluralization = 'Top predictors:'
-
-            outcomeString = outcomeString + f' {predictorPluralization} {topPredictorsString}!'
+        topPredictorsString = ', '.join(topPredictorsStrings)
+        messagePrefix = f'🗳️ \"{winningOutcome.title}\" is the winning outcome!'
+        fullMessage = f'{messagePrefix} {predictorPluralization} {topPredictorsString}!'
 
         self.__twitchChatMessenger.send(
-            text = outcomeString,
+            text = fullMessage,
             twitchChannelId = predictionData.twitchChannelId,
         )
 
