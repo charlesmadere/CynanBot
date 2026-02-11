@@ -93,7 +93,7 @@ class GiveCutenessChatCommand(AbsChatCommand):
 
         try:
             incrementAmount = int(incrementAmountStr)
-        except (SyntaxError, TypeError, ValueError) as e:
+        except Exception as e:
             self.__timber.log('GiveCutenessChatCommand', f'Unable to convert increment amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} into an int: \"{incrementAmountStr}\": {e}', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ Increment amount argument is malformed. Example: !givecuteness @{userName} 5',

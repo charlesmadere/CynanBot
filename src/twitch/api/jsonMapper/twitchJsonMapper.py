@@ -1255,7 +1255,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseOutcome(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchOutcome | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1266,23 +1266,24 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         title = utils.getStrFromDict(jsonResponse, 'title', clean = True)
         color = await self.requireOutcomeColor(utils.getStrFromDict(jsonResponse, 'color'))
 
-        frozenTopPredictors: FrozenList[TwitchOutcomePredictor] | None = None
-        if 'top_predictors' in jsonResponse:
-            topPredictorsItem: Any | None = jsonResponse.get('top_predictors')
+        topPredictorsArray: list[dict[str, Any]] | Any | None = jsonResponse.get('top_predictors')
+        frozenTopPredictors: FrozenList[TwitchOutcomePredictor] = FrozenList()
 
-            if isinstance(topPredictorsItem, list) and len(topPredictorsItem) >= 1:
-                topPredictors: list[TwitchOutcomePredictor] = list()
+        if isinstance(topPredictorsArray, list) and len(topPredictorsArray) >= 1:
+            topPredictors: list[TwitchOutcomePredictor] = list()
 
-                for topPredictorItem in topPredictorsItem:
-                    topPredictor = await self.parseOutcomePredictor(topPredictorItem)
+            for index, topPredictorItem in enumerate(topPredictorsArray):
+                topPredictor = await self.parseOutcomePredictor(topPredictorItem)
 
-                    if topPredictor is not None:
-                        topPredictors.append(topPredictor)
+                if topPredictor is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"top_predictors\" data ({jsonResponse=})')
+                else:
+                    topPredictors.append(topPredictor)
 
-                if len(topPredictors) >= 1:
-                    topPredictors.sort(key = lambda element: element.channelPointsUsed, reverse = True)
-                    frozenTopPredictors = FrozenList(topPredictors)
-                    frozenTopPredictors.freeze()
+            topPredictors.sort(key = lambda element: element.channelPointsUsed, reverse = True)
+            frozenTopPredictors.extend(topPredictors)
+
+        frozenTopPredictors.freeze()
 
         return TwitchOutcome(
             topPredictors = frozenTopPredictors,
@@ -1295,7 +1296,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseOutcomeColor(
         self,
-        outcomeColor: str | Any | None
+        outcomeColor: str | Any | None,
     ) -> TwitchOutcomeColor | None:
         if not utils.isValidStr(outcomeColor):
             return None
@@ -1309,7 +1310,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseOutcomePredictor(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchOutcomePredictor | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1329,7 +1330,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             channelPointsWon = channelPointsWon,
             userId = userId,
             userLogin = userLogin,
-            userName = userName
+            userName = userName,
         )
 
     async def parsePaginationResponse(
@@ -2430,7 +2431,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def requireOutcomeColor(
         self,
-        outcomeColor: str | Any | None
+        outcomeColor: str | Any | None,
     ) -> TwitchOutcomeColor:
         result = await self.parseOutcomeColor(outcomeColor)
 

@@ -399,21 +399,21 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseOutcome(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchOutcome | None:
         pass
 
     @abstractmethod
     async def parseOutcomeColor(
         self,
-        outcomeColor: str | Any | None
+        outcomeColor: str | Any | None,
     ) -> TwitchOutcomeColor | None:
         pass
 
     @abstractmethod
     async def parseOutcomePredictor(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchOutcomePredictor | None:
         pass
 
@@ -714,7 +714,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def requireOutcomeColor(
         self,
-        outcomeColor: str | Any | None
+        outcomeColor: str | Any | None,
     ) -> TwitchOutcomeColor:
         pass
 

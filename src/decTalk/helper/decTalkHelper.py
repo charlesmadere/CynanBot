@@ -88,10 +88,10 @@ class DecTalkHelper(DecTalkHelperInterface):
                 text = fullMessage,
             )
         except DecTalkExecutableIsMissingException as e:
-            self.__timber.log('DecTalkHelper', f'Encountered executable file is missing exception when generating speech ({voice=}) ({fullMessage=}): {e}', e, traceback.format_exc())
+            self.__timber.log('DecTalkHelper', f'Encountered executable file is missing exception when generating speech ({voice=}) ({fullMessage=})', e, traceback.format_exc())
             return None
         except DecTalkFailedToGenerateSpeechFileException as e:
-            self.__timber.log('DecTalkHelper', f'Encountered failure to create speech file exception when generating speech ({voice=}) ({fullMessage=}): {e}', e, traceback.format_exc())
+            self.__timber.log('DecTalkHelper', f'Encountered failure to create speech file exception when generating speech ({voice=}) ({fullMessage=})', e, traceback.format_exc())
             return None
 
         storeDateTime = datetime.now(self.__timeZoneRepository.getDefault())

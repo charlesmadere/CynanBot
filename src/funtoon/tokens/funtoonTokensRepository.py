@@ -51,23 +51,23 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
         self.__seedFileReader = None
 
         if not await seedFileReader.fileExistsAsync():
-            self.__timber.log('FuntoonTokensRepository', f'Seed file (\"{seedFileReader}\") does not exist')
+            self.__timber.log('FuntoonTokensRepository', f'Seed file does not exist ({seedFileReader=})')
             return
 
         jsonContents = await seedFileReader.readJsonAsync()
         await seedFileReader.deleteFileAsync()
 
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
-            self.__timber.log('FuntoonTokensRepository', f'Seed file (\"{seedFileReader}\") is empty')
+            self.__timber.log('FuntoonTokensRepository', f'Seed file is empty ({seedFileReader=})')
             return
 
-        self.__timber.log('FuntoonTokensRepository', f'Reading in seed file \"{seedFileReader}\"...')
+        self.__timber.log('FuntoonTokensRepository', f'Reading in seed file ({seedFileReader=})...')
 
         for twitchChannel, token in jsonContents.items():
             try:
                 twitchChannelId = await self.__userIdsRepository.requireUserId(twitchChannel)
             except Exception as e:
-                self.__timber.log('FuntoonTokensRepository', f'Failed to fetch Twitch channel ID for \"{twitchChannel}\": {e}', e, traceback.format_exc())
+                self.__timber.log('FuntoonTokensRepository', f'Failed to fetch Twitch channel ID ({twitchChannel=}) ({seedFileReader=})', e, traceback.format_exc())
                 continue
 
             await self.setToken(
@@ -75,7 +75,7 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
                 twitchChannelId = twitchChannelId,
             )
 
-        self.__timber.log('FuntoonTokensRepository', f'Finished reading in seed file \"{seedFileReader}\"')
+        self.__timber.log('FuntoonTokensRepository', f'Finished reading in seed file ({seedFileReader=})')
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()
@@ -98,7 +98,7 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
                 WHERE twitchchannelid = $1
                 LIMIT 1
             ''',
-            twitchChannelId
+            twitchChannelId,
         )
 
         await connection.close()
@@ -179,7 +179,7 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
                     VALUES ($1, $2)
                     ON CONFLICT (twitchchannelid) DO UPDATE SET token = EXCLUDED.token
                 ''',
-                token, twitchChannelId
+                token, twitchChannelId,
             )
 
             self.__cache[twitchChannelId] = token
@@ -190,7 +190,7 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
                     DELETE FROM funtoontokens
                     WHERE twitchchannelid = $1
                 ''',
-                twitchChannelId
+                twitchChannelId,
             )
 
             self.__cache[twitchChannelId] = None
