@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from datetime import tzinfo
+from datetime import datetime, tzinfo
 from typing import Collection
 
 from frozenlist import FrozenList
@@ -11,6 +11,10 @@ class TimeZoneRepositoryInterface(ABC):
 
     @abstractmethod
     def getDefault(self) -> tzinfo:
+        pass
+
+    @abstractmethod
+    def getNow(self) -> datetime:
         pass
 
     @abstractmethod
