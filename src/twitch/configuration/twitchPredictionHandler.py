@@ -87,7 +87,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
 
         topPredictorsString = ', '.join(topPredictorsStrings)
         messagePrefix = f'🗳️ \"{winningOutcome.title}\" is the winning outcome!'
-        fullMessage = f'{messagePrefix} {predictorPluralization} {topPredictorsString}!'
+        fullMessage = f'{messagePrefix} {predictorPluralization} {topPredictorsString}'
 
         self.__twitchChatMessenger.send(
             text = fullMessage,
