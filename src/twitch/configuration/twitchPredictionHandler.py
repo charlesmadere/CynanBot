@@ -29,7 +29,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
         websocketConnectionServer: WebsocketConnectionServerInterface,
-        maxTopPredictors: int = 3,
+        maxTopPredictors: int = 5,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
