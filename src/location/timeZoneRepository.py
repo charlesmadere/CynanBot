@@ -1,4 +1,4 @@
-from datetime import timezone, tzinfo
+from datetime import datetime, timezone, tzinfo
 from typing import Collection, Final
 
 import pytz
@@ -12,16 +12,22 @@ from ..misc import utils as utils
 # https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones
 class TimeZoneRepository(TimeZoneRepositoryInterface):
 
-    def __init__(self, defaultTimeZone: tzinfo = timezone.utc):
+    def __init__(
+        self,
+        defaultTimeZone: tzinfo = timezone.utc,
+    ):
         if not isinstance(defaultTimeZone, tzinfo):
             raise TypeError(f'defaultTimeZone argument is malformed: \"{defaultTimeZone}\"')
 
         self.__defaultTimeZone: Final[tzinfo] = defaultTimeZone
-
         self.__timeZones: Final[dict[str, tzinfo]] = dict()
 
     def getDefault(self) -> tzinfo:
         return self.__defaultTimeZone
+
+    def getNow(self) -> datetime:
+        timeZone = self.getDefault()
+        return datetime.now(timeZone)
 
     def getTimeZone(self, timeZoneStr: str) -> tzinfo:
         if not utils.isValidStr(timeZoneStr):
