@@ -2,7 +2,7 @@ from abc import ABC
 from typing import Final
 
 from .triviaQuestionRepositoryInterface import TriviaQuestionRepositoryInterface
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaExceptions import NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException
 from ...misc import utils as utils
 
@@ -11,12 +11,12 @@ class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface, ABC):
 
     def __init__(
         self,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
     ):
-        if not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        if not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
 
-        self._triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = triviaSettingsRepository
+        self._triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
 
     async def _buildMultipleChoiceResponsesList(
         self,
@@ -29,7 +29,7 @@ class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface, ABC):
             raise NoTriviaMultipleChoiceResponsesException(f'multipleChoiceResponses argument is malformed: \"{multipleChoiceResponses}\"')
 
         filteredMultipleChoiceResponses: list[str] = list(correctAnswers)
-        maxMultipleChoiceResponses = await self._triviaSettingsRepository.getMaxMultipleChoiceResponses()
+        maxMultipleChoiceResponses = await self._triviaSettings.getMaxMultipleChoiceResponses()
 
         # Annoyingly, I've encountered a few situations where we can have a question with more
         # than one of the same multiple choice answers. The below logic takes some steps to make

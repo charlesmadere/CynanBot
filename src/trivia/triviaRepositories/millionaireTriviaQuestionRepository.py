@@ -5,7 +5,7 @@ from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaFetchOptions import TriviaFetchOptions
 
@@ -16,10 +16,10 @@ class MillionaireTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self,
         millionaireTriviaQuestionStorage: MillionaireTriviaQuestionStorageInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+        triviaSettings: TriviaSettingsInterface,
     ):
         super().__init__(
-            triviaSettingsRepository = triviaSettingsRepository
+            triviaSettings = triviaSettings,
         )
 
         if not isinstance(millionaireTriviaQuestionStorage, MillionaireTriviaQuestionStorageInterface):
@@ -43,12 +43,12 @@ class MillionaireTriviaQuestionRepository(AbsTriviaQuestionRepository):
         correctAnswers.append(correctAnswer)
 
         multipleChoiceResponses = await self.__triviaQuestionCompiler.compileResponses(
-            responses = millionaireTriviaQuestion.incorrectAnswers
+            responses = millionaireTriviaQuestion.incorrectAnswers,
         )
 
         multipleChoiceResponses = await self._buildMultipleChoiceResponsesList(
             correctAnswers = correctAnswers,
-            multipleChoiceResponses = multipleChoiceResponses
+            multipleChoiceResponses = multipleChoiceResponses,
         )
 
         return MultipleChoiceTriviaQuestion(
@@ -60,7 +60,7 @@ class MillionaireTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaId = millionaireTriviaQuestion.questionId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = self.triviaSource
+            triviaSource = self.triviaSource,
         )
 
     async def hasQuestionSetAvailable(self) -> bool:

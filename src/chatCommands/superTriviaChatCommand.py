@@ -7,7 +7,7 @@ from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
 from ..trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ..trivia.questions.triviaSource import TriviaSource
-from ..trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
@@ -23,7 +23,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface,
         triviaGameMachine: TriviaGameMachineInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
         triviaUtils: TriviaUtilsInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         usersRepository: UsersRepositoryInterface,
@@ -36,8 +36,8 @@ class SuperTriviaChatCommand(AbsChatCommand):
             raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
@@ -49,7 +49,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface] = triviaGameBuilder
         self.__triviaGameMachine: Final[TriviaGameMachineInterface] = triviaGameMachine
-        self.__triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = triviaSettingsRepository
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
         self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
@@ -87,7 +87,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
                 )
                 return
 
-            maxNumberOfGames = await self.__triviaSettingsRepository.getMaxSuperTriviaGameQueueSize()
+            maxNumberOfGames = await self.__triviaSettings.getMaxSuperTriviaGameQueueSize()
 
             if numberOfGames < 1 or numberOfGames > maxNumberOfGames:
                 self.__timber.log('SuperTriviaChatCommand', f'The numberOfGames argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} is out of bounds ({numberOfGames=}) ({numberOfGamesStr=})')

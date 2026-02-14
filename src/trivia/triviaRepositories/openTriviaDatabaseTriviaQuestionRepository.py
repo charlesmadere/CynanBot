@@ -10,7 +10,7 @@ from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestio
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaExceptions import GenericTriviaNetworkException, UnsupportedTriviaTypeException
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
@@ -26,10 +26,10 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
         timber: TimberInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+        triviaSettings: TriviaSettingsInterface,
     ):
         super().__init__(
-            triviaSettingsRepository = triviaSettingsRepository
+            triviaSettings = triviaSettings,
         )
 
         if not isinstance(openTriviaDatabaseQuestionFetcher, OpenTriviaDatabaseQuestionFetcherInterface):

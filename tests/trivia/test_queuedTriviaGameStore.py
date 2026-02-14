@@ -9,8 +9,8 @@ from src.trivia.games.queuedTriviaGameStoreInterface import QueuedTriviaGameStor
 from src.trivia.misc.triviaSourceParser import TriviaSourceParser
 from src.trivia.misc.triviaSourceParserInterface import TriviaSourceParserInterface
 from src.trivia.questionAnswerTriviaConditions import QuestionAnswerTriviaConditions
-from src.trivia.settings.triviaSettingsRepository import TriviaSettingsRepository
-from src.trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from src.trivia.settings.triviaSettings import TriviaSettings
+from src.trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from src.trivia.triviaFetchOptions import TriviaFetchOptions
 from src.trivia.triviaIdGenerator import TriviaIdGenerator
 from src.trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
@@ -24,15 +24,15 @@ class TestQueuedTriviaGameStore1:
 
     triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
 
-    triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+    triviaSettings: TriviaSettingsInterface = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
-        triviaSourceParser = triviaSourceParser
+        triviaSourceParser = triviaSourceParser,
     )
 
     queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     )
 
     startNewSuperTriviaGameAction1 = StartNewSuperTriviaGameAction(
@@ -185,15 +185,15 @@ class TestQueuedTriviaGameStore2:
 
     triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
 
-    triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+    triviaSettings: TriviaSettingsInterface = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
-        triviaSourceParser = triviaSourceParser
+        triviaSourceParser = triviaSourceParser,
     )
 
     queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     )
 
     @pytest.mark.asyncio
@@ -214,15 +214,15 @@ class TestQueuedTriviaGameStore3:
 
     triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
 
-    triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+    triviaSettings: TriviaSettingsInterface = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
-        triviaSourceParser = triviaSourceParser
+        triviaSourceParser = triviaSourceParser,
     )
 
     queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     )
 
     @pytest.mark.asyncio
@@ -244,15 +244,15 @@ class TestQueuedTriviaGameStore4:
 
     triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
 
-    triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+    triviaSettings: TriviaSettingsInterface = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
-        triviaSourceParser = triviaSourceParser
+        triviaSourceParser = triviaSourceParser,
     )
 
     queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     )
 
     startNewSuperTriviaGameAction = StartNewSuperTriviaGameAction(
@@ -273,8 +273,8 @@ class TestQueuedTriviaGameStore4:
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             twitchChannelId = 'c',
-            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
-        )
+            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED,
+        ),
     )
 
     @pytest.mark.asyncio
@@ -304,15 +304,15 @@ class TestQueuedTriviaGameStore5:
 
     triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
 
-    triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+    triviaSettings: TriviaSettingsInterface = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
-        triviaSourceParser = triviaSourceParser
+        triviaSourceParser = triviaSourceParser,
     )
 
     queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     )
 
     startNewSuperTriviaGameAction = StartNewSuperTriviaGameAction(
@@ -333,8 +333,8 @@ class TestQueuedTriviaGameStore5:
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'stashiocat',
             twitchChannelId = 's',
-            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
-        )
+            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED,
+        ),
     )
 
     @pytest.mark.asyncio
@@ -364,15 +364,15 @@ class TestQueuedTriviaGameStore6:
 
     triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
 
-    triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+    triviaSettings: TriviaSettingsInterface = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
-        triviaSourceParser = triviaSourceParser
+        triviaSourceParser = triviaSourceParser,
     )
 
     queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     )
 
     startNewSuperTriviaGameAction = StartNewSuperTriviaGameAction(
@@ -445,15 +445,15 @@ class TestQueuedTriviaGameStore7:
 
     triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
 
-    triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+    triviaSettings: TriviaSettingsInterface = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
-        triviaSourceParser = triviaSourceParser
+        triviaSourceParser = triviaSourceParser,
     )
 
     queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     )
 
     startNewSuperTriviaGameAction = StartNewSuperTriviaGameAction(

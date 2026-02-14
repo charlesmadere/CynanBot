@@ -1,7 +1,9 @@
+from typing import Final
+
 from .triviaScraperInterface import TriviaScraperInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.triviaSource import TriviaSource
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaRepositories.glacialTriviaQuestionRepositoryInterface import GlacialTriviaQuestionRepositoryInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -12,24 +14,24 @@ class TriviaScraper(TriviaScraperInterface):
         self,
         glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface,
         timber: TimberInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+        triviaSettings: TriviaSettingsInterface,
     ):
         if not isinstance(glacialTriviaQuestionRepository, GlacialTriviaQuestionRepositoryInterface):
             raise TypeError(f'glacialTriviaQuestionRepository argument is malformed: \"{glacialTriviaQuestionRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
 
-        self.__glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = glacialTriviaQuestionRepository
-        self.__timber: TimberInterface = timber
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
+        self.__glacialTriviaQuestionRepository: Final[GlacialTriviaQuestionRepositoryInterface] = glacialTriviaQuestionRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
 
     async def store(self, question: AbsTriviaQuestion):
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
 
-        if not await self.__triviaSettingsRepository.isScraperEnabled():
+        if not await self.__triviaSettings.isScraperEnabled():
             return
         elif question.triviaSource is TriviaSource.GLACIAL:
             return

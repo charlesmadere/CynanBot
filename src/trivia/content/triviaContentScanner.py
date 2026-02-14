@@ -2,7 +2,7 @@ from .triviaContentCode import TriviaContentCode
 from .triviaContentScannerInterface import TriviaContentScannerInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ...contentScanner.bannedPhrase import BannedPhrase
 from ...contentScanner.bannedWord import BannedWord
 from ...contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
@@ -18,7 +18,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         bannedWordsRepository: BannedWordsRepositoryInterface,
         contentScanner: ContentScannerInterface,
         timber: TimberInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+        triviaSettings: TriviaSettingsInterface,
     ):
         if not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
             raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
@@ -26,13 +26,13 @@ class TriviaContentScanner(TriviaContentScannerInterface):
             raise TypeError(f'contentScanner argument is malformed: \"{contentScanner}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
 
         self.__bannedWordsRepository: BannedWordsRepositoryInterface = bannedWordsRepository
         self.__contentScanner: ContentScannerInterface = contentScanner
         self.__timber: TimberInterface = timber
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
+        self.__triviaSettings: TriviaSettingsInterface = triviaSettings
 
     async def __getAllPhrasesFromQuestion(self, question: AbsTriviaQuestion) -> set[str]:
         if not isinstance(question, AbsTriviaQuestion):
@@ -98,13 +98,13 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
 
-        maxQuestionLength = await self.__triviaSettingsRepository.getMaxQuestionLength()
+        maxQuestionLength = await self.__triviaSettings.getMaxQuestionLength()
 
         if len(question.question) >= maxQuestionLength:
             self.__timber.log('TriviaContentScanner', f'Trivia question is too long (max is {maxQuestionLength}): {question.question}')
             return TriviaContentCode.QUESTION_TOO_LONG
 
-        maxPhraseAnswerLength = await self.__triviaSettingsRepository.getMaxPhraseAnswerLength()
+        maxPhraseAnswerLength = await self.__triviaSettings.getMaxPhraseAnswerLength()
 
         if question.triviaType is TriviaQuestionType.QUESTION_ANSWER:
             for correctAnswer in question.correctAnswers:
@@ -112,7 +112,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
                     self.__timber.log('TriviaContentScanner', f'Trivia answer is too long (max is {maxPhraseAnswerLength}): {question.correctAnswers}')
                     return TriviaContentCode.ANSWER_TOO_LONG
 
-        maxAnswerLength = await self.__triviaSettingsRepository.getMaxAnswerLength()
+        maxAnswerLength = await self.__triviaSettings.getMaxAnswerLength()
 
         for response in question.responses:
             if len(response) >= maxAnswerLength:
@@ -196,7 +196,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
             return TriviaContentCode.OK
 
         responses = question.responses
-        minMultipleChoiceResponses = await self.__triviaSettingsRepository.getMinMultipleChoiceResponses()
+        minMultipleChoiceResponses = await self.__triviaSettings.getMinMultipleChoiceResponses()
 
         if responses is None or len(responses) == 0 or len(responses) < minMultipleChoiceResponses:
             self.__timber.log('TriviaContentScanner', f'Trivia question has too few multiple choice responses (min is {minMultipleChoiceResponses}): {responses}')

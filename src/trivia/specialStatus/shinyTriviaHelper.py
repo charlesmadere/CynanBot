@@ -1,8 +1,10 @@
 import random
 from datetime import datetime, timedelta
 
+from frozendict import frozendict
+
 from .shinyTriviaOccurencesRepositoryInterface import ShinyTriviaOccurencesRepositoryInterface
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ...cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
@@ -17,8 +19,8 @@ class ShinyTriviaHelper:
         shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        cooldown: timedelta = timedelta(hours = 3)
+        triviaSettings: TriviaSettingsInterface,
+        cooldown: timedelta = timedelta(hours = 3),
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -28,8 +30,8 @@ class ShinyTriviaHelper:
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
@@ -37,10 +39,10 @@ class ShinyTriviaHelper:
         self.__shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = shinyTriviaOccurencesRepository
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
+        self.__triviaSettings: TriviaSettingsInterface = triviaSettings
         self.__cooldown: timedelta = cooldown
 
-        self.__rankToProbabilityDict: dict[int, float] = {
+        self.__rankToProbabilityDict: frozendict[int, float] = frozendict({
             1: 0.500,
             2: 0.550,
             3: 0.600,
@@ -50,14 +52,14 @@ class ShinyTriviaHelper:
             7: 0.800,
             8: 0.850,
             9: 0.900,
-            10: 0.950
-        }
+            10: 0.950,
+        })
 
     async def __getUserPlacementOnLeaderboard(
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> int | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -68,7 +70,7 @@ class ShinyTriviaHelper:
 
         cutenessLeaderboard = await self.__cutenessRepository.fetchCutenessLeaderboard(
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         if cutenessLeaderboard.entries is None or len(cutenessLeaderboard.entries) == 0:
@@ -85,7 +87,7 @@ class ShinyTriviaHelper:
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -96,16 +98,16 @@ class ShinyTriviaHelper:
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        if not await self.__triviaSettingsRepository.areShinyTriviasEnabled():
+        if not await self.__triviaSettings.areShinyTriviasEnabled():
             return False
 
         userPlacementOnLeaderboard = await self.__getUserPlacementOnLeaderboard(
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
-        probability = await self.__triviaSettingsRepository.getShinyProbability()
+        probability = await self.__triviaSettings.getShinyProbability()
 
         if userPlacementOnLeaderboard is not None and userPlacementOnLeaderboard in self.__rankToProbabilityDict:
             probability = probability * self.__rankToProbabilityDict[userPlacementOnLeaderboard]
@@ -116,7 +118,7 @@ class ShinyTriviaHelper:
         details = await self.__shinyTriviaOccurencesRepository.fetchDetails(
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
         mostRecent = details.mostRecent
@@ -131,7 +133,7 @@ class ShinyTriviaHelper:
         result = await self.__shinyTriviaOccurencesRepository.incrementShinyCount(
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
         self.__timber.log('ShinyTriviaHelper', f'In {twitchChannel}, {userName}:{result.userId} has encountered a shiny trivia question!')
@@ -142,10 +144,10 @@ class ShinyTriviaHelper:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        if not await self.__triviaSettingsRepository.areShinyTriviasEnabled():
+        if not await self.__triviaSettings.areShinyTriviasEnabled():
             return False
 
-        probability = await self.__triviaSettingsRepository.getShinyProbability()
+        probability = await self.__triviaSettings.getShinyProbability()
         randomNumber = random.uniform(0, 1)
 
         if randomNumber > probability:
@@ -159,7 +161,7 @@ class ShinyTriviaHelper:
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ):
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -173,7 +175,7 @@ class ShinyTriviaHelper:
         result = await self.__shinyTriviaOccurencesRepository.incrementShinyCount(
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
         self.__timber.log('ShinyTriviaHelper', f'In {twitchChannel}, {userName}:{result.userId} won a shiny trivia! (they have won {result.newShinyCountStr} total)')

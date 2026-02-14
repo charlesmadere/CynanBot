@@ -9,7 +9,7 @@ from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaFetchOptions import TriviaFetchOptions
 from ...misc import utils as utils
@@ -25,10 +25,10 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         timber: TimberInterface,
         triviaAnswerCompiler: TriviaAnswerCompilerInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
     ):
         super().__init__(
-            triviaSettingsRepository = triviaSettingsRepository,
+            triviaSettings = triviaSettings,
         )
 
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
@@ -65,7 +65,7 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         question = await self.__triviaQuestionCompiler.compileQuestion(lotrTriviaQuestion.question)
 
         allWords: frozenset[str] | None = None
-        if await self._triviaSettingsRepository.useNewAnswerCheckingMethod():
+        if await self._triviaSettings.useNewAnswerCheckingMethod():
             allWords = await self.__triviaQuestionCompiler.findAllWordsInQuestion(
                 category = category,
                 question = question

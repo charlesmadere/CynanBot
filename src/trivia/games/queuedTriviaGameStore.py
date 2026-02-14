@@ -9,7 +9,7 @@ from .queuedTriviaGameStoreInterface import QueuedTriviaGameStoreInterface
 from ..actions.startNewSuperTriviaGameAction import StartNewSuperTriviaGameAction
 from ..addQueuedGamesResult import AddQueuedGamesResult
 from ..clearQueuedGamesResult import ClearQueuedGamesResult
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -21,15 +21,15 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
         self,
         timber: TimberInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
         queueTimeoutSeconds: float = 3,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
             raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not utils.isValidNum(queueTimeoutSeconds):
             raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
@@ -37,7 +37,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
 
         self.__timber: Final[TimberInterface] = timber
         self.__triviaIdGenerator: Final[TriviaIdGeneratorInterface] = triviaIdGenerator
-        self.__triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = triviaSettingsRepository
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
 
         self.__queuedSuperGames: Final[dict[str, list[StartNewSuperTriviaGameAction]]] = defaultdict(lambda: list())
 
@@ -62,7 +62,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
             )
 
         action.consumeQueueAction()
-        maxSuperTriviaGameQueueSize = await self.__triviaSettingsRepository.getMaxSuperTriviaGameQueueSize()
+        maxSuperTriviaGameQueueSize = await self.__triviaSettings.getMaxSuperTriviaGameQueueSize()
 
         if maxSuperTriviaGameQueueSize < 1:
             return AddQueuedGamesResult(

@@ -4,7 +4,7 @@ from .banTriviaQuestionResult import BanTriviaQuestionResult
 from .bannedTriviaIdsRepositoryInterface import BannedTriviaIdsRepositoryInterface
 from .triviaBanHelperInterface import TriviaBanHelperInterface
 from ..questions.triviaSource import TriviaSource
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaRepositories.glacialTriviaQuestionRepositoryInterface import GlacialTriviaQuestionRepositoryInterface
 from ...funtoon.funtoonHelperInterface import FuntoonHelperInterface
 from ...misc import utils as utils
@@ -17,7 +17,7 @@ class TriviaBanHelper(TriviaBanHelperInterface):
         bannedTriviaIdsRepository: BannedTriviaIdsRepositoryInterface,
         funtoonHelper: FuntoonHelperInterface,
         glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
     ):
         if not isinstance(bannedTriviaIdsRepository, BannedTriviaIdsRepositoryInterface):
             raise TypeError(f'bannedTriviaIdsRepository argument is malformed: \"{bannedTriviaIdsRepository}\"')
@@ -25,13 +25,13 @@ class TriviaBanHelper(TriviaBanHelperInterface):
             raise TypeError(f'funtoonHelper argument is malformed: \"{funtoonHelper}\"')
         elif not isinstance(glacialTriviaQuestionRepository, GlacialTriviaQuestionRepositoryInterface):
             raise TypeError(f'glacialTriviaQuestionRepository argument is malformed: \"{glacialTriviaQuestionRepository}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
 
         self.__bannedTriviaIdsRepository: Final[BannedTriviaIdsRepositoryInterface] = bannedTriviaIdsRepository
         self.__funtoonHelper: Final[FuntoonHelperInterface] = funtoonHelper
         self.__glacialTriviaQuestionRepository: Final[GlacialTriviaQuestionRepositoryInterface] = glacialTriviaQuestionRepository
-        self.__triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = triviaSettingsRepository
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
 
     async def ban(
         self,
@@ -71,7 +71,7 @@ class TriviaBanHelper(TriviaBanHelperInterface):
         elif not isinstance(triviaSource, TriviaSource):
             raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
-        if not await self.__triviaSettingsRepository.isBanListEnabled():
+        if not await self.__triviaSettings.isBanListEnabled():
             return False
 
         return await self.__bannedTriviaIdsRepository.isBanned(

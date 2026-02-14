@@ -194,11 +194,8 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         userIdsToUserNames: dict[str, str] = dict()
 
         for outcome in predictionData.outcomes:
-            topPredictors = outcome.topPredictors
-
-            if topPredictors is not None and len(topPredictors) >= 1:
-                for topPredictor in topPredictors:
-                    userIdsToUserNames[topPredictor.userId] = topPredictor.userLogin
+            for topPredictor in outcome.topPredictors:
+                userIdsToUserNames[topPredictor.userId] = topPredictor.userLogin
 
         for userId, userName in userIdsToUserNames.items():
             await self.__activeChattersRepository.add(

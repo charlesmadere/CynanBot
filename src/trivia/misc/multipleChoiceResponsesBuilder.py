@@ -1,7 +1,7 @@
-from typing import Collection
+from typing import Collection, Final
 
 from .multipleChoiceResponsesBuilderInterface import MultipleChoiceResponsesBuilderInterface
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaExceptions import NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException
 from ...misc import utils as utils
 
@@ -10,26 +10,26 @@ class MultipleChoiceResponsesBuilder(MultipleChoiceResponsesBuilderInterface):
 
     def __init__(
         self,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
         forcedLastMultipleChoiceResponses: frozenset[str] = frozenset({
             'all of the above',
             'all of these',
             'none of the above',
-            'none of these'
-        })
+            'none of these',
+        }),
     ):
-        if not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        if not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not isinstance(forcedLastMultipleChoiceResponses, frozenset):
             raise TypeError(f'forcedLastMultipleChoiceResponses argument is malformed: \"{forcedLastMultipleChoiceResponses}\"')
 
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
-        self.__forcedLastMultipleChoiceResponses: frozenset[str] = forcedLastMultipleChoiceResponses
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
+        self.__forcedLastMultipleChoiceResponses: Final[frozenset[str]] = forcedLastMultipleChoiceResponses
 
     async def build(
         self,
         correctAnswers: Collection[str],
-        multipleChoiceResponses: Collection[str]
+        multipleChoiceResponses: Collection[str],
     ) -> list[str]:
         if not isinstance(correctAnswers, Collection) or len(correctAnswers) == 0:
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
@@ -38,7 +38,7 @@ class MultipleChoiceResponsesBuilder(MultipleChoiceResponsesBuilderInterface):
 
         filteredMultipleChoiceResponses: list[str] = list()
         filteredMultipleChoiceResponses.extend(correctAnswers)
-        maxMultipleChoiceResponses = await self.__triviaSettingsRepository.getMaxMultipleChoiceResponses()
+        maxMultipleChoiceResponses = await self.__triviaSettings.getMaxMultipleChoiceResponses()
 
         # Annoyingly, I've encountered a few situations where we can have a question with more
         # than one of the same multiple choice answers. The below logic takes some steps to make

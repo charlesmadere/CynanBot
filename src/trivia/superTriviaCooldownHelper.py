@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Final
 
-from .settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from .settings.triviaSettingsInterface import TriviaSettingsInterface
 from .superTriviaCooldownHelperInterface import SuperTriviaCooldownHelperInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
@@ -13,15 +13,15 @@ class SuperTriviaCooldownHelper(SuperTriviaCooldownHelperInterface):
     def __init__(
         self,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
     ):
         if not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
 
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
-        self.__triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = triviaSettingsRepository
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
 
         self.__values: Final[dict[str, datetime]] = defaultdict(
             lambda: datetime.now(timeZoneRepository.getDefault()) - timedelta(weeks = 1),
@@ -48,7 +48,7 @@ class SuperTriviaCooldownHelper(SuperTriviaCooldownHelperInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        cooldownSeconds = await self.__triviaSettingsRepository.getSuperTriviaCooldownSeconds()
+        cooldownSeconds = await self.__triviaSettings.getSuperTriviaCooldownSeconds()
         cooldown = timedelta(seconds = cooldownSeconds)
         now = datetime.now(self.__timeZoneRepository.getDefault())
 

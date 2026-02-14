@@ -20,7 +20,7 @@ from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestio
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import (BadTriviaTypeException,
                                 NoTriviaCorrectAnswersException,
@@ -45,14 +45,14 @@ class GlacialTriviaQuestionRepository(
         timber: TimberInterface,
         triviaAnswerCompiler: TriviaAnswerCompilerInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
         triviaSourceParser: TriviaSourceParserInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         triviaDatabaseFile: str = '../db/glacialTriviaQuestionsDatabase.sqlite',
     ):
         super().__init__(
-            triviaSettingsRepository = triviaSettingsRepository,
+            triviaSettings = triviaSettings,
         )
 
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
@@ -667,7 +667,7 @@ class GlacialTriviaQuestionRepository(
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
 
-        if not await self._triviaSettingsRepository.isScraperEnabled():
+        if not await self._triviaSettings.isScraperEnabled():
             return False
         elif question.triviaSource is TriviaSource.GLACIAL:
             return False

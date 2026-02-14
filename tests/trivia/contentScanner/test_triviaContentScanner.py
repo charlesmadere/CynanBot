@@ -19,8 +19,8 @@ from src.trivia.questions.multipleChoiceTriviaQuestion import MultipleChoiceTriv
 from src.trivia.questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from src.trivia.questions.triviaSource import TriviaSource
 from src.trivia.questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
-from src.trivia.settings.triviaSettingsRepository import TriviaSettingsRepository
-from src.trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from src.trivia.settings.triviaSettings import TriviaSettings
+from src.trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from src.trivia.triviaDifficulty import TriviaDifficulty
 
 
@@ -28,32 +28,32 @@ class TestTriviaContentScanner:
 
     triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
 
-    triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+    triviaSettings: TriviaSettingsInterface = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
-        triviaSourceParser = triviaSourceParser
+        triviaSourceParser = triviaSourceParser,
     )
 
     bannedWordsLinesReader: LinesReaderInterface = LinesStaticReader(
-        lines = [ 'bitch', '"trump"' ]
+        lines = [ 'bitch', '"trump"' ],
     )
 
     timber: TimberInterface = TimberStub()
 
     bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
         bannedWordsLinesReader = bannedWordsLinesReader,
-        timber = timber
+        timber = timber,
     )
 
     contentScanner: ContentScannerInterface = ContentScanner(
         bannedWordsRepository = bannedWordsRepository,
-        timber = timber
+        timber = timber,
     )
 
     triviaContentScanner: TriviaContentScannerInterface = TriviaContentScanner(
         bannedWordsRepository = bannedWordsRepository,
         contentScanner = contentScanner,
         timber = timber,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     )
 
     @pytest.mark.asyncio

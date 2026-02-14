@@ -12,7 +12,7 @@ class TriviaHistoryRepositoryInterface(ABC):
         self,
         emote: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> TriviaQuestionReference | None:
         pass
 
@@ -22,6 +22,6 @@ class TriviaHistoryRepositoryInterface(ABC):
         question: AbsTriviaQuestion,
         emote: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> TriviaContentCode:
         pass

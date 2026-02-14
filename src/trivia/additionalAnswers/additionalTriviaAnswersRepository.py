@@ -8,7 +8,7 @@ from .additionalTriviaAnswers import AdditionalTriviaAnswers
 from .additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaExceptions import (AdditionalTriviaAnswerAlreadyExistsException,
                                 AdditionalTriviaAnswerIsMalformedException,
                                 AdditionalTriviaAnswerIsUnsupportedTriviaTypeException,
@@ -30,7 +30,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface
@@ -39,8 +39,8 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -50,7 +50,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
+        self.__triviaSettings: TriviaSettingsInterface = triviaSettings
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
@@ -63,7 +63,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         triviaId: str,
         userId: str,
         triviaQuestionType: TriviaQuestionType,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> AdditionalTriviaAnswers:
         if not utils.isValidStr(additionalAnswer):
             raise AdditionalTriviaAnswerIsMalformedException(f'additionalAnswer argument is malformed: \"{additionalAnswer}\"')
@@ -77,7 +77,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         additionalAnswerLength = len(additionalAnswer)
-        maxAdditionalTriviaAnswerLength = await self.__triviaSettingsRepository.getMaxAdditionalTriviaAnswerLength()
+        maxAdditionalTriviaAnswerLength = await self.__triviaSettings.getMaxAdditionalTriviaAnswerLength()
 
         if additionalAnswerLength > maxAdditionalTriviaAnswerLength:
             raise AdditionalTriviaAnswerIsMalformedException(f'Attempted to add additional answer \"{additionalAnswer}\" for {triviaSource.toStr()}:{triviaId}, but it is too long (len is {additionalAnswerLength}, max len is {maxAdditionalTriviaAnswerLength})')
@@ -85,13 +85,13 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             raise AdditionalTriviaAnswerIsUnsupportedTriviaTypeException(
                 message = f'Attempted to add additional answer \"{additionalAnswer}\" for {triviaSource.toStr()}:{triviaId}, but it is an unsupported type ({triviaQuestionType=})',
                 triviaQuestionType = triviaQuestionType,
-                triviaSource = triviaSource
+                triviaSource = triviaSource,
             )
 
         reference = await self.getAdditionalTriviaAnswers(
             triviaId = triviaId,
             triviaQuestionType = triviaQuestionType,
-            triviaSource = triviaSource
+            triviaSource = triviaSource,
         )
 
         additionalAnswersList: list[AdditionalTriviaAnswer] = list()
@@ -113,23 +113,23 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
 
         userName = await self.__userIdsRepository.requireUserName(
             userId = userId,
-            twitchAccessToken = twitchAccessToken
+            twitchAccessToken = twitchAccessToken,
         )
 
         additionalAnswersList.append(AdditionalTriviaAnswer(
             answer = additionalAnswer,
             userId = userId,
-            userName = userName
+            userName = userName,
         ))
 
         additionalAnswersList.sort(key = lambda additionalAnswer: (additionalAnswer.answer.casefold(), additionalAnswer.userName.casefold()))
 
-        if len(additionalAnswersList) > await self.__triviaSettingsRepository.getMaxAdditionalTriviaAnswers():
+        if len(additionalAnswersList) > await self.__triviaSettings.getMaxAdditionalTriviaAnswers():
             raise TooManyAdditionalTriviaAnswersException(
                 answerCount = len(additionalAnswersList),
                 triviaId = triviaId,
                 triviaQuestionType = triviaQuestionType,
-                triviaSource = triviaSource
+                triviaSource = triviaSource,
             )
 
         connection = await self.__getDatabaseConnection()
@@ -141,7 +141,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                     INSERT INTO additionaltriviaanswers (additionalanswer, triviaid, triviasource, triviatype, userid)
                     VALUES ($1, $2, $3, $4, $5)
                 ''',
-                additionalAnswer, triviaId, triviaSource.toStr(), triviaQuestionType.toStr(), userId
+                additionalAnswer, triviaId, triviaSource.toStr(), triviaQuestionType.toStr(), userId,
             )
         except DatabaseOperationalError as e:
             exception = e
@@ -155,7 +155,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                 message = f'Attempted to add additional answer for {triviaSource.toStr()}:{triviaId}, but it already exists ({additionalAnswer=}) ({triviaQuestionType=}) ({additionalAnswersList=})',
                 triviaId = triviaId,
                 triviaQuestionType = triviaQuestionType,
-                triviaSource = triviaSource
+                triviaSource = triviaSource,
             )
 
         self.__timber.log('AdditionalTriviaAnswersRepository', f'Added additional answer for {triviaSource.toStr()}:{triviaId} ({additionalAnswer=}) ({triviaQuestionType=}) ({additionalAnswersList=})')
@@ -167,7 +167,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             answers = frozenAnswers,
             triviaId = triviaId,
             triviaQuestionType = triviaQuestionType,
-            triviaSource = triviaSource
+            triviaSource = triviaSource,
         )
 
     async def addAdditionalTriviaAnswers(
@@ -175,7 +175,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         currentAnswers: list[str],
         triviaId: str,
         triviaQuestionType: TriviaQuestionType,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> bool:
         if not isinstance(currentAnswers, list):
             raise TypeError(f'currentAnswers argument is malformed: \"{currentAnswers}\"')
@@ -202,7 +202,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         self,
         triviaId: str,
         triviaQuestionType: TriviaQuestionType,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> AdditionalTriviaAnswers | None:
         if not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
@@ -214,7 +214,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         reference = await self.getAdditionalTriviaAnswers(
             triviaId = triviaId,
             triviaQuestionType = triviaQuestionType,
-            triviaSource = triviaSource
+            triviaSource = triviaSource,
         )
 
         if reference is None:
@@ -227,7 +227,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                 DELETE FROM additionaltriviaanswers
                 WHERE triviaid = $1 AND triviasource = $2 AND triviatype = $3
             ''',
-            triviaId, triviaSource.toStr(), triviaQuestionType.toStr()
+            triviaId, triviaSource.toStr(), triviaQuestionType.toStr(),
         )
 
         await connection.close()
@@ -239,7 +239,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         self,
         triviaId: str,
         triviaQuestionType: TriviaQuestionType,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> AdditionalTriviaAnswers | None:
         if not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
@@ -248,7 +248,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         elif not isinstance(triviaSource, TriviaSource):
             raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
-        if not await self.__triviaSettingsRepository.areAdditionalTriviaAnswersEnabled():
+        if not await self.__triviaSettings.areAdditionalTriviaAnswersEnabled():
             return None
 
         connection = await self.__getDatabaseConnection()
@@ -262,7 +262,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                     WHERE additionaltriviaanswers.triviaid = $1 AND additionaltriviaanswers.triviasource = $2 AND additionaltriviaanswers.triviatype = $3
                     ORDER BY additionaltriviaanswers.additionalanswer ASC
                 ''',
-                triviaId, triviaSource.toStr(), triviaQuestionType.toStr()
+                triviaId, triviaSource.toStr(), triviaQuestionType.toStr(),
             )
         except DatabaseOperationalError as e:
             self.__timber.log('AdditionalTriviaAnswersRepository', f'Encountered a database operational error when trying to retrieve additional trivia answers ({triviaId=}) ({triviaSource=}) ({triviaQuestionType=}): {e}', e, traceback.format_exc())
@@ -278,7 +278,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             additionalAnswers.append(AdditionalTriviaAnswer(
                 answer = record[0],
                 userId = record[1],
-                userName = record[2]
+                userName = record[2],
             ))
 
         additionalAnswers.sort(key = lambda additionalAnswer: (additionalAnswer.answer.casefold(), additionalAnswer.userName.casefold()))
@@ -290,7 +290,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             answers = frozenAnswers,
             triviaId = triviaId,
             triviaQuestionType = triviaQuestionType,
-            triviaSource = triviaSource
+            triviaSource = triviaSource,
         )
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:

@@ -10,7 +10,7 @@ class ToxicTriviaOccurencesRepositoryInterface(ABC):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> ToxicTriviaResult:
         pass
 
@@ -19,6 +19,6 @@ class ToxicTriviaOccurencesRepositoryInterface(ABC):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> ToxicTriviaResult:
         pass

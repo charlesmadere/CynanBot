@@ -24,8 +24,8 @@ from src.trivia.content.triviaContentScannerInterface import TriviaContentScanne
 from src.trivia.misc.triviaSourceParser import TriviaSourceParser
 from src.trivia.misc.triviaSourceParserInterface import TriviaSourceParserInterface
 from src.trivia.questions.triviaQuestionType import TriviaQuestionType
-from src.trivia.settings.triviaSettingsRepository import TriviaSettingsRepository
-from src.trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from src.trivia.settings.triviaSettings import TriviaSettings
+from src.trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from src.trivia.triviaDifficulty import TriviaDifficulty
 
 inQuestionAnswerMode: Final[bool] = True
@@ -45,7 +45,7 @@ timber: Final[TimberInterface] = Timber(
 
 triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 
-triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = TriviaSettingsRepository(
+triviaSettings: Final[TriviaSettingsInterface] = TriviaSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = 'triviaSettingsRepository.json',
@@ -70,7 +70,7 @@ triviaContentScanner: Final[TriviaContentScannerInterface] = TriviaContentScanne
     bannedWordsRepository = bannedWordsRepository,
     contentScanner = contentScanner,
     timber = timber,
-    triviaSettingsRepository = triviaSettingsRepository,
+    triviaSettings = triviaSettings,
 )
 
 def readInCsvRows(fileName: str) -> list[list[str]]:
