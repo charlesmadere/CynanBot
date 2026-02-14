@@ -187,9 +187,9 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__superTriviaLotrGamePointRedemption: AbsChannelPointRedemption = superTriviaLotrGamePointRedemption
 
         if triviaGamePointRedemption is None:
-            self.__triviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__triviaGamePointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__triviaGamePointRedemption: AbsChannelPointRedemption = triviaGamePointRedemption
+            self.__triviaGamePointRedemption: AbsChannelPointRedemption2 = triviaGamePointRedemption
 
         if ttsChatterPointRedemption is None:
             self.__ttsChatterPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
@@ -317,8 +317,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.isTriviaGameEnabled and channelPointsMessage.rewardId == user.triviaGameRewardId:
             if await self.__triviaGamePointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage,
+                channelPointsRedemption = channelPointsRedemption,
             ):
                 return
 
