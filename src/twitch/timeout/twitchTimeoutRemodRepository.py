@@ -109,7 +109,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
                 data.append(TwitchTimeoutRemodData(
                     remodDateTime = remodDateTime,
                     broadcasterUserId = record[0],
-                    userId = record[1],
+                    userId = record[2],
                 ))
 
         data.freeze()
