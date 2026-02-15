@@ -51,23 +51,23 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
         self.__seedFileReader = None
 
         if not await seedFileReader.fileExistsAsync():
-            self.__timber.log('TtsMonsterTokensRepository', f'Seed file (\"{seedFileReader}\") does not exist')
+            self.__timber.log('TtsMonsterTokensRepository', f'Seed file does not exist ({seedFileReader=})')
             return
 
         jsonContents: dict[str, dict[str, Any]] | None = await seedFileReader.readJsonAsync()
         await seedFileReader.deleteFileAsync()
 
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
-            self.__timber.log('TtsMonsterTokensRepository', f'Seed file (\"{seedFileReader}\") is empty')
+            self.__timber.log('TtsMonsterTokensRepository', f'Seed file is empty ({seedFileReader=})')
             return
 
-        self.__timber.log('TtsMonsterTokensRepository', f'Reading in seed file \"{seedFileReader}\"...')
+        self.__timber.log('TtsMonsterTokensRepository', f'Reading in seed file ({seedFileReader=})...')
 
         for twitchChannel, tokensJson in jsonContents.items():
             try:
                 twitchChannelId = await self.__userIdsRepository.requireUserId(twitchChannel)
             except Exception as e:
-                self.__timber.log('TtsMonsterTokensRepository', f'Failed to fetch Twitch channel ID for \"{twitchChannel}\": {e}', e, traceback.format_exc())
+                self.__timber.log('TtsMonsterTokensRepository', f'Failed to fetch Twitch channel ID ({twitchChannel=}) ({seedFileReader=})', e, traceback.format_exc())
                 continue
 
             ttsMonsterKey: str | None = None
@@ -84,7 +84,7 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
                 twitchChannelId = twitchChannelId,
             )
 
-        self.__timber.log('TtsMonsterTokensRepository', f'Finished reading in seed file \"{seedFileReader}\"')
+        self.__timber.log('TtsMonsterTokensRepository', f'Finished reading in seed file ({seedFileReader=})')
 
     async def get(
         self,
@@ -139,7 +139,7 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
                             twitchchannelid text NOT NULL PRIMARY KEY,
                             userid text NOT NULL
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -150,7 +150,7 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
                             twitchchannelid TEXT NOT NULL PRIMARY KEY,
                             userid TEXT NOT NULL
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:

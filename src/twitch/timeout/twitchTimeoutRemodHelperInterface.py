@@ -12,7 +12,6 @@ class TwitchTimeoutRemodHelperInterface(ABC):
         self,
         timeoutDurationSeconds: int,
         broadcasterUserId: str,
-        broadcasterUserName: str,
         userId: str,
     ):
         pass

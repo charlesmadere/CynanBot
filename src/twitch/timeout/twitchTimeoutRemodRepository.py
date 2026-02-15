@@ -40,10 +40,16 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
 
     async def add(
         self,
-        data: TwitchTimeoutRemodData,
+        remodDateTime: datetime,
+        broadcasterUserId: str,
+        userId: str,
     ):
-        if not isinstance(data, TwitchTimeoutRemodData):
-            raise TypeError(f'data argument is malformed: \"{data}\"')
+        if not isinstance(remodDateTime, datetime):
+            raise TypeError(f'remodDateTime argument is malformed: \"{remodDateTime}\"')
+        elif not utils.isValidStr(broadcasterUserId):
+            raise TypeError(f'data argument is malformed: \"{broadcasterUserId}\"')
+        elif not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
@@ -52,11 +58,11 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
                 VALUES ($1, $2, $3)
                 ON CONFLICT (broadcasteruserid, userid) DO UPDATE SET remoddatetime = EXCLUDED.remoddatetime
             ''',
-            data.broadcasterUserId, data.remodDateTime.isoformat(), data.userId,
+            broadcasterUserId, remodDateTime.isoformat(), userId,
         )
 
         await connection.close()
-        self.__timber.log('TwitchTimeoutRemodRepository', f'Added remod action ({data=})')
+        self.__timber.log('TwitchTimeoutRemodRepository', f'Added remod action ({remodDateTime=}) ({broadcasterUserId=}) ({userId=})')
 
     async def delete(
         self,
@@ -84,15 +90,14 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
             '''
-                SELECT twitchtimeoutremodactions.broadcasteruserid, twitchtimeoutremodactions.remoddatetime, twitchtimeoutremodactions.userid, userids.username FROM twitchtimeoutremodactions
-                INNER JOIN userids ON twitchtimeoutremodactions.broadcasteruserid = userids.userid
-                ORDER BY twitchtimeoutremodactions.remoddatetime ASC
+                SELECT broadcasteruserid, remoddatetime, userid FROM twitchtimeoutremodactions
+                ORDER BY remoddatetime ASC
             ''',
         )
 
         await connection.close()
         data: FrozenList[TwitchTimeoutRemodData] = FrozenList()
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         if records is not None and len(records) >= 1:
             for record in records:
@@ -104,8 +109,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
                 data.append(TwitchTimeoutRemodData(
                     remodDateTime = remodDateTime,
                     broadcasterUserId = record[0],
-                    broadcasterUserName = record[3],
-                    userId = record[2],
+                    userId = record[1],
                 ))
 
         data.freeze()

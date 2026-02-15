@@ -1,6 +1,6 @@
 import asyncio
 import traceback
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Final
 
 from .twitchTimeoutRemodData import TwitchTimeoutRemodData
@@ -27,7 +27,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         queueSleepTimeSeconds: float = 3,
-        additionalBufferTime: timedelta = timedelta(seconds = 5),
+        additionalBufferTime: timedelta = timedelta(seconds = 3),
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -148,7 +148,6 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
         self,
         timeoutDurationSeconds: int,
         broadcasterUserId: str,
-        broadcasterUserName: str,
         userId: str,
     ):
         if not utils.isValidInt(timeoutDurationSeconds):
@@ -157,17 +156,14 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
             raise ValueError(f'timeoutDurationSeconds argument is out of bounds: {timeoutDurationSeconds}')
         if not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        elif not utils.isValidStr(broadcasterUserName):
-            raise TypeError(f'broadcasterUserName argument is malformed: \"{broadcasterUserName}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         remodDateTime = now + timedelta(seconds = timeoutDurationSeconds) + self.__additionalBufferTime
 
-        await self.__twitchTimeoutRemodRepository.add(TwitchTimeoutRemodData(
+        await self.__twitchTimeoutRemodRepository.add(
             remodDateTime = remodDateTime,
             broadcasterUserId = broadcasterUserId,
-            broadcasterUserName = broadcasterUserName,
             userId = userId,
-        ))
+        )
