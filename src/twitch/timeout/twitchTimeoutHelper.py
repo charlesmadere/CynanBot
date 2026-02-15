@@ -273,19 +273,26 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
+        banRequest = TwitchBanRequest(
+            duration = durationSeconds,
+            broadcasterUserId = twitchChannelId,
+            moderatorUserId = cynanBotUserId,
+            reason = reason,
+            userIdToBan = userIdToTimeout,
+        )
+
         try:
-            await self.__twitchApiService.banUser(
+            banResponse = await self.__twitchApiService.banUser(
                 twitchAccessToken = twitchAccessToken,
-                banRequest = TwitchBanRequest(
-                    duration = durationSeconds,
-                    broadcasterUserId = twitchChannelId,
-                    moderatorUserId = cynanBotUserId,
-                    reason = reason,
-                    userIdToBan = userIdToTimeout,
-                ),
+                banRequest = banRequest,
             )
         except Exception as e:
-            self.__timber.log('TwitchTimeoutHelper', f'Failed to timeout user ({reason=}) ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})', e, traceback.format_exc())
+            self.__timber.log('TwitchTimeoutHelper', f'Failed to timeout user ({userNameToTimeout=}) ({user=}) ({banRequest=})', e, traceback.format_exc())
             return False
 
-        return True
+        for banResponseEntry in banResponse.data:
+            if banResponseEntry.userId == userIdToTimeout:
+                return True
+
+        self.__timber.log('TwitchTimeoutHelper', f'Failed to timeout user ({userNameToTimeout=}) ({user=}) ({banRequest=}) ({banResponse=})')
+        return False
