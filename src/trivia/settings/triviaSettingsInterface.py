@@ -7,7 +7,7 @@ from ..questions.triviaSource import TriviaSource
 from ...misc.clearable import Clearable
 
 
-class TriviaSettingsRepositoryInterface(Clearable, ABC):
+class TriviaSettingsInterface(Clearable, ABC):
 
     @abstractmethod
     async def areAdditionalTriviaAnswersEnabled(self) -> bool:

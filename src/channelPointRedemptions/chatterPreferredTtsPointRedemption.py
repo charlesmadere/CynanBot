@@ -2,7 +2,7 @@ import re
 import traceback
 from typing import Final, Pattern
 
-from .absChannelPointRedemption import AbsChannelPointRedemption
+from .absChannelPointRedemption2 import AbsChannelPointRedemption2
 from ..chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
 from ..chatterPreferredTts.exceptions import FailedToChooseRandomTtsException, NoEnabledTtsProvidersException, \
     TtsProviderIsNotEnabledException, UnableToParseUserMessageIntoTtsException
@@ -13,11 +13,10 @@ from ..chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterfa
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
+from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
-class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
+class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption2):
 
     def __init__(
         self,
@@ -48,43 +47,42 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
 
     async def handlePointRedemption(
         self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        channelPointsRedemption: TwitchChannelPointsRedemption,
     ) -> bool:
         if not await self.__chatterPreferredTtsSettingsRepository.isEnabled():
             return False
 
-        twitchUser = twitchChannelPointsMessage.twitchUser
+        twitchUser = channelPointsRedemption.twitchUser
         if not twitchUser.isChatterPreferredTtsEnabled:
             return False
 
-        userMessage = utils.cleanStr(twitchChannelPointsMessage.redemptionMessage)
+        userMessage = utils.cleanStr(channelPointsRedemption.redemptionMessage)
         preferredTts: ChatterPreferredTts
 
         try:
             if self.__randomRegEx.fullmatch(userMessage):
                 preferredTts = await self.__chatterPreferredTtsHelper.applyRandomPreferredTts(
-                    chatterUserId = twitchChannelPointsMessage.userId,
-                    twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+                    chatterUserId = channelPointsRedemption.redemptionUserId,
+                    twitchChannelId = channelPointsRedemption.twitchChannelId,
                 )
             else:
                 preferredTts = await self.__chatterPreferredTtsHelper.applyUserMessagePreferredTts(
-                    chatterUserId = twitchChannelPointsMessage.userId,
-                    twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+                    chatterUserId = channelPointsRedemption.rewardId,
+                    twitchChannelId = channelPointsRedemption.twitchChannelId,
                     userMessage = userMessage,
                 )
         except (FailedToChooseRandomTtsException, NoEnabledTtsProvidersException, UnableToParseUserMessageIntoTtsException) as e:
-            self.__timber.log('ChatterPreferredTtsPointRedemption', f'Failed to set preferred TTS given by {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({twitchChannelPointsMessage=}) ({userMessage=})', e, traceback.format_exc())
+            self.__timber.log('ChatterPreferredTtsPointRedemption', f'Failed to set preferred TTS given ({channelPointsRedemption=}) ({userMessage=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
-                text = f'⚠ @{twitchChannelPointsMessage.userName} unable to set your preferred TTS! Please check your input and try again.',
-                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+                text = f'⚠ @{channelPointsRedemption.redemptionUserName} unable to set your preferred TTS! Please check your input and try again.',
+                twitchChannelId = channelPointsRedemption.twitchChannelId,
             )
             return True
         except TtsProviderIsNotEnabledException as e:
-            self.__timber.log('ChatterPreferredTtsPointRedemption', f'The TTS Provider requested by {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} is not enabled ({userMessage=})', e, traceback.format_exc())
+            self.__timber.log('ChatterPreferredTtsPointRedemption', f'The TTS Provider requested is not enabled ({channelPointsRedemption=}) ({userMessage=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
-                text = f'⚠ @{twitchChannelPointsMessage.userName} the TTS provider you requested is not available! Please try a different TTS provider.',
-                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+                text = f'⚠ @{channelPointsRedemption.redemptionUserName} the TTS provider you requested is not available! Please try a different TTS provider.',
+                twitchChannelId = channelPointsRedemption.twitchChannelId,
             )
             return True
 
@@ -93,9 +91,9 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
         )
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ @{twitchChannelPointsMessage.userName} here\'s your new preferred TTS: {printOut}',
-            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            text = f'ⓘ @{channelPointsRedemption.redemptionUserName} here\'s your new preferred TTS: {printOut}',
+            twitchChannelId = channelPointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log('ChatterPreferredTtsPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
+        self.__timber.log('ChatterPreferredTtsPointRedemption', f'Redeemed ({channelPointsRedemption=}) ({userMessage=}) ({preferredTts=})')
         return True

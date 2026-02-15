@@ -1,17 +1,16 @@
 import traceback
 from typing import Final
 
-from .absChannelPointRedemption import AbsChannelPointRedemption
+from .absChannelPointRedemption2 import AbsChannelPointRedemption2
 from ..chatterPreferredName.exceptions import ChatterPreferredNameFeatureIsDisabledException, \
     ChatterPreferredNameIsInvalidException
 from ..chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
+from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
-class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption):
+class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption2):
 
     def __init__(
         self,
@@ -32,34 +31,33 @@ class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption):
 
     async def handlePointRedemption(
         self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        channelPointsRedemption: TwitchChannelPointsRedemption,
     ) -> bool:
-        twitchUser = twitchChannelPointsMessage.twitchUser
+        twitchUser = channelPointsRedemption.twitchUser
         if not twitchUser.isChatterPreferredNameEnabled:
             return False
 
         try:
             preferredNameData = await self.__chatterPreferredNameHelper.set(
-                chatterUserId = twitchChannelPointsMessage.userId,
-                preferredName = twitchChannelPointsMessage.redemptionMessage,
-                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+                chatterUserId = channelPointsRedemption.redemptionUserId,
+                preferredName = channelPointsRedemption.redemptionMessage,
+                twitchChannelId = channelPointsRedemption.twitchChannelId,
             )
         except ChatterPreferredNameFeatureIsDisabledException as e:
-            self.__timber.log('ChatterPreferredNamePointRedemption', f'Preferred name feature is disabled; redeemed by {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({twitchChannelPointsMessage=})', e, traceback.format_exc())
+            self.__timber.log('ChatterPreferredNamePointRedemption', f'Preferred name feature is disabled ({channelPointsRedemption=})', e, traceback.format_exc())
             return False
         except ChatterPreferredNameIsInvalidException as e:
-            self.__timber.log('ChatterPreferredNamePointRedemption', f'The given preferred name is invalid as redeemed by {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({twitchChannelPointsMessage=})', e, traceback.format_exc())
+            self.__timber.log('ChatterPreferredNamePointRedemption', f'The given preferred name is invalid ({channelPointsRedemption=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
-                text = f'⚠ @{twitchChannelPointsMessage.userName} unable to set your preferred name! Please check your input and try again.',
-                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+                text = f'⚠ @{channelPointsRedemption.redemptionUserName} unable to set your preferred name! Please check your input and try again.',
+                twitchChannelId = channelPointsRedemption.twitchChannelId,
             )
             return False
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ @{twitchChannelPointsMessage.userName} here\'s your new preferred name: {preferredNameData.preferredName}',
-            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            text = f'ⓘ @{channelPointsRedemption.redemptionUserName} here\'s your new preferred name: {preferredNameData.preferredName}',
+            twitchChannelId = channelPointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log('ChatterPreferredNamePointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
+        self.__timber.log('ChatterPreferredNamePointRedemption', f'Redeemed ({channelPointsRedemption=}) ({preferredNameData=})')
         return True

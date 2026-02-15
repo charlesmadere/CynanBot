@@ -8,7 +8,7 @@ from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestio
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaExceptions import UnsupportedTriviaTypeException
 from ..triviaFetchOptions import TriviaFetchOptions
 
@@ -19,10 +19,10 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self,
         triviaDatabaseQuestionStorage: TriviaDatabaseQuestionStorageInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+        triviaSettings: TriviaSettingsInterface,
     ):
         super().__init__(
-            triviaSettingsRepository = triviaSettingsRepository
+            triviaSettings = triviaSettings,
         )
 
         if not isinstance(triviaDatabaseQuestionStorage, TriviaDatabaseQuestionStorageInterface):

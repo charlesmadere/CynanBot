@@ -19,8 +19,8 @@ from src.trivia.questions.multipleChoiceTriviaQuestion import MultipleChoiceTriv
 from src.trivia.questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from src.trivia.questions.triviaSource import TriviaSource
 from src.trivia.questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
-from src.trivia.settings.triviaSettingsRepository import TriviaSettingsRepository
-from src.trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from src.trivia.settings.triviaSettings import TriviaSettings
+from src.trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from src.trivia.triviaDifficulty import TriviaDifficulty
 
 
@@ -30,7 +30,7 @@ class TestTriviaAnswerChecker:
 
     triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 
-    triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = TriviaSettingsRepository(
+    triviaSettings: Final[TriviaSettingsInterface] = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
         triviaSourceParser = triviaSourceParser,
     )
@@ -46,7 +46,7 @@ class TestTriviaAnswerChecker:
     triviaAnswerChecker: Final[TriviaAnswerCheckerInterface] = TriviaAnswerChecker(
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
-        triviaSettingsRepository = triviaSettingsRepository,
+        triviaSettings = triviaSettings,
     )
 
     @pytest.mark.asyncio

@@ -10,7 +10,7 @@ from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestio
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaExceptions import GenericTriviaNetworkException, UnsupportedTriviaTypeException
 from ..triviaFetchOptions import TriviaFetchOptions
 from ...network.exceptions import GenericNetworkException
@@ -24,10 +24,10 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
         bongoApiService: BongoApiServiceInterface,
         timber: TimberInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
     ):
         super().__init__(
-            triviaSettingsRepository = triviaSettingsRepository,
+            triviaSettings = triviaSettings,
         )
 
         if not isinstance(bongoApiService, BongoApiServiceInterface):

@@ -14,7 +14,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
     def __init__(
         self,
         backingDatabase: BackingDatabase,
-        timeZoneRepository: TimeZoneRepositoryInterface
+        timeZoneRepository: TimeZoneRepositoryInterface,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -30,7 +30,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> ToxicTriviaResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -64,7 +64,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
             oldToxicCount = toxicCount,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
@@ -75,7 +75,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> ToxicTriviaResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -87,7 +87,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
         result = await self.fetchDetails(
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
         newToxicCount = result.oldToxicCount + 1
@@ -98,14 +98,14 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
             oldToxicCount = result.oldToxicCount,
             twitchChannel = result.twitchChannel,
             twitchChannelId = result.twitchChannelId,
-            userId = result.userId
+            userId = result.userId,
         )
 
         await self.__updateToxicCount(
             newToxicCount = newResult.newToxicCount,
             twitchChannel = newResult.twitchChannel,
             twitchChannelId = newResult.twitchChannelId,
-            userId = newResult.userId
+            userId = newResult.userId,
         )
 
         return newResult
@@ -154,7 +154,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
         newToxicCount: int,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ):
         if not utils.isValidInt(newToxicCount):
             raise TypeError(f'newToxicCount argument is malformed: \"{newToxicCount}\"')
@@ -176,7 +176,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
                     VALUES ($1, $2, $3, $4)
                     ON CONFLICT (twitchchannelid, userid) DO UPDATE SET count = EXCLUDED.count, mostrecent = EXCLUDED.mostrecent
             ''',
-            newToxicCount, nowDateTime.isoformat(), twitchChannelId, userId
+            newToxicCount, nowDateTime.isoformat(), twitchChannelId, userId,
         )
 
         await connection.close()

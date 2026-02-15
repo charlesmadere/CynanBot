@@ -9,7 +9,7 @@ from .pokepediaMoveTriviaQuestionType import PokepediaMoveTriviaQuestionType
 from .pokepediaTriviaQuestion import PokepediaTriviaQuestion
 from .pokepediaTriviaQuestionGeneratorInterface import PokepediaTriviaQuestionGeneratorInterface
 from .pokepediaTriviaQuestionType import PokepediaTriviaQuestionType
-from ...settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ...settings.triviaSettingsInterface import TriviaSettingsInterface
 from ....misc import utils as utils
 from ....pkmn.pokepediaDamageClass import PokepediaDamageClass
 from ....pkmn.pokepediaElementType import PokepediaElementType
@@ -25,15 +25,15 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
     def __init__(
         self,
         pokepediaRepository: PokepediaRepositoryInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+        triviaSettings: TriviaSettingsInterface
     ):
         if not isinstance(pokepediaRepository, PokepediaRepositoryInterface):
             raise TypeError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
 
         self.__pokepediaRepository: PokepediaRepositoryInterface = pokepediaRepository
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
+        self.__triviaSettings: TriviaSettingsInterface = triviaSettings
 
     async def __createMoveIsAvailableAsMachineQuestion(
         self,
@@ -217,8 +217,8 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
         allTypes: FrozenList[PokepediaElementType] = FrozenList(PokepediaElementType)
         allTypes.freeze()
 
-        minResponses = await self.__triviaSettingsRepository.getMinMultipleChoiceResponses()
-        maxResponses = await self.__triviaSettingsRepository.getMaxMultipleChoiceResponses()
+        minResponses = await self.__triviaSettings.getMinMultipleChoiceResponses()
+        maxResponses = await self.__triviaSettings.getMaxMultipleChoiceResponses()
         maxResponses = min(maxResponses, len(PokepediaElementType) - 1)
         responses = random.randint(minResponses, maxResponses)
 
@@ -242,8 +242,8 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
         elif not isinstance(actualMachineType, PokepediaMachineType):
             raise TypeError(f'actualMachineType argument is malformed: \"{actualMachineType}\"')
 
-        minResponses = await self.__triviaSettingsRepository.getMinMultipleChoiceResponses()
-        maxResponses = await self.__triviaSettingsRepository.getMaxMultipleChoiceResponses()
+        minResponses = await self.__triviaSettings.getMinMultipleChoiceResponses()
+        maxResponses = await self.__triviaSettings.getMaxMultipleChoiceResponses()
         responses = random.randint(minResponses, maxResponses)
         maxMachineNumber = actualMachineType.getMaxMachineNumber()
 

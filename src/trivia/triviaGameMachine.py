@@ -43,7 +43,7 @@ from .games.triviaGameState import TriviaGameState
 from .games.triviaGameStoreInterface import TriviaGameStoreInterface
 from .questions.absTriviaQuestion import AbsTriviaQuestion
 from .score.triviaScoreRepositoryInterface import TriviaScoreRepositoryInterface
-from .settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from .settings.triviaSettingsInterface import TriviaSettingsInterface
 from .specialStatus.shinyTriviaHelper import ShinyTriviaHelper
 from .specialStatus.specialTriviaStatus import SpecialTriviaStatus
 from .specialStatus.toxicTriviaHelper import ToxicTriviaHelper
@@ -84,7 +84,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         triviaIdGenerator: TriviaIdGeneratorInterface,
         triviaRepository: TriviaRepositoryInterface,
         triviaScoreRepository: TriviaScoreRepositoryInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
         triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -119,8 +119,8 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise TypeError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
         elif not isinstance(triviaScoreRepository, TriviaScoreRepositoryInterface):
             raise TypeError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not isinstance(triviaTwitchEmoteHelper, TriviaTwitchEmoteHelperInterface):
             raise TypeError(f'triviaTwitchEmoteHelper argument is malformed: \"{triviaTwitchEmoteHelper}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -150,7 +150,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self.__triviaIdGenerator: Final[TriviaIdGeneratorInterface] = triviaIdGenerator
         self.__triviaRepository: Final[TriviaRepositoryInterface] = triviaRepository
         self.__triviaScoreRepository: Final[TriviaScoreRepositoryInterface] = triviaScoreRepository
-        self.__triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = triviaSettingsRepository
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
         self.__triviaTwitchEmoteHelper: Final[TriviaTwitchEmoteHelperInterface] = triviaTwitchEmoteHelper
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
@@ -687,7 +687,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
         superTriviaFirstQuestionDelay = timedelta(
-            seconds = await self.__triviaSettingsRepository.getSuperTriviaFirstQuestionDelaySeconds(),
+            seconds = await self.__triviaSettings.getSuperTriviaFirstQuestionDelaySeconds(),
         )
 
         if action.creationTime + superTriviaFirstQuestionDelay >= now:

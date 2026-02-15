@@ -8,7 +8,7 @@ from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaExceptions import GenericTriviaNetworkException, UnsupportedTriviaTypeException
 from ..triviaFetchOptions import TriviaFetchOptions
 from ...network.exceptions import GenericNetworkException
@@ -21,11 +21,11 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self,
         timber: TimberInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        willFryTriviaApiService: WillFryTriviaApiServiceInterface
+        triviaSettings: TriviaSettingsInterface,
+        willFryTriviaApiService: WillFryTriviaApiServiceInterface,
     ):
         super().__init__(
-            triviaSettingsRepository = triviaSettingsRepository
+            triviaSettings = triviaSettings,
         )
 
         if not isinstance(timber, TimberInterface):

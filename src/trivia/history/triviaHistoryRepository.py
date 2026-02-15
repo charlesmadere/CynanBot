@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Final
 
 from .triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from ..content.triviaContentCode import TriviaContentCode
@@ -6,7 +7,7 @@ from ..misc.triviaQuestionTypeParserInterface import TriviaQuestionTypeParserInt
 from ..misc.triviaSourceParserInterface import TriviaSourceParserInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.triviaQuestionReference import TriviaQuestionReference
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
@@ -23,8 +24,8 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         triviaQuestionTypeParser: TriviaQuestionTypeParserInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        triviaSourceParser: TriviaSourceParserInterface
+        triviaSettings: TriviaSettingsInterface,
+        triviaSourceParser: TriviaSourceParserInterface,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -34,17 +35,17 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(triviaQuestionTypeParser, TriviaQuestionTypeParserInterface):
             raise TypeError(f'triviaQuestionTypeParser argument is malformed: \"{triviaQuestionTypeParser}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not isinstance(triviaSourceParser, TriviaSourceParserInterface):
             raise TypeError(f'triviaSourceParser argument is malformed: \"{triviaSourceParser}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__triviaQuestionTypeParser: TriviaQuestionTypeParserInterface = triviaQuestionTypeParser
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
-        self.__triviaSourceParser: TriviaSourceParserInterface = triviaSourceParser
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__triviaQuestionTypeParser: Final[TriviaQuestionTypeParserInterface] = triviaQuestionTypeParser
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
+        self.__triviaSourceParser: Final[TriviaSourceParserInterface] = triviaSourceParser
 
         self.__isDatabaseReady: bool = False
 
@@ -56,7 +57,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         self,
         emote: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> TriviaQuestionReference | None:
         if not utils.isValidStr(emote):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
@@ -73,7 +74,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
                 ORDER BY datetime DESC
                 LIMIT 1
             ''',
-            emote, twitchChannelId
+            emote, twitchChannelId,
         )
 
         await connection.close()
@@ -88,7 +89,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
             triviaSource = await self.__triviaSourceParser.parse(record[3]),
-            triviaType = await self.__triviaQuestionTypeParser.parse(record[4])
+            triviaType = await self.__triviaQuestionTypeParser.parse(record[4]),
         )
 
     async def __initDatabaseTable(self):
@@ -139,7 +140,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         question: AbsTriviaQuestion,
         emote: str,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> TriviaContentCode:
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
@@ -164,7 +165,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
                 WHERE triviaid = $1 AND triviasource = $2 AND triviatype = $3 AND twitchchannelid = $4
                 LIMIT 1
             ''',
-            question.triviaId, triviaSource, triviaType, twitchChannelId
+            question.triviaId, triviaSource, triviaType, twitchChannelId,
         )
 
         nowDateTime = datetime.now(self.__timeZoneRepository.getDefault())
@@ -176,7 +177,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
                     INSERT INTO triviahistory (datetime, emote, triviaid, triviasource, triviatype, twitchchannelid)
                     VALUES ($1, $2, $3, $4, $5, $6)
                 ''',
-                nowDateTimeStr, emote, question.triviaId, triviaSource, triviaType, twitchChannelId
+                nowDateTimeStr, emote, question.triviaId, triviaSource, triviaType, twitchChannelId,
             )
 
             await connection.close()
@@ -184,7 +185,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
 
         questionDateTimeStr: str = record[0]
         questionDateTime = datetime.fromisoformat(questionDateTimeStr)
-        minimumTimeDelta = timedelta(days = await self.__triviaSettingsRepository.getMinDaysBeforeRepeatQuestion())
+        minimumTimeDelta = timedelta(days = await self.__triviaSettings.getMinDaysBeforeRepeatQuestion())
 
         if questionDateTime + minimumTimeDelta >= nowDateTime:
             await connection.close()
@@ -197,7 +198,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
                 SET datetime = $1, emote = $2
                 WHERE triviaid = $3 AND triviasource = $4 AND triviatype = $5 AND twitchchannelid = $6
             ''',
-            nowDateTimeStr, emote, question.triviaId, triviaSource, triviaType, twitchChannelId
+            nowDateTimeStr, emote, question.triviaId, triviaSource, triviaType, twitchChannelId,
         )
 
         await connection.close()

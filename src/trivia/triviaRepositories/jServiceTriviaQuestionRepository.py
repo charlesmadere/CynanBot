@@ -9,7 +9,7 @@ from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import GenericTriviaNetworkException, MalformedTriviaJsonException
 from ..triviaFetchOptions import TriviaFetchOptions
@@ -30,10 +30,10 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
         triviaAnswerCompiler: TriviaAnswerCompilerInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+        triviaSettings: TriviaSettingsInterface,
     ):
         super().__init__(
-            triviaSettingsRepository = triviaSettingsRepository
+            triviaSettings = triviaSettings,
         )
 
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
@@ -76,7 +76,7 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
         jsonResponse = await response.json()
         await response.close()
 
-        if await self._triviaSettingsRepository.isDebugLoggingEnabled():
+        if await self._triviaSettings.isDebugLoggingEnabled():
             self.__timber.log('JServiceTriviaQuestionRepository', f'{jsonResponse}')
 
         if not isinstance(jsonResponse, list) or len(jsonResponse) == 0:

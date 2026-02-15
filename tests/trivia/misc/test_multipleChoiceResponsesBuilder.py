@@ -5,21 +5,21 @@ from src.trivia.misc.multipleChoiceResponsesBuilder import MultipleChoiceRespons
 from src.trivia.misc.multipleChoiceResponsesBuilderInterface import MultipleChoiceResponsesBuilderInterface
 from src.trivia.misc.triviaSourceParser import TriviaSourceParser
 from src.trivia.misc.triviaSourceParserInterface import TriviaSourceParserInterface
-from src.trivia.settings.triviaSettingsRepository import TriviaSettingsRepository
-from src.trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from src.trivia.settings.triviaSettings import TriviaSettings
+from src.trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 
 
 class TestMultipleChoicesResponsesBuilder:
 
     triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
 
-    triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+    triviaSettings: TriviaSettingsInterface = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
-        triviaSourceParser = triviaSourceParser
+        triviaSourceParser = triviaSourceParser,
     )
 
     builder: MultipleChoiceResponsesBuilderInterface = MultipleChoiceResponsesBuilder(
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     )
 
     @pytest.mark.asyncio

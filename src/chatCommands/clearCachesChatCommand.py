@@ -46,7 +46,7 @@ from ..trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
 from ..trivia.gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from ..trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
-from ..trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTokenRepositoryInterface import \
     OpenTriviaDatabaseSessionTokenRepositoryInterface
 from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
@@ -117,7 +117,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         timeoutActionSettings: TimeoutActionSettingsInterface | None,
         triviaGameControllersRepository: TriviaGameControllersRepositoryInterface | None,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface | None,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface | None,
+        triviaSettings: TriviaSettingsInterface | None,
         trollmojiHelper: TrollmojiHelperInterface | None,
         trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface | None,
         ttsChatterRepository: TtsChatterRepositoryInterface | None,
@@ -213,8 +213,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
         elif triviaGameGlobalControllersRepository is not None and not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
             raise TypeError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
-        elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif triviaSettings is not None and not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif trollmojiHelper is not None and not isinstance(trollmojiHelper, TrollmojiHelperInterface):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif trollmojiSettingsRepository is not None and not isinstance(trollmojiSettingsRepository, TrollmojiSettingsRepositoryInterface):
@@ -297,7 +297,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(timeoutActionSettings)
         self.__clearables.append(triviaGameControllersRepository)
         self.__clearables.append(triviaGameGlobalControllersRepository)
-        self.__clearables.append(triviaSettingsRepository)
+        self.__clearables.append(triviaSettings)
         self.__clearables.append(trollmojiHelper)
         self.__clearables.append(trollmojiSettingsRepository)
         self.__clearables.append(ttsChatterRepository)

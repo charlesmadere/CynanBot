@@ -7,7 +7,7 @@ from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestio
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import (GenericTriviaNetworkException,
                                 MalformedTriviaJsonException,
@@ -29,10 +29,10 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
         quizApiKey: str,
         timber: TimberInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+        triviaSettings: TriviaSettingsInterface,
     ):
         super().__init__(
-            triviaSettingsRepository = triviaSettingsRepository
+            triviaSettings = triviaSettings,
         )
 
         if not isinstance(networkClientProvider, NetworkClientProvider):
@@ -75,7 +75,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
         jsonResponse = await response.json()
         await response.close()
 
-        if await self._triviaSettingsRepository.isDebugLoggingEnabled():
+        if await self._triviaSettings.isDebugLoggingEnabled():
             self.__timber.log('QuizApiTriviaQuestionRepository', f'{jsonResponse}')
 
         if not utils.hasItems(jsonResponse) or not isinstance(jsonResponse, list):

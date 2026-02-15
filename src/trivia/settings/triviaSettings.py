@@ -4,13 +4,13 @@ from frozendict import frozendict
 
 from ..misc.triviaSourceParserInterface import TriviaSourceParserInterface
 from ..questions.triviaSource import TriviaSource
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..settings.triviaSourceAndProperties import TriviaSourceAndProperties
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 
 
-class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
+class TriviaSettings(TriviaSettingsInterface):
 
     def __init__(
         self,

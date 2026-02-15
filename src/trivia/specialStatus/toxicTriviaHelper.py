@@ -1,7 +1,7 @@
 import random
 
 from .toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -12,27 +12,27 @@ class ToxicTriviaHelper:
         self,
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface,
         timber: TimberInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface
+        triviaSettings: TriviaSettingsInterface,
     ):
         if not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
             raise TypeError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
 
         self.__toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = toxicTriviaOccurencesRepository
         self.__timber: TimberInterface = timber
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
+        self.__triviaSettings: TriviaSettingsInterface = triviaSettings
 
     async def isToxicSuperTriviaQuestion(self, twitchChannelId: str) -> bool:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        if not await self.__triviaSettingsRepository.areToxicTriviasEnabled():
+        if not await self.__triviaSettings.areToxicTriviasEnabled():
             return False
 
-        probability = await self.__triviaSettingsRepository.getToxicProbability()
+        probability = await self.__triviaSettings.getToxicProbability()
         randomNumber = random.uniform(0, 1)
 
         if randomNumber > probability:
@@ -46,7 +46,7 @@ class ToxicTriviaHelper:
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str
+        userName: str,
     ):
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -60,7 +60,7 @@ class ToxicTriviaHelper:
         result = await self.__toxicTriviaOccurencesRepository.incrementToxicCount(
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
         self.__timber.log('ToxicTriviaHelper', f'In {twitchChannel}, {userName}:{result.userId} won a toxic trivia question!')

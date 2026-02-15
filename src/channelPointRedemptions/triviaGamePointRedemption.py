@@ -1,14 +1,13 @@
 from typing import Final
 
-from .absChannelPointRedemption import AbsChannelPointRedemption
+from .absChannelPointRedemption2 import AbsChannelPointRedemption2
 from ..timber.timberInterface import TimberInterface
 from ..trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
-from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
+from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
-class TriviaGamePointRedemption(AbsChannelPointRedemption):
+class TriviaGamePointRedemption(AbsChannelPointRedemption2):
 
     def __init__(
         self,
@@ -29,19 +28,18 @@ class TriviaGamePointRedemption(AbsChannelPointRedemption):
 
     async def handlePointRedemption(
         self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        channelPointsRedemption: TwitchChannelPointsRedemption,
     ) -> bool:
         action = await self.__triviaGameBuilder.createNewTriviaGame(
-            twitchChannel = twitchChannelPointsMessage.twitchUser.handle,
-            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
-            userId = twitchChannelPointsMessage.userId,
-            userName = twitchChannelPointsMessage.userName,
+            twitchChannel = channelPointsRedemption.twitchChannel,
+            twitchChannelId = channelPointsRedemption.twitchChannelId,
+            userId = channelPointsRedemption.redemptionUserId,
+            userName = channelPointsRedemption.redemptionUserName,
         )
 
         if action is None:
             return False
 
         self.__triviaGameMachine.submitAction(action)
-        self.__timber.log('TriviaGameRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchChannel.getTwitchChannelName()}')
+        self.__timber.log('TriviaGamePointRedemption', f'Redeemed ({channelPointsRedemption=})')
         return True

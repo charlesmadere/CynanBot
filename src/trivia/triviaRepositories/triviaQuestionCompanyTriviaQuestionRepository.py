@@ -10,7 +10,7 @@ from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import UnsupportedTriviaTypeException
 from ..triviaFetchOptions import TriviaFetchOptions
@@ -24,11 +24,11 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
         self,
         timber: TimberInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        triviaDatabaseFile: str = '../db/triviaQuestionCompanyTriviaQuestionRepository.sqlite'
+        triviaSettings: TriviaSettingsInterface,
+        triviaDatabaseFile: str = '../db/triviaQuestionCompanyTriviaQuestionRepository.sqlite',
     ):
         super().__init__(
-            triviaSettingsRepository = triviaSettingsRepository
+            triviaSettings = triviaSettings,
         )
 
         if not isinstance(timber, TimberInterface):
@@ -52,7 +52,7 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
 
         triviaDict = await self.__fetchTriviaQuestionDict()
 
-        if await self._triviaSettingsRepository.isDebugLoggingEnabled():
+        if await self._triviaSettings.isDebugLoggingEnabled():
             self.__timber.log('TriviaQuestionCompanyTriviaQuestionRepository', f'{triviaDict}')
 
         difficulty = TriviaDifficulty.fromInt(utils.getIntFromDict(triviaDict, 'difficulty'))

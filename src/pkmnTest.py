@@ -17,8 +17,8 @@ from .trivia.compilers.triviaQuestionCompiler import TriviaQuestionCompiler
 from .trivia.compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
 from .trivia.misc.triviaSourceParser import TriviaSourceParser
 from .trivia.misc.triviaSourceParserInterface import TriviaSourceParserInterface
-from .trivia.settings.triviaSettingsRepository import TriviaSettingsRepository
-from .trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from .trivia.settings.triviaSettings import TriviaSettings
+from .trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from .trivia.triviaFetchOptions import TriviaFetchOptions
 from .trivia.triviaIdGenerator import TriviaIdGenerator
 from .trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
@@ -57,17 +57,17 @@ pokepediaRepository = PokepediaRepository(
 
 triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
 
-triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+triviaSettings: TriviaSettingsInterface = TriviaSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = 'triviaSettingsRepository.json'
+        fileName = 'triviaSettingsRepository.json',
     ),
-    triviaSourceParser = triviaSourceParser
+    triviaSourceParser = triviaSourceParser,
 )
 
 pokepediaTriviaQuestionGenerator: PokepediaTriviaQuestionGeneratorInterface = PokepediaTriviaQuestionGenerator(
     pokepediaRepository = pokepediaRepository,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettings = triviaSettings,
 )
 
 triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
@@ -80,7 +80,7 @@ pkmnTriviaQuestionRepository = PkmnTriviaQuestionRepository(
     pokepediaTriviaQuestionGenerator = pokepediaTriviaQuestionGenerator,
     triviaIdGenerator = triviaIdGenerator,
     triviaQuestionCompiler = triviaQuestionCompiler,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettings = triviaSettings,
 )
 
 async def main():

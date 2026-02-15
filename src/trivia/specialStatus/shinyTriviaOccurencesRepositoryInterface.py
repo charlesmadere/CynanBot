@@ -10,7 +10,7 @@ class ShinyTriviaOccurencesRepositoryInterface(ABC):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> ShinyTriviaResult:
         pass
 
@@ -19,6 +19,6 @@ class ShinyTriviaOccurencesRepositoryInterface(ABC):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> ShinyTriviaResult:
         pass

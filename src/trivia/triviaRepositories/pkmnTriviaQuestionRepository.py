@@ -8,7 +8,7 @@ from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestio
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaDifficulty import TriviaDifficulty
 from ..triviaExceptions import UnsupportedTriviaTypeException
 from ..triviaFetchOptions import TriviaFetchOptions
@@ -23,11 +23,11 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         pokepediaTriviaQuestionGenerator: PokepediaTriviaQuestionGeneratorInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        maxGeneration: PokepediaGeneration = PokepediaGeneration.GENERATION_3
+        triviaSettings: TriviaSettingsInterface,
+        maxGeneration: PokepediaGeneration = PokepediaGeneration.GENERATION_3,
     ):
         super().__init__(
-            triviaSettingsRepository = triviaSettingsRepository
+            triviaSettings = triviaSettings,
         )
 
         if not isinstance(pokepediaTriviaQuestionGenerator, PokepediaTriviaQuestionGeneratorInterface):

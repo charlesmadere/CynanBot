@@ -30,7 +30,7 @@ from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestio
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..scraper.triviaScraperInterface import TriviaScraperInterface
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaExceptions import (GenericTriviaNetworkException,
                                 MalformedTriviaJsonException,
                                 NoTriviaCorrectAnswersException,
@@ -68,7 +68,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         triviaQuestionCompanyTriviaQuestionRepository: TriviaQuestionCompanyTriviaQuestionRepository,
         triviaQuestionOccurrencesRepository: TriviaQuestionOccurrencesRepositoryInterface,
         triviaScraper: TriviaScraperInterface | None,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
         triviaSourceInstabilityHelper: TriviaSourceInstabilityHelper,
         triviaVerifier: TriviaVerifierInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
@@ -110,8 +110,8 @@ class TriviaRepository(TriviaRepositoryInterface):
             raise TypeError(f'triviaQuestionOccurrencesRepository argument is malformed: \"{triviaQuestionOccurrencesRepository}\"')
         elif triviaScraper is not None and not isinstance(triviaScraper, TriviaScraperInterface):
             raise TypeError(f'triviaScraper argument is malformed: \"{triviaScraper}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not isinstance(triviaSourceInstabilityHelper, TriviaSourceInstabilityHelper):
             raise TypeError(f'triviaSourceInstabilityHelper argument is malformed: \"{triviaSourceInstabilityHelper}\"')
         elif not isinstance(triviaVerifier, TriviaVerifierInterface):
@@ -149,7 +149,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         self.__triviaQuestionCompanyTriviaQuestionRepository: TriviaQuestionRepositoryInterface = triviaQuestionCompanyTriviaQuestionRepository
         self.__triviaQuestionOccurrencesRepository: TriviaQuestionOccurrencesRepositoryInterface = triviaQuestionOccurrencesRepository
         self.__triviaScraper: TriviaScraperInterface | None = triviaScraper
-        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
+        self.__triviaSettings: TriviaSettingsInterface = triviaSettings
         self.__triviaSourceInstabilityHelper: TriviaSourceInstabilityHelper = triviaSourceInstabilityHelper
         self.__triviaVerifier: TriviaVerifierInterface = triviaVerifier
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
@@ -172,7 +172,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         if not isinstance(triviaFetchOptions, TriviaFetchOptions):
             raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
-        allTriviaSourcesAndProperties = await self.__triviaSettingsRepository.getTriviaSourcesAndProperties()
+        allTriviaSourcesAndProperties = await self.__triviaSettings.getTriviaSourcesAndProperties()
 
         currentlyInvalidTriviaSources = await self.__getCurrentlyInvalidTriviaSources(
             triviaFetchOptions = triviaFetchOptions
@@ -262,7 +262,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         question: AbsTriviaQuestion | None = None
         retryCount = 0
-        maxRetryCount = await self.__triviaSettingsRepository.getMaxRetryCount()
+        maxRetryCount = await self.__triviaSettings.getMaxRetryCount()
         attemptedTriviaSources: list[TriviaSource] = list()
 
         while retryCount < maxRetryCount:
@@ -358,7 +358,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         return frozenset(currentlyInvalidTriviaSources)
 
     async def __getCurrentlyUnstableTriviaSources(self) -> set[TriviaSource]:
-        instabilityThreshold = await self.__triviaSettingsRepository.getTriviaSourceInstabilityThreshold()
+        instabilityThreshold = await self.__triviaSettings.getTriviaSourceInstabilityThreshold()
         unstableTriviaSources: set[TriviaSource] = set()
 
         for triviaSource in TriviaSource:
@@ -441,7 +441,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         elif not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
 
-        if not await self.__triviaSettingsRepository.isScraperEnabled():
+        if not await self.__triviaSettings.isScraperEnabled():
             return
 
         triviaScraper = self.__triviaScraper
@@ -450,7 +450,7 @@ class TriviaRepository(TriviaRepositoryInterface):
             await triviaScraper.store(question)
 
     async def __spoolNewSuperTriviaQuestion(self):
-        if self.__superTriviaQuestionSpool.qsize() >= await self.__triviaSettingsRepository.getMaxSuperTriviaQuestionSpoolSize():
+        if self.__superTriviaQuestionSpool.qsize() >= await self.__triviaSettings.getMaxSuperTriviaQuestionSpoolSize():
             return
 
         triviaFetchOptions = TriviaFetchOptions(
@@ -496,7 +496,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         await self.__scrapeAndStore(question)
 
     async def __spoolNewTriviaQuestion(self):
-        if self.__triviaQuestionSpool.qsize() >= await self.__triviaSettingsRepository.getMaxTriviaQuestionSpoolSize():
+        if self.__triviaQuestionSpool.qsize() >= await self.__triviaSettings.getMaxTriviaQuestionSpoolSize():
             return
 
         triviaFetchOptions = TriviaFetchOptions(

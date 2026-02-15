@@ -266,8 +266,8 @@ from src.trivia.score.triviaScoreRepository import TriviaScoreRepository
 from src.trivia.score.triviaScoreRepositoryInterface import TriviaScoreRepositoryInterface
 from src.trivia.scraper.triviaScraper import TriviaScraper
 from src.trivia.scraper.triviaScraperInterface import TriviaScraperInterface
-from src.trivia.settings.triviaSettingsRepository import TriviaSettingsRepository
-from src.trivia.settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from src.trivia.settings.triviaSettings import TriviaSettings
+from src.trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from src.trivia.specialStatus.shinyTriviaHelper import ShinyTriviaHelper
 from src.trivia.specialStatus.shinyTriviaOccurencesRepository import ShinyTriviaOccurencesRepository
 from src.trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import ShinyTriviaOccurencesRepositoryInterface
@@ -1116,7 +1116,7 @@ toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = Toxi
 
 triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 
-triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
+triviaSettings: TriviaSettingsInterface = TriviaSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = 'triviaSettingsRepository.json'
@@ -1139,7 +1139,7 @@ triviaSourceInstabilityHelper: TriviaSourceInstabilityHelper = TriviaSourceInsta
 additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = AdditionalTriviaAnswersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    triviaSettingsRepository = triviaSettingsRepository,
+    triviaSettings = triviaSettings,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
@@ -1154,18 +1154,18 @@ shinyTriviaHelper = ShinyTriviaHelper(
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettings = triviaSettings,
 )
 toxicTriviaHelper = ToxicTriviaHelper(
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     timber = timber,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettings = triviaSettings,
 )
 triviaContentScanner: TriviaContentScannerInterface = TriviaContentScanner(
     bannedWordsRepository = bannedWordsRepository,
     contentScanner = contentScanner,
     timber = timber,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettings = triviaSettings,
 )
 triviaEmoteRepository: TriviaEmoteRepositoryInterface = TriviaEmoteRepository(
     backingDatabase = backingDatabase
@@ -1205,8 +1205,8 @@ triviaHistoryRepository: TriviaHistoryRepositoryInterface = TriviaHistoryReposit
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     triviaQuestionTypeParser = triviaQuestionTypeParser,
-    triviaSettingsRepository = triviaSettingsRepository,
-    triviaSourceParser = triviaSourceParser
+    triviaSettings = triviaSettings,
+    triviaSourceParser = triviaSourceParser,
 )
 
 triviaScoreRepository: TriviaScoreRepositoryInterface = TriviaScoreRepository(
@@ -1242,7 +1242,7 @@ bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
     bongoApiService = bongoApiService,
     timber = timber,
     triviaQuestionCompiler = triviaQuestionCompiler,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettings = triviaSettings,
 )
 
 authSnapshot = authRepository.getAll()
@@ -1254,30 +1254,30 @@ if authSnapshot.hasQuizApiKey():
         quizApiKey = authSnapshot.requireQuizApiKey(),
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     )
 
 openTriviaDatabaseJsonParser: OpenTriviaDatabaseJsonParserInterface = OpenTriviaDatabaseJsonParser(
     timber = timber,
     triviaDifficultyParser = triviaDifficultyParser,
-    triviaQuestionTypeParser = triviaQuestionTypeParser
+    triviaQuestionTypeParser = triviaQuestionTypeParser,
 )
 
 openTriviaDatabaseApiService: OpenTriviaDatabaseApiServiceInterface = OpenTriviaDatabaseApiService(
     networkClientProvider = networkClientProvider,
     openTriviaDatabaseJsonParser = openTriviaDatabaseJsonParser,
-    timber = timber
+    timber = timber,
 )
 
 openTriviaDatabaseSessionTokenRepository: OpenTriviaDatabaseSessionTokenRepositoryInterface = OpenTriviaDatabaseSessionTokenRepository(
     backingDatabase = backingDatabase,
-    timber = timber
+    timber = timber,
 )
 
 openTriviaDatabaseQuestionFetcher: OpenTriviaDatabaseQuestionFetcherInterface = OpenTriviaDatabaseQuestionFetcher(
     openTriviaDatabaseApiService = openTriviaDatabaseApiService,
     openTriviaDatabaseSessionTokenRepository = openTriviaDatabaseSessionTokenRepository,
-    timber = timber
+    timber = timber,
 )
 
 openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRepository(
@@ -1285,52 +1285,52 @@ openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRep
     timber = timber,
     triviaIdGenerator = triviaIdGenerator,
     triviaQuestionCompiler = triviaQuestionCompiler,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettings = triviaSettings,
 )
 
 openTriviaQaQuestionTypeParser: OpenTriviaQaQuestionTypeParserInterface = OpenTriviaQaQuestionTypeParser(
-    timber = timber
+    timber = timber,
 )
 
 openTriviaQaQuestionStorage: OpenTriviaQaQuestionStorageInterface = OpenTriviaQaQuestionStorage(
     questionTypeParser = openTriviaQaQuestionTypeParser,
-    timber = timber
+    timber = timber,
 )
 
 openTriviaQaTriviaQuestionRepository = OpenTriviaQaTriviaQuestionRepository(
     openTriviaQaQuestionStorage = openTriviaQaQuestionStorage,
     triviaQuestionCompiler = triviaQuestionCompiler,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettings = triviaSettings,
 )
 
 triviaDatabaseQuestionStorage: TriviaDatabaseQuestionStorageInterface = TriviaDatabaseQuestionStorage(
     timber = timber,
     triviaDifficultyParser = triviaDifficultyParser,
-    triviaQuestionTypeParser = triviaQuestionTypeParser
+    triviaQuestionTypeParser = triviaQuestionTypeParser,
 )
 
 triviaDatabaseTriviaQuestionRepository = TriviaDatabaseTriviaQuestionRepository(
     triviaDatabaseQuestionStorage = triviaDatabaseQuestionStorage,
     triviaQuestionCompiler = triviaQuestionCompiler,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettings = triviaSettings,
 )
 
 willFryTriviaJsonParser: WillFryTriviaJsonParserInterface = WillFryTriviaJsonParser(
     timber = timber,
-    triviaDifficultyParser = triviaDifficultyParser
+    triviaDifficultyParser = triviaDifficultyParser,
 )
 
 willFryTriviaApiService: WillFryTriviaApiServiceInterface = WillFryTriviaApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
-    willFryTriviaJsonParser = willFryTriviaJsonParser
+    willFryTriviaJsonParser = willFryTriviaJsonParser,
 )
 
 willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
     timber = timber,
     triviaQuestionCompiler = triviaQuestionCompiler,
-    triviaSettingsRepository = triviaSettingsRepository,
-    willFryTriviaApiService = willFryTriviaApiService
+    triviaSettings = triviaSettings,
+    willFryTriviaApiService = willFryTriviaApiService,
 )
 
 glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = GlacialTriviaQuestionRepository(
@@ -1338,7 +1338,7 @@ glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = Glac
     timber = timber,
     triviaAnswerCompiler = triviaAnswerCompiler,
     triviaQuestionCompiler = triviaQuestionCompiler,
-    triviaSettingsRepository = triviaSettingsRepository,
+    triviaSettings = triviaSettings,
     triviaSourceParser = triviaSourceParser,
     twitchHandleProvider = authRepository,
     userIdsRepository = userIdsRepository,
@@ -1354,47 +1354,47 @@ lotrTriviaQuestionRepository = LotrTriviaQuestionRepository(
     timber = timber,
     triviaAnswerCompiler = triviaAnswerCompiler,
     triviaQuestionCompiler = triviaQuestionCompiler,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettings = triviaSettings,
 )
 
 millionaireTriviaQuestionStorage: MillionaireTriviaQuestionStorageInterface = MillionaireTriviaQuestionStorage(
-    timber = timber
+    timber = timber,
 )
 
 millionaireTriviaQuestionRepository = MillionaireTriviaQuestionRepository(
     millionaireTriviaQuestionStorage = millionaireTriviaQuestionStorage,
     triviaQuestionCompiler = triviaQuestionCompiler,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettings = triviaSettings,
 )
 
 pokepediaTriviaQuestionGenerator: PokepediaTriviaQuestionGeneratorInterface = PokepediaTriviaQuestionGenerator(
     pokepediaRepository = pokepediaRepository,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettings = triviaSettings,
 )
 
 triviaBanHelper: TriviaBanHelperInterface = TriviaBanHelper(
     bannedTriviaIdsRepository = bannedTriviaIdsRepository,
     funtoonHelper = funtoonHelper,
     glacialTriviaQuestionRepository = glacialTriviaQuestionRepository,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettings = triviaSettings,
 )
 
 triviaVerifier: TriviaVerifierInterface = TriviaVerifier(
     timber = timber,
     triviaBanHelper = triviaBanHelper,
     triviaContentScanner = triviaContentScanner,
-    triviaHistoryRepository = triviaHistoryRepository
+    triviaHistoryRepository = triviaHistoryRepository,
 )
 
 triviaScraper: TriviaScraperInterface = TriviaScraper(
     glacialTriviaQuestionRepository = glacialTriviaQuestionRepository,
     timber = timber,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettings = triviaSettings,
 )
 
 triviaQuestionOccurrencesRepository: TriviaQuestionOccurrencesRepositoryInterface = TriviaQuestionOccurrencesRepository(
     backingDatabase = backingDatabase,
-    timber = timber
+    timber = timber,
 )
 
 triviaRepository: TriviaRepositoryInterface = TriviaRepository(
@@ -1406,7 +1406,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
         triviaQuestionCompiler = triviaQuestionCompiler,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     ),
     glacialTriviaQuestionRepository = glacialTriviaQuestionRepository,
     jServiceTriviaQuestionRepository = None,
@@ -1418,7 +1418,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
         pokepediaTriviaQuestionGenerator = pokepediaTriviaQuestionGenerator,
         triviaIdGenerator = triviaIdGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     ),
     quizApiTriviaQuestionRepository = quizApiTriviaQuestionRepository,
     timber = timber,
@@ -1426,11 +1426,11 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
     triviaQuestionCompanyTriviaQuestionRepository = TriviaQuestionCompanyTriviaQuestionRepository(
         timber = timber,
         triviaQuestionCompiler = triviaQuestionCompiler,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     ),
     triviaQuestionOccurrencesRepository = triviaQuestionOccurrencesRepository,
     triviaScraper = triviaScraper,
-    triviaSettingsRepository = triviaSettingsRepository,
+    triviaSettings = triviaSettings,
     triviaSourceInstabilityHelper = triviaSourceInstabilityHelper,
     triviaVerifier = triviaVerifier,
     twitchHandleProvider = authRepository,
@@ -1439,8 +1439,8 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
     wwtbamTriviaQuestionRepository = WwtbamTriviaQuestionRepository(
         timber = timber,
         triviaQuestionCompiler = triviaQuestionCompiler,
-        triviaSettingsRepository = triviaSettingsRepository
-    )
+        triviaSettings = triviaSettings,
+    ),
 )
 
 triviaTwitchEmoteHelper: Final[TriviaTwitchEmoteHelperInterface] = TriviaTwitchEmoteHelper(
@@ -1455,12 +1455,12 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
     queuedTriviaGameStore = QueuedTriviaGameStore(
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     ),
     shinyTriviaHelper = shinyTriviaHelper,
     superTriviaCooldownHelper = SuperTriviaCooldownHelper(
         timeZoneRepository = timeZoneRepository,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     ),
     timber = timber,
     timeZoneRepository = timeZoneRepository,
@@ -1468,17 +1468,17 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
     triviaAnswerChecker = TriviaAnswerChecker(
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettings = triviaSettings,
     ),
     triviaEmoteGenerator = triviaEmoteGenerator,
     triviaGameStore = triviaGameStore,
     triviaIdGenerator = triviaIdGenerator,
     triviaRepository = triviaRepository,
     triviaScoreRepository = triviaScoreRepository,
-    triviaSettingsRepository = triviaSettingsRepository,
+    triviaSettings = triviaSettings,
     triviaTwitchEmoteHelper = triviaTwitchEmoteHelper,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
 triviaEventHandler: AbsTriviaEventHandler = TriviaEventHandler(
@@ -2239,7 +2239,7 @@ cynanBot: Final[CynanBot] = CynanBot(
     triviaQuestionOccurrencesRepository = triviaQuestionOccurrencesRepository,
     triviaRepository = triviaRepository,
     triviaScoreRepository = triviaScoreRepository,
-    triviaSettingsRepository = triviaSettingsRepository,
+    triviaSettings = triviaSettings,
     triviaTwitchEmoteHelper = triviaTwitchEmoteHelper,
     triviaUtils = triviaUtils,
     trollmojiHelper = trollmojiHelper,

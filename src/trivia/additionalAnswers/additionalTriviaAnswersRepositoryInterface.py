@@ -14,7 +14,7 @@ class AdditionalTriviaAnswersRepositoryInterface(ABC):
         triviaId: str,
         userId: str,
         triviaQuestionType: TriviaQuestionType,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> AdditionalTriviaAnswers:
         pass
 
@@ -24,7 +24,7 @@ class AdditionalTriviaAnswersRepositoryInterface(ABC):
         currentAnswers: list[str],
         triviaId: str,
         triviaQuestionType: TriviaQuestionType,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> bool:
         pass
 
@@ -33,7 +33,7 @@ class AdditionalTriviaAnswersRepositoryInterface(ABC):
         self,
         triviaId: str,
         triviaQuestionType: TriviaQuestionType,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> AdditionalTriviaAnswers | None:
         pass
 
@@ -42,6 +42,6 @@ class AdditionalTriviaAnswersRepositoryInterface(ABC):
         self,
         triviaId: str,
         triviaQuestionType: TriviaQuestionType,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> AdditionalTriviaAnswers | None:
         pass

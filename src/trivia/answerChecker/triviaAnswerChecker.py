@@ -14,7 +14,7 @@ from ..questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestio
 from ..questions.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
-from ..settings.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaExceptions import BadTriviaAnswerException, UnsupportedTriviaTypeException
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -26,18 +26,18 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         self,
         timber: TimberInterface,
         triviaAnswerCompiler: TriviaAnswerCompilerInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaAnswerCompiler, TriviaAnswerCompilerInterface):
             raise TypeError(f'triviaAnswerCompiler argument is malformed: \"{triviaAnswerCompiler}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
 
         self.__timber: Final[TimberInterface] = timber
         self.__triviaAnswerCompiler: Final[TriviaAnswerCompilerInterface] = triviaAnswerCompiler
-        self.__triviaSettingsRepository: Final[TriviaSettingsRepositoryInterface] = triviaSettingsRepository
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
 
         self.__extraWhitespacePattern: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
 
@@ -160,7 +160,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             raise ValueError(f'TriviaType is not {TriviaQuestionType.QUESTION_ANSWER}: \"{triviaQuestion.triviaType}\"')
 
         # prevent potential for insane answer lengths
-        maxPhraseGuessLength = await self.__triviaSettingsRepository.getMaxPhraseGuessLength()
+        maxPhraseGuessLength = await self.__triviaSettings.getMaxPhraseGuessLength()
         if utils.isValidStr(answer) and len(answer) > maxPhraseGuessLength:
             answer = answer[0:maxPhraseGuessLength].strip()
 
@@ -247,7 +247,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         word1: str,
         word2: str,
     ) -> bool:
-        thresholdGrowthRate = await self.__triviaSettingsRepository.getLevenshteinThresholdGrowthRate()
+        thresholdGrowthRate = await self.__triviaSettings.getLevenshteinThresholdGrowthRate()
 
         for w1 in self.__genVariantPossibilities(word1):
             if not utils.isValidStr(w1):

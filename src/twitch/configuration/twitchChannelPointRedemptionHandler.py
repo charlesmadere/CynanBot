@@ -127,14 +127,14 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__casualGamePollPointRedemption: AbsChannelPointRedemption2 = casualGamePollPointRedemption
 
         if chatterPreferredNamePointRedemption is None:
-            self.__chatterPreferredNamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__chatterPreferredNamePointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__chatterPreferredNamePointRedemption: AbsChannelPointRedemption = chatterPreferredNamePointRedemption
+            self.__chatterPreferredNamePointRedemption: AbsChannelPointRedemption2 = chatterPreferredNamePointRedemption
 
         if chatterPreferredTtsPointRedemption is None:
-            self.__chatterPreferredTtsPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__chatterPreferredTtsPointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__chatterPreferredTtsPointRedemption: AbsChannelPointRedemption = chatterPreferredTtsPointRedemption
+            self.__chatterPreferredTtsPointRedemption: AbsChannelPointRedemption2 = chatterPreferredTtsPointRedemption
 
         if cutenessPointRedemption is None:
             self.__cutenessPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
@@ -187,9 +187,9 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__superTriviaLotrGamePointRedemption: AbsChannelPointRedemption = superTriviaLotrGamePointRedemption
 
         if triviaGamePointRedemption is None:
-            self.__triviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__triviaGamePointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__triviaGamePointRedemption: AbsChannelPointRedemption = triviaGamePointRedemption
+            self.__triviaGamePointRedemption: AbsChannelPointRedemption2 = triviaGamePointRedemption
 
         if ttsChatterPointRedemption is None:
             self.__ttsChatterPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
@@ -241,15 +241,13 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if channelPointsMessage.rewardId == user.chatterPreferredNameRewardId:
             if await self.__chatterPreferredNamePointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage,
+                channelPointsRedemption = channelPointsRedemption,
             ):
                 return
 
         if user.isChatterPreferredTtsEnabled and channelPointsMessage.rewardId == user.setChatterPreferredTtsRewardId:
             if await self.__chatterPreferredTtsPointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage,
+                channelPointsRedemption = channelPointsRedemption,
             ):
                 return
 
@@ -319,8 +317,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.isTriviaGameEnabled and channelPointsMessage.rewardId == user.triviaGameRewardId:
             if await self.__triviaGamePointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage,
+                channelPointsRedemption = channelPointsRedemption,
             ):
                 return
 
