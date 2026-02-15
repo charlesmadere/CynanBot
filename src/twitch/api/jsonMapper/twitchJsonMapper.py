@@ -221,7 +221,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
         data: FrozenList[TwitchBanResponseEntry] = FrozenList()
 
-        if isinstance(dataArray, list) and len(data) >= 1:
+        if isinstance(dataArray, list) and len(dataArray) >= 1:
             banResponseEntries: list[TwitchBanResponseEntry] = list()
 
             for index, dataItem in enumerate(dataArray):
