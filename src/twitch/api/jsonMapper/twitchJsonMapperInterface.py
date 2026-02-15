@@ -238,7 +238,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseChatter(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChatter:
         pass
 

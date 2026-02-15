@@ -682,7 +682,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseChatter(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChatter:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             raise TypeError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
@@ -694,7 +694,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         return TwitchChatter(
             userId = userId,
             userLogin = userLogin,
-            userName = userName
+            userName = userName,
         )
 
     async def parseChattersResponse(
@@ -704,30 +704,28 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        total = utils.getIntFromDict(jsonResponse, 'total', fallback = 0)
-        pagination = await self.parsePaginationResponse(jsonResponse.get('pagination'))
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        data: FrozenList[TwitchChatter] = FrozenList()
 
-        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
-        frozenChatters: FrozenList[TwitchChatter]
-
-        if isinstance(data, list) and len(data) >= 1:
+        if isinstance(dataArray, list) and len(dataArray) >= 1:
             chatters: list[TwitchChatter] = list()
 
-            for chatterJson in data:
+            for index, chatterJson in enumerate(dataArray):
                 chatter = await self.parseChatter(chatterJson)
                 chatters.append(chatter)
 
             chatters.sort(key = lambda chatter: chatter.userName.casefold())
-            frozenChatters = FrozenList(chatters)
-        else:
-            frozenChatters = FrozenList()
+            data.extend(chatters)
 
-        frozenChatters.freeze()
+        data.freeze()
+
+        total = utils.getIntFromDict(jsonResponse, 'total', fallback = 0)
+        pagination = await self.parsePaginationResponse(jsonResponse.get('pagination'))
 
         return TwitchChattersResponse(
-            data = frozenChatters,
+            data = data,
             total = total,
-            pagination = pagination
+            pagination = pagination,
         )
 
     async def parseCheerMetadata(
@@ -1098,18 +1096,18 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             return None
 
         dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
-        eventSubDetails: FrozenList[TwitchEventSubDetails] = FrozenList()
+        data: FrozenList[TwitchEventSubDetails] = FrozenList()
 
         if isinstance(dataArray, list) and len(dataArray) >= 1:
-            for index, eventSubDetailsJson in enumerate(dataArray):
-                details = await self.parseEventSubDetails(eventSubDetailsJson)
+            for index, dataItem in enumerate(dataArray):
+                eventSubDetails = await self.parseEventSubDetails(dataItem)
 
-                if details is None:
-                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"emotes\" data ({eventSubDetailsJson=}) ({jsonResponse=})')
+                if eventSubDetails is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"emotes\" data ({dataItem=}) ({jsonResponse=})')
                 else:
-                    eventSubDetails.append(details)
+                    data.append(eventSubDetails)
 
-        eventSubDetails.freeze()
+        data.freeze()
 
         maxTotalCost = utils.getIntFromDict(jsonResponse, 'max_total_cost')
         total = utils.getIntFromDict(jsonResponse, 'total')
@@ -1117,7 +1115,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         pagination = await self.parsePaginationResponse(jsonResponse.get('pagination'))
 
         return TwitchEventSubResponse(
-            data = eventSubDetails,
+            data = data,
             maxTotalCost = maxTotalCost,
             total = total,
             totalCost = totalCost,
@@ -1198,7 +1196,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
         data: FrozenList[TwitchModeratorUser] = FrozenList()
 
-        if isinstance(dataArray, list) and len(data) >= 1:
+        if isinstance(dataArray, list) and len(dataArray) >= 1:
             for index, dataItem in enumerate(dataArray):
                 moderatorUser = await self.parseModeratorUser(dataItem)
 
