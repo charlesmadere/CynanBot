@@ -30,7 +30,7 @@ class AioHttpHandle(NetworkHandle):
         url: str,
         headers: dict[str, Any] | None = None,
     ) -> NetworkResponse:
-        response: aiohttp.ClientResponse | None = None
+        response: aiohttp.ClientResponse | None
 
         try:
             response = await self.__clientSession.delete(
@@ -38,10 +38,10 @@ class AioHttpHandle(NetworkHandle):
                 headers = headers,
             )
         except Exception as e:
-            self.__timber.log('AioHttpHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP DELETE ({url=}) ({headers=}): {e}', e)
+            self.__timber.log('AioHttpHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP DELETE ({url=}) ({headers=})', e)
             raise GenericNetworkException(f'Encountered network error (via {self.networkClientType}) when trying to HTTP DELETE ({url=}) ({headers=}): {e}')
 
-        if response is None:
+        if not isinstance(response, aiohttp.ClientResponse):
             self.__timber.log('AioHttpHandle', f'Received no response (via {self.networkClientType}) when trying to HTTP DELETE ({url=}) ({headers=})')
             raise GenericNetworkException(f'Received no response (via {self.networkClientType}) when trying to HTTP DELETE ({url=}) ({headers=})')
 
@@ -56,7 +56,7 @@ class AioHttpHandle(NetworkHandle):
         url: str,
         headers: dict[str, Any] | None = None,
     ) -> NetworkResponse:
-        response: aiohttp.ClientResponse | None = None
+        response: aiohttp.ClientResponse | None
 
         try:
             response = await self.__clientSession.get(
@@ -64,10 +64,10 @@ class AioHttpHandle(NetworkHandle):
                 headers = headers,
             )
         except Exception as e:
-            self.__timber.log('AioHttpHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP GET ({url=}) ({headers=}): {e}', e)
+            self.__timber.log('AioHttpHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP GET ({url=}) ({headers=})', e)
             raise GenericNetworkException(f'Encountered network error (via {self.networkClientType}) when trying to HTTP GET ({url=}) ({headers=}): {e}')
 
-        if response is None:
+        if not isinstance(response, aiohttp.ClientResponse):
             self.__timber.log('AioHttpHandle', f'Received no response (via {self.networkClientType}) when trying to HTTP GET ({url=}) ({headers=})')
             raise GenericNetworkException(f'Received no response (via {self.networkClientType}) when trying to HTTP GET ({url=}) ({headers=})')
 
@@ -87,7 +87,7 @@ class AioHttpHandle(NetworkHandle):
         headers: dict[str, Any] | None = None,
         json: dict[str, Any] | None = None,
     ) -> NetworkResponse:
-        response: aiohttp.ClientResponse | None = None
+        response: aiohttp.ClientResponse | None
 
         try:
             response = await self.__clientSession.post(
@@ -96,10 +96,10 @@ class AioHttpHandle(NetworkHandle):
                 json = json,
             )
         except Exception as e:
-            self.__timber.log('AioHttpHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP POST ({url=}) ({headers=}) ({json=}): {e}', e)
+            self.__timber.log('AioHttpHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP POST ({url=}) ({headers=}) ({json=})', e)
             raise GenericNetworkException(f'Encountered network error (via {self.networkClientType}) when trying to HTTP POST ({url=}) ({headers=}) ({json=}): {e}')
 
-        if response is None:
+        if not isinstance(response, aiohttp.ClientResponse):
             self.__timber.log('AioHttpHandle', f'Received no response (via {self.networkClientType}) when trying to HTTP POST ({url=}) ({headers=}) ({json=})')
             raise GenericNetworkException(f'Received no response (via {self.networkClientType}) when trying to HTTP POST ({url=}) ({headers=}) ({json=})')
 
