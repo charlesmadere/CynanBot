@@ -213,36 +213,40 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseBanResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchBanResponse | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        data: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        data: FrozenList[TwitchBanResponseEntry] = FrozenList()
 
-        if not isinstance(data, list) or len(data) == 0:
-            return None
+        if isinstance(dataArray, list) and len(data) >= 1:
+            banResponseEntries: list[TwitchBanResponseEntry] = list()
 
-        entries: list[TwitchBanResponseEntry] = list()
+            for index, dataItem in enumerate(dataArray):
+                banResponseEntry = await self.parseBanResponseEntry(dataItem)
 
-        for dataEntry in data:
-            entry = await self.parseBanResponseEntry(dataEntry)
-            entries.append(entry)
+                if banResponseEntry is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"data\" element ({jsonResponse=})')
+                else:
+                    banResponseEntries.append(banResponseEntry)
 
-        entries.sort(key = lambda entry: entry.createdAt, reverse = True)
-        frozenEntries: FrozenList[TwitchBanResponseEntry] = FrozenList(entries)
-        frozenEntries.freeze()
+            banResponseEntries.sort(key = lambda entry: entry.createdAt, reverse = True)
+            data.extend(banResponseEntries)
+
+        data.freeze()
 
         return TwitchBanResponse(
-            data = frozenEntries
+            data = data,
         )
 
     async def parseBanResponseEntry(
         self,
-        jsonResponse: dict[str, Any] | Any | None
-    ) -> TwitchBanResponseEntry:
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchBanResponseEntry | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            raise TypeError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+            return None
 
         createdAt = utils.getDateTimeFromDict(jsonResponse, 'created_at')
 
@@ -259,7 +263,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             endTime = endTime,
             broadcasterId = broadcasterId,
             moderatorId = moderatorId,
-            userId = userId
+            userId = userId,
         )
 
     async def parseBannedUser(
@@ -1194,7 +1198,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
         data: FrozenList[TwitchModeratorUser] = FrozenList()
 
-        if isinstance(data, list) and len(data) >= 1:
+        if isinstance(dataArray, list) and len(data) >= 1:
             for index, dataItem in enumerate(dataArray):
                 moderatorUser = await self.parseModeratorUser(dataItem)
 
@@ -1712,21 +1716,16 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             return None
 
         dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
-        if not isinstance(dataArray, list) or len(dataArray) == 0:
-            return None
-
         data: FrozenList[TwitchStartCommercialDetails] = FrozenList()
 
-        for index, dataJson in enumerate(dataArray):
-            commercialDetails = await self.parseStartCommercialDetails(dataJson)
+        if isinstance(dataArray, list) and len(dataArray) >= 1:
+            for index, dataJson in enumerate(dataArray):
+                commercialDetails = await self.parseStartCommercialDetails(dataJson)
 
-            if commercialDetails is None:
-                self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} ({commercialDetails=}) ({jsonResponse=})')
-            else:
-                data.append(commercialDetails)
-
-        if len(data) == 0:
-            return None
+                if commercialDetails is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} ({commercialDetails=}) ({jsonResponse=})')
+                else:
+                    data.append(commercialDetails)
 
         data.freeze()
 

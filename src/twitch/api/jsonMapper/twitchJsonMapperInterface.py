@@ -112,14 +112,14 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseBanResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchBanResponse | None:
         pass
 
     @abstractmethod
     async def parseBanResponseEntry(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchBanResponseEntry:
         pass
 
