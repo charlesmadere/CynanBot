@@ -3,8 +3,6 @@ import traceback
 from datetime import datetime, timedelta
 from typing import Final
 
-from frozenlist import FrozenList
-
 from .twitchTimeoutRemodData import TwitchTimeoutRemodData
 from .twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from .twitchTimeoutRemodRepositoryInterface import TwitchTimeoutRemodRepositoryInterface
@@ -78,17 +76,14 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
 
     async def __refresh(self):
         remodActions = await self.__twitchTimeoutRemodRepository.getAll()
-        frozenRemodActions: FrozenList[TwitchTimeoutRemodData] = FrozenList(remodActions)
-        frozenRemodActions.freeze()
-
-        if len(frozenRemodActions) == 0:
+        if len(remodActions) == 0:
             return
 
         self.__timber.log('TwitchTimeoutRemodHelper', f'Re-applying mod status to {len(remodActions)} user(s)...')
         twitchAccessTokens: dict[str, str | None] = dict()
         broadcastersWithoutTokens: set[str] = set()
 
-        for remodAction in frozenRemodActions:
+        for remodAction in remodActions:
             if remodAction.broadcasterUserId in broadcastersWithoutTokens:
                 continue
 
@@ -129,7 +124,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
 
             await self.__deleteFromRepository(remodAction)
 
-        self.__timber.log('TwitchTimeoutRemodHelper', f'Finished re-applying mod status to {len(frozenRemodActions)} user(s)')
+        self.__timber.log('TwitchTimeoutRemodHelper', f'Finished re-applying mod status to {len(remodActions)} user(s)')
 
     def start(self):
         if self.__isStarted:

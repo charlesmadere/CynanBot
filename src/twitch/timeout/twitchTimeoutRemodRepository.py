@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Collection, Final
+from typing import Final
 
 from frozenlist import FrozenList
 
@@ -80,7 +80,7 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
         await connection.close()
         self.__timber.log('TwitchTimeoutRemodRepository', f'Deleted remod action ({broadcasterUserId=}) ({userId=})')
 
-    async def getAll(self) -> Collection[TwitchTimeoutRemodData]:
+    async def getAll(self) -> FrozenList[TwitchTimeoutRemodData]:
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
             '''
