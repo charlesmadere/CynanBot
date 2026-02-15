@@ -6,5 +6,4 @@ from datetime import datetime
 class TwitchTimeoutRemodData:
     remodDateTime: datetime
     broadcasterUserId: str
-    broadcasterUserName: str
     userId: str

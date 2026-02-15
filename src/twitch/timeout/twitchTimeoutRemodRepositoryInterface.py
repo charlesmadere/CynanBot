@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Collection
+from datetime import datetime
+
+from frozenlist import FrozenList
 
 from .twitchTimeoutRemodData import TwitchTimeoutRemodData
 
@@ -9,7 +11,9 @@ class TwitchTimeoutRemodRepositoryInterface(ABC):
     @abstractmethod
     async def add(
         self,
-        data: TwitchTimeoutRemodData,
+        remodDateTime: datetime,
+        broadcasterUserId: str,
+        userId: str,
     ):
         pass
 
@@ -22,5 +26,5 @@ class TwitchTimeoutRemodRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def getAll(self) -> Collection[TwitchTimeoutRemodData]:
+    async def getAll(self) -> FrozenList[TwitchTimeoutRemodData]:
         pass

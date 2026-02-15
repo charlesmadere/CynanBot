@@ -555,11 +555,11 @@ timber: Final[TimberInterface] = Timber(
     timeZoneRepository = timeZoneRepository,
 )
 
-networkJsonMapper: NetworkJsonMapperInterface = NetworkJsonMapper()
+networkJsonMapper: Final[NetworkJsonMapperInterface] = NetworkJsonMapper()
 
-soundPlayerJsonMapper: SoundPlayerJsonMapperInterface = SoundPlayerJsonMapper()
+soundPlayerJsonMapper: Final[SoundPlayerJsonMapperInterface] = SoundPlayerJsonMapper()
 
-storageJsonMapper: StorageJsonMapperInterface = StorageJsonMapper()
+storageJsonMapper: Final[StorageJsonMapperInterface] = StorageJsonMapper()
 
 generalSettingsRepository = GeneralSettingsRepository(
     settingsJsonReader = JsonFileReader(

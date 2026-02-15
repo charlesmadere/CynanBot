@@ -1,9 +1,7 @@
 import asyncio
 import traceback
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Final
-
-from frozenlist import FrozenList
 
 from .twitchTimeoutRemodData import TwitchTimeoutRemodData
 from .twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
@@ -29,7 +27,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         queueSleepTimeSeconds: float = 3,
-        additionalBufferTime: timedelta = timedelta(seconds = 5),
+        additionalBufferTime: timedelta = timedelta(seconds = 3),
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -78,17 +76,14 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
 
     async def __refresh(self):
         remodActions = await self.__twitchTimeoutRemodRepository.getAll()
-        frozenRemodActions: FrozenList[TwitchTimeoutRemodData] = FrozenList(remodActions)
-        frozenRemodActions.freeze()
-
-        if len(frozenRemodActions) == 0:
+        if len(remodActions) == 0:
             return
 
         self.__timber.log('TwitchTimeoutRemodHelper', f'Re-applying mod status to {len(remodActions)} user(s)...')
         twitchAccessTokens: dict[str, str | None] = dict()
         broadcastersWithoutTokens: set[str] = set()
 
-        for remodAction in frozenRemodActions:
+        for remodAction in remodActions:
             if remodAction.broadcasterUserId in broadcastersWithoutTokens:
                 continue
 
@@ -129,7 +124,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
 
             await self.__deleteFromRepository(remodAction)
 
-        self.__timber.log('TwitchTimeoutRemodHelper', f'Finished re-applying mod status to {len(frozenRemodActions)} user(s)')
+        self.__timber.log('TwitchTimeoutRemodHelper', f'Finished re-applying mod status to {len(remodActions)} user(s)')
 
     def start(self):
         if self.__isStarted:
@@ -153,7 +148,6 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
         self,
         timeoutDurationSeconds: int,
         broadcasterUserId: str,
-        broadcasterUserName: str,
         userId: str,
     ):
         if not utils.isValidInt(timeoutDurationSeconds):
@@ -162,17 +156,14 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
             raise ValueError(f'timeoutDurationSeconds argument is out of bounds: {timeoutDurationSeconds}')
         if not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        elif not utils.isValidStr(broadcasterUserName):
-            raise TypeError(f'broadcasterUserName argument is malformed: \"{broadcasterUserName}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         remodDateTime = now + timedelta(seconds = timeoutDurationSeconds) + self.__additionalBufferTime
 
-        await self.__twitchTimeoutRemodRepository.add(TwitchTimeoutRemodData(
+        await self.__twitchTimeoutRemodRepository.add(
             remodDateTime = remodDateTime,
             broadcasterUserId = broadcasterUserId,
-            broadcasterUserName = broadcasterUserName,
             userId = userId,
-        ))
+        )
