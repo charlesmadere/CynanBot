@@ -58,7 +58,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
                 VALUES ($1)
                 ON CONFLICT (userid) DO NOTHING
             ''',
-            userId
+            userId,
         )
 
         await connection.close()
@@ -79,7 +79,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
         records = await connection.fetchRows(
             '''
                 SELECT userid FROM bannedtriviagamecontrollers
-            '''
+            ''',
         )
 
         await connection.close()
@@ -111,7 +111,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
                         CREATE TABLE IF NOT EXISTS bannedtriviagamecontrollers (
                             userid text NOT NULL PRIMARY KEY
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -120,7 +120,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
                         CREATE TABLE IF NOT EXISTS bannedtriviagamecontrollers (
                             userid TEXT NOT NULL PRIMARY KEY
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:
@@ -148,7 +148,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
                 DELETE FROM bannedtriviagamecontrollers
                 WHERE userid = $1
             ''',
-            userId
+            userId,
         )
 
         await connection.close()
