@@ -203,23 +203,23 @@ async def main():
 
     message = f'Welcome in everyone from Eddie\'s stream! Thanks for the raid. ありがとうございます！'
 
-    fileReference = await googleTtsHelper.generateTts(
-        voicePreset = await googleTtsVoicesHelper.getVoiceForLanguage(LanguageEntry.SWEDISH),
-        allowMultiSpeaker = True,
-        donationPrefix = None,
-        message = message,
-        twitchChannelId = twitchChannelId,
-    )
+    voicePresets = await googleTtsVoicesHelper.getChirp3VoicesForLanguage(LanguageEntry.JAPANESE)
 
-    if fileReference is None:
-        raise RuntimeError(f'expected a non None fileReference: \"{fileReference}\"')
+    for voicePreset in voicePresets:
+        fileReference = await googleTtsHelper.generateTts(
+            voicePreset = voicePreset,
+            allowMultiSpeaker = False,
+            donationPrefix = None,
+            message = message,
+            twitchChannelId = twitchChannelId,
+        )
 
-    print(f'text to speech results: ({message=}) ({twitchChannelId=}) ({fileReference=})')
+        print(f'text to speech results: ({message=}) ({twitchChannelId=}) ({fileReference=}) ({voicePreset=})')
 
-    await soundPlayerManager.playSoundFile(
-        filePath = fileReference.filePath,
-        volume = await googleSettingsRepository.getMediaPlayerVolume(),
-    )
+    # await soundPlayerManager.playSoundFile(
+    #     filePath = fileReference.filePath,
+    #     volume = await googleSettingsRepository.getMediaPlayerVolume(),
+    # )
 
     pass
 

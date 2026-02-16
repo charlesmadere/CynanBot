@@ -191,7 +191,6 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
     JAPANESE_JAPAN_STANDARD_D = auto()
     JAPANESE_JAPAN_CHIRP3_ACHIRD = auto()
     JAPANESE_JAPAN_CHIRP3_ACHERNAR = auto()
-    JAPANESE_JAPAN_CHIRP3_AOEDE = auto()
     JAPANESE_JAPAN_CHIRP3_AUTONOE = auto()
     JAPANESE_JAPAN_CHIRP3_CALLIRRHOE = auto()
     JAPANESE_JAPAN_CHIRP3_DESPINA = auto()
@@ -199,6 +198,14 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
     KANNADA_INDIA_STANDARD_B = auto()
     KANNADA_INDIA_STANDARD_C = auto()
     KANNADA_INDIA_STANDARD_D = auto()
+    KOREAN_KOREA_CHIRP3_ACHERNAR = auto()
+    KOREAN_KOREA_CHIRP3_AUTONOE = auto()
+    KOREAN_KOREA_CHIRP3_CALLIRRHOE = auto()
+    KOREAN_KOREA_CHIRP3_DESPINA = auto()
+    KOREAN_KOREA_CHIRP3_LEDA = auto()
+    KOREAN_KOREA_CHIRP3_PUCK = auto()
+    KOREAN_KOREA_CHIRP3_SCHEDAR = auto()
+    KOREAN_KOREA_CHIRP3_ZEPHYR = auto()
     KOREAN_KOREA_STANDARD_A = auto()
     KOREAN_KOREA_STANDARD_B = auto()
     KOREAN_KOREA_STANDARD_C = auto()
@@ -511,7 +518,6 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
             case GoogleVoicePreset.JAPANESE_JAPAN_STANDARD_D: return 'ja-JP-Standard-D'
             case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_ACHERNAR: return 'ja-JP-Chirp3-HD-Achernar'
             case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_ACHIRD: return 'ja-JP-Chirp3-HD-Achird'
-            case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AOEDE: return 'ja-JA-Chirp3-HD-Aoede'
             case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AUTONOE: return 'ja-JP-Chirp3-HD-Autonoe'
             case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_CALLIRRHOE: return 'ja-JP-Chirp3-HD-Callirrhoe'
             case GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_DESPINA: return 'ja-JP-Chirp3-HD-Despina'
@@ -519,6 +525,14 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
             case GoogleVoicePreset.KANNADA_INDIA_STANDARD_B: return 'kn-IN-Standard-B'
             case GoogleVoicePreset.KANNADA_INDIA_STANDARD_C: return 'kn-IN-Standard-C'
             case GoogleVoicePreset.KANNADA_INDIA_STANDARD_D: return 'kn-IN-Standard-D'
+            case GoogleVoicePreset.KOREAN_KOREA_CHIRP3_ACHERNAR: return 'ko-KR-Chirp3-HD-Achernar'
+            case GoogleVoicePreset.KOREAN_KOREA_CHIRP3_AUTONOE: return 'ko-KR-Chirp3-HD-Autonoe'
+            case GoogleVoicePreset.KOREAN_KOREA_CHIRP3_CALLIRRHOE: return 'ko-KR-Chirp3-HD-Callirrhoe'
+            case GoogleVoicePreset.KOREAN_KOREA_CHIRP3_DESPINA: return 'ko-KR-Chirp3-HD-Despina'
+            case GoogleVoicePreset.KOREAN_KOREA_CHIRP3_LEDA: return 'ko-KR-Chirp3-HD-Leda'
+            case GoogleVoicePreset.KOREAN_KOREA_CHIRP3_PUCK: return 'ko-KR-Chirp3-HD-Puck'
+            case GoogleVoicePreset.KOREAN_KOREA_CHIRP3_SCHEDAR: return 'ko-KR-Chirp3-HD-Schedar'
+            case GoogleVoicePreset.KOREAN_KOREA_CHIRP3_ZEPHYR: return 'ko-KR-Chirp3-HD-Zephyr'
             case GoogleVoicePreset.KOREAN_KOREA_STANDARD_A: return 'ko-KR-Standard-A'
             case GoogleVoicePreset.KOREAN_KOREA_STANDARD_B: return 'ko-KR-Standard-B'
             case GoogleVoicePreset.KOREAN_KOREA_STANDARD_C: return 'ko-KR-Standard-C'
