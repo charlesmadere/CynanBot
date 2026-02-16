@@ -91,7 +91,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
         return f'{normalizedEmote} {triviaSource}:{reference.triviaId} — dateTime:{dateAndTimeString} ({relativeTimeString}) triviaType:{triviaType} isLocal:{isLocal} additionalAnswers:{additionalAnswersLen} occurrences:{occurrencesStr}'
 
     async def __getRelativeTimeString(self, dateTime: datetime) -> str:
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         questionDateTimeVersusNowSeconds = round((now - dateTime).total_seconds())
 
         if questionDateTimeVersusNowSeconds <= 3:

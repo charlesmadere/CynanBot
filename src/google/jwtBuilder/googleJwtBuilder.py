@@ -1,6 +1,6 @@
 import calendar
-from datetime import datetime, timedelta
-from typing import Any
+from datetime import timedelta
+from typing import Any, Final
 
 import jwt
 
@@ -39,12 +39,12 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
         elif len(googleScopes) == 0:
             raise ValueError(f'googleScopes argument is empty: \"{googleScopes}\"')
 
-        self.__googleCloudCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = googleCloudCredentialsProvider
-        self.__googleJsonMapper: GoogleJsonMapperInterface = googleJsonMapper
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__googleScopes: frozenset[GoogleScope] = googleScopes
+        self.__googleCloudCredentialsProvider: Final[GoogleCloudProjectCredentialsProviderInterface] = googleCloudCredentialsProvider
+        self.__googleJsonMapper: Final[GoogleJsonMapperInterface] = googleJsonMapper
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__googleScopes: Final[frozenset[GoogleScope]] = googleScopes
 
-        self.__scopesString: str | None = None
+        self.__scopeString: str | None = None
 
     async def __buildHeadersDictionary(self) -> dict[str, Any]:
         keyId = await self.__googleCloudCredentialsProvider.getGoogleCloudProjectKeyId()
@@ -72,7 +72,7 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
         )
 
     async def __buildPayloadDictionary(self) -> dict[str, Any]:
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         expirationTime = calendar.timegm((now + timedelta(minutes = 59, seconds = 45)).timetuple())
         issuedTime = calendar.timegm(now.timetuple())
 
@@ -80,20 +80,21 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
         if not utils.isValidStr(serviceAccountEmail):
             raise GoogleCloudServiceAccountEmailUnavailableException(f'No Google Cloud Service Account Email is available: \"{serviceAccountEmail}\"')
 
+        scope = await self.__buildScopeString()
+
         return {
             'aud': 'https://oauth2.googleapis.com/token',
             'exp': expirationTime,
             'iat': issuedTime,
             'iss': serviceAccountEmail,
-            'scope': await self.__buildScopesString(),
+            'scope': scope,
         }
 
-    async def __buildScopesString(self) -> str:
-        scopesString = self.__scopesString
+    async def __buildScopeString(self) -> str:
+        scopeString = self.__scopeString
 
-        if scopesString is None:
-            scopes = list(self.__googleScopes)
-            scopesString = await self.__googleJsonMapper.serializeScopes(scopes)
-            self.__scopesString = scopesString
+        if scopeString is None:
+            scopeString = await self.__googleJsonMapper.serializeScopes(self.__googleScopes)
+            self.__scopeString = scopeString
 
-        return scopesString
+        return scopeString

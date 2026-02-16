@@ -1,7 +1,7 @@
 import asyncio
 import queue
 import traceback
-from datetime import datetime, timedelta
+from datetime import timedelta
 from queue import SimpleQueue
 from typing import Final
 
@@ -83,7 +83,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             self.__timber.log('CrowdControlMachine', f'Abandoning action due to too many handle attempts ({action=})')
             return CrowdControlActionHandleResult.ABANDON
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         if now > action.dateTime + timedelta(seconds = await self.__crowdControlSettingsRepository.getSecondsToLive()):
             self.__timber.log('CrowdControlMachine', f'Abandoning action due to age exceeding time to live ({action=})')
             return CrowdControlActionHandleResult.ABANDON
@@ -102,11 +102,13 @@ class CrowdControlMachine(CrowdControlMachineInterface):
                 action = action,
                 actionHandler = actionHandler,
             )
+
         elif isinstance(action, GameShuffleCrowdControlAction):
             handleResult = await self.__handleGameShuffleAction(
                 action = action,
                 actionHandler = actionHandler,
             )
+
         else:
             raise TypeError(f'Encountered unknown CrowdControlAction type: ({action=})')
 

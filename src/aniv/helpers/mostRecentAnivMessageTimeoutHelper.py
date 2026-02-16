@@ -1,6 +1,6 @@
 import random
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Final
 
 from frozendict import frozendict
@@ -282,7 +282,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         user: UserInterface,
     ) -> FrozenList[MostRecentAnivMessage]:
         validAnivMessages: FrozenList[MostRecentAnivMessage] = FrozenList()
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         maxAgeSeconds = user.anivMessageCopyMaxAgeSeconds
         if not utils.isValidInt(maxAgeSeconds):

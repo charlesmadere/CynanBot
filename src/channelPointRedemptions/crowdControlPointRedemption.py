@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Final
 
 from .absChannelPointRedemption import AbsChannelPointRedemption
@@ -64,7 +63,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
         if boosterPack is None:
             return False
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         actionId = await self.__crowdControlIdGenerator.generateActionId()
 
         if boosterPack.inputType is CrowdControlInputType.GAME_SHUFFLE:

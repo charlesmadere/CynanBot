@@ -88,7 +88,7 @@ class CrowdControlAutomator(CrowdControlAutomatorInterface):
         if len(self.__automatorData) == 0:
             return
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         twitchChannelIds: set[str] = set()
 
         for automatorData in self.__automatorData.values():

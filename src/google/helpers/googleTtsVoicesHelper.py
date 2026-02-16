@@ -76,10 +76,21 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
                 voicePresets = {
                     GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_ACHERNAR,
                     GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_ACHIRD,
-                    GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AOEDE,
                     GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_AUTONOE,
                     GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_CALLIRRHOE,
                     GoogleVoicePreset.JAPANESE_JAPAN_CHIRP3_DESPINA,
+                }
+
+            case LanguageEntry.KOREAN:
+                voicePresets = {
+                    GoogleVoicePreset.KOREAN_KOREA_CHIRP3_ACHERNAR,
+                    GoogleVoicePreset.KOREAN_KOREA_CHIRP3_AUTONOE,
+                    GoogleVoicePreset.KOREAN_KOREA_CHIRP3_CALLIRRHOE,
+                    GoogleVoicePreset.KOREAN_KOREA_CHIRP3_DESPINA,
+                    GoogleVoicePreset.KOREAN_KOREA_CHIRP3_LEDA,
+                    GoogleVoicePreset.KOREAN_KOREA_CHIRP3_PUCK,
+                    GoogleVoicePreset.KOREAN_KOREA_CHIRP3_SCHEDAR,
+                    GoogleVoicePreset.KOREAN_KOREA_CHIRP3_ZEPHYR,
                 }
 
             case LanguageEntry.SPANISH:
