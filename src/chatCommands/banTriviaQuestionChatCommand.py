@@ -60,7 +60,7 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def __getRelativeTimeString(self, dateTime: datetime) -> str:
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         questionDateTimeVersusNowSeconds = round((now - dateTime).total_seconds())
 
         if questionDateTimeVersusNowSeconds <= 30:
