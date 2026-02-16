@@ -1,6 +1,8 @@
 import re
 from typing import Any, Final, Pattern
 
+from frozendict import frozendict
+
 from .chatterPreferredNameStringCleanerInterface import ChatterPreferredNameStringCleanerInterface
 from ...misc import utils as utils
 
@@ -19,7 +21,12 @@ class ChatterPreferredNameStringCleaner(ChatterPreferredNameStringCleanerInterfa
         self.__maxLength: Final[int] = maxLength
 
         self.__invalidCharactersRegEx: Final[Pattern] = re.compile(r'[^\w\s]', re.IGNORECASE)
-        self.__spaceReplacementCharactersRegEx: Final[Pattern] = re.compile(r'[_-]', re.IGNORECASE)
+
+        self.__whitespaceReplacementCharacterRegExes: Final[frozendict[Pattern, str]] = frozendict({
+            re.compile(r'_{2,}', re.IGNORECASE): '_',
+            re.compile(r'-{2,}', re.IGNORECASE): '-',
+            re.compile(r' {2,}', re.IGNORECASE): ' ',
+        })
 
     async def clean(
         self,
@@ -29,7 +36,10 @@ class ChatterPreferredNameStringCleaner(ChatterPreferredNameStringCleanerInterfa
             return None
 
         cleanedPreferredName = utils.cleanStr(preferredName)
-        cleanedPreferredName = self.__spaceReplacementCharactersRegEx.sub(' ', cleanedPreferredName).strip()
+
+        for pattern, replacement in self.__whitespaceReplacementCharacterRegExes.items():
+            cleanedPreferredName = pattern.sub(replacement, cleanedPreferredName)
+
         cleanedPreferredName = self.__invalidCharactersRegEx.sub('', cleanedPreferredName).strip()
         cleanedPreferredName = utils.cleanStr(cleanedPreferredName)
 

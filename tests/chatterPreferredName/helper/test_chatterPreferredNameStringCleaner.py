@@ -58,8 +58,13 @@ class TestChatterPreferredNameStringCleaner:
 
     @pytest.mark.asyncio
     async def test_clean_withName4(self):
-        result = await self.cleaner.clean('\"bastion_blue_succubus87\"')
-        assert result == 'bastion blue succubus87'
+        result = await self.cleaner.clean('\"bastion___blue__succubus87\"')
+        assert result == 'bastion_blue_succubus87'
+
+    @pytest.mark.asyncio
+    async def test_clean_withName5(self):
+        result = await self.cleaner.clean('zanian_')
+        assert result == 'zanian_'
 
     @pytest.mark.asyncio
     async def test_clean_withSentence1(self):
