@@ -78,7 +78,7 @@ timber: Final[TimberInterface] = TimberStub()
 
 timeZoneRepository: Final[TimeZoneRepositoryInterface] = TimeZoneRepository()
 
-aioHttpCookieJarProvider = AioHttpCookieJarProvider(
+aioHttpCookieJarProvider: Final[AioHttpCookieJarProvider] = AioHttpCookieJarProvider(
     eventLoop = eventLoop,
 )
 
@@ -88,12 +88,12 @@ networkClientProvider: Final[NetworkClientProvider] = AioHttpClientProvider(
     timber = timber,
 )
 
-googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
+googleApiAccessTokenStorage: Final[GoogleApiAccessTokenStorageInterface] = GoogleApiAccessTokenStorage(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
 )
 
-googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = FakeGoogleCloudProjectCredentialsProvider()
+googleCloudProjectCredentialsProvider: Final[GoogleCloudProjectCredentialsProviderInterface] = FakeGoogleCloudProjectCredentialsProvider()
 
 googleJsonMapper: Final[GoogleJsonMapperInterface] = GoogleJsonMapper(
     timber = timber,
@@ -125,9 +125,9 @@ googleTtsApiHelper: Final[GoogleTtsApiHelperInterface] = GoogleTtsApiHelper(
     timber = timber,
 )
 
-glacialTtsDataMapper: GlacialTtsDataMapperInterface = GlacialTtsDataMapper()
+glacialTtsDataMapper: Final[GlacialTtsDataMapperInterface] = GlacialTtsDataMapper()
 
-glacialTtsIdGenerator: GlacialTtsIdGeneratorInterface = GlacialTtsIdGenerator()
+glacialTtsIdGenerator: Final[GlacialTtsIdGeneratorInterface] = GlacialTtsIdGenerator()
 
 glacialTtsStorageRepository: Final[GlacialTtsStorageRepositoryInterface] = GlacialTtsStorageRepository(
     glacialTtsDataMapper = glacialTtsDataMapper,
