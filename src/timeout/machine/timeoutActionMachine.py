@@ -335,7 +335,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
         except UnknownTimeoutTargetException as e:
-            self.__timber.log('TimeoutActionMachine', f'Failed to determine banana timeout target ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TimeoutActionMachine', f'Failed to determine banana timeout target ({action=})', e, traceback.format_exc())
             await self.__submitEvent(NoBananaTargetAvailableTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
@@ -406,7 +406,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
         except UnknownTimeoutTargetException as e:
-            self.__timber.log('TimeoutActionMachine', f'Failed to determine banana timeout target ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TimeoutActionMachine', f'Failed to determine banana timeout target ({action=})', e, traceback.format_exc())
             await self.__submitEvent(NoBananaTargetAvailableTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
@@ -495,7 +495,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 chatterUserId = action.targetUserId,
             )
         except Exception as e:
-            self.__timber.log('TimeoutActionMachine', f'Failed to fetch username for basic timeout target ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TimeoutActionMachine', f'Failed to fetch username for basic timeout target ({action=})', e, traceback.format_exc())
             await self.__submitEvent(BasicTimeoutTargetUnavailableTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
@@ -992,7 +992,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                     action = self.__actionQueue.get_nowait()
                     actions.append(action)
             except queue.Empty as e:
-                self.__timber.log('TimeoutActionMachine', f'Encountered queue.Empty when building up actions list (queue size: {self.__actionQueue.qsize()}) ({len(actions)=}): {e}', e, traceback.format_exc())
+                self.__timber.log('TimeoutActionMachine', f'Encountered queue.Empty when building up actions list (queue size: {self.__actionQueue.qsize()}) ({len(actions)=})', e, traceback.format_exc())
 
             actions.freeze()
 
@@ -1000,7 +1000,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 try:
                     await self.__handleTimeoutAction(action)
                 except Exception as e:
-                    self.__timber.log('TimeoutActionMachine', f'Encountered unknown Exception when looping through actions (queue size: {self.__actionQueue.qsize()}) ({len(actions)=}) ({index=}) ({action=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('TimeoutActionMachine', f'Encountered unknown Exception when looping through actions (queue size: {self.__actionQueue.qsize()}) ({len(actions)=}) ({index=}) ({action=})', e, traceback.format_exc())
 
             await asyncio.sleep(self.__sleepTimeSeconds)
 
@@ -1016,7 +1016,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                         event = self.__eventQueue.get_nowait()
                         events.append(event)
                 except queue.Empty as e:
-                    self.__timber.log('TimeoutActionMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('TimeoutActionMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=})', e, traceback.format_exc())
 
                 events.freeze()
 
@@ -1024,7 +1024,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                     try:
                         await eventListener.onNewTimeoutEvent(event)
                     except Exception as e:
-                        self.__timber.log('TimeoutActionMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({index=}) ({event=}): {e}', e, traceback.format_exc())
+                        self.__timber.log('TimeoutActionMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({index=}) ({event=})', e, traceback.format_exc())
 
             await asyncio.sleep(self.__sleepTimeSeconds)
 
@@ -1035,7 +1035,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         try:
             self.__actionQueue.put(action, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
-            self.__timber.log('TimeoutActionMachine', f'Encountered queue.Full when submitting a new action ({action}) into the action queue (queue size: {self.__actionQueue.qsize()}): {e}', e, traceback.format_exc())
+            self.__timber.log('TimeoutActionMachine', f'Encountered queue.Full when submitting a new action ({action}) into the action queue (queue size: {self.__actionQueue.qsize()})', e, traceback.format_exc())
 
     async def __submitEvent(self, event: AbsTimeoutEvent):
         if not isinstance(event, AbsTimeoutEvent):
@@ -1044,7 +1044,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         try:
             self.__eventQueue.put(event, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
-            self.__timber.log('TimeoutActionMachine', f'Encountered queue.Full when submitting a new event ({event}) into the event queue (queue size: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
+            self.__timber.log('TimeoutActionMachine', f'Encountered queue.Full when submitting a new event ({event}) into the event queue (queue size: {self.__eventQueue.qsize()})', e, traceback.format_exc())
 
     async def __verifyStreamLiveStatus(self, action: AbsTimeoutAction) -> bool:
         streamStatusRequirement = action.getStreamStatusRequirement()
