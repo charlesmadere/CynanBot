@@ -92,10 +92,10 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         try:
             await asyncio.wait_for(playPlaylist(), timeout = timeoutSeconds)
         except TimeoutError as e:
-            self.__timber.log('HalfLifeTtsManager', f'Stopping TTS event due to timeout ({playlist=}) ({timeoutSeconds=}): {e}', e)
+            self.__timber.log('HalfLifeTtsManager', f'Stopping TTS event due to timeout ({playlist=}) ({timeoutSeconds=})', e)
             await self.stopTtsEvent()
         except Exception as e:
-            self.__timber.log('HalfLifeTtsManager', f'Stopping TTS event due to unknown exception ({playlist=}) ({timeoutSeconds=}): {e}', e, traceback.format_exc())
+            self.__timber.log('HalfLifeTtsManager', f'Stopping TTS event due to unknown exception ({playlist=}) ({timeoutSeconds=})', e, traceback.format_exc())
             await self.stopTtsEvent()
 
     @property

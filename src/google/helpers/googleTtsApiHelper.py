@@ -36,7 +36,7 @@ class GoogleTtsApiHelper(GoogleTtsApiHelperInterface):
         try:
             response = await self.__googleApiService.textToSpeech(request)
         except (GenericNetworkException, GoogleCloudProjectIdUnavailableException) as e:
-            self.__timber.log('GoogleTtsApiHelper', f'Failed to fetch Google text to speech ({request=}): {e}', e, traceback.format_exc())
+            self.__timber.log('GoogleTtsApiHelper', f'Failed to fetch Google text to speech ({request=})', e, traceback.format_exc())
             return None
 
         try:
@@ -45,5 +45,5 @@ class GoogleTtsApiHelper(GoogleTtsApiHelperInterface):
                 validate = True
             )
         except binascii.Error as e:
-            self.__timber.log('GoogleTtsApiHelper', f'Unable to decode base64 string into bytes due to bad characters ({request=}) ({response=}): {e}', e, traceback.format_exc())
+            self.__timber.log('GoogleTtsApiHelper', f'Unable to decode base64 string into bytes due to bad characters ({request=}) ({response=})', e, traceback.format_exc())
             return None
