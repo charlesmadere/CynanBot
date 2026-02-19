@@ -97,10 +97,10 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         try:
             await asyncio.wait_for(playSoundFile(), timeout = timeoutSeconds)
         except TimeoutError as e:
-            self.__timber.log('MicrosoftSamTtsManager', f'Stopping TTS event due to timeout ({fileReference=}) ({timeoutSeconds=}): {e}', e)
+            self.__timber.log('MicrosoftSamTtsManager', f'Stopping TTS event due to timeout ({fileReference=}) ({timeoutSeconds=})', e)
             await self.stopTtsEvent()
         except Exception as e:
-            self.__timber.log('MicrosoftSamTtsManager', f'Stopping TTS event due to unknown exception ({fileReference=}) ({timeoutSeconds=}): {e}', e, traceback.format_exc())
+            self.__timber.log('MicrosoftSamTtsManager', f'Stopping TTS event due to unknown exception ({fileReference=}) ({timeoutSeconds=})', e, traceback.format_exc())
             await self.stopTtsEvent()
 
     @property
