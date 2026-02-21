@@ -190,6 +190,7 @@ class UsersRepository(UsersRepositoryInterface):
         isGiveCutenessEnabled = utils.getBoolFromDict(userJson, 'giveCutenessEnabled', False)
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
         isLoremIpsumEnabled = utils.getBoolFromDict(userJson, 'loremIpsumEnabled', True)
+        isMouseCursorEnabled = utils.getBoolFromDict(userJson, 'mouseCursorEnabled', False)
         isNotifyOfHypeTrainProgressEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.NOTIFY_OF_HYPE_TRAIN_PROGRESS_ENABLED.jsonKey, True)
         isNotifyOfHypeTrainStartEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.NOTIFY_OF_HYPE_TRAIN_START_ENABLED.jsonKey, True)
         isNotifyOfPollResultsEnabled = utils.getBoolFromDict(userJson, 'notifyOfPollResultsEnabled', True)
@@ -399,6 +400,10 @@ class UsersRepository(UsersRepositoryInterface):
             timeZones.append(self.__timeZoneRepository.getTimeZone(userJson['timeZone']))
             timeZones.freeze()
 
+        mouseCursorRewardId: str | None = None
+        if isMouseCursorEnabled:
+            mouseCursorRewardId = utils.getStrFromDict(userJson, 'mouseCursorRewardId', '')
+
         user = User(
             areAsplodieStatsEnabled = areAsplodieStatsEnabled,
             areBeanStatsEnabled = areBeanStatsEnabled,
@@ -427,6 +432,7 @@ class UsersRepository(UsersRepositoryInterface):
             isGiveCutenessEnabled = isGiveCutenessEnabled,
             isJishoEnabled = isJishoEnabled,
             isLoremIpsumEnabled = isLoremIpsumEnabled,
+            isMouseCursorEnabled = isMouseCursorEnabled,
             isNotifyOfHypeTrainProgressEnabled = isNotifyOfHypeTrainProgressEnabled,
             isNotifyOfHypeTrainStartEnabled = isNotifyOfHypeTrainStartEnabled,
             isNotifyOfPollResultsEnabled = isNotifyOfPollResultsEnabled,
@@ -493,6 +499,7 @@ class UsersRepository(UsersRepositoryInterface):
             instagram = instagram,
             locationId = locationId,
             mastodonUrl = mastodonUrl,
+            mouseCursorRewardId = mouseCursorRewardId,
             pkmnBattleRewardId = pkmnBattleRewardId,
             pkmnEvolveRewardId = pkmnEvolveRewardId,
             pkmnShinyRewardId = pkmnShinyRewardId,

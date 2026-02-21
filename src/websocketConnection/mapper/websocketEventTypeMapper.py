@@ -10,4 +10,5 @@ class WebsocketEventTypeMapper(WebsocketEventTypeMapperInterface):
 
         match eventType:
             case WebsocketEventType.CHANNEL_PREDICTION: return 'channelPrediction'
+            case WebsocketEventType.MOUSE_CURSOR: return 'mouseCursor'
             case _: raise RuntimeError(f'unknown WebsocketEventType value: \"{eventType}\"')
