@@ -16,7 +16,7 @@ class MouseCursorHelper(MouseCursorHelperInterface):
         timber: TimberInterface,
         usersRepository: UsersRepositoryInterface,
         websocketConnectionServer: WebsocketConnectionServerInterface,
-        visibilityDuration: timedelta = timedelta(seconds = 16),
+        visibilityDuration: timedelta = timedelta(seconds = 20),
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')

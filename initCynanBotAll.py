@@ -36,6 +36,7 @@ from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGame
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
 from src.channelPointRedemptions.decTalkSongPointRedemption import DecTalkSongPointRedemption
+from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from src.channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
 from src.channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from src.channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
@@ -305,6 +306,8 @@ from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
+from src.mouseCursor.mouseCursorHelper import MouseCursorHelper
+from src.mouseCursor.mouseCursorHelperInterface import MouseCursorHelperInterface
 from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.networkClientProvider import NetworkClientProvider
@@ -3234,21 +3237,21 @@ eccoHelper: Final[EccoHelperInterface] = EccoHelper(
 ## Websocket Connection Server initialization section ##
 ########################################################
 
-websocketConnectionServerSettings: WebsocketConnectionServerSettingsInterface = WebsocketConnectionServerSettings(
+websocketConnectionServerSettings: Final[WebsocketConnectionServerSettingsInterface] = WebsocketConnectionServerSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/websocketConnectionServerSettings.json'
-    )
+        fileName = '../config/websocketConnectionServerSettings.json',
+    ),
 )
 
-websocketEventTypeMapper: WebsocketEventTypeMapperInterface = WebsocketEventTypeMapper()
+websocketEventTypeMapper: Final[WebsocketEventTypeMapperInterface] = WebsocketEventTypeMapper()
 
-websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnectionServer(
+websocketConnectionServer: Final[WebsocketConnectionServerInterface] = WebsocketConnectionServer(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     websocketConnectionServerSettings = websocketConnectionServerSettings,
-    websocketEventTypeMapper = websocketEventTypeMapper
+    websocketEventTypeMapper = websocketEventTypeMapper,
 )
 
 
@@ -3285,6 +3288,22 @@ redemptionCounterPointRedemption = RedemptionCounterPointRedemption(
 )
 
 
+#########################################
+## Mouse Cursor initialization section ##
+#########################################
+
+mouseCursorHelper: Final[MouseCursorHelperInterface] = MouseCursorHelper(
+    timber = timber,
+    usersRepository = usersRepository,
+    websocketConnectionServer = websocketConnectionServer,
+)
+
+mouseCursorPointRedemption: Final[MouseCursorPointRedemption] = MouseCursorPointRedemption(
+    mouseCursorHelper = mouseCursorHelper,
+    timber = timber,
+)
+
+
 ##########################################
 ## Twitch events initialization section ##
 ##########################################
@@ -3296,7 +3315,7 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = cutenessPointRedemption,
     decTalkSongPointRedemption = decTalkSongPointRedemption,
-    mouseCursorPointRedemption = None,
+    mouseCursorPointRedemption = mouseCursorPointRedemption,
     pkmnBattlePointRedemption = pkmnBattlePointRedemption,
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,
     pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,
