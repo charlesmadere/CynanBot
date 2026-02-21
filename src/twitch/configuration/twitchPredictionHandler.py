@@ -1,3 +1,4 @@
+import locale
 from typing import Final
 
 from ..absTwitchPredictionHandler import AbsTwitchPredictionHandler
@@ -74,23 +75,30 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         topPredictorsStrings: list[str] = list()
 
         for topPredictor in winningOutcome.topPredictors:
-            topPredictorsStrings.append(f'@{topPredictor.userName} ({topPredictor.channelPointsWonStr})')
+            channelPointsWon = topPredictor.channelPointsWon
+
+            if channelPointsWon is None or channelPointsWon < 1:
+                continue
+
+            channelPointsWonStr = locale.format_string("%d", channelPointsWon, grouping = True)
+            topPredictorsStrings.append(f'@{topPredictor.userName} ({channelPointsWonStr})')
 
         if len(topPredictorsStrings) > self.__maxTopPredictors:
             topPredictorsStrings = topPredictorsStrings[:self.__maxTopPredictors]
 
-        predictorPluralization: str
-        if len(topPredictorsStrings) == 1:
-            predictorPluralization = 'Top predictor:'
-        else:
-            predictorPluralization = 'Top predictors:'
+        predictorPluralization = ''
 
-        topPredictorsString = ', '.join(topPredictorsStrings)
+        if len(topPredictorsStrings) >= 1:
+            if len(topPredictorsStrings) == 1:
+                predictorPluralization = 'Top predictor:'
+            else:
+                predictorPluralization = 'Top predictors:'
+
         messagePrefix = f'🗳️ \"{winningOutcome.title}\" is the winning outcome!'
-        fullMessage = f'{messagePrefix} {predictorPluralization} {topPredictorsString}'
+        topPredictorsString = ', '.join(topPredictorsStrings)
 
         self.__twitchChatMessenger.send(
-            text = fullMessage,
+            text = f'{messagePrefix} {predictorPluralization} {topPredictorsString}',
             twitchChannelId = predictionData.twitchChannelId,
         )
 
