@@ -2363,6 +2363,7 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = None,
     decTalkSongPointRedemption = decTalkSongPointRedemption,
+    mouseCursorPointRedemption = None,
     pkmnBattlePointRedemption = None,
     pkmnCatchPointRedemption = None,
     pkmnEvolvePointRedemption = None,
