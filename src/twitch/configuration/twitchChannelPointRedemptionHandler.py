@@ -7,11 +7,9 @@ from typing import Final
 from frozenlist import FrozenList
 
 from .twitchChannelPointsMessage import TwitchChannelPointsMessage
-from .twitchChannelProvider import TwitchChannelProvider
 from ..absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
-from ...channelPointRedemptions.absChannelPointRedemption import AbsChannelPointRedemption
 from ...channelPointRedemptions.absChannelPointRedemption2 import AbsChannelPointRedemption2
 from ...channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
 from ...channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
@@ -24,7 +22,6 @@ from ...channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePoint
 from ...channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
 from ...channelPointRedemptions.redemptionCounterPointRedemption import RedemptionCounterPointRedemption
 from ...channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
-from ...channelPointRedemptions.stub.stubChannelPointRedemption import StubPointRedemption
 from ...channelPointRedemptions.stub.stubChannelPointRedemption2 import StubChannelPointRedemption2
 from ...channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
 from ...channelPointRedemptions.superTriviaLotrGamePointRedemption import SuperTriviaLotrGamePointRedemption
@@ -119,7 +116,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         self.__isStarted: bool = False
         self.__channelPointsMessagesQueue: Final[SimpleQueue[TwitchChannelPointsMessage]] = SimpleQueue()
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
         if casualGamePollPointRedemption is None:
             self.__casualGamePollPointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
@@ -137,54 +133,54 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__chatterPreferredTtsPointRedemption: AbsChannelPointRedemption2 = chatterPreferredTtsPointRedemption
 
         if cutenessPointRedemption is None:
-            self.__cutenessPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__cutenessPointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__cutenessPointRedemption: AbsChannelPointRedemption = cutenessPointRedemption
+            self.__cutenessPointRedemption: AbsChannelPointRedemption2 = cutenessPointRedemption
 
         if decTalkSongPointRedemption is None:
-            self.__decTalkSongPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__decTalkSongPointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__decTalkSongPointRedemption: AbsChannelPointRedemption = decTalkSongPointRedemption
+            self.__decTalkSongPointRedemption: AbsChannelPointRedemption2 = decTalkSongPointRedemption
 
         if pkmnBattlePointRedemption is None:
-            self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__pkmnBattlePointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = pkmnBattlePointRedemption
+            self.__pkmnBattlePointRedemption: AbsChannelPointRedemption2 = pkmnBattlePointRedemption
 
         if pkmnCatchPointRedemption is None:
-            self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__pkmnCatchPointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = pkmnCatchPointRedemption
+            self.__pkmnCatchPointRedemption: AbsChannelPointRedemption2 = pkmnCatchPointRedemption
 
         if pkmnEvolvePointRedemption is None:
-            self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = pkmnEvolvePointRedemption
+            self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption2 = pkmnEvolvePointRedemption
 
         if pkmnShinyPointRedemption is None:
-            self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__pkmnShinyPointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = pkmnShinyPointRedemption
+            self.__pkmnShinyPointRedemption: AbsChannelPointRedemption2 = pkmnShinyPointRedemption
 
         if redemptionCounterPointRedemption is None:
-            self.__redemptionCounterPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__redemptionCounterPointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__redemptionCounterPointRedemption: AbsChannelPointRedemption = redemptionCounterPointRedemption
+            self.__redemptionCounterPointRedemption: AbsChannelPointRedemption2 = redemptionCounterPointRedemption
 
         if soundAlertPointRedemption is None:
-            self.__soundAlertPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__soundAlertPointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__soundAlertPointRedemption: AbsChannelPointRedemption = soundAlertPointRedemption
+            self.__soundAlertPointRedemption: AbsChannelPointRedemption2 = soundAlertPointRedemption
 
         if superTriviaGamePointRedemption is None:
-            self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__superTriviaGamePointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = superTriviaGamePointRedemption
+            self.__superTriviaGamePointRedemption: AbsChannelPointRedemption2 = superTriviaGamePointRedemption
 
         if superTriviaLotrGamePointRedemption is None:
-            self.__superTriviaLotrGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__superTriviaLotrGamePointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__superTriviaLotrGamePointRedemption: AbsChannelPointRedemption = superTriviaLotrGamePointRedemption
+            self.__superTriviaLotrGamePointRedemption: AbsChannelPointRedemption2 = superTriviaLotrGamePointRedemption
 
         if triviaGamePointRedemption is None:
             self.__triviaGamePointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
@@ -192,9 +188,9 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__triviaGamePointRedemption: AbsChannelPointRedemption2 = triviaGamePointRedemption
 
         if ttsChatterPointRedemption is None:
-            self.__ttsChatterPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
+            self.__ttsChatterPointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
         else:
-            self.__ttsChatterPointRedemption: AbsChannelPointRedemption = ttsChatterPointRedemption
+            self.__ttsChatterPointRedemption: AbsChannelPointRedemption2 = ttsChatterPointRedemption
 
         if voicemailPointRedemption is None:
             self.__voicemailPointRedemption: AbsChannelPointRedemption2 = StubChannelPointRedemption2()
@@ -205,14 +201,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         if not isinstance(channelPointsMessage, TwitchChannelPointsMessage):
             raise TypeError(f'channelPointsMessage argument is malformed: \"{channelPointsMessage}\"')
 
-        twitchChannelProvider = self.__twitchChannelProvider
-
-        if twitchChannelProvider is None:
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Abandoning handling of this channel point redemption as no TwitchChannelProvider has been set ({twitchChannelProvider=}) ({channelPointsMessage=})')
-            return
-
         user = channelPointsMessage.twitchUser
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.handle)
 
         # TODO eventually this will be moved elsewhere, but for now, it's fine here
         channelPointsRedemption = TwitchChannelPointsRedemption(
@@ -229,8 +218,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.areRedemptionCountersEnabled:
             await self.__redemptionCounterPointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage,
+                channelPointsRedemption = channelPointsRedemption,
             )
 
         if user.isCasualGamePollEnabled and channelPointsMessage.rewardId == user.casualGamePollRewardId:
@@ -253,65 +241,56 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.isCutenessEnabled:
             if await self.__cutenessPointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage,
+                channelPointsRedemption = channelPointsRedemption,
             ):
                 return
 
         if user.isDecTalkSongsEnabled:
             if await self.__decTalkSongPointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage,
+                channelPointsRedemption = channelPointsRedemption,
             ):
                 return
 
         if user.isPkmnEnabled:
             if channelPointsMessage.rewardId == user.pkmnBattleRewardId:
                 if await self.__pkmnBattlePointRedemption.handlePointRedemption(
-                    twitchChannel = twitchChannel,
-                    twitchChannelPointsMessage = channelPointsMessage,
+                    channelPointsRedemption = channelPointsRedemption,
                 ):
                     return
 
             if await self.__pkmnCatchPointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage,
+                channelPointsRedemption = channelPointsRedemption,
             ):
                 return
 
             if channelPointsMessage.rewardId == user.pkmnEvolveRewardId:
                 if await self.__pkmnEvolvePointRedemption.handlePointRedemption(
-                    twitchChannel = twitchChannel,
-                    twitchChannelPointsMessage = channelPointsMessage,
+                    channelPointsRedemption = channelPointsRedemption,
                 ):
                     return
 
             if channelPointsMessage.rewardId == user.pkmnShinyRewardId:
                 if await self.__pkmnShinyPointRedemption.handlePointRedemption(
-                    twitchChannel = twitchChannel,
-                    twitchChannelPointsMessage = channelPointsMessage,
+                    channelPointsRedemption = channelPointsRedemption,
                 ):
                     return
 
         if user.areSoundAlertsEnabled:
             if await self.__soundAlertPointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage,
+                channelPointsRedemption = channelPointsRedemption,
             ):
                 return
 
         if user.isSuperTriviaGameEnabled:
             if channelPointsMessage.rewardId == user.superTriviaGameRewardId:
                 if await self.__superTriviaGamePointRedemption.handlePointRedemption(
-                    twitchChannel = twitchChannel,
-                    twitchChannelPointsMessage = channelPointsMessage,
+                    channelPointsRedemption = channelPointsRedemption,
                 ):
                     return
 
             if channelPointsMessage.rewardId == user.superTriviaLotrGameRewardId:
                 if await self.__superTriviaLotrGamePointRedemption.handlePointRedemption(
-                    twitchChannel = twitchChannel,
-                    twitchChannelPointsMessage = channelPointsMessage,
+                    channelPointsRedemption = channelPointsRedemption,
                 ):
                     return
 
@@ -323,8 +302,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.areTtsChattersEnabled and channelPointsMessage.rewardId == user.ttsChatterRewardId:
             if await self.__ttsChatterPointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage,
+                channelPointsRedemption = channelPointsRedemption,
             ):
                 return
 
@@ -393,12 +371,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         await self.onNewChannelPointRedemption(
             channelPointsMessage = channelPointsMessage,
         )
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider
 
     def start(self):
         if self.__isStarted:

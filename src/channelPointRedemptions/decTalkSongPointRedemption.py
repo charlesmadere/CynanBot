@@ -1,7 +1,7 @@
 from asyncio import AbstractEventLoop
 from typing import Any, Final
 
-from .absChannelPointRedemption import AbsChannelPointRedemption
+from .absChannelPointRedemption2 import AbsChannelPointRedemption2
 from ..storage.jsonFileReader import JsonFileReader
 from ..storage.jsonReaderInterface import JsonReaderInterface
 from ..streamAlertsManager.streamAlert import StreamAlert
@@ -10,11 +10,10 @@ from ..timber.timberInterface import TimberInterface
 from ..tts.models.ttsEvent import TtsEvent
 from ..tts.models.ttsProvider import TtsProvider
 from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
-from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
+from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
-class DecTalkSongPointRedemption(AbsChannelPointRedemption):
+class DecTalkSongPointRedemption(AbsChannelPointRedemption2):
 
     def __init__(
         self,
@@ -39,10 +38,9 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
 
     async def handlePointRedemption(
         self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        channelPointsRedemption: TwitchChannelPointsRedemption,
     ) -> bool:
-        twitchUser = twitchChannelPointsMessage.twitchUser
+        twitchUser = channelPointsRedemption.twitchUser
         if not twitchUser.isDecTalkSongsEnabled:
             return False
 
@@ -54,7 +52,7 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
         if decTalkSongBoosterPacks is None or len(decTalkSongBoosterPacks) == 0:
             return False
 
-        decTalkSongBoosterPack = decTalkSongBoosterPacks.get(twitchChannelPointsMessage.rewardId, None)
+        decTalkSongBoosterPack = decTalkSongBoosterPacks.get(channelPointsRedemption.rewardId, None)
         if decTalkSongBoosterPack is None:
             return False
 
@@ -67,14 +65,14 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
-            twitchChannel = twitchUser.handle,
-            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            twitchChannel = channelPointsRedemption.twitchChannel,
+            twitchChannelId = channelPointsRedemption.twitchChannelId,
             ttsEvent = TtsEvent(
                 message = message,
-                twitchChannel = twitchUser.handle,
-                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
-                userId = twitchChannelPointsMessage.userId,
-                userName = twitchChannelPointsMessage.userName,
+                twitchChannel = channelPointsRedemption.twitchChannel,
+                twitchChannelId = channelPointsRedemption.twitchChannelId,
+                userId = channelPointsRedemption.redemptionUserId,
+                userName = channelPointsRedemption.redemptionUserName,
                 donation = None,
                 provider = TtsProvider.UNRESTRICTED_DEC_TALK,
                 providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
@@ -82,5 +80,5 @@ class DecTalkSongPointRedemption(AbsChannelPointRedemption):
             ),
         ))
 
-        self.__timber.log('DecTalkSongPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({decTalkSongBoosterPack=})')
+        self.__timber.log('DecTalkSongPointRedemption', f'Redeemed ({channelPointsRedemption=}) ({decTalkSongBoosterPack=})')
         return True

@@ -41,5 +41,5 @@ class TriviaGamePointRedemption(AbsChannelPointRedemption2):
             return False
 
         self.__triviaGameMachine.submitAction(action)
-        self.__timber.log('TriviaGamePointRedemption', f'Redeemed ({channelPointsRedemption=})')
+        self.__timber.log('TriviaGamePointRedemption', f'Redeemed ({channelPointsRedemption=}) ({action=})')
         return True

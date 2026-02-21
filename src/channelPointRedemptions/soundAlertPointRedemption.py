@@ -1,6 +1,6 @@
 from typing import Final
 
-from .absChannelPointRedemption import AbsChannelPointRedemption
+from .absChannelPointRedemption2 import AbsChannelPointRedemption2
 from ..misc import utils as utils
 from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
@@ -9,13 +9,12 @@ from ..soundPlayerManager.soundAlert import SoundAlert
 from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..timber.timberInterface import TimberInterface
-from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
+from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 from ..users.soundAlert.soundAlertRedemption import SoundAlertRedemption
 from ..users.userInterface import UserInterface
 
 
-class SoundAlertPointRedemption(AbsChannelPointRedemption):
+class SoundAlertPointRedemption(AbsChannelPointRedemption2):
 
     def __init__(
         self,
@@ -40,11 +39,11 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
 
     async def __findSoundAlertRedemption(
         self,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        channelPointsRedemption: TwitchChannelPointsRedemption,
         user: UserInterface,
     ) -> SoundAlertRedemption | None:
-        if not isinstance(twitchChannelPointsMessage, TwitchChannelPointsMessage):
-            raise TypeError(f'twitchChannelPointsMessage argument is malformed: \"{twitchChannelPointsMessage}\"')
+        if not isinstance(TwitchChannelPointsRedemption, TwitchChannelPointsRedemption):
+            raise TypeError(f'channelPointsRedemption argument is malformed: \"{channelPointsRedemption}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
@@ -52,14 +51,13 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         if soundAlertRedemptions is None or len(soundAlertRedemptions) == 0:
             return None
 
-        return soundAlertRedemptions.get(twitchChannelPointsMessage.rewardId, None)
+        return soundAlertRedemptions.get(channelPointsRedemption.rewardId, None)
 
     async def handlePointRedemption(
         self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        channelPointsRedemption: TwitchChannelPointsRedemption,
     ) -> bool:
-        user = twitchChannelPointsMessage.twitchUser
+        user = channelPointsRedemption.twitchUser
         if not user.areSoundAlertsEnabled:
             return False
 
@@ -68,12 +66,12 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         soundAlertRedemption: SoundAlertRedemption | None = None
         filePath: str | None = None
 
-        if twitchChannelPointsMessage.rewardId == user.randomSoundAlertRewardId:
+        if channelPointsRedemption.rewardId == user.randomSoundAlertRewardId:
             soundAlert = await self.__soundPlayerRandomizerHelper.chooseRandomSoundAlert()
 
         if soundAlert is None:
             soundAlertRedemption = await self.__findSoundAlertRedemption(
-                twitchChannelPointsMessage = twitchChannelPointsMessage,
+                channelPointsRedemption = channelPointsRedemption,
                 user = user,
             )
 
@@ -100,10 +98,10 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         else:
             self.__streamAlertsManager.submitAlert(StreamAlert(
                 soundAlert = soundAlert,
-                twitchChannel = twitchChannel.getTwitchChannelName(),
-                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+                twitchChannel = channelPointsRedemption.twitchChannel,
+                twitchChannelId = channelPointsRedemption.twitchChannelId,
                 ttsEvent = None,
             ))
 
-        self.__timber.log('SoundAlertPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {user.handle} ({soundAlert=}) ({filePath=}) ({isImmediate=})')
+        self.__timber.log('SoundAlertPointRedemption', f'Redeemed ({channelPointsRedemption=}) ({soundAlert=}) ({filePath=}) ({isImmediate=})')
         return True
