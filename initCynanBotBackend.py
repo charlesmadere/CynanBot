@@ -1871,7 +1871,7 @@ if mostRecentAnivMessageRepository is not None:
         timber = timber,
     )
 
-chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
+chatActionsManager: Final[ChatActionsManagerInterface] = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,
     anivCheckChatAction = anivCheckChatAction,
     chatBackMessagesChatAction = chatBackMessagesChatAction,
@@ -1901,34 +1901,34 @@ casualGamePollPointRedemption: Final[CasualGamePollPointRedemption] = CasualGame
     twitchChatMessenger = twitchChatMessenger,
 )
 
-cutenessPointRedemption: Final[CutenessPointRedemption | None] = CutenessPointRedemption(
+cutenessPointRedemption: Final[CutenessPointRedemption] = CutenessPointRedemption(
     cutenessRepository = cutenessRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-pkmnBattlePointRedemption: Final[PkmnBattlePointRedemption | None] = PkmnBattlePointRedemption(
+pkmnBattlePointRedemption: Final[PkmnBattlePointRedemption] = PkmnBattlePointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-pkmnCatchPointRedemption: Final[PkmnCatchPointRedemption | None] = PkmnCatchPointRedemption(
+pkmnCatchPointRedemption: Final[PkmnCatchPointRedemption] = PkmnCatchPointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-pkmnEvolvePointRedemption: Final[PkmnEvolvePointRedemption | None] = PkmnEvolvePointRedemption(
+pkmnEvolvePointRedemption: Final[PkmnEvolvePointRedemption] = PkmnEvolvePointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-pkmnShinyPointRedemption: Final[PkmnShinyPointRedemption | None] = PkmnShinyPointRedemption(
+pkmnShinyPointRedemption: Final[PkmnShinyPointRedemption] = PkmnShinyPointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,

@@ -2272,7 +2272,7 @@ ttsChatterPointRedemption = TtsChatterPointRedemption(
     twitchChatMessenger = twitchChatMessenger,
 )
 
-chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
+chatActionsManager: Final[ChatActionsManagerInterface] = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,
     anivCheckChatAction = None,
     chatBackMessagesChatAction = None,
@@ -2289,7 +2289,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     ttsChatterChatAction = ttsChatterChatAction,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
-    voicemailChatAction = voicemailChatAction
+    voicemailChatAction = voicemailChatAction,
 )
 
 
