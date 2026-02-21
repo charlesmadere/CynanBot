@@ -1,6 +1,6 @@
 from typing import Final
 
-from .absChannelPointRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..misc import utils as utils
 from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
@@ -14,7 +14,7 @@ from ..users.soundAlert.soundAlertRedemption import SoundAlertRedemption
 from ..users.userInterface import UserInterface
 
 
-class SoundAlertPointRedemption(AbsChannelPointRedemption2):
+class SoundAlertPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,

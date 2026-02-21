@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Final
 
-from .absChannelPointRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
@@ -15,7 +15,7 @@ from ..voicemail.models.addVoicemailResult import AddVoicemailResult
 from ..voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
 
 
-class VoicemailPointRedemption(AbsChannelPointRedemption2):
+class VoicemailPointRedemption(AbsChannelPointRedemption):
 
     @dataclass(frozen = True, slots = True)
     class TargetedUserData:

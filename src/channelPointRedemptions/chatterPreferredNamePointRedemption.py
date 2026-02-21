@@ -1,7 +1,7 @@
 import traceback
 from typing import Final
 
-from .absChannelPointRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..chatterPreferredName.exceptions import ChatterPreferredNameFeatureIsDisabledException, \
     ChatterPreferredNameIsInvalidException
 from ..chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
@@ -10,7 +10,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
-class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption2):
+class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,

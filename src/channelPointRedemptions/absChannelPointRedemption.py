@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
-class AbsChannelPointRedemption2(ABC):
+class AbsChannelPointRedemption(ABC):
 
     @abstractmethod
     async def handlePointRedemption(

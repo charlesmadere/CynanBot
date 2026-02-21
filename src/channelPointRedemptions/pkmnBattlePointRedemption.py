@@ -1,6 +1,6 @@
 from typing import Final
 
-from .absChannelPointRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..funtoon.funtoonHelperInterface import FuntoonHelperInterface
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
@@ -9,7 +9,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
-class PkmnBattlePointRedemption(AbsChannelPointRedemption2):
+class PkmnBattlePointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,

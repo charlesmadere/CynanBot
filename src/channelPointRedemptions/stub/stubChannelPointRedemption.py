@@ -1,8 +1,8 @@
-from ..absChannelPointRedemption2 import AbsChannelPointRedemption2
+from ..absChannelPointRedemption import AbsChannelPointRedemption
 from ...twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
-class StubChannelPointRedemption2(AbsChannelPointRedemption2):
+class StubChannelPointRedemption(AbsChannelPointRedemption):
 
     async def handlePointRedemption(
         self,

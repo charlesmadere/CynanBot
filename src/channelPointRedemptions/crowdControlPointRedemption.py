@@ -1,6 +1,6 @@
 from typing import Final
 
-from .absChannelPointRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..crowdControl.actions.buttonPressCrowdControlAction import ButtonPressCrowdControlAction
 from ..crowdControl.actions.crowdControlButton import CrowdControlButton
 from ..crowdControl.actions.gameShuffleCrowdControlAction import GameShuffleCrowdControlAction
@@ -14,7 +14,7 @@ from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPoin
 from ..users.crowdControl.crowdControlInputType import CrowdControlInputType
 
 
-class CrowdControlPointRedemption(AbsChannelPointRedemption2):
+class CrowdControlPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,

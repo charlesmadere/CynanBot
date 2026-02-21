@@ -1,13 +1,13 @@
 from typing import Final
 
-from .absChannelPointRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..timber.timberInterface import TimberInterface
 from ..trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
-class TriviaGamePointRedemption(AbsChannelPointRedemption2):
+class TriviaGamePointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,

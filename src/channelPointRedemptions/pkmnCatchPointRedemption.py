@@ -1,6 +1,6 @@
 from typing import Final
 
-from .absChannelPointRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..funtoon.funtoonHelperInterface import FuntoonHelperInterface
 from ..funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
@@ -11,7 +11,7 @@ from ..users.pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from ..users.pkmn.pkmnCatchType import PkmnCatchType
 
 
-class PkmnCatchPointRedemption(AbsChannelPointRedemption2):
+class PkmnCatchPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,

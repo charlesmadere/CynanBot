@@ -1,13 +1,13 @@
 from typing import Final
 
-from .absChannelPointRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..timber.timberInterface import TimberInterface
 from ..ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
-class TtsChatterPointRedemption(AbsChannelPointRedemption2):
+class TtsChatterPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,

@@ -1,7 +1,7 @@
 import traceback
 from typing import Final
 
-from .absChannelPointRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..misc import utils as utils
 from ..redemptionCounter.exceptions import RedemptionCounterNoSuchUserException, RedemptionCounterIsDisabledException
 from ..redemptionCounter.helpers.redemptionCounterHelperInterface import RedemptionCounterHelperInterface
@@ -12,7 +12,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
-class RedemptionCounterPointRedemption(AbsChannelPointRedemption2):
+class RedemptionCounterPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,

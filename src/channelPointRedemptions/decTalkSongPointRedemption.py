@@ -1,7 +1,7 @@
 from asyncio import AbstractEventLoop
 from typing import Any, Final
 
-from .absChannelPointRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..storage.jsonFileReader import JsonFileReader
 from ..storage.jsonReaderInterface import JsonReaderInterface
 from ..streamAlertsManager.streamAlert import StreamAlert
@@ -13,7 +13,7 @@ from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStat
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
-class DecTalkSongPointRedemption(AbsChannelPointRedemption2):
+class DecTalkSongPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,

@@ -1,14 +1,14 @@
 import traceback
 from typing import Final
 
-from .absChannelPointRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
-class CutenessPointRedemption(AbsChannelPointRedemption2):
+class CutenessPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,

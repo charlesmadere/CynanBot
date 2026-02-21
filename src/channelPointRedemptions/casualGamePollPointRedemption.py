@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import Final
 
-from .absChannelPointRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
@@ -9,7 +9,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
-class CasualGamePollPointRedemption(AbsChannelPointRedemption2):
+class CasualGamePollPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
