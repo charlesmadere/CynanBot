@@ -5,8 +5,7 @@ from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
+from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
 class CutenessPointRedemption(AbsChannelPointRedemption):
@@ -30,10 +29,9 @@ class CutenessPointRedemption(AbsChannelPointRedemption):
 
     async def handlePointRedemption(
         self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        channelPointsRedemption: TwitchChannelPointsRedemption,
     ) -> bool:
-        twitchUser = twitchChannelPointsMessage.twitchUser
+        twitchUser = channelPointsRedemption.twitchUser
         if not twitchUser.isCutenessEnabled:
             return False
 
@@ -41,7 +39,7 @@ class CutenessPointRedemption(AbsChannelPointRedemption):
         if cutenessBoosterPacks is None or len(cutenessBoosterPacks) == 0:
             return False
 
-        cutenessBoosterPack = cutenessBoosterPacks.get(twitchChannelPointsMessage.rewardId, None)
+        cutenessBoosterPack = cutenessBoosterPacks.get(channelPointsRedemption.rewardId, None)
         if cutenessBoosterPack is None:
             return False
 
@@ -50,18 +48,18 @@ class CutenessPointRedemption(AbsChannelPointRedemption):
         try:
             await self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = incrementAmount,
-                twitchChannel = twitchUser.handle,
-                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
-                userId = twitchChannelPointsMessage.userId,
-                userName = twitchChannelPointsMessage.userName,
+                twitchChannel = channelPointsRedemption.twitchChannel,
+                twitchChannelId = channelPointsRedemption.twitchChannelId,
+                userId = channelPointsRedemption.redemptionUserId,
+                userName = channelPointsRedemption.redemptionUserName,
             )
 
-            self.__timber.log('CutenessRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({incrementAmount=})')
+            self.__timber.log('CutenessRedemption', f'Redeemed ({channelPointsRedemption=}) ({incrementAmount=})')
         except Exception as e:
-            self.__timber.log('CutenessRedemption', f'Error redeeming for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({incrementAmount=})', e, traceback.format_exc())
+            self.__timber.log('CutenessRedemption', f'Error redeeming ({channelPointsRedemption=}) ({incrementAmount=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
-                text = f'⚠ Error increasing cuteness for {twitchChannelPointsMessage.userName}',
-                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+                text = f'⚠ Error increasing cuteness for @{channelPointsRedemption.redemptionUserName}',
+                twitchChannelId = channelPointsRedemption.twitchChannelId,
             )
 
         return True

@@ -4,8 +4,7 @@ from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..timber.timberInterface import TimberInterface
 from ..ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
+from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
 class TtsChatterPointRedemption(AbsChannelPointRedemption):
@@ -29,32 +28,31 @@ class TtsChatterPointRedemption(AbsChannelPointRedemption):
 
     async def handlePointRedemption(
         self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        channelPointsRedemption: TwitchChannelPointsRedemption,
     ) -> bool:
-        twitchUser = twitchChannelPointsMessage.twitchUser
+        twitchUser = channelPointsRedemption.twitchUser
         if not twitchUser.areTtsChattersEnabled:
             return False
 
         if await self.__ttsChatterRepository.isTtsChatter(
-            chatterUserId = twitchChannelPointsMessage.userId,
-            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            chatterUserId = channelPointsRedemption.redemptionUserId,
+            twitchChannelId = channelPointsRedemption.twitchChannelId,
         ):
             self.__twitchChatMessenger.send(
-                text = f'ⓘ @{twitchChannelPointsMessage.userName} you are already a TTS Chatter',
-                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+                text = f'ⓘ @{channelPointsRedemption.redemptionUserName} you are already a TTS Chatter',
+                twitchChannelId = channelPointsRedemption.twitchChannelId,
             )
             return True
 
         await self.__ttsChatterRepository.add(
-            chatterUserId = twitchChannelPointsMessage.userId,
-            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            chatterUserId = channelPointsRedemption.redemptionUserId,
+            twitchChannelId = channelPointsRedemption.twitchChannelId,
         )
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ @{twitchChannelPointsMessage.userName} you are now a TTS Chatter',
-            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            text = f'ⓘ @{channelPointsRedemption.redemptionUserName} you are now a TTS Chatter',
+            twitchChannelId = channelPointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log('TtsChatterPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
+        self.__timber.log('TtsChatterPointRedemption', f'Redeemed ({channelPointsRedemption=})')
         return True

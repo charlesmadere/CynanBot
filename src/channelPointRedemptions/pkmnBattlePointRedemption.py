@@ -6,8 +6,7 @@ from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
+from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
 class PkmnBattlePointRedemption(AbsChannelPointRedemption):
@@ -35,19 +34,18 @@ class PkmnBattlePointRedemption(AbsChannelPointRedemption):
 
     async def handlePointRedemption(
         self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        channelPointsRedemption: TwitchChannelPointsRedemption,
     ) -> bool:
-        twitchUser = twitchChannelPointsMessage.twitchUser
+        twitchUser = channelPointsRedemption.twitchUser
         if not twitchUser.isPkmnEnabled:
             return False
 
-        splits = utils.getCleanedSplits(twitchChannelPointsMessage.redemptionMessage)
+        splits = utils.getCleanedSplits(channelPointsRedemption.redemptionMessage)
 
         if splits is None or len(splits) == 0:
             self.__twitchChatMessenger.send(
-                text = f'⚠ Sorry @{twitchChannelPointsMessage.userName}, you must specify the exact user name of the person you want to fight',
-                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+                text = f'⚠ Sorry @{channelPointsRedemption.redemptionUserName}, you must specify the exact user name of the person you want to fight',
+                twitchChannelId = channelPointsRedemption.twitchChannelId,
             )
             return False
 
@@ -56,19 +54,19 @@ class PkmnBattlePointRedemption(AbsChannelPointRedemption):
         actionCompleted = False
 
         if generalSettings.isFuntoonApiEnabled() and await self.__funtoonHelper.pkmnBattle(
-            twitchChannel = twitchUser.handle,
-            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
-            userThatRedeemed = twitchChannelPointsMessage.userName,
+            twitchChannel = channelPointsRedemption.twitchChannel,
+            twitchChannelId = channelPointsRedemption.twitchChannelId,
+            userThatRedeemed = channelPointsRedemption.redemptionUserName,
             userToBattle = opponentUserName,
         ):
             actionCompleted = True
 
         if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
             self.__twitchChatMessenger.send(
-                text = f'!battle {twitchChannelPointsMessage.userName} {opponentUserName}',
-                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+                text = f'!battle {channelPointsRedemption.redemptionUserName} {opponentUserName}',
+                twitchChannelId = channelPointsRedemption.twitchChannelId,
             )
             actionCompleted = True
 
-        self.__timber.log('PkmnBattleRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({actionCompleted=})')
+        self.__timber.log('PkmnBattleRedemption', f'Redeemed ({channelPointsRedemption=}) ({actionCompleted=})')
         return actionCompleted

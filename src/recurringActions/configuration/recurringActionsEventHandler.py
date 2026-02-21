@@ -52,7 +52,7 @@ class RecurringActionsEventHandler(AbsRecurringActionsEventHandler):
         twitchConnectionReadinessProvider = self.__twitchConnectionReadinessProvider
 
         if twitchConnectionReadinessProvider is None:
-            self.__timber.log('RecurringActionsEventHandler', f'Received new recurring action event, but it won\'t be handled, as the twitchChannelProvider and/or twitchConnectionReadinessProvider instances have not been set ({event=}) ({twitchConnectionReadinessProvider=})')
+            self.__timber.log('RecurringActionsEventHandler', f'Received new recurring action event, but it won\'t be handled, as the twitchConnectionReadinessProvider instances have not been set ({event=}) ({twitchConnectionReadinessProvider=})')
             return
 
         await twitchConnectionReadinessProvider.waitForReady()

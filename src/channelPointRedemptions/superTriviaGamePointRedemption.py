@@ -4,8 +4,7 @@ from .absChannelPointRedemption import AbsChannelPointRedemption
 from ..timber.timberInterface import TimberInterface
 from ..trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
-from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
+from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
 class SuperTriviaGamePointRedemption(AbsChannelPointRedemption):
@@ -29,17 +28,16 @@ class SuperTriviaGamePointRedemption(AbsChannelPointRedemption):
 
     async def handlePointRedemption(
         self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        channelPointsRedemption: TwitchChannelPointsRedemption,
     ) -> bool:
         action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
-            twitchChannel = twitchChannelPointsMessage.twitchUser.handle,
-            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            twitchChannel = channelPointsRedemption.twitchChannel,
+            twitchChannelId = channelPointsRedemption.twitchChannelId,
         )
 
         if action is None:
             return False
 
         self.__triviaGameMachine.submitAction(action)
-        self.__timber.log('SuperTriviaGameRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchChannel.getTwitchChannelName()}')
+        self.__timber.log('SuperTriviaGameRedemption', f'Redeemed ({channelPointsRedemption=}) ({action=})')
         return True

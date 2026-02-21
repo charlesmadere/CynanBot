@@ -10,8 +10,7 @@ from ..crowdControl.mapper.crowdControlInputTypeMapperInterface import CrowdCont
 from ..crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdControlUserInputUtilsInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..timber.timberInterface import TimberInterface
-from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
+from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 from ..users.crowdControl.crowdControlInputType import CrowdControlInputType
 
 
@@ -48,10 +47,9 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
 
     async def handlePointRedemption(
         self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        channelPointsRedemption: TwitchChannelPointsRedemption,
     ) -> bool:
-        twitchUser = twitchChannelPointsMessage.twitchUser
+        twitchUser = channelPointsRedemption.twitchUser
         if not twitchUser.isCrowdControlEnabled:
             return False
 
@@ -59,7 +57,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
         if boosterPacks is None or len(boosterPacks) == 0:
             return False
 
-        boosterPack = boosterPacks.get(twitchChannelPointsMessage.rewardId, None)
+        boosterPack = boosterPacks.get(channelPointsRedemption.rewardId, None)
         if boosterPack is None:
             return False
 
@@ -72,21 +70,21 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
                 entryWithinGigaShuffle = False,
                 startOfGigaShuffleSize = None,
                 actionId = actionId,
-                chatterUserId = twitchChannelPointsMessage.userId,
-                chatterUserName = twitchChannelPointsMessage.userName,
-                twitchChannel = twitchUser.handle,
-                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+                chatterUserId = channelPointsRedemption.redemptionUserId,
+                chatterUserName = channelPointsRedemption.redemptionUserName,
+                twitchChannel = channelPointsRedemption.twitchChannel,
+                twitchChannelId = channelPointsRedemption.twitchChannelId,
                 twitchChatMessageId = None,
             ))
 
-            self.__timber.log('CrowdControlPointRedemption', f'Created new game shuffle crowd control action from channel point redemption ({twitchChannelPointsMessage=}) ({boosterPack=})')
+            self.__timber.log('CrowdControlPointRedemption', f'Redeemed ({channelPointsRedemption=}) ({boosterPack=})')
             return True
 
         button: CrowdControlButton | None
 
         if boosterPack.inputType is CrowdControlInputType.USER_INPUT_BUTTON:
             button = await self.__crowdControlUserInputUtils.parseButtonFromUserInput(
-                userInput = twitchChannelPointsMessage.redemptionMessage,
+                userInput = channelPointsRedemption.redemptionMessage,
             )
         else:
             button = await self.__crowdControlInputTypeMapper.toButton(
@@ -94,19 +92,19 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
             )
 
         if button is None:
-            self.__timber.log('CrowdControlPointRedemption', f'Unable to create crowd control action from channel point redemption ({twitchChannelPointsMessage=}) ({boosterPack=}) ({button=})')
+            self.__timber.log('CrowdControlPointRedemption', f'Unable to redeem ({channelPointsRedemption=}) ({boosterPack=}) ({button=})')
             return False
 
         self.__crowdControlMachine.submitAction(ButtonPressCrowdControlAction(
             button = button,
             dateTime = now,
             actionId = actionId,
-            chatterUserId = twitchChannelPointsMessage.userId,
-            chatterUserName = twitchChannelPointsMessage.userName,
-            twitchChannel = twitchUser.handle,
-            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            chatterUserId = channelPointsRedemption.redemptionUserId,
+            chatterUserName = channelPointsRedemption.redemptionUserName,
+            twitchChannel = channelPointsRedemption.twitchChannel,
+            twitchChannelId = channelPointsRedemption.twitchChannelId,
             twitchChatMessageId = None,
         ))
 
-        self.__timber.log('CrowdControlPointRedemption', f'Created new button press crowd control action from channel point redemption ({twitchChannelPointsMessage=}) ({boosterPack=}) ({button=})')
+        self.__timber.log('CrowdControlPointRedemption', f'Redeemed ({channelPointsRedemption=}) ({boosterPack=}) ({button=})')
         return True

@@ -9,8 +9,7 @@ from ..redemptionCounter.settings.redemptionCounterSettingsInterface import Rede
 from ..timber.timberInterface import TimberInterface
 from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
+from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
 class RedemptionCounterPointRedemption(AbsChannelPointRedemption):
@@ -42,10 +41,9 @@ class RedemptionCounterPointRedemption(AbsChannelPointRedemption):
 
     async def handlePointRedemption(
         self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        channelPointsRedemption: TwitchChannelPointsRedemption,
     ) -> bool:
-        twitchUser = twitchChannelPointsMessage.twitchUser
+        twitchUser = channelPointsRedemption.twitchUser
         if not twitchUser.areRedemptionCountersEnabled:
             return False
 
@@ -53,22 +51,22 @@ class RedemptionCounterPointRedemption(AbsChannelPointRedemption):
         if boosterPacks is None or len(boosterPacks) == 0:
             return False
 
-        boosterPack = boosterPacks.get(twitchChannelPointsMessage.rewardId, None)
+        boosterPack = boosterPacks.get(channelPointsRedemption.rewardId, None)
         if boosterPack is None:
             return False
 
         try:
             result = await self.__redemptionCounterHelper.increment(
                 incrementAmount = boosterPack.incrementAmount,
-                chatterUserId = twitchChannelPointsMessage.userId,
+                chatterUserId = channelPointsRedemption.redemptionUserId,
                 counterName = boosterPack.counterName,
-                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+                twitchChannelId = channelPointsRedemption.twitchChannelId,
             )
         except RedemptionCounterIsDisabledException as e:
-            self.__timber.log('RedemptionCounterPointRedemption', f'Redemption Counter feature is currently disabled ({twitchChannelPointsMessage=})', e, traceback.format_exc())
+            self.__timber.log('RedemptionCounterPointRedemption', f'Redemption Counter feature is currently disabled ({channelPointsRedemption=}) ({boosterPack=})', e, traceback.format_exc())
             return True
         except RedemptionCounterNoSuchUserException as e:
-            self.__timber.log('RedemptionCounterPointRedemption', f'Unable to find the user of the given user ID ({twitchChannelPointsMessage=})', e, traceback.format_exc())
+            self.__timber.log('RedemptionCounterPointRedemption', f'Unable to find the user of the given user ID ({channelPointsRedemption=}) ({boosterPack=})', e, traceback.format_exc())
             return True
 
         prefixEmote = await self.__trollmojiHelper.getDinkDonkEmote()
@@ -80,9 +78,9 @@ class RedemptionCounterPointRedemption(AbsChannelPointRedemption):
             suffixEmote = boosterPack.emote
 
         self.__twitchChatMessenger.send(
-            text = f'{prefixEmote} @{twitchChannelPointsMessage.userName} has a new {result.counterName} count of {result.countStr}! {suffixEmote}',
-            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+            text = f'{prefixEmote} @{channelPointsRedemption.redemptionUserName} has a new {result.counterName} count of {result.countStr}! {suffixEmote}',
+            twitchChannelId = channelPointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log('RedemptionCounterPointRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle}')
+        self.__timber.log('RedemptionCounterPointRedemption', f'Redeemed ({channelPointsRedemption=}) ({boosterPack=}) ({result=})')
         return True

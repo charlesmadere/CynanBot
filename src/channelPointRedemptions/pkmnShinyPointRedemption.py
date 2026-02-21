@@ -5,8 +5,7 @@ from ..funtoon.funtoonHelperInterface import FuntoonHelperInterface
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchChannel import TwitchChannel
-from ..twitch.configuration.twitchChannelPointsMessage import TwitchChannelPointsMessage
+from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 
 
 class PkmnShinyPointRedemption(AbsChannelPointRedemption):
@@ -34,10 +33,9 @@ class PkmnShinyPointRedemption(AbsChannelPointRedemption):
 
     async def handlePointRedemption(
         self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage,
+        channelPointsRedemption: TwitchChannelPointsRedemption,
     ) -> bool:
-        twitchUser = twitchChannelPointsMessage.twitchUser
+        twitchUser = channelPointsRedemption.twitchUser
         if not twitchUser.isPkmnEnabled:
             return False
 
@@ -45,18 +43,18 @@ class PkmnShinyPointRedemption(AbsChannelPointRedemption):
         actionCompleted = False
 
         if generalSettings.isFuntoonApiEnabled() and await self.__funtoonHelper.pkmnGiveShiny(
-            twitchChannel = twitchUser.handle,
-            twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
-            userThatRedeemed = twitchChannelPointsMessage.userName,
+            twitchChannel = channelPointsRedemption.twitchChannel,
+            twitchChannelId = channelPointsRedemption.twitchChannelId,
+            userThatRedeemed = channelPointsRedemption.redemptionUserName,
         ):
             actionCompleted = True
 
         if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
             self.__twitchChatMessenger.send(
-                text = f'!freeshiny {twitchChannelPointsMessage.userName}',
-                twitchChannelId = twitchChannelPointsMessage.twitchChannelId,
+                text = f'!freeshiny {channelPointsRedemption.redemptionUserName}',
+                twitchChannelId = channelPointsRedemption.twitchChannelId,
             )
             actionCompleted = True
 
-        self.__timber.log('PkmnShinyRedemption', f'Redeemed for {twitchChannelPointsMessage.userName}:{twitchChannelPointsMessage.userId} in {twitchUser.handle} ({actionCompleted=})')
+        self.__timber.log('PkmnShinyRedemption', f'Redeemed ({channelPointsRedemption=}) ({actionCompleted=})')
         return actionCompleted

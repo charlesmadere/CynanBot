@@ -246,7 +246,6 @@ from .twitch.configuration.channelJoinListener import ChannelJoinListener
 from .twitch.configuration.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
 from .twitch.configuration.joinChannelsEvent import JoinChannelsEvent
 from .twitch.configuration.twitchChannel import TwitchChannel
-from .twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from .twitch.configuration.twitchConfiguration import TwitchConfiguration
 from .twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
 from .twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
@@ -286,7 +285,6 @@ class CynanBot(
     commands.Bot,
     AddOrRemoveUserEventListener,
     ChannelJoinListener,
-    TwitchChannelProvider,
     TwitchConnectionReadinessProvider,
 ):
 
@@ -1161,9 +1159,6 @@ class CynanBot(
             self.__timber.log('CynanBot', f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e, traceback.format_exc())
             raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e, traceback.format_exc())
 
-    async def getTwitchChannel(self, twitchChannel: str) -> TwitchChannel:
-        return await self.__getChannel(twitchChannel)
-
     async def onAddOrRemoveUserEvent(self, event: AddOrRemoveUserData):
         self.__timber.log('CynanBot', f'Received new modify user data event ({event=})')
 
@@ -1207,7 +1202,6 @@ class CynanBot(
         self.__twitchChatMessenger.start()
 
         if self.__twitchChannelPointRedemptionHandler is not None:
-            self.__twitchChannelPointRedemptionHandler.setTwitchChannelProvider(self)
             self.__twitchChannelPointRedemptionHandler.start()
 
         if self.__chatterItemEventHandler is not None:
