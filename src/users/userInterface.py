@@ -408,6 +408,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def isMouseCursorEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isNotifyOfHypeTrainProgressEnabled(self) -> bool:
         pass
 
@@ -554,6 +559,11 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def minimumRaidViewersForNotification(self) -> int | None:
+        pass
+
+    @property
+    @abstractmethod
+    def mouseCursorRewardId(self) -> str | None:
         pass
 
     @property

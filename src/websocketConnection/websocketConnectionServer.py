@@ -2,7 +2,7 @@ import asyncio
 import json
 import queue
 import traceback
-from datetime import datetime, timedelta
+from datetime import timedelta
 from queue import SimpleQueue
 from typing import Any, Final
 
@@ -75,7 +75,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
             seconds = await self.__websocketConnectionServerSettings.getEventTimeToLiveSeconds(),
         )
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         for index, event in enumerate(events):
             if event.eventTime + eventTimeToLive >= now:
@@ -94,7 +94,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
         # may need to add more logic here in the future if there are ever more event types
-        return json.dumps(event.eventData, sort_keys = True)
+        return json.dumps(event.eventData, allow_nan = False, sort_keys = True)
 
     def start(self):
         if self.__isStarted:
@@ -156,7 +156,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         }
 
         websocketEvent = WebsocketEvent(
-            eventTime = datetime.now(self.__timeZoneRepository.getDefault()),
+            eventTime = self.__timeZoneRepository.getNow(),
             eventData = event,
             eventType = eventType,
         )

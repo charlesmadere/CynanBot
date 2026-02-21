@@ -36,6 +36,7 @@ from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGame
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
 from src.channelPointRedemptions.decTalkSongPointRedemption import DecTalkSongPointRedemption
+from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from src.channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
 from src.channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from src.channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
@@ -305,6 +306,8 @@ from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
+from src.mouseCursor.mouseCursorHelper import MouseCursorHelper
+from src.mouseCursor.mouseCursorHelperInterface import MouseCursorHelperInterface
 from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.networkClientProvider import NetworkClientProvider
@@ -3098,7 +3101,7 @@ ttsChatterChatAction = TtsChatterChatAction(
     ttsChatterSettingsRepository = ttsChatterSettingsRepository
 )
 
-chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
+chatActionsManager: Final[ChatActionsManagerInterface] = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,
     anivCheckChatAction = anivCheckChatAction,
     chatBackMessagesChatAction = chatBackMessagesChatAction,
@@ -3115,7 +3118,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     ttsChatterChatAction = ttsChatterChatAction,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
-    voicemailChatAction = voicemailChatAction
+    voicemailChatAction = voicemailChatAction,
 )
 
 
@@ -3123,18 +3126,18 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 ## Channel Point Redemptions initialization section ##
 ######################################################
 
-casualGamePollPointRedemption: Final[CasualGamePollPointRedemption | None] = CasualGamePollPointRedemption(
+casualGamePollPointRedemption: Final[CasualGamePollPointRedemption] = CasualGamePollPointRedemption(
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-cutenessPointRedemption: Final[CutenessPointRedemption | None] = CutenessPointRedemption(
+cutenessPointRedemption: Final[CutenessPointRedemption] = CutenessPointRedemption(
     cutenessRepository = cutenessRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-chatterPreferredTtsPointRedemption: Final[ChatterPreferredTtsPointRedemption | None] = ChatterPreferredTtsPointRedemption(
+chatterPreferredTtsPointRedemption: Final[ChatterPreferredTtsPointRedemption] = ChatterPreferredTtsPointRedemption(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
     chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
@@ -3142,66 +3145,66 @@ chatterPreferredTtsPointRedemption: Final[ChatterPreferredTtsPointRedemption | N
     twitchChatMessenger = twitchChatMessenger,
 )
 
-decTalkSongPointRedemption: Final[DecTalkSongPointRedemption | None] = DecTalkSongPointRedemption(
+decTalkSongPointRedemption: Final[DecTalkSongPointRedemption] = DecTalkSongPointRedemption(
     eventLoop = eventLoop,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
 )
 
-pkmnBattlePointRedemption: Final[PkmnBattlePointRedemption | None] = PkmnBattlePointRedemption(
+pkmnBattlePointRedemption: Final[PkmnBattlePointRedemption] = PkmnBattlePointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-pkmnCatchPointRedemption: Final[PkmnCatchPointRedemption | None] = PkmnCatchPointRedemption(
+pkmnCatchPointRedemption: Final[PkmnCatchPointRedemption] = PkmnCatchPointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-pkmnEvolvePointRedemption: Final[PkmnEvolvePointRedemption | None] = PkmnEvolvePointRedemption(
+pkmnEvolvePointRedemption: Final[PkmnEvolvePointRedemption] = PkmnEvolvePointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-pkmnShinyPointRedemption: Final[PkmnShinyPointRedemption | None] = PkmnShinyPointRedemption(
+pkmnShinyPointRedemption: Final[PkmnShinyPointRedemption] = PkmnShinyPointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-soundAlertPointRedemption: SoundAlertPointRedemption | None = SoundAlertPointRedemption(
+soundAlertPointRedemption: Final[SoundAlertPointRedemption] = SoundAlertPointRedemption(
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
 )
 
-superTriviaGamePointRedemption: SuperTriviaGamePointRedemption | None = SuperTriviaGamePointRedemption(
+superTriviaGamePointRedemption: Final[SuperTriviaGamePointRedemption] = SuperTriviaGamePointRedemption(
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
     triviaGameMachine = triviaGameMachine
 )
 
-superTriviaLotrGamePointRedemption: SuperTriviaLotrGamePointRedemption | None = SuperTriviaLotrGamePointRedemption(
+superTriviaLotrGamePointRedemption: Final[SuperTriviaLotrGamePointRedemption] = SuperTriviaLotrGamePointRedemption(
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
     triviaGameMachine = triviaGameMachine,
 )
 
-triviaGamePointRedemption: TriviaGamePointRedemption | None = TriviaGamePointRedemption(
+triviaGamePointRedemption: Final[TriviaGamePointRedemption] = TriviaGamePointRedemption(
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
     triviaGameMachine = triviaGameMachine
 )
 
-ttsChatterPointRedemption: TtsChatterPointRedemption | None = TtsChatterPointRedemption(
+ttsChatterPointRedemption: Final[TtsChatterPointRedemption] = TtsChatterPointRedemption(
     timber = timber,
     ttsChatterRepository = ttsChatterRepository,
     twitchChatMessenger = twitchChatMessenger,
@@ -3234,21 +3237,21 @@ eccoHelper: Final[EccoHelperInterface] = EccoHelper(
 ## Websocket Connection Server initialization section ##
 ########################################################
 
-websocketConnectionServerSettings: WebsocketConnectionServerSettingsInterface = WebsocketConnectionServerSettings(
+websocketConnectionServerSettings: Final[WebsocketConnectionServerSettingsInterface] = WebsocketConnectionServerSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/websocketConnectionServerSettings.json'
-    )
+        fileName = '../config/websocketConnectionServerSettings.json',
+    ),
 )
 
-websocketEventTypeMapper: WebsocketEventTypeMapperInterface = WebsocketEventTypeMapper()
+websocketEventTypeMapper: Final[WebsocketEventTypeMapperInterface] = WebsocketEventTypeMapper()
 
-websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnectionServer(
+websocketConnectionServer: Final[WebsocketConnectionServerInterface] = WebsocketConnectionServer(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     websocketConnectionServerSettings = websocketConnectionServerSettings,
-    websocketEventTypeMapper = websocketEventTypeMapper
+    websocketEventTypeMapper = websocketEventTypeMapper,
 )
 
 
@@ -3285,6 +3288,22 @@ redemptionCounterPointRedemption = RedemptionCounterPointRedemption(
 )
 
 
+#########################################
+## Mouse Cursor initialization section ##
+#########################################
+
+mouseCursorHelper: Final[MouseCursorHelperInterface] = MouseCursorHelper(
+    timber = timber,
+    usersRepository = usersRepository,
+    websocketConnectionServer = websocketConnectionServer,
+)
+
+mouseCursorPointRedemption: Final[MouseCursorPointRedemption] = MouseCursorPointRedemption(
+    mouseCursorHelper = mouseCursorHelper,
+    timber = timber,
+)
+
+
 ##########################################
 ## Twitch events initialization section ##
 ##########################################
@@ -3296,6 +3315,7 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = cutenessPointRedemption,
     decTalkSongPointRedemption = decTalkSongPointRedemption,
+    mouseCursorPointRedemption = mouseCursorPointRedemption,
     pkmnBattlePointRedemption = pkmnBattlePointRedemption,
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,
     pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,

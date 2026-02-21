@@ -36,6 +36,7 @@ from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGame
 from src.channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.decTalkSongPointRedemption import DecTalkSongPointRedemption
+from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from src.channelPointRedemptions.ttsChatterPointRedemption import TtsChatterPointRedemption
 from src.channelPointRedemptions.voicemailPointRedemption import VoicemailPointRedemption
@@ -257,6 +258,8 @@ from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
+from src.mouseCursor.mouseCursorHelper import MouseCursorHelper
+from src.mouseCursor.mouseCursorHelperInterface import MouseCursorHelperInterface
 from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.networkClientProvider import NetworkClientProvider
@@ -2269,7 +2272,7 @@ ttsChatterPointRedemption = TtsChatterPointRedemption(
     twitchChatMessenger = twitchChatMessenger,
 )
 
-chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
+chatActionsManager: Final[ChatActionsManagerInterface] = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,
     anivCheckChatAction = None,
     chatBackMessagesChatAction = None,
@@ -2286,7 +2289,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     ttsChatterChatAction = ttsChatterChatAction,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
-    voicemailChatAction = voicemailChatAction
+    voicemailChatAction = voicemailChatAction,
 )
 
 
@@ -2334,21 +2337,37 @@ if soundPlayerManagerProvider is not None and soundPlayerRandomizerHelper is not
 ## Websocket Connection Server initialization section ##
 ########################################################
 
-websocketConnectionServerSettings: WebsocketConnectionServerSettingsInterface = WebsocketConnectionServerSettings(
+websocketConnectionServerSettings: Final[WebsocketConnectionServerSettingsInterface] = WebsocketConnectionServerSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/websocketConnectionServerSettings.json'
-    )
+        fileName = '../config/websocketConnectionServerSettings.json',
+    ),
 )
 
-websocketEventTypeMapper: WebsocketEventTypeMapperInterface = WebsocketEventTypeMapper()
+websocketEventTypeMapper: Final[WebsocketEventTypeMapperInterface] = WebsocketEventTypeMapper()
 
-websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnectionServer(
+websocketConnectionServer: Final[WebsocketConnectionServerInterface] = WebsocketConnectionServer(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     websocketConnectionServerSettings = websocketConnectionServerSettings,
-    websocketEventTypeMapper = websocketEventTypeMapper
+    websocketEventTypeMapper = websocketEventTypeMapper,
+)
+
+
+#########################################
+## Mouse Cursor initialization section ##
+#########################################
+
+mouseCursorHelper: Final[MouseCursorHelperInterface] = MouseCursorHelper(
+    timber = timber,
+    usersRepository = usersRepository,
+    websocketConnectionServer = websocketConnectionServer,
+)
+
+mouseCursorPointRedemption: Final[MouseCursorPointRedemption] = MouseCursorPointRedemption(
+    mouseCursorHelper = mouseCursorHelper,
+    timber = timber,
 )
 
 
@@ -2363,6 +2382,7 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = None,
     decTalkSongPointRedemption = decTalkSongPointRedemption,
+    mouseCursorPointRedemption = mouseCursorPointRedemption,
     pkmnBattlePointRedemption = None,
     pkmnCatchPointRedemption = None,
     pkmnEvolvePointRedemption = None,

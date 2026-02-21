@@ -52,6 +52,7 @@ class User(UserInterface):
         isGiveCutenessEnabled: bool,
         isJishoEnabled: bool,
         isLoremIpsumEnabled: bool,
+        isMouseCursorEnabled: bool,
         isNotifyOfHypeTrainProgressEnabled: bool,
         isNotifyOfHypeTrainStartEnabled: bool,
         isNotifyOfPollResultsEnabled: bool,
@@ -116,6 +117,7 @@ class User(UserInterface):
         instagram: str | None,
         locationId: str | None,
         mastodonUrl: str | None,
+        mouseCursorRewardId: str | None,
         pkmnBattleRewardId: str | None,
         pkmnEvolveRewardId: str | None,
         pkmnShinyRewardId: str | None,
@@ -196,6 +198,8 @@ class User(UserInterface):
             raise TypeError(f'isJishoEnabled argument is malformed: \"{isJishoEnabled}\"')
         elif not utils.isValidBool(isLoremIpsumEnabled):
             raise TypeError(f'isLoremIpsumEnabled argument is malformed: \"{isLoremIpsumEnabled}\"')
+        elif not utils.isValidBool(isMouseCursorEnabled):
+            raise TypeError(f'isMouseCursorEnabled argument is malformed: \"{isMouseCursorEnabled}\"')
         elif not utils.isValidBool(isNotifyOfHypeTrainProgressEnabled):
             raise TypeError(f'isNotifyOfHypeTrainProgressEnabled argument is malformed: \"{isNotifyOfHypeTrainProgressEnabled}\"')
         elif not utils.isValidBool(isNotifyOfHypeTrainStartEnabled):
@@ -320,6 +324,8 @@ class User(UserInterface):
             raise TypeError(f'locationId argument is malformed: \"{locationId}\"')
         elif mastodonUrl is not None and not isinstance(mastodonUrl, str):
             raise TypeError(f'mastodonUrl argument is malformed: \"{mastodonUrl}\"')
+        elif mouseCursorRewardId is not None and not isinstance(mouseCursorRewardId, str):
+            raise TypeError(f'mouseCursorRewardId argument is malformed: \"{mouseCursorRewardId}\"')
         elif pkmnBattleRewardId is not None and not isinstance(pkmnBattleRewardId, str):
             raise TypeError(f'pkmnBattleRewardId argument is malformed: \"{pkmnBattleRewardId}\"')
         elif pkmnEvolveRewardId and not isinstance(pkmnEvolveRewardId, str):
@@ -398,6 +404,7 @@ class User(UserInterface):
         self.__isGiveCutenessEnabled: Final[bool] = isGiveCutenessEnabled
         self.__isJishoEnabled: Final[bool] = isJishoEnabled
         self.__isLoremIpsumEnabled: bool = isLoremIpsumEnabled
+        self.__isMouseCursorEnabled: Final[bool] = isMouseCursorEnabled
         self.__isNotifyOfHypeTrainProgressEnabled: Final[bool] = isNotifyOfHypeTrainProgressEnabled
         self.__isNotifyOfHypeTrainStartEnabled: Final[bool] = isNotifyOfHypeTrainStartEnabled
         self.__isNotifyOfPollResultsEnabled: bool = isNotifyOfPollResultsEnabled
@@ -462,6 +469,7 @@ class User(UserInterface):
         self.__instagram: str | None = instagram
         self.__locationId: str | None = locationId
         self.__mastodonUrl: str | None = mastodonUrl
+        self.__mouseCursorRewardId: Final[str | None] = mouseCursorRewardId
         self.__pkmnBattleRewardId: str | None = pkmnBattleRewardId
         self.__pkmnEvolveRewardId: str | None = pkmnEvolveRewardId
         self.__pkmnShinyRewardId: str | None = pkmnShinyRewardId
@@ -813,6 +821,10 @@ class User(UserInterface):
         return self.__isLoremIpsumEnabled
 
     @property
+    def isMouseCursorEnabled(self) -> bool:
+        return self.__isMouseCursorEnabled
+
+    @property
     def isNotifyOfHypeTrainProgressEnabled(self) -> bool:
         return self.__isNotifyOfHypeTrainProgressEnabled
 
@@ -931,6 +943,10 @@ class User(UserInterface):
     @property
     def minimumRaidViewersForNotification(self) -> int | None:
         return self.__minimumRaidViewersForNotification
+
+    @property
+    def mouseCursorRewardId(self) -> str | None:
+        return self.__mouseCursorRewardId
 
     @property
     def pkmnBattleRewardId(self) -> str | None:

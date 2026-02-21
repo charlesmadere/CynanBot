@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .websocketConnectionServerSettingsInterface import WebsocketConnectionServerSettingsInterface
 from ...misc import utils as utils
@@ -11,7 +11,7 @@ class WebsocketConnectionServerSettings(WebsocketConnectionServerSettingsInterfa
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
 
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
 
         self.__settingsCache: dict[str, Any] | None = None
 
