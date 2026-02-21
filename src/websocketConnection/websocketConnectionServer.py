@@ -2,7 +2,7 @@ import asyncio
 import json
 import queue
 import traceback
-from datetime import datetime, timedelta
+from datetime import timedelta
 from queue import SimpleQueue
 from typing import Any, Final
 
@@ -75,7 +75,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
             seconds = await self.__websocketConnectionServerSettings.getEventTimeToLiveSeconds(),
         )
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         for index, event in enumerate(events):
             if event.eventTime + eventTimeToLive >= now:
@@ -156,7 +156,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         }
 
         websocketEvent = WebsocketEvent(
-            eventTime = datetime.now(self.__timeZoneRepository.getDefault()),
+            eventTime = self.__timeZoneRepository.getNow(),
             eventData = event,
             eventType = eventType,
         )
