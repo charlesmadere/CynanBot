@@ -94,7 +94,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
         # may need to add more logic here in the future if there are ever more event types
-        return json.dumps(event.eventData, sort_keys = True)
+        return json.dumps(event.eventData, allow_nan = False, sort_keys = True)
 
     def start(self):
         if self.__isStarted:

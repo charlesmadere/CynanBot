@@ -795,7 +795,7 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
         async with aiofiles.open(self.__usersFile, mode = 'w', encoding = 'utf-8') as file:
-            jsonString = json.dumps(jsonContents, indent = 4, sort_keys = True)
+            jsonString = json.dumps(jsonContents, allow_nan = False, indent = 4, sort_keys = True)
             await file.write(jsonString)
             await file.flush()
 
