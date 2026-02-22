@@ -6,5 +6,5 @@ from ..websocketEventType import WebsocketEventType
 class WebsocketEventTypeMapperInterface(ABC):
 
     @abstractmethod
-    def toString(self, eventType: WebsocketEventType) -> str:
+    def serializeEventType(self, eventType: WebsocketEventType) -> str:
         pass

@@ -151,7 +151,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         event: dict[str, Any] = {
             'twitchChannel': twitchChannel,
             'twitchChannelId': twitchChannelId,
-            'eventType': self.__websocketEventTypeMapper.toString(eventType),
+            'eventType': self.__websocketEventTypeMapper.serializeEventType(eventType),
             'eventData': eventData,
         }
 
