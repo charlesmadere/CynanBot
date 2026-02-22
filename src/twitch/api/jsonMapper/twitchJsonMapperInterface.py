@@ -210,7 +210,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseChatMessageFragmentEmote(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChatMessageFragmentEmote | None:
         pass
 
@@ -315,14 +315,14 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseEmoteImageFormat(
         self,
-        emoteImageFormat: str | Any | None
+        emoteImageFormat: str | Any | None,
     ) -> TwitchEmoteImageFormat | None:
         pass
 
     @abstractmethod
     async def parseEmoteImageScale(
         self,
-        emoteImageScale: str | Any | None
+        emoteImageScale: str | Any | None,
     ) -> TwitchEmoteImageScale | None:
         pass
 
