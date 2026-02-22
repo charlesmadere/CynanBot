@@ -7,6 +7,7 @@ from ..timber.timberInterface import TimberInterface
 from ..twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.configuration.twitchContext import TwitchContext
+from ..twitch.localModels.twitchCheer import TwitchCheer
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -72,19 +73,24 @@ class TestCheerChatCommand(AbsChatCommand):
             return
 
         chatMessage = utils.cleanStr(f'cheer{bits} ' + ' '.join(splits[2:]))
+
+        twitchCheer = TwitchCheer(
+            bits = bits,
+            chatMessage = chatMessage,
+            cheerUserId = ctx.getAuthorId(),
+            cheerUserLogin = ctx.getAuthorName(),
+            cheerUserName = ctx.getAuthorDisplayName(),
+            twitchChannelId = twitchChannelId,
+            twitchChatMessageId = await ctx.getMessageId(),
+            twitchUser = user,
+        )
+
         exception: Exception | None = None
 
         try:
-            await self.__twitchCheerHandler.onNewCheer(AbsTwitchCheerHandler.CheerData(
-                bits = bits,
-                chatMessage = chatMessage,
-                cheerUserId = ctx.getAuthorId(),
-                cheerUserLogin = ctx.getAuthorName(),
-                cheerUserName = ctx.getAuthorDisplayName(),
-                twitchChannelId = twitchChannelId,
-                twitchChatMessageId = await ctx.getMessageId(),
-                user = user,
-            ))
+            await self.__twitchCheerHandler.onNewCheer(
+                cheer = twitchCheer,
+            )
         except Exception as e:
             exception = e
             self.__timber.log('TestCheerChatCommand', f'Encountered exception when attempting to run onNewCheer() for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({bits=}) ({chatMessage=})', e, traceback.format_exc())
