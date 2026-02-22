@@ -21,7 +21,7 @@ from ..localModels.twitchChatMessageFragmentCheermote import TwitchChatMessageFr
 from ..localModels.twitchChatMessageFragmentEmote import TwitchChatMessageFragmentEmote
 from ..localModels.twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention
 from ..localModels.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
-from ..localModels.twitchCheer import TwitchCheer
+from ..localModels.twitchCheerMetadata import TwitchCheerMetadata
 from ..localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ...chatLogger.chatLoggerInterface import ChatLoggerInterface
 from ...cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
@@ -273,11 +273,11 @@ class TwitchChatHandler(AbsTwitchChatHandler):
     async def __mapApiCheer(
         self,
         apiCheer: ApiTwitchCheerMetadata | None,
-    ) -> TwitchCheer | None:
+    ) -> TwitchCheerMetadata | None:
         if apiCheer is None or apiCheer.bits < 1:
             return None
 
-        return TwitchCheer(
+        return TwitchCheerMetadata(
             bits = apiCheer.bits,
         )
 

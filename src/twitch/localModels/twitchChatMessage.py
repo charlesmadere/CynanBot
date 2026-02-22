@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from frozenlist import FrozenList
 
 from .twitchChatMessageFragment import TwitchChatMessageFragment
-from .twitchCheer import TwitchCheer
+from .twitchCheerMetadata import TwitchCheerMetadata
 from .twitchUserInterface import TwitchUserInterface
 from ...users.userInterface import UserInterface
 
@@ -19,7 +19,7 @@ class TwitchChatMessage(TwitchUserInterface):
     text: str
     twitchChannelId: str
     twitchChatMessageId: str | None
-    cheer: TwitchCheer | None
+    cheer: TwitchCheerMetadata | None
     twitchUser: UserInterface
 
     def getUserId(self) -> str:

@@ -2,5 +2,5 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True, slots = True)
-class TwitchCheer:
+class TwitchCheerMetadata:
     bits: int
