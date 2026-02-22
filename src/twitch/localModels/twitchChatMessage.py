@@ -19,7 +19,7 @@ class TwitchChatMessage(TwitchUserInterface):
     text: str
     twitchChannelId: str
     twitchChatMessageId: str | None
-    cheer: TwitchCheerMetadata | None
+    cheerMetadata: TwitchCheerMetadata | None
     twitchUser: UserInterface
 
     def getUserId(self) -> str:

@@ -76,11 +76,11 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         self.__triviaGameMachine: Final[TriviaGameMachineInterface | None] = triviaGameMachine
 
     async def __logCheer(self, chatMessage: TwitchChatMessage):
-        if chatMessage.cheer is None or chatMessage.cheer.bits < 1:
+        if chatMessage.cheerMetadata is None or chatMessage.cheerMetadata.bits < 1:
             return
 
         self.__chatLogger.logCheer(
-            bits = chatMessage.cheer.bits,
+            bits = chatMessage.cheerMetadata.bits,
             cheerUserId = chatMessage.chatterUserId,
             cheerUserLogin = chatMessage.chatterUserLogin,
             twitchChannel = chatMessage.twitchChannel,
@@ -139,7 +139,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             return
 
         messageFragments = await self.__mapApiMessageFragments(chatMessage.fragments)
-        cheer = await self.__mapApiCheer(event.cheer)
+        cheer = await self.__mapApiCheerMetadata(event.cheer)
 
         chatMessage = TwitchChatMessage(
             messageFragments = messageFragments,
@@ -151,7 +151,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             text = chatMessage.text,
             twitchChannelId = twitchChannelId,
             twitchChatMessageId = event.messageId,
-            cheer = cheer,
+            cheerMetadata = cheer,
             twitchUser = user,
         )
 
@@ -167,7 +167,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         elif self.__cheerActionHelper is None:
             return False
 
-        cheer = chatMessage.cheer
+        cheer = chatMessage.cheerMetadata
         if cheer is None or cheer.bits < 1:
             return False
 
@@ -192,7 +192,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         elif self.__triviaGameBuilder is None or self.__triviaGameMachine is None:
             return
 
-        cheer = chatMessage.cheer
+        cheer = chatMessage.cheerMetadata
         if cheer is None or cheer.bits < 1:
             return
 
@@ -223,7 +223,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         if not user.isTtsEnabled:
             return
 
-        cheer = chatMessage.cheer
+        cheer = chatMessage.cheerMetadata
         if cheer is None or cheer.bits < 1:
             return
 
@@ -270,7 +270,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         purgedMessage = ' '.join(chunks)
         return utils.cleanStr(purgedMessage)
 
-    async def __mapApiCheer(
+    async def __mapApiCheerMetadata(
         self,
         apiCheer: ApiTwitchCheerMetadata | None,
     ) -> TwitchCheerMetadata | None:
