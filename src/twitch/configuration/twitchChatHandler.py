@@ -1,10 +1,28 @@
 import math
-from typing import Final
+from typing import Collection, Final
+
+from frozenlist import FrozenList
 
 from ..absTwitchChatHandler import AbsTwitchChatHandler
-from ..api.models.twitchChatMessage import TwitchChatMessage
-from ..api.models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
+from ..api.models.twitchChatMessageFragment import TwitchChatMessageFragment as ApiTwitchChatMessageFragment
+from ..api.models.twitchChatMessageFragmentCheermote import \
+    TwitchChatMessageFragmentCheermote as ApiTwitchChatMessageFragmentCheermote
+from ..api.models.twitchChatMessageFragmentEmote import \
+    TwitchChatMessageFragmentEmote as ApiTwitchChatMessageFragmentEmote
+from ..api.models.twitchChatMessageFragmentMention import \
+    TwitchChatMessageFragmentMention as ApiTwitchChatMessageFragmentMention
+from ..api.models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType as ApiTwitchChatMessageFragmentType
+from ..api.models.twitchCheerMetadata import TwitchCheerMetadata as ApiTwitchCheerMetadata
+from ..api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiTwitchEmoteImageFormat
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..localModels.twitchChatMessage import TwitchChatMessage
+from ..localModels.twitchChatMessageFragment import TwitchChatMessageFragment
+from ..localModels.twitchChatMessageFragmentCheermote import TwitchChatMessageFragmentCheermote
+from ..localModels.twitchChatMessageFragmentEmote import TwitchChatMessageFragmentEmote
+from ..localModels.twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention
+from ..localModels.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
+from ..localModels.twitchCheer import TwitchCheer
+from ..localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ...chatLogger.chatLoggerInterface import ChatLoggerInterface
 from ...cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from ...misc import utils as utils
@@ -57,39 +75,39 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface | None] = triviaGameBuilder
         self.__triviaGameMachine: Final[TriviaGameMachineInterface | None] = triviaGameMachine
 
-    async def __logCheer(self, chatData: AbsTwitchChatHandler.ChatData):
-        if chatData.cheer is None or chatData.cheer.bits < 1:
+    async def __logCheer(self, chatMessage: TwitchChatMessage):
+        if chatMessage.twitchCheer is None or chatMessage.twitchCheer.bits < 1:
             return
 
         self.__chatLogger.logCheer(
-            bits = chatData.cheer.bits,
-            cheerUserId = chatData.chatterUserId,
-            cheerUserLogin = chatData.chatterUserLogin,
-            twitchChannel = chatData.user.handle,
-            twitchChannelId = chatData.twitchChannelId,
+            bits = chatMessage.twitchCheer.bits,
+            cheerUserId = chatMessage.chatterUserId,
+            cheerUserLogin = chatMessage.chatterUserLogin,
+            twitchChannel = chatMessage.twitchChannel,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
-    async def onNewChat(self, chatData: AbsTwitchChatHandler.ChatData):
-        if not isinstance(chatData, AbsTwitchChatHandler.ChatData):
-            raise TypeError(f'chatData argument is malformed: \"{chatData}\"')
+    async def onNewChat(self, chatMessage: TwitchChatMessage):
+        if not isinstance(chatMessage, TwitchChatMessage):
+            raise TypeError(f'chatMessage argument is malformed: \"{chatMessage}\"')
 
-        if utils.isValidStr(chatData.sourceMessageId):
+        if utils.isValidStr(chatMessage.sourceMessageId):
             # This is a chat message that originated from a shared chat/stream. As such, let's not
             # even bother to process it or work with it at all. In the future, we may have a reason
             # to change this. But for now, it's better to just ignore these messages completely.
             return
 
-        if chatData.user.isChatLoggingEnabled:
-            await self.__logCheer(chatData)
+        if chatMessage.twitchUser.isChatLoggingEnabled:
+            await self.__logCheer(chatMessage)
 
-        if chatData.user.areCheerActionsEnabled and await self.__processCheerAction(chatData):
+        if chatMessage.twitchUser.areCheerActionsEnabled and await self.__processCheerAction(chatMessage):
             return
 
-        if chatData.user.isSuperTriviaGameEnabled:
-            await self.__processSuperTriviaEvent(chatData)
+        if chatMessage.twitchUser.isSuperTriviaGameEnabled:
+            await self.__processSuperTriviaEvent(chatMessage)
 
-        if chatData.user.isTtsEnabled:
-            await self.__processTtsEvent(chatData)
+        if chatMessage.twitchUser.isTtsEnabled:
+            await self.__processTtsEvent(chatMessage)
 
     async def onNewChatDataBundle(
         self,
@@ -110,65 +128,71 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             self.__timber.log('TwitchChatHandler', f'Received a data bundle that has no event: ({user=}) ({twitchChannelId=}) ({dataBundle=})')
             return
 
+        eventId = dataBundle.metadata.messageId
         chatterUserId = event.chatterUserId
         chatterUserLogin = event.chatterUserLogin
         chatterUserName = event.chatterUserName
         chatMessage = event.chatMessage
 
-        if not utils.isValidStr(chatterUserId) or not utils.isValidStr(chatterUserLogin) or not utils.isValidStr(chatterUserName) or chatMessage is None:
+        if not utils.isValidStr(eventId) or not utils.isValidStr(chatterUserId) or not utils.isValidStr(chatterUserLogin) or not utils.isValidStr(chatterUserName) or chatMessage is None:
             self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=})')
             return
 
-        chatData = AbsTwitchChatHandler.ChatData(
+        twitchChatMessageFragments = await self.__mapApiMessageFragments(chatMessage.fragments)
+        twitchCheer = await self.__mapApiCheer(event.cheer)
+
+        chatMessage = TwitchChatMessage(
+            twitchChatMessageFragments = twitchChatMessageFragments,
             chatterUserId = chatterUserId,
             chatterUserLogin = chatterUserLogin,
             chatterUserName = chatterUserName,
+            eventId = eventId,
             sourceMessageId = event.sourceMessageId,
+            text = chatMessage.text,
             twitchChannelId = twitchChannelId,
             twitchChatMessageId = event.messageId,
-            message = chatMessage,
-            cheer = event.cheer,
-            user = user,
+            twitchCheer = twitchCheer,
+            twitchUser = user,
         )
 
         await self.onNewChat(
-            chatData = chatData,
+            chatMessage = chatMessage,
         )
 
-    async def __processCheerAction(self, chatData: AbsTwitchChatHandler.ChatData) -> bool:
-        user = chatData.user
+    async def __processCheerAction(self, chatMessage: TwitchChatMessage) -> bool:
+        user = chatMessage.twitchUser
 
         if not user.areCheerActionsEnabled:
             return False
         elif self.__cheerActionHelper is None:
             return False
 
-        cheer = chatData.cheer
+        cheer = chatMessage.twitchCheer
         if cheer is None or cheer.bits < 1:
             return False
 
-        messageWithoutCheerText = await self.__purgeChatMessageOfCheers(chatData.message)
-        self.__timber.log('TwitchChatHandler', f'Purged message of cheers: ({messageWithoutCheerText=}) ({chatData=})')
+        messageWithoutCheerText = await self.__purgeChatMessageOfCheers(chatMessage)
+        self.__timber.log('TwitchChatHandler', f'Purged message of cheers ({messageWithoutCheerText=}) ({chatMessage=})')
 
         return await self.__cheerActionHelper.handleCheerAction(
             bits = cheer.bits,
-            cheerUserId = chatData.chatterUserId,
-            cheerUserName = chatData.chatterUserLogin,
-            message = chatData.message.text,
-            twitchChannelId = chatData.twitchChannelId,
-            twitchChatMessageId = chatData.twitchChatMessageId,
+            cheerUserId = chatMessage.chatterUserId,
+            cheerUserName = chatMessage.chatterUserLogin,
+            message = chatMessage.text,
+            twitchChannelId = chatMessage.twitchChannelId,
+            twitchChatMessageId = chatMessage.twitchChatMessageId,
             user = user,
         )
 
-    async def __processSuperTriviaEvent(self, chatData: AbsTwitchChatHandler.ChatData):
-        user = chatData.user
+    async def __processSuperTriviaEvent(self, chatMessage: TwitchChatMessage):
+        user = chatMessage.twitchUser
 
         if not user.isSuperTriviaGameEnabled:
             return
         elif self.__triviaGameBuilder is None or self.__triviaGameMachine is None:
             return
 
-        cheer = chatData.cheer
+        cheer = chatMessage.twitchCheer
         if cheer is None or cheer.bits < 1:
             return
 
@@ -186,21 +210,20 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             numberOfGames = int(min(numberOfGames, superTriviaCheerTriggerMaximum))
 
         action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
-            twitchChannel = user.handle,
-            twitchChannelId = chatData.twitchChannelId,
+            twitchChannel = chatMessage.twitchChannel,
+            twitchChannelId = chatMessage.twitchChannelId,
             numberOfGames = numberOfGames,
         )
 
         if action is not None:
             self.__triviaGameMachine.submitAction(action)
 
-    async def __processTtsEvent(self, chatData: AbsTwitchChatHandler.ChatData):
-        user = chatData.user
-
+    async def __processTtsEvent(self, chatMessage: TwitchChatMessage):
+        user = chatMessage.twitchUser
         if not user.isTtsEnabled:
             return
 
-        cheer = chatData.cheer
+        cheer = chatMessage.twitchCheer
         if cheer is None or cheer.bits < 1:
             return
 
@@ -220,14 +243,14 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.CHEER,
-            twitchChannel = user.handle,
-            twitchChannelId = chatData.twitchChannelId,
+            twitchChannel = chatMessage.twitchChannel,
+            twitchChannelId = chatMessage.twitchChannelId,
             ttsEvent = TtsEvent(
-                message = chatData.message.text,
-                twitchChannel = user.handle,
-                twitchChannelId = chatData.twitchChannelId,
-                userId = chatData.chatterUserId,
-                userName = chatData.chatterUserLogin,
+                message = chatMessage.text,
+                twitchChannel = chatMessage.twitchChannel,
+                twitchChannelId = chatMessage.twitchChannelId,
+                userId = chatMessage.chatterUserId,
+                userName = chatMessage.chatterUserLogin,
                 donation = TtsCheerDonation(
                     bits = cheer.bits,
                 ),
@@ -240,8 +263,121 @@ class TwitchChatHandler(AbsTwitchChatHandler):
     async def __purgeChatMessageOfCheers(self, message: TwitchChatMessage) -> str:
         purgedMessage = ''
 
-        for fragment in message.fragments:
+        for fragment in message.twitchChatMessageFragments:
             if fragment.fragmentType is not TwitchChatMessageFragmentType.CHEERMOTE:
                 purgedMessage = f'{purgedMessage} {fragment.text}'
 
         return utils.cleanStr(purgedMessage)
+
+    async def __mapApiCheer(
+        self,
+        apiCheer: ApiTwitchCheerMetadata | None,
+    ) -> TwitchCheer | None:
+        if apiCheer is None or apiCheer.bits < 1:
+            return None
+
+        return TwitchCheer(
+            bits = apiCheer.bits,
+        )
+
+    async def __mapApiMessageFragments(
+        self,
+        apiMessageFragments: Collection[ApiTwitchChatMessageFragment],
+    ) -> FrozenList[TwitchChatMessageFragment]:
+        messageFragments: FrozenList[TwitchChatMessageFragment] = FrozenList()
+
+        for apiMessageFragment in apiMessageFragments:
+            messageFragment = await self.__mapApiMessageFragment(apiMessageFragment)
+            messageFragments.append(messageFragment)
+
+        messageFragments.freeze()
+        return messageFragments
+
+    async def __mapApiMessageFragment(
+        self,
+        apiMessageFragment: ApiTwitchChatMessageFragment,
+    ) -> TwitchChatMessageFragment:
+        cheermote = await self.__mapApiMessageFragmentCheermote(apiMessageFragment.cheermote)
+        emote = await self.__mapApiMessageFragmentEmote(apiMessageFragment.emote)
+        mention = await self.__mapApiMessageFragmentMention(apiMessageFragment.mention)
+        fragmentType = await self.__mapApiMessageFragmentType(apiMessageFragment.fragmentType)
+
+        return TwitchChatMessageFragment(
+            text = apiMessageFragment.text,
+            cheermote = cheermote,
+            emote = emote,
+            mention = mention,
+            fragmentType = fragmentType,
+        )
+
+    async def __mapApiMessageFragmentCheermote(
+        self,
+        apiCheermote: ApiTwitchChatMessageFragmentCheermote | None,
+    ) -> TwitchChatMessageFragmentCheermote | None:
+        if apiCheermote is None:
+            return None
+
+        return TwitchChatMessageFragmentCheermote(
+            bits = apiCheermote.bits,
+            tier = apiCheermote.tier,
+            prefix = apiCheermote.prefix,
+        )
+
+    async def __mapApiMessageFragmentEmote(
+        self,
+        apiEmote: ApiTwitchChatMessageFragmentEmote | None,
+    ) -> TwitchChatMessageFragmentEmote | None:
+        if apiEmote is None:
+            return None
+
+        frozenImageFormats: frozenset[TwitchEmoteImageFormat] | None = None
+
+        if apiEmote.formats is not None and len(apiEmote.formats) >= 1:
+            imageFormats: set[TwitchEmoteImageFormat] = set()
+
+            for apiImageFormat in apiEmote.formats:
+                imageFormat = await self.__mapApiEmoteImageFormat(apiImageFormat)
+                imageFormats.add(imageFormat)
+
+            frozenImageFormats = frozenset(imageFormats)
+
+        return TwitchChatMessageFragmentEmote(
+            imageFormats = frozenImageFormats,
+            emoteId = apiEmote.emoteId,
+            emoteSetId = apiEmote.emoteSetId,
+            ownerId = apiEmote.ownerId,
+        )
+
+    async def __mapApiEmoteImageFormat(
+        self,
+        apiImageFormat: ApiTwitchEmoteImageFormat,
+    ) -> TwitchEmoteImageFormat:
+        match apiImageFormat:
+            case ApiTwitchEmoteImageFormat.ANIMATED: return TwitchEmoteImageFormat.ANIMATED
+            case ApiTwitchEmoteImageFormat.DEFAULT: return TwitchEmoteImageFormat.DEFAULT
+            case ApiTwitchEmoteImageFormat.STATIC: return TwitchEmoteImageFormat.STATIC
+            case _: raise ValueError(f'Encountered unknown ApiTwitchEmoteImageFormat: \"{apiImageFormat}\"')
+
+    async def __mapApiMessageFragmentMention(
+        self,
+        apiMention: ApiTwitchChatMessageFragmentMention | None,
+    ) -> TwitchChatMessageFragmentMention | None:
+        if apiMention is None:
+            return None
+
+        return TwitchChatMessageFragmentMention(
+            userId = apiMention.userId,
+            userLogin = apiMention.userLogin,
+            userName = apiMention.userName,
+        )
+
+    async def __mapApiMessageFragmentType(
+        self,
+        apiFragmentType: ApiTwitchChatMessageFragmentType,
+    ) -> TwitchChatMessageFragmentType:
+        match apiFragmentType:
+            case ApiTwitchChatMessageFragmentType.CHEERMOTE: return TwitchChatMessageFragmentType.CHEERMOTE
+            case ApiTwitchChatMessageFragmentType.EMOTE: return TwitchChatMessageFragmentType.EMOTE
+            case ApiTwitchChatMessageFragmentType.MENTION: return TwitchChatMessageFragmentType.MENTION
+            case ApiTwitchChatMessageFragmentType.TEXT: return TwitchChatMessageFragmentType.TEXT
+            case _: raise ValueError(f'Encountered unknown ApiTwitchChatMessageFragmentType: \"{apiFragmentType}\"')

@@ -601,7 +601,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseChatMessageFragmentEmote(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChatMessageFragmentEmote | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -982,7 +982,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseEmoteImageFormat(
         self,
-        emoteImageFormat: str | Any | None
+        emoteImageFormat: str | Any | None,
     ) -> TwitchEmoteImageFormat | None:
         if not utils.isValidStr(emoteImageFormat):
             return None
@@ -996,7 +996,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseEmoteImageScale(
         self,
-        emoteImageScale: str | Any | None
+        emoteImageScale: str | Any | None,
     ) -> TwitchEmoteImageScale | None:
         if not utils.isValidStr(emoteImageScale):
             return None
