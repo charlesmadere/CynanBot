@@ -42,7 +42,7 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         channelPointsRedemption: TwitchChannelPointsRedemption,
         user: UserInterface,
     ) -> SoundAlertRedemption | None:
-        if not isinstance(TwitchChannelPointsRedemption, TwitchChannelPointsRedemption):
+        if not isinstance(channelPointsRedemption, TwitchChannelPointsRedemption):
             raise TypeError(f'channelPointsRedemption argument is malformed: \"{channelPointsRedemption}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
