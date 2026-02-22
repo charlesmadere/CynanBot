@@ -203,7 +203,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseChatMessageFragmentCheermote(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChatMessageFragmentCheermote | None:
         pass
 
@@ -217,7 +217,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseChatMessageFragmentMention(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChatMessageFragmentMention | None:
         pass
 
