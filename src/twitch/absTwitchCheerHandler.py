@@ -1,25 +1,14 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 
 from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from .localModels.twitchCheer import TwitchCheer
 from ..users.userInterface import UserInterface
 
 
 class AbsTwitchCheerHandler(ABC):
 
-    @dataclass(frozen = True, slots = True)
-    class CheerData:
-        bits: int
-        chatMessage: str
-        cheerUserId: str
-        cheerUserLogin: str
-        cheerUserName: str
-        twitchChannelId: str
-        twitchChatMessageId: str | None
-        user: UserInterface
-
     @abstractmethod
-    async def onNewCheer(self, cheerData: CheerData):
+    async def onNewCheer(self, cheer: TwitchCheer):
         pass
 
     @abstractmethod

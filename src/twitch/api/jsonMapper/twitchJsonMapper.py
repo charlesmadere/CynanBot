@@ -584,7 +584,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseChatMessageFragmentCheermote(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChatMessageFragmentCheermote | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -606,25 +606,24 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        formats: set[TwitchEmoteImageFormat] = set()
-        formatsJson: list[str] | Any | None = jsonResponse.get('format')
+        imageFormats: set[TwitchEmoteImageFormat] = set()
+        formatsArray: list[str] | Any | None = jsonResponse.get('format')
 
-        if isinstance(formatsJson, list) and len(formatsJson) >= 1:
-            for index, formatString in enumerate(formatsJson):
-                emoteImageFormat = await self.parseEmoteImageFormat(formatString)
+        if isinstance(formatsArray, list) and len(formatsArray) >= 1:
+            for index, formatString in enumerate(formatsArray):
+                imageFormat = await self.parseEmoteImageFormat(formatString)
 
-                if emoteImageFormat is None:
+                if imageFormat is None:
                     self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"format\" data ({jsonResponse=})')
                 else:
-                    formats.add(emoteImageFormat)
+                    imageFormats.add(imageFormat)
 
-        frozenFormats: frozenset[TwitchEmoteImageFormat] = frozenset(formats)
         emoteId = utils.getStrFromDict(jsonResponse, 'id')
         emoteSetId = utils.getStrFromDict(jsonResponse, 'emote_set_id')
         ownerId = utils.getStrFromDict(jsonResponse, 'owner_id')
 
         return TwitchChatMessageFragmentEmote(
-            formats = frozenFormats,
+            imageFormats = frozenset(imageFormats),
             emoteId = emoteId,
             emoteSetId = emoteSetId,
             ownerId = ownerId,
@@ -632,7 +631,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseChatMessageFragmentMention(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChatMessageFragmentMention | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None

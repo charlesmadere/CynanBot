@@ -3,14 +3,14 @@ from dataclasses import dataclass
 from frozenlist import FrozenList
 
 from .twitchChatMessageFragment import TwitchChatMessageFragment
-from .twitchCheer import TwitchCheer
+from .twitchCheerMetadata import TwitchCheerMetadata
 from .twitchUserInterface import TwitchUserInterface
 from ...users.userInterface import UserInterface
 
 
 @dataclass(frozen = True, slots = True)
 class TwitchChatMessage(TwitchUserInterface):
-    twitchChatMessageFragments: FrozenList[TwitchChatMessageFragment]
+    messageFragments: FrozenList[TwitchChatMessageFragment]
     chatterUserId: str
     chatterUserLogin: str
     chatterUserName: str
@@ -19,7 +19,7 @@ class TwitchChatMessage(TwitchUserInterface):
     text: str
     twitchChannelId: str
     twitchChatMessageId: str | None
-    twitchCheer: TwitchCheer | None
+    cheerMetadata: TwitchCheerMetadata | None
     twitchUser: UserInterface
 
     def getUserId(self) -> str:

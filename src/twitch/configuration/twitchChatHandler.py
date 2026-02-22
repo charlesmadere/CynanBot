@@ -21,7 +21,7 @@ from ..localModels.twitchChatMessageFragmentCheermote import TwitchChatMessageFr
 from ..localModels.twitchChatMessageFragmentEmote import TwitchChatMessageFragmentEmote
 from ..localModels.twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention
 from ..localModels.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
-from ..localModels.twitchCheer import TwitchCheer
+from ..localModels.twitchCheerMetadata import TwitchCheerMetadata
 from ..localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ...chatLogger.chatLoggerInterface import ChatLoggerInterface
 from ...cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
@@ -76,11 +76,11 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         self.__triviaGameMachine: Final[TriviaGameMachineInterface | None] = triviaGameMachine
 
     async def __logCheer(self, chatMessage: TwitchChatMessage):
-        if chatMessage.twitchCheer is None or chatMessage.twitchCheer.bits < 1:
+        if chatMessage.cheerMetadata is None or chatMessage.cheerMetadata.bits < 1:
             return
 
         self.__chatLogger.logCheer(
-            bits = chatMessage.twitchCheer.bits,
+            bits = chatMessage.cheerMetadata.bits,
             cheerUserId = chatMessage.chatterUserId,
             cheerUserLogin = chatMessage.chatterUserLogin,
             twitchChannel = chatMessage.twitchChannel,
@@ -138,11 +138,11 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=})')
             return
 
-        twitchChatMessageFragments = await self.__mapApiMessageFragments(chatMessage.fragments)
-        twitchCheer = await self.__mapApiCheer(event.cheer)
+        messageFragments = await self.__mapApiMessageFragments(chatMessage.fragments)
+        cheer = await self.__mapApiCheerMetadata(event.cheer)
 
         chatMessage = TwitchChatMessage(
-            twitchChatMessageFragments = twitchChatMessageFragments,
+            messageFragments = messageFragments,
             chatterUserId = chatterUserId,
             chatterUserLogin = chatterUserLogin,
             chatterUserName = chatterUserName,
@@ -151,7 +151,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             text = chatMessage.text,
             twitchChannelId = twitchChannelId,
             twitchChatMessageId = event.messageId,
-            twitchCheer = twitchCheer,
+            cheerMetadata = cheer,
             twitchUser = user,
         )
 
@@ -167,7 +167,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         elif self.__cheerActionHelper is None:
             return False
 
-        cheer = chatMessage.twitchCheer
+        cheer = chatMessage.cheerMetadata
         if cheer is None or cheer.bits < 1:
             return False
 
@@ -192,7 +192,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         elif self.__triviaGameBuilder is None or self.__triviaGameMachine is None:
             return
 
-        cheer = chatMessage.twitchCheer
+        cheer = chatMessage.cheerMetadata
         if cheer is None or cheer.bits < 1:
             return
 
@@ -223,7 +223,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         if not user.isTtsEnabled:
             return
 
-        cheer = chatMessage.twitchCheer
+        cheer = chatMessage.cheerMetadata
         if cheer is None or cheer.bits < 1:
             return
 
@@ -261,22 +261,23 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         ))
 
     async def __purgeChatMessageOfCheers(self, message: TwitchChatMessage) -> str:
-        purgedMessage = ''
+        chunks: list[str] = list()
 
-        for fragment in message.twitchChatMessageFragments:
-            if fragment.fragmentType is not TwitchChatMessageFragmentType.CHEERMOTE:
-                purgedMessage = f'{purgedMessage} {fragment.text}'
+        for messageFragment in message.messageFragments:
+            if messageFragment.fragmentType is not TwitchChatMessageFragmentType.CHEERMOTE:
+                chunks.append(messageFragment.text)
 
+        purgedMessage = ' '.join(chunks)
         return utils.cleanStr(purgedMessage)
 
-    async def __mapApiCheer(
+    async def __mapApiCheerMetadata(
         self,
         apiCheer: ApiTwitchCheerMetadata | None,
-    ) -> TwitchCheer | None:
+    ) -> TwitchCheerMetadata | None:
         if apiCheer is None or apiCheer.bits < 1:
             return None
 
-        return TwitchCheer(
+        return TwitchCheerMetadata(
             bits = apiCheer.bits,
         )
 
@@ -330,19 +331,15 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         if apiEmote is None:
             return None
 
-        frozenImageFormats: frozenset[TwitchEmoteImageFormat] | None = None
+        imageFormats: set[TwitchEmoteImageFormat] = set()
 
-        if apiEmote.formats is not None and len(apiEmote.formats) >= 1:
-            imageFormats: set[TwitchEmoteImageFormat] = set()
-
-            for apiImageFormat in apiEmote.formats:
+        if apiEmote.imageFormats is not None and len(apiEmote.imageFormats) >= 1:
+            for apiImageFormat in apiEmote.imageFormats:
                 imageFormat = await self.__mapApiEmoteImageFormat(apiImageFormat)
                 imageFormats.add(imageFormat)
 
-            frozenImageFormats = frozenset(imageFormats)
-
         return TwitchChatMessageFragmentEmote(
-            imageFormats = frozenImageFormats,
+            imageFormats = frozenset(imageFormats),
             emoteId = apiEmote.emoteId,
             emoteSetId = apiEmote.emoteSetId,
             ownerId = apiEmote.ownerId,
