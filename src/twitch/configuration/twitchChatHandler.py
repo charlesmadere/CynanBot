@@ -331,19 +331,15 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         if apiEmote is None:
             return None
 
-        frozenImageFormats: frozenset[TwitchEmoteImageFormat] | None = None
+        imageFormats: set[TwitchEmoteImageFormat] = set()
 
         if apiEmote.formats is not None and len(apiEmote.formats) >= 1:
-            imageFormats: set[TwitchEmoteImageFormat] = set()
-
             for apiImageFormat in apiEmote.formats:
                 imageFormat = await self.__mapApiEmoteImageFormat(apiImageFormat)
                 imageFormats.add(imageFormat)
 
-            frozenImageFormats = frozenset(imageFormats)
-
         return TwitchChatMessageFragmentEmote(
-            imageFormats = frozenImageFormats,
+            imageFormats = frozenset(imageFormats),
             emoteId = apiEmote.emoteId,
             emoteSetId = apiEmote.emoteSetId,
             ownerId = apiEmote.ownerId,
