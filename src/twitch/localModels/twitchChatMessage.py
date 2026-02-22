@@ -10,7 +10,7 @@ from ...users.userInterface import UserInterface
 
 @dataclass(frozen = True, slots = True)
 class TwitchChatMessage(TwitchUserInterface):
-    twitchChatMessageFragments: FrozenList[TwitchChatMessageFragment]
+    messageFragments: FrozenList[TwitchChatMessageFragment]
     chatterUserId: str
     chatterUserLogin: str
     chatterUserName: str
@@ -19,7 +19,7 @@ class TwitchChatMessage(TwitchUserInterface):
     text: str
     twitchChannelId: str
     twitchChatMessageId: str | None
-    twitchCheer: TwitchCheer | None
+    cheer: TwitchCheer | None
     twitchUser: UserInterface
 
     def getUserId(self) -> str:
