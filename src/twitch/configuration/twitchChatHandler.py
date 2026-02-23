@@ -181,10 +181,10 @@ class TwitchChatHandler(AbsTwitchChatHandler):
                         chatMessage = chatMessage,
                     )
 
-                    if result is ChatCommandResult.CONSUMED:
-                        return
-                    elif result is ChatCommandResult.HANDLED:
-                        break
+                    match result:
+                        case ChatCommandResult.CONSUMED: return
+                        case ChatCommandResult.HANDLED: break
+                        case ChatCommandResult.IGNORED: pass
             except Exception as e:
                 self.__timber.log('TwitchChatHandler', f'Encountered an unexpected error while handling a chat command ({index=}) ({chatCommand=}) ({chatMessage=})', e, traceback.format_exc())
 
