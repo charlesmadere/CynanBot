@@ -29,8 +29,8 @@ class TestMouseCursorChatCommand(AbsChatCommand2):
         self.__timber: Final[TimberInterface] = timber
 
         self.__commandPatterns: Final[frozenset[Pattern]] = frozenset({
-            re.compile(r'\s*!testmousecursor\.*', re.IGNORECASE),
-            re.compile(r'\s*!testmousepointer\.*', re.IGNORECASE),
+            re.compile(r'^\s*!testmousecursor', re.IGNORECASE),
+            re.compile(r'^\s*!testmousepointer', re.IGNORECASE),
         })
 
     @property

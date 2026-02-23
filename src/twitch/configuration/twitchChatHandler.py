@@ -114,7 +114,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         if chatMessage.twitchUser.isTtsEnabled:
             await self.__processTtsEvent(chatMessage)
 
-        if self.__chatCommandPrefixRegEx.fullmatch(chatMessage.text):
+        if self.__chatCommandPrefixRegEx.match(chatMessage.text):
             await self.__processChatCommand(chatMessage)
 
     async def onNewChatDataBundle(
@@ -174,7 +174,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
             try:
                 for commandPattern in chatCommand.commandPatterns:
-                    if not commandPattern.fullmatch(chatMessage.text):
+                    if not commandPattern.match(chatMessage.text):
                         continue
 
                     result = await chatCommand.handleChatCommand(
