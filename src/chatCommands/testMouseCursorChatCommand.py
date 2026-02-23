@@ -34,6 +34,10 @@ class TestMouseCursorChatCommand(AbsChatCommand2):
         })
 
     @property
+    def commandName(self) -> str:
+        return 'TestMouseCursorChatCommand'
+
+    @property
     def commandPatterns(self) -> Collection[Pattern]:
         return self.__commandPatterns
 
@@ -50,5 +54,5 @@ class TestMouseCursorChatCommand(AbsChatCommand2):
             twitchChannelId = chatMessage.twitchChannelId,
         )
 
-        self.__timber.log('TestMouseCursorChatCommand', f'Result ({chatMessage=}) ({result=})')
+        self.__timber.log(self.commandName, f'Result ({chatMessage=}) ({result=})')
         return ChatCommandResult.HANDLED

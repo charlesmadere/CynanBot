@@ -9,6 +9,11 @@ class AbsChatCommand2(ABC):
 
     @property
     @abstractmethod
+    def commandName(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
     def commandPatterns(self) -> Collection[Pattern]:
         pass
 

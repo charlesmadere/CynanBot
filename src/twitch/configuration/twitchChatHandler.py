@@ -1,5 +1,6 @@
 import math
 import re
+import traceback
 from typing import Collection, Final, Pattern
 
 from frozenlist import FrozenList
@@ -77,7 +78,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface | None] = triviaGameBuilder
         self.__triviaGameMachine: Final[TriviaGameMachineInterface | None] = triviaGameMachine
 
-        self.__chatCommandPrefixRegEx: Final[Pattern] = re.compile(r'\s*!\w+\.*', re.IGNORECASE)
+        self.__chatCommandPrefixRegEx: Final[Pattern] = re.compile(r'^\s*!\w+\.*', re.IGNORECASE)
 
     async def __logCheer(self, chatMessage: TwitchChatMessage):
         if chatMessage.cheerMetadata is None or chatMessage.cheerMetadata.bits < 1:
@@ -113,25 +114,8 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         if chatMessage.twitchUser.isTtsEnabled:
             await self.__processTtsEvent(chatMessage)
 
-        if not self.__chatCommandPrefixRegEx.fullmatch(chatMessage.text):
-            return
-
-        for chatCommand in self.__chatCommands:
-            if chatCommand is None:
-                continue
-
-            for commandPattern in chatCommand.commandPatterns:
-                if not commandPattern.fullmatch(chatMessage.text):
-                    continue
-
-                result = await chatCommand.handleChatCommand(
-                    chatMessage = chatMessage,
-                )
-
-                if result is ChatCommandResult.CONSUMED:
-                    return
-                elif result is ChatCommandResult.HANDLED:
-                    break
+        if self.__chatCommandPrefixRegEx.fullmatch(chatMessage.text):
+            await self.__processChatCommand(chatMessage)
 
     async def onNewChatDataBundle(
         self,
@@ -182,6 +166,27 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         await self.onNewChat(
             chatMessage = chatMessage,
         )
+
+    async def __processChatCommand(self, chatMessage: TwitchChatMessage):
+        for index, chatCommand in enumerate(self.__chatCommands):
+            if chatCommand is None:
+                continue
+
+            try:
+                for commandPattern in chatCommand.commandPatterns:
+                    if not commandPattern.fullmatch(chatMessage.text):
+                        continue
+
+                    result = await chatCommand.handleChatCommand(
+                        chatMessage = chatMessage,
+                    )
+
+                    if result is ChatCommandResult.CONSUMED:
+                        return
+                    elif result is ChatCommandResult.HANDLED:
+                        break
+            except Exception as e:
+                self.__timber.log('TwitchChatHandler', f'Encountered an unexpected error while handling a chat command ({index=}) ({chatCommand=}) ({chatMessage=})', e, traceback.format_exc())
 
     async def __processCheerAction(self, chatMessage: TwitchChatMessage) -> bool:
         user = chatMessage.twitchUser
