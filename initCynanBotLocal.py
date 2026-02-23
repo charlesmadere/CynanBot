@@ -1,7 +1,7 @@
 import asyncio
 import locale
 from asyncio import AbstractEventLoop
-from typing import Final
+from typing import Collection, Final
 
 from src.accessLevelChecking.accessLevelCheckingHelper import AccessLevelCheckingHelper
 from src.accessLevelChecking.accessLevelCheckingHelperInterface import AccessLevelCheckingHelperInterface
@@ -49,6 +49,8 @@ from src.chatActions.soundAlertChatAction import SoundAlertChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.ttsChatterChatAction import TtsChatterChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
+from src.chatCommands.absChatCommand2 import AbsChatCommand2
+from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
@@ -2370,6 +2372,12 @@ mouseCursorPointRedemption: Final[MouseCursorPointRedemption] = MouseCursorPoint
     timber = timber,
 )
 
+testMouseCursorChatCommand: Final[TestMouseCursorChatCommand] = TestMouseCursorChatCommand(
+    administratorProvider = administratorProvider,
+    mouseCursorHelper = mouseCursorHelper,
+    timber = timber,
+)
+
 
 ##########################################
 ## Twitch events initialization section ##
@@ -2398,8 +2406,12 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     voicemailPointRedemption = voicemailPointRedemption,
 )
 
+chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
+    testMouseCursorChatCommand,
+})
+
 twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
-    backgroundTaskHelper = backgroundTaskHelper,
+    chatCommands = chatCommands,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
     streamAlertsManager = streamAlertsManager,

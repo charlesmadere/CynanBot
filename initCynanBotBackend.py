@@ -1,7 +1,7 @@
 import asyncio
 import locale
 from asyncio import AbstractEventLoop
-from typing import Final
+from typing import Collection, Final
 
 from src.aniv.contentScanner.anivContentScanner import AnivContentScanner
 from src.aniv.contentScanner.anivContentScannerInterface import AnivContentScannerInterface
@@ -45,6 +45,7 @@ from src.chatActions.manager.chatActionsManagerInterface import ChatActionsManag
 from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
+from src.chatCommands.absChatCommand2 import AbsChatCommand2
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
@@ -2050,8 +2051,10 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     voicemailPointRedemption = None,
 )
 
+chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset()
+
 twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
-    backgroundTaskHelper = backgroundTaskHelper,
+    chatCommands = chatCommands,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
     streamAlertsManager = streamAlertsManager,
