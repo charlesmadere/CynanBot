@@ -1,5 +1,7 @@
 import math
-from typing import Collection, Final
+import re
+import traceback
+from typing import Collection, Final, Pattern
 
 from frozenlist import FrozenList
 
@@ -23,10 +25,11 @@ from ..localModels.twitchChatMessageFragmentMention import TwitchChatMessageFrag
 from ..localModels.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 from ..localModels.twitchCheerMetadata import TwitchCheerMetadata
 from ..localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat
+from ...chatCommands.absChatCommand2 import AbsChatCommand2
+from ...chatCommands.chatCommandResult import ChatCommandResult
 from ...chatLogger.chatLoggerInterface import ChatLoggerInterface
 from ...cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from ...misc import utils as utils
-from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
@@ -44,7 +47,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelperInterface,
+        chatCommands: Collection[AbsChatCommand2 | None],
         chatLogger: ChatLoggerInterface,
         cheerActionHelper: CheerActionHelperInterface | None,
         streamAlertsManager: StreamAlertsManagerInterface,
@@ -52,8 +55,8 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         triviaGameBuilder: TriviaGameBuilderInterface | None,
         triviaGameMachine: TriviaGameMachineInterface | None,
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
-            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        if not isinstance(chatCommands, Collection):
+            raise TypeError(f'chatCommands argument is malformed: \"{chatCommands}\"')
         elif not isinstance(chatLogger, ChatLoggerInterface):
             raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
         elif cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
@@ -67,13 +70,15 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
 
-        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__chatCommands: Final[Collection[AbsChatCommand2 | None]] = chatCommands
         self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
         self.__cheerActionHelper: Final[CheerActionHelperInterface | None] = cheerActionHelper
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface | None] = triviaGameBuilder
         self.__triviaGameMachine: Final[TriviaGameMachineInterface | None] = triviaGameMachine
+
+        self.__chatCommandPrefixRegEx: Final[Pattern] = re.compile(r'^\s*!\w+\.*', re.IGNORECASE)
 
     async def __logCheer(self, chatMessage: TwitchChatMessage):
         if chatMessage.cheerMetadata is None or chatMessage.cheerMetadata.bits < 1:
@@ -108,6 +113,9 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
         if chatMessage.twitchUser.isTtsEnabled:
             await self.__processTtsEvent(chatMessage)
+
+        if self.__chatCommandPrefixRegEx.match(chatMessage.text):
+            await self.__processChatCommand(chatMessage)
 
     async def onNewChatDataBundle(
         self,
@@ -158,6 +166,27 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         await self.onNewChat(
             chatMessage = chatMessage,
         )
+
+    async def __processChatCommand(self, chatMessage: TwitchChatMessage):
+        for index, chatCommand in enumerate(self.__chatCommands):
+            if chatCommand is None:
+                continue
+
+            try:
+                for commandPattern in chatCommand.commandPatterns:
+                    if not commandPattern.match(chatMessage.text):
+                        continue
+
+                    result = await chatCommand.handleChatCommand(
+                        chatMessage = chatMessage,
+                    )
+
+                    match result:
+                        case ChatCommandResult.CONSUMED: return
+                        case ChatCommandResult.HANDLED: break
+                        case ChatCommandResult.IGNORED: pass
+            except Exception as e:
+                self.__timber.log('TwitchChatHandler', f'Encountered an unexpected error while handling a chat command ({index=}) ({chatCommand=}) ({chatMessage=})', e, traceback.format_exc())
 
     async def __processCheerAction(self, chatMessage: TwitchChatMessage) -> bool:
         user = chatMessage.twitchUser
