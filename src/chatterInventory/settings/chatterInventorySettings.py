@@ -24,10 +24,10 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         chatterInventoryMapper: ChatterInventoryMapperInterface,
         settingsJsonReader: JsonReaderInterface,
         defaultAirStrikeItemDetails: AirStrikeItemDetails = AirStrikeItemDetails(
-            maxDurationSeconds = 64,
-            minDurationSeconds = 50,
-            maxTargets = 13,
-            minTargets = 9,
+            maxDurationSeconds = 60,
+            minDurationSeconds = 42,
+            maxTargets = 11,
+            minTargets = 8,
         ),
         defaultAnimalPetItemDetails: AnimalPetItemDetails = AnimalPetItemDetails(
             soundDirectory = 'sounds/animalPets',
