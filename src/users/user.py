@@ -44,6 +44,7 @@ class User(UserInterface):
         isChatterInventoryEnabled: bool,
         isChatterPreferredNameEnabled: bool,
         isChatterPreferredTtsEnabled: bool,
+        isCommandsCommandEnabled: bool,
         isCrowdControlEnabled: bool,
         isCutenessEnabled: bool,
         isDecTalkSongsEnabled: bool,
@@ -182,6 +183,8 @@ class User(UserInterface):
             raise TypeError(f'isChatterPreferredNameEnabled argument is malformed: \"{isChatterPreferredNameEnabled}\"')
         elif not utils.isValidBool(isChatterPreferredTtsEnabled):
             raise TypeError(f'isChatterPreferredTtsEnabled argument is malformed: \"{isChatterPreferredTtsEnabled}\"')
+        elif not utils.isValidBool(isCommandsCommandEnabled):
+            raise TypeError(f'isCommandsCommandEnabled argument is malformed: \"{isCommandsCommandEnabled}\"')
         elif not utils.isValidBool(isCrowdControlEnabled):
             raise TypeError(f'isCrowdControlEnabled argument is malformed: \"{isCrowdControlEnabled}\"')
         elif not utils.isValidBool(isCutenessEnabled):
@@ -396,6 +399,7 @@ class User(UserInterface):
         self.__isChatterInventoryEnabled: Final[bool] = isChatterInventoryEnabled
         self.__isChatterPreferredNameEnabled: Final[bool] = isChatterPreferredNameEnabled
         self.__isChatterPreferredTtsEnabled: Final[bool] = isChatterPreferredTtsEnabled
+        self.__isCommandsCommandEnabled: Final[bool] = isCommandsCommandEnabled
         self.__isCrowdControlEnabled: bool = isCrowdControlEnabled
         self.__isCutenessEnabled: bool = isCutenessEnabled
         self.__isDecTalkSongsEnabled: bool = isDecTalkSongsEnabled
@@ -787,6 +791,10 @@ class User(UserInterface):
     @property
     def isChatterPreferredTtsEnabled(self) -> bool:
         return self.__isChatterPreferredTtsEnabled
+
+    @property
+    def isCommandsCommandEnabled(self) -> bool:
+        return self.__isCommandsCommandEnabled
 
     @property
     def isCrowdControlEnabled(self) -> bool:

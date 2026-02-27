@@ -182,6 +182,7 @@ class UsersRepository(UsersRepositoryInterface):
         isChatterInventoryEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHATTER_INVENTORY_ENABLED.jsonKey, False)
         isChatterPreferredNameEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHATTER_PREFERRED_NAME_ENABLED.jsonKey, False)
         isChatterPreferredTtsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHATTER_PREFERRED_TTS_ENABLED.jsonKey, False)
+        isCommandsCommandEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.COMMANDS_COMMAND_ENABLED.jsonKey, True)
         isCrowdControlEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CROWD_CONTROL_ENABLED.jsonKey, False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
         isDecTalkSongsEnabled = utils.getBoolFromDict(userJson, 'decTalkSongsEnabled', False)
@@ -424,6 +425,7 @@ class UsersRepository(UsersRepositoryInterface):
             isChatterInventoryEnabled = isChatterInventoryEnabled,
             isChatterPreferredNameEnabled = isChatterPreferredNameEnabled,
             isChatterPreferredTtsEnabled = isChatterPreferredTtsEnabled,
+            isCommandsCommandEnabled = isCommandsCommandEnabled,
             isCrowdControlEnabled = isCrowdControlEnabled,
             isCutenessEnabled = isCutenessEnabled,
             isDecTalkSongsEnabled = isDecTalkSongsEnabled,
