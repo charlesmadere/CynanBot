@@ -14,6 +14,7 @@ class UserJsonConstant(Enum):
     CHATTER_PREFERRED_TTS_ENABLED = auto()
     CHAT_SOUND_ALERTS_ENABLED = auto()
     CHEER_ACTIONS_ENABLED = auto()
+    COMMANDS_COMMAND_ENABLED = auto()
     CROWD_CONTROL_ENABLED = auto()
     CUTENESS_ENABLED = auto()
     CYNAN_SOURCE_ENABLED = auto()
@@ -53,6 +54,7 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.CHATTER_PREFERRED_TTS_ENABLED: return 'chatterPreferredTtsEnabled'
             case UserJsonConstant.CHAT_SOUND_ALERTS_ENABLED: return 'chatSoundAlertsEnabled'
             case UserJsonConstant.CHEER_ACTIONS_ENABLED: return 'cheerActionsEnabled'
+            case UserJsonConstant.COMMANDS_COMMAND_ENABLED: return 'commandsCommandEnabled'
             case UserJsonConstant.CROWD_CONTROL_ENABLED: return 'crowdControlEnabled'
             case UserJsonConstant.CUTENESS_ENABLED: return 'cutenessEnabled'
             case UserJsonConstant.CYNAN_SOURCE_ENABLED: return 'cynanSourceEnabled'

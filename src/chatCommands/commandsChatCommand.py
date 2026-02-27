@@ -33,6 +33,8 @@ class CommandsChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        if not user.isCommandsCommandEnabled:
+            return
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ Commands: {self.__commandsUrl}',

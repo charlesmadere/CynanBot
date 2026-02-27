@@ -368,6 +368,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def isCommandsCommandEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isCrowdControlEnabled(self) -> bool:
         pass
 
