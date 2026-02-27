@@ -9,6 +9,7 @@ from ..exceptions import UnknownTimeoutTargetException
 from ..models.actions.airStrikeTimeoutAction import AirStrikeTimeoutAction
 from ..models.timeoutTarget import TimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
+from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.activeChatters.activeChatter import ActiveChatter
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
@@ -28,6 +29,7 @@ class DetermineAirStrikeTargetsUseCase:
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
+        targetReducerScale: float = 0.5,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -41,6 +43,10 @@ class DetermineAirStrikeTargetsUseCase:
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not utils.isValidNum(targetReducerScale):
+            raise TypeError(f'targetReducerScale argument is malformed: \"{targetReducerScale}\"')
+        elif targetReducerScale < 0.1 or targetReducerScale > 1.0:
+            raise ValueError(f'targetReducerScale argument is out of bounds: {targetReducerScale}')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__timber: Final[TimberInterface] = timber
@@ -48,6 +54,7 @@ class DetermineAirStrikeTargetsUseCase:
         self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__targetReducerScale: Final[float] = targetReducerScale
 
     async def __fetchUserName(
         self,
@@ -109,12 +116,12 @@ class DetermineAirStrikeTargetsUseCase:
 
         airStrikeTargetCount = random.randint(timeoutAction.minTimeoutTargets, timeoutAction.maxTimeoutTargets)
 
-        if float(airStrikeTargetCount) / float(len(vulnerableChatters)) >= 0.75:
-            # Let's check to see if the number of air strike targets we are trying to hit is too
-            # close to the total number of current active chatters. This helps prevent situations
-            # where we could end up repeatedly timing out the same people, as there just aren't
-            # enough active chatters to increase the randomness.
-            airStrikeTargetCount = max(timeoutAction.minTimeoutTargets, int(math.floor(float(airStrikeTargetCount) * 0.75)))
+        if airStrikeTargetCount >= len(vulnerableChatters) or float(airStrikeTargetCount) / float(len(vulnerableChatters)) >= self.__targetReducerScale:
+            # Let's check to see if the number of air strike targets we are trying to hit is
+            # either greater than or too close to the total number of current active chatters.
+            # This helps prevent situations where we could end up repeatedly timing out the same
+            # people, as there just aren't enough active chatters to increase the randomness.
+            airStrikeTargetCount = max(timeoutAction.minTimeoutTargets, int(math.floor(float(airStrikeTargetCount) * self.__targetReducerScale)))
 
         vulnerableChattersList: list[ActiveChatter] = list(vulnerableChatters.values())
 
