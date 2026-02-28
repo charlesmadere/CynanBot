@@ -15,7 +15,7 @@ class FuntoonHelperInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
         userThatRedeemed: str,
-        userToBattle: str
+        userToBattle: str,
     ) -> bool:
         pass
 
@@ -25,7 +25,7 @@ class FuntoonHelperInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
         userThatRedeemed: str,
-        funtoonPkmnCatchType: FuntoonPkmnCatchType | None = None
+        funtoonPkmnCatchType: FuntoonPkmnCatchType | None = None,
     ) -> bool:
         pass
 
@@ -34,7 +34,7 @@ class FuntoonHelperInterface(ABC):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userThatRedeemed: str
+        userThatRedeemed: str,
     ) -> bool:
         pass
 
@@ -43,6 +43,6 @@ class FuntoonHelperInterface(ABC):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userThatRedeemed: str
+        userThatRedeemed: str,
     ) -> bool:
         pass

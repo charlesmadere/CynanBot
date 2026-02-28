@@ -10,13 +10,13 @@ class FuntoonJsonMapperInterface(ABC):
     @abstractmethod
     async def parseTriviaQuestion(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> FuntoonTriviaQuestion | None:
         pass
 
     @abstractmethod
     async def serializePkmnCatchType(
         self,
-        pkmnCatchType: FuntoonPkmnCatchType
+        pkmnCatchType: FuntoonPkmnCatchType,
     ) -> str:
         pass

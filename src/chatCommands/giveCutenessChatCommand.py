@@ -94,7 +94,7 @@ class GiveCutenessChatCommand(AbsChatCommand):
         try:
             incrementAmount = int(incrementAmountStr)
         except Exception as e:
-            self.__timber.log('GiveCutenessChatCommand', f'Unable to convert increment amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} into an int: \"{incrementAmountStr}\": {e}', e, traceback.format_exc())
+            self.__timber.log('GiveCutenessChatCommand', f'Unable to convert increment amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} into an int: \"{incrementAmountStr}\"', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ Increment amount argument is malformed. Example: !givecuteness @{userName} 5',
                 twitchChannelId = await ctx.getTwitchChannelId(),
@@ -128,7 +128,7 @@ class GiveCutenessChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId(),
             )
         except (OverflowError, ValueError) as e:
-            self.__timber.log('GiveCutenessChatCommand', f'Error giving {incrementAmount} cuteness from {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} to {userName}:{userId} in {user.handle}: {e}', e, traceback.format_exc())
+            self.__timber.log('GiveCutenessChatCommand', f'Error giving {incrementAmount} cuteness from {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} to {userName}:{userId} in {user.handle}', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ Error giving cuteness to \"{userName}\"',
                 twitchChannelId = await ctx.getTwitchChannelId(),
