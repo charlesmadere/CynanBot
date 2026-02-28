@@ -72,8 +72,6 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
         )
 
         if utils.isValidStr(twitchAccessToken):
-            self.__timber.log('TwitchChannelEditorsRepository', f'Fetching channel editors... ({twitchChannelId=}) ({editorsData=})')
-
             try:
                 channelEditorsResponse = await self.__twitchApiService.fetchChannelEditors(
                     broadcasterId = twitchChannelId,
@@ -86,7 +84,7 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
                     channelEditorsResponse = channelEditorsResponse,
                 )
             except Exception as e:
-                self.__timber.log('TwitchChannelEditorsRepository', f'Failed to fetch channel editors ({twitchChannelId=}) ({editorsData=}): {e}', e, traceback.format_exc())
+                self.__timber.log('TwitchChannelEditorsRepository', f'Failed to fetch channel editors ({twitchChannelId=}) ({editorsData=})', e, traceback.format_exc())
                 editorsData = None
 
         if editorsData is None:
