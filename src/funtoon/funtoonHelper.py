@@ -44,7 +44,7 @@ class FuntoonHelper(FuntoonHelperInterface):
         try:
             successfullyBanned = await self.__funtoonApiService.banTriviaQuestion(triviaId = triviaId)
         except GenericNetworkException as e:
-            self.__timber.log('FuntoonHelper', f'Encountered network error when banning trivia question ({triviaId=}): {e}', e, traceback.format_exc())
+            self.__timber.log('FuntoonHelper', f'Encountered network error when banning trivia question ({triviaId=})', e, traceback.format_exc())
 
         return successfullyBanned
 
@@ -53,7 +53,7 @@ class FuntoonHelper(FuntoonHelperInterface):
         twitchChannel: str,
         twitchChannelId: str,
         userThatRedeemed: str,
-        userToBattle: str
+        userToBattle: str,
     ) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -66,21 +66,21 @@ class FuntoonHelper(FuntoonHelperInterface):
 
         try:
             funtoonToken = await self.__funtoonTokensRepository.requireToken(
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
         except NoFuntoonTokenException as e:
-            self.__timber.log('FuntoonHelper', f'Can\'t perform pkmnBattle as twitchChannel \"{twitchChannel}\" has no Funtoon token', e, traceback.format_exc())
+            self.__timber.log('FuntoonHelper', f'Can\'t perform pkmnBattle as no Funtoon token is available ({twitchChannelId=})', e, traceback.format_exc())
             return False
 
         return await self.__funtoonApiService.customEvent(
             data = {
                 'player': userThatRedeemed,
-                'opponent': userToBattle
+                'opponent': userToBattle,
             },
             event = 'battle',
             funtoonToken = funtoonToken,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def pkmnCatch(
@@ -88,7 +88,7 @@ class FuntoonHelper(FuntoonHelperInterface):
         twitchChannel: str,
         twitchChannelId: str,
         userThatRedeemed: str,
-        funtoonPkmnCatchType: FuntoonPkmnCatchType | None = None
+        funtoonPkmnCatchType: FuntoonPkmnCatchType | None = None,
     ) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -101,10 +101,10 @@ class FuntoonHelper(FuntoonHelperInterface):
 
         try:
             funtoonToken = await self.__funtoonTokensRepository.requireToken(
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
         except NoFuntoonTokenException as e:
-            self.__timber.log('FuntoonHelper', f'Can\'t perform pkmnCatch as twitchChannel \"{twitchChannel}\" has no Funtoon token', e, traceback.format_exc())
+            self.__timber.log('FuntoonHelper', f'Can\'t perform pkmnCatch as no Funtoon token is available ({twitchChannelId=})', e, traceback.format_exc())
             return False
 
         data: dict[str, Any] | str | None
@@ -116,7 +116,7 @@ class FuntoonHelper(FuntoonHelperInterface):
 
             data = {
                 'who': userThatRedeemed,
-                'catchType': catchType
+                'catchType': catchType,
             }
 
         return await self.__funtoonApiService.customEvent(
@@ -124,14 +124,14 @@ class FuntoonHelper(FuntoonHelperInterface):
             event = 'catch',
             funtoonToken = funtoonToken,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def pkmnGiveEvolve(
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userThatRedeemed: str
+        userThatRedeemed: str,
     ) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -142,10 +142,10 @@ class FuntoonHelper(FuntoonHelperInterface):
 
         try:
             funtoonToken = await self.__funtoonTokensRepository.requireToken(
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
         except NoFuntoonTokenException as e:
-            self.__timber.log('FuntoonHelper', f'Can\'t perform pkmnGiveEvolve as twitchChannel \"{twitchChannel}\" has no Funtoon token: {e}', e, traceback.format_exc())
+            self.__timber.log('FuntoonHelper', f'Can\'t perform pkmnGiveEvolve as no Funtoon token is available ({twitchChannelId=})', e, traceback.format_exc())
             return False
 
         return await self.__funtoonApiService.customEvent(
@@ -153,14 +153,14 @@ class FuntoonHelper(FuntoonHelperInterface):
             event = 'giveFreeEvolve',
             funtoonToken = funtoonToken,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
     async def pkmnGiveShiny(
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userThatRedeemed: str
+        userThatRedeemed: str,
     ) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -171,10 +171,10 @@ class FuntoonHelper(FuntoonHelperInterface):
 
         try:
             funtoonToken = await self.__funtoonTokensRepository.requireToken(
-                twitchChannelId = twitchChannelId
+                twitchChannelId = twitchChannelId,
             )
         except NoFuntoonTokenException as e:
-            self.__timber.log('FuntoonHelper', f'Can\'t perform pkmnGiveShiny as twitchChannel \"{twitchChannel}\" has no Funtoon token: {e}', e, traceback.format_exc())
+            self.__timber.log('FuntoonHelper', f'Can\'t perform pkmnGiveShiny as no Funtoon token is available ({twitchChannelId=})', e, traceback.format_exc())
             return False
 
         return await self.__funtoonApiService.customEvent(
@@ -182,5 +182,5 @@ class FuntoonHelper(FuntoonHelperInterface):
             event = 'giveFreeShiny',
             funtoonToken = funtoonToken,
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )

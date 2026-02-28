@@ -10,7 +10,7 @@ class FuntoonJsonMapper(FuntoonJsonMapperInterface):
 
     async def parseTriviaQuestion(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
     ) -> FuntoonTriviaQuestion | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
@@ -31,7 +31,7 @@ class FuntoonJsonMapper(FuntoonJsonMapperInterface):
 
     async def serializePkmnCatchType(
         self,
-        pkmnCatchType: FuntoonPkmnCatchType
+        pkmnCatchType: FuntoonPkmnCatchType,
     ) -> str:
         if not isinstance(pkmnCatchType, FuntoonPkmnCatchType):
             raise TypeError(f'pkmnCatchType argument is malformed: \"{pkmnCatchType}\"')
