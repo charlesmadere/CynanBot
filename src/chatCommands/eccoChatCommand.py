@@ -1,6 +1,8 @@
-from typing import Final
+import re
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..ecco.eccoHelperInterface import EccoHelperInterface
 from ..ecco.exceptions import EccoFailedToFetchTimeRemaining
 from ..ecco.models.absEccoTimeRemaining import AbsEccoTimeRemaining
@@ -9,18 +11,16 @@ from ..ecco.models.eccoTimeRemaining import EccoTimeRemaining
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class EccoChatCommand(AbsChatCommand):
+class EccoChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
         eccoHelper: EccoHelperInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(eccoHelper, EccoHelperInterface):
             raise TypeError(f'eccoHelper argument is malformed: \"{eccoHelper}\"')
@@ -28,38 +28,46 @@ class EccoChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__eccoHelper: Final[EccoHelperInterface] = eccoHelper
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        self.__commandPatterns: Final[frozenset] = frozenset({
+            re.compile(r'^\s*!ecco', re.IGNORECASE),
+        })
 
-        if not user.isEccoEnabled:
-            return
+    @property
+    def commandName(self) -> str:
+        return 'EccoChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isEccoEnabled:
+            return ChatCommandResult.IGNORED
 
         try:
             eccoTimeRemaining = await self.__eccoHelper.fetchEccoTimeRemaining()
         except EccoFailedToFetchTimeRemaining as e:
-            self.__timber.log('EccoChatCommand', f'Failed to fetch Ecco time remaining for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}: {e}', e)
+            self.__timber.log(self.commandName, f'Failed to fetch Ecco time remaining ({chatMessage=})', e)
             self.__twitchChatMessenger.send(
                 text = f'⚠ Error fetching Ecco time remaining',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+            return ChatCommandResult.HANDLED
 
         self.__twitchChatMessenger.send(
             text = await self.__toString(eccoTimeRemaining),
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            replyMessageId = await ctx.getMessageId(),
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log('EccoChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({chatMessage=}) ({eccoTimeRemaining=})')
+        return ChatCommandResult.HANDLED
 
     async def __toString(self, eccoTimeRemaining: AbsEccoTimeRemaining) -> str:
         if isinstance(eccoTimeRemaining, EccoReleased):

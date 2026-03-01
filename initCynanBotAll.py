@@ -63,6 +63,7 @@ from src.chatActions.ttsChatterChatAction import TtsChatterChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
+from src.chatCommands.eccoChatCommand import EccoChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -3344,6 +3345,11 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    EccoChatCommand(
+        eccoHelper = eccoHelper,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     testMouseCursorChatCommand,
 })
 
@@ -3480,7 +3486,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     cutenessRepository = cutenessRepository,
     cutenessUtils = cutenessUtils,
     decTalkSettingsRepository = decTalkSettingsRepository,
-    eccoHelper = eccoHelper,
     funtoonHelper = funtoonHelper,
     funtoonTokensRepository = funtoonTokensRepository,
     gashaponRewardHelper = gashaponRewardHelper,

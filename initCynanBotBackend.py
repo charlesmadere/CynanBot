@@ -47,6 +47,7 @@ from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWiz
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
+from src.chatCommands.eccoChatCommand import EccoChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
@@ -2057,6 +2058,11 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    EccoChatCommand(
+        eccoHelper = eccoHelper,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
 })
 
 twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
@@ -2192,7 +2198,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     cutenessRepository = cutenessRepository,
     cutenessUtils = cutenessUtils,
     decTalkSettingsRepository = None,
-    eccoHelper = eccoHelper,
     funtoonHelper = funtoonHelper,
     funtoonTokensRepository = funtoonTokensRepository,
     gashaponRewardHelper = None,

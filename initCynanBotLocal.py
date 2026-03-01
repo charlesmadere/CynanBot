@@ -2548,7 +2548,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     cutenessRepository = None,
     cutenessUtils = None,
     decTalkSettingsRepository = decTalkSettingsRepository,
-    eccoHelper = None,
     funtoonHelper = funtoonHelper,
     funtoonTokensRepository = funtoonTokensRepository,
     gashaponRewardHelper = gashaponRewardHelper,
