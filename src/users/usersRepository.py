@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import tzinfo
-from typing import Any, Collection
+from typing import Any, Collection, Final
 
 import aiofiles
 import aiofiles.ospath
@@ -96,31 +96,31 @@ class UsersRepository(UsersRepositoryInterface):
         elif not utils.isValidStr(usersFile):
             raise TypeError(f'usersFile argument is malformed: \"{usersFile}\"')
 
-        self.__anivJsonMapper: AnivJsonMapperInterface = anivJsonMapper
-        self.__chatSoundAlertJsonParser: ChatSoundAlertJsonParserInterface = chatSoundAlertJsonParser
-        self.__crowdControlJsonParser: CrowdControlJsonParserInterface = crowdControlJsonParser
-        self.__cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = cutenessBoosterPackJsonParser
-        self.__decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = decTalkSongBoosterPackParser
-        self.__languageEntryJsonMapper: LanguageEntryJsonMapperInterface = languageEntryJsonMapper
-        self.__pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = pkmnBoosterPackJsonParser
-        self.__redemptionCounterBoosterPackParser: RedemptionCounterBoosterPackParserInterface = redemptionCounterBoosterPackParser
-        self.__soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface = soundAlertRedemptionJsonParser
-        self.__supStreamerBoosterPackJsonParser: SupStreamerBoosterPackJsonParserInterface = supStreamerBoosterPackJsonParser
-        self.__timber: TimberInterface = timber
-        self.__timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface = timeoutBoosterPackJsonParser
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__ttsBoosterPackParser: TtsBoosterPackParserInterface = ttsBoosterPackParser
-        self.__ttsJsonMapper: TtsJsonMapperInterface = ttsJsonMapper
-        self.__usersFile: str = usersFile
+        self.__anivJsonMapper: Final[AnivJsonMapperInterface] = anivJsonMapper
+        self.__chatSoundAlertJsonParser: Final[ChatSoundAlertJsonParserInterface] = chatSoundAlertJsonParser
+        self.__crowdControlJsonParser: Final[CrowdControlJsonParserInterface] = crowdControlJsonParser
+        self.__cutenessBoosterPackJsonParser: Final[CutenessBoosterPackJsonParserInterface] = cutenessBoosterPackJsonParser
+        self.__decTalkSongBoosterPackParser: Final[DecTalkSongBoosterPackParserInterface] = decTalkSongBoosterPackParser
+        self.__languageEntryJsonMapper: Final[LanguageEntryJsonMapperInterface] = languageEntryJsonMapper
+        self.__pkmnBoosterPackJsonParser: Final[PkmnBoosterPackJsonParserInterface] = pkmnBoosterPackJsonParser
+        self.__redemptionCounterBoosterPackParser: Final[RedemptionCounterBoosterPackParserInterface] = redemptionCounterBoosterPackParser
+        self.__soundAlertRedemptionJsonParser: Final[SoundAlertRedemptionJsonParserInterface] = soundAlertRedemptionJsonParser
+        self.__supStreamerBoosterPackJsonParser: Final[SupStreamerBoosterPackJsonParserInterface] = supStreamerBoosterPackJsonParser
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeoutBoosterPackJsonParser: Final[TimeoutBoosterPackJsonParserInterface] = timeoutBoosterPackJsonParser
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__ttsBoosterPackParser: Final[TtsBoosterPackParserInterface] = ttsBoosterPackParser
+        self.__ttsJsonMapper: Final[TtsJsonMapperInterface] = ttsJsonMapper
+        self.__usersFile: Final[str] = usersFile
 
         self.__jsonCache: dict[str, Any] | None = None
-        self.__userCache: dict[str, User | None] = dict()
+        self.__userCache: Final[dict[str, User | None]] = dict()
 
     async def addUser(self, handle: str):
         if not utils.isValidStr(handle):
             raise TypeError(f'handle argument is malformed: \"{handle}\"')
 
-        self.__timber.log('UsersRepository', f'Adding user \"{handle}\"...')
+        self.__timber.log('UsersRepository', f'Adding user ({handle=})...')
         jsonContents = await self.__readJsonAsync()
 
         for key in jsonContents.keys():
@@ -130,7 +130,7 @@ class UsersRepository(UsersRepositoryInterface):
 
         jsonContents[handle] = dict()
         await self.__writeAndFlushUsersFileAsync(jsonContents)
-        self.__timber.log('UsersRepository', f'Finished adding user \"{handle}\"')
+        self.__timber.log('UsersRepository', f'Finished adding user ({handle=})')
 
     async def clearCaches(self):
         self.__jsonCache = None
@@ -182,7 +182,7 @@ class UsersRepository(UsersRepositoryInterface):
         isChatterInventoryEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHATTER_INVENTORY_ENABLED.jsonKey, False)
         isChatterPreferredNameEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHATTER_PREFERRED_NAME_ENABLED.jsonKey, False)
         isChatterPreferredTtsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHATTER_PREFERRED_TTS_ENABLED.jsonKey, False)
-        isCommandsCommandEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.COMMANDS_COMMAND_ENABLED.jsonKey, True)
+        isCommandsCommandEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.COMMANDS_COMMAND_ENABLED.jsonKey, False)
         isCrowdControlEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CROWD_CONTROL_ENABLED.jsonKey, False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
         isDecTalkSongsEnabled = utils.getBoolFromDict(userJson, 'decTalkSongsEnabled', False)
@@ -765,9 +765,14 @@ class UsersRepository(UsersRepositoryInterface):
         if not utils.isValidStr(handle):
             raise TypeError(f'handle argument is malformed: \"{handle}\"')
 
-        self.__timber.log('UsersRepository', f'Removing user \"{handle}\"...')
-        await self.setUserEnabled(handle, False)
-        self.__timber.log('UsersRepository', f'Finished removing user \"{handle}\"')
+        self.__timber.log('UsersRepository', f'Removing user ({handle=})...')
+
+        await self.setUserEnabled(
+            handle = handle,
+            enabled = False,
+        )
+
+        self.__timber.log('UsersRepository', f'Finished removing user ({handle=})')
 
     async def setUserEnabled(self, handle: str, enabled: bool):
         if not utils.isValidStr(handle):
@@ -775,7 +780,7 @@ class UsersRepository(UsersRepositoryInterface):
         elif not utils.isValidBool(enabled):
             raise TypeError(f'enabled argument is malformed: \"{enabled}\"')
 
-        self.__timber.log('UsersRepository', f'Changing enabled status for user \"{handle}\" to \"{enabled}\"...')
+        self.__timber.log('UsersRepository', f'Changing enabled status for user ({handle=}) ({enabled=})...')
         jsonContents = await self.__readJsonAsync()
         preExistingHandle: str | None = None
 
@@ -804,4 +809,4 @@ class UsersRepository(UsersRepositoryInterface):
         # be sure to clear caches, as JSON file contents have now been updated
         await self.clearCaches()
 
-        self.__timber.log('UsersRepository', f'Finished writing out changes to users repository JSON file (\"{self.__usersFile}\")')
+        self.__timber.log('UsersRepository', f'Finished writing out changes to users repository JSON file ({self.__usersFile=})')
