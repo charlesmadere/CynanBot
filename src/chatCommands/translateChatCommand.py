@@ -53,7 +53,6 @@ class TranslateChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-
         if not user.isTranslateEnabled:
             return
 
@@ -86,7 +85,7 @@ class TranslateChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId(),
             )
         except Exception as e:
-            self.__timber.log('TranslateCommand', f'Error translating ({targetLanguageEntry=}) ({text=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TranslateCommand', f'Error translating ({targetLanguageEntry=}) ({text=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = '⚠ Error translating',
                 twitchChannelId = await ctx.getTwitchChannelId(),

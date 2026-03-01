@@ -1,7 +1,7 @@
 import math
 import re
 import traceback
-from typing import Collection, Final, Pattern
+from typing import Any, Collection, Final, Pattern
 
 from frozenlist import FrozenList
 
@@ -70,7 +70,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
 
-        self.__chatCommands: Final[Collection[AbsChatCommand2 | None]] = chatCommands
+        self.__chatCommands: Final[Collection[AbsChatCommand2]] = self.__buildChatCommandsCollection(chatCommands)
         self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
         self.__cheerActionHelper: Final[CheerActionHelperInterface | None] = cheerActionHelper
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
@@ -79,6 +79,27 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         self.__triviaGameMachine: Final[TriviaGameMachineInterface | None] = triviaGameMachine
 
         self.__chatCommandPrefixRegEx: Final[Pattern] = re.compile(r'^\s*!\w+\.*', re.IGNORECASE)
+
+    def __buildChatCommandsCollection(
+        self,
+        chatCommands: Collection[AbsChatCommand2 | Any | None],
+    ) -> frozenset[AbsChatCommand2]:
+        frozenChatCommands: FrozenList[AbsChatCommand2 | Any | None] = FrozenList(chatCommands)
+        frozenChatCommands.freeze()
+
+        validChatCommands: set[AbsChatCommand2] = set()
+
+        for index, chatCommand in enumerate(frozenChatCommands):
+            if chatCommand is None:
+                continue
+            elif isinstance(chatCommand, AbsChatCommand2):
+                validChatCommands.add(chatCommand)
+            else:
+                exception = ValueError(f'Encountered an invalid AbsChatCommand2 instance ({index=}) ({chatCommand=}) ({frozenChatCommands=})')
+                self.__timber.log('TwitchChatHandler', f'Encountered an invalid AbsChatCommand2 instance ({index=}) ({chatCommand=}) ({frozenChatCommands=})', exception, traceback.format_exc())
+                raise exception
+
+        return frozenset(validChatCommands)
 
     async def __logCheer(self, chatMessage: TwitchChatMessage):
         if chatMessage.cheerMetadata is None or chatMessage.cheerMetadata.bits < 1:
