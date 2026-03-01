@@ -46,6 +46,7 @@ from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
+from src.chatCommands.commandsChatCommand import CommandsChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
@@ -2051,7 +2052,12 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     voicemailPointRedemption = None,
 )
 
-chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset()
+chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
+    CommandsChatCommand(
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+})
 
 twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
     chatCommands = chatCommands,
