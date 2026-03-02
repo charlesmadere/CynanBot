@@ -51,6 +51,7 @@ from src.chatActions.ttsChatterChatAction import TtsChatterChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
+from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -2409,6 +2410,11 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
 
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     CommandsChatCommand(
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    LoremIpsumChatCommand(
+        administratorProvider = administratorProvider,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),

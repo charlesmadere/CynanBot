@@ -68,7 +68,6 @@ from .chatCommands.getTriviaControllersChatCommand import GetTriviaControllersCh
 from .chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
 from .chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from .chatCommands.jishoChatCommand import JishoChatCommand
-from .chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from .chatCommands.myCutenessChatCommand import MyCutenessChatCommand
 from .chatCommands.pkMonChatCommand import PkMonChatCommand
 from .chatCommands.pkMoveChatCommand import PkMoveChatCommand
@@ -828,7 +827,6 @@ class CynanBot(
         self.__confirmCommand: AbsChatCommand = ConfirmChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, usersRepository)
         self.__cynanSourceCommand: AbsChatCommand = CynanSourceChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__discordCommand: AbsChatCommand = DiscordChatCommand(timber, twitchChatMessenger, usersRepository)
-        self.__loremIpsumCommand: AbsChatCommand = LoremIpsumChatCommand(administratorProvider, timber, twitchChatMessenger, usersRepository)
         self.__removeUserCommand: AbsChatCommand = RemoveUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, twitchTokensRepository, userIdsRepository, usersRepository)
         self.__setTwitchCodeCommand: AbsChatCommand = SetTwitchCodeChatCommand(administratorProvider, timber, twitchTokensRepository, twitchChatMessenger, usersRepository)
         self.__skipTtsCommand: AbsChatCommand = SkipTtsChatCommand(administratorProvider, compositeTtsManagerProvider, timber, twitchChannelEditorsRepository)
@@ -1510,11 +1508,6 @@ class CynanBot(
     async def command_jisho(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__jishoCommand.handleChatCommand(context)
-
-    @commands.command(name = 'lorem', aliases = [ 'loremipsum' ])
-    async def command_lorem(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__loremIpsumCommand.handleChatCommand(context)
 
     @commands.command(name = 'mycuteness', aliases = [ 'mycutenesshistory' ])
     async def command_mycuteness(self, ctx: Context):

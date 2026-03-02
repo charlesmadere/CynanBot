@@ -48,6 +48,7 @@ from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAn
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
+from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
@@ -2060,6 +2061,11 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     ),
     EccoChatCommand(
         eccoHelper = eccoHelper,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    LoremIpsumChatCommand(
+        administratorProvider = administratorProvider,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
