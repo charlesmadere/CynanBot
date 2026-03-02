@@ -387,10 +387,9 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
         imageFormats: set[TwitchEmoteImageFormat] = set()
 
-        if apiEmote.imageFormats is not None and len(apiEmote.imageFormats) >= 1:
-            for apiImageFormat in apiEmote.imageFormats:
-                imageFormat = await self.__mapApiEmoteImageFormat(apiImageFormat)
-                imageFormats.add(imageFormat)
+        for apiImageFormat in apiEmote.imageFormats:
+            imageFormat = await self.__mapApiEmoteImageFormat(apiImageFormat)
+            imageFormats.add(imageFormat)
 
         return TwitchChatMessageFragmentEmote(
             imageFormats = frozenset(imageFormats),
