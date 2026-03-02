@@ -1,22 +1,21 @@
-from typing import Final
+import re
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class LoremIpsumChatCommand(AbsChatCommand):
+class LoremIpsumChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -24,24 +23,29 @@ class LoremIpsumChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!lorem', re.IGNORECASE),
+        })
 
-        if not user.isLoremIpsumEnabled:
+    @property
+    def commandName(self) -> str:
+        return 'LoremIpsumChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage):
+        if not chatMessage.twitchUser.isLoremIpsumEnabled:
             return
 
-        twitchChannelId = await ctx.getTwitchChannelId()
         administrator = await self.__administratorProvider.getAdministratorUserId()
-
-        if twitchChannelId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
+        if chatMessage.twitchChannelId != chatMessage.chatterUserId and administrator != chatMessage.chatterUserId:
             return
 
         loremIpsumText: str
@@ -52,7 +56,7 @@ class LoremIpsumChatCommand(AbsChatCommand):
 
         self.__twitchChatMessenger.send(
             text = loremIpsumText,
-            twitchChannelId = twitchChannelId,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
-        self.__timber.log('LoremIpsumCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('LoremIpsumCommand', f'Handled ({chatMessage=})')

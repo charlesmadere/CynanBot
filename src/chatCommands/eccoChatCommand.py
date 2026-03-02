@@ -33,7 +33,7 @@ class EccoChatCommand(AbsChatCommand2):
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
-        self.__commandPatterns: Final[frozenset] = frozenset({
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
             re.compile(r'^\s*!ecco', re.IGNORECASE),
         })
 
