@@ -8,6 +8,10 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
         pass
 
     @abstractmethod
+    async def getDisappointBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getFrostyToolsDotComUserId(self) -> str | None:
         pass
 

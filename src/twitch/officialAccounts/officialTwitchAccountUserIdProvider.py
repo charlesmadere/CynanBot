@@ -8,6 +8,7 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
 
     def __init__(
         self,
+        disappointBotUserId: str | None = '169809959',
         frostyToolsDotComUserId: str | None = '955237329',
         moobotUserId: str | None = '1564983',
         nightBotUserId: str | None = '19264788',
@@ -24,7 +25,9 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         valorantUserId: str | None = '490592527',
         zeldoBotUserId: str | None = '54866013',
     ):
-        if frostyToolsDotComUserId is not None and not isinstance(frostyToolsDotComUserId, str):
+        if disappointBotUserId is not None and not isinstance(disappointBotUserId, str):
+            raise TypeError(f'disappointBotUserId argument is malformed: \"{disappointBotUserId}\"')
+        elif frostyToolsDotComUserId is not None and not isinstance(frostyToolsDotComUserId, str):
             raise TypeError(f'frostyToolsDotComUserId argument is malformed: \"{frostyToolsDotComUserId}\"')
         elif moobotUserId is not None and not isinstance(moobotUserId, str):
             raise TypeError(f'moobotUserId argument is malformed: \"{moobotUserId}\"')
@@ -55,6 +58,7 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         elif zeldoBotUserId is not None and not isinstance(zeldoBotUserId, str):
             raise TypeError(f'zeldoBotUserId argument is malformed: \"{zeldoBotUserId}\"')
 
+        self.__disappointBotUserId: Final[str | None] = disappointBotUserId
         self.__frostyToolsDotComUserId: Final[str | None] = frostyToolsDotComUserId
         self.__moobotUserId: Final[str | None] = moobotUserId
         self.__nightBotUserId: Final[str | None] = nightBotUserId
@@ -73,6 +77,10 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
 
     async def getAllUserIds(self) -> frozenset[str]:
         allUserIds: set[str] = set()
+
+        disappointBotUserId = await self.getDisappointBotUserId()
+        if utils.isValidStr(disappointBotUserId):
+            allUserIds.add(disappointBotUserId)
 
         frostyToolsDotComUserId = await self.getFrostyToolsDotComUserId()
         if utils.isValidStr(frostyToolsDotComUserId):
@@ -133,6 +141,9 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
             allUserIds.add(zeldoBotUserId)
 
         return frozenset(allUserIds)
+
+    async def getDisappointBotUserId(self) -> str | None:
+        return self.__disappointBotUserId
 
     async def getFrostyToolsDotComUserId(self) -> str | None:
         return self.__frostyToolsDotComUserId
