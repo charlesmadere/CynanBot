@@ -404,7 +404,6 @@ class TwitchChatHandler(AbsTwitchChatHandler):
     ) -> TwitchEmoteImageFormat:
         match apiImageFormat:
             case ApiTwitchEmoteImageFormat.ANIMATED: return TwitchEmoteImageFormat.ANIMATED
-            case ApiTwitchEmoteImageFormat.DEFAULT: return TwitchEmoteImageFormat.DEFAULT
             case ApiTwitchEmoteImageFormat.STATIC: return TwitchEmoteImageFormat.STATIC
             case _: raise ValueError(f'Encountered unknown ApiTwitchEmoteImageFormat: \"{apiImageFormat}\"')
 
