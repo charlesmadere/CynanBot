@@ -98,7 +98,6 @@ from .chatCommands.timeChatCommand import TimeChatCommand
 from .chatCommands.translateChatCommand import TranslateChatCommand
 from .chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from .chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
-from .chatCommands.ttsChatCommand import TtsChatCommand
 from .chatCommands.twitchUserInfoChatCommand import TwitchUserInfoChatCommand
 from .chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
 from .chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
@@ -1023,11 +1022,6 @@ class CynanBot(
         else:
             self.__removeTtsChatterCommand: AbsChatCommand = RemoveTtsChatterChatCommand(timber, ttsChatterRepository, twitchChatMessenger, usersRepository)
 
-        if streamAlertsManager is None or ttsJsonMapper is None:
-            self.__ttsCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__ttsCommand: AbsChatCommand = TtsChatCommand(administratorProvider, streamAlertsManager, timber, ttsJsonMapper, twitchChatMessenger, usersRepository)
-
         if locationsRepository is None or weatherReportPresenter is None or weatherRepository is None:
             self.__weatherCommand: AbsChatCommand = StubChatCommand()
         else:
@@ -1648,11 +1642,6 @@ class CynanBot(
     async def command_triviascore(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__triviaScoreCommand.handleChatCommand(context)
-
-    @commands.command(name = 'tts', aliases = [ 'TTS', 'Tts', 'TTs' ])
-    async def command_tts(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__ttsCommand.handleChatCommand(context)
 
     @commands.command(name = 'twitchuserinfo', aliases = [ 'twitchinfo', 'userinfo' ])
     async def command_twitchuserinfo(self, ctx: Context):

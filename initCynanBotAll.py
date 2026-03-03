@@ -66,6 +66,7 @@ from src.chatCommands.commandsChatCommand import CommandsChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
+from src.chatCommands.ttsChatCommand import TtsChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
@@ -3357,6 +3358,13 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
     ),
     testMouseCursorChatCommand,
+    TtsChatCommand(
+        administratorProvider = administratorProvider,
+        streamAlertsManager = streamAlertsManager,
+        timber = timber,
+        ttsJsonMapper = ttsJsonMapper,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
 })
 
 twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
