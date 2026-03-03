@@ -1,4 +1,5 @@
 import random
+from typing import Final
 
 import pytest
 from frozenlist import FrozenList
@@ -23,13 +24,13 @@ from src.timber.timberStub import TimberStub
 
 class TestGoogleJsonMapper:
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+    timeZoneRepository: Final[TimeZoneRepositoryInterface] = TimeZoneRepository()
 
-    mapper: GoogleJsonMapperInterface = GoogleJsonMapper(
+    mapper: Final[GoogleJsonMapperInterface] = GoogleJsonMapper(
         timber = timber,
-        timeZoneRepository = timeZoneRepository
+        timeZoneRepository = timeZoneRepository,
     )
 
     @pytest.mark.asyncio
@@ -213,6 +214,16 @@ class TestGoogleJsonMapper:
         assert result['text'] == markupTurn.text
 
     @pytest.mark.asyncio
+    async def test_serializeScope_withAll(self):
+        results: set[str] = set()
+
+        for scope in GoogleScope:
+            result = await self.mapper.serializeScope(scope)
+            results.add(result)
+
+        assert len(results) == len(GoogleScope)
+
+    @pytest.mark.asyncio
     async def test_serializeScope_withCloudTextToSpeech(self):
         result = await self.mapper.serializeScope(GoogleScope.CLOUD_TEXT_TO_SPEECH)
         assert result == 'https://www.googleapis.com/auth/cloud-platform'
@@ -228,6 +239,15 @@ class TestGoogleJsonMapper:
 
         with pytest.raises(ValueError):
             result = await self.mapper.serializeScopes(list())
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_serializeScopes_withEmptySet(self):
+        result: str | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.mapper.serializeScopes(set())
 
         assert result is None
 

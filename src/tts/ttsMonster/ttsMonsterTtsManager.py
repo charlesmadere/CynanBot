@@ -151,19 +151,19 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
 
     async def __processTtsEvent(self, event: TtsEvent) -> TtsMonsterFileReference | None:
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        message = await self.__ttsMonsterMessageCleaner.clean(event.message)
+        cleanedMessage = await self.__ttsMonsterMessageCleaner.clean(event.message)
         voice = await self.__determineVoice(event)
 
         try:
             return await self.__ttsMonsterHelper.generateTts(
                 donationPrefix = donationPrefix,
-                message = message,
+                message = cleanedMessage,
                 twitchChannel = event.twitchChannel,
                 twitchChannelId = event.twitchChannelId,
                 voice = voice,
             )
         except Exception as e:
-            self.__timber.log('TtsMonsterTtsManager', f'Encountered error while generating TTS ({event=}) ({donationPrefix=}) ({message=}) ({voice=})', e, traceback.format_exc())
+            self.__timber.log('TtsMonsterTtsManager', f'Encountered unknown exception while generating TTS ({event=}) ({donationPrefix=}) ({cleanedMessage=}) ({voice=})', e, traceback.format_exc())
             return None
 
     async def stopTtsEvent(self):

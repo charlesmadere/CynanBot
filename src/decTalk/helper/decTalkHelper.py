@@ -1,5 +1,4 @@
 import traceback
-from datetime import datetime
 from typing import Final
 
 from .decTalkHelperInterface import DecTalkHelperInterface
@@ -94,7 +93,7 @@ class DecTalkHelper(DecTalkHelperInterface):
             self.__timber.log('DecTalkHelper', f'Encountered failure to create speech file exception when generating speech ({voice=}) ({fullMessage=})', e, traceback.format_exc())
             return None
 
-        storeDateTime = datetime.now(self.__timeZoneRepository.getDefault())
+        storeDateTime = self.__timeZoneRepository.getNow()
 
         return DecTalkFileReference(
             storeDateTime = storeDateTime,
