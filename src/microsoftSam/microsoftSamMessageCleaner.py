@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .microsoftSamMessageCleanerInterface import MicrosoftSamMessageCleanerInterface
 from ..misc import utils as utils
@@ -18,8 +18,8 @@ class MicrosoftSamMessageCleaner(MicrosoftSamMessageCleanerInterface):
         elif not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
             raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
 
-        self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
-        self.__twitchMessageStringUtils: TwitchMessageStringUtilsInterface = twitchMessageStringUtils
+        self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
+        self.__twitchMessageStringUtils: Final[TwitchMessageStringUtilsInterface] = twitchMessageStringUtils
 
     async def clean(self, message: str | Any | None) -> str | None:
         if not utils.isValidStr(message):
