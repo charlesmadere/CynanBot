@@ -1,8 +1,9 @@
 import random
 import re
-from typing import Final, Pattern
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..streamAlertsManager.streamAlert import StreamAlert
@@ -13,12 +14,11 @@ from ..tts.models.ttsEvent import TtsEvent
 from ..tts.models.ttsProvider import TtsProvider
 from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..users.userInterface import UserInterface
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class TtsChatCommand(AbsChatCommand):
+class TtsChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -27,7 +27,6 @@ class TtsChatCommand(AbsChatCommand):
         timber: TimberInterface,
         ttsJsonMapper: TtsJsonMapperInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -39,34 +38,43 @@ class TtsChatCommand(AbsChatCommand):
             raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__ttsJsonMapper: Final[TtsJsonMapperInterface] = ttsJsonMapper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
+
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!tts', re.IGNORECASE),
+        })
 
         self.__ttsProviderRegEx: Final[Pattern] = re.compile(r'^--(\w+)$', re.IGNORECASE)
 
-    async def __displayTtsCheerAmounts(self, ctx: TwitchContext, user: UserInterface):
-        cheerAmountStrings = await self.__getTtsCheerAmountStrings(user)
+    @property
+    def commandName(self) -> str:
+        return 'TtsChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def __displayTtsCheerAmounts(self, chatMessage: TwitchChatMessage):
+        cheerAmountStrings = await self.__getTtsCheerAmountStrings(chatMessage.twitchUser)
 
         if len(cheerAmountStrings) == 0:
             self.__twitchChatMessenger.send(
                 text = f'ⓘ TTS cheers have not been set up for this channel',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
         else:
             cheerAmountString = ', '.join(cheerAmountStrings)
 
             self.__twitchChatMessenger.send(
                 text = f'ⓘ TTS cheer information — {cheerAmountString}',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
 
     async def __getTtsCheerAmountStrings(self, user: UserInterface) -> list[str]:
@@ -101,30 +109,26 @@ class TtsChatCommand(AbsChatCommand):
         strings.sort(key = lambda ttsProvider: ttsProvider.casefold())
         return strings
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isTtsEnabled:
+            return ChatCommandResult.IGNORED
 
-        if not user.isTtsEnabled:
-            return
-
-        userId = await ctx.getTwitchChannelId()
         administrator = await self.__administratorProvider.getAdministratorUserId()
+        if chatMessage.twitchChannelId != chatMessage.chatterUserId and administrator != chatMessage.chatterUserId:
+            await self.__displayTtsCheerAmounts(chatMessage)
+            return ChatCommandResult.HANDLED
 
-        if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            await self.__displayTtsCheerAmounts(ctx, user)
-            return
-
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 2:
-            await self.__displayTtsCheerAmounts(ctx, user)
-            return
+            await self.__displayTtsCheerAmounts(chatMessage)
+            return ChatCommandResult.HANDLED
 
         message = ' '.join(splits[1:])
         if not utils.isValidStr(message):
-            await self.__displayTtsCheerAmounts(ctx, user)
-            return
+            await self.__displayTtsCheerAmounts(chatMessage)
+            return ChatCommandResult.HANDLED
 
-        ttsProvider = user.defaultTtsProvider
+        ttsProvider = chatMessage.twitchUser.defaultTtsProvider
         ttsProviderMatch = self.__ttsProviderRegEx.fullmatch(message.split()[0])
 
         if ttsProviderMatch is not None and utils.isValidStr(ttsProviderMatch.group(1)) and len(splits) >= 3:
@@ -137,22 +141,22 @@ class TtsChatCommand(AbsChatCommand):
 
                 self.__twitchChatMessenger.send(
                     text = f'⚠ TTS provider argument is malformed! Available TTS provider(s): {ttsProviderString}. Example: !tts --{random.choice(ttsProviderStrings)} Hello, World!',
-                    twitchChannelId = await ctx.getTwitchChannelId(),
-                    replyMessageId = await ctx.getMessageId(),
+                    twitchChannelId = chatMessage.twitchChannelId,
+                    replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
-                return
+                return ChatCommandResult.HANDLED
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
-            twitchChannel = user.handle,
-            twitchChannelId = userId,
+            twitchChannel = chatMessage.twitchChannel,
+            twitchChannelId = chatMessage.twitchChannelId,
             ttsEvent = TtsEvent(
                 message = message,
-                twitchChannel = user.handle,
-                twitchChannelId = userId,
-                userId = ctx.getAuthorId(),
-                userName = ctx.getAuthorName(),
+                twitchChannel = chatMessage.twitchChannel,
+                twitchChannelId = chatMessage.twitchChannelId,
+                userId = chatMessage.chatterUserId,
+                userName = chatMessage.chatterUserName,
                 donation = None,
                 provider = ttsProvider,
                 providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
@@ -162,8 +166,9 @@ class TtsChatCommand(AbsChatCommand):
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ Submitted TTS message using {ttsProvider.humanName}…',
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            replyMessageId = await ctx.getMessageId(),
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log('TtsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('TtsChatCommand', f'Handled ({chatMessage=})')
+        return ChatCommandResult.HANDLED
