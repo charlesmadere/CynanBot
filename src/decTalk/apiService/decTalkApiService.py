@@ -62,13 +62,13 @@ class DecTalkApiService(DecTalkApiServiceInterface):
     async def __createTtsDirectory(self, ttsDirectory: str):
         if await aiofiles.ospath.exists(
             path = ttsDirectory,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             return
 
         await aiofiles.os.makedirs(
             name = ttsDirectory,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         )
 
         self.__timber.log('DecTalkApiService', f'Created new TTS directory ({ttsDirectory=})')
@@ -88,13 +88,13 @@ class DecTalkApiService(DecTalkApiServiceInterface):
             decTalkPath = os.path.normpath(decTalkPath),
             fileName = os.path.normpath(fileName),
             fullFilePath = os.path.normpath(fullFilePath),
-            ttsDirectory = os.path.normpath(ttsDirectory)
+            ttsDirectory = os.path.normpath(ttsDirectory),
         )
 
     async def generateSpeechFile(
         self,
         voice: DecTalkVoice | None,
-        text: str
+        text: str,
     ) -> str:
         if voice is not None and not isinstance(voice, DecTalkVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
@@ -107,7 +107,7 @@ class DecTalkApiService(DecTalkApiServiceInterface):
 
         if not await aiofiles.ospath.isfile(
             path = filePaths.decTalkPath,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             raise DecTalkExecutableIsMissingException(f'Couldn\'t find DecTalk executable ({filePaths=})')
 
@@ -122,12 +122,12 @@ class DecTalkApiService(DecTalkApiServiceInterface):
             decTalkProcess = await asyncio.create_subprocess_shell(
                 cmd = command,
                 stdout = asyncio.subprocess.PIPE,
-                stderr = asyncio.subprocess.PIPE
+                stderr = asyncio.subprocess.PIPE,
             )
 
             outputTuple = await asyncio.wait_for(
                 fut = decTalkProcess.communicate(),
-                timeout = 3
+                timeout = 3,
             )
         except BaseException as e:
             exception = e
@@ -144,7 +144,7 @@ class DecTalkApiService(DecTalkApiServiceInterface):
 
         if not await aiofiles.ospath.isfile(
             path = filePaths.fullFilePath,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             raise DecTalkFailedToGenerateSpeechFileException(f'Failed to generate speech file ({filePaths=}) ({command=}) ({outputString=}) ({exception=})')
 

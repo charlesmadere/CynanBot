@@ -131,15 +131,19 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
 
     async def __processTtsEvent(self, event: TtsEvent) -> StreamElementsFileReference | None:
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        message = await self.__streamElementsMessageCleaner.clean(event.message)
+        cleanedMessage = await self.__streamElementsMessageCleaner.clean(event.message)
         voice = await self.__determineVoice(event)
 
-        return await self.__streamElementsHelper.generateTts(
-            donationPrefix = donationPrefix,
-            message = message,
-            twitchChannelId = event.twitchChannelId,
-            voice = voice,
-        )
+        try:
+            return await self.__streamElementsHelper.generateTts(
+                donationPrefix = donationPrefix,
+                message = cleanedMessage,
+                twitchChannelId = event.twitchChannelId,
+                voice = voice,
+            )
+        except Exception as e:
+            self.__timber.log('StreamElementsTtsManager', f'Encountered unknown exception while generating TTS ({event=}) ({donationPrefix=}) ({cleanedMessage=}) ({voice=})', e, traceback.format_exc())
+            return None
 
     async def stopTtsEvent(self):
         if not self.isLoadingOrPlaying:

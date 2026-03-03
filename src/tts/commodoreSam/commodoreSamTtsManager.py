@@ -99,14 +99,18 @@ class CommodoreSamTtsManager(CommodoreSamTtsManagerInterface):
 
     async def __processTtsEvent(self, event: TtsEvent) -> CommodoreSamFileReference | None:
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        message = await self.__commodoreSamMessageCleaner.clean(event.message)
+        cleanedMessage = await self.__commodoreSamMessageCleaner.clean(event.message)
 
-        return await self.__commodoreSamHelper.generateTts(
-            donationPrefix = donationPrefix,
-            message = message,
-            twitchChannel = event.twitchChannel,
-            twitchChannelId = event.twitchChannelId,
-        )
+        try:
+            return await self.__commodoreSamHelper.generateTts(
+                donationPrefix = donationPrefix,
+                message = cleanedMessage,
+                twitchChannel = event.twitchChannel,
+                twitchChannelId = event.twitchChannelId,
+            )
+        except Exception as e:
+            self.__timber.log('CommodoreSamTtsManager', f'Encountered unknown exception while generating TTS ({event=}) ({donationPrefix=}) ({cleanedMessage=})', e, traceback.format_exc())
+            return None
 
     async def stopTtsEvent(self):
         if not self.isLoadingOrPlaying:

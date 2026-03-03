@@ -146,16 +146,20 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
 
     async def __processTtsEvent(self, event: TtsEvent) -> GoogleTtsFileReference | None:
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        message = await self.__googleTtsMessageCleaner.clean(event.message)
+        cleanedMessage = await self.__googleTtsMessageCleaner.clean(event.message)
         voicePreset = await self.__determineVoicePreset(event)
 
-        return await self.__googleTtsHelper.generateTts(
-            voicePreset = voicePreset,
-            allowMultiSpeaker = False,
-            donationPrefix = donationPrefix,
-            message = message,
-            twitchChannelId = event.twitchChannelId,
-        )
+        try:
+            return await self.__googleTtsHelper.generateTts(
+                voicePreset = voicePreset,
+                allowMultiSpeaker = False,
+                donationPrefix = donationPrefix,
+                message = cleanedMessage,
+                twitchChannelId = event.twitchChannelId,
+            )
+        except Exception as e:
+            self.__timber.log('GoogleTtsManager', f'Encountered unknown exception while generating TTS ({event=}) ({donationPrefix=}) ({cleanedMessage=}) ({voicePreset=})', e, traceback.format_exc())
+            return None
 
     async def stopTtsEvent(self):
         if not self.isLoadingOrPlaying:

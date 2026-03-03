@@ -140,15 +140,19 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
 
     async def __processTtsEvent(self, event: TtsEvent) -> DecTalkFileReference | None:
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        message = await self.__decTalkMessageCleaner.clean(event.message)
+        cleanedMessage = await self.__decTalkMessageCleaner.clean(event.message)
         voice = await self.__determineVoice(event)
 
-        return await self.__decTalkHelper.generateTts(
-            voice = voice,
-            donationPrefix = donationPrefix,
-            message = message,
-            twitchChannelId = event.twitchChannelId,
-        )
+        try:
+            return await self.__decTalkHelper.generateTts(
+                voice = voice,
+                donationPrefix = donationPrefix,
+                message = cleanedMessage,
+                twitchChannelId = event.twitchChannelId,
+            )
+        except Exception as e:
+            self.__timber.log('DecTalkTtsManager', f'Encountered unknown exception while generating TTS ({event=}) ({donationPrefix=}) ({cleanedMessage=}) ({voice=})', e, traceback.format_exc())
+            return None
 
     async def stopTtsEvent(self):
         if not self.isLoadingOrPlaying:

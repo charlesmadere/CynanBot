@@ -9,6 +9,6 @@ class DecTalkApiServiceInterface(ABC):
     async def generateSpeechFile(
         self,
         voice: DecTalkVoice | None,
-        text: str
+        text: str,
     ) -> str:
         pass

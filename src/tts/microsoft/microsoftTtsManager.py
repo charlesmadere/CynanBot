@@ -89,7 +89,7 @@ class MicrosoftTtsManager(MicrosoftTtsManagerInterface):
         async def playSoundFile():
             await self.__soundPlayerManager.playSoundFile(
                 filePath = fileReference.filePath,
-                volume = volume
+                volume = volume,
             )
 
             self.__isLoadingOrPlaying = False
@@ -130,16 +130,20 @@ class MicrosoftTtsManager(MicrosoftTtsManagerInterface):
 
     async def __processTtsEvent(self, event: TtsEvent) -> MicrosoftTtsFileReference | None:
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        message = await self.__microsoftTtsMessageCleaner.clean(event.message)
+        cleanedMessage = await self.__microsoftTtsMessageCleaner.clean(event.message)
         voice = await self.__determineVoice(event)
 
-        return await self.__microsoftTtsHelper.generateTts(
-            voice = voice,
-            donationPrefix = donationPrefix,
-            message = message,
-            twitchChannel = event.twitchChannel,
-            twitchChannelId = event.twitchChannelId,
-        )
+        try:
+            return await self.__microsoftTtsHelper.generateTts(
+                voice = voice,
+                donationPrefix = donationPrefix,
+                message = cleanedMessage,
+                twitchChannel = event.twitchChannel,
+                twitchChannelId = event.twitchChannelId,
+            )
+        except Exception as e:
+            self.__timber.log('MicrosoftTtsManager', f'Encountered unknown exception while generating TTS ({event=}) ({donationPrefix=}) ({cleanedMessage=}) ({voice=})', e, traceback.format_exc())
+            return None
 
     async def stopTtsEvent(self):
         if not self.isLoadingOrPlaying:

@@ -127,10 +127,14 @@ class HalfLifeTtsManager(HalfLifeTtsManagerInterface):
         cleanedMessage = await self.__halfLifeMessageCleaner.clean(event.message)
         voice = await self.__determineVoice(event)
 
-        soundFiles = await self.__halfLifeTtsHelper.generateTts(
-            voice = voice,
-            message = cleanedMessage,
-        )
+        try:
+            soundFiles = await self.__halfLifeTtsHelper.generateTts(
+                voice = voice,
+                message = cleanedMessage,
+            )
+        except Exception as e:
+            self.__timber.log('HalfLifeTtsManager', f'Encountered unknown exception while generating TTS ({event=}) ({cleanedMessage=}) ({voice=})', e, traceback.format_exc())
+            return None
 
         if soundFiles is None or len(soundFiles) == 0:
             return None

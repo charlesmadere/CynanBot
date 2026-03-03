@@ -130,16 +130,20 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
 
     async def __processTtsEvent(self, event: TtsEvent) -> MicrosoftSamFileReference | None:
         donationPrefix = await self.__ttsCommandBuilder.buildDonationPrefix(event)
-        message = await self.__microsoftSamMessageCleaner.clean(event.message)
+        cleanedMessage = await self.__microsoftSamMessageCleaner.clean(event.message)
         voice = await self.__determineVoice(event)
 
-        return await self.__microsoftSamHelper.generateTts(
-            voice = voice,
-            donationPrefix = donationPrefix,
-            message = message,
-            twitchChannel = event.twitchChannel,
-            twitchChannelId = event.twitchChannelId,
-        )
+        try:
+            return await self.__microsoftSamHelper.generateTts(
+                voice = voice,
+                donationPrefix = donationPrefix,
+                message = cleanedMessage,
+                twitchChannel = event.twitchChannel,
+                twitchChannelId = event.twitchChannelId,
+            )
+        except Exception as e:
+            self.__timber.log('MicrosoftSamTtsManager', f'Encountered unknown exception while generating TTS ({event=}) ({donationPrefix=}) ({cleanedMessage=}) ({voice=})', e, traceback.format_exc())
+            return None
 
     async def stopTtsEvent(self):
         if not self.isLoadingOrPlaying:
