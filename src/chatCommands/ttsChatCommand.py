@@ -170,5 +170,5 @@ class TtsChatCommand(AbsChatCommand2):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log('TtsChatCommand', f'Handled ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Handled ({chatMessage=})')
         return ChatCommandResult.HANDLED
