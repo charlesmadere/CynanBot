@@ -11,22 +11,22 @@ class SupStreamerBoosterPackJsonParser(SupStreamerBoosterPackJsonParserInterface
 
     def parseBoosterPack(
         self,
-        jsonContents: dict[str, Any]
+        jsonContents: dict[str, Any],
     ) -> SupStreamerBoosterPack:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
-        message = utils.getStrFromDict(jsonContents, 'message', '')
-        reply = utils.getStrFromDict(jsonContents, 'reply', '')
+        message = utils.getStrFromDict(jsonContents, 'message')
+        reply = utils.getStrFromDict(jsonContents, 'reply')
 
         return SupStreamerBoosterPack(
             message = message,
-            reply = reply
+            reply = reply,
         )
 
     def parseBoosterPacks(
         self,
-        jsonContents: list[dict[str, Any]] | Any | None
+        jsonContents: list[dict[str, Any]] | Any | None,
     ) -> FrozenList[SupStreamerBoosterPack] | None:
         if not isinstance(jsonContents, list) or len(jsonContents) == 0:
             return None

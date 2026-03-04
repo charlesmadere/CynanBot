@@ -17,6 +17,7 @@ from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStat
 from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..users.supStreamer.supStreamerBoosterPack import SupStreamerBoosterPack
 from ..users.userInterface import UserInterface
 
 
@@ -72,7 +73,7 @@ class SupStreamerChatAction(AbsChatAction):
         if not user.isSupStreamerEnabled or not user.isTtsEnabled:
             return False
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         if mostRecentChat is not None and (mostRecentChat.mostRecentChat + self.__cooldown) > now:
             return False
 
@@ -80,15 +81,19 @@ class SupStreamerChatAction(AbsChatAction):
         supStreamerBoosterPacks = user.supStreamerBoosterPacks
 
         if supStreamerBoosterPacks is not None and len(supStreamerBoosterPacks) >= 1:
-            shuffledBoosterPacks = list(supStreamerBoosterPacks)
+            shuffledBoosterPacks: list[SupStreamerBoosterPack] = list(supStreamerBoosterPacks)
             random.shuffle(shuffledBoosterPacks)
 
             for supStreamerBoosterPack in shuffledBoosterPacks:
-                if await self.__checkSupMessage(cleanedMessage, message, now, supStreamerBoosterPack.message, supStreamerBoosterPack.reply, user):
+                if await self.__checkSupMessage(
+                    chatMessage = cleanedMessage,
+                    message = message,
+                    now = now,
+                    supStreamerMessage = supStreamerBoosterPack.message,
+                    reply = supStreamerBoosterPack.reply,
+                    user = user,
+                ):
                     return True
-
-        if utils.isValidStr(user.supStreamerMessage):
-            return await self.__checkSupMessage(cleanedMessage, message, now, user.supStreamerMessage, 'sup', user)
 
         return False
 
