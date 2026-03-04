@@ -496,7 +496,7 @@ class User(UserInterface):
         self.__timeoutBoosterPacks: frozendict[str, TimeoutBoosterPack] | None = timeoutBoosterPacks
         self.__chatSoundAlerts: FrozenList[AbsChatSoundAlert] | None = chatSoundAlerts
         self.__chatBackMessages: FrozenList[str] | None = chatBackMessages
-        self.__supStreamerBoosterPacks: FrozenList[SupStreamerBoosterPack] | None = supStreamerBoosterPacks
+        self.__supStreamerBoosterPacks: Final[FrozenList[SupStreamerBoosterPack] | None] = supStreamerBoosterPacks
         self.__ttsBoosterPacks: FrozenList[TtsBoosterPack] | None = ttsBoosterPacks
         self.__timeZones: FrozenList[tzinfo] | None = timeZones
 

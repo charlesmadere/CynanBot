@@ -13,12 +13,12 @@ class TestSupStreamerBoosterPackJsonParser:
     def test_parseBoosterPack(self):
         boosterPack = SupStreamerBoosterPack(
             message = "test",
-            reply = "ahoy"
+            reply = "ahoy",
         )
 
         result = self.parser.parseBoosterPack({
             'message': boosterPack.message,
-            'reply': boosterPack.reply
+            'reply': boosterPack.reply,
         })
 
         assert isinstance(result, SupStreamerBoosterPack)
@@ -65,8 +65,8 @@ class TestSupStreamerBoosterPackJsonParser:
         ])
 
         assert isinstance(result, FrozenList)
+        assert result.frozen
         assert len(result) == 2
-
 
         redemption = result[0]
         assert isinstance(redemption, SupStreamerBoosterPack)
