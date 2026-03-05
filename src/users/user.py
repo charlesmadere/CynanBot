@@ -126,7 +126,6 @@ class User(UserInterface):
         setChatterPreferredTtsRewardId: str | None,
         soundAlertRewardId: str | None,
         speedrunProfile: str | None,
-        supStreamerMessage: str | None,
         triviaGameRewardId: str | None,
         ttsChatterRewardId: str | None,
         voicemailRewardId: str | None,
@@ -343,8 +342,6 @@ class User(UserInterface):
             raise TypeError(f'soundAlertRewardId argument is malformed: \"{soundAlertRewardId}\"')
         elif speedrunProfile is not None and not isinstance(speedrunProfile, str):
             raise TypeError(f'speedrunProfile argument is malformed: \"{speedrunProfile}\"')
-        elif supStreamerMessage is not None and not isinstance(supStreamerMessage, str):
-            raise TypeError(f'supStreamerMessage argument is malformed: \"{supStreamerMessage}\"')
         elif triviaGameRewardId is not None and not isinstance(triviaGameRewardId, str):
             raise TypeError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
         elif ttsChatterRewardId is not None and not isinstance(ttsChatterRewardId, str):
@@ -481,7 +478,6 @@ class User(UserInterface):
         self.__setChatterPreferredTtsRewardId: str | None = setChatterPreferredTtsRewardId
         self.__soundAlertRewardId: str | None = soundAlertRewardId
         self.__speedrunProfile: str | None = speedrunProfile
-        self.__supStreamerMessage: str | None = supStreamerMessage
         self.__triviaGameRewardId: str | None = triviaGameRewardId
         self.__ttsChatterRewardId: str | None = ttsChatterRewardId
         self.__voicemailRewardId: str | None = voicemailRewardId
@@ -695,10 +691,6 @@ class User(UserInterface):
     @property
     def superTriviaSubscribeTriggerMaximum(self) -> int | None:
         return self.__superTriviaSubscribeTriggerMaximum
-
-    @property
-    def supStreamerMessage(self) -> str | None:
-        return self.__supStreamerMessage
 
     @property
     def supStreamerBoosterPacks(self) -> FrozenList[SupStreamerBoosterPack] | None:
