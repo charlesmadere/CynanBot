@@ -37,7 +37,7 @@ class CommodoreSamHelper(CommodoreSamHelperInterface):
     async def __createFullMessage(
         self,
         donationPrefix: str | None,
-        message: str | None
+        message: str | None,
     ) -> str | None:
         if not await self.__commodoreSamSettingsRepository.useDonationPrefix():
             return message
@@ -55,7 +55,7 @@ class CommodoreSamHelper(CommodoreSamHelperInterface):
         donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CommodoreSamFileReference | None:
         if donationPrefix is not None and not isinstance(donationPrefix, str):
             raise TypeError(f'donationPrefix argument is malformed: \"{donationPrefix}\"')
@@ -71,7 +71,7 @@ class CommodoreSamHelper(CommodoreSamHelperInterface):
 
         fullMessage = await self.__createFullMessage(
             donationPrefix = donationPrefix,
-            message = message
+            message = message,
         )
 
         if not utils.isValidStr(fullMessage):
@@ -79,18 +79,18 @@ class CommodoreSamHelper(CommodoreSamHelperInterface):
 
         try:
             speechFile = await self.__commodoreSamApiService.generateSpeechFile(
-                text = fullMessage
+                text = fullMessage,
             )
         except CommodoreSamExecutableIsMissingException as e:
-            self.__timber.log('CommodoreSamHelper', f'Encountered executable file is missing exception when generating speech ({fullMessage=}): {e}', e, traceback.format_exc())
+            self.__timber.log('CommodoreSamHelper', f'Encountered executable file is missing exception when generating speech ({fullMessage=})', e, traceback.format_exc())
             return None
         except CommodoreSamFailedToGenerateSpeechFileException as e:
-            self.__timber.log('CommodoreSamHelper', f'Encountered failure to create speech file exception when generating speech ({fullMessage=}): {e}', e, traceback.format_exc())
+            self.__timber.log('CommodoreSamHelper', f'Encountered failure to create speech file exception when generating speech ({fullMessage=})', e, traceback.format_exc())
             return None
 
         storeDateTime = datetime.now(self.__timeZoneRepository.getDefault())
 
         return CommodoreSamFileReference(
             storeDateTime = storeDateTime,
-            filePath = speechFile
+            filePath = speechFile,
         )

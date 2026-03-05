@@ -190,7 +190,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         try:
             dictionary = json.loads(message)
         except Exception as e:
-            self.__timber.log('TwitchWebsocketClient', f'Encountered an exception when attempting to parse message into JSON dictionary ({message=}) ({user=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchWebsocketClient', f'Encountered an exception when attempting to parse message into JSON dictionary ({message=}) ({user=})', e, traceback.format_exc())
             return None
 
         if not isinstance(dictionary, dict) or len(dictionary) == 0:
@@ -212,7 +212,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         )
 
         if exception is not None:
-            self.__timber.log('TwitchWebsocketClient', f'Encountered an exception when attempting to convert dictionary into TwitchWebsocketDataBundle ({dataBundle=}) ({dictionary=}) ({message=}) ({user=}): {exception}', exception, traceback.format_exc())
+            self.__timber.log('TwitchWebsocketClient', f'Encountered an exception when attempting to convert dictionary into TwitchWebsocketDataBundle ({dataBundle=}) ({dictionary=}) ({message=}) ({user=})', exception, traceback.format_exc())
             return None
         elif dataBundle is None:
             self.__timber.log('TwitchWebsocketClient', f'Received `None` when attempting to convert dictionary into TwitchWebsocketDataBundle ({dataBundle=}) ({dictionary=}) ({message=}) ({user=})')
@@ -248,7 +248,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                         dataBundle = self.__dataBundleQueue.get_nowait()
                         dataBundles.append(dataBundle)
                 except queue.Empty as e:
-                    self.__timber.log('TwitchWebsocketClient', f'Encountered queue.Empty when building up dataBundles list (queue size: {self.__dataBundleQueue.qsize()}) (dataBundles size: {len(dataBundles)}): {e}', e, traceback.format_exc())
+                    self.__timber.log('TwitchWebsocketClient', f'Encountered queue.Empty when building up dataBundles list (queue size: {self.__dataBundleQueue.qsize()}) (dataBundles size: {len(dataBundles)})', e, traceback.format_exc())
 
                 dataBundles.freeze()
 
@@ -256,7 +256,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                     try:
                         await dataBundleListener.onNewWebsocketDataBundle(dataBundle)
                     except Exception as e:
-                        self.__timber.log('TwitchWebsocketClient', f'Encountered unknown Exception when looping through dataBundles (queue size: {self.__dataBundleQueue.qsize()}) ({index=}) ({dataBundle=}): {e}', e, traceback.format_exc())
+                        self.__timber.log('TwitchWebsocketClient', f'Encountered unknown Exception when looping through dataBundles (queue size: {self.__dataBundleQueue.qsize()}) ({index=}) ({dataBundle=})', e, traceback.format_exc())
 
             await asyncio.sleep(self.__queueSleepTimeSeconds)
 
@@ -311,7 +311,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                         await self.__submitDataBundle(dataBundle)
             except Exception as e:
                 instability = self.__twitchWebsocketInstabilityHelper.incrementErrorCount(user)
-                self.__timber.log('TwitchWebsocketClient', f'Encountered websocket exception ({user=}) ({twitchWebsocketEndpoint=}) ({instability=}): {e}', e, traceback.format_exc())
+                self.__timber.log('TwitchWebsocketClient', f'Encountered websocket exception ({user=}) ({twitchWebsocketEndpoint=}) ({instability=})', e, traceback.format_exc())
 
             if retry:
                 instability = self.__twitchWebsocketInstabilityHelper[user]
@@ -344,4 +344,4 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         try:
             self.__dataBundleQueue.put(dataBundle, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
-            self.__timber.log('TwitchWebsocketClient', f'Encountered queue.Full when submitting a new dataBundle ({dataBundle}) into the dataBundle queue (queue size: {self.__dataBundleQueue.qsize()}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchWebsocketClient', f'Encountered queue.Full when submitting a new dataBundle ({dataBundle}) into the dataBundle queue (queue size: {self.__dataBundleQueue.qsize()})', e, traceback.format_exc())

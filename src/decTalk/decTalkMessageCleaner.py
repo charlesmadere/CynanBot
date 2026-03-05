@@ -39,11 +39,11 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
         self.__twitchMessageStringUtils: Final[TwitchMessageStringUtilsInterface] = twitchMessageStringUtils
         self.__isUnrestricted: Final[bool] = isUnrestricted
 
-        self.__decTalkInlineCommandRegExes: Collection[Pattern] = self.__buildDecTalkInlineCommandRegExes()
-        self.__decTalkInputFlagRegExes: Collection[Pattern] = self.__buildDecTalkInputFlagRegExes()
-        self.__terminalExploitRegExes: Collection[Pattern] = self.__buildTerminalExploitRegExes()
-        self.__decTalkIllegalCharactersRegEx: Pattern = re.compile(r'[\[\]]', re.IGNORECASE)
-        self.__extraWhiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
+        self.__decTalkInlineCommandRegExes: Final[Collection[Pattern]] = self.__buildDecTalkInlineCommandRegExes()
+        self.__decTalkInputFlagRegExes: Final[Collection[Pattern]] = self.__buildDecTalkInputFlagRegExes()
+        self.__terminalExploitRegExes: Final[Collection[Pattern]] = self.__buildTerminalExploitRegExes()
+        self.__decTalkIllegalCharactersRegEx: Final[Pattern] = re.compile(r'[\[\]]', re.IGNORECASE)
+        self.__extraWhiteSpaceRegEx: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
 
     def __buildDecTalkInlineCommandRegExes(self) -> FrozenList[Pattern]:
         regExes: FrozenList[Pattern] = FrozenList()
@@ -183,7 +183,7 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
             # DECTalk requires Windows-1252 encoding
             message = message.encode().decode('windows-1252')
         except Exception as e:
-            self.__timber.log('DecTalkMessageCleaner', f'Encountered an error when attempting to re-encode message for DECTalk ({message=}): {e}', e, traceback.format_exc())
+            self.__timber.log('DecTalkMessageCleaner', f'Encountered an error when attempting to re-encode message for DECTalk ({message=})', e, traceback.format_exc())
             return None
 
         return message

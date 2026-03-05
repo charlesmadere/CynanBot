@@ -87,7 +87,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     bits = int(content)
                     wizard.setBits(bits)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Air Strike wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Air Strike wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Air Strike wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -97,7 +97,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     maxDurationSeconds = int(content)
                     wizard.setMaxDurationSeconds(maxDurationSeconds)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set maxDurationSeconds value for Air Strike wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set maxDurationSeconds value for Air Strike wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Air Strike wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -107,7 +107,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     maximumChatters = int(content)
                     wizard.setMaxTimeoutChatters(maximumChatters)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set maximumChatters value for Air Strike wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set maximumChatters value for Air Strike wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Air Strike wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -117,7 +117,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     minDurationSeconds = int(content)
                     wizard.setMinDurationSeconds(minDurationSeconds)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set minDurationSeconds value for Air Strike wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set minDurationSeconds value for Air Strike wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Air Strike wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -127,7 +127,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     minimumChatters = int(content)
                     wizard.setMinTimeoutChatters(minimumChatters)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set minimumChatters value for Air Strike wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set minimumChatters value for Air Strike wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Air Strike wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -212,7 +212,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     bits = int(content)
                     wizard.setBits(bits)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Bean Chance wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Bean Chance wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Bean Chance wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -222,7 +222,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     randomChance = int(content)
                     wizard.setRandomChance(randomChance)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set randomChance value for Bean Chance wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set randomChance value for Bean Chance wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Bean Chance wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -291,7 +291,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     bits = int(content)
                     wizard.setBits(bits)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Crowd Control wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Crowd Control wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Crowd Control wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -356,7 +356,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     bits = int(content)
                     wizard.setBits(bits)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Game Shuffle wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Game Shuffle wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Game Shuffle wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -366,7 +366,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     chance = int(content)
                     wizard.setGigaShuffleChance(chance)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set giga shuffle chance value for Game Shuffle wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set giga shuffle chance value for Game Shuffle wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Game Shuffle wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -436,7 +436,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     bits = int(content)
                     wizard.setBits(bits)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for item Use wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for item Use wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Item Use wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -446,7 +446,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     itemType = await self.__chatterInventoryMapper.requireItemType(content)
                     wizard.setItemType(itemType)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set item type value for Item Use wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set item type value for Item Use wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The item Use wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -523,7 +523,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     bits = int(content)
                     wizard.setBits(bits)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Sound Alert wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Sound Alert wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Sound Alert wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -532,7 +532,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                 try:
                     wizard.setDirectory(content)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to set tag value for Sound Alert wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to set tag value for Sound Alert wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Sound Alert wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -602,7 +602,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     bits = int(content)
                     wizard.setBits(bits)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Timeout wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Timeout wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Timeout wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -612,7 +612,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     durationSeconds = int(content)
                     wizard.setDurationSeconds(durationSeconds)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set durationSeconds value for Timeout wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set durationSeconds value for Timeout wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Timeout wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -622,7 +622,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     randomChanceEnabled = utils.strictStrToBool(content)
                     wizard.setRandomChanceEnabled(randomChanceEnabled)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set randomChanceEnabled value for Timeout wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set randomChanceEnabled value for Timeout wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Timeout wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -632,7 +632,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     streamStatus = await self.__cheerActionJsonMapper.requireCheerActionStreamStatusRequirement(content)
                     wizard.setStreamStatus(streamStatus)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set stream status value for Timeout wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set stream status value for Timeout wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Timeout wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -642,7 +642,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     targetType = await self.__cheerActionJsonMapper.requireTimeoutCheerActionTargetType(content)
                     wizard.setTargetType(targetType)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set target type value for Timeout wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set target type value for Timeout wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Timeout wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True
@@ -740,7 +740,7 @@ class CheerActionsWizardChatAction(AbsChatAction):
                     bits = int(content)
                     wizard.setBits(bits)
                 except Exception as e:
-                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Voicemail wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CheerActionsWizardChatAction', f'Unable to parse/set bits value for Voicemail wizard ({wizard=}) ({content=})', e, traceback.format_exc())
                     await self.__send(message, f'⚠ The Voicemail wizard encountered an error, please try again')
                     await self.__cheerActionsWizard.complete(wizard.twitchChannelId)
                     return True

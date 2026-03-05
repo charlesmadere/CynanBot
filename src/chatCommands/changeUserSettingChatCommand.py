@@ -85,7 +85,7 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
                 value = value,
             )
         except BadModifyUserValueException as e:
-            self.__timber.log('ChangeUserSettingChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but an invalid value argument was supplied: {e}', e, traceback.format_exc())
+            self.__timber.log('ChangeUserSettingChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but an invalid value argument was supplied', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to change user setting as an invalid value argument was given. Example: !changeusersetting {randomJsonConstant.jsonKey.lower()} {randomBoolean}',
                 twitchChannelId = await ctx.getTwitchChannelId(),

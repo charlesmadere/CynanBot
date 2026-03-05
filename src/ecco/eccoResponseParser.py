@@ -82,7 +82,7 @@ class EccoResponseParser(EccoResponseParserInterface):
         try:
             dateTime = datetime.strptime(cleanedDateTimeInfo.dateTimeString, '%b %d, %Y %H:%M:%S')
         except Exception as e:
-            self.__timber.log('EccoResponseParser', f'Unable to parse datetime ({scriptTimerMatch=}) ({cleanedDateTimeInfo=}): {e}', e, traceback.format_exc())
+            self.__timber.log('EccoResponseParser', f'Unable to parse datetime ({scriptTimerMatch=}) ({cleanedDateTimeInfo=})', e, traceback.format_exc())
             return None
 
         return dateTime.replace(tzinfo = cleanedDateTimeInfo.timeZone)

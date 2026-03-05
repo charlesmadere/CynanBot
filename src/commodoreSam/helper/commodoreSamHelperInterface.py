@@ -11,6 +11,6 @@ class CommodoreSamHelperInterface(ABC):
         donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CommodoreSamFileReference | None:
         pass
