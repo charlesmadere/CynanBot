@@ -69,7 +69,7 @@ class DeleteCheerActionChatCommand(AbsChatCommand):
         try:
             bits = int(splits[1])
         except Exception as e:
-            self.__timber.log('DeleteCheerActionCommand', f'Cheer action was attempted to be deleted by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but was unable to convert: {e}', e, traceback.format_exc())
+            self.__timber.log('DeleteCheerActionCommand', f'Cheer action was attempted to be deleted by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but was unable to convert', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ Bit amount is necessary for the !deletecheeraction command. Example: !deletecheeraction 100',
                 twitchChannelId = await ctx.getTwitchChannelId(),

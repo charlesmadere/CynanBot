@@ -70,7 +70,7 @@ class DisableCheerActionChatCommand(AbsChatCommand):
         try:
             bits = int(bitsString)
         except Exception as e:
-            self.__timber.log('DisableCheerActionChatCommand', f'Bits amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} is malformed ({bitsString=}): {e}', e, traceback.format_exc())
+            self.__timber.log('DisableCheerActionChatCommand', f'Bits amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} is malformed ({bitsString=})', e, traceback.format_exc())
 
             self.__twitchChatMessenger.send(
                 text = f'⚠ Bits amount argument is malformed. Example: !disablecheeraction 100',

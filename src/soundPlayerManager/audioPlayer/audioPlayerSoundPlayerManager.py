@@ -248,7 +248,7 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
 
                 await asyncio.sleep(self.__playbackLoopSleepTimeSeconds)
         except Exception as e:
-            self.__timber.log('AudioPlayerSoundPlayerManager', f'Encountered exception when progressing through playlist ({playErrorOccurred=}) ({currentPlaylistIndex=}) ({currentFile=}) ({currentVolume=}) ({playlist=}) ({baseVolume=}) ({mediaPlayer=}): {e}', e, traceback.format_exc())
+            self.__timber.log('AudioPlayerSoundPlayerManager', f'Encountered exception when progressing through playlist ({playErrorOccurred=}) ({currentPlaylistIndex=}) ({currentFile=}) ({currentVolume=}) ({playlist=}) ({baseVolume=}) ({mediaPlayer=})', e, traceback.format_exc())
 
         self.__isLoadingOrPlaying = False
 

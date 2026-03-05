@@ -1,7 +1,7 @@
 import re
 import traceback
 from asyncio import AbstractEventLoop
-from typing import Pattern
+from typing import Final, Pattern
 
 import aiofiles
 import aiofiles.os
@@ -31,7 +31,7 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
         microsoftTtsJsonParser: MicrosoftTtsJsonParserInterface,
         microsoftTtsMessageVoiceParser: MicrosoftTtsMessageVoiceParserInterface,
         microsoftTtsSettingsRepository: MicrosoftTtsSettingsRepositoryInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -48,15 +48,15 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = glacialTtsFileRetriever
-        self.__microsoftTtsApiHelper: MicrosoftTtsApiHelperInterface = microsoftTtsApiHelper
-        self.__microsoftTtsJsonParser: MicrosoftTtsJsonParserInterface = microsoftTtsJsonParser
-        self.__microsoftTtsMessageVoiceParser: MicrosoftTtsMessageVoiceParserInterface = microsoftTtsMessageVoiceParser
-        self.__microsoftTtsSettingsRepository: MicrosoftTtsSettingsRepositoryInterface = microsoftTtsSettingsRepository
-        self.__timber: TimberInterface = timber
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__glacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = glacialTtsFileRetriever
+        self.__microsoftTtsApiHelper: Final[MicrosoftTtsApiHelperInterface] = microsoftTtsApiHelper
+        self.__microsoftTtsJsonParser: Final[MicrosoftTtsJsonParserInterface] = microsoftTtsJsonParser
+        self.__microsoftTtsMessageVoiceParser: Final[MicrosoftTtsMessageVoiceParserInterface] = microsoftTtsMessageVoiceParser
+        self.__microsoftTtsSettingsRepository: Final[MicrosoftTtsSettingsRepositoryInterface] = microsoftTtsSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
 
-        self.__directoryTreeRegEx: Pattern = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
+        self.__directoryTreeRegEx: Final[Pattern] = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
 
     async def __createDirectories(self, filePath: str):
         # this logic removes the file name from the file path, leaving us with just a directory tree
@@ -69,13 +69,13 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
 
         if await aiofiles.ospath.exists(
             path = directory,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         ):
             return
 
         await aiofiles.os.makedirs(
             name = directory,
-            loop = self.__eventLoop
+            loop = self.__eventLoop,
         )
 
         self.__timber.log('MicrosoftTtsHelper', f'Created new directories ({filePath=}) ({directory=})')
@@ -83,7 +83,7 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
     async def __createFullMessage(
         self,
         donationPrefix: str | None,
-        message: str | None
+        message: str | None,
     ) -> str | None:
         if not await self.__microsoftTtsSettingsRepository.useDonationPrefix():
             return message
@@ -102,7 +102,7 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
         donationPrefix: str | None,
         message: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> MicrosoftTtsFileReference | None:
         if voice is not None and not isinstance(voice, MicrosoftTtsVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
@@ -129,7 +129,7 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
 
         fullMessage = await self.__createFullMessage(
             donationPrefix = donationPrefix,
-            message = message
+            message = message,
         )
 
         if not utils.isValidStr(fullMessage):
@@ -138,19 +138,19 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
         glacialFile = await self.__glacialTtsFileRetriever.findFile(
             message = fullMessage,
             voice = await self.__microsoftTtsJsonParser.serializeVoice(voice),
-            provider = TtsProvider.MICROSOFT
+            provider = TtsProvider.MICROSOFT,
         )
 
         if glacialFile is not None:
             return MicrosoftTtsFileReference(
                 storeDateTime = glacialFile.storeDateTime,
                 filePath = glacialFile.filePath,
-                voice = await self.__microsoftTtsJsonParser.requireVoice(glacialFile.voice)
+                voice = await self.__microsoftTtsJsonParser.requireVoice(glacialFile.voice),
             )
 
         speechBytes = await self.__microsoftTtsApiHelper.getSpeech(
             voice = voice,
-            message = fullMessage
+            message = fullMessage,
         )
 
         if speechBytes is None:
@@ -160,18 +160,18 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
             fileExtension = await self.__microsoftTtsSettingsRepository.getFileExtension(),
             message = fullMessage,
             voice = await self.__microsoftTtsJsonParser.serializeVoice(voice),
-            provider = TtsProvider.MICROSOFT
+            provider = TtsProvider.MICROSOFT,
         )
 
         if await self.__saveSpeechBytes(
             speechBytes = speechBytes,
             fileName = glacialFile.fileName,
-            filePath = glacialFile.filePath
+            filePath = glacialFile.filePath,
         ):
             return MicrosoftTtsFileReference(
                 storeDateTime = glacialFile.storeDateTime,
                 filePath = glacialFile.filePath,
-                voice = voice
+                voice = voice,
             )
         else:
             self.__timber.log('MicrosoftTtsHelper', f'Failed to write Microsoft TTS speechBytes to file ({fullMessage=}) ({glacialFile=})')
@@ -181,7 +181,7 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
         self,
         speechBytes: bytes,
         fileName: str,
-        filePath: str
+        filePath: str,
     ) -> bool:
         if not isinstance(speechBytes, bytes):
             raise TypeError(f'speechBytes argument is malformed: \"{speechBytes}\"')
@@ -196,12 +196,12 @@ class MicrosoftTtsHelper(MicrosoftTtsHelperInterface):
             async with aiofiles.open(
                 file = filePath,
                 mode = 'wb',
-                loop = self.__eventLoop
+                loop = self.__eventLoop,
             ) as file:
                 await file.write(speechBytes)
                 await file.flush()
         except Exception as e:
-            self.__timber.log('MicrosoftTtsHelper', f'Encountered exception when trying to write Microsoft speechBytes to file ({fileName=}) ({filePath=}): {e}', e, traceback.format_exc())
+            self.__timber.log('MicrosoftTtsHelper', f'Encountered exception when trying to write Microsoft speechBytes to file ({fileName=}) ({filePath=})', e, traceback.format_exc())
             return False
 
         return True

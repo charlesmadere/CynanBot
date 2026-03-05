@@ -199,7 +199,7 @@ class StreamElementsHelper(StreamElementsHelperInterface):
                 await file.write(speechBytes)
                 await file.flush()
         except Exception as e:
-            self.__timber.log('StreamElementsHelper', f'Encountered exception when trying to write Stream Elements TTS speechBytes to file ({fileName=}) ({filePath=}): {e}', e, traceback.format_exc())
+            self.__timber.log('StreamElementsHelper', f'Encountered exception when trying to write Stream Elements TTS speechBytes to file ({fileName=}) ({filePath=})', e, traceback.format_exc())
             return False
 
         return True

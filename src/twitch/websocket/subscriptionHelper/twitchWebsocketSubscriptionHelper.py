@@ -81,7 +81,7 @@ class TwitchWebsocketSubscriptionHelper(TwitchWebsocketSubscriptionHelperInterfa
         try:
             userTwitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(user.userId)
         except TwitchAccessTokenMissingException as e:
-            self.__timber.log('TwitchWebsocketSubscriptionHelper', f'Skipping creation of {len(subscriptionTypes)} EventSub subscription(s) as we failed to fetch this user\'s Twitch access token ({user=}) ({sessionId=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchWebsocketSubscriptionHelper', f'Skipping creation of {len(subscriptionTypes)} EventSub subscription(s) as we failed to fetch this user\'s Twitch access token ({user=}) ({sessionId=})', e, traceback.format_exc())
             return
 
         transport = TwitchWebsocketTransport(
@@ -122,7 +122,7 @@ class TwitchWebsocketSubscriptionHelper(TwitchWebsocketSubscriptionHelperInterfa
             await asyncio.gather(*createEventSubSubscriptionCoroutines, return_exceptions = False)
             self.__timber.log('TwitchWebsocketSubscriptionHelper', f'Finished creating {len(subscriptionTypes)} EventSub subscription(s) ({user=}) ({sessionId=})')
         except Exception as e:
-            self.__timber.log('TwitchWebsocketSubscriptionHelper', f'Encountered unknown error when creating EventSub subscription(s) ({user=}) ({sessionId=}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchWebsocketSubscriptionHelper', f'Encountered unknown error when creating EventSub subscription(s) ({user=}) ({sessionId=})', e, traceback.format_exc())
 
         if isFirstSubscriptionAttempt:
             await self.__inspectEventSubSubscriptionResultsAndMaybeResubscribe(

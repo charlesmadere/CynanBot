@@ -230,7 +230,6 @@ class UsersRepository(UsersRepositoryInterface):
         setChatterPreferredTtsRewardId = utils.getStrFromDict(userJson, 'setChatterPreferredTtsRewardId', '')
         soundAlertRewardId = utils.getStrFromDict(userJson, 'soundAlertRewardId', '')
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
-        supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
         ttsChatterRewardId = utils.getStrFromDict(userJson, 'ttsChatterRewardId', '')
         voicemailRewardId = utils.getStrFromDict(userJson, 'voicemailRewardId', '')
 
@@ -509,7 +508,6 @@ class UsersRepository(UsersRepositoryInterface):
             setChatterPreferredTtsRewardId = setChatterPreferredTtsRewardId,
             speedrunProfile = speedrunProfile,
             soundAlertRewardId = soundAlertRewardId,
-            supStreamerMessage = supStreamerMessage,
             triviaGameRewardId = triviaGameRewardId,
             defaultTtsProvider = defaultTtsProvider,
             whichAnivUser = whichAnivUser,

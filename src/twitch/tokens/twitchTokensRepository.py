@@ -147,7 +147,9 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self.__timber.log('TwitchTokensRepository', f'Discovered {len(twitchChannelIdsToValidate)} Twitch token(s) that require validation...')
 
         for twitchChannelId in twitchChannelIds:
-            tokensDetails = await self.getTokensDetailsById(twitchChannelId)
+            tokensDetails = await self.getTokensDetailsById(
+                twitchChannelId = twitchChannelId,
+            )
 
             if tokensDetails is None:
                 self.__timber.log('TwitchTokensRepository', f'Twitch tokens details for \"{twitchChannelId}\" require validation, but unable to find any existing tokens details')
@@ -300,7 +302,9 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         if not utils.isValidStr(twitchChannelId):
             return None
 
-        return await self.getTokensDetailsById(twitchChannelId)
+        return await self.getTokensDetailsById(
+            twitchChannelId = twitchChannelId,
+        )
 
     async def getTokensDetailsById(
         self,
@@ -585,8 +589,8 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
                 twitchAccessToken = tokensDetails.accessToken
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to validate Twitch tokens ({twitchChannelId=}) ({tokensDetails=}): {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to validate Twitch tokens ({twitchChannelId=}) ({tokensDetails=}): {e}')
+            self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to validate Twitch tokens ({twitchChannelId=}) ({tokensDetails=})', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to validate Twitch tokens ({twitchChannelId=}) ({tokensDetails=})')
         except TwitchStatusCodeException:
             # this is an expected error
             pass
@@ -600,12 +604,12 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
                     twitchRefreshToken = tokensDetails.refreshToken,
                 )
             except GenericNetworkException as e:
-                self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to refresh Twitch tokens ({twitchChannelId=}): {e}', e, traceback.format_exc())
-                raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to refresh Twitch tokens ({twitchChannelId=}): {e}')
+                self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to refresh Twitch tokens ({twitchChannelId=})', e, traceback.format_exc())
+                raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to refresh Twitch tokens ({twitchChannelId=})')
             except TwitchPasswordChangedException as e:
-                self.__timber.log('TwitchTokensRepository', f'Encountered network error caused by password change when trying to refresh Twitch tokens ({twitchChannelId=}): {e}', e, traceback.format_exc())
+                self.__timber.log('TwitchTokensRepository', f'Encountered network error caused by password change when trying to refresh Twitch tokens ({twitchChannelId=})', e, traceback.format_exc())
                 await self.removeUserById(twitchChannelId)
-                raise TwitchPasswordChangedException(f'TwitchTokensRepository encountered network error caused by password change when trying to refresh Twitch tokens ({twitchChannelId=}): {e}')
+                raise TwitchPasswordChangedException(f'TwitchTokensRepository encountered network error caused by password change when trying to refresh Twitch tokens ({twitchChannelId=})')
 
             await self.__setTokensDetails(
                 twitchChannelId = twitchChannelId,

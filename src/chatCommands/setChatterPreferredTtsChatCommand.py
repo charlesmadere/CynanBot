@@ -154,7 +154,7 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
                     userMessage = userMessage,
                 )
         except (FailedToChooseRandomTtsException, NoEnabledTtsProvidersException, UnableToParseUserMessageIntoTtsException) as e:
-            self.__timber.log('SetChatterPreferredTtsChatCommand', f'Failed to set preferred TTS given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({lookupUser=}) ({userMessage=}): {e}', e, traceback.format_exc())
+            self.__timber.log('SetChatterPreferredTtsChatCommand', f'Failed to set preferred TTS given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({lookupUser=}) ({userMessage=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to set preferred TTS for @{lookupUser.userName}! Please check your input and try again.',
                 twitchChannelId = twitchChannelId,
@@ -162,7 +162,7 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
             )
             return
         except TtsProviderIsNotEnabledException as e:
-            self.__timber.log('SetChatterPreferredTtsChatCommand', f'The TTS Provider given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}  is not enabled ({lookupUser=}) ({userMessage=}): {e}', e, traceback.format_exc())
+            self.__timber.log('SetChatterPreferredTtsChatCommand', f'The TTS Provider given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}  is not enabled ({lookupUser=}) ({userMessage=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ The TTS provider requested for @{lookupUser.userName} is not available! Please try a different TTS provider.',
                 twitchChannelId = twitchChannelId,

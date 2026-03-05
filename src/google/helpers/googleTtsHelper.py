@@ -357,7 +357,7 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
                 await file.write(speechBytes)
                 await file.flush()
         except Exception as e:
-            self.__timber.log('GoogleTtsHelper', f'Encountered exception when trying to write Google TTS speechBytes to file ({fileName=}) ({filePath=}): {e}', e, traceback.format_exc())
+            self.__timber.log('GoogleTtsHelper', f'Encountered exception when trying to write Google TTS speechBytes to file ({fileName=}) ({filePath=})', e, traceback.format_exc())
             return False
 
         return True

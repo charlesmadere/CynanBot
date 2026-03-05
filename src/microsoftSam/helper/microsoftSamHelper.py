@@ -201,7 +201,7 @@ class MicrosoftSamHelper(MicrosoftSamHelperInterface):
                 await file.write(speechBytes)
                 await file.flush()
         except Exception as e:
-            self.__timber.log('MicrosoftSamHelper', f'Encountered exception when trying to write Microsoft Sam speechBytes to file ({fileName=}) ({filePath=}): {e}', e, traceback.format_exc())
+            self.__timber.log('MicrosoftSamHelper', f'Encountered exception when trying to write Microsoft Sam speechBytes to file ({fileName=}) ({filePath=})', e, traceback.format_exc())
             return False
 
         return True
