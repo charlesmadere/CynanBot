@@ -61,7 +61,7 @@ class DetermineTm36SplashTargetUseCase:
                 twitchAccessToken = twitchAccessToken,
             )
         except NoSuchUserException as e:
-            self.__timber.log('DetermineTm36SplashTargetUseCase', f'Failed to fetch timeout target\'s username ({twitchChannelId=}) ({userId=}): {e}', e, traceback.format_exc())
+            self.__timber.log('DetermineTm36SplashTargetUseCase', f'Failed to fetch timeout target\'s username ({twitchChannelId=}) ({userId=})', e, traceback.format_exc())
             raise UnknownTimeoutTargetException(f'Failed to fetch timeout target\'s username ({twitchChannelId=}) ({userId=})')
 
     async def invoke(

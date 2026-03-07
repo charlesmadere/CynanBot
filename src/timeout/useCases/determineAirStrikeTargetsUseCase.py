@@ -29,7 +29,7 @@ class DetermineAirStrikeTargetsUseCase:
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        targetReducerScale: float = 0.5,
+        targetReducerScale: float = 0.46,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -71,7 +71,7 @@ class DetermineAirStrikeTargetsUseCase:
                 twitchAccessToken = twitchAccessToken,
             )
         except NoSuchUserException as e:
-            self.__timber.log('DetermineAirStrikeTargetsUseCase', f'Failed to fetch timeout target\'s username ({twitchChannelId=}) ({userId=}): {e}', e, traceback.format_exc())
+            self.__timber.log('DetermineAirStrikeTargetsUseCase', f'Failed to fetch timeout target\'s username ({twitchChannelId=}) ({userId=})', e, traceback.format_exc())
             raise UnknownTimeoutTargetException(f'Failed to fetch timeout target\'s username ({twitchChannelId=}) ({userId=})')
 
     async def invoke(
@@ -122,6 +122,10 @@ class DetermineAirStrikeTargetsUseCase:
             # This helps prevent situations where we could end up repeatedly timing out the same
             # people, as there just aren't enough active chatters to increase the randomness.
             airStrikeTargetCount = max(timeoutAction.minTimeoutTargets, int(math.floor(float(airStrikeTargetCount) * self.__targetReducerScale)))
+
+        if float(airStrikeTargetCount) / float(timeoutAction.minTimeoutTargets) < 0.5:
+            # TODO
+            pass
 
         vulnerableChattersList: list[ActiveChatter] = list(vulnerableChatters.values())
 
