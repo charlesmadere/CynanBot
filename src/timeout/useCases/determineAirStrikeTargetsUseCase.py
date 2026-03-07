@@ -124,8 +124,9 @@ class DetermineAirStrikeTargetsUseCase:
             airStrikeTargetCount = max(timeoutAction.minTimeoutTargets, int(math.floor(float(airStrikeTargetCount) * self.__targetReducerScale)))
 
         if float(airStrikeTargetCount) / float(timeoutAction.minTimeoutTargets) < 0.5:
-            # TODO
-            pass
+            emptyTimeoutTargetsList: FrozenList[TimeoutTarget] = FrozenList()
+            emptyTimeoutTargetsList.freeze()
+            return emptyTimeoutTargetsList
 
         vulnerableChattersList: list[ActiveChatter] = list(vulnerableChatters.values())
 
