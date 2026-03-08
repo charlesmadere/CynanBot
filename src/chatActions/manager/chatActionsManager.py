@@ -1,8 +1,12 @@
 from typing import Final
 
+from frozenlist import FrozenList
+
 from .chatActionsManagerInterface import ChatActionsManagerInterface
 from ..absChatAction import AbsChatAction
+from ..absChatAction2 import AbsChatAction2
 from ..anivCheckChatAction import AnivCheckChatAction
+from ..chatActionResult import ChatActionResult
 from ..chatBackMessagesChatAction import ChatBackMessagesChatAction
 from ..chatLoggerChatAction import ChatLoggerChatAction
 from ..cheerActionsWizardChatAction import CheerActionsWizardChatAction
@@ -14,11 +18,15 @@ from ..supStreamerChatAction import SupStreamerChatAction
 from ..ttsChatterChatAction import TtsChatterChatAction
 from ..voicemailChatAction import VoicemailChatAction
 from ...aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
+from ...misc import utils as utils
 from ...misc.generalSettingsRepository import GeneralSettingsRepository
 from ...mostRecentChat.mostRecentChat import MostRecentChat
 from ...mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ...twitch.configuration.twitchMessage import TwitchMessage
+from ...twitch.localModels.twitchChatMessage import TwitchChatMessage
+from ...twitch.localModels.twitchChatMessageFragment import TwitchChatMessageFragment
+from ...twitch.localModels.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
 from ...users.usersRepositoryInterface import UsersRepositoryInterface
@@ -92,7 +100,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__recurringActionsWizardChatAction: Final[AbsChatAction | None] = recurringActionsWizardChatAction
         self.__saveMostRecentAnivMessageChatAction: Final[AbsChatAction | None] = saveMostRecentAnivMessageChatAction
         self.__soundAlertChatAction: Final[AbsChatAction | None] = soundAlertChatAction
-        self.__supStreamerChatAction: Final[AbsChatAction | None] = supStreamerChatAction
+        self.__supStreamerChatAction: Final[AbsChatAction2 | None] = supStreamerChatAction
         self.__ttsChatterChatAction: Final[AbsChatAction | None] = ttsChatterChatAction
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
         self.__voicemailChatAction: Final[VoicemailChatAction | None] = voicemailChatAction
@@ -155,6 +163,11 @@ class ChatActionsManager(ChatActionsManagerInterface):
 
         user = await self.__usersRepository.getUserAsync(message.getTwitchChannelName())
 
+        chatMessage = await self.__mapTwitchMessageToTwitchChatMessage(
+            message = message,
+            twitchUser = user,
+        )
+
         await self.__handleAnivChatActions(
             mostRecentChat = mostRecentChat,
             message = message,
@@ -205,6 +218,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
 
         await self.__handleSoundMessage(
             mostRecentChat = mostRecentChat,
+            chatMessage = chatMessage,
             message = message,
             user = user,
         )
@@ -212,15 +226,18 @@ class ChatActionsManager(ChatActionsManagerInterface):
     async def __handleSoundMessage(
         self,
         mostRecentChat: MostRecentChat | None,
+        chatMessage: TwitchChatMessage,
         message: TwitchMessage,
         user: UserInterface,
     ):
-        if self.__supStreamerChatAction is not None and await self.__supStreamerChatAction.handleChat(
-            mostRecentChat = mostRecentChat,
-            message = message,
-            user = user,
-        ):
-            return
+        if self.__supStreamerChatAction is not None:
+            match await self.__supStreamerChatAction.handleChatAction(
+                mostRecentChat = mostRecentChat,
+                chatMessage = chatMessage,
+            ):
+                case ChatActionResult.CONSUMED: return
+                case ChatActionResult.HANDLED: pass
+                case ChatActionResult.IGNORED: pass
 
         elif self.__soundAlertChatAction is not None and await self.__soundAlertChatAction.handleChat(
             mostRecentChat = mostRecentChat,
@@ -235,3 +252,46 @@ class ChatActionsManager(ChatActionsManagerInterface):
             user = user,
         ):
             return
+
+    async def __mapTwitchMessageToTwitchChatMessage(
+        self,
+        message: TwitchMessage,
+        twitchUser: UserInterface,
+    ) -> TwitchChatMessage:
+        text = utils.cleanStr(message.getContent())
+
+        messageFragments = await self.__mapMessageTextToMessageFragments(
+            text = text,
+        )
+
+        tags = await message.getTags()
+
+        return TwitchChatMessage(
+            messageFragments = messageFragments,
+            chatterUserId = message.getAuthorId(),
+            chatterUserLogin = message.getAuthorName(),
+            chatterUserName = message.getAuthorName(),
+            eventId = tags.messageId,
+            sourceMessageId = tags.sourceMessageId,
+            text = text,
+            twitchChannelId = await message.getTwitchChannelId(),
+            twitchChatMessageId = tags.messageId,
+            cheerMetadata = None,
+            twitchUser = twitchUser,
+        )
+
+    async def __mapMessageTextToMessageFragments(
+        self,
+        text: str,
+    ) -> FrozenList[TwitchChatMessageFragment]:
+        fragments: FrozenList[TwitchChatMessageFragment] = FrozenList()
+        fragments.append(TwitchChatMessageFragment(
+            text = text,
+            cheermote = None,
+            emote = None,
+            mention = None,
+            fragmentType = TwitchChatMessageFragmentType.TEXT,
+        ))
+
+        fragments.freeze()
+        return fragments

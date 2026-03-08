@@ -2,7 +2,8 @@ import random
 from datetime import datetime, timedelta
 from typing import Final
 
-from .absChatAction import AbsChatAction
+from .absChatAction2 import AbsChatAction2
+from .chatActionResult import ChatActionResult
 from ..chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
@@ -14,14 +15,13 @@ from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryIn
 from ..timber.timberInterface import TimberInterface
 from ..tts.models.ttsEvent import TtsEvent
 from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
-from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..users.supStreamer.supStreamerBoosterPack import SupStreamerBoosterPack
-from ..users.userInterface import UserInterface
 
 
-class SupStreamerChatAction(AbsChatAction):
+class SupStreamerChatAction(AbsChatAction2):
 
     def __init__(
         self,
@@ -33,7 +33,7 @@ class SupStreamerChatAction(AbsChatAction):
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        cooldown: timedelta = timedelta(hours = 6),
+        cooldown: timedelta = timedelta(hours = 8),
     ):
         if not isinstance(chatterPreferredNameHelper, ChatterPreferredNameHelperInterface):
             raise TypeError(f'chatterPreferredNameHelper argument is malformed: \"{chatterPreferredNameHelper}\"')
@@ -64,123 +64,58 @@ class SupStreamerChatAction(AbsChatAction):
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__cooldown: Final[timedelta] = cooldown
 
-    async def handleChat(
+    @property
+    def actionName(self) -> str:
+        return 'SupStreamerChatAction'
+
+    async def handleChatAction(
         self,
         mostRecentChat: MostRecentChat | None,
-        message: TwitchMessage,
-        user: UserInterface,
-    ) -> bool:
-        if not user.isSupStreamerEnabled or not user.isTtsEnabled:
-            return False
+        chatMessage: TwitchChatMessage,
+    ) -> ChatActionResult:
+        if not chatMessage.twitchUser.isSupStreamerEnabled or not chatMessage.twitchUser.isTtsEnabled:
+            return ChatActionResult.IGNORED
 
         now = self.__timeZoneRepository.getNow()
         if mostRecentChat is not None and (mostRecentChat.mostRecentChat + self.__cooldown) > now:
-            return False
+            return ChatActionResult.IGNORED
 
-        cleanedMessage = utils.cleanStr(message.getContent())
-        supStreamerBoosterPacks = user.supStreamerBoosterPacks
+        cleanedMessage = utils.cleanStr(chatMessage.text)
+        if not utils.isValidStr(cleanedMessage):
+            return ChatActionResult.IGNORED
 
-        if supStreamerBoosterPacks is not None and len(supStreamerBoosterPacks) >= 1:
-            shuffledBoosterPacks: list[SupStreamerBoosterPack] = list(supStreamerBoosterPacks)
-            random.shuffle(shuffledBoosterPacks)
+        supStreamerBoosterPacks = chatMessage.twitchUser.supStreamerBoosterPacks
+        if supStreamerBoosterPacks is None or len(supStreamerBoosterPacks) == 0:
+            return ChatActionResult.IGNORED
 
-            for supStreamerBoosterPack in shuffledBoosterPacks:
-                if await self.__checkSupMessage(
-                    chatMessage = cleanedMessage,
-                    message = message,
-                    now = now,
-                    supStreamerMessage = supStreamerBoosterPack.message,
-                    reply = supStreamerBoosterPack.reply,
-                    user = user,
-                ):
-                    return True
+        shuffledBoosterPacks: list[SupStreamerBoosterPack] = list(supStreamerBoosterPacks)
+        random.shuffle(shuffledBoosterPacks)
 
-        return False
+        for supStreamerBoosterPack in shuffledBoosterPacks:
+            if await self.__isSupMessage(
+                now = now,
+                cleanedMessage = cleanedMessage,
+                supStreamerBoosterPack = supStreamerBoosterPack,
+                chatMessage = chatMessage,
+            ):
+                return ChatActionResult.CONSUMED
 
-    async def __checkSupMessage(
-        self,
-        chatMessage: str | None,
-        message: TwitchMessage,
-        now: datetime,
-        supStreamerMessage: str,
-        reply: str,
-        user: UserInterface,
-    ) -> bool:
-        if not utils.isValidStr(chatMessage) or not utils.isValidStr(supStreamerMessage):
-            return False
-        elif not await self.__supStreamerHelper.isSupStreamerMessage(
-            chatMessage = chatMessage,
-            supStreamerMessage = supStreamerMessage,
-        ):
-            return False
+        return ChatActionResult.IGNORED
 
-        supStreamerChatData = await self.__supStreamerRepository.get(
-            chatterUserId = message.getAuthorId(),
-            twitchChannelId = await message.getTwitchChannelId(),
-        )
-
-        if supStreamerChatData is not None and (supStreamerChatData.mostRecentSup + self.__cooldown) > now:
-            return False
-
-        # only allow sup streamer messages from chatters who are following
-        if not await self.__isFollowing(message):
-            return False
-
-        await self.__supStreamerRepository.set(
-            chatterUserId = message.getAuthorId(),
-            twitchChannelId = await message.getTwitchChannelId(),
-        )
-
-        authorName = await self.__determineAuthorName(message)
-
-        self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.handle}')
-
-        providerOverridableStatus: TtsProviderOverridableStatus
-
-        if user.isChatterPreferredTtsEnabled:
-            providerOverridableStatus = TtsProviderOverridableStatus.CHATTER_OVERRIDABLE
-        else:
-            providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
-
-        self.__streamAlertsManager.submitAlert(StreamAlert(
-            soundAlert = None,
-            twitchChannel = user.handle,
-            twitchChannelId = await message.getTwitchChannelId(),
-            ttsEvent = TtsEvent(
-                message = f'{authorName} {reply}',
-                twitchChannel = user.handle,
-                twitchChannelId = await message.getTwitchChannelId(),
-                userId = message.getAuthorId(),
-                userName = message.getAuthorName(),
-                donation = None,
-                provider = user.defaultTtsProvider,
-                providerOverridableStatus = providerOverridableStatus,
-                raidInfo = None,
-            ),
-        ))
-
-        return True
-
-    async def __determineAuthorName(self, message: TwitchMessage) -> str:
-        if not isinstance(message, TwitchMessage):
-            raise TypeError(f'message argument is malformed: \"{message}\"')
-
+    async def __determineAuthorName(self, chatMessage: TwitchChatMessage) -> str:
         preferredNameData = await self.__chatterPreferredNameHelper.get(
-            chatterUserId = message.getAuthorId(),
-            twitchChannelId = await message.getTwitchChannelId(),
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
         if preferredNameData is None:
-            return message.getAuthorName()
+            return chatMessage.chatterUserName
         else:
             return preferredNameData.preferredName
 
-    async def __isFollowing(self, message: TwitchMessage) -> bool:
-        if not isinstance(message, TwitchMessage):
-            raise TypeError(f'message argument is malformed: \"{message}\"')
-
+    async def __isFollowing(self, chatMessage: TwitchChatMessage) -> bool:
         twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-            twitchChannelId = await message.getTwitchChannelId(),
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
         if not utils.isValidStr(twitchAccessToken):
@@ -188,6 +123,66 @@ class SupStreamerChatAction(AbsChatAction):
 
         return await self.__twitchFollowingStatusRepository.isFollowing(
             twitchAccessToken = twitchAccessToken,
-            twitchChannelId = await message.getTwitchChannelId(),
-            userId = message.getAuthorId(),
+            twitchChannelId = chatMessage.twitchChannelId,
+            userId = chatMessage.chatterUserId,
         )
+
+    async def __isSupMessage(
+        self,
+        now: datetime,
+        cleanedMessage: str,
+        supStreamerBoosterPack: SupStreamerBoosterPack,
+        chatMessage: TwitchChatMessage,
+    ) -> bool:
+        if not await self.__supStreamerHelper.isSupStreamerMessage(
+            chatMessage = cleanedMessage,
+            supStreamerMessage = supStreamerBoosterPack.message,
+        ):
+            return False
+
+        supStreamerChatData = await self.__supStreamerRepository.get(
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
+        )
+
+        if supStreamerChatData is not None and (supStreamerChatData.mostRecentSup + self.__cooldown) > now:
+            return False
+
+        # only allow sup streamer messages from chatters who are following
+        if not await self.__isFollowing(chatMessage):
+            return False
+
+        await self.__supStreamerRepository.set(
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
+        )
+
+        authorName = await self.__determineAuthorName(chatMessage)
+
+        providerOverridableStatus: TtsProviderOverridableStatus
+
+        if chatMessage.twitchUser.isChatterPreferredTtsEnabled:
+            providerOverridableStatus = TtsProviderOverridableStatus.CHATTER_OVERRIDABLE
+        else:
+            providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
+
+        self.__timber.log(self.actionName, f'Encountered sup streamer chat message ({chatMessage=}) ({supStreamerBoosterPack=}) ({supStreamerChatData=})')
+
+        self.__streamAlertsManager.submitAlert(StreamAlert(
+            soundAlert = None,
+            twitchChannel = chatMessage.twitchChannel,
+            twitchChannelId = chatMessage.twitchChannelId,
+            ttsEvent = TtsEvent(
+                message = f'{authorName} {supStreamerBoosterPack.reply}',
+                twitchChannel = chatMessage.twitchChannel,
+                twitchChannelId = chatMessage.twitchChannelId,
+                userId = chatMessage.chatterUserId,
+                userName = chatMessage.chatterUserName,
+                donation = None,
+                provider = chatMessage.twitchUser.defaultTtsProvider,
+                providerOverridableStatus = providerOverridableStatus,
+                raidInfo = None,
+            ),
+        ))
+
+        return True
