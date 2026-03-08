@@ -100,7 +100,6 @@ from .chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from .chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from .chatCommands.twitchUserInfoChatCommand import TwitchUserInfoChatCommand
 from .chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
-from .chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
 from .chatCommands.voicemailsChatCommand import VoicemailsChatCommand
 from .chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
 from .chatCommands.weatherChatCommand import WeatherChatCommand
@@ -847,13 +846,11 @@ class CynanBot(
             self.__freeGiveChatterItemCommand: AbsChatCommand = StubChatCommand()
             self.__getGashaponItemChatCommand: AbsChatCommand = StubChatCommand()
             self.__giveChatterItemCommand: AbsChatCommand = StubChatCommand()
-            self.__useChatterItemCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__chatterInventoryCommand: AbsChatCommand = ChatterInventoryChatCommand(chatterInventoryHelper, chatterInventorySettings, timber, twitchChatMessenger, usersRepository)
             self.__freeGiveChatterItemCommand: AbsChatCommand = FreeGiveChatterItemChatCommand(administratorProvider, chatterInventoryHelper, chatterInventoryMapper, chatterInventorySettings, timber, twitchChannelEditorsRepository, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository)
             self.__getGashaponItemChatCommand: AbsChatCommand = GetGashaponItemChatCommand(gashaponRewardHelper, soundPlayerManagerProvider, timber, timeZoneRepository, twitchChatMessenger, usersRepository)
             self.__giveChatterItemCommand: AbsChatCommand = GiveChatterItemChatCommand(chatterInventoryIdGenerator, chatterInventoryItemUseMachine, chatterInventoryMapper, chatterInventorySettings, timber, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository)
-            self.__useChatterItemCommand: AbsChatCommand = UseChatterItemChatCommand(chatterInventoryIdGenerator, timber, twitchChatMessenger, useChatterItemHelper, usersRepository)
 
         if cheerActionJsonMapper is None or cheerActionsRepository is None or cheerActionsWizard is None:
             self.__addCrowdControlCheerActionCommand: AbsChatCommand = StubChatCommand()
@@ -1652,14 +1649,6 @@ class CynanBot(
     async def command_unbantriviaquestion(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__unbanTriviaQuestionChatCommand.handleChatCommand(context)
-
-    @commands.command(
-        name = 'useitem',
-        aliases = [ 'use', 'Use', 'USE', 'usechatteritem', 'use-item', 'use_item' ]
-    )
-    async def command_usechatteritem(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__useChatterItemCommand.handleChatCommand(context)
 
     @commands.command(name = 'voicemails', aliases = [ 'voicemail' ])
     async def command_voicemails(self, ctx: Context):
