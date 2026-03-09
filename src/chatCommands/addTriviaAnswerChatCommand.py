@@ -90,7 +90,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
-            self.__timber.log('AddTriviaAnswerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but an invalid emote argument was given: \"{emote}\"')
+            self.__timber.log('AddTriviaAnswerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but an invalid emote argument was given ({emote=})')
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to add additional trivia answer as an invalid emote argument was given. Example: !addtriviaanswer {self.__triviaEmoteGenerator.getRandomEmote()} Theodore Roosevelt',
                 twitchChannelId = await ctx.getTwitchChannelId(),
@@ -105,7 +105,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
         )
 
         if reference is None:
-            self.__timber.log('AddTriviaAnswerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no trivia question reference was found with emote \"{emote}\"')
+            self.__timber.log('AddTriviaAnswerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no trivia question reference was found with emote ({emote=}) ({normalizedEmote=}) ({reference=})')
             self.__twitchChatMessenger.send(
                 text = f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")',
                 twitchChannelId = await ctx.getTwitchChannelId(),
@@ -115,7 +115,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
 
         additionalAnswer: str | None = ' '.join(splits[2:])
         if not utils.isValidStr(additionalAnswer):
-            self.__timber.log('AddTriviaAnswerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but an invalid additional answer was given: \"{additionalAnswer}\"')
+            self.__timber.log('AddTriviaAnswerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but an invalid additional answer was given ({additionalAnswer=}) ({reference=})')
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to add additional trivia answer as an invalid answer argument was given. Example: !addtriviaanswer {self.__triviaEmoteGenerator.getRandomEmote()} Theodore Roosevelt',
                 twitchChannelId = await ctx.getTwitchChannelId(),
@@ -140,7 +140,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId(),
             )
 
-            self.__timber.log('AddTriviaAnswerChatCommand', f'Added additional trivia answer for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}: \"{additionalAnswer}\"')
+            self.__timber.log('AddTriviaAnswerChatCommand', f'Added additional trivia answer for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({additionalAnswer=}) ({reference=})')
         except AdditionalTriviaAnswerAlreadyExistsException as e:
             self.__twitchChatMessenger.send(
                 text = f'{reference.emote} Unable to add additional trivia answer for {reference.triviaSource.toStr()}:{reference.triviaId} as it already exists',
@@ -148,7 +148,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId(),
             )
 
-            self.__timber.log('AddTriviaAnswerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the additional answer already exists: \"{additionalAnswer}\"', e, traceback.format_exc())
+            self.__timber.log('AddTriviaAnswerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the additional answer already exists ({additionalAnswer=}) ({reference=})', e, traceback.format_exc())
         except AdditionalTriviaAnswerIsMalformedException as e:
             self.__twitchChatMessenger.send(
                 text = f'{reference.emote} Unable to add additional trivia answer for {reference.triviaSource.toStr()}:{reference.triviaId} as it is malformed',
@@ -156,15 +156,15 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId(),
             )
 
-            self.__timber.log('AddTriviaAnswerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the additional answer is malformed: \"{additionalAnswer}\"', e, traceback.format_exc())
+            self.__timber.log('AddTriviaAnswerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the additional answer is malformed ({additionalAnswer=}) ({reference=})', e, traceback.format_exc())
         except AdditionalTriviaAnswerIsUnsupportedTriviaTypeException as e:
             self.__twitchChatMessenger.send(
-                text = f'{reference.emote} Unable to add additional trivia answer for {reference.triviaSource.toStr()}:{reference.triviaId} as the question is an unsupported type ({reference.triviaType.toStr()})',
+                text = f'{reference.emote} Unable to add additional trivia answer for {reference.triviaSource.toStr()}:{reference.triviaId} as the question is an unsupported type ({reference=})',
                 twitchChannelId = await ctx.getTwitchChannelId(),
                 replyMessageId = await ctx.getMessageId(),
             )
 
-            self.__timber.log('AddTriviaAnswerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the question is an unsupported type: \"{reference.triviaType.toStr()}\"', e, traceback.format_exc())
+            self.__timber.log('AddTriviaAnswerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the question is an unsupported type ({additionalAnswer=}) ({reference=})', e, traceback.format_exc())
         except TooManyAdditionalTriviaAnswersException as e:
             self.__twitchChatMessenger.send(
                 text = f'{reference.emote} Unable to add additional trivia answer for {reference.triviaSource.toStr()}:{reference.triviaId} as the question has too many additional answers ({reference.triviaType.toStr()})',
@@ -172,6 +172,6 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
                 replyMessageId = await ctx.getMessageId(),
             )
 
-            self.__timber.log('AddTriviaAnswerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the question has too many additional answers', e, traceback.format_exc())
+            self.__timber.log('AddTriviaAnswerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but the question has too many additional answers ({additionalAnswer=}) ({reference=})', e, traceback.format_exc())
 
         self.__timber.log('AddTriviaAnswerChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
