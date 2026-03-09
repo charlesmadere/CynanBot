@@ -2233,16 +2233,17 @@ soundAlertChatAction = SoundAlertChatAction(
 ## Sup Streamer initialization section ##
 #########################################
 
-supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
+supStreamerRepository: Final[SupStreamerRepositoryInterface] = SupStreamerRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
 )
 
-supStreamerHelper: SupStreamerHelperInterface = SupStreamerHelper()
+supStreamerHelper: Final[SupStreamerHelperInterface] = SupStreamerHelper()
 
-supStreamerChatAction: SupStreamerChatAction = SupStreamerChatAction(
+supStreamerChatAction: Final[SupStreamerChatAction] = SupStreamerChatAction(
     chatterPreferredNameHelper = chatterPreferredNameHelper,
+    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     streamAlertsManager = streamAlertsManager,
     supStreamerHelper = supStreamerHelper,
     supStreamerRepository = supStreamerRepository,
@@ -2252,12 +2253,12 @@ supStreamerChatAction: SupStreamerChatAction = SupStreamerChatAction(
     twitchTokensRepository = twitchTokensRepository,
 )
 
-ttsChatterRepository: TtsChatterRepositoryInterface = TtsChatterRepository(
+ttsChatterRepository: Final[TtsChatterRepositoryInterface] = TtsChatterRepository(
     backingDatabase = backingDatabase,
     timber = timber,
 )
 
-ttsChatterSettingsRepository: TtsChatterSettingsRepositoryInterface = TtsChatterSettingsRepository(
+ttsChatterSettingsRepository: Final[TtsChatterSettingsRepositoryInterface] = TtsChatterSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/ttsChatterSettingsRepository.json',

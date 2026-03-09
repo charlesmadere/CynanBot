@@ -5,6 +5,7 @@ from typing import Final
 from .absChatAction2 import AbsChatAction2
 from .chatActionResult import ChatActionResult
 from ..chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
+from ..chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
@@ -14,6 +15,7 @@ from ..supStreamer.supStreamerHelperInterface import SupStreamerHelperInterface
 from ..supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..tts.models.ttsEvent import TtsEvent
+from ..tts.models.ttsProvider import TtsProvider
 from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
@@ -26,6 +28,7 @@ class SupStreamerChatAction(AbsChatAction2):
     def __init__(
         self,
         chatterPreferredNameHelper: ChatterPreferredNameHelperInterface,
+        chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         supStreamerHelper: SupStreamerHelperInterface,
         supStreamerRepository: SupStreamerRepositoryInterface,
@@ -37,6 +40,8 @@ class SupStreamerChatAction(AbsChatAction2):
     ):
         if not isinstance(chatterPreferredNameHelper, ChatterPreferredNameHelperInterface):
             raise TypeError(f'chatterPreferredNameHelper argument is malformed: \"{chatterPreferredNameHelper}\"')
+        elif not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
+            raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(supStreamerHelper, SupStreamerHelperInterface):
@@ -55,6 +60,7 @@ class SupStreamerChatAction(AbsChatAction2):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = chatterPreferredNameHelper
+        self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = chatterPreferredTtsHelper
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__supStreamerHelper: Final[SupStreamerHelperInterface] = supStreamerHelper
         self.__supStreamerRepository: Final[SupStreamerRepositoryInterface] = supStreamerRepository
@@ -166,7 +172,12 @@ class SupStreamerChatAction(AbsChatAction2):
         else:
             providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
 
-        self.__timber.log(self.actionName, f'Encountered sup streamer chat message ({chatMessage=}) ({supStreamerBoosterPack=}) ({supStreamerChatData=})')
+        provider = await self.__determineTtsProvider(
+            providerOverridableStatus = providerOverridableStatus,
+            chatMessage = chatMessage,
+        )
+
+        self.__timber.log(self.actionName, f'Encountered sup streamer chat message ({chatMessage=}) ({supStreamerBoosterPack=}) ({supStreamerChatData=}) ({providerOverridableStatus=}) ({provider=})')
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
@@ -179,10 +190,28 @@ class SupStreamerChatAction(AbsChatAction2):
                 userId = chatMessage.chatterUserId,
                 userName = chatMessage.chatterUserName,
                 donation = None,
-                provider = chatMessage.twitchUser.defaultTtsProvider,
+                provider = provider,
                 providerOverridableStatus = providerOverridableStatus,
                 raidInfo = None,
             ),
         ))
 
         return True
+
+    async def __determineTtsProvider(
+        self,
+        providerOverridableStatus: TtsProviderOverridableStatus,
+        chatMessage: TwitchChatMessage,
+    ) -> TtsProvider:
+        if providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
+            return chatMessage.twitchUser.defaultTtsProvider
+
+        chatterPreferredTts = await self.__chatterPreferredTtsHelper.get(
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
+        )
+
+        if chatterPreferredTts is None:
+            return chatMessage.twitchUser.defaultTtsProvider
+        else:
+            return chatterPreferredTts.provider

@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 from frozenlist import FrozenList
 
@@ -8,12 +10,12 @@ from src.users.supStreamer.supStreamerBoosterPackJsonParserInterface import SupS
 
 class TestSupStreamerBoosterPackJsonParser:
 
-    parser: SupStreamerBoosterPackJsonParserInterface = SupStreamerBoosterPackJsonParser()
+    parser: Final[SupStreamerBoosterPackJsonParserInterface] = SupStreamerBoosterPackJsonParser()
 
     def test_parseBoosterPack(self):
         boosterPack = SupStreamerBoosterPack(
-            message = "test",
-            reply = "ahoy",
+            message = 'test',
+            reply = 'ahoy',
         )
 
         result = self.parser.parseBoosterPack({
@@ -44,24 +46,24 @@ class TestSupStreamerBoosterPackJsonParser:
 
     def test_parseBoosterPacks(self):
         boosterPack1 = SupStreamerBoosterPack(
-            message = "test",
-            reply = "ahoy"
+            message = 'test',
+            reply = 'ahoy',
         )
 
         boosterPack2 = SupStreamerBoosterPack(
-            message = "test2",
-            reply = "ahoy2"
+            message = 'test2',
+            reply = 'ahoy2',
         )
 
         result = self.parser.parseBoosterPacks([
             {
-                'message': "test",
-                'reply': "ahoy"
+                'message': 'test',
+                'reply': 'ahoy',
             },
             {
-                'message': "test2",
-                'reply': "ahoy2"
-            }
+                'message': 'test2',
+                'reply': 'ahoy2',
+            },
         ])
 
         assert isinstance(result, FrozenList)
