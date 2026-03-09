@@ -80,7 +80,7 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         subscriptionEntry = self.__selfCaches.get(twitchChannelId, None)
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         if subscriptionEntry is not None and subscriptionEntry.fetchTime + self.__cacheTimeToLive >= now:
             return subscriptionEntry.subscriptionStatus
@@ -154,7 +154,7 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         subscriptionEntry = self.__chatterCaches[twitchChannelId].get(chatterUserId, None)
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         if subscriptionEntry is not None and subscriptionEntry.fetchTime + self.__cacheTimeToLive >= now:
             return subscriptionEntry.subscriptionStatus

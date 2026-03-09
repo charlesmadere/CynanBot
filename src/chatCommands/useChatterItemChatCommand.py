@@ -1,17 +1,18 @@
-from typing import Final
+import re
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from ..chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
 from ..chatterInventory.models.useChatterItemRequest import UseChatterItemRequest
 from ..chatterInventory.models.useChatterItemResult import UseChatterItemResult
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class UseChatterItemChatCommand(AbsChatCommand):
+class UseChatterItemChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -19,7 +20,6 @@ class UseChatterItemChatCommand(AbsChatCommand):
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         useChatterItemHelper: UseChatterItemHelperInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
             raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
@@ -29,20 +29,29 @@ class UseChatterItemChatCommand(AbsChatCommand):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(useChatterItemHelper, UseChatterItemHelperInterface):
             raise TypeError(f'useChatterItemHelper argument is malformed: \"{useChatterItemHelper}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = chatterInventoryIdGenerator
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__useChatterItemHelper: Final[UseChatterItemHelperInterface] = useChatterItemHelper
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!use', re.IGNORECASE),
+            re.compile(r'^\s*!use(?:\s+|_|-)?item', re.IGNORECASE),
+            re.compile(r'^\s*!use(?:\s+|_|-)?chatter(?:\s+|_|-)?item', re.IGNORECASE),
+        })
 
-        if not user.isChatterInventoryEnabled:
-            return
+    @property
+    def commandName(self) -> str:
+        return 'UseChatterItemChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isChatterInventoryEnabled:
+            return ChatCommandResult.IGNORED
 
         # As it is currently written, this chat command does not specify an item type. Instead,
         # there is some logic within the UseChatterItemHelper class that will parse the user's
@@ -51,12 +60,12 @@ class UseChatterItemChatCommand(AbsChatCommand):
         result = await self.__useChatterItemHelper.useItem(UseChatterItemRequest(
             ignoreInventory = False,
             itemType = None,
-            chatMessage = ctx.getMessageContent(),
-            chatterUserId = ctx.getAuthorId(),
+            chatMessage = chatMessage.text,
+            chatterUserId = chatMessage.chatterUserId,
             requestId = await self.__chatterInventoryIdGenerator.generateRequestId(),
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            twitchChatMessageId = await ctx.getMessageId(),
-            user = user,
+            twitchChannelId = chatMessage.twitchChannelId,
+            twitchChatMessageId = chatMessage.twitchChatMessageId,
+            user = chatMessage.twitchUser,
         ))
 
         match result:
@@ -67,8 +76,8 @@ class UseChatterItemChatCommand(AbsChatCommand):
             case UseChatterItemResult.INVALID_REQUEST:
                 self.__twitchChatMessenger.send(
                     text = f'⚠ Invalid item use request! Please try again',
-                    twitchChannelId = await ctx.getTwitchChannelId(),
-                    replyMessageId = await ctx.getMessageId(),
+                    twitchChannelId = chatMessage.twitchChannelId,
+                    replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
             case UseChatterItemResult.ITEM_DISABLED:
@@ -79,4 +88,5 @@ class UseChatterItemChatCommand(AbsChatCommand):
                 # this case is intentionally empty
                 pass
 
-        self.__timber.log('UseChatterItemChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({chatMessage=}) ({result=})')
+        return ChatCommandResult.HANDLED
