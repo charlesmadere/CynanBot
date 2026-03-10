@@ -82,7 +82,6 @@ from .chatCommands.removeRecurringSuperTriviaActionCommand import RemoveRecurrin
 from .chatCommands.removeRecurringWeatherActionCommand import RemoveRecurringWeatherActionCommand
 from .chatCommands.removeRecurringWordOfTheDayAction import RemoveRecurringWordOfTheDayActionCommand
 from .chatCommands.removeTriviaControllerChatCommand import RemoveTriviaControllerChatCommand
-from .chatCommands.removeTtsChatterChatCommand import RemoveTtsChatterChatCommand
 from .chatCommands.removeUserChatCommand import RemoveUserChatCommand
 from .chatCommands.setChatterPreferredNameChatCommand import SetChatterPreferredNameChatCommand
 from .chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferredTtsChatCommand
@@ -217,8 +216,6 @@ from .trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRep
 from .tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from .tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
 from .tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from .ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
-from .ttsChatter.settings.ttsChatterSettingsRepositoryInterface import TtsChatterSettingsRepositoryInterface
 from .ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from .ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \
     TtsMonsterTokensRepositoryInterface
@@ -407,8 +404,6 @@ class CynanBot(
         triviaUtils: TriviaUtilsInterface | None,
         trollmojiHelper: TrollmojiHelperInterface | None,
         trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface | None,
-        ttsChatterRepository: TtsChatterRepositoryInterface | None,
-        ttsChatterSettingsRepository: TtsChatterSettingsRepositoryInterface | None,
         ttsJsonMapper: TtsJsonMapperInterface | None,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface | None,
         ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface | None,
@@ -698,10 +693,6 @@ class CynanBot(
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif trollmojiSettingsRepository is not None and not isinstance(trollmojiSettingsRepository, TrollmojiSettingsRepositoryInterface):
             raise TypeError(f'trollmojiSettingsRepository argument is malformed: \"{trollmojiSettingsRepository}\"')
-        elif ttsChatterRepository is not None and not isinstance(ttsChatterRepository, TtsChatterRepositoryInterface):
-            raise TypeError(f'ttsChatterRepository argument is malformed: \"{ttsChatterRepository}\"')
-        elif ttsChatterSettingsRepository is not None and not isinstance(ttsChatterSettingsRepository, TtsChatterSettingsRepositoryInterface):
-            raise TypeError(f'ttsChatterSettingsRepository argument is malformed: \"{ttsChatterSettingsRepository}\"')
         elif ttsJsonMapper is not None and not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
             raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
         elif ttsMonsterSettingsRepository is not None and not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
@@ -803,7 +794,6 @@ class CynanBot(
         self.__triviaEventHandler: Final[AbsTriviaEventHandler | None] = triviaEventHandler
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
         self.__triviaRepository: TriviaRepositoryInterface | None = triviaRepository
-        self.__ttsChatterRepository: Final[TtsChatterRepositoryInterface | None] = ttsChatterRepository
         self.__twitchChannelJoinHelper: Final[TwitchChannelJoinHelperInterface] = twitchChannelJoinHelper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchConfiguration: Final[TwitchConfiguration] = twitchConfiguration
@@ -821,7 +811,7 @@ class CynanBot(
 
         self.__addUserCommand: AbsChatCommand = AddUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchChatMessenger, userIdsRepository, usersRepository)
         self.__blueSkyCommand: AbsChatCommand = BlueSkyChatCommand(timber, twitchChatMessenger, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettings, asplodieStatsRepository, authRepository, bannedTriviaGameControllersRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, guaranteedTimeoutUsersRepository, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionSettings, triviaGameControllersRepository, triviaGameGlobalControllersRepository, triviaSettings, trollmojiHelper, trollmojiSettingsRepository, ttsChatterRepository, ttsChatterSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchChatMessenger, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, voicemailsRepository, voicemailSettingsRepository, weatherRepository, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettings, asplodieStatsRepository, authRepository, bannedTriviaGameControllersRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, guaranteedTimeoutUsersRepository, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionSettings, triviaGameControllersRepository, triviaGameGlobalControllersRepository, triviaSettings, trollmojiHelper, trollmojiSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchChatMessenger, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, voicemailsRepository, voicemailSettingsRepository, weatherRepository, wordOfTheDayRepository)
         self.__confirmCommand: AbsChatCommand = ConfirmChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, usersRepository)
         self.__cynanSourceCommand: AbsChatCommand = CynanSourceChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__discordCommand: AbsChatCommand = DiscordChatCommand(timber, twitchChatMessenger, usersRepository)
@@ -1013,11 +1003,6 @@ class CynanBot(
             self.__translateCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__translateCommand: AbsChatCommand = TranslateChatCommand(languagesRepository, timber, translationHelper, twitchChatMessenger, usersRepository)
-
-        if ttsChatterRepository is None:
-            self.__removeTtsChatterCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__removeTtsChatterCommand: AbsChatCommand = RemoveTtsChatterChatCommand(timber, ttsChatterRepository, twitchChatMessenger, usersRepository)
 
         if locationsRepository is None or weatherReportPresenter is None or weatherRepository is None:
             self.__weatherCommand: AbsChatCommand = StubChatCommand()
@@ -1569,11 +1554,6 @@ class CynanBot(
     async def command_removetriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeTriviaControllerChatCommand.handleChatCommand(context)
-
-    @commands.command(name = 'stopttschatting', aliases = [ 'stopttschat', 'stoptts' ])
-    async def command_removettschatter(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeTtsChatterCommand.handleChatCommand(context)
 
     @commands.command(name = 'setpreferredname', aliases = [ 'setname' ])
     async def command_setchatterpreferredname(self, ctx: Context):

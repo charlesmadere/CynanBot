@@ -4,7 +4,6 @@ from typing import Final
 from frozendict import frozendict
 from frozenlist import FrozenList
 
-from .chatSoundAlert.absChatSoundAlert import AbsChatSoundAlert
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .cuteness.cutenessBoosterPack import CutenessBoosterPack
 from .decTalkSongs.decTalkSongBoosterPack import DecTalkSongBoosterPack
@@ -27,13 +26,11 @@ class User(UserInterface):
         self,
         areAsplodieStatsEnabled: bool,
         areBeanStatsEnabled: bool,
-        areChatSoundAlertsEnabled: bool,
         areCheerActionsEnabled: bool,
         arePranksEnabled: bool,
         areRecurringActionsEnabled: bool,
         areRedemptionCountersEnabled: bool,
         areSoundAlertsEnabled: bool,
-        areTtsChattersEnabled: bool,
         isAnivContentScanningEnabled: bool,
         isAnivMessageCopyTimeoutChatReportingEnabled: bool,
         isAnivMessageCopyTimeoutEnabled: bool,
@@ -127,8 +124,6 @@ class User(UserInterface):
         soundAlertRewardId: str | None,
         speedrunProfile: str | None,
         triviaGameRewardId: str | None,
-        ttsChatterRewardId: str | None,
-        voicemailRewardId: str | None,
         defaultTtsProvider: TtsProvider,
         whichAnivUser: WhichAnivUser | None,
         crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None,
@@ -138,7 +133,6 @@ class User(UserInterface):
         redemptionCounterBoosterPacks: frozendict[str, RedemptionCounterBoosterPack] | None,
         soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None,
         timeoutBoosterPacks: frozendict[str, TimeoutBoosterPack] | None,
-        chatSoundAlerts: FrozenList[AbsChatSoundAlert] | None,
         chatBackMessages: FrozenList[str] | None,
         supStreamerBoosterPacks: FrozenList[SupStreamerBoosterPack] | None,
         ttsBoosterPacks: FrozenList[TtsBoosterPack] | None,
@@ -148,8 +142,6 @@ class User(UserInterface):
             raise TypeError(f'areAsplodieStatsEnabled argument is malformed: \"{areAsplodieStatsEnabled}\"')
         elif not utils.isValidBool(areBeanStatsEnabled):
             raise TypeError(f'areBeanStatsEnabled argument is malformed: \"{areBeanStatsEnabled}\"')
-        elif not utils.isValidBool(areChatSoundAlertsEnabled):
-            raise TypeError(f'areChatSoundAlertsEnabled argument is malformed: \"{areChatSoundAlertsEnabled}\"')
         elif not utils.isValidBool(areCheerActionsEnabled):
             raise TypeError(f'areCheerActionsEnabled argument is malformed: \"{areCheerActionsEnabled}\"')
         elif not utils.isValidBool(arePranksEnabled):
@@ -160,8 +152,6 @@ class User(UserInterface):
             raise TypeError(f'areRedemptionCountersEnabled argument is malformed: \"{areRedemptionCountersEnabled}\"')
         elif not utils.isValidBool(areSoundAlertsEnabled):
             raise TypeError(f'areSoundAlertsEnabled argument is malformed: \"{areSoundAlertsEnabled}\"')
-        elif not utils.isValidBool(areTtsChattersEnabled):
-            raise TypeError(f'areTtsChattersEnabled argument is malformed: \"{areTtsChattersEnabled}\"')
         elif not utils.isValidBool(isAnivContentScanningEnabled):
             raise TypeError(f'isAnivContentScanningEnabled argument is malformed: \"{isAnivContentScanningEnabled}\"')
         elif not utils.isValidBool(isAnivMessageCopyTimeoutChatReportingEnabled):
@@ -344,10 +334,6 @@ class User(UserInterface):
             raise TypeError(f'speedrunProfile argument is malformed: \"{speedrunProfile}\"')
         elif triviaGameRewardId is not None and not isinstance(triviaGameRewardId, str):
             raise TypeError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
-        elif ttsChatterRewardId is not None and not isinstance(ttsChatterRewardId, str):
-            raise TypeError(f'ttsChatterRewardId argument is malformed: \"{ttsChatterRewardId}\"')
-        elif voicemailRewardId is not None and not isinstance(voicemailRewardId, str):
-            raise TypeError(f'voicemailRewardId argument is malformed: \"{voicemailRewardId}\"')
         elif not isinstance(defaultTtsProvider, TtsProvider):
             raise TypeError(f'defaultTtsProvider argument is malformed: \"{defaultTtsProvider}\"')
         elif whichAnivUser is not None and not isinstance(whichAnivUser, WhichAnivUser):
@@ -366,8 +352,6 @@ class User(UserInterface):
             raise TypeError(f'soundAlertRedemptions argument is malformed: \"{soundAlertRedemptions}\"')
         elif timeoutBoosterPacks is not None and not isinstance(timeoutBoosterPacks, frozendict):
             raise TypeError(f'timeoutBoosterPacks argument is malformed: \"{timeoutBoosterPacks}\"')
-        elif chatSoundAlerts is not None and not isinstance(chatSoundAlerts, FrozenList):
-            raise TypeError(f'chatSoundAlerts argument is malformed: \"{chatSoundAlerts}\"')
         elif chatBackMessages is not None and not isinstance(chatBackMessages, FrozenList):
             raise TypeError(f'chatBackMessages argument is malformed: \"{chatBackMessages}\"')
         elif supStreamerBoosterPacks is not None and not isinstance(supStreamerBoosterPacks, FrozenList):
@@ -379,13 +363,11 @@ class User(UserInterface):
 
         self.__areAsplodieStatsEnabled: bool = areAsplodieStatsEnabled
         self.__areBeanStatsEnabled: bool = areBeanStatsEnabled
-        self.__areChatSoundAlertsEnabled: bool = areChatSoundAlertsEnabled
         self.__areCheerActionsEnabled: bool = areCheerActionsEnabled
         self.__arePranksEnabled: bool = arePranksEnabled
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
         self.__areRedemptionCountersEnabled: bool = areRedemptionCountersEnabled
         self.__areSoundAlertsEnabled: bool = areSoundAlertsEnabled
-        self.__areTtsChattersEnabled: Final[bool] = areTtsChattersEnabled
         self.__isAnivContentScanningEnabled: bool = isAnivContentScanningEnabled
         self.__isAnivMessageCopyTimeoutChatReportingEnabled: bool = isAnivMessageCopyTimeoutChatReportingEnabled
         self.__isAnivMessageCopyTimeoutEnabled: bool = isAnivMessageCopyTimeoutEnabled
@@ -479,8 +461,6 @@ class User(UserInterface):
         self.__soundAlertRewardId: str | None = soundAlertRewardId
         self.__speedrunProfile: str | None = speedrunProfile
         self.__triviaGameRewardId: str | None = triviaGameRewardId
-        self.__ttsChatterRewardId: str | None = ttsChatterRewardId
-        self.__voicemailRewardId: str | None = voicemailRewardId
         self.__defaultTtsProvider: TtsProvider = defaultTtsProvider
         self.__whichAnivUser: WhichAnivUser | None = whichAnivUser
         self.__crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None = crowdControlBoosterPacks
@@ -490,7 +470,6 @@ class User(UserInterface):
         self.__redemptionCounterBoosterPacks: frozendict[str, RedemptionCounterBoosterPack] | None = redemptionCounterBoosterPacks
         self.__soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None = soundAlertRedemptions
         self.__timeoutBoosterPacks: frozendict[str, TimeoutBoosterPack] | None = timeoutBoosterPacks
-        self.__chatSoundAlerts: FrozenList[AbsChatSoundAlert] | None = chatSoundAlerts
         self.__chatBackMessages: FrozenList[str] | None = chatBackMessages
         self.__supStreamerBoosterPacks: Final[FrozenList[SupStreamerBoosterPack] | None] = supStreamerBoosterPacks
         self.__ttsBoosterPacks: FrozenList[TtsBoosterPack] | None = ttsBoosterPacks
@@ -521,10 +500,6 @@ class User(UserInterface):
         return self.__areBeanStatsEnabled
 
     @property
-    def areChatSoundAlertsEnabled(self) -> bool:
-        return self.__areChatSoundAlertsEnabled
-
-    @property
     def areCheerActionsEnabled(self) -> bool:
         return self.__areCheerActionsEnabled
 
@@ -545,16 +520,8 @@ class User(UserInterface):
         return self.__areSoundAlertsEnabled
 
     @property
-    def areTtsChattersEnabled(self) -> bool:
-        return self.__areTtsChattersEnabled
-
-    @property
     def blueSkyUrl(self) -> str | None:
         return self.__blueSkyUrl
-
-    @property
-    def chatSoundAlerts(self) -> FrozenList[AbsChatSoundAlert] | None:
-        return self.__chatSoundAlerts
 
     @property
     def crowdControlBoosterPacks(self) -> frozendict[str, CrowdControlBoosterPack] | None:
@@ -707,10 +674,6 @@ class User(UserInterface):
     @property
     def triviaGameShinyMultiplier(self) -> int | None:
         return self.__triviaGameShinyMultiplier
-
-    @property
-    def ttsChatterRewardId(self) -> str | None:
-        return self.__ttsChatterRewardId
 
     @property
     def twitchUrl(self) -> str:
@@ -986,10 +949,6 @@ class User(UserInterface):
     @property
     def ttsBoosterPacks(self) -> FrozenList[TtsBoosterPack] | None:
         return self.__ttsBoosterPacks
-
-    @property
-    def voicemailRewardId(self) -> str | None:
-        return self.__voicemailRewardId
 
     @property
     def whichAnivUser(self) -> WhichAnivUser | None:

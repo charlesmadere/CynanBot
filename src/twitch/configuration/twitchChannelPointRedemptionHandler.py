@@ -26,8 +26,6 @@ from ...channelPointRedemptions.stub.stubChannelPointRedemption import StubChann
 from ...channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
 from ...channelPointRedemptions.superTriviaLotrGamePointRedemption import SuperTriviaLotrGamePointRedemption
 from ...channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
-from ...channelPointRedemptions.ttsChatterPointRedemption import TtsChatterPointRedemption
-from ...channelPointRedemptions.voicemailPointRedemption import VoicemailPointRedemption
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
@@ -55,10 +53,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         superTriviaGamePointRedemption: SuperTriviaGamePointRedemption | None,
         superTriviaLotrGamePointRedemption: SuperTriviaLotrGamePointRedemption | None,
         triviaGamePointRedemption: TriviaGamePointRedemption | None,
-        ttsChatterPointRedemption: TtsChatterPointRedemption | None,
         timber: TimberInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        voicemailPointRedemption: VoicemailPointRedemption | None,
         queueSleepTimeSeconds: float = 1,
         queueTimeoutSeconds: float = 3,
     ):
@@ -94,14 +90,10 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'superTriviaLotrGamePointRedemption argument is malformed: \"{superTriviaLotrGamePointRedemption}\"')
         elif triviaGamePointRedemption is not None and not isinstance(triviaGamePointRedemption, TriviaGamePointRedemption):
             raise TypeError(f'triviaGamePointRedemption argument is malformed: \"{triviaGamePointRedemption}\"')
-        elif ttsChatterPointRedemption is not None and not isinstance(ttsChatterPointRedemption, TtsChatterPointRedemption):
-            raise TypeError(f'ttsChatterPointRedemption argument is malformed: \"{ttsChatterPointRedemption}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif voicemailPointRedemption is not None and not isinstance(voicemailPointRedemption, VoicemailPointRedemption):
-            raise TypeError(f'voicemailPointRedemption argument is malformed: \"{voicemailPointRedemption}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 15:
@@ -195,16 +187,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         else:
             self.__triviaGamePointRedemption: AbsChannelPointRedemption = triviaGamePointRedemption
 
-        if ttsChatterPointRedemption is None:
-            self.__ttsChatterPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__ttsChatterPointRedemption: AbsChannelPointRedemption = ttsChatterPointRedemption
-
-        if voicemailPointRedemption is None:
-            self.__voicemailPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__voicemailPointRedemption: AbsChannelPointRedemption = voicemailPointRedemption
-
     async def __handleChannelPointsRedemption(self, channelPointsRedemption: TwitchChannelPointsRedemption):
         if not isinstance(channelPointsRedemption, TwitchChannelPointsRedemption):
             raise TypeError(f'channelPointsRedemption argument is malformed: \"{channelPointsRedemption}\"')
@@ -297,18 +279,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.isTriviaGameEnabled and channelPointsRedemption.rewardId == user.triviaGameRewardId:
             if await self.__triviaGamePointRedemption.handlePointRedemption(
-                channelPointsRedemption = channelPointsRedemption,
-            ):
-                return
-
-        if user.areTtsChattersEnabled and channelPointsRedemption.rewardId == user.ttsChatterRewardId:
-            if await self.__ttsChatterPointRedemption.handlePointRedemption(
-                channelPointsRedemption = channelPointsRedemption,
-            ):
-                return
-
-        if user.isVoicemailEnabled and channelPointsRedemption.rewardId == user.voicemailRewardId:
-            if await self.__voicemailPointRedemption.handlePointRedemption(
                 channelPointsRedemption = channelPointsRedemption,
             ):
                 return

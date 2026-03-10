@@ -52,8 +52,6 @@ from ..trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTok
 from ..trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ..trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from ..tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from ..ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
-from ..ttsChatter.settings.ttsChatterSettingsRepositoryInterface import TtsChatterSettingsRepositoryInterface
 from ..ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ..ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \
     TtsMonsterTokensRepositoryInterface
@@ -120,8 +118,6 @@ class ClearCachesChatCommand(AbsChatCommand):
         triviaSettings: TriviaSettingsInterface | None,
         trollmojiHelper: TrollmojiHelperInterface | None,
         trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface | None,
-        ttsChatterRepository: TtsChatterRepositoryInterface | None,
-        ttsChatterSettingsRepository: TtsChatterSettingsRepositoryInterface | None,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface | None,
         ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
@@ -219,10 +215,6 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif trollmojiSettingsRepository is not None and not isinstance(trollmojiSettingsRepository, TrollmojiSettingsRepositoryInterface):
             raise TypeError(f'trollmojiSettingsRepository argument is malformed: \"{trollmojiSettingsRepository}\"')
-        elif ttsChatterRepository is not None and not isinstance(ttsChatterRepository, TtsChatterRepositoryInterface):
-            raise TypeError(f'ttsChatterRepository argument is malformed: \"{ttsChatterRepository}\"')
-        elif ttsChatterSettingsRepository is not None and not isinstance(ttsChatterSettingsRepository, TtsChatterSettingsRepositoryInterface):
-            raise TypeError(f'ttsChatterSettingsRepository argument is malformed: \"{ttsChatterSettingsRepository}\"')
         elif ttsMonsterSettingsRepository is not None and not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
         elif ttsMonsterTokensRepository is not None and not isinstance(ttsMonsterTokensRepository, TtsMonsterTokensRepositoryInterface):
@@ -300,8 +292,6 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(triviaSettings)
         self.__clearables.append(trollmojiHelper)
         self.__clearables.append(trollmojiSettingsRepository)
-        self.__clearables.append(ttsChatterRepository)
-        self.__clearables.append(ttsChatterSettingsRepository)
         self.__clearables.append(ttsMonsterSettingsRepository)
         self.__clearables.append(ttsMonsterTokensRepository)
         self.__clearables.append(ttsSettingsRepository)
