@@ -3,8 +3,6 @@ import locale
 from asyncio import AbstractEventLoop
 from typing import Collection, Final
 
-from src.accessLevelChecking.accessLevelCheckingHelper import AccessLevelCheckingHelper
-from src.accessLevelChecking.accessLevelCheckingHelperInterface import AccessLevelCheckingHelperInterface
 from src.aniv.contentScanner.anivContentScanner import AnivContentScanner
 from src.aniv.contentScanner.anivContentScannerInterface import AnivContentScannerInterface
 from src.aniv.helpers.anivCopyMessageTimeoutScoreHelper import AnivCopyMessageTimeoutScoreHelper
@@ -46,8 +44,6 @@ from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPoin
 from src.channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
 from src.channelPointRedemptions.superTriviaLotrGamePointRedemption import SuperTriviaLotrGamePointRedemption
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
-from src.channelPointRedemptions.ttsChatterPointRedemption import TtsChatterPointRedemption
-from src.channelPointRedemptions.voicemailPointRedemption import VoicemailPointRedemption
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
 from src.chatActions.chatBackMessagesChatAction import ChatBackMessagesChatAction
 from src.chatActions.chatLoggerChatAction import ChatLoggerChatAction
@@ -57,9 +53,7 @@ from src.chatActions.manager.chatActionsManagerInterface import ChatActionsManag
 from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
-from src.chatActions.soundAlertChatAction import SoundAlertChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
-from src.chatActions.ttsChatterChatAction import TtsChatterChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
@@ -595,10 +589,6 @@ from src.tts.streamElements.streamElementsTtsManagerProvider import StreamElemen
 from src.tts.streamElements.streamElementsTtsManagerProviderInterface import StreamElementsTtsManagerProviderInterface
 from src.tts.ttsMonster.ttsMonsterTtsManagerProvider import TtsMonsterTtsManagerProvider
 from src.tts.ttsMonster.ttsMonsterTtsManagerProviderInterface import TtsMonsterTtsManagerProviderInterface
-from src.ttsChatter.repository.ttsChatterRepository import TtsChatterRepository
-from src.ttsChatter.repository.ttsChatterRepositoryInterface import TtsChatterRepositoryInterface
-from src.ttsChatter.settings.ttsChatterSettingsRepository import TtsChatterSettingsRepository
-from src.ttsChatter.settings.ttsChatterSettingsRepositoryInterface import TtsChatterSettingsRepositoryInterface
 from src.ttsMonster.apiService.ttsMonsterPrivateApiService import TtsMonsterPrivateApiService
 from src.ttsMonster.apiService.ttsMonsterPrivateApiServiceInterface import TtsMonsterPrivateApiServiceInterface
 from src.ttsMonster.helpers.ttsMonsterHelper import TtsMonsterHelper
@@ -715,8 +705,6 @@ from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMa
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from src.users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
 from src.users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
-from src.users.chatSoundAlert.chatSoundAlertJsonParser import ChatSoundAlertJsonParser
-from src.users.chatSoundAlert.chatSoundAlertJsonParserInterface import ChatSoundAlertJsonParserInterface
 from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
 from src.users.crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from src.users.cuteness.cutenessBoosterPackJsonParser import CutenessBoosterPackJsonParser
@@ -930,10 +918,6 @@ anivJsonMapper: AnivJsonMapperInterface = AnivJsonMapper()
 
 soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper()
 
-chatSoundAlertJsonParser: ChatSoundAlertJsonParserInterface = ChatSoundAlertJsonParser(
-    soundAlertJsonMapper = soundAlertJsonMapper
-)
-
 crowdControlJsonParser: CrowdControlJsonParserInterface = CrowdControlJsonParser()
 
 cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = CutenessBoosterPackJsonParser()
@@ -966,7 +950,6 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
     anivJsonMapper = anivJsonMapper,
-    chatSoundAlertJsonParser = chatSoundAlertJsonParser,
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
     decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,
@@ -2427,17 +2410,6 @@ voicemailChatAction = VoicemailChatAction(
     voicemailSettingsRepository = voicemailSettingsRepository,
 )
 
-voicemailPointRedemption = VoicemailPointRedemption(
-    activeChattersRepository = activeChattersRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
-    voicemailHelper = voicemailHelper,
-    voicemailSettingsRepository = voicemailSettingsRepository,
-)
-
 
 ########################################
 ## Pixels Dice initialization section ##
@@ -3000,12 +2972,6 @@ jishoHelper: Final[JishoHelperInterface] = JishoHelper(
 ## Chat Actions initialization section ##
 #########################################
 
-accessLevelCheckingHelper: AccessLevelCheckingHelperInterface = AccessLevelCheckingHelper(
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchSubscriptionsRepository = twitchSubscriptionsRepository,
-    twitchTokensRepository = twitchTokensRepository
-)
-
 anivCheckChatAction = AnivCheckChatAction(
     anivContentScanner = anivContentScanner,
     anivUserIdsRepository = anivUserIdsRepository,
@@ -3057,13 +3023,6 @@ saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
     timber = timber,
 )
 
-soundAlertChatAction = SoundAlertChatAction(
-    accessLevelCheckingHelper = accessLevelCheckingHelper,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-    timber = timber
-)
-
 
 #########################################
 ## Sup Streamer initialization section ##
@@ -3089,26 +3048,6 @@ supStreamerChatAction: Final[SupStreamerChatAction] = SupStreamerChatAction(
     twitchTokensRepository = twitchTokensRepository,
 )
 
-ttsChatterRepository: Final[TtsChatterRepositoryInterface] = TtsChatterRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-)
-
-ttsChatterSettingsRepository: Final[TtsChatterSettingsRepositoryInterface] = TtsChatterSettingsRepository(
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/ttsChatterSettingsRepository.json',
-    ),
-)
-
-ttsChatterChatAction = TtsChatterChatAction(
-    accessLevelCheckingHelper = accessLevelCheckingHelper,
-    compositeTtsManagerProvider = compositeTtsManagerProvider,
-    streamAlertsManager = streamAlertsManager,
-    ttsChatterRepository = ttsChatterRepository,
-    ttsChatterSettingsRepository = ttsChatterSettingsRepository
-)
-
 chatActionsManager: Final[ChatActionsManagerInterface] = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,
     anivCheckChatAction = anivCheckChatAction,
@@ -3121,9 +3060,7 @@ chatActionsManager: Final[ChatActionsManagerInterface] = ChatActionsManager(
     persistAllUsersChatAction = persistAllUsersChatAction,
     recurringActionsWizardChatAction = recurringActionsWizardChatAction,
     saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
-    soundAlertChatAction = soundAlertChatAction,
     supStreamerChatAction = supStreamerChatAction,
-    ttsChatterChatAction = ttsChatterChatAction,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
     voicemailChatAction = voicemailChatAction,
@@ -3209,13 +3146,7 @@ superTriviaLotrGamePointRedemption: Final[SuperTriviaLotrGamePointRedemption] = 
 triviaGamePointRedemption: Final[TriviaGamePointRedemption] = TriviaGamePointRedemption(
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
-    triviaGameMachine = triviaGameMachine
-)
-
-ttsChatterPointRedemption: Final[TtsChatterPointRedemption] = TtsChatterPointRedemption(
-    timber = timber,
-    ttsChatterRepository = ttsChatterRepository,
-    twitchChatMessenger = twitchChatMessenger,
+    triviaGameMachine = triviaGameMachine,
 )
 
 
@@ -3338,10 +3269,8 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     superTriviaGamePointRedemption = superTriviaGamePointRedemption,
     superTriviaLotrGamePointRedemption = superTriviaLotrGamePointRedemption,
     triviaGamePointRedemption = triviaGamePointRedemption,
-    ttsChatterPointRedemption = ttsChatterPointRedemption,
     timber = timber,
     userIdsRepository = userIdsRepository,
-    voicemailPointRedemption = voicemailPointRedemption,
 )
 
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
@@ -3569,8 +3498,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     triviaUtils = triviaUtils,
     trollmojiHelper = trollmojiHelper,
     trollmojiSettingsRepository = trollmojiSettingsRepository,
-    ttsChatterRepository = ttsChatterRepository,
-    ttsChatterSettingsRepository = ttsChatterSettingsRepository,
     ttsJsonMapper = ttsJsonMapper,
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
     ttsMonsterTokensRepository = ttsMonsterTokensRepository,

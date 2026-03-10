@@ -455,8 +455,6 @@ from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMa
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from src.users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
 from src.users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
-from src.users.chatSoundAlert.chatSoundAlertJsonParserInterface import ChatSoundAlertJsonParserInterface
-from src.users.chatSoundAlert.stub.stubChatSoundAlertJsonParser import StubChatSoundAlertJsonParser
 from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
 from src.users.crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from src.users.cuteness.cutenessBoosterPackJsonParser import CutenessBoosterPackJsonParser
@@ -656,8 +654,6 @@ twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface]
 
 anivJsonMapper: AnivJsonMapperInterface = AnivJsonMapper()
 
-chatSoundAlertJsonParser: ChatSoundAlertJsonParserInterface = StubChatSoundAlertJsonParser()
-
 crowdControlJsonParser: CrowdControlJsonParserInterface = CrowdControlJsonParser()
 
 cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = CutenessBoosterPackJsonParser()
@@ -686,7 +682,6 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = StubTtsBoosterPackParser()
 
 usersRepository: UsersRepositoryInterface = UsersRepository(
     anivJsonMapper = anivJsonMapper,
-    chatSoundAlertJsonParser = chatSoundAlertJsonParser,
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
     decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,
@@ -1887,9 +1882,7 @@ chatActionsManager: Final[ChatActionsManagerInterface] = ChatActionsManager(
     persistAllUsersChatAction = persistAllUsersChatAction,
     recurringActionsWizardChatAction = recurringActionsWizardChatAction,
     saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
-    soundAlertChatAction = None,
     supStreamerChatAction = None,
-    ttsChatterChatAction = None,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
     voicemailChatAction = None,
@@ -2048,10 +2041,8 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     superTriviaGamePointRedemption = superTriviaGamePointRedemption,
     superTriviaLotrGamePointRedemption = superTriviaLotrGamePointRedemption,
     triviaGamePointRedemption = triviaGamePointRedemption,
-    ttsChatterPointRedemption = None,
     timber = timber,
     userIdsRepository = userIdsRepository,
-    voicemailPointRedemption = None,
 )
 
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
@@ -2265,8 +2256,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     triviaUtils = triviaUtils,
     trollmojiHelper = trollmojiHelper,
     trollmojiSettingsRepository = trollmojiSettingsRepository,
-    ttsChatterRepository = None,
-    ttsChatterSettingsRepository = None,
     ttsJsonMapper = None,
     ttsMonsterSettingsRepository = None,
     ttsMonsterTokensRepository = None,

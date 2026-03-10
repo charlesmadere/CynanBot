@@ -47,10 +47,6 @@ class TestUserJsonConstants:
         result = UserJsonConstant.CHATTER_PREFERRED_TTS_ENABLED.jsonKey
         assert result == 'chatterPreferredTtsEnabled'
 
-    def test_jsonKey_withChatSoundAlertsEnabled(self):
-        result = UserJsonConstant.CHAT_SOUND_ALERTS_ENABLED.jsonKey
-        assert result == 'chatSoundAlertsEnabled'
-
     def test_jsonKey_withCheerActionsEnabled(self):
         result = UserJsonConstant.CHEER_ACTIONS_ENABLED.jsonKey
         assert result == 'cheerActionsEnabled'

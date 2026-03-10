@@ -4,7 +4,6 @@ from datetime import tzinfo
 from frozendict import frozendict
 from frozenlist import FrozenList
 
-from .chatSoundAlert.absChatSoundAlert import AbsChatSoundAlert
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .cuteness.cutenessBoosterPack import CutenessBoosterPack
 from .decTalkSongs.decTalkSongBoosterPack import DecTalkSongBoosterPack
@@ -53,11 +52,6 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def areChatSoundAlertsEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
     def areCheerActionsEnabled(self) -> bool:
         pass
 
@@ -83,17 +77,7 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def areTtsChattersEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
     def blueSkyUrl(self) -> str | None:
-        pass
-
-    @property
-    @abstractmethod
-    def chatSoundAlerts(self) -> FrozenList[AbsChatSoundAlert] | None:
         pass
 
     @property
@@ -279,11 +263,6 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def triviaGameShinyMultiplier(self) -> int | None:
-        pass
-
-    @property
-    @abstractmethod
-    def ttsChatterRewardId(self) -> str | None:
         pass
 
     @property
@@ -609,11 +588,6 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def ttsBoosterPacks(self) -> FrozenList[TtsBoosterPack] | None:
-        pass
-
-    @property
-    @abstractmethod
-    def voicemailRewardId(self) -> str | None:
         pass
 
     @property

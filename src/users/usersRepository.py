@@ -8,8 +8,6 @@ import aiofiles.ospath
 from frozendict import frozendict
 from frozenlist import FrozenList
 
-from .chatSoundAlert.absChatSoundAlert import AbsChatSoundAlert
-from .chatSoundAlert.chatSoundAlertJsonParserInterface import ChatSoundAlertJsonParserInterface
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from .cuteness.cutenessBoosterPack import CutenessBoosterPack
@@ -47,7 +45,6 @@ class UsersRepository(UsersRepositoryInterface):
     def __init__(
         self,
         anivJsonMapper: AnivJsonMapperInterface,
-        chatSoundAlertJsonParser: ChatSoundAlertJsonParserInterface,
         crowdControlJsonParser: CrowdControlJsonParserInterface,
         cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface,
         decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface,
@@ -65,8 +62,6 @@ class UsersRepository(UsersRepositoryInterface):
     ):
         if not isinstance(anivJsonMapper, AnivJsonMapperInterface):
             raise TypeError(f'anivJsonMapper argument is malformed: \"{anivJsonMapper}\"')
-        elif not isinstance(chatSoundAlertJsonParser, ChatSoundAlertJsonParserInterface):
-            raise TypeError(f'chatSoundAlertJsonParser argument is malformed: \"{chatSoundAlertJsonParser}\"')
         elif not isinstance(crowdControlJsonParser, CrowdControlJsonParserInterface):
             raise TypeError(f'crowdControlJsonParser argument is malformed: \"{crowdControlJsonParser}\"')
         elif not isinstance(cutenessBoosterPackJsonParser, CutenessBoosterPackJsonParserInterface):
@@ -97,7 +92,6 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'usersFile argument is malformed: \"{usersFile}\"')
 
         self.__anivJsonMapper: Final[AnivJsonMapperInterface] = anivJsonMapper
-        self.__chatSoundAlertJsonParser: Final[ChatSoundAlertJsonParserInterface] = chatSoundAlertJsonParser
         self.__crowdControlJsonParser: Final[CrowdControlJsonParserInterface] = crowdControlJsonParser
         self.__cutenessBoosterPackJsonParser: Final[CutenessBoosterPackJsonParserInterface] = cutenessBoosterPackJsonParser
         self.__decTalkSongBoosterPackParser: Final[DecTalkSongBoosterPackParserInterface] = decTalkSongBoosterPackParser
@@ -165,13 +159,11 @@ class UsersRepository(UsersRepositoryInterface):
 
         areAsplodieStatsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ASPLODIE_STATS_ENABLED.jsonKey, False)
         areBeanStatsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.BEAN_STATS_ENABLED.jsonKey, False)
-        areChatSoundAlertsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHAT_SOUND_ALERTS_ENABLED.jsonKey, False)
         areCheerActionsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHEER_ACTIONS_ENABLED.jsonKey, False)
         arePranksEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.PRANKS_ENABLED.jsonKey, False)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         areRedemptionCountersEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.REDEMPTION_COUNTERS_ENABLED.jsonKey, False)
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
-        areTtsChattersEnabled = utils.getBoolFromDict(userJson, 'ttsChattersEnabled', False)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_CONTENT_SCANNING_ENABLED.jsonKey, False)
         isAnivMessageCopyTimeoutChatReportingEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_CHAT_REPORTING_ENABLED.jsonKey, True)
         isAnivMessageCopyTimeoutEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED.jsonKey, False)
@@ -230,8 +222,6 @@ class UsersRepository(UsersRepositoryInterface):
         setChatterPreferredTtsRewardId = utils.getStrFromDict(userJson, 'setChatterPreferredTtsRewardId', '')
         soundAlertRewardId = utils.getStrFromDict(userJson, 'soundAlertRewardId', '')
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
-        ttsChatterRewardId = utils.getStrFromDict(userJson, 'ttsChatterRewardId', '')
-        voicemailRewardId = utils.getStrFromDict(userJson, 'voicemailRewardId', '')
 
         defaultLanguageString = utils.getStrFromDict(
             d = userJson,
@@ -257,11 +247,6 @@ class UsersRepository(UsersRepositoryInterface):
 
             if 'anivMessageCopyTimeoutMaxSeconds' in userJson and utils.isValidInt(userJson.get('anivMessageCopyTimeoutMaxSeconds')):
                 anivMessageCopyTimeoutMaxSeconds = utils.getIntFromDict(userJson, 'anivMessageCopyTimeoutMaxSeconds')
-
-        chatSoundAlerts: FrozenList[AbsChatSoundAlert] | None = None
-        if areChatSoundAlertsEnabled:
-            chatSoundAlertsJson: list[dict[str, Any]] | None = userJson.get('chatSoundAlerts')
-            chatSoundAlerts = self.__chatSoundAlertJsonParser.parseChatSoundAlerts(chatSoundAlertsJson)
 
         redemptionCounterBoosterPacks: frozendict[str, RedemptionCounterBoosterPack] | None = None
         if areRedemptionCountersEnabled:
@@ -407,13 +392,11 @@ class UsersRepository(UsersRepositoryInterface):
         user = User(
             areAsplodieStatsEnabled = areAsplodieStatsEnabled,
             areBeanStatsEnabled = areBeanStatsEnabled,
-            areChatSoundAlertsEnabled = areChatSoundAlertsEnabled,
             areCheerActionsEnabled = areCheerActionsEnabled,
             arePranksEnabled = arePranksEnabled,
             areRecurringActionsEnabled = areRecurringActionsEnabled,
             areRedemptionCountersEnabled = areRedemptionCountersEnabled,
             areSoundAlertsEnabled = areSoundAlertsEnabled,
-            areTtsChattersEnabled = areTtsChattersEnabled,
             isAnivContentScanningEnabled = isAnivContentScanningEnabled,
             isAnivMessageCopyTimeoutChatReportingEnabled = isAnivMessageCopyTimeoutChatReportingEnabled,
             isAnivMessageCopyTimeoutEnabled = isAnivMessageCopyTimeoutEnabled,
@@ -484,8 +467,6 @@ class UsersRepository(UsersRepositoryInterface):
             timeoutActionFollowShieldDays = timeoutActionFollowShieldDays,
             triviaGamePoints = triviaGamePoints,
             triviaGameShinyMultiplier = triviaGameShinyMultiplier,
-            ttsChatterRewardId = ttsChatterRewardId,
-            voicemailRewardId = voicemailRewardId,
             waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
             defaultLanguage = defaultLanguage,
@@ -518,7 +499,6 @@ class UsersRepository(UsersRepositoryInterface):
             redemptionCounterBoosterPacks = redemptionCounterBoosterPacks,
             soundAlertRedemptions = soundAlertRedemptions,
             timeoutBoosterPacks = timeoutBoosterPacks,
-            chatSoundAlerts = chatSoundAlerts,
             chatBackMessages = chatBackMessages,
             supStreamerBoosterPacks = supStreamerBoosterPacks,
             ttsBoosterPacks = ttsBoosterPacks,
