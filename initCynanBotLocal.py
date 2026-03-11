@@ -731,8 +731,7 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
     ttsJsonMapper = ttsJsonMapper
 )
 
-usersRepository: UsersRepositoryInterface = UsersRepository(
-    anivJsonMapper = anivJsonMapper,
+usersRepository: Final[UsersRepositoryInterface] = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
     decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,

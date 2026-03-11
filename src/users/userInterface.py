@@ -13,7 +13,6 @@ from .soundAlert.soundAlertRedemption import SoundAlertRedemption
 from .supStreamer.supStreamerBoosterPack import SupStreamerBoosterPack
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
-from ..aniv.models.whichAnivUser import WhichAnivUser
 from ..language.languageEntry import LanguageEntry
 from ..tts.models.ttsProvider import TtsProvider
 
@@ -588,9 +587,4 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def ttsBoosterPacks(self) -> FrozenList[TtsBoosterPack] | None:
-        pass
-
-    @property
-    @abstractmethod
-    def whichAnivUser(self) -> WhichAnivUser | None:
         pass
