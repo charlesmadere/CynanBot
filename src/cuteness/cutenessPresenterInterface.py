@@ -16,7 +16,7 @@ class CutenessPresenterInterface(ABC):
     async def printCutenessChampions(
         self,
         result: CutenessChampionsResult,
-        delimiter: str = ', '
+        delimiter: str = ', ',
     ) -> str:
         pass
 
@@ -24,7 +24,7 @@ class CutenessPresenterInterface(ABC):
     async def printLeaderboard(
         self,
         result: CutenessLeaderboardResult,
-        delimiter: str = ', '
+        delimiter: str = ', ',
     ) -> str:
         pass
 

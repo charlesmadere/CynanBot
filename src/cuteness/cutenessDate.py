@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, Final
 
 from ..misc import utils as utils
 from ..misc.simpleDateTime import SimpleDateTime
@@ -17,8 +17,8 @@ class CutenessDate:
         else:
             self.__simpleDateTime: SimpleDateTime = SimpleDateTime()
 
-        self.__databaseString: str = self.__simpleDateTime.getDateTime().strftime('%Y-%m')
-        self.__humanString: str = self.__simpleDateTime.getDateTime().strftime('%b %Y')
+        self.__databaseString: Final[str] = self.__simpleDateTime.getDateTime().strftime('%Y-%m')
+        self.__humanString: Final[str] = self.__simpleDateTime.getDateTime().strftime('%b %Y')
 
     def __ge__(self, other: Any) -> bool:
         if isinstance(other, CutenessDate):
@@ -60,5 +60,5 @@ class CutenessDate:
     def toDictionary(self) -> dict[str, Any]:
         return {
             'databaseString': self.__databaseString,
-            'humanString': self.__humanString
+            'humanString': self.__humanString,
         }

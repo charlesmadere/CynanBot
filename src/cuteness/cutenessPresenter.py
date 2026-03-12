@@ -20,7 +20,7 @@ class CutenessPresenter(CutenessPresenterInterface):
     async def printCutenessChampions(
         self,
         result: CutenessChampionsResult,
-        delimiter: str = ', '
+        delimiter: str = ', ',
     ) -> str:
         if not isinstance(result, CutenessChampionsResult):
             raise TypeError(f'result argument is malformed: \"{result}\"')
@@ -41,7 +41,7 @@ class CutenessPresenter(CutenessPresenterInterface):
     async def printLeaderboard(
         self,
         result: CutenessLeaderboardResult,
-        delimiter: str = ', '
+        delimiter: str = ', ',
     ) -> str:
         if not isinstance(result, CutenessLeaderboardResult):
             raise TypeError(f'result argument is malformed: \"{result}\"')
