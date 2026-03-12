@@ -316,6 +316,7 @@ class CutenessRepository(CutenessRepositoryInterface):
             cutenessDate = cutenessDate,
             newCuteness = newCuteness,
             previousCuteness = previousCuteness,
+            twitchChannelId = twitchChannelId,
             userId = userId,
             userName = userName,
         )
@@ -494,7 +495,7 @@ class CutenessRepository(CutenessRepositoryInterface):
                             utcyearandmonth text NOT NULL,
                             PRIMARY KEY (twitchchannelid, userid, utcyearandmonth)
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -507,7 +508,7 @@ class CutenessRepository(CutenessRepositoryInterface):
                             utcyearandmonth TEXT NOT NULL,
                             PRIMARY KEY (twitchchannelid, userid, utcyearandmonth)
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:

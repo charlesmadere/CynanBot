@@ -9,6 +9,7 @@ class IncrementedCutenessResult:
     cutenessDate: CutenessDate
     newCuteness: int
     previousCuteness: int
+    twitchChannelId: str
     userId: str
     userName: str
 
