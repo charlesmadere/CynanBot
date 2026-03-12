@@ -1,3 +1,4 @@
+import math
 import traceback
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -113,7 +114,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         if indexToDelete is not None:
             del activeChatters[indexToDelete]
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         activeChatter = ActiveChatter(
             mostRecentChat = now,
@@ -148,7 +149,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             index = index - 1
 
     async def clearCaches(self):
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         for entry in self.__twitchChannelIdToActiveChatters.values():
             await self.__clean(
@@ -176,7 +177,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         if not utils.isValidStr(twitchAccessToken):
             return entry.chatters
 
-        first = max(round(self.__maxActiveChattersSize * 0.75), 8)
+        first = max(math.ceil(self.__maxActiveChattersSize * 0.75), 8)
         self.__timber.log('ActiveChattersRepository', f'Fetching currently connected chatters... ({twitchChannelId=}) ({first=})')
 
         try:
@@ -193,8 +194,8 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             return entry.chatters
 
         index = 0
-        now = datetime.now(self.__timeZoneRepository.getDefault())
-        mostRecentChat = now - timedelta(seconds = round(self.__maxActiveChattersTimeToLive.total_seconds() * 0.25))
+        now = self.__timeZoneRepository.getNow()
+        mostRecentChat = now - timedelta(seconds = math.ceil(self.__maxActiveChattersTimeToLive.total_seconds() * 0.25))
 
         while index < len(chatters.data) and index < self.__maxActiveChattersSize:
             chatter = chatters.data[index]
@@ -217,7 +218,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         activeChatters = await self.__getCurrentActiveChatters(twitchChannelId)
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         await self.__clean(
             now = now,
