@@ -14,7 +14,6 @@ from .supStreamer.supStreamerBoosterPack import SupStreamerBoosterPack
 from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .userInterface import UserInterface
-from ..aniv.models.whichAnivUser import WhichAnivUser
 from ..language.languageEntry import LanguageEntry
 from ..misc import utils as utils
 from ..tts.models.ttsProvider import TtsProvider
@@ -125,7 +124,6 @@ class User(UserInterface):
         speedrunProfile: str | None,
         triviaGameRewardId: str | None,
         defaultTtsProvider: TtsProvider,
-        whichAnivUser: WhichAnivUser | None,
         crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None,
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None,
         decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None,
@@ -336,8 +334,6 @@ class User(UserInterface):
             raise TypeError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
         elif not isinstance(defaultTtsProvider, TtsProvider):
             raise TypeError(f'defaultTtsProvider argument is malformed: \"{defaultTtsProvider}\"')
-        elif whichAnivUser is not None and not isinstance(whichAnivUser, WhichAnivUser):
-            raise TypeError(f'whichAnivUser argument is malformed: \"{whichAnivUser}\"')
         elif crowdControlBoosterPacks is not None and not isinstance(crowdControlBoosterPacks, frozendict):
             raise TypeError(f'crowdControlBoosterPacks argument is malformed: \"{crowdControlBoosterPacks}\"')
         elif cutenessBoosterPacks is not None and not isinstance(cutenessBoosterPacks, frozendict):
@@ -361,44 +357,44 @@ class User(UserInterface):
         elif timeZones is not None and not isinstance(timeZones, FrozenList):
             raise TypeError(f'timeZones argument is malformed: \"{timeZones}\"')
 
-        self.__areAsplodieStatsEnabled: bool = areAsplodieStatsEnabled
-        self.__areBeanStatsEnabled: bool = areBeanStatsEnabled
-        self.__areCheerActionsEnabled: bool = areCheerActionsEnabled
-        self.__arePranksEnabled: bool = arePranksEnabled
-        self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
-        self.__areRedemptionCountersEnabled: bool = areRedemptionCountersEnabled
-        self.__areSoundAlertsEnabled: bool = areSoundAlertsEnabled
-        self.__isAnivContentScanningEnabled: bool = isAnivContentScanningEnabled
-        self.__isAnivMessageCopyTimeoutChatReportingEnabled: bool = isAnivMessageCopyTimeoutChatReportingEnabled
-        self.__isAnivMessageCopyTimeoutEnabled: bool = isAnivMessageCopyTimeoutEnabled
-        self.__isCasualGamePollEnabled: bool = isCasualGamePollEnabled
-        self.__isChannelPredictionChartEnabled: bool = isChannelPredictionChartEnabled
-        self.__isChatBackMessagesEnabled: bool = isChatBackMessagesEnabled
-        self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
+        self.__areAsplodieStatsEnabled: Final[bool] = areAsplodieStatsEnabled
+        self.__areBeanStatsEnabled: Final[bool] = areBeanStatsEnabled
+        self.__areCheerActionsEnabled: Final[bool] = areCheerActionsEnabled
+        self.__arePranksEnabled: Final[bool] = arePranksEnabled
+        self.__areRecurringActionsEnabled: Final[bool] = areRecurringActionsEnabled
+        self.__areRedemptionCountersEnabled: Final[bool] = areRedemptionCountersEnabled
+        self.__areSoundAlertsEnabled: Final[bool] = areSoundAlertsEnabled
+        self.__isAnivContentScanningEnabled: Final[bool] = isAnivContentScanningEnabled
+        self.__isAnivMessageCopyTimeoutChatReportingEnabled: Final[bool] = isAnivMessageCopyTimeoutChatReportingEnabled
+        self.__isAnivMessageCopyTimeoutEnabled: Final[bool] = isAnivMessageCopyTimeoutEnabled
+        self.__isCasualGamePollEnabled: Final[bool] = isCasualGamePollEnabled
+        self.__isChannelPredictionChartEnabled: Final[bool] = isChannelPredictionChartEnabled
+        self.__isChatBackMessagesEnabled: Final[bool] = isChatBackMessagesEnabled
+        self.__isChatLoggingEnabled: Final[bool] = isChatLoggingEnabled
         self.__isChatterInventoryEnabled: Final[bool] = isChatterInventoryEnabled
         self.__isChatterPreferredNameEnabled: Final[bool] = isChatterPreferredNameEnabled
         self.__isChatterPreferredTtsEnabled: Final[bool] = isChatterPreferredTtsEnabled
         self.__isCommandsCommandEnabled: Final[bool] = isCommandsCommandEnabled
-        self.__isCrowdControlEnabled: bool = isCrowdControlEnabled
-        self.__isCutenessEnabled: bool = isCutenessEnabled
-        self.__isDecTalkSongsEnabled: bool = isDecTalkSongsEnabled
+        self.__isCrowdControlEnabled: Final[bool] = isCrowdControlEnabled
+        self.__isCutenessEnabled: Final[bool] = isCutenessEnabled
+        self.__isDecTalkSongsEnabled: Final[bool] = isDecTalkSongsEnabled
         self.__isEccoEnabled: Final[bool] = isEccoEnabled
         self.__isEnabled: Final[bool] = isEnabled
         self.__isGiveCutenessEnabled: Final[bool] = isGiveCutenessEnabled
         self.__isJishoEnabled: Final[bool] = isJishoEnabled
-        self.__isLoremIpsumEnabled: bool = isLoremIpsumEnabled
+        self.__isLoremIpsumEnabled: Final[bool] = isLoremIpsumEnabled
         self.__isMouseCursorEnabled: Final[bool] = isMouseCursorEnabled
         self.__isNotifyOfHypeTrainProgressEnabled: Final[bool] = isNotifyOfHypeTrainProgressEnabled
         self.__isNotifyOfHypeTrainStartEnabled: Final[bool] = isNotifyOfHypeTrainStartEnabled
-        self.__isNotifyOfPollResultsEnabled: bool = isNotifyOfPollResultsEnabled
-        self.__isNotifyOfPollStartEnabled: bool = isNotifyOfPollStartEnabled
-        self.__isNotifyOfPredictionResultsEnabled: bool = isNotifyOfPredictionResultsEnabled
-        self.__isNotifyOfPredictionStartEnabled: bool = isNotifyOfPredictionStartEnabled
-        self.__isNotifyOfRaidEnabled: bool = isNotifyOfRaidEnabled
-        self.__isPkmnEnabled: bool = isPkmnEnabled
-        self.__isPokepediaEnabled: bool = isPokepediaEnabled
-        self.__isRaceEnabled: bool = isRaceEnabled
-        self.__isShinyTriviaEnabled: bool = isShinyTriviaEnabled
+        self.__isNotifyOfPollResultsEnabled: Final[bool] = isNotifyOfPollResultsEnabled
+        self.__isNotifyOfPollStartEnabled: Final[bool] = isNotifyOfPollStartEnabled
+        self.__isNotifyOfPredictionResultsEnabled: Final[bool] = isNotifyOfPredictionResultsEnabled
+        self.__isNotifyOfPredictionStartEnabled: Final[bool] = isNotifyOfPredictionStartEnabled
+        self.__isNotifyOfRaidEnabled: Final[bool] = isNotifyOfRaidEnabled
+        self.__isPkmnEnabled: Final[bool] = isPkmnEnabled
+        self.__isPokepediaEnabled: Final[bool] = isPokepediaEnabled
+        self.__isRaceEnabled: Final[bool] = isRaceEnabled
+        self.__isShinyTriviaEnabled: Final[bool] = isShinyTriviaEnabled
         self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
         self.__isSuperTriviaGameEnabled: bool = isSuperTriviaGameEnabled
@@ -462,18 +458,17 @@ class User(UserInterface):
         self.__speedrunProfile: str | None = speedrunProfile
         self.__triviaGameRewardId: str | None = triviaGameRewardId
         self.__defaultTtsProvider: TtsProvider = defaultTtsProvider
-        self.__whichAnivUser: WhichAnivUser | None = whichAnivUser
-        self.__crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None = crowdControlBoosterPacks
-        self.__cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None = cutenessBoosterPacks
-        self.__decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None = decTalkSongBoosterPacks
-        self.__pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None = pkmnCatchBoosterPacks
-        self.__redemptionCounterBoosterPacks: frozendict[str, RedemptionCounterBoosterPack] | None = redemptionCounterBoosterPacks
-        self.__soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None = soundAlertRedemptions
-        self.__timeoutBoosterPacks: frozendict[str, TimeoutBoosterPack] | None = timeoutBoosterPacks
-        self.__chatBackMessages: FrozenList[str] | None = chatBackMessages
+        self.__crowdControlBoosterPacks: Final[frozendict[str, CrowdControlBoosterPack] | None] = crowdControlBoosterPacks
+        self.__cutenessBoosterPacks: Final[frozendict[str, CutenessBoosterPack] | None] = cutenessBoosterPacks
+        self.__decTalkSongBoosterPacks: Final[frozendict[str, DecTalkSongBoosterPack] | None] = decTalkSongBoosterPacks
+        self.__pkmnCatchBoosterPacks: Final[frozendict[str, PkmnCatchBoosterPack] | None] = pkmnCatchBoosterPacks
+        self.__redemptionCounterBoosterPacks: Final[frozendict[str, RedemptionCounterBoosterPack] | None] = redemptionCounterBoosterPacks
+        self.__soundAlertRedemptions: Final[frozendict[str, SoundAlertRedemption] | None] = soundAlertRedemptions
+        self.__timeoutBoosterPacks: Final[frozendict[str, TimeoutBoosterPack] | None] = timeoutBoosterPacks
+        self.__chatBackMessages: Final[FrozenList[str] | None] = chatBackMessages
         self.__supStreamerBoosterPacks: Final[FrozenList[SupStreamerBoosterPack] | None] = supStreamerBoosterPacks
-        self.__ttsBoosterPacks: FrozenList[TtsBoosterPack] | None = ttsBoosterPacks
-        self.__timeZones: FrozenList[tzinfo] | None = timeZones
+        self.__ttsBoosterPacks: Final[FrozenList[TtsBoosterPack] | None] = ttsBoosterPacks
+        self.__timeZones: Final[FrozenList[tzinfo] | None] = timeZones
 
     @property
     def anivMessageCopyMaxAgeSeconds(self) -> int | None:
@@ -949,7 +944,3 @@ class User(UserInterface):
     @property
     def ttsBoosterPacks(self) -> FrozenList[TtsBoosterPack] | None:
         return self.__ttsBoosterPacks
-
-    @property
-    def whichAnivUser(self) -> WhichAnivUser | None:
-        return self.__whichAnivUser
