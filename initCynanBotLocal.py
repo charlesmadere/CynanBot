@@ -45,6 +45,7 @@ from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
+from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
@@ -2342,6 +2343,13 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     CommandsChatCommand(
         timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    GetGashaponItemChatCommand(
+        gashaponRewardHelper = gashaponRewardHelper,
+        soundPlayerManagerProvider = soundPlayerManagerProvider,
+        timber = timber,
+        timeZoneRepository = timeZoneRepository,
         twitchChatMessenger = twitchChatMessenger,
     ),
     LoremIpsumChatCommand(
