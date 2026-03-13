@@ -589,7 +589,7 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         if event.user.areSoundAlertsEnabled:
             soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
-            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.MEGA_GRENADE))
+            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.SELF_DESTRUCT))
 
         remainingInventoryString = ''
         if event.updatedInventory is not None:

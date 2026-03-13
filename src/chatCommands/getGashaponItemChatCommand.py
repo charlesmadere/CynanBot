@@ -1,9 +1,11 @@
 import locale
 import math
+import re
 from datetime import datetime
-from typing import Final
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..chatterInventory.helpers.gashaponRewardHelperInterface import GashaponRewardHelperInterface
 from ..chatterInventory.models.chatterItemType import ChatterItemType
 from ..chatterInventory.models.gashaponResults.chatterInventoryDisabledGashaponResult import \
@@ -20,12 +22,10 @@ from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import So
 from ..soundPlayerManager.soundAlert import SoundAlert
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
-from ..users.userInterface import UserInterface
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class GetGashaponItemChatCommand(AbsChatCommand):
+class GetGashaponItemChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -34,7 +34,6 @@ class GetGashaponItemChatCommand(AbsChatCommand):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(gashaponRewardHelper, GashaponRewardHelperInterface):
             raise TypeError(f'gashaponRewardHelper argument is malformed: \"{gashaponRewardHelper}\"')
@@ -46,25 +45,35 @@ class GetGashaponItemChatCommand(AbsChatCommand):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__gashaponRewardHelper: Final[GashaponRewardHelperInterface] = gashaponRewardHelper
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface | None] = soundPlayerManagerProvider
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!(?:get\s*)?chest', re.IGNORECASE),
+            re.compile(r'^\s*!(?:get\s*)?gacha(?:pon)?', re.IGNORECASE),
+            re.compile(r'^\s*!(?:get\s*)?gasha(?:pon)?', re.IGNORECASE),
+            re.compile(r'^\s*!(?:get\s*)?loot(?:box)?', re.IGNORECASE),
+        })
 
-        if not user.isChatterInventoryEnabled:
-            return
+    @property
+    def commandName(self) -> str:
+        return 'GetGashaponItemChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isChatterInventoryEnabled:
+            return ChatCommandResult.IGNORED
 
         gashaponResult = await self.__gashaponRewardHelper.checkAndGiveRewardIfAvailable(
-            chatterUserId = ctx.getAuthorId(),
-            twitchChannelId = await ctx.getTwitchChannelId(),
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
         if isinstance(gashaponResult, ChatterInventoryDisabledGashaponResult):
@@ -77,39 +86,40 @@ class GetGashaponItemChatCommand(AbsChatCommand):
 
         elif isinstance(gashaponResult, GashaponRewardedGashaponResult):
             await self.__handleRewardedGashaponResult(
-                ctx = ctx,
+                chatMessage = chatMessage,
                 gashaponResult = gashaponResult,
-                user = user,
             )
 
         elif isinstance(gashaponResult, NotFollowingGashaponResult):
             self.__twitchChatMessenger.send(
                 text = f'⚠ Sorry, you must be following in order to receive a gashapon',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
 
         elif isinstance(gashaponResult, NotReadyGashaponResult):
             await self.__handleNotReadyGashaponResult(
-                ctx = ctx,
+                chatMessage = chatMessage,
                 gashaponResult = gashaponResult,
             )
 
         elif isinstance(gashaponResult, NotSubscribedGashaponResult):
             self.__twitchChatMessenger.send(
                 text = f'⚠ Sorry, you must be subscribed in order to receive a gashapon',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
 
         else:
-            self.__timber.log('GetGashaponItemChatCommand', f'Received unhandled gashapon result when handling command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({gashaponResult=})')
+            # this branch is intentionally empty
+            pass
 
-        self.__timber.log('GetGashaponItemChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({chatMessage=}) ({gashaponResult=})')
+        return ChatCommandResult.HANDLED
 
     async def __handleNotReadyGashaponResult(
         self,
-        ctx: TwitchContext,
+        chatMessage: TwitchChatMessage,
         gashaponResult: NotReadyGashaponResult,
     ):
         now = datetime.now(self.__timeZoneRepository.getDefault())
@@ -134,17 +144,16 @@ class GetGashaponItemChatCommand(AbsChatCommand):
 
         self.__twitchChatMessenger.send(
             text = f'⚠ Sorry, you can\'t receive your gashapon yet! Your next gashapon will be available in {availableWhen}',
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            replyMessageId = await ctx.getMessageId(),
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )
 
     async def __handleRewardedGashaponResult(
         self,
-        ctx: TwitchContext,
+        chatMessage: TwitchChatMessage,
         gashaponResult: GashaponRewardedGashaponResult,
-        user: UserInterface,
     ):
-        if user.areSoundAlertsEnabled and self.__soundPlayerManagerProvider is not None:
+        if chatMessage.twitchUser.areSoundAlertsEnabled and self.__soundPlayerManagerProvider is not None:
             soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
             await soundPlayerManager.playSoundAlert(SoundAlert.GASHAPON)
 
@@ -157,6 +166,6 @@ class GetGashaponItemChatCommand(AbsChatCommand):
 
         self.__twitchChatMessenger.send(
             text = f'{gashaponResult.hypeEmote} Congrats, gashapon get! {suffixString}',
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            replyMessageId = await ctx.getMessageId(),
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )

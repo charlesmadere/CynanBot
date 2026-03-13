@@ -49,6 +49,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case 'prediction': return SoundAlert.PREDICTION
             case 'raid': return SoundAlert.RAID
             case 'random_from_directory': return SoundAlert.RANDOM_FROM_DIRECTORY
+            case 'self_destruct': return SoundAlert.SELF_DESTRUCT
             case 'splat': return SoundAlert.SPLAT
             case 'subscribe': return SoundAlert.SUBSCRIBE
             case 'tnt': return SoundAlert.AIR_STRIKE
@@ -106,6 +107,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case SoundAlert.PREDICTION: return 'prediction'
             case SoundAlert.RAID: return 'raid'
             case SoundAlert.RANDOM_FROM_DIRECTORY: return 'random_from_directory'
+            case SoundAlert.SELF_DESTRUCT: return 'self_destruct'
             case SoundAlert.SPLAT: return 'splat'
             case SoundAlert.SUBSCRIBE: return 'subscribe'
             case SoundAlert.VORE: return 'vore'

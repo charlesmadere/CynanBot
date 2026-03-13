@@ -250,6 +250,13 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     fallback = 'Raid Alert.mp3',
                 )
 
+            case SoundAlert.SELF_DESTRUCT:
+                return utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'selfDestructFilePath',
+                    fallback = 'Self Destruct.mp3',
+                )
+
             case SoundAlert.SPLAT:
                 return utils.getStrFromDict(
                     d = jsonContents,

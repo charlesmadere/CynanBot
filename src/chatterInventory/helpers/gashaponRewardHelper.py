@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Final
 
 from .gashaponRewardHelperInterface import GashaponRewardHelperInterface
@@ -109,7 +109,7 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
         )
 
         if rewardHistory is not None:
-            now = datetime.now(self.__timeZoneRepository.getDefault())
+            now = self.__timeZoneRepository.getNow()
             daysBetweenGashaponRewards = await self.__chatterInventorySettings.getDaysBetweenGashaponRewards()
             nextGashaponAvailability = rewardHistory.mostRecentReward + timedelta(days = daysBetweenGashaponRewards)
 
