@@ -145,6 +145,10 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.parseSoundAlert('random_from_directory')
         assert result is SoundAlert.RANDOM_FROM_DIRECTORY
 
+    def test_parseSoundAlert_withSelfDestructString(self):
+        result = self.jsonMapper.parseSoundAlert('self_destruct')
+        assert result is SoundAlert.SELF_DESTRUCT
+
     def test_parseSoundAlert_withSplatString(self):
         result = self.jsonMapper.parseSoundAlert('splat')
         assert result is SoundAlert.SPLAT
@@ -216,6 +220,14 @@ class TestSoundAlertJsonMapper:
     def test_requireSoundAlert_withRaid(self):
         result = self.jsonMapper.requireSoundAlert('raid')
         assert result is SoundAlert.RAID
+
+    def test_requireSoundAlert_withSelfDestruct(self):
+        result = self.jsonMapper.requireSoundAlert('self_destruct')
+        assert result is SoundAlert.SELF_DESTRUCT
+
+    def test_requireSoundAlert_withSplat(self):
+        result = self.jsonMapper.requireSoundAlert('splat')
+        assert result is SoundAlert.SPLAT
 
     def test_requireSoundAlert_withSubscribe(self):
         result = self.jsonMapper.requireSoundAlert('subscribe')
@@ -369,6 +381,10 @@ class TestSoundAlertJsonMapper:
     def test_serializeSoundAlert_withRandomFromDirectory(self):
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.RANDOM_FROM_DIRECTORY)
         assert result == 'random_from_directory'
+
+    def test_serializeSoundAlert_withSelfDestruct(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.SELF_DESTRUCT)
+        assert result == 'self_destruct'
 
     def test_serializeSoundAlert_withSplat(self):
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.SPLAT)

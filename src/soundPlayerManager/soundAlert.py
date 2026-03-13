@@ -35,6 +35,7 @@ class SoundAlert(Enum):
     PREDICTION = auto()
     RAID = auto()
     RANDOM_FROM_DIRECTORY = auto()
+    SELF_DESTRUCT = auto()
     SPLAT = auto()
     SUBSCRIBE = auto()
     VORE = auto()
