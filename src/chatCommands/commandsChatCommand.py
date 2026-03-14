@@ -29,7 +29,7 @@ class CommandsChatCommand(AbsChatCommand2):
         self.__commandsUrl: Final[str] = commandsUrl
 
         self.__commandPatterns: Final[frozenset[Pattern]] = frozenset({
-            re.compile(r'^\s*!commands?', re.IGNORECASE),
+            re.compile(r'^\s*!commands?\b', re.IGNORECASE),
         })
 
     @property

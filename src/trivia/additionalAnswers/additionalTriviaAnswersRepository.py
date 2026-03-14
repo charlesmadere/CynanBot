@@ -1,5 +1,5 @@
 import traceback
-from typing import Any
+from typing import Any, Final
 
 from frozenlist import FrozenList
 
@@ -33,7 +33,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         triviaSettings: TriviaSettingsInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface
+        userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -48,12 +48,12 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timber: TimberInterface = timber
-        self.__triviaSettings: TriviaSettingsInterface = triviaSettings
-        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
+        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
         self.__isDatabaseReady: bool = False
 
@@ -80,10 +80,10 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         maxAdditionalTriviaAnswerLength = await self.__triviaSettings.getMaxAdditionalTriviaAnswerLength()
 
         if additionalAnswerLength > maxAdditionalTriviaAnswerLength:
-            raise AdditionalTriviaAnswerIsMalformedException(f'Attempted to add additional answer \"{additionalAnswer}\" for {triviaSource.toStr()}:{triviaId}, but it is too long (len is {additionalAnswerLength}, max len is {maxAdditionalTriviaAnswerLength})')
+            raise AdditionalTriviaAnswerIsMalformedException(f'Attempted to add additional answer, but it is too long (len is {additionalAnswerLength}, max len is {maxAdditionalTriviaAnswerLength}) ({additionalAnswer=}) ({triviaSource=}) ({triviaId=}) ({triviaQuestionType=})')
         elif triviaQuestionType is not TriviaQuestionType.QUESTION_ANSWER:
             raise AdditionalTriviaAnswerIsUnsupportedTriviaTypeException(
-                message = f'Attempted to add additional answer \"{additionalAnswer}\" for {triviaSource.toStr()}:{triviaId}, but it is an unsupported type ({triviaQuestionType=})',
+                message = f'Attempted to add additional answer, but it is an unsupported type ({additionalAnswer=}) ({triviaSource=}) ({triviaId=}) ({triviaQuestionType=})',
                 triviaQuestionType = triviaQuestionType,
                 triviaSource = triviaSource,
             )
@@ -102,10 +102,10 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             for existingAdditionalAnswer in reference.answerStrings:
                 if existingAdditionalAnswer.casefold() == additionalAnswer.casefold():
                     raise AdditionalTriviaAnswerAlreadyExistsException(
-                        message = f'Attempted to add additional answer \"{additionalAnswer}\" for {triviaSource.toStr()}:{triviaId}, but it already exists ({triviaQuestionType=}) ({reference=})',
+                        message = f'Attempted to add additional answer, but it already exists ({additionalAnswer=}) ({triviaSource=}) ({triviaId=}) ({triviaQuestionType=}) ({reference=})',
                         triviaId = triviaId,
                         triviaQuestionType = triviaQuestionType,
-                        triviaSource = triviaSource
+                        triviaSource = triviaSource,
                     )
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
@@ -152,13 +152,13 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             self.__timber.log('AdditionalTriviaAnswersRepository', f'Encountered a database operational error when trying to insert additional trivia answer ({additionalAnswer=}) ({triviaId=}) ({triviaSource=}) ({triviaQuestionType=}): {exception}', exception, traceback.format_exc())
 
             raise AdditionalTriviaAnswerAlreadyExistsException(
-                message = f'Attempted to add additional answer for {triviaSource.toStr()}:{triviaId}, but it already exists ({additionalAnswer=}) ({triviaQuestionType=}) ({additionalAnswersList=})',
+                message = f'Attempted to add additional answer, but it already exists ({triviaSource=}) ({triviaId=}) ({additionalAnswer=}) ({triviaQuestionType=}) ({additionalAnswersList=})',
                 triviaId = triviaId,
                 triviaQuestionType = triviaQuestionType,
                 triviaSource = triviaSource,
             )
 
-        self.__timber.log('AdditionalTriviaAnswersRepository', f'Added additional answer for {triviaSource.toStr()}:{triviaId} ({additionalAnswer=}) ({triviaQuestionType=}) ({additionalAnswersList=})')
+        self.__timber.log('AdditionalTriviaAnswersRepository', f'Added additional answer ({triviaSource=}) ({triviaId=}) ({additionalAnswer=}) ({triviaQuestionType=}) ({additionalAnswersList=})')
 
         frozenAnswers: FrozenList[AdditionalTriviaAnswer] = FrozenList(additionalAnswersList)
         frozenAnswers.freeze()
@@ -189,7 +189,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         reference = await self.getAdditionalTriviaAnswers(
             triviaId = triviaId,
             triviaQuestionType = triviaQuestionType,
-            triviaSource = triviaSource
+            triviaSource = triviaSource,
         )
 
         if reference is None:
@@ -218,7 +218,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         )
 
         if reference is None:
-            self.__timber.log('AdditionalTriviaAnswersRepository', f'Attempted to delete additional answers for {triviaSource.toStr()}:{triviaId}, but there were none ({reference=})')
+            self.__timber.log('AdditionalTriviaAnswersRepository', f'Attempted to delete additional answers, but there were none ({reference=}) ({triviaSource=}) ({triviaId=})')
             return None
 
         connection = await self.__getDatabaseConnection()
@@ -231,7 +231,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         )
 
         await connection.close()
-        self.__timber.log('AdditionalTriviaAnswersRepository', f'Deleted additional answers for {triviaSource.toStr()}:{triviaId} ({reference=})')
+        self.__timber.log('AdditionalTriviaAnswersRepository', f'Deleted additional answers ({reference=}) ({triviaSource=}) ({triviaId=})')
 
         return reference
 
@@ -265,7 +265,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                 triviaId, triviaSource.toStr(), triviaQuestionType.toStr(),
             )
         except DatabaseOperationalError as e:
-            self.__timber.log('AdditionalTriviaAnswersRepository', f'Encountered a database operational error when trying to retrieve additional trivia answers ({triviaId=}) ({triviaSource=}) ({triviaQuestionType=}): {e}', e, traceback.format_exc())
+            self.__timber.log('AdditionalTriviaAnswersRepository', f'Encountered a database operational error when trying to retrieve additional trivia answers ({triviaId=}) ({triviaSource=}) ({triviaQuestionType=})', e, traceback.format_exc())
 
         await connection.close()
 
@@ -316,7 +316,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                             userid text NOT NULL,
                             PRIMARY KEY (additionalanswer, triviaid, triviasource, triviatype)
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -330,7 +330,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                             userid TEXT NOT NULL,
                             PRIMARY KEY (additionalanswer, triviaid, triviasource, triviatype)
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:

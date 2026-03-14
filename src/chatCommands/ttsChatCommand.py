@@ -46,7 +46,7 @@ class TtsChatCommand(AbsChatCommand2):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!tts', re.IGNORECASE),
+            re.compile(r'^\s*!tts\b', re.IGNORECASE),
         })
 
         self.__ttsProviderRegEx: Final[Pattern] = re.compile(r'^--(\w+)$', re.IGNORECASE)
@@ -170,5 +170,5 @@ class TtsChatCommand(AbsChatCommand2):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Handled ({chatMessage=}) ({ttsProvider=})')
         return ChatCommandResult.HANDLED

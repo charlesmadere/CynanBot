@@ -2,6 +2,7 @@ import re
 from typing import Collection, Final, Pattern
 
 from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
@@ -29,7 +30,7 @@ class LoremIpsumChatCommand(AbsChatCommand2):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!lorem', re.IGNORECASE),
+            re.compile(r'^\s*!lorem\b', re.IGNORECASE),
         })
 
     @property
@@ -40,13 +41,13 @@ class LoremIpsumChatCommand(AbsChatCommand2):
     def commandPatterns(self) -> Collection[Pattern]:
         return self.__commandPatterns
 
-    async def handleChatCommand(self, chatMessage: TwitchChatMessage):
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
         if not chatMessage.twitchUser.isLoremIpsumEnabled:
-            return
+            return ChatCommandResult.IGNORED
 
         administrator = await self.__administratorProvider.getAdministratorUserId()
         if chatMessage.twitchChannelId != chatMessage.chatterUserId and administrator != chatMessage.chatterUserId:
-            return
+            return ChatCommandResult.IGNORED
 
         loremIpsumText: str
         if utils.randomBool():
@@ -59,4 +60,5 @@ class LoremIpsumChatCommand(AbsChatCommand2):
             twitchChannelId = chatMessage.twitchChannelId,
         )
 
-        self.__timber.log('LoremIpsumCommand', f'Handled ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Handled ({chatMessage=})')
+        return ChatCommandResult.HANDLED

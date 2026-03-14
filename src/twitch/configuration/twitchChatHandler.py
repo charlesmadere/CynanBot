@@ -119,8 +119,8 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
         if utils.isValidStr(chatMessage.sourceMessageId):
             # This is a chat message that originated from a shared chat/stream. As such, let's not
-            # even bother to process it or work with it at all. In the future, we may have a reason
-            # to change this. But for now, it's better to just ignore these messages completely.
+            # even bother to process it or work with it at all. In the future, we may have a reason to
+            # change this. But for now, it's better/easier to just ignore these messages completely.
             return
 
         if chatMessage.twitchUser.isChatLoggingEnabled:
