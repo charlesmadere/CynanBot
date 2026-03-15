@@ -100,7 +100,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand2):
         if not utils.isValidStr(normalizedEmote):
             self.__timber.log(self.commandName, f'Attempted to handle command, but an invalid emote argument was given ({emote=}) ({normalizedEmote=}) ({chatMessage=}) ({splits=})')
             self.__twitchChatMessenger.send(
-                text = f'⚠ Unable to add additional trivia answer as an invalid emote argument was given. Example: !addtriviaanswer {self.__triviaEmoteGenerator.getRandomEmote()} Theodore Roosevelt',
+                text = f'⚠ Unable to add additional trivia answer as an invalid emote argument was given. Example: !addtriviaanswer {self.__triviaEmoteGenerator.getRandomEmote()} Benjamin Franklin',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
@@ -113,7 +113,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand2):
         )
 
         if reference is None:
-            self.__timber.log(self.commandName, f'Attempted to handle command, but no trivia question reference was found with emote ({emote=}) ({normalizedEmote=}) ({reference=}) ({chatMessage=}) ({splits=})')
+            self.__timber.log(self.commandName, f'Attempted to handle command, but no trivia question reference was found ({emote=}) ({normalizedEmote=}) ({reference=}) ({chatMessage=}) ({splits=})')
             self.__twitchChatMessenger.send(
                 text = f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")',
                 twitchChannelId = chatMessage.twitchChannelId,

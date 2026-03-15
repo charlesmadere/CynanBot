@@ -1,18 +1,19 @@
 import locale
+import re
 from dataclasses import dataclass
-from typing import Final
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..timber.timberInterface import TimberInterface
 from ..twitch.activeChatters.activeChatter import ActiveChatter
 from ..twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class VulnerableChattersChatCommand(AbsChatCommand):
+class VulnerableChattersChatCommand(AbsChatCommand2):
 
     @dataclass(frozen = True, slots = True)
     class VulnerableChattersData:
@@ -33,7 +34,6 @@ class VulnerableChattersChatCommand(AbsChatCommand):
         timber: TimberInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -41,14 +41,24 @@ class VulnerableChattersChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
+
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!vcs?\b', re.IGNORECASE),
+            re.compile(r'^\s*!vulnerablechatters?\b', re.IGNORECASE),
+        })
+
+    @property
+    def commandName(self) -> str:
+        return 'VulnerableChattersChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
 
     async def __getVulnerableChattersData(self, twitchChannelId: str) -> VulnerableChattersData:
         activeChatters = await self.__activeChattersRepository.get(
@@ -68,22 +78,21 @@ class VulnerableChattersChatCommand(AbsChatCommand):
             totalVulnerableChatters = len(vulnerableChatters),
         )
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-
-        if not user.isVulnerableChattersEnabled:
-            return
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isVulnerableChattersEnabled:
+            return ChatCommandResult.IGNORED
 
         chattersData = await self.__getVulnerableChattersData(
-            twitchChannelId = await ctx.getTwitchChannelId(),
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
         message = f'ⓘ There are {chattersData.totalVulnerableChattersStr} vulnerable chatter(s) and {chattersData.totalActiveChattersStr} active chatter(s)'
 
         self.__twitchChatMessenger.send(
             text = message,
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            replyMessageId = await ctx.getMessageId(),
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log('VulnerableChattersChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({chattersData=})')
+        return ChatCommandResult.HANDLED
