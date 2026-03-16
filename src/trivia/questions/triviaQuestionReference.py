@@ -10,7 +10,6 @@ class TriviaQuestionReference:
     dateTime: datetime
     emote: str
     triviaId: str
-    twitchChannel: str
     twitchChannelId: str
     triviaSource: TriviaSource
     triviaType: TriviaQuestionType

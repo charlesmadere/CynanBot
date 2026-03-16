@@ -91,7 +91,6 @@ class UnbanTriviaQuestionChatCommand(AbsChatCommand):
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
             emote = normalizedEmote,
-            twitchChannel = user.handle,
             twitchChannelId = await ctx.getTwitchChannelId(),
         )
 

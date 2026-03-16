@@ -143,7 +143,6 @@ class TriviaInfoChatCommand(AbsChatCommand2):
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
             emote = normalizedEmote,
-            twitchChannel = chatMessage.twitchChannel,
             twitchChannelId = chatMessage.twitchChannelId,
         )
 

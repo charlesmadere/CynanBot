@@ -11,14 +11,14 @@ class TriviaQuestionOccurrencesRepositoryInterface(ABC):
     async def getOccurrences(
         self,
         triviaId: str,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> TriviaQuestionOccurrences:
         pass
 
     @abstractmethod
     async def getOccurrencesFromQuestion(
         self,
-        triviaQuestion: AbsTriviaQuestion
+        triviaQuestion: AbsTriviaQuestion,
     ) -> TriviaQuestionOccurrences:
         pass
 
@@ -26,13 +26,13 @@ class TriviaQuestionOccurrencesRepositoryInterface(ABC):
     async def incrementOccurrences(
         self,
         triviaId: str,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> TriviaQuestionOccurrences:
         pass
 
     @abstractmethod
     async def incrementOccurrencesFromQuestion(
         self,
-        triviaQuestion: AbsTriviaQuestion
+        triviaQuestion: AbsTriviaQuestion,
     ) -> TriviaQuestionOccurrences:
         pass
