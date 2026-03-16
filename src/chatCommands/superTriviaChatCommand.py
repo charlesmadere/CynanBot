@@ -1,7 +1,9 @@
+import re
 import traceback
-from typing import Final
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
@@ -11,11 +13,10 @@ from ..trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class SuperTriviaChatCommand(AbsChatCommand):
+class SuperTriviaChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -26,7 +27,6 @@ class SuperTriviaChatCommand(AbsChatCommand):
         triviaSettings: TriviaSettingsInterface,
         triviaUtils: TriviaUtilsInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -42,8 +42,6 @@ class SuperTriviaChatCommand(AbsChatCommand):
             raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
         self.__timber: Final[TimberInterface] = timber
@@ -52,77 +50,92 @@ class SuperTriviaChatCommand(AbsChatCommand):
         self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
         self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!supertrivia\b', re.IGNORECASE),
+            re.compile(r'^\s*!supertrivia(?:lotr)?\b', re.IGNORECASE),
+        })
+
+        self.__lotrTriviaSourcePattern: Final[Pattern] = re.compile(r'^\s*!supertrivialotr\b', re.IGNORECASE)
+
+    @property
+    def commandName(self) -> str:
+        return 'SuperTriviaChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isTriviaGameEnabled or not chatMessage.twitchUser.isSuperTriviaGameEnabled:
+            return ChatCommandResult.IGNORED
 
         # For the time being, this command is intentionally not checking for mod status, as it has
         # been determined that super trivia game controllers shouldn't necessarily have to be mod.
+
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
         if not generalSettings.isTriviaGameEnabled() or not generalSettings.isSuperTriviaGameEnabled():
-            return
-        elif not user.isTriviaGameEnabled or not user.isSuperTriviaGameEnabled:
-            return
+            return ChatCommandResult.IGNORED
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            userId = ctx.getAuthorId(),
+            twitchChannelId = chatMessage.twitchChannelId,
+            userId = chatMessage.chatterUserId,
         ):
-            return
+            return ChatCommandResult.IGNORED
 
         numberOfGames = 1
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        splits = utils.getCleanedSplits(chatMessage.text)
 
         if len(splits) >= 2:
-            numberOfGamesStr = splits[1]
+            numberOfGamesStr: str | None = splits[1]
 
             try:
                 numberOfGames = int(numberOfGamesStr)
             except Exception as e:
-                self.__timber.log('SuperTriviaChatCommand', f'Unable to convert the numberOfGamesStr argument into an int (given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}) ({splits=}) ({numberOfGamesStr=})', e, traceback.format_exc())
+                self.__timber.log('SuperTriviaChatCommand', f'Unable to convert the numberOfGamesStr argument into an int ({chatMessage=}) ({splits=}) ({numberOfGamesStr=})', e, traceback.format_exc())
                 self.__twitchChatMessenger.send(
                     text = f'⚠ Error converting the given count into an int. Example: !supertrivia 2',
-                    twitchChannelId = await ctx.getTwitchChannelId(),
-                    replyMessageId = await ctx.getMessageId(),
+                    twitchChannelId = chatMessage.twitchChannelId,
+                    replyMessageId = chatMessage.twitchChatMessageId,
                 )
-                return
+                return ChatCommandResult.HANDLED
 
             maxNumberOfGames = await self.__triviaSettings.getMaxSuperTriviaGameQueueSize()
 
             if numberOfGames < 1 or numberOfGames > maxNumberOfGames:
-                self.__timber.log('SuperTriviaChatCommand', f'The numberOfGames argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} is out of bounds ({numberOfGames=}) ({numberOfGamesStr=})')
+                self.__timber.log('SuperTriviaChatCommand', f'The numberOfGames argument is out of bounds ({chatMessage=}) ({splits=}) ({numberOfGamesStr=}) ({numberOfGames=})')
                 self.__twitchChatMessenger.send(
                     text = f'⚠ The given count is an unexpected number, please try again. Example: !supertrivia 2',
-                    twitchChannelId = await ctx.getTwitchChannelId(),
-                    replyMessageId = await ctx.getMessageId(),
+                    twitchChannelId = chatMessage.twitchChannelId,
+                    replyMessageId = chatMessage.twitchChatMessageId,
                 )
-                return
+                return ChatCommandResult.HANDLED
 
         triviaSource: TriviaSource | None = None
 
-        match splits[0]:
-            case '!supertrivialotr':
-                triviaSource = TriviaSource.LORD_OF_THE_RINGS
+        if self.__lotrTriviaSourcePattern.match(splits[0]):
+            triviaSource = TriviaSource.LORD_OF_THE_RINGS
 
-        if user.arePranksEnabled and await self.__stopForPrank(
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            userId = ctx.getAuthorId(),
+        if chatMessage.twitchUser.arePranksEnabled and await self.__stopForPrank(
+            twitchChannelId = chatMessage.twitchChannelId,
+            userId = chatMessage.chatterUserId,
             triviaSource = triviaSource,
         ):
-            return
+            return ChatCommandResult.HANDLED
 
         action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
-            twitchChannel = user.handle,
-            twitchChannelId = await ctx.getTwitchChannelId(),
+            twitchChannel = chatMessage.twitchChannel,
+            twitchChannelId = chatMessage.twitchChannelId,
             numberOfGames = numberOfGames,
             requiredTriviaSource = triviaSource,
         )
 
         if action is None:
-            return
+            return ChatCommandResult.IGNORED
 
         self.__triviaGameMachine.submitAction(action)
-        self.__timber.log('SuperTriviaChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({numberOfGames=}) ({triviaSource=})')
+        self.__timber.log(self.commandName, f'Handled ({chatMessage=}) ({numberOfGames=}) ({triviaSource=})')
+        return ChatCommandResult.HANDLED
 
     async def __stopForPrank(
         self,
@@ -130,8 +143,5 @@ class SuperTriviaChatCommand(AbsChatCommand):
         userId: str,
         triviaSource: TriviaSource | None,
     ) -> bool:
-        if triviaSource is not TriviaSource.LORD_OF_THE_RINGS:
-            return False
-
         # TODO prank code goes here
         return False

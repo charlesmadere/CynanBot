@@ -56,13 +56,22 @@ from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAn
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
+from src.chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatCommand
+from src.chatCommands.answerChatCommand import AnswerChatCommand
+from src.chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
+from src.chatCommands.cutenessChatCommand import CutenessChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
+from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
+from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
+from src.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
+from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
+from src.chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
@@ -2233,9 +2242,10 @@ triviaScraper: TriviaScraperInterface = TriviaScraper(
     triviaSettings = triviaSettings,
 )
 
-triviaQuestionOccurrencesRepository: TriviaQuestionOccurrencesRepositoryInterface = TriviaQuestionOccurrencesRepository(
+triviaQuestionOccurrencesRepository: Final[TriviaQuestionOccurrencesRepositoryInterface] = TriviaQuestionOccurrencesRepository(
     backingDatabase = backingDatabase,
-    timber = timber
+    timber = timber,
+    triviaSourceParser = triviaSourceParser,
 )
 
 triviaRepository: TriviaRepositoryInterface = TriviaRepository(
@@ -3274,9 +3284,41 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
 )
 
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
+    AddTriviaAnswerChatCommand(
+        additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaHistoryRepository = triviaHistoryRepository,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    AnswerChatCommand(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaGameMachine = triviaGameMachine,
+        triviaIdGenerator = triviaIdGenerator,
+    ),
+    BanTriviaQuestionChatCommand(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        timeZoneRepository = timeZoneRepository,
+        triviaBanHelper = triviaBanHelper,
+        triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaHistoryRepository = triviaHistoryRepository,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     CommandsChatCommand(
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    CutenessChatCommand(
+        cutenessPresenter = cutenessPresenter,
+        cutenessRepository = cutenessRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        userIdsRepository = userIdsRepository,
     ),
     EccoChatCommand(
         eccoHelper = eccoHelper,
@@ -3290,12 +3332,46 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timeZoneRepository = timeZoneRepository,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    GiveCutenessChatCommand(
+        cutenessRepository = cutenessRepository,
+        timber = timber,
+        triviaUtils = triviaUtils,
+        twitchHandleProvider = authRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        userIdsRepository = userIdsRepository,
+    ),
     LoremIpsumChatCommand(
         administratorProvider = administratorProvider,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    SuperAnswerChatCommand(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaGameMachine = triviaGameMachine,
+        triviaIdGenerator = triviaIdGenerator,
+    ),
+    SuperTriviaChatCommand(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaGameBuilder = triviaGameBuilder,
+        triviaGameMachine = triviaGameMachine,
+        triviaSettings = triviaSettings,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     testMouseCursorChatCommand,
+    TriviaInfoChatCommand(
+        additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        timeZoneRepository = timeZoneRepository,
+        triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaHistoryRepository = triviaHistoryRepository,
+        triviaQuestionOccurrencesRepository = triviaQuestionOccurrencesRepository,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     TtsChatCommand(
         administratorProvider = administratorProvider,
         streamAlertsManager = streamAlertsManager,
@@ -3308,6 +3384,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
         useChatterItemHelper = useChatterItemHelper,
+    ),
+    VulnerableChattersChatCommand(
+        activeChattersRepository = activeChattersRepository,
+        timber = timber,
+        timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+        twitchChatMessenger = twitchChatMessenger,
     ),
 })
 

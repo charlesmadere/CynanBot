@@ -46,9 +46,17 @@ from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
+from src.chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatCommand
+from src.chatCommands.answerChatCommand import AnswerChatCommand
+from src.chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
+from src.chatCommands.cutenessChatCommand import CutenessChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
+from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
+from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
+from src.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
+from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
@@ -1390,9 +1398,10 @@ triviaScraper: TriviaScraperInterface = TriviaScraper(
     triviaSettings = triviaSettings,
 )
 
-triviaQuestionOccurrencesRepository: TriviaQuestionOccurrencesRepositoryInterface = TriviaQuestionOccurrencesRepository(
+triviaQuestionOccurrencesRepository: Final[TriviaQuestionOccurrencesRepositoryInterface] = TriviaQuestionOccurrencesRepository(
     backingDatabase = backingDatabase,
     timber = timber,
+    triviaSourceParser = triviaSourceParser,
 )
 
 triviaRepository: TriviaRepositoryInterface = TriviaRepository(
@@ -2045,18 +2054,84 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
 )
 
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
+    AddTriviaAnswerChatCommand(
+        additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaHistoryRepository = triviaHistoryRepository,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    AnswerChatCommand(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaGameMachine = triviaGameMachine,
+        triviaIdGenerator = triviaIdGenerator,
+    ),
+    BanTriviaQuestionChatCommand(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        timeZoneRepository = timeZoneRepository,
+        triviaBanHelper = triviaBanHelper,
+        triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaHistoryRepository = triviaHistoryRepository,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     CommandsChatCommand(
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    CutenessChatCommand(
+        cutenessPresenter = cutenessPresenter,
+        cutenessRepository = cutenessRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        userIdsRepository = userIdsRepository,
     ),
     EccoChatCommand(
         eccoHelper = eccoHelper,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    GiveCutenessChatCommand(
+        cutenessRepository = cutenessRepository,
+        timber = timber,
+        triviaUtils = triviaUtils,
+        twitchHandleProvider = authRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        userIdsRepository = userIdsRepository,
+    ),
     LoremIpsumChatCommand(
         administratorProvider = administratorProvider,
         timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    SuperAnswerChatCommand(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaGameMachine = triviaGameMachine,
+        triviaIdGenerator = triviaIdGenerator,
+    ),
+    SuperTriviaChatCommand(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaGameBuilder = triviaGameBuilder,
+        triviaGameMachine = triviaGameMachine,
+        triviaSettings = triviaSettings,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    TriviaInfoChatCommand(
+        additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        timeZoneRepository = timeZoneRepository,
+        triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaHistoryRepository = triviaHistoryRepository,
+        triviaQuestionOccurrencesRepository = triviaQuestionOccurrencesRepository,
+        triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
 })

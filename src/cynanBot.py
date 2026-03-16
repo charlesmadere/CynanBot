@@ -30,14 +30,11 @@ from .chatCommands.addRecurringSuperTriviaActionChatCommand import AddRecurringS
 from .chatCommands.addRecurringWeatherActionChatCommand import AddRecurringWeatherActionChatCommand
 from .chatCommands.addRecurringWordOfTheDayActionChatCommand import AddRecurringWordOfTheDayActionChatCommand
 from .chatCommands.addSoundAlertCheerActionCommand import AddSoundAlertCheerActionCommand
-from .chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatCommand
 from .chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
 from .chatCommands.addUserChatCommand import AddUserChatCommand
 from .chatCommands.addVoicemailCheerActionCommand import AddVoicemailCheerActionCommand
 from .chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
-from .chatCommands.answerChatCommand import AnswerChatCommand
 from .chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
-from .chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
 from .chatCommands.beanInstructionsChatCommand import BeanInstructionsChatCommand
 from .chatCommands.beanStatsChatCommand import BeanStatsChatCommand
 from .chatCommands.blueSkyChatCommand import BlueSkyChatCommand
@@ -47,7 +44,6 @@ from .chatCommands.clearSuperTriviaQueueChatCommand import ClearSuperTriviaQueue
 from .chatCommands.confirmChatCommand import ConfirmChatCommand
 from .chatCommands.crowdControlChatCommand import CrowdControlChatCommand
 from .chatCommands.cutenessChampionsChatCommand import CutenessChampionsChatCommand
-from .chatCommands.cutenessChatCommand import CutenessChatCommand
 from .chatCommands.cutenessHistoryChatCommand import CutenessHistoryChatCommand
 from .chatCommands.cynanSourceChatCommand import CynanSourceChatCommand
 from .chatCommands.deleteCheerActionChatCommand import DeleteCheerActionChatCommand
@@ -65,7 +61,6 @@ from .chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChat
 from .chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from .chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from .chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
-from .chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from .chatCommands.jishoChatCommand import JishoChatCommand
 from .chatCommands.myCutenessChatCommand import MyCutenessChatCommand
 from .chatCommands.pkMonChatCommand import PkMonChatCommand
@@ -88,18 +83,14 @@ from .chatCommands.setFuntoonTokenChatCommand import SetFuntoonTokenChatCommand
 from .chatCommands.setTwitchCodeChatCommand import SetTwitchCodeChatCommand
 from .chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from .chatCommands.stubChatCommand import StubChatCommand
-from .chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
-from .chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
 from .chatCommands.swQuoteChatCommand import SwQuoteChatCommand
 from .chatCommands.testCheerChatCommand import TestCheerChatCommand
 from .chatCommands.timeChatCommand import TimeChatCommand
 from .chatCommands.translateChatCommand import TranslateChatCommand
-from .chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from .chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from .chatCommands.twitchUserInfoChatCommand import TwitchUserInfoChatCommand
 from .chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
 from .chatCommands.voicemailsChatCommand import VoicemailsChatCommand
-from .chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
 from .chatCommands.weatherChatCommand import WeatherChatCommand
 from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -921,28 +912,19 @@ class CynanBot(
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or cutenessUtils is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameControllersRepository is None or triviaGameGlobalControllersRepository is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaIdGenerator is None or triviaQuestionOccurrencesRepository is None or triviaScoreRepository is None or triviaSettings is None or triviaUtils is None:
             self.__addGlobalTriviaControllerCommand: AbsChatCommand = StubChatCommand()
-            self.__addTriviaAnswerCommand: AbsChatCommand = StubChatCommand()
             self.__addTriviaControllerCommand: AbsChatCommand = StubChatCommand()
-            self.__answerCommand: AbsChatCommand = StubChatCommand()
-            self.__banTriviaQuestionCommand: AbsChatCommand = StubChatCommand()
             self.__clearSuperTriviaQueueCommand: AbsChatCommand = StubChatCommand()
             self.__deleteTriviaAnswersCommand: AbsChatCommand = StubChatCommand()
             self.__getGlobalTriviaControllersCommand: AbsChatCommand = StubChatCommand()
             self.__getTriviaAnswersCommand: AbsChatCommand = StubChatCommand()
             self.__getTriviaControllersCommand: AbsChatCommand = StubChatCommand()
-            self.__removeTriviaControllerChatCommand: AbsChatCommand = StubChatCommand()
-            self.__superAnswerCommand: AbsChatCommand = StubChatCommand()
-            self.__superTriviaCommand: AbsChatCommand = StubChatCommand()
-            self.__triviaInfoCommand: AbsChatCommand = StubChatCommand()
-            self.__triviaScoreCommand: AbsChatCommand = StubChatCommand()
             self.__removeGlobalTriviaControllerChatCommand: AbsChatCommand = StubChatCommand()
+            self.__removeTriviaControllerChatCommand: AbsChatCommand = StubChatCommand()
+            self.__triviaScoreCommand: AbsChatCommand = StubChatCommand()
             self.__unbanTriviaQuestionChatCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__addGlobalTriviaControllerCommand: AbsChatCommand = AddGlobalTriviaControllerChatCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
             self.__addTriviaControllerCommand: AbsChatCommand = AddTriviaControllerChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
-            self.__addTriviaAnswerCommand: AbsChatCommand = AddTriviaAnswerChatCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchChatMessenger, usersRepository)
-            self.__answerCommand: AbsChatCommand = AnswerChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
-            self.__banTriviaQuestionCommand: AbsChatCommand = BanTriviaQuestionChatCommand(generalSettingsRepository, timber, timeZoneRepository, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchChatMessenger, usersRepository)
             self.__clearSuperTriviaQueueCommand: AbsChatCommand = ClearSuperTriviaQueueChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, triviaUtils, usersRepository)
             self.__deleteTriviaAnswersCommand: AbsChatCommand = DeleteTriviaAnswersChatCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchChatMessenger, usersRepository)
             self.__getGlobalTriviaControllersCommand: AbsChatCommand = GetGlobalTriviaControllersChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameGlobalControllersRepository, triviaUtils, twitchChatMessenger, usersRepository)
@@ -950,23 +932,16 @@ class CynanBot(
             self.__getTriviaControllersCommand: AbsChatCommand = GetTriviaControllersChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, triviaUtils, twitchChatMessenger, usersRepository)
             self.__removeGlobalTriviaControllerChatCommand: AbsChatCommand = RemoveGlobalTriviaControllerChatCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
             self.__removeTriviaControllerChatCommand: AbsChatCommand = RemoveTriviaControllerChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
-            self.__superAnswerCommand: AbsChatCommand = SuperAnswerChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
-            self.__superTriviaCommand: AbsChatCommand = SuperTriviaChatCommand(generalSettingsRepository, timber, triviaGameBuilder, triviaGameMachine, triviaSettings, triviaUtils, twitchChatMessenger, usersRepository)
-            self.__triviaInfoCommand: AbsChatCommand = TriviaInfoChatCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, timeZoneRepository, triviaEmoteGenerator, triviaHistoryRepository, triviaQuestionOccurrencesRepository, triviaUtils, twitchChatMessenger, usersRepository)
             self.__triviaScoreCommand: AbsChatCommand = TriviaScoreChatCommand(generalSettingsRepository, shinyTriviaOccurencesRepository, timber, toxicTriviaOccurencesRepository, triviaScoreRepository, triviaUtils, twitchChatMessenger, userIdsRepository, usersRepository)
             self.__unbanTriviaQuestionChatCommand: AbsChatCommand = UnbanTriviaQuestionChatCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchChatMessenger, usersRepository)
 
         if cutenessPresenter is None or cutenessRepository is None or cutenessUtils is None or triviaUtils is None:
-            self.__cutenessCommand: AbsChatCommand = StubChatCommand()
             self.__cutenessChampionsCommand: AbsChatCommand = StubChatCommand()
             self.__cutenessHistoryCommand: AbsChatCommand = StubChatCommand()
-            self.__giveCutenessCommand: AbsChatCommand = StubChatCommand()
             self.__myCutenessCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__cutenessCommand: AbsChatCommand = CutenessChatCommand(cutenessPresenter, cutenessRepository, timber, twitchChatMessenger, userIdsRepository, usersRepository)
             self.__cutenessChampionsCommand: AbsChatCommand = CutenessChampionsChatCommand(cutenessPresenter, cutenessRepository, timber, twitchChatMessenger, usersRepository)
             self.__cutenessHistoryCommand: AbsChatCommand = CutenessHistoryChatCommand(cutenessRepository, cutenessUtils, timber, twitchChatMessenger, userIdsRepository, usersRepository)
-            self.__giveCutenessCommand: AbsChatCommand = GiveCutenessChatCommand(cutenessRepository, timber, triviaUtils, authRepository, twitchChatMessenger, userIdsRepository, usersRepository)
             self.__myCutenessCommand: AbsChatCommand = MyCutenessChatCommand(cutenessRepository, cutenessUtils, timber, twitchChatMessenger, usersRepository)
 
         if funtoonTokensRepository is None:
@@ -1010,11 +985,6 @@ class CynanBot(
             self.__testCheerCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__testCheerCommand: AbsChatCommand = TestCheerChatCommand(twitchCheerHandler, timber, twitchChatMessenger, usersRepository)
-
-        if timeoutImmuneUserIdsRepository is None:
-            self.__vulnerableChattersCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__vulnerableChattersCommand: AbsChatCommand = VulnerableChattersChatCommand(activeChattersRepository, timber, timeoutImmuneUserIdsRepository, twitchChatMessenger, usersRepository)
 
         if voicemailHelper is None or voicemailsRepository is None or voicemailSettingsRepository is None:
             self.__playVoicemailCommand: AbsChatCommand = StubChatCommand()
@@ -1292,11 +1262,6 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addSoundAlertCheerActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'addtriviaanswer')
-    async def command_addtriviaanswer(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addTriviaAnswerCommand.handleChatCommand(context)
-
     @commands.command(name = 'addtriviacontroller')
     async def command_addtriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1317,20 +1282,10 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__anivTimeoutsCommand.handleChatCommand(context)
 
-    @commands.command(name = 'answer', aliases = [ 'ANSWER', 'Answer', 'a', 'A' ])
-    async def command_answer(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__answerCommand.handleChatCommand(context)
-
     @commands.command(name = 'asplodiestats', aliases = [ 'asplodies', 'asplodiesstats', 'getasplodiestats' ])
     async def command_asplodiestats(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__asplodieStatsCommand.handleChatCommand(context)
-
-    @commands.command(name = 'bantriviaquestion', aliases = [ 'bantrivia' ])
-    async def command_bantriviaquestion(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__banTriviaQuestionCommand.handleChatCommand(context)
 
     @commands.command(name = 'beans')
     async def command_beans(self, ctx: Context):
@@ -1366,11 +1321,6 @@ class CynanBot(
     async def command_crowdcontrol(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__crowdControlCommand.handleChatCommand(context)
-
-    @commands.command(name = 'cuteness', aliases = [ 'CUTENESS', 'Cuteness' ])
-    async def command_cuteness(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__cutenessCommand.handleChatCommand(context)
 
     @commands.command(name = 'cutenesschampions')
     async def command_cutenesschampions(self, ctx: Context):
@@ -1456,11 +1406,6 @@ class CynanBot(
     async def command_gettriviacontrollers(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getTriviaControllersCommand.handleChatCommand(context)
-
-    @commands.command(name = 'givecuteness', aliases = [ 'addcuteness' ])
-    async def command_givecuteness(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__giveCutenessCommand.handleChatCommand(context)
 
     @commands.command(name = 'giveitem', aliases = [ 'givechatteritem', 'itemgive' ])
     async def command_givechatteritem(self, ctx: Context):
@@ -1572,16 +1517,6 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__skipTtsCommand.handleChatCommand(context)
 
-    @commands.command(name = 'superanswer', aliases = [ 'SUPERANSWER', 'SuperAnswer', 'Superanswer', 'sa', 'SA', 'Sa', 'sA', 'sanswer', 'SANSWER', 'Sanswer' ])
-    async def command_superanswer(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__superAnswerCommand.handleChatCommand(context)
-
-    @commands.command(name = 'supertrivia', aliases = [ 'Supertrivia', 'SuperTrivia', 'supertrivialotr' ])
-    async def command_supertrivia(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__superTriviaCommand.handleChatCommand(context)
-
     @commands.command(name = 'swquote')
     async def command_swquote(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1602,11 +1537,6 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__translateCommand.handleChatCommand(context)
 
-    @commands.command(name = 'triviainfo', aliases = [ 'gettriviainfo' ])
-    async def command_triviainfo(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__triviaInfoCommand.handleChatCommand(context)
-
     @commands.command(name = 'triviascore')
     async def command_triviascore(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1626,11 +1556,6 @@ class CynanBot(
     async def command_voicemails(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__voicemailsCommand.handleChatCommand(context)
-
-    @commands.command(name = 'vulnerablechatters', aliases = [ 'vulnerablechatter', 'vc', 'vcs', 'VC', 'VCS' ])
-    async def command_vulnerablechatters(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__vulnerableChattersCommand.handleChatCommand(context)
 
     @commands.command(name = 'weather')
     async def command_weather(self, ctx: Context):

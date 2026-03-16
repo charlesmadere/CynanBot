@@ -56,13 +56,10 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
     async def getMostRecentTriviaQuestionDetails(
         self,
         emote: str,
-        twitchChannel: str,
         twitchChannelId: str,
     ) -> TriviaQuestionReference | None:
         if not utils.isValidStr(emote):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -86,7 +83,6 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
             dateTime = datetime.fromisoformat(record[0]),
             emote = record[1],
             triviaId = record[2],
-            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
             triviaSource = await self.__triviaSourceParser.parse(record[3]),
             triviaType = await self.__triviaQuestionTypeParser.parse(record[4]),
@@ -139,15 +135,12 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         self,
         question: AbsTriviaQuestion,
         emote: str,
-        twitchChannel: str,
         twitchChannelId: str,
     ) -> TriviaContentCode:
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
         elif not utils.isValidStr(emote):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -189,7 +182,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
 
         if questionDateTime + minimumTimeDelta >= nowDateTime:
             await connection.close()
-            self.__timber.log('TriviaHistoryRepository', f'Encountered duplicate triviaHistory entry that is within the window of being a repeat ({nowDateTimeStr=}) ({questionDateTimeStr=}) ({emote=}) ({workingTriviaSource=}) ({question.originalTriviaSource=}) ({question.triviaId=}) ({question.triviaSource=}) ({question.triviaType=}) ({twitchChannel=}) ({twitchChannelId=})')
+            self.__timber.log('TriviaHistoryRepository', f'Encountered duplicate triviaHistory entry that is within the window of being a repeat ({nowDateTimeStr=}) ({questionDateTimeStr=}) ({emote=}) ({workingTriviaSource=}) ({question=}) ({twitchChannelId=})')
             return TriviaContentCode.REPEAT
 
         await connection.execute(
@@ -202,5 +195,5 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         )
 
         await connection.close()
-        self.__timber.log('TriviaHistoryRepository', f'Updated triviaHistory entry ({nowDateTimeStr=}) ({questionDateTimeStr=}) ({emote=}) ({workingTriviaSource=}) ({question.originalTriviaSource=}) ({question.triviaId=}) ({question.triviaSource=}) ({question.triviaType=}) ({twitchChannel=}) ({twitchChannelId=})')
+        self.__timber.log('TriviaHistoryRepository', f'Updated triviaHistory entry ({nowDateTimeStr=}) ({questionDateTimeStr=}) ({emote=}) ({workingTriviaSource=}) ({question=}) ({twitchChannelId=})')
         return TriviaContentCode.OK

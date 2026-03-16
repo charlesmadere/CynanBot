@@ -1,19 +1,20 @@
+import re
 import traceback
-from typing import Final
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class GiveCutenessChatCommand(AbsChatCommand):
+class GiveCutenessChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -23,7 +24,6 @@ class GiveCutenessChatCommand(AbsChatCommand):
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -37,8 +37,6 @@ class GiveCutenessChatCommand(AbsChatCommand):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__cutenessRepository: Final[CutenessRepositoryInterface] = cutenessRepository
         self.__timber: Final[TimberInterface] = timber
@@ -46,93 +44,95 @@ class GiveCutenessChatCommand(AbsChatCommand):
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!givecuteness\b', re.IGNORECASE),
+        })
 
-        if not user.isCutenessEnabled or not user.isGiveCutenessEnabled:
-            return
+    @property
+    def commandName(self) -> str:
+        return 'GiveCutenessChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isCutenessEnabled or not chatMessage.twitchUser.isGiveCutenessEnabled:
+            return ChatCommandResult.IGNORED
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            userId = ctx.getAuthorId(),
+            twitchChannelId = chatMessage.twitchChannelId,
+            userId = chatMessage.chatterUserId,
         ):
-            return
+            return ChatCommandResult.IGNORED
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
 
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 3:
-            self.__timber.log('GiveCutenessChatCommand', f'Less than 2 arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+            self.__timber.log(self.commandName, f'Less than 2 arguments given ({chatMessage=}) ({splits=})')
             self.__twitchChatMessenger.send(
-                text = f'⚠ Username and amount is necessary for this command. Example: !givecuteness {twitchHandle} 5',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                text = f'⚠ Username and amount is necessary for this command. Example: !givecuteness @{twitchHandle} 5',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+            return ChatCommandResult.HANDLED
 
-        userName: str | None = splits[1]
-        if not utils.isValidStr(userName) or not utils.strContainsAlphanumericCharacters(userName):
-            self.__timber.log('GiveCutenessChatCommand', f'Username given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} is malformed: \"{userName}\"')
+        targetUserName: str | None = splits[1]
+        if not utils.isValidStr(targetUserName) or not utils.strContainsAlphanumericCharacters(targetUserName):
+            self.__timber.log(self.commandName, f'Given target username is malformed ({chatMessage=}) ({splits=}) ({targetUserName=})')
             self.__twitchChatMessenger.send(
-                text = f'⚠ Username argument is malformed. Example: !givecuteness {twitchHandle} 5',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                text = f'⚠ Username argument is malformed. Example: !givecuteness @{twitchHandle} 5',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+            return ChatCommandResult.HANDLED
 
+        targetUserName = utils.removePreceedingAt(targetUserName)
         incrementAmountStr: str | None = splits[2]
-        if not utils.isValidStr(incrementAmountStr):
-            self.__timber.log('GiveCutenessChatCommand', f'Increment amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} is malformed: \"{incrementAmountStr}\"')
-            self.__twitchChatMessenger.send(
-                text = f'⚠ Increment amount argument is malformed. Example: !givecuteness {userName} 5',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
-            )
-            return
 
         try:
             incrementAmount = int(incrementAmountStr)
         except Exception as e:
-            self.__timber.log('GiveCutenessChatCommand', f'Unable to convert increment amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} into an int: \"{incrementAmountStr}\"', e, traceback.format_exc())
+            self.__timber.log(self.commandName, f'Unable to convert increment amount into an int ({chatMessage=}) ({splits=}) ({targetUserName=}) ({incrementAmountStr=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
-                text = f'⚠ Increment amount argument is malformed. Example: !givecuteness @{userName} 5',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                text = f'⚠ Increment amount argument is malformed. Example: !givecuteness @{targetUserName} 5',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+            return ChatCommandResult.HANDLED
 
-        userName = utils.removePreceedingAt(userName)
-        userId = await self.__userIdsRepository.fetchUserId(userName = userName)
+        targetUserId = await self.__userIdsRepository.fetchUserId(userName = targetUserName)
 
-        if not utils.isValidStr(userId):
+        if not utils.isValidStr(targetUserId):
             self.__twitchChatMessenger.send(
-                text = f'⚠ Unable to fetch user ID for \"{userName}\"',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                text = f'⚠ Unable to fetch user ID for \"{targetUserName}\"',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+            return ChatCommandResult.HANDLED
 
         try:
             result = await self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = incrementAmount,
-                twitchChannel = user.handle,
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                userId = userId,
-                userName = userName,
+                twitchChannel = chatMessage.twitchChannel,
+                twitchChannelId = chatMessage.twitchChannelId,
+                userId = targetUserId,
+                userName = targetUserName,
             )
 
             self.__twitchChatMessenger.send(
-                text = f'ⓘ Cuteness for @{userName} is now {result.newCutenessStr} (was previously {result.previousCutenessStr})',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                text = f'ⓘ Cuteness for @{targetUserName} is now {result.newCutenessStr} (was previously {result.previousCutenessStr})',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
         except (OverflowError, ValueError) as e:
-            self.__timber.log('GiveCutenessChatCommand', f'Error giving {incrementAmount} cuteness from {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} to {userName}:{userId} in {user.handle}', e, traceback.format_exc())
+            self.__timber.log(self.commandName, f'Error giving cuteness ({chatMessage=}) ({incrementAmount=}) ({targetUserId=}) ({targetUserName=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
-                text = f'⚠ Error giving cuteness to \"{userName}\"',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                text = f'⚠ Error giving cuteness to \"{targetUserName}\"',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log('GiveCutenessChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({chatMessage=}) ({incrementAmount=}) ({targetUserId=}) ({targetUserName=})')
+        return ChatCommandResult.HANDLED

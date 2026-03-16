@@ -36,9 +36,9 @@ class UseChatterItemChatCommand(AbsChatCommand2):
         self.__useChatterItemHelper: Final[UseChatterItemHelperInterface] = useChatterItemHelper
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!use', re.IGNORECASE),
-            re.compile(r'^\s*!use(?:\s+|_|-)?item', re.IGNORECASE),
-            re.compile(r'^\s*!use(?:\s+|_|-)?chatter(?:\s+|_|-)?item', re.IGNORECASE),
+            re.compile(r'^\s*!use\b', re.IGNORECASE),
+            re.compile(r'^\s*!use(?:\s+|_|-)?item\b', re.IGNORECASE),
+            re.compile(r'^\s*!use(?:\s+|_|-)?chatter(?:\s+|_|-)?item\b', re.IGNORECASE),
         })
 
     @property

@@ -1,5 +1,8 @@
+from typing import Final
+
 from .triviaQuestionOccurrences import TriviaQuestionOccurrences
 from .triviaQuestionOccurrencesRepositoryInterface import TriviaQuestionOccurrencesRepositoryInterface
+from ..misc.triviaSourceParserInterface import TriviaSourceParserInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..questions.triviaSource import TriviaSource
 from ...misc import utils as utils
@@ -14,15 +17,19 @@ class TriviaQuestionOccurrencesRepository(TriviaQuestionOccurrencesRepositoryInt
     def __init__(
         self,
         backingDatabase: BackingDatabase,
-        timber: TimberInterface
+        timber: TimberInterface,
+        triviaSourceParser: TriviaSourceParserInterface,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaSourceParser, TriviaSourceParserInterface):
+            raise TypeError(f'triviaSourceParser argument is malformed: \"{triviaSourceParser}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timber: TimberInterface = timber
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaSourceParser: Final[TriviaSourceParserInterface] = triviaSourceParser
 
         self.__isDatabaseReady: bool = False
 
@@ -33,7 +40,7 @@ class TriviaQuestionOccurrencesRepository(TriviaQuestionOccurrencesRepositoryInt
     async def getOccurrences(
         self,
         triviaId: str,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> TriviaQuestionOccurrences:
         if not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
@@ -44,7 +51,7 @@ class TriviaQuestionOccurrencesRepository(TriviaQuestionOccurrencesRepositoryInt
         occurrences = await self.__getOccurrences(
             connection = connection,
             triviaId = triviaId,
-            triviaSource = triviaSource
+            triviaSource = triviaSource,
         )
 
         await connection.close()
@@ -54,33 +61,35 @@ class TriviaQuestionOccurrencesRepository(TriviaQuestionOccurrencesRepositoryInt
         self,
         connection: DatabaseConnection,
         triviaId: str,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> TriviaQuestionOccurrences:
+        triviaSourceString = await self.__triviaSourceParser.serialize(triviaSource)
+
         record = await connection.fetchRow(
             '''
                 SELECT occurrences FROM triviaquestionoccurrences
                 WHERE triviaid = $1 AND triviasource = $2
                 LIMIT 1
             ''',
-            triviaId, triviaSource.toStr()
+            triviaId, triviaSourceString,
         )
 
         if record is None or len(record) == 0:
             return TriviaQuestionOccurrences(
                 occurrences = 0,
                 triviaId = triviaId,
-                triviaSource = triviaSource
+                triviaSource = triviaSource,
             )
         else:
             return TriviaQuestionOccurrences(
                 occurrences = record[0],
                 triviaId = triviaId,
-                triviaSource = triviaSource
+                triviaSource = triviaSource,
             )
 
     async def getOccurrencesFromQuestion(
         self,
-        triviaQuestion: AbsTriviaQuestion
+        triviaQuestion: AbsTriviaQuestion,
     ) -> TriviaQuestionOccurrences:
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
@@ -91,13 +100,13 @@ class TriviaQuestionOccurrencesRepository(TriviaQuestionOccurrencesRepositoryInt
 
         return await self.getOccurrences(
             triviaId = triviaQuestion.triviaId,
-            triviaSource = workingTriviaSource
+            triviaSource = workingTriviaSource,
         )
 
     async def incrementOccurrences(
         self,
         triviaId: str,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ) -> TriviaQuestionOccurrences:
         if not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
@@ -109,14 +118,16 @@ class TriviaQuestionOccurrencesRepository(TriviaQuestionOccurrencesRepositoryInt
         occurrences = await self.__getOccurrences(
             connection = connection,
             triviaId = triviaId,
-            triviaSource = triviaSource
+            triviaSource = triviaSource,
         )
 
         newOccurrences = TriviaQuestionOccurrences(
             occurrences = occurrences.occurrences + 1,
             triviaId = triviaId,
-            triviaSource = triviaSource
+            triviaSource = triviaSource,
         )
+
+        triviaSourceString = await self.__triviaSourceParser.serialize(triviaSource)
 
         await connection.execute(
             '''
@@ -124,7 +135,7 @@ class TriviaQuestionOccurrencesRepository(TriviaQuestionOccurrencesRepositoryInt
                 VALUES ($1, $2, $3)
                 ON CONFLICT (triviaid, triviasource) DO UPDATE SET occurrences = EXCLUDED.occurrences
             ''',
-            newOccurrences.occurrences, triviaId, triviaSource.toStr()
+            newOccurrences.occurrences, triviaId, triviaSourceString,
         )
 
         await connection.close()
@@ -132,7 +143,7 @@ class TriviaQuestionOccurrencesRepository(TriviaQuestionOccurrencesRepositoryInt
 
     async def incrementOccurrencesFromQuestion(
         self,
-        triviaQuestion: AbsTriviaQuestion
+        triviaQuestion: AbsTriviaQuestion,
     ) -> TriviaQuestionOccurrences:
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
@@ -143,7 +154,7 @@ class TriviaQuestionOccurrencesRepository(TriviaQuestionOccurrencesRepositoryInt
 
         return await self.incrementOccurrences(
             triviaId = triviaQuestion.triviaId,
-            triviaSource = workingTriviaSource
+            triviaSource = workingTriviaSource,
         )
 
     async def __initDatabaseTable(self):
