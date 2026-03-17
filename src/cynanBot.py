@@ -33,7 +33,6 @@ from .chatCommands.addSoundAlertCheerActionCommand import AddSoundAlertCheerActi
 from .chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
 from .chatCommands.addUserChatCommand import AddUserChatCommand
 from .chatCommands.addVoicemailCheerActionCommand import AddVoicemailCheerActionCommand
-from .chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
 from .chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
 from .chatCommands.beanInstructionsChatCommand import BeanInstructionsChatCommand
 from .chatCommands.beanStatsChatCommand import BeanStatsChatCommand
@@ -954,11 +953,6 @@ class CynanBot(
         else:
             self.__jishoCommand: AbsChatCommand = JishoChatCommand(generalSettingsRepository, jishoHelper, timber, twitchChatMessenger, usersRepository)
 
-        if anivCopyMessageTimeoutScoreHelper is None or anivCopyMessageTimeoutScorePresenter is None or anivSettings is None:
-            self.__anivTimeoutsCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__anivTimeoutsCommand: AbsChatCommand = AnivTimeoutsChatCommand(anivCopyMessageTimeoutScoreHelper, anivCopyMessageTimeoutScorePresenter, anivSettings, timber, twitchChannelEditorsRepository, twitchChatMessenger, userIdsRepository, usersRepository)
-
         if pokepediaRepository is None:
             self.__pkMonCommand: AbsChatCommand = StubChatCommand()
             self.__pkMoveCommand: AbsChatCommand = StubChatCommand()
@@ -1276,11 +1270,6 @@ class CynanBot(
     async def command_addvoicemailcheeraction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addVoicemailCheerActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'anivtimeouts')
-    async def command_anivtimeouts(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__anivTimeoutsCommand.handleChatCommand(context)
 
     @commands.command(name = 'asplodiestats', aliases = [ 'asplodies', 'asplodiesstats', 'getasplodiestats' ])
     async def command_asplodiestats(self, ctx: Context):
