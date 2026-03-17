@@ -134,7 +134,7 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        mostRecentChat = datetime.now(self.__timeZoneRepository.getDefault())
+        mostRecentChat = self.__timeZoneRepository.getNow()
 
         self.__caches[twitchChannelId][chatterUserId] = MostRecentChat(
             mostRecentChat = mostRecentChat,

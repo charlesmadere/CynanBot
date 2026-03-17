@@ -36,6 +36,7 @@ from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import Chatt
 from src.channelPointRedemptions.decTalkSongPointRedemption import DecTalkSongPointRedemption
 from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
+from src.chatActions.absChatAction2 import AbsChatAction2
 from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
 from src.chatActions.manager.chatActionsManager import ChatActionsManager
 from src.chatActions.manager.chatActionsManagerInterface import ChatActionsManagerInterface
@@ -728,8 +729,8 @@ ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
     timber = timber
 )
 
-ttsBoosterPackParser: TtsBoosterPackParserInterface = TtsBoosterPackParser(
-    ttsJsonMapper = ttsJsonMapper
+ttsBoosterPackParser: Final[TtsBoosterPackParserInterface] = TtsBoosterPackParser(
+    ttsJsonMapper = ttsJsonMapper,
 )
 
 usersRepository: Final[UsersRepositoryInterface] = UsersRepository(
@@ -854,10 +855,10 @@ locationsRepository: LocationsRepositoryInterface = LocationsRepository(
     timeZoneRepository = timeZoneRepository
 )
 
-mostRecentChatsRepository: MostRecentChatsRepositoryInterface = MostRecentChatsRepository(
+mostRecentChatsRepository: Final[MostRecentChatsRepositoryInterface] = MostRecentChatsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 twitchIrcTagsParser: TwitchIrcTagsParserInterface = TwitchIrcTagsParser()
@@ -2218,13 +2219,14 @@ chatActionsManager: Final[ChatActionsManagerInterface] = ChatActionsManager(
     chatBackMessagesChatAction = None,
     chatLoggerChatAction = None,
     cheerActionsWizardChatAction = cheerActionsWizardChatAction,
+    chatActions = None,
     generalSettingsRepository = generalSettingsRepository,
     mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
     persistAllUsersChatAction = persistAllUsersChatAction,
     recurringActionsWizardChatAction = None,
     saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
-    supStreamerChatAction = supStreamerChatAction,
+    timber = timber,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
     voicemailChatAction = voicemailChatAction,
@@ -2340,6 +2342,10 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     userIdsRepository = userIdsRepository,
 )
 
+chatActions: Final[Collection[AbsChatAction2 | None]] = [
+    supStreamerChatAction,
+]
+
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     CommandsChatCommand(
         timber = timber,
@@ -2374,13 +2380,15 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
 })
 
 twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
-    chatCommands = chatCommands,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
+    mostRecentChatsRepository = mostRecentChatsRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = None,
     triviaGameMachine = None,
+    chatActions = chatActions,
+    chatCommands = chatCommands,
 )
 
 twitchCheerHandler: Final[AbsTwitchCheerHandler] = TwitchCheerHandler(

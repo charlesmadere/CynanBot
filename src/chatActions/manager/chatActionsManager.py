@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Any, Collection, Final
 
 from frozenlist import FrozenList
 
@@ -6,20 +6,19 @@ from .chatActionsManagerInterface import ChatActionsManagerInterface
 from ..absChatAction import AbsChatAction
 from ..absChatAction2 import AbsChatAction2
 from ..anivCheckChatAction import AnivCheckChatAction
-from ..chatActionResult import ChatActionResult
 from ..chatBackMessagesChatAction import ChatBackMessagesChatAction
 from ..chatLoggerChatAction import ChatLoggerChatAction
 from ..cheerActionsWizardChatAction import CheerActionsWizardChatAction
 from ..persistAllUsersChatAction import PersistAllUsersChatAction
 from ..recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from ..saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
-from ..supStreamerChatAction import SupStreamerChatAction
 from ..voicemailChatAction import VoicemailChatAction
 from ...aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from ...misc import utils as utils
 from ...misc.generalSettingsRepository import GeneralSettingsRepository
 from ...mostRecentChat.mostRecentChat import MostRecentChat
 from ...mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
+from ...timber.timberInterface import TimberInterface
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ...twitch.configuration.twitchMessage import TwitchMessage
 from ...twitch.localModels.twitchChatMessage import TwitchChatMessage
@@ -39,13 +38,14 @@ class ChatActionsManager(ChatActionsManagerInterface):
         chatBackMessagesChatAction: ChatBackMessagesChatAction | None,
         chatLoggerChatAction: ChatLoggerChatAction | None,
         cheerActionsWizardChatAction: CheerActionsWizardChatAction | None,
+        chatActions: Collection[AbsChatAction2 | Any | None] | None,
         generalSettingsRepository: GeneralSettingsRepository,
         mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface,
         persistAllUsersChatAction: PersistAllUsersChatAction | None,
         recurringActionsWizardChatAction: RecurringActionsWizardChatAction | None,
         saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None,
-        supStreamerChatAction: SupStreamerChatAction | None,
+        timber: TimberInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
         voicemailChatAction: VoicemailChatAction | None,
@@ -60,6 +60,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise TypeError(f'chatLoggerChatAction argument is malformed: \"{chatLoggerChatAction}\"')
         elif cheerActionsWizardChatAction is not None and not isinstance(cheerActionsWizardChatAction, CheerActionsWizardChatAction):
             raise TypeError(f'cheerActionsWizardChatAction argument is malformed: \"{cheerActionsWizardChatAction}\"')
+        elif chatActions is not None and not isinstance(chatActions, Collection):
+            raise TypeError(f'chatActions argument is malformed: \"{chatActions}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif mostRecentAnivMessageTimeoutHelper is not None and not isinstance(mostRecentAnivMessageTimeoutHelper, MostRecentAnivMessageTimeoutHelperInterface):
@@ -72,8 +74,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise TypeError(f'recurringActionsWizardChatAction argument is malformed: \"{recurringActionsWizardChatAction}\"')
         elif saveMostRecentAnivMessageChatAction is not None and not isinstance(saveMostRecentAnivMessageChatAction, SaveMostRecentAnivMessageChatAction):
             raise TypeError(f'saveMostRecentAnivMessageChatAction argument is malformed: \"{saveMostRecentAnivMessageChatAction}\"')
-        elif supStreamerChatAction is not None and not isinstance(supStreamerChatAction, SupStreamerChatAction):
-            raise TypeError(f'supStreamerChatAction argument is malformed: \"{supStreamerChatAction}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -91,7 +93,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__persistAllUsersChatAction: Final[AbsChatAction | None] = persistAllUsersChatAction
         self.__recurringActionsWizardChatAction: Final[AbsChatAction | None] = recurringActionsWizardChatAction
         self.__saveMostRecentAnivMessageChatAction: Final[AbsChatAction | None] = saveMostRecentAnivMessageChatAction
-        self.__supStreamerChatAction: Final[AbsChatAction2 | None] = supStreamerChatAction
+        self.__timber: Final[TimberInterface] = timber
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
         self.__voicemailChatAction: Final[VoicemailChatAction | None] = voicemailChatAction
 
@@ -212,22 +214,6 @@ class ChatActionsManager(ChatActionsManagerInterface):
             message = message,
             user = user,
         )
-
-    async def __handleSoundChatActions(
-        self,
-        mostRecentChat: MostRecentChat | None,
-        chatMessage: TwitchChatMessage,
-        message: TwitchMessage,
-        user: UserInterface,
-    ):
-        if self.__supStreamerChatAction is not None:
-            match await self.__supStreamerChatAction.handleChatAction(
-                mostRecentChat = mostRecentChat,
-                chatMessage = chatMessage,
-            ):
-                case ChatActionResult.CONSUMED: return
-                case ChatActionResult.HANDLED: pass
-                case ChatActionResult.IGNORED: pass
 
     async def __mapTwitchMessageToTwitchChatMessage(
         self,
