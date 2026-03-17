@@ -472,7 +472,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        self.__timber.log('TwitchTokensRepository', f'Removing user \"{twitchChannelId}\"...')
+        self.__timber.log('TwitchTokensRepository', f'Removing user ({twitchChannelId=})...')
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
