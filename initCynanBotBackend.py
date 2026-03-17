@@ -48,6 +48,7 @@ from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWiz
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
 from src.chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatCommand
+from src.chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
 from src.chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
 from src.chatCommands.answerChatCommand import AnswerChatCommand
 from src.chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
@@ -2067,6 +2068,16 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaHistoryRepository = triviaHistoryRepository,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    AddTriviaControllerChatCommand(
+        administratorProvider = administratorProvider,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaGameControllersRepository = triviaGameControllersRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchHandleProvider = authRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository =  userIdsRepository,
     ),
     AnivTimeoutsChatCommand(
         anivCopyMessageTimeoutScoreHelper = anivCopyMessageTimeoutScoreHelper,

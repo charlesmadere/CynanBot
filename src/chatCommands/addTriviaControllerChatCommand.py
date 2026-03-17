@@ -1,6 +1,8 @@
-from typing import Final
+import re
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
@@ -8,15 +10,14 @@ from ..timber.timberInterface import TimberInterface
 from ..trivia.gameController.addTriviaGameControllerResult import AddTriviaGameControllerResult
 from ..trivia.gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..users.exceptions import NoSuchUserException
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class AddTriviaControllerChatCommand(AbsChatCommand):
+class AddTriviaControllerChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -28,7 +29,6 @@ class AddTriviaControllerChatCommand(AbsChatCommand):
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -46,8 +46,6 @@ class AddTriviaControllerChatCommand(AbsChatCommand):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
@@ -57,87 +55,96 @@ class AddTriviaControllerChatCommand(AbsChatCommand):
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        twitchChannelId = await ctx.getTwitchChannelId()
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!addtriviacontroller\b', re.IGNORECASE),
+        })
+
+    @property
+    def commandName(self) -> str:
+        return 'AddTriviaControllerChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isTriviaGameEnabled and not chatMessage.twitchUser.isSuperTriviaGameEnabled:
+            return ChatCommandResult.IGNORED
+        elif chatMessage.chatterUserId != chatMessage.twitchChannelId and chatMessage.chatterUserId != await self.__administratorProvider.getAdministratorUserId():
+            return ChatCommandResult.IGNORED
+
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
-            return
-        elif not user.isTriviaGameEnabled and not user.isSuperTriviaGameEnabled:
-            return
+            return ChatCommandResult.IGNORED
 
-        if ctx.getAuthorId() != twitchChannelId and ctx.getAuthorId() != await self.__administratorProvider.getAdministratorUserId():
-            self.__timber.log('AddTriviaGameControllerChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
-            return
+        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
 
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 2:
-            self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no arguments were supplied ({splits=})')
+            self.__timber.log(self.commandName, f'Attempted to handle command, but no arguments were supplied ({splits=}) ({chatMessage=})')
 
             self.__twitchChatMessenger.send(
-                text = f'⚠ Unable to add trivia controller as no username argument was given. Example: !addtriviacontroller {twitchHandle}',
-                twitchChannelId = twitchChannelId,
-                replyMessageId = await ctx.getMessageId(),
+                text = f'⚠ Unable to add trivia controller as no username argument was given. Example: !addtriviacontroller @{twitchHandle}',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+            return ChatCommandResult.HANDLED
 
-        userName: str | None = utils.removePreceedingAt(splits[1])
-        if not utils.isValidStr(userName) or not utils.strContainsAlphanumericCharacters(userName):
-            self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but username argument is malformed ({userName=})')
+        targetUserName: str | None = utils.removePreceedingAt(splits[1])
+        if not utils.isValidStr(targetUserName) or not utils.strContainsAlphanumericCharacters(targetUserName):
+            self.__timber.log(self.commandName, f'Attempted to handle command, but username argument is malformed ({targetUserName=}) ({splits=}) ({chatMessage=})')
 
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to add trivia controller as username argument is malformed. Example: !addtriviacontroller {twitchHandle}',
-                twitchChannelId = twitchChannelId,
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+            return ChatCommandResult.HANDLED
 
         try:
-            userId = await self.__userIdsRepository.requireUserId(
-                userName = userName,
+            targetUserId = await self.__userIdsRepository.requireUserId(
+                userName = targetUserName,
                 twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-                    twitchChannelId = twitchChannelId,
+                    twitchChannelId = chatMessage.twitchChannelId,
                 ),
             )
         except NoSuchUserException:
-            self.__timber.log('AddTriviaControllerChatCommand', f'Failed to fetch user ID for the given username argument by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({userName=})')
+            self.__timber.log(self.commandName, f'Failed to fetch user ID for the given username argument ({targetUserName=}) ({splits=}) ({chatMessage=})')
 
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to add trivia controller as no user ID could be found for the given username',
-                twitchChannelId = twitchChannelId,
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+            return ChatCommandResult.HANDLED
 
         result = await self.__triviaGameControllersRepository.addController(
-            twitchChannelId = twitchChannelId,
-            userId = userId,
+            twitchChannelId = chatMessage.twitchChannelId,
+            userId = targetUserId,
         )
 
         match result:
             case AddTriviaGameControllerResult.ADDED:
                 self.__twitchChatMessenger.send(
-                    text = f'ⓘ Added @{userName} as a trivia game controller',
-                    twitchChannelId = twitchChannelId,
-                    replyMessageId = await ctx.getMessageId(),
+                    text = f'ⓘ Added @{targetUserName} as a trivia game controller',
+                    twitchChannelId = chatMessage.twitchChannelId,
+                    replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
             case AddTriviaGameControllerResult.ALREADY_EXISTS:
                 self.__twitchChatMessenger.send(
-                    text = f'⚠ Tried adding @{userName} as a trivia game controller, but they already were one',
-                    twitchChannelId = twitchChannelId,
-                    replyMessageId = await ctx.getMessageId(),
+                    text = f'⚠ Tried adding @{targetUserName} as a trivia game controller, but they already were one',
+                    twitchChannelId = chatMessage.twitchChannelId,
+                    replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
             case AddTriviaGameControllerResult.ERROR:
                 self.__twitchChatMessenger.send(
-                    text = f'⚠ An error occurred when trying to add @{userName} as a trivia game controller!',
-                    twitchChannelId = twitchChannelId,
-                    replyMessageId = await ctx.getMessageId(),
+                    text = f'⚠ An error occurred when trying to add @{targetUserName} as a trivia game controller!',
+                    twitchChannelId = chatMessage.twitchChannelId,
+                    replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
-        self.__timber.log('AddTriviaControllerChatCommand', f'Handled command with {result} result for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({result=}) ({targetUserId=}) ({targetUserName=}) ({chatMessage=})')
+        return ChatCommandResult.HANDLED
