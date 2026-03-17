@@ -155,11 +155,6 @@ class ChatActionsManager(ChatActionsManagerInterface):
 
         user = await self.__usersRepository.getUserAsync(message.getTwitchChannelName())
 
-        chatMessage = await self.__mapTwitchMessageToTwitchChatMessage(
-            message = message,
-            twitchUser = user,
-        )
-
         await self.__handleAnivChatActions(
             mostRecentChat = mostRecentChat,
             message = message,
@@ -207,53 +202,3 @@ class ChatActionsManager(ChatActionsManagerInterface):
                 message = message,
                 user = user,
             )
-
-        await self.__handleSoundChatActions(
-            mostRecentChat = mostRecentChat,
-            chatMessage = chatMessage,
-            message = message,
-            user = user,
-        )
-
-    async def __mapTwitchMessageToTwitchChatMessage(
-        self,
-        message: TwitchMessage,
-        twitchUser: UserInterface,
-    ) -> TwitchChatMessage:
-        text = utils.cleanStr(message.getContent())
-
-        messageFragments = await self.__mapMessageTextToMessageFragments(
-            text = text,
-        )
-
-        tags = await message.getTags()
-
-        return TwitchChatMessage(
-            messageFragments = messageFragments,
-            chatterUserId = message.getAuthorId(),
-            chatterUserLogin = message.getAuthorName(),
-            chatterUserName = message.getAuthorName(),
-            eventId = tags.messageId,
-            sourceMessageId = tags.sourceMessageId,
-            text = text,
-            twitchChannelId = await message.getTwitchChannelId(),
-            twitchChatMessageId = tags.messageId,
-            cheerMetadata = None,
-            twitchUser = twitchUser,
-        )
-
-    async def __mapMessageTextToMessageFragments(
-        self,
-        text: str,
-    ) -> FrozenList[TwitchChatMessageFragment]:
-        fragments: FrozenList[TwitchChatMessageFragment] = FrozenList()
-        fragments.append(TwitchChatMessageFragment(
-            text = text,
-            cheermote = None,
-            emote = None,
-            mention = None,
-            fragmentType = TwitchChatMessageFragmentType.TEXT,
-        ))
-
-        fragments.freeze()
-        return fragments
