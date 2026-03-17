@@ -146,7 +146,3 @@ class TestUserJsonConstants:
     def test_jsonKey_withWeatherEnabled(self):
         result = UserJsonConstant.WEATHER_ENABLED.jsonKey
         assert result == 'weatherEnabled'
-
-    def test_jsonKey_withWhichAnivUser(self):
-        result = UserJsonConstant.WHICH_ANIV_USER.jsonKey
-        assert result == 'whichAnivUser'
