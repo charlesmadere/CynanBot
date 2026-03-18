@@ -1,14 +1,14 @@
 from typing import Final
 
-from .absChatAction import AbsChatAction
+from .absChatAction2 import AbsChatAction2
+from .chatActionResult import ChatActionResult
 from ..chatLogger.chatLoggerInterface import ChatLoggerInterface
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
-from ..twitch.configuration.twitchMessage import TwitchMessage
-from ..users.userInterface import UserInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class ChatLoggerChatAction(AbsChatAction):
+class ChatLoggerChatAction(AbsChatAction2):
 
     def __init__(
         self,
@@ -19,24 +19,27 @@ class ChatLoggerChatAction(AbsChatAction):
 
         self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
 
-    async def handleChat(
+    @property
+    def actionName(self) -> str:
+        return 'ChatLoggerChatAction'
+
+    async def handleChatAction(
         self,
         mostRecentChat: MostRecentChat | None,
-        message: TwitchMessage,
-        user: UserInterface,
-    ) -> bool:
-        if not user.isChatLoggingEnabled:
-            return False
+        chatMessage: TwitchChatMessage,
+    ) -> ChatActionResult:
+        if not chatMessage.twitchUser.isChatLoggingEnabled:
+            return ChatActionResult.IGNORED
 
-        cleanedMessage = utils.cleanStr(message.getContent())
+        cleanedMessage = utils.cleanStr(chatMessage.text)
 
         self.__chatLogger.logMessage(
             bits = None,
-            chatterUserId = message.getAuthorId(),
-            chatterUserLogin = message.getAuthorName(),
+            chatterUserId = chatMessage.chatterUserId,
+            chatterUserLogin = chatMessage.chatterUserLogin,
             message = cleanedMessage,
-            twitchChannel = user.handle,
-            twitchChannelId = await message.getTwitchChannelId(),
+            twitchChannel = chatMessage.twitchChannel,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
-        return True
+        return ChatActionResult.HANDLED

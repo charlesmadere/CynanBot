@@ -83,9 +83,6 @@ class GeneralSettingsRepositorySnapshot:
     def isJishoEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'jishoEnabled', True)
 
-    def isPersistAllUsersEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'persistAllUsersEnabled', False)
-
     def isPokepediaEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'pokepediaEnabled', True)
 

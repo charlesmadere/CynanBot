@@ -1,16 +1,16 @@
 from typing import Final
 
-from .absChatAction import AbsChatAction
+from .absChatAction2 import AbsChatAction2
+from .chatActionResult import ChatActionResult
 from ..aniv.repositories.anivUserIdsRepositoryInterface import AnivUserIdsRepositoryInterface
 from ..aniv.repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..timber.timberInterface import TimberInterface
-from ..twitch.configuration.twitchMessage import TwitchMessage
-from ..users.userInterface import UserInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class SaveMostRecentAnivMessageChatAction(AbsChatAction):
+class SaveMostRecentAnivMessageChatAction(AbsChatAction2):
 
     def __init__(
         self,
@@ -29,27 +29,29 @@ class SaveMostRecentAnivMessageChatAction(AbsChatAction):
         self.__mostRecentAnivMessageRepository: Final[MostRecentAnivMessageRepositoryInterface] = mostRecentAnivMessageRepository
         self.__timber: Final[TimberInterface] = timber
 
-    async def handleChat(
+    @property
+    def actionName(self) -> str:
+        return 'SaveMostRecentAnivMessageChatAction'
+
+    async def handleChatAction(
         self,
         mostRecentChat: MostRecentChat | None,
-        message: TwitchMessage,
-        user: UserInterface,
-    ) -> bool:
+        chatMessage: TwitchChatMessage,
+    ) -> ChatActionResult:
         whichAnivUser = await self.__anivUserIdsRepository.determineAnivUser(
-            chatterUserId = message.getAuthorId(),
+            chatterUserId = chatMessage.chatterUserId,
         )
 
         if whichAnivUser is None:
-            return False
+            return ChatActionResult.IGNORED
 
-        cleanedMessage = utils.cleanStr(message.getContent())
-        twitchChannelId = await message.getTwitchChannelId()
+        cleanedMessage = utils.cleanStr(chatMessage.text)
 
         await self.__mostRecentAnivMessageRepository.set(
             message = cleanedMessage,
-            twitchChannelId = twitchChannelId,
+            twitchChannelId = chatMessage.twitchChannelId,
             whichAnivUser = whichAnivUser,
         )
 
-        self.__timber.log('SaveMostRecentAnivMessageChatAction', f'Updated most recent aniv message ({user=}) ({twitchChannelId=}) ({whichAnivUser=})')
-        return True
+        self.__timber.log(self.actionName, f'Updated most recent aniv message ({chatMessage=}) ({whichAnivUser=})')
+        return ChatActionResult.HANDLED

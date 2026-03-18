@@ -1,6 +1,7 @@
 from typing import Final
 
-from .absChatAction import AbsChatAction
+from .absChatAction2 import AbsChatAction2
+from .chatActionResult import ChatActionResult
 from ..aniv.contentScanner.anivContentScannerInterface import AnivContentScannerInterface
 from ..aniv.models.anivContentCode import AnivContentCode
 from ..aniv.repositories.anivUserIdsRepositoryInterface import AnivUserIdsRepositoryInterface
@@ -13,14 +14,13 @@ from ..timeout.models.absTimeoutDuration import AbsTimeoutDuration
 from ..timeout.models.actions.basicTimeoutAction import BasicTimeoutAction
 from ..timeout.models.exactTimeoutDuration import ExactTimeoutDuration
 from ..timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
-from ..twitch.configuration.twitchMessage import TwitchMessage
 from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ..users.userInterface import UserInterface
 
 
-class AnivCheckChatAction(AbsChatAction):
+class AnivCheckChatAction(AbsChatAction2):
 
     def __init__(
         self,
@@ -65,37 +65,40 @@ class AnivCheckChatAction(AbsChatAction):
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__timeoutDurationSeconds: Final[int] = timeoutDurationSeconds
 
-    async def handleChat(
+    @property
+    def actionName(self) -> str:
+        return 'AnivCheckChatAction'
+
+    async def handleChatAction(
         self,
         mostRecentChat: MostRecentChat | None,
-        message: TwitchMessage,
-        user: UserInterface,
-    ) -> bool:
-        if not user.isAnivContentScanningEnabled:
-            return False
-        elif message.getAuthorId() == await message.getTwitchChannelId():
-            return False
+        chatMessage: TwitchChatMessage,
+    ) -> ChatActionResult:
+        if not chatMessage.twitchUser.isAnivContentScanningEnabled:
+            return ChatActionResult.IGNORED
+        elif chatMessage.chatterUserId == chatMessage.twitchChannelId:
+            return ChatActionResult.IGNORED
 
         whichAnivUser = await self.__anivUserIdsRepository.determineAnivUser(
-            chatterUserId = message.getAuthorId(),
+            chatterUserId = chatMessage.chatterUserId,
         )
 
         if whichAnivUser is None:
-            return False
+            return ChatActionResult.IGNORED
 
-        contentCode = await self.__anivContentScanner.scan(message.getContent())
+        contentCode = await self.__anivContentScanner.scan(chatMessage.text)
         if contentCode is AnivContentCode.OK:
-            return False
+            return ChatActionResult.IGNORED
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
         moderatorTwitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
 
         if not utils.isValidStr(moderatorTwitchAccessToken):
             self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} ({whichAnivUser=}) for posting bad content (\"{message.getContent()}\") ({contentCode=}), but was unable to fetch a valid Twitch access token ({moderatorTwitchAccessToken=}) for the bot user ({twitchHandle=})')
-            return False
+            return ChatActionResult.IGNORED
 
         userTwitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-            twitchChannelId = await message.getTwitchChannelId(),
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
         if not utils.isValidStr(userTwitchAccessToken):
