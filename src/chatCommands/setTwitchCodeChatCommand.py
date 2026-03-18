@@ -72,6 +72,7 @@ class SetTwitchCodeChatCommand(AbsChatCommand):
             twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
         )
+
         self.__twitchChatMessenger.send(
             text = f'ⓘ Twitch code has been updated',
             twitchChannelId = await ctx.getTwitchChannelId(),
