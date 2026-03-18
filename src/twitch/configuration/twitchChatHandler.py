@@ -25,8 +25,11 @@ from ..localModels.twitchChatMessageFragmentMention import TwitchChatMessageFrag
 from ..localModels.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 from ..localModels.twitchCheerMetadata import TwitchCheerMetadata
 from ..localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat
+from ...aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from ...chatActions.absChatAction2 import AbsChatAction2
+from ...chatActions.anivCheckChatAction import AnivCheckChatAction
 from ...chatActions.chatActionResult import ChatActionResult
+from ...chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from ...chatCommands.absChatCommand2 import AbsChatCommand2
 from ...chatCommands.chatCommandResult import ChatCommandResult
 from ...chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -51,9 +54,12 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
     def __init__(
         self,
+        anivCheckChatAction: AnivCheckChatAction | None,
         chatLogger: ChatLoggerInterface,
         cheerActionHelper: CheerActionHelperInterface | None,
+        mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface,
+        saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
@@ -61,12 +67,18 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         chatActions: Collection[AbsChatCommand2 | Any | None] | None,
         chatCommands: Collection[AbsChatCommand2 | Any | None] | None,
     ):
-        if not isinstance(chatLogger, ChatLoggerInterface):
+        if anivCheckChatAction is not None and not isinstance(anivCheckChatAction, AnivCheckChatAction):
+            raise TypeError(f'anivCheckChatAction argument is malformed: \"{anivCheckChatAction}\"')
+        elif not isinstance(chatLogger, ChatLoggerInterface):
             raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
         elif cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
             raise TypeError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
+        elif mostRecentAnivMessageTimeoutHelper is not None and not isinstance(mostRecentAnivMessageTimeoutHelper, MostRecentAnivMessageTimeoutHelperInterface):
+            raise TypeError(f'mostRecentAnivMessageTimeoutHelper argument is malformed: \"{mostRecentAnivMessageTimeoutHelper}\"')
         elif not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
             raise TypeError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
+        elif saveMostRecentAnivMessageChatAction is not None and not isinstance(saveMostRecentAnivMessageChatAction, SaveMostRecentAnivMessageChatAction):
+            raise TypeError(f'saveMostRecentAnivMessageChatAction argument is malformed: \"{saveMostRecentAnivMessageChatAction}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -80,9 +92,12 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         elif chatCommands is not None and not isinstance(chatCommands, Collection):
             raise TypeError(f'chatCommands argument is malformed: \"{chatCommands}\"')
 
+        self.__anivCheckChatAction: Final[AbsChatAction2 | None] = anivCheckChatAction
         self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
         self.__cheerActionHelper: Final[CheerActionHelperInterface | None] = cheerActionHelper
+        self.__mostRecentAnivMessageTimeoutHelper: Final[MostRecentAnivMessageTimeoutHelperInterface | None] = mostRecentAnivMessageTimeoutHelper
         self.__mostRecentChatsRepository: Final[MostRecentChatsRepositoryInterface] = mostRecentChatsRepository
+        self.__saveMostRecentAnivMessageChatAction: Final[AbsChatAction2 | None] = saveMostRecentAnivMessageChatAction
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface | None] = triviaGameBuilder
@@ -144,12 +159,14 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
         return frozenset(validChatCommands)
 
-    async def __logCheer(self, chatMessage: TwitchChatMessage):
-        if chatMessage.cheerMetadata is None or chatMessage.cheerMetadata.bits < 1:
-            return
+    async def __logChat(self, chatMessage: TwitchChatMessage):
+        bits: int | None = None
+
+        if chatMessage.cheerMetadata is not None and chatMessage.cheerMetadata.bits > 0:
+            bits = chatMessage.cheerMetadata.bits
 
         self.__chatLogger.logCheer(
-            bits = chatMessage.cheerMetadata.bits,
+            bits = bits,
             cheerUserId = chatMessage.chatterUserId,
             cheerUserLogin = chatMessage.chatterUserLogin,
             twitchChannel = chatMessage.twitchChannel,
@@ -166,19 +183,12 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             # change this. But for now, it's better/easier to just ignore these messages completely.
             return
 
-        if chatMessage.twitchUser.isChatLoggingEnabled:
-            await self.__logCheer(chatMessage)
-
-        if chatMessage.twitchUser.areCheerActionsEnabled and await self.__processCheerAction(chatMessage):
-            return
-
-        if chatMessage.twitchUser.isSuperTriviaGameEnabled:
-            await self.__processSuperTriviaEvent(chatMessage)
-
-        if chatMessage.twitchUser.isTtsEnabled:
-            await self.__processTtsEvent(chatMessage)
-
         mostRecentChat = await self.__mostRecentChatsRepository.get(
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
+        )
+
+        await self.__mostRecentChatsRepository.set(
             chatterUserId = chatMessage.chatterUserId,
             twitchChannelId = chatMessage.twitchChannelId,
         )
@@ -188,8 +198,25 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             chatMessage = chatMessage,
         )
 
+        if chatMessage.twitchUser.isChatLoggingEnabled:
+            await self.__logChat(chatMessage)
+
+        if chatMessage.twitchUser.areCheerActionsEnabled:
+            await self.__processCheerAction(chatMessage)
+
+        if chatMessage.twitchUser.isSuperTriviaGameEnabled:
+            await self.__processSuperTriviaEvent(chatMessage)
+
+        if chatMessage.twitchUser.isTtsEnabled:
+            await self.__processTtsEvent(chatMessage)
+
         if self.__chatCommandPrefixRegEx.match(chatMessage.text):
             await self.__processChatCommand(chatMessage)
+
+        await self.__processAnivChatActions(
+            mostRecentChat = mostRecentChat,
+            chatMessage = chatMessage,
+        )
 
     async def onNewChatDataBundle(
         self,
@@ -240,6 +267,32 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         await self.onNewChat(
             chatMessage = chatMessage,
         )
+
+    async def __processAnivChatActions(
+        self,
+        mostRecentChat: MostRecentChat | None,
+        chatMessage: TwitchChatMessage,
+    ):
+        if self.__saveMostRecentAnivMessageChatAction is not None:
+            await self.__saveMostRecentAnivMessageChatAction.handleChatAction(
+                mostRecentChat = mostRecentChat,
+                chatMessage = chatMessage,
+            )
+
+            if self.__mostRecentAnivMessageTimeoutHelper is not None:
+                await self.__mostRecentAnivMessageTimeoutHelper.checkMessageAndMaybeTimeout(
+                    chatterMessage = chatMessage.text,
+                    chatterUserId = chatMessage.chatterUserId,
+                    chatterUserName = chatMessage.chatterUserName,
+                    twitchChannelId = chatMessage.twitchChannelId,
+                    user = chatMessage.twitchUser,
+                )
+
+        if self.__anivCheckChatAction is not None:
+            await self.__anivCheckChatAction.handleChatAction(
+                mostRecentChat = mostRecentChat,
+                chatMessage = chatMessage,
+            )
 
     async def __processChatActions(
         self,

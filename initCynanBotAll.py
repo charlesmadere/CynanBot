@@ -51,7 +51,6 @@ from src.chatActions.chatLoggerChatAction import ChatLoggerChatAction
 from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
 from src.chatActions.manager.chatActionsManager import ChatActionsManager
 from src.chatActions.manager.chatActionsManagerInterface import ChatActionsManagerInterface
-from src.chatActions.persistAllUsersChatAction import PersistAllUsersChatAction
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
@@ -3018,11 +3017,6 @@ cheerActionsWizardChatAction = CheerActionsWizardChatAction(
     twitchChatMessenger = twitchChatMessenger,
 )
 
-persistAllUsersChatAction = PersistAllUsersChatAction(
-    generalSettingsRepository = generalSettingsRepository,
-    userIdsRepository = userIdsRepository
-)
-
 recurringActionsWizardChatAction = RecurringActionsWizardChatAction(
     recurringActionsRepository = recurringActionsRepository,
     recurringActionsWizard = recurringActionsWizard,
@@ -3063,17 +3057,12 @@ supStreamerChatAction: Final[SupStreamerChatAction] = SupStreamerChatAction(
 
 chatActionsManager: Final[ChatActionsManagerInterface] = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,
-    anivCheckChatAction = anivCheckChatAction,
     chatBackMessagesChatAction = chatBackMessagesChatAction,
-    chatLoggerChatAction = chatLoggerChatAction,
     cheerActionsWizardChatAction = cheerActionsWizardChatAction,
     chatActions = None,
     generalSettingsRepository = generalSettingsRepository,
-    mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
-    persistAllUsersChatAction = persistAllUsersChatAction,
     recurringActionsWizardChatAction = recurringActionsWizardChatAction,
-    saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
     timber = timber,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
@@ -3421,9 +3410,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
 })
 
 twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
+    anivCheckChatAction = anivCheckChatAction,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
+    mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
+    saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,

@@ -98,11 +98,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to add user ({twitchChannel=}) ({twitchChannelId=}) ({code=})', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to add user ({twitchChannel=}) ({twitchChannelId=}) ({code=})')
 
-        await self.__userIdsRepository.setUser(
-            userId = twitchChannelId,
-            userName = twitchChannel,
-        )
-
         await self.__setTokensDetails(
             twitchChannelId = twitchChannelId,
             tokensDetails = tokensDetails,
