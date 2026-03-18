@@ -165,10 +165,11 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         if chatMessage.cheerMetadata is not None and chatMessage.cheerMetadata.bits > 0:
             bits = chatMessage.cheerMetadata.bits
 
-        self.__chatLogger.logCheer(
+        self.__chatLogger.logMessage(
             bits = bits,
-            cheerUserId = chatMessage.chatterUserId,
-            cheerUserLogin = chatMessage.chatterUserLogin,
+            chatterUserId = chatMessage.chatterUserId,
+            chatterUserLogin = chatMessage.chatterUserLogin,
+            message = chatMessage.text,
             twitchChannel = chatMessage.twitchChannel,
             twitchChannelId = chatMessage.twitchChannelId,
         )
