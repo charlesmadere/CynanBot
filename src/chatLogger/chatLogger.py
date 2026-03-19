@@ -13,7 +13,6 @@ from frozenlist import FrozenList
 
 from .chatLoggerInterface import ChatLoggerInterface
 from .models.absChatLog import AbsChatLog
-from .models.cheerChatLog import CheerChatLog
 from .models.messageChatLog import MessageChatLog
 from .models.raidChatLog import RaidChatLog
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -58,10 +57,7 @@ class ChatLogger(ChatLoggerInterface):
 
         logStatement = f'{chatLog.getDateAndTimeStr()} —'
 
-        if isinstance(chatLog, CheerChatLog):
-            logStatement = f'{logStatement} {chatLog.cheerUserLogin} ({chatLog.cheerUserId}) cheered {chatLog.bitsStr} bit(s)'
-
-        elif isinstance(chatLog, MessageChatLog):
+        if isinstance(chatLog, MessageChatLog):
             logStatement = f'{logStatement} {chatLog.chatterUserLogin} ({chatLog.chatterUserId}) — {chatLog.message}'
 
         elif isinstance(chatLog, RaidChatLog):
@@ -71,38 +67,6 @@ class ChatLogger(ChatLoggerInterface):
             raise RuntimeError(f'Encountered unknown AbsChatLog type ({chatLog=})')
 
         return f'{logStatement.strip()}\n'
-
-    def logCheer(
-        self,
-        bits: int,
-        cheerUserId: str,
-        cheerUserLogin: str,
-        twitchChannel: str,
-        twitchChannelId: str,
-    ):
-        if not utils.isValidInt(bits):
-            raise TypeError(f'bits argument is malformed: \"{bits}\"')
-        elif bits < 1 or bits > utils.getIntMaxSafeSize():
-            raise ValueError(f'bits argument is malformed: {bits}')
-        elif not utils.isValidStr(cheerUserId):
-            raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
-        elif not utils.isValidStr(cheerUserLogin):
-            raise TypeError(f'cheerUserLogin argument is malformed: \"{cheerUserLogin}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-
-        dateTime = datetime.now(self.__timeZoneRepository.getDefault())
-
-        self.__chatLogQueue.put(CheerChatLog(
-            dateTime = dateTime,
-            bits = bits,
-            cheerUserId = cheerUserId,
-            cheerUserLogin = cheerUserLogin,
-            twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId,
-        ))
 
     def logMessage(
         self,

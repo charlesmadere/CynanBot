@@ -80,10 +80,6 @@ class TwitchWebsocketSettingsRepository(TwitchWebsocketSettingsRepositoryInterfa
 
         return frozenset(subscriptionTypes)
 
-    async def isChatEventToCheerEventSubscriptionFallbackEnabled(self) -> bool:
-        jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'chatEventToCheerEventSubscriptionFallbackEnabled', fallback = True)
-
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
             return self.__cache
