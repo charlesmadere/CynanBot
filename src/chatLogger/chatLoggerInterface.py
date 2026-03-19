@@ -4,17 +4,6 @@ from abc import ABC, abstractmethod
 class ChatLoggerInterface(ABC):
 
     @abstractmethod
-    def logCheer(
-        self,
-        bits: int,
-        cheerUserId: str,
-        cheerUserLogin: str,
-        twitchChannel: str,
-        twitchChannelId: str,
-    ):
-        pass
-
-    @abstractmethod
     def logMessage(
         self,
         bits: int | None,

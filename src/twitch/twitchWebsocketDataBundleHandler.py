@@ -2,7 +2,6 @@ from typing import Final
 
 from .absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from .absTwitchChatHandler import AbsTwitchChatHandler
-from .absTwitchCheerHandler import AbsTwitchCheerHandler
 from .absTwitchFollowHandler import AbsTwitchFollowHandler
 from .absTwitchHypeTrainHandler import AbsTwitchHypeTrainHandler
 from .absTwitchPollHandler import AbsTwitchPollHandler
@@ -25,7 +24,6 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         self,
         channelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None,
         chatHandler: AbsTwitchChatHandler | None,
-        cheerHandler: AbsTwitchCheerHandler | None,
         followHandler: AbsTwitchFollowHandler | None,
         hypeTrainHandler: AbsTwitchHypeTrainHandler | None,
         pollHandler: AbsTwitchPollHandler | None,
@@ -40,8 +38,6 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
             raise TypeError(f'channelPointRedemptionHandler argument is malformed: \"{channelPointRedemptionHandler}\"')
         elif chatHandler is not None and not isinstance(chatHandler, AbsTwitchChatHandler):
             raise TypeError(f'chatHandler argument is malformed: \"{chatHandler}\"')
-        elif cheerHandler is not None and not isinstance(cheerHandler, AbsTwitchCheerHandler):
-            raise TypeError(f'cheerHandler argument is malformed: \"{cheerHandler}\"')
         elif followHandler is not None and not isinstance(followHandler, AbsTwitchFollowHandler):
             raise TypeError(f'followHandler argument is malformed: \"{followHandler}\"')
         elif hypeTrainHandler is not None and not isinstance(hypeTrainHandler, AbsTwitchHypeTrainHandler):
@@ -63,7 +59,6 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
         self.__channelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler | None] = channelPointRedemptionHandler
         self.__chatHandler: Final[AbsTwitchChatHandler | None] = chatHandler
-        self.__cheerHandler: Final[AbsTwitchCheerHandler | None] = cheerHandler
         self.__followHandler: Final[AbsTwitchFollowHandler | None] = followHandler
         self.__hypeTrainHandler: Final[AbsTwitchHypeTrainHandler | None] = hypeTrainHandler
         self.__pollHandler: Final[AbsTwitchPollHandler | None] = pollHandler
@@ -85,12 +80,6 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         subscriptionType: TwitchWebsocketSubscriptionType | None
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE
-
-    async def __isCheerType(
-        self,
-        subscriptionType: TwitchWebsocketSubscriptionType | None
-    ) -> bool:
-        return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CHEER
 
     async def __isFollowType(
         self,
@@ -181,14 +170,6 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         elif await self.__isChatType(subscriptionType):
             if self.__chatHandler is not None:
                 await self.__chatHandler.onNewChatDataBundle(
-                    twitchChannelId = userId,
-                    user = user,
-                    dataBundle = dataBundle,
-                )
-
-        elif await self.__isCheerType(subscriptionType):
-            if self.__cheerHandler is not None:
-                await self.__cheerHandler.onNewCheerDataBundle(
                     twitchChannelId = userId,
                     user = user,
                     dataBundle = dataBundle,

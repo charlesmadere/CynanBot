@@ -82,7 +82,6 @@ from .chatCommands.setTwitchCodeChatCommand import SetTwitchCodeChatCommand
 from .chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from .chatCommands.stubChatCommand import StubChatCommand
 from .chatCommands.swQuoteChatCommand import SwQuoteChatCommand
-from .chatCommands.testCheerChatCommand import TestCheerChatCommand
 from .chatCommands.timeChatCommand import TimeChatCommand
 from .chatCommands.translateChatCommand import TranslateChatCommand
 from .chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
@@ -209,7 +208,6 @@ from .ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \
     TtsMonsterTokensRepositoryInterface
 from .twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from .twitch.absTwitchChatHandler import AbsTwitchChatHandler
-from .twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from .twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
 from .twitch.absTwitchHypeTrainHandler import AbsTwitchHypeTrainHandler
 from .twitch.absTwitchPollHandler import AbsTwitchPollHandler
@@ -230,7 +228,6 @@ from .twitch.configuration.twitchConnectionReadinessProvider import TwitchConnec
 from .twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from .twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from .twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
-from .twitch.ircReconnectHelper.twitchIrcReconnectHelperInterface import TwitchIrcReconnectHelperInterface
 from .twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from .twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
 from .twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
@@ -272,7 +269,6 @@ class CynanBot(
         eventLoop: AbstractEventLoop,
         twitchChannelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None,
         twitchChatHandler: AbsTwitchChatHandler | None,
-        twitchCheerHandler: AbsTwitchCheerHandler | None,
         twitchFollowHandler: AbsTwitchFollowHandler | None,
         twitchHypeTrainHandler: AbsTwitchHypeTrainHandler | None,
         twitchPollHandler: AbsTwitchPollHandler | None,
@@ -404,7 +400,6 @@ class CynanBot(
         twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface | None,
-        twitchIrcReconnectHelper: TwitchIrcReconnectHelperInterface,
         twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
         twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface | None,
@@ -443,8 +438,6 @@ class CynanBot(
             raise TypeError(f'twitchChannelPointRedemptionHandler argument is malformed: \"{twitchChannelPointRedemptionHandler}\"')
         elif twitchChatHandler is not None and not isinstance(twitchChatHandler, AbsTwitchChatHandler):
             raise TypeError(f'twitchChatHandler argument is malformed: \"{twitchChatHandler}\"')
-        elif twitchCheerHandler is not None and not isinstance(twitchCheerHandler, AbsTwitchCheerHandler):
-            raise TypeError(f'twitchCheerHandler argument is malformed: \"{twitchCheerHandler}\"')
         elif twitchFollowHandler is not None and not isinstance(twitchFollowHandler, AbsTwitchFollowHandler):
             raise TypeError(f'twitchFollowHandler argument is malformed: \"{twitchFollowHandler}\"')
         elif twitchHypeTrainHandler is not None and not isinstance(twitchHypeTrainHandler, AbsTwitchHypeTrainHandler):
@@ -705,8 +698,6 @@ class CynanBot(
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif twitchFriendsUserIdRepository is not None and not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
-        elif not isinstance(twitchIrcReconnectHelper, TwitchIrcReconnectHelperInterface):
-            raise TypeError(f'twitchIrcReconnectHelper argument is malformed: \"{twitchIrcReconnectHelper}\"')
         elif twitchMessageStringUtils is not None and not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
             raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
@@ -750,7 +741,6 @@ class CynanBot(
 
         self.__twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler | None] = twitchChannelPointRedemptionHandler
         self.__twitchChatHandler: Final[AbsTwitchChatHandler | None] = twitchChatHandler
-        self.__twitchCheerHandler: Final[AbsTwitchCheerHandler | None] = twitchCheerHandler
         self.__twitchFollowHandler: Final[AbsTwitchFollowHandler | None] = twitchFollowHandler
         self.__twitchHypeTrainHandler: Final[AbsTwitchHypeTrainHandler | None] = twitchHypeTrainHandler
         self.__twitchPollHandler: Final[AbsTwitchPollHandler | None] = twitchPollHandler
@@ -785,7 +775,6 @@ class CynanBot(
         self.__twitchChannelJoinHelper: Final[TwitchChannelJoinHelperInterface] = twitchChannelJoinHelper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchConfiguration: Final[TwitchConfiguration] = twitchConfiguration
-        self.__twitchIrcReconnectHelper: Final[TwitchIrcReconnectHelperInterface] = twitchIrcReconnectHelper
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchWebsocketClient: Final[TwitchWebsocketClientInterface | None] = twitchWebsocketClient
@@ -971,11 +960,6 @@ class CynanBot(
             self.__weatherCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__weatherCommand: AbsChatCommand = WeatherChatCommand(locationsRepository, timber, twitchChatMessenger, usersRepository, weatherReportPresenter, weatherRepository)
-
-        if twitchCheerHandler is None:
-            self.__testCheerCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__testCheerCommand: AbsChatCommand = TestCheerChatCommand(twitchCheerHandler, timber, twitchChatMessenger, usersRepository)
 
         if voicemailHelper is None or voicemailsRepository is None or voicemailSettingsRepository is None:
             self.__playVoicemailCommand: AbsChatCommand = StubChatCommand()
@@ -1174,7 +1158,6 @@ class CynanBot(
             self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
                 channelPointRedemptionHandler = self.__twitchChannelPointRedemptionHandler,
                 chatHandler = self.__twitchChatHandler,
-                cheerHandler = self.__twitchCheerHandler,
                 followHandler = self.__twitchFollowHandler,
                 hypeTrainHandler = self.__twitchHypeTrainHandler,
                 pollHandler = self.__twitchPollHandler,
@@ -1187,9 +1170,6 @@ class CynanBot(
             ))
 
             self.__twitchWebsocketClient.start()
-
-        self.__twitchIrcReconnectHelper.setTwitchIoBot(self)
-        self.__twitchIrcReconnectHelper.start()
 
     async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
         self.__timber.log('CynanBot', f'Joining channels: {event}')
@@ -1502,11 +1482,6 @@ class CynanBot(
     async def command_swquote(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__swQuoteCommand.handleChatCommand(context)
-
-    @commands.command(name = 'testcheer', aliases = [ 'testcheeraction' ])
-    async def command_testcheer(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__testCheerCommand.handleChatCommand(context)
 
     @commands.command(name = 'time')
     async def command_time(self, ctx: Context):

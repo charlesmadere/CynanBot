@@ -14,7 +14,3 @@ class TwitchWebsocketSettingsRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def getSubscriptionTypes(self) -> frozenset[TwitchWebsocketSubscriptionType]:
         pass
-
-    @abstractmethod
-    async def isChatEventToCheerEventSubscriptionFallbackEnabled(self) -> bool:
-        pass

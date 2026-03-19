@@ -369,7 +369,6 @@ from src.tts.provider.compositeTtsManagerProviderInterface import CompositeTtsMa
 from src.tts.provider.stub.stubCompositeTtsManagerProvider import StubCompositeTtsManagerProvider
 from src.twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from src.twitch.absTwitchChatHandler import AbsTwitchChatHandler
-from src.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from src.twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
 from src.twitch.absTwitchHypeTrainHandler import AbsTwitchHypeTrainHandler
 from src.twitch.absTwitchPollHandler import AbsTwitchPollHandler
@@ -389,7 +388,6 @@ from src.twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMess
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
 from src.twitch.configuration.twitchChannelPointRedemptionHandler import TwitchChannelPointRedemptionHandler
 from src.twitch.configuration.twitchChatHandler import TwitchChatHandler
-from src.twitch.configuration.twitchCheerHandler import TwitchCheerHandler
 from src.twitch.configuration.twitchConfiguration import TwitchConfiguration
 from src.twitch.configuration.twitchFollowHandler import TwitchFollowHandler
 from src.twitch.configuration.twitchHypeTrainHandler import TwitchHypeTrainHandler
@@ -406,8 +404,6 @@ from src.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import 
 from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from src.twitch.globalTwitchConstants import GlobalTwitchConstants
-from src.twitch.ircReconnectHelper.twitchIrcReconnectHelper import TwitchIrcReconnectHelper
-from src.twitch.ircReconnectHelper.twitchIrcReconnectHelperInterface import TwitchIrcReconnectHelperInterface
 from src.twitch.ircTagsParser.twitchIrcTagsParser import TwitchIrcTagsParser
 from src.twitch.ircTagsParser.twitchIrcTagsParserInterface import TwitchIrcTagsParserInterface
 from src.twitch.isLive.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
@@ -710,13 +706,6 @@ twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHel
     backgroundTaskHelper = backgroundTaskHelper,
     verified = True,
     timber = timber,
-    usersRepository = usersRepository,
-)
-
-twitchIrcReconnectHelper: TwitchIrcReconnectHelperInterface = TwitchIrcReconnectHelper(
-    backgroundTaskHelper = backgroundTaskHelper,
-    timber = timber,
-    userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
 )
 
@@ -2165,15 +2154,6 @@ twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
     chatCommands = chatCommands,
 )
 
-twitchCheerHandler: Final[AbsTwitchCheerHandler] = TwitchCheerHandler(
-    chatLogger = chatLogger,
-    cheerActionHelper = cheerActionHelper,
-    streamAlertsManager = streamAlertsManager,
-    timber = timber,
-    triviaGameBuilder = triviaGameBuilder,
-    triviaGameMachine = triviaGameMachine,
-)
-
 twitchFollowHandler: Final[AbsTwitchFollowHandler] = TwitchFollowHandler(
     timber = timber,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
@@ -2229,7 +2209,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     eventLoop = eventLoop,
     twitchChannelPointRedemptionHandler = twitchChannelPointRedemptionHandler,
     twitchChatHandler = twitchChatHandler,
-    twitchCheerHandler = twitchCheerHandler,
     twitchFollowHandler = twitchFollowHandler,
     twitchHypeTrainHandler = twitchHypeTrainHandler,
     twitchPollHandler = twitchPollHandler,
@@ -2361,7 +2340,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
-    twitchIrcReconnectHelper = twitchIrcReconnectHelper,
     twitchMessageStringUtils = twitchMessageStringUtils,
     twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,
