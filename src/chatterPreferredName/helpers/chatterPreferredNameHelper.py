@@ -87,11 +87,16 @@ class ChatterPreferredNameHelper(ChatterPreferredNameHelperInterface):
             twitchChannelId = twitchChannelId,
         )
 
-        return await self.__chatterPreferredNameRepository.set(
+        newPreferredNameData = await self.__chatterPreferredNameRepository.set(
             chatterUserId = chatterUserId,
             preferredName = preferredName,
             twitchChannelId = twitchChannelId,
         )
+
+        if newPreferredNameData is None:
+            raise ChatterPreferredNameIsInvalidException(f'The given preferred name is invalid ({chatterUserId=}) ({preferredName=}) ({twitchChannelId=}) ({newPreferredNameData=})')
+
+        return newPreferredNameData
 
     async def __verifyPreferredNameIsNotStreamerName(
         self,
