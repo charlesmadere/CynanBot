@@ -10,8 +10,8 @@ class TwitchStream(TwitchUserInterface):
     startedAt: datetime
     tags: frozenset[str]
     viewerCount: int
-    gameId: str
-    gameName: str
+    gameId: str | None
+    gameName: str | None
     language: str | None
     streamId: str
     thumbnailUrl: str | None
