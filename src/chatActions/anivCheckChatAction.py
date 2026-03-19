@@ -94,7 +94,7 @@ class AnivCheckChatAction(AbsChatAction2):
         moderatorTwitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
 
         if not utils.isValidStr(moderatorTwitchAccessToken):
-            self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} ({whichAnivUser=}) for posting bad content (\"{message.getContent()}\") ({contentCode=}), but was unable to fetch a valid Twitch access token ({moderatorTwitchAccessToken=}) for the bot user ({twitchHandle=})')
+            self.__timber.log(self.actionName, f'Attempted to timeout for posting bad content, but was unable to fetch a valid Twitch access token for the bot user ({whichAnivUser=}) ({contentCode=}) ({chatMessage=}) ({moderatorTwitchAccessToken=}) ({twitchHandle=})')
             return ChatActionResult.IGNORED
 
         userTwitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
@@ -102,8 +102,8 @@ class AnivCheckChatAction(AbsChatAction2):
         )
 
         if not utils.isValidStr(userTwitchAccessToken):
-            self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} ({whichAnivUser=}) for posting bad content (\"{message.getContent()}\") ({contentCode=}), but was unable to fetch a valid Twitch access token ({userTwitchAccessToken=}) for this Twitch channel ({user=})')
-            return False
+            self.__timber.log(self.actionName, f'Attempted to timeout for posting bad content, but was unable to fetch a valid Twitch access token for this Twitch channel ({whichAnivUser=}) ({contentCode=}) ({chatMessage=}) ({userTwitchAccessToken=})')
+            return ChatActionResult.IGNORED
 
         moderatorUserId = await self.__userIdsRepository.requireUserId(
             userName = twitchHandle,
@@ -122,14 +122,13 @@ class AnivCheckChatAction(AbsChatAction2):
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
             reason = f'Timed out for content code {contentCode}',
-            targetUserId = message.getAuthorId(),
-            twitchChannelId = await message.getTwitchChannelId(),
+            targetUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
             twitchChatMessageId = None,
             userTwitchAccessToken = userTwitchAccessToken,
             streamStatusRequirement = TimeoutStreamStatusRequirement.ANY,
-            user = user,
+            user = chatMessage.twitchUser,
         ))
 
-        self.__timber.log('AnivCheckChatAction', f'Timed out {message.getAuthorName()} ({whichAnivUser=}) for {self.__timeoutDurationSeconds} second(s) due to posting bad content (\"{message.getContent()}\") ({contentCode=})')
-
-        return True
+        self.__timber.log(self.actionName, f'Timed out an aniv user for {self.__timeoutDurationSeconds} second(s) due to posting bad content ({whichAnivUser=}) ({contentCode=}) ({chatMessage=})')
+        return ChatActionResult.HANDLED
