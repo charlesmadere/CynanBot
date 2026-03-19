@@ -138,93 +138,93 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         if event is None:
             return
 
-        userId: str | None = None
-        userLogin: str | None = None
+        twitchChannelId: str | None = None
+        twitchChannelLogin: str | None = None
 
         if utils.isValidStr(event.broadcasterUserId):
-            userId = event.broadcasterUserId
+            twitchChannelId = event.broadcasterUserId
         elif utils.isValidStr(event.toBroadcasterUserId):
-            userId = event.toBroadcasterUserId
+            twitchChannelId = event.toBroadcasterUserId
 
         if utils.isValidStr(event.broadcasterUserLogin):
-            userLogin = event.broadcasterUserLogin
+            twitchChannelLogin = event.broadcasterUserLogin
         elif utils.isValidStr(event.toBroadcasterUserLogin):
-            userLogin = event.toBroadcasterUserLogin
+            twitchChannelLogin = event.toBroadcasterUserLogin
 
-        if not utils.isValidStr(userId) or not utils.isValidStr(userLogin):
-            self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find broadcaster user information in data bundle ({userId=}) ({userLogin=}) ({dataBundle=})')
+        if not utils.isValidStr(twitchChannelId) or not utils.isValidStr(twitchChannelLogin):
+            self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find broadcaster user information in data bundle ({twitchChannelId=}) ({twitchChannelLogin=}) ({dataBundle=})')
             return
 
         await self.__persistUserInfo(event)
-        user = await self.__usersRepository.getUserAsync(userLogin)
+        twitchUser = await self.__usersRepository.getUserAsync(twitchChannelLogin)
         subscriptionType = dataBundle.metadata.subscriptionType
 
         if await self.__isChannelPointsRedemptionType(subscriptionType):
             if self.__channelPointRedemptionHandler is not None:
                 await self.__channelPointRedemptionHandler.onNewChannelPointRedemptionDataBundle(
-                    twitchChannelId = userId,
-                    user = user,
+                    twitchChannelId = twitchChannelId,
+                    user = twitchUser,
                     dataBundle = dataBundle,
                 )
 
         elif await self.__isChatType(subscriptionType):
             if self.__chatHandler is not None:
                 await self.__chatHandler.onNewChatDataBundle(
-                    twitchChannelId = userId,
-                    user = user,
+                    twitchChannelId = twitchChannelId,
+                    user = twitchUser,
                     dataBundle = dataBundle,
                 )
 
         elif await self.__isFollowType(subscriptionType):
             if self.__followHandler is not None:
                 await self.__followHandler.onNewFollowDataBundle(
-                    twitchChannelId = userId,
-                    user = user,
+                    twitchChannelId = twitchChannelId,
+                    user = twitchUser,
                     dataBundle = dataBundle,
                 )
 
         elif await self.__isHypeTrainType(subscriptionType):
             if self.__hypeTrainHandler is not None:
                 await self.__hypeTrainHandler.onNewHypeTrainDataBundle(
-                    twitchChannelId = userId,
-                    user = user,
+                    twitchChannelId = twitchChannelId,
+                    user = twitchUser,
                     dataBundle = dataBundle,
                 )
 
         elif await self.__isPollType(subscriptionType):
             if self.__pollHandler is not None:
                 await self.__pollHandler.onNewPollDataBundle(
-                    twitchChannelId = userId,
-                    user = user,
+                    twitchChannelId = twitchChannelId,
+                    user = twitchUser,
                     dataBundle = dataBundle,
                 )
 
         elif await self.__isPredictionType(subscriptionType):
             if self.__predictionHandler is not None:
                 await self.__predictionHandler.onNewPredictionDataBundle(
-                    twitchChannelId = userId,
-                    user = user,
+                    twitchChannelId = twitchChannelId,
+                    user = twitchUser,
                     dataBundle = dataBundle,
                 )
 
         elif await self.__isRaidType(subscriptionType):
             if self.__raidHandler is not None:
                 await self.__raidHandler.onNewRaidDataBundle(
-                    twitchChannelId = userId,
-                    user = user,
+                    twitchChannelId = twitchChannelId,
+                    user = twitchUser,
                     dataBundle = dataBundle,
                 )
 
         elif await self.__isSubscriptionType(subscriptionType):
             if self.__subscriptionHandler is not None:
                 await self.__subscriptionHandler.onNewSubscriptionDataBundle(
-                    twitchChannelId = userId,
-                    user = user,
+                    twitchChannelId = twitchChannelId,
+                    user = twitchUser,
                     dataBundle = dataBundle,
                 )
 
         else:
-            self.__timber.log('TwitchWebsocketDataBundleHandler', f'Received unhandled data bundle ({userId=}) ({user=}) ({subscriptionType=}) ({dataBundle=})')
+            self.__timber.log('TwitchWebsocketDataBundleHandler', f'Received unhandled data bundle ({twitchChannelId=}) ({twitchUser=}) ({subscriptionType=}) ({dataBundle=})')
 
     async def __persistUserInfo(self, event: TwitchWebsocketEvent | None):
         if event is None:
