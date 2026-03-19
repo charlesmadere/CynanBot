@@ -3366,11 +3366,6 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
-    TestCheerChatCommand(
-        twitchChatHandler = twitchChatHandler,
-        timber = timber,
-        twitchChatMessenger = twitchChatMessenger,
-    ),
     testMouseCursorChatCommand,
     TriviaInfoChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
