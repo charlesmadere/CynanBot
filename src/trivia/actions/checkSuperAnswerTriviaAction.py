@@ -13,7 +13,7 @@ class CheckSuperAnswerTriviaAction(AbsTriviaAction):
         answer: str | None,
         twitchChannel: str,
         twitchChannelId: str,
-        twitchChatMessageId: str,
+        twitchChatMessageId: str | None,
         userId: str,
         userName: str,
     ):
@@ -25,7 +25,7 @@ class CheckSuperAnswerTriviaAction(AbsTriviaAction):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not utils.isValidStr(twitchChatMessageId):
+        elif twitchChatMessageId is not None and not utils.isValidStr(twitchChatMessageId):
             raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
@@ -35,7 +35,7 @@ class CheckSuperAnswerTriviaAction(AbsTriviaAction):
         self.__answer: Final[str | None] = answer
         self.__twitchChannel: Final[str] = twitchChannel
         self.__twitchChannelId: Final[str] = twitchChannelId
-        self.__twitchChatMessageId: Final[str] = twitchChatMessageId
+        self.__twitchChatMessageId: Final[str | None] = twitchChatMessageId
         self.__userId: Final[str] = userId
         self.__userName: Final[str] = userName
 
@@ -76,7 +76,7 @@ class CheckSuperAnswerTriviaAction(AbsTriviaAction):
         return self.__twitchChannelId
 
     @property
-    def twitchChatMessageId(self) -> str:
+    def twitchChatMessageId(self) -> str | None:
         return self.__twitchChatMessageId
 
     @property

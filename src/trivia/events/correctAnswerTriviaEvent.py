@@ -26,7 +26,7 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
         gameId: str,
         twitchChannel: str,
         twitchChannelId: str,
-        twitchChatMessageId: str,
+        twitchChatMessageId: str | None,
         userId: str,
         userName: str,
         triviaScoreResult: TriviaScoreResult,

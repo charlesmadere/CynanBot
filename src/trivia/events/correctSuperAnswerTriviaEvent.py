@@ -29,7 +29,7 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         gameId: str,
         twitchChannel: str,
         twitchChannelId: str,
-        twitchChatMessageId: str,
+        twitchChatMessageId: str | None,
         userId: str,
         userName: str,
         triviaScoreResult: TriviaScoreResult,
@@ -67,7 +67,7 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not utils.isValidStr(twitchChatMessageId):
+        elif twitchChatMessageId is not None and not utils.isValidStr(twitchChatMessageId):
             raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
@@ -88,7 +88,7 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         self.__gameId: Final[str] = gameId
         self.__twitchChannel: Final[str] = twitchChannel
         self.__twitchChannelId: Final[str] = twitchChannelId
-        self.__twitchChatMessageId: Final[str] = twitchChatMessageId
+        self.__twitchChatMessageId: Final[str | None] = twitchChatMessageId
         self.__userId: Final[str] = userId
         self.__userName: Final[str] = userName
         self.__triviaScoreResult: Final[TriviaScoreResult] = triviaScoreResult
@@ -164,7 +164,7 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         return self.__twitchChannelId
 
     @property
-    def twitchChatMessageId(self) -> str:
+    def twitchChatMessageId(self) -> str | None:
         return self.__twitchChatMessageId
 
     @property

@@ -65,7 +65,7 @@ class CutenessChatCommand(AbsChatCommand2):
         if len(splits) >= 2 and utils.strContainsAlphanumericCharacters(splits[1]):
             targetUserName = utils.removePreceedingAt(splits[1])
 
-        targetUserId: str
+        targetUserId: str | None
         result: Any
 
         # this means that a user is querying for another user's cuteness
