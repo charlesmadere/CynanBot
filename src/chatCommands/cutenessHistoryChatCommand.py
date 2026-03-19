@@ -1,19 +1,18 @@
-from datetime import timedelta
-from typing import Final
+import re
+from typing import Any, Collection, Final, Pattern
 
-from ..chatCommands.absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..cuteness.cutenessUtilsInterface import CutenessUtilsInterface
 from ..misc import utils as utils
-from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class CutenessHistoryChatCommand(AbsChatCommand):
+class CutenessHistoryChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -22,10 +21,8 @@ class CutenessHistoryChatCommand(AbsChatCommand):
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
         entryDelimiter: str = ', ',
         leaderboardDelimiter: str = ' — ',
-        cooldown: timedelta = timedelta(seconds = 2),
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -37,57 +34,62 @@ class CutenessHistoryChatCommand(AbsChatCommand):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not isinstance(entryDelimiter, str):
             raise TypeError(f'entryDelimiter argument is malformed: \"{entryDelimiter}\"')
         elif not isinstance(leaderboardDelimiter, str):
             raise TypeError(f'leaderboardDelimiter argument is malformed: \"{leaderboardDelimiter}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessRepository: Final[CutenessRepositoryInterface] = cutenessRepository
         self.__cutenessUtils: Final[CutenessUtilsInterface] = cutenessUtils
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
         self.__entryDelimiter: Final[str] = entryDelimiter
         self.__leaderboardDelimiter: Final[str] = leaderboardDelimiter
-        self.__lastMessageTimes: Final[TimedDict] = TimedDict(cooldown)
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!cutenesshistory\b', re.IGNORECASE),
+        })
 
-        if not user.isCutenessEnabled:
-            return
-        elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
-            return
+    @property
+    def commandName(self) -> str:
+        return 'CutenessHistoryChatCommand'
 
-        userName = ctx.getAuthorName()
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isCutenessEnabled:
+            return ChatCommandResult.IGNORED
+
+        targetUserName = chatMessage.chatterUserName
+        splits = utils.getCleanedSplits(chatMessage.text)
 
         if len(splits) >= 2 and utils.strContainsAlphanumericCharacters(splits[1]):
-            userName = utils.removePreceedingAt(splits[1])
+            targetUserName = utils.removePreceedingAt(splits[1])
+
+        result: Any
 
         # this means that a user is querying for another user's cuteness history
-        if userName.casefold() != ctx.getAuthorName().casefold():
-            userId = await self.__userIdsRepository.fetchUserId(userName = userName)
+        if targetUserName.casefold() != chatMessage.chatterUserName.casefold():
+            targetUserId = await self.__userIdsRepository.fetchUserId(userName = targetUserName)
 
-            if not utils.isValidStr(userId):
-                self.__timber.log('CutenessHistoryCommand', f'Unable to find user ID for \"{userName}\" in the database')
+            if not utils.isValidStr(targetUserId):
+                self.__timber.log(self.commandName, f'Unable to find target user ID ({targetUserName=}) ({splits=}) ({chatMessage=})')
+
                 self.__twitchChatMessenger.send(
-                    text = f'⚠ Unable to find cuteness info for \"{userName}\"',
-                    twitchChannelId = await ctx.getTwitchChannelId(),
-                    replyMessageId = await ctx.getMessageId(),
+                    text = f'⚠ Unable to find cuteness info for \"{targetUserName}\"',
+                    twitchChannelId = chatMessage.twitchChannelId,
+                    replyMessageId = chatMessage.twitchChatMessageId,
                 )
-                return
+                return ChatCommandResult.HANDLED
 
             result = await self.__cutenessRepository.fetchCutenessHistory(
-                twitchChannel = user.handle,
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                userId = userId,
-                userName = userName,
+                twitchChannel = chatMessage.twitchChannel,
+                twitchChannelId = chatMessage.twitchChannelId,
+                userId = targetUserId,
+                userName = targetUserName,
             )
 
             message = self.__cutenessUtils.getCutenessHistory(
@@ -97,13 +99,13 @@ class CutenessHistoryChatCommand(AbsChatCommand):
 
             self.__twitchChatMessenger.send(
                 text = message,
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
         else:
             result = await self.__cutenessRepository.fetchCutenessLeaderboardHistory(
-                twitchChannel = user.handle,
-                twitchChannelId = await ctx.getTwitchChannelId(),
+                twitchChannel = chatMessage.twitchChannel,
+                twitchChannelId = chatMessage.twitchChannelId,
             )
 
             message = self.__cutenessUtils.getCutenessLeaderboardHistory(
@@ -114,8 +116,9 @@ class CutenessHistoryChatCommand(AbsChatCommand):
 
             self.__twitchChatMessenger.send(
                 text = message,
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log('CutenessHistoryCommand', f'Handled !cutenesshistory command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({result=})')
+        return ChatCommandResult.HANDLED

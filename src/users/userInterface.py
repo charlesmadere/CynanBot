@@ -461,11 +461,6 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def isSuperTriviaLotrTimeoutEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
     def isSupStreamerEnabled(self) -> bool:
         pass
 
@@ -497,11 +492,6 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def isTriviaGameEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
-    def isTriviaScoreEnabled(self) -> bool:
         pass
 
     @property

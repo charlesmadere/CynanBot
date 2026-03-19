@@ -8,7 +8,11 @@ from .cutenessLeaderboardHistoryResult import CutenessLeaderboardHistoryResult
 class CutenessUtilsInterface(ABC):
 
     @abstractmethod
-    def getCutenessHistory(self, result: CutenessHistoryResult, delimiter: str) -> str:
+    def getCutenessHistory(
+        self,
+        result: CutenessHistoryResult,
+        delimiter: str = ', ',
+    ) -> str:
         pass
 
     @abstractmethod

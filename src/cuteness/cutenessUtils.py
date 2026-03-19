@@ -7,7 +7,11 @@ from ..misc import utils as utils
 
 class CutenessUtils(CutenessUtilsInterface):
 
-    def getCutenessHistory(self, result: CutenessHistoryResult, delimiter: str) -> str:
+    def getCutenessHistory(
+        self,
+        result: CutenessHistoryResult,
+        delimiter: str = ', ',
+    ) -> str:
         if not isinstance(result, CutenessHistoryResult):
             raise TypeError(f'result argument is malformed: \"{result}\"')
         elif not isinstance(delimiter, str):
