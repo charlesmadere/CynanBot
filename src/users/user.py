@@ -64,7 +64,6 @@ class User(UserInterface):
         isStarWarsQuotesEnabled: bool,
         isSubGiftThankingEnabled: bool,
         isSuperTriviaGameEnabled: bool,
-        isSuperTriviaLotrTimeoutEnabled: bool,
         isSupStreamerEnabled: bool,
         isTimeoutCheerActionIncreasedBullyFailureEnabled: bool,
         isTimeoutCheerActionFailureEnabled: bool,
@@ -72,7 +71,6 @@ class User(UserInterface):
         isToxicTriviaEnabled: bool,
         isTranslateEnabled: bool,
         isTriviaGameEnabled: bool,
-        isTriviaScoreEnabled: bool,
         isTtsEnabled: bool,
         isVoicemailEnabled: bool,
         isVulnerableChattersEnabled: bool,
@@ -218,8 +216,6 @@ class User(UserInterface):
             raise TypeError(f'isSubGiftThankingEnabled argument is malformed: \"{isSubGiftThankingEnabled}\"')
         elif not utils.isValidBool(isSuperTriviaGameEnabled):
             raise TypeError(f'isSuperTriviaGameEnabled argument is malformed: \"{isSuperTriviaGameEnabled}\"')
-        elif not utils.isValidBool(isSuperTriviaLotrTimeoutEnabled):
-            raise TypeError(f'isSuperTriviaLotrTimeoutEnabled argument is malformed: \"{isSuperTriviaLotrTimeoutEnabled}\"')
         elif not utils.isValidBool(isSupStreamerEnabled):
             raise TypeError(f'isSupStreamerEnabled argument is malformed: \"{isSupStreamerEnabled}\"')
         elif not utils.isValidBool(isTimeoutCheerActionIncreasedBullyFailureEnabled):
@@ -234,8 +230,6 @@ class User(UserInterface):
             raise TypeError(f'isTranslateEnabled argument is malformed: \"{isTranslateEnabled}\"')
         elif not utils.isValidBool(isTriviaGameEnabled):
             raise TypeError(f'isTriviaGameEnabled argument is malformed: \"{isTriviaGameEnabled}\"')
-        elif not utils.isValidBool(isTriviaScoreEnabled):
-            raise TypeError(f'isTriviaScoreEnabled argument is malformed: \"{isTriviaScoreEnabled}\"')
         elif not utils.isValidBool(isTtsEnabled):
             raise TypeError(f'isTtsEnabled argument is malformed: \"{isTtsEnabled}\"')
         elif not utils.isValidBool(isVoicemailEnabled):
@@ -397,16 +391,14 @@ class User(UserInterface):
         self.__isShinyTriviaEnabled: Final[bool] = isShinyTriviaEnabled
         self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
-        self.__isSuperTriviaGameEnabled: bool = isSuperTriviaGameEnabled
-        self.__isSuperTriviaLotrTimeoutEnabled: bool = isSuperTriviaLotrTimeoutEnabled
+        self.__isSuperTriviaGameEnabled: Final[bool] = isSuperTriviaGameEnabled
         self.__isSupStreamerEnabled: bool = isSupStreamerEnabled
         self.__isTimeoutCheerActionIncreasedBullyFailureEnabled: bool = isTimeoutCheerActionIncreasedBullyFailureEnabled
         self.__isTimeoutCheerActionFailureEnabled: bool = isTimeoutCheerActionFailureEnabled
         self.__isTimeoutCheerActionReverseEnabled: bool = isTimeoutCheerActionReverseEnabled
         self.__isToxicTriviaEnabled: bool = isToxicTriviaEnabled
         self.__isTranslateEnabled: bool = isTranslateEnabled
-        self.__isTriviaGameEnabled: bool = isTriviaGameEnabled
-        self.__isTriviaScoreEnabled: bool = isTriviaScoreEnabled
+        self.__isTriviaGameEnabled: Final[bool] = isTriviaGameEnabled
         self.__isTtsEnabled: Final[bool] = isTtsEnabled
         self.__isVoicemailEnabled: Final[bool] = isVoicemailEnabled
         self.__isVulnerableChattersEnabled: bool = isVulnerableChattersEnabled
@@ -839,10 +831,6 @@ class User(UserInterface):
         return self.__isSuperTriviaGameEnabled
 
     @property
-    def isSuperTriviaLotrTimeoutEnabled(self) -> bool:
-        return self.__isSuperTriviaLotrTimeoutEnabled
-
-    @property
     def isSupStreamerEnabled(self) -> bool:
         return self.__isSupStreamerEnabled
 
@@ -869,10 +857,6 @@ class User(UserInterface):
     @property
     def isTriviaGameEnabled(self) -> bool:
         return self.__isTriviaGameEnabled
-
-    @property
-    def isTriviaScoreEnabled(self) -> bool:
-        return self.__isTriviaScoreEnabled
 
     @property
     def isTtsEnabled(self) -> bool:

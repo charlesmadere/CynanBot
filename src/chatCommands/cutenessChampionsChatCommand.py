@@ -1,17 +1,16 @@
-from datetime import timedelta
-from typing import Final
+import re
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..cuteness.cutenessPresenterInterface import CutenessPresenterInterface
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
-from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class CutenessChampionsChatCommand(AbsChatCommand):
+class CutenessChampionsChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -19,9 +18,6 @@ class CutenessChampionsChatCommand(AbsChatCommand):
         cutenessRepository: CutenessRepositoryInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface,
-        delimiter: str = ', ',
-        cooldown: timedelta = timedelta(seconds = 15),
     ):
         if not isinstance(cutenessPresenter, CutenessPresenterInterface):
             raise TypeError(f'cutenessPresenter argument is malformed: \"{cutenessPresenter}\"')
@@ -31,40 +27,43 @@ class CutenessChampionsChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(delimiter, str):
-            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessPresenter: Final[CutenessPresenterInterface] = cutenessPresenter
         self.__cutenessRepository: Final[CutenessRepositoryInterface] = cutenessRepository
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
-        self.__delimiter: Final[str] = delimiter
-        self.__lastMessageTimes: Final[TimedDict] = TimedDict(cooldown)
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!cutenesschamps\b', re.IGNORECASE),
+            re.compile(r'^\s*!cutenesschampions\b', re.IGNORECASE),
+        })
 
-        if not user.isCutenessEnabled:
-            return
-        elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
-            return
+    @property
+    def commandName(self) -> str:
+        return 'CutenessChampionsChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isCutenessEnabled:
+            return ChatCommandResult.IGNORED
 
         result = await self.__cutenessRepository.fetchCutenessChampions(
-            twitchChannel = user.handle,
-            twitchChannelId = await ctx.getTwitchChannelId(),
+            twitchChannel = chatMessage.twitchChannel,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
-        printOut = await self.__cutenessPresenter.printCutenessChampions(result)
+        printOut = await self.__cutenessPresenter.printCutenessChampions(
+            result = result,
+        )
 
         self.__twitchChatMessenger.send(
             text = printOut,
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            replyMessageId = await ctx.getMessageId(),
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log('CutenessChampionsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({result=})')
+        return ChatCommandResult.HANDLED

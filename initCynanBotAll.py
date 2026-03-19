@@ -62,16 +62,19 @@ from src.chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
 from src.chatCommands.answerChatCommand import AnswerChatCommand
 from src.chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
+from src.chatCommands.cutenessChampionsChatCommand import CutenessChampionsChatCommand
 from src.chatCommands.cutenessChatCommand import CutenessChatCommand
+from src.chatCommands.cutenessHistoryChatCommand import CutenessHistoryChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
+from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
 from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from src.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
-from src.chatCommands.testCheerChatCommand import TestCheerChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
+from src.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
 from src.chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
@@ -3319,9 +3322,22 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    CutenessChampionsChatCommand(
+        cutenessPresenter = cutenessPresenter,
+        cutenessRepository = cutenessRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     CutenessChatCommand(
         cutenessPresenter = cutenessPresenter,
         cutenessRepository = cutenessRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        userIdsRepository = userIdsRepository,
+    ),
+    CutenessHistoryChatCommand(
+        cutenessRepository = cutenessRepository,
+        cutenessUtils = cutenessUtils,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
         userIdsRepository = userIdsRepository,
@@ -3351,6 +3367,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    MyCutenessChatCommand(
+        cutenessRepository = cutenessRepository,
+        cutenessUtils = cutenessUtils,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     SuperAnswerChatCommand(
         generalSettingsRepository = generalSettingsRepository,
         timber = timber,
@@ -3377,6 +3399,16 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaQuestionOccurrencesRepository = triviaQuestionOccurrencesRepository,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    TriviaScoreChatCommand(
+        generalSettingsRepository = generalSettingsRepository,
+        shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
+        timber = timber,
+        toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
+        triviaScoreRepository = triviaScoreRepository,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+        userIdsRepository = userIdsRepository,
     ),
     TtsChatCommand(
         administratorProvider = administratorProvider,

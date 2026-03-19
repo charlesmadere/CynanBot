@@ -196,7 +196,6 @@ class UsersRepository(UsersRepositoryInterface):
         isTimeoutCheerActionReverseEnabled = utils.getBoolFromDict(userJson, 'timeoutCheerActionReverseEnabled', True)
         isTranslateEnabled = utils.getBoolFromDict(userJson, 'translateEnabled', False)
         isTriviaGameEnabled = utils.getBoolFromDict(userJson, 'triviaGameEnabled', False)
-        isTriviaScoreEnabled = utils.getBoolFromDict(userJson, 'triviaScoreEnabled', isTriviaGameEnabled)
         isTtsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.TTS_ENABLED.jsonKey, False)
         isVoicemailEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.VOICEMAIL_ENABLED.jsonKey, False)
         isVulnerableChattersEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.VULNERABLE_CHATTERS_ENABLED.jsonKey, False)
@@ -269,7 +268,6 @@ class UsersRepository(UsersRepositoryInterface):
         isShinyTriviaEnabled: bool = isTriviaGameEnabled
         isToxicTriviaEnabled: bool = isTriviaGameEnabled
         isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
-        isSuperTriviaLotrTimeoutEnabled: bool = False
         superTriviaSubscribeTriggerAmount: float | None = None
         superTriviaCheerTriggerAmount: int | None = None
         superTriviaCheerTriggerMaximum: int | None = None
@@ -291,7 +289,6 @@ class UsersRepository(UsersRepositoryInterface):
             isShinyTriviaEnabled = utils.getBoolFromDict(userJson, 'shinyTriviaEnabled', isShinyTriviaEnabled)
             isToxicTriviaEnabled = utils.getBoolFromDict(userJson, 'toxicTriviaEnabled', isToxicTriviaEnabled)
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
-            isSuperTriviaLotrTimeoutEnabled = utils.getBoolFromDict(userJson, 'superTriviaLotrTimeoutEnabled', False)
 
             if 'superTriviaSubscribeTriggerAmount' in userJson and utils.isValidNum(userJson.get('superTriviaSubscribeTriggerAmount')):
                 superTriviaSubscribeTriggerAmount = utils.getFloatFromDict(userJson, 'superTriviaSubscribeTriggerAmount')
@@ -421,7 +418,6 @@ class UsersRepository(UsersRepositoryInterface):
             isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isSubGiftThankingEnabled = isSubGiftThankingEnabled,
             isSuperTriviaGameEnabled = isSuperTriviaGameEnabled,
-            isSuperTriviaLotrTimeoutEnabled = isSuperTriviaLotrTimeoutEnabled,
             isSupStreamerEnabled = isSupStreamerEnabled,
             isTimeoutCheerActionIncreasedBullyFailureEnabled = isTimeoutCheerActionIncreasedBullyFailureEnabled,
             isTimeoutCheerActionFailureEnabled = isTimeoutCheerActionFailureEnabled,
@@ -429,7 +425,6 @@ class UsersRepository(UsersRepositoryInterface):
             isToxicTriviaEnabled = isToxicTriviaEnabled,
             isTranslateEnabled = isTranslateEnabled,
             isTriviaGameEnabled = isTriviaGameEnabled,
-            isTriviaScoreEnabled = isTriviaScoreEnabled,
             isTtsEnabled = isTtsEnabled,
             isVoicemailEnabled = isVoicemailEnabled,
             isVulnerableChattersEnabled = isVulnerableChattersEnabled,
