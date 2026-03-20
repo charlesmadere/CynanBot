@@ -47,7 +47,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         twitchWebsocketSessionIdHelper: TwitchWebsocketSessionIdHelperInterface,
         twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface,
         twitchWebsocketSubscriptionHelper: TwitchWebsocketSubscriptionHelperInterface,
-        queueSleepTimeSeconds: float = 1,
+        queueSleepTimeSeconds: float = 0.25,
         queueTimeoutSeconds: float = 3,
         websocketCreationDelayTimeSeconds: float = 0.5,
         websocketRetrySleepTimeSeconds: float = 3,
@@ -79,7 +79,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'twitchWebsocketSubscriptionHelper argument is malformed: \"{twitchWebsocketSubscriptionHelper}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
-        elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 15:
+        elif queueSleepTimeSeconds < 0.25 or queueSleepTimeSeconds > 4:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
         elif not utils.isValidNum(queueTimeoutSeconds):
             raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
