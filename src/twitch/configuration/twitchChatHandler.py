@@ -6,6 +6,7 @@ from typing import Any, Collection, Final, Pattern
 from frozenlist import FrozenList
 
 from ..absTwitchChatHandler import AbsTwitchChatHandler
+from ..activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ..api.models.twitchChatMessageFragment import TwitchChatMessageFragment as ApiTwitchChatMessageFragment
 from ..api.models.twitchChatMessageFragmentCheermote import \
     TwitchChatMessageFragmentCheermote as ApiTwitchChatMessageFragmentCheermote
@@ -54,6 +55,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
     def __init__(
         self,
+        activeChattersRepository: ActiveChattersRepositoryInterface,
         anivCheckChatAction: AnivCheckChatAction | None,
         chatLogger: ChatLoggerInterface,
         cheerActionHelper: CheerActionHelperInterface | None,
@@ -67,7 +69,9 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         chatActions: Collection[AbsChatCommand2 | Any | None] | None,
         chatCommands: Collection[AbsChatCommand2 | Any | None] | None,
     ):
-        if anivCheckChatAction is not None and not isinstance(anivCheckChatAction, AnivCheckChatAction):
+        if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
+            raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif anivCheckChatAction is not None and not isinstance(anivCheckChatAction, AnivCheckChatAction):
             raise TypeError(f'anivCheckChatAction argument is malformed: \"{anivCheckChatAction}\"')
         elif not isinstance(chatLogger, ChatLoggerInterface):
             raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
@@ -92,6 +96,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         elif chatCommands is not None and not isinstance(chatCommands, Collection):
             raise TypeError(f'chatCommands argument is malformed: \"{chatCommands}\"')
 
+        self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__anivCheckChatAction: Final[AbsChatAction2 | None] = anivCheckChatAction
         self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
         self.__cheerActionHelper: Final[CheerActionHelperInterface | None] = cheerActionHelper
@@ -183,6 +188,12 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             # even bother to process it or work with it at all. In the future, we may have a reason to
             # change this. But for now, it's better/easier to just ignore these messages completely.
             return
+
+        await self.__activeChattersRepository.add(
+            chatterUserId = chatMessage.chatterUserId,
+            chatterUserName = chatMessage.chatterUserName,
+            twitchChannelId = chatMessage.twitchChannelId,
+        )
 
         mostRecentChat = await self.__mostRecentChatsRepository.get(
             chatterUserId = chatMessage.chatterUserId,

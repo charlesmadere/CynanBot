@@ -3435,6 +3435,7 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
 })
 
 twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
+    activeChattersRepository = activeChattersRepository,
     anivCheckChatAction = anivCheckChatAction,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
