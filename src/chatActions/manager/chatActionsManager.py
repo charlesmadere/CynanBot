@@ -3,7 +3,6 @@ from typing import Any, Collection, Final
 from .chatActionsManagerInterface import ChatActionsManagerInterface
 from ..absChatAction import AbsChatAction
 from ..absChatAction2 import AbsChatAction2
-from ..chatBackMessagesChatAction import ChatBackMessagesChatAction
 from ..cheerActionsWizardChatAction import CheerActionsWizardChatAction
 from ..recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from ..voicemailChatAction import VoicemailChatAction
@@ -21,7 +20,6 @@ class ChatActionsManager(ChatActionsManagerInterface):
     def __init__(
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
-        chatBackMessagesChatAction: ChatBackMessagesChatAction | None,
         cheerActionsWizardChatAction: CheerActionsWizardChatAction | None,
         chatActions: Collection[AbsChatAction2 | Any | None] | None,
         generalSettingsRepository: GeneralSettingsRepository,
@@ -34,8 +32,6 @@ class ChatActionsManager(ChatActionsManagerInterface):
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
-        elif chatBackMessagesChatAction is not None and not isinstance(chatBackMessagesChatAction, ChatBackMessagesChatAction):
-            raise TypeError(f'chatBackMessagesChatAction argument is malformed: \"{chatBackMessagesChatAction}\"')
         elif cheerActionsWizardChatAction is not None and not isinstance(cheerActionsWizardChatAction, CheerActionsWizardChatAction):
             raise TypeError(f'cheerActionsWizardChatAction argument is malformed: \"{cheerActionsWizardChatAction}\"')
         elif chatActions is not None and not isinstance(chatActions, Collection):
@@ -56,7 +52,6 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise TypeError(f'voicemailChatAction argument is malformed: \"{voicemailChatAction}\"')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
-        self.__chatBackMessagesChatAction: Final[AbsChatAction | None] = chatBackMessagesChatAction
         self.__cheerActionsWizardChatAction: Final[CheerActionsWizardChatAction | None] = cheerActionsWizardChatAction
         self.__mostRecentChatsRepository: Final[MostRecentChatsRepositoryInterface] = mostRecentChatsRepository
         self.__recurringActionsWizardChatAction: Final[AbsChatAction | None] = recurringActionsWizardChatAction
@@ -80,13 +75,6 @@ class ChatActionsManager(ChatActionsManagerInterface):
         )
 
         user = await self.__usersRepository.getUserAsync(message.getTwitchChannelName())
-
-        if self.__chatBackMessagesChatAction is not None:
-            await self.__chatBackMessagesChatAction.handleChat(
-                mostRecentChat = mostRecentChat,
-                message = message,
-                user = user,
-            )
 
         if self.__cheerActionsWizardChatAction is not None:
             await self.__cheerActionsWizardChatAction.handleChat(

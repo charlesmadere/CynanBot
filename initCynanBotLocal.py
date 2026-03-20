@@ -2198,7 +2198,6 @@ supStreamerChatAction: Final[SupStreamerChatAction] = SupStreamerChatAction(
 
 chatActionsManager: Final[ChatActionsManagerInterface] = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,
-    chatBackMessagesChatAction = None,
     cheerActionsWizardChatAction = cheerActionsWizardChatAction,
     chatActions = None,
     generalSettingsRepository = generalSettingsRepository,

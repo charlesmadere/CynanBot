@@ -46,7 +46,6 @@ from src.channelPointRedemptions.superTriviaLotrGamePointRedemption import Super
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from src.chatActions.absChatAction2 import AbsChatAction2
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
-from src.chatActions.chatBackMessagesChatAction import ChatBackMessagesChatAction
 from src.chatActions.chatLoggerChatAction import ChatLoggerChatAction
 from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
 from src.chatActions.manager.chatActionsManager import ChatActionsManager
@@ -2989,11 +2988,6 @@ anivCheckChatAction = AnivCheckChatAction(
     userIdsRepository = userIdsRepository,
 )
 
-chatBackMessagesChatAction = ChatBackMessagesChatAction(
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
 chatLoggerChatAction = ChatLoggerChatAction(
     chatLogger = chatLogger
 )
@@ -3051,7 +3045,6 @@ supStreamerChatAction: Final[SupStreamerChatAction] = SupStreamerChatAction(
 
 chatActionsManager: Final[ChatActionsManagerInterface] = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,
-    chatBackMessagesChatAction = chatBackMessagesChatAction,
     cheerActionsWizardChatAction = cheerActionsWizardChatAction,
     chatActions = None,
     generalSettingsRepository = generalSettingsRepository,
