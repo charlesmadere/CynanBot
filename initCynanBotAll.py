@@ -56,6 +56,7 @@ from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAn
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
+from src.chatCommands.addGlobalTriviaControllerChatCommand import AddGlobalTriviaControllerChatCommand
 from src.chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatCommand
 from src.chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
 from src.chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
@@ -3274,6 +3275,15 @@ chatActions: Final[Collection[AbsChatAction2 | None]] = [
 ]
 
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
+    AddGlobalTriviaControllerChatCommand(
+        administratorProvider = administratorProvider,
+        timber = timber,
+        triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchHandleProvider = authRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
+    ),
     AddTriviaAnswerChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
         generalSettingsRepository = generalSettingsRepository,
