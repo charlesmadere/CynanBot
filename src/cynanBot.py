@@ -2,7 +2,7 @@ import traceback
 from asyncio import AbstractEventLoop
 from typing import Final
 
-from twitchio import Channel, Message, User
+from twitchio import Message
 from twitchio.ext import commands
 from twitchio.ext.commands import Context
 from twitchio.ext.commands.errors import CommandNotFound
@@ -242,7 +242,6 @@ from .users.addOrRemoveUserData import AddOrRemoveUserData
 from .users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
 from .users.addOrRemoveUserEventListener import AddOrRemoveUserEventListener
 from .users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from .users.userInterface import UserInterface
 from .users.usersRepositoryInterface import UsersRepositoryInterface
 from .voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
 from .voicemail.repositories.voicemailsRepositoryInterface import VoicemailsRepositoryInterface
@@ -960,37 +959,11 @@ class CynanBot(
     async def event_channel_join_failure(self, channel: str):
         self.__timber.log('CynanBot', f'Encountered channel join failure ({channel=})')
 
-        userId = await self.__userIdsRepository.fetchUserId(channel)
-        user: UserInterface | None = None
-        exception: Exception | None = None
-
-        try:
-            user = await self.__usersRepository.getUserAsync(channel)
-        except Exception as e:
-            exception = e
-
-        if user is None or exception is not None:
-            self.__timber.log('CynanBot', f'Failed to join channel, and also failed to retrieve a user for this channel ({channel=}) ({userId=}) ({user=})', exception, traceback.format_exc())
-            return
-
-        self.__timber.log('CynanBot', f'Failed to join channel ({channel=}) ({userId=}) ({user=}), disabling this user...')
-
-        await self.__usersRepository.setUserEnabled(
-            handle = user.handle,
-            enabled = False,
-        )
-
-        self.__timber.log('CynanBot', f'Finished disabling user due to channel join failure ({channel=}) ({userId=}) ({user=})')
-
     async def event_command_error(self, context: Context, error: Exception):
         if isinstance(error, CommandNotFound):
             return
         else:
             raise error
-
-    async def event_join(self, channel: Channel, user: User):
-        # intentionally empty for now
-        pass
 
     async def event_message(self, message: Message):
         if message.echo:
@@ -1006,13 +979,6 @@ class CynanBot(
 
         await self.handle_commands(message)
 
-    async def event_mode(self, channel: Channel, user: User, status: str):
-        self.__timber.log('CynanBot', f'Received MODE event ({channel=}) ({user=}) ({status=})')
-
-    async def event_part(self, user: User):
-        # intentionally empty for now
-        pass
-
     async def event_ready(self):
         await self.waitForReady()
 
@@ -1023,9 +989,7 @@ class CynanBot(
         self.__twitchChannelJoinHelper.joinChannels()
 
     async def event_reconnect(self):
-        self.__timber.log('CynanBot', f'Received RECONNECT event')
-        await self.waitForReady()
-        self.__timber.log('CynanBot', f'Finished reconnecting')
+        self.__timber.log('CynanBot', f'Received IRC RECONNECT event')
 
     async def __getChannel(self, twitchChannel: str) -> TwitchChannel:
         if not utils.isValidStr(twitchChannel):
