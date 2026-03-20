@@ -46,7 +46,6 @@ from src.channelPointRedemptions.superTriviaLotrGamePointRedemption import Super
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from src.chatActions.absChatAction2 import AbsChatAction2
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
-from src.chatActions.chatBackMessagesChatAction import ChatBackMessagesChatAction
 from src.chatActions.chatLoggerChatAction import ChatLoggerChatAction
 from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
 from src.chatActions.manager.chatActionsManager import ChatActionsManager
@@ -56,6 +55,7 @@ from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAn
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
+from src.chatCommands.addGlobalTriviaControllerChatCommand import AddGlobalTriviaControllerChatCommand
 from src.chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatCommand
 from src.chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
 from src.chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
@@ -2988,11 +2988,6 @@ anivCheckChatAction = AnivCheckChatAction(
     userIdsRepository = userIdsRepository,
 )
 
-chatBackMessagesChatAction = ChatBackMessagesChatAction(
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
 chatLoggerChatAction = ChatLoggerChatAction(
     chatLogger = chatLogger
 )
@@ -3050,7 +3045,6 @@ supStreamerChatAction: Final[SupStreamerChatAction] = SupStreamerChatAction(
 
 chatActionsManager: Final[ChatActionsManagerInterface] = ChatActionsManager(
     activeChattersRepository = activeChattersRepository,
-    chatBackMessagesChatAction = chatBackMessagesChatAction,
     cheerActionsWizardChatAction = cheerActionsWizardChatAction,
     chatActions = None,
     generalSettingsRepository = generalSettingsRepository,
@@ -3274,6 +3268,15 @@ chatActions: Final[Collection[AbsChatAction2 | None]] = [
 ]
 
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
+    AddGlobalTriviaControllerChatCommand(
+        administratorProvider = administratorProvider,
+        timber = timber,
+        triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchHandleProvider = authRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
+    ),
     AddTriviaAnswerChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
         generalSettingsRepository = generalSettingsRepository,
