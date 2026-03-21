@@ -134,5 +134,5 @@ class AddBannedTriviaControllerChatCommand(AbsChatCommand2):
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
-        self.__timber.log('AddBannedTriviaControllerChatCommand', f'Handled ({result=}) ({targetUserId=}) ({targetUserName})')
+        self.__timber.log(self.commandName, f'Handled ({result=}) ({targetUserId=}) ({targetUserName})')
         return ChatCommandResult.HANDLED
