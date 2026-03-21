@@ -86,10 +86,10 @@ class AddGlobalTriviaControllerChatCommand(AbsChatCommand2):
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
-            self.__timber.log(self.commandName, f'Attempted to handle command, but username argument is malformed ({targetUserName=}) ({splits=}) ({chatMessage=})')
+            self.__timber.log(self.commandName, f'Attempted to handle command, but the username argument is malformed ({targetUserName=}) ({splits=}) ({chatMessage=})')
             return ChatCommandResult.HANDLED
 
-        targetUserId = await self.__userIdsRepository.requireUserId(
+        targetUserId = await self.__userIdsRepository.fetchUserId(
             userName = targetUserName,
             twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
                 twitchChannelId = chatMessage.twitchChannelId,
@@ -127,7 +127,7 @@ class AddGlobalTriviaControllerChatCommand(AbsChatCommand2):
 
             case AddTriviaGameControllerResult.ERROR:
                 self.__twitchChatMessenger.send(
-                    text = f'⚠ An error occurred when trying to add @{targetUserName} as a global trivia game controller',
+                    text = f'⚠ An error occurred when trying to add @{targetUserName} as a global trivia game controller!',
                     twitchChannelId = chatMessage.twitchChannelId,
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
