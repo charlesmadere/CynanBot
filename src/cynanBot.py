@@ -19,7 +19,6 @@ from .beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
 from .beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from .chatActions.manager.chatActionsManagerInterface import ChatActionsManagerInterface
 from .chatCommands.absChatCommand import AbsChatCommand
-from .chatCommands.addBannedTriviaControllerChatCommand import AddBannedTriviaControllerChatCommand
 from .chatCommands.addCrowdControlCheerActionChatCommand import AddCrowdControlCheerActionChatCommand
 from .chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
 from .chatCommands.addGameShuffleCheerActionChatCommand import AddGameShuffleCheerActionChatCommand
@@ -865,11 +864,9 @@ class CynanBot(
             self.__removeRecurringWordOfTheDayActionCommand: AbsChatCommand = RemoveRecurringWordOfTheDayActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
 
         if bannedTriviaGameControllersRepository is None or triviaUtils is None:
-            self.__addBannedTriviaControllerCommand: AbsChatCommand = StubChatCommand()
             self.__getBannedTriviaControllersCommand: AbsChatCommand = StubChatCommand()
             self.__removeBannedTriviaControllerCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__addBannedTriviaControllerCommand: AbsChatCommand = AddBannedTriviaControllerChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
             self.__getBannedTriviaControllersCommand: AbsChatCommand = GetBannedTriviaControllersChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, triviaUtils, twitchChatMessenger, usersRepository)
             self.__removeBannedTriviaControllerCommand: AbsChatCommand = RemoveBannedTriviaControllerChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
 
@@ -1123,11 +1120,6 @@ class CynanBot(
 
     async def waitForReady(self):
         await self.wait_for_ready()
-
-    @commands.command(name = 'addbannedtriviacontroller')
-    async def command_addbannedtriviacontroller(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addBannedTriviaControllerCommand.handleChatCommand(context)
 
     @commands.command(name = 'addcrowdcontrolcheeraction', aliases = [ 'addcrowdcontrolaction' ])
     async def command_addcrowdcontrolaction(self, ctx: Context):

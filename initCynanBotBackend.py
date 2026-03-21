@@ -45,6 +45,7 @@ from src.chatActions.manager.chatActionsManagerInterface import ChatActionsManag
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
+from src.chatCommands.addBannedTriviaControllerChatCommand import AddBannedTriviaControllerChatCommand
 from src.chatCommands.addGlobalTriviaControllerChatCommand import AddGlobalTriviaControllerChatCommand
 from src.chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatCommand
 from src.chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
@@ -2036,6 +2037,15 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
 chatActions: Final[Collection[AbsChatAction2 | None]] = list()
 
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
+    AddBannedTriviaControllerChatCommand(
+        administratorProvider = administratorProvider,
+        bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchHandleProvider = authRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
+    ),
     AddGlobalTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
         timber = timber,
