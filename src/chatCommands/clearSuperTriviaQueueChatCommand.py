@@ -1,15 +1,18 @@
-from .absChatCommand import AbsChatCommand
+import re
+from typing import Collection, Final, Pattern
+
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
 from ..trivia.actions.clearSuperTriviaQueueTriviaAction import ClearSuperTriviaQueueTriviaAction
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ..trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
-from ..twitch.configuration.twitchContext import TwitchContext
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class ClearSuperTriviaQueueChatCommand(AbsChatCommand):
+class ClearSuperTriviaQueueChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -18,7 +21,6 @@ class ClearSuperTriviaQueueChatCommand(AbsChatCommand):
         triviaGameMachine: TriviaGameMachineInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
         triviaUtils: TriviaUtilsInterface,
-        usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -30,36 +32,46 @@ class ClearSuperTriviaQueueChatCommand(AbsChatCommand):
             raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
-        self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
-        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaGameMachine: Final[TriviaGameMachineInterface] = triviaGameMachine
+        self.__triviaIdGenerator: Final[TriviaIdGeneratorInterface] = triviaIdGenerator
+        self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
 
-    async def handleChatCommand(self, ctx: TwitchContext):
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!clearsupertriviaqueue\b', re.IGNORECASE),
+        })
+
+    @property
+    def commandName(self) -> str:
+        return 'ClearSuperTriviaQueueChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isSuperTriviaGameEnabled:
+            return ChatCommandResult.IGNORED
+
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        twitchChannelId = await ctx.getTwitchChannelId()
-
         if not generalSettings.isSuperTriviaGameEnabled():
-            return
-        elif not user.isSuperTriviaGameEnabled:
-            return
+            return ChatCommandResult.IGNORED
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannelId = twitchChannelId,
-            userId = ctx.getAuthorId()
+            twitchChannelId = chatMessage.twitchChannelId,
+            userId = chatMessage.chatterUserId,
         ):
-            return
+            return ChatCommandResult.IGNORED
+
+        actionId = await self.__triviaIdGenerator.generateActionId()
 
         self.__triviaGameMachine.submitAction(ClearSuperTriviaQueueTriviaAction(
             actionId = await self.__triviaIdGenerator.generateActionId(),
-            twitchChannel = user.handle,
-            twitchChannelId = twitchChannelId,
-            twitchChatMessageId = await ctx.getMessageId()
+            twitchChannel = chatMessage.twitchChannel,
+            twitchChannelId = chatMessage.twitchChannelId,
+            twitchChatMessageId = chatMessage.twitchChatMessageId,
         ))
 
-        self.__timber.log('ClearSuperTriviaQueueChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({actionId=})')
+        return ChatCommandResult.HANDLED

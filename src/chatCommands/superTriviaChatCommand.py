@@ -70,11 +70,7 @@ class SuperTriviaChatCommand(AbsChatCommand2):
         if not chatMessage.twitchUser.isTriviaGameEnabled or not chatMessage.twitchUser.isSuperTriviaGameEnabled:
             return ChatCommandResult.IGNORED
 
-        # For the time being, this command is intentionally not checking for mod status, as it has
-        # been determined that super trivia game controllers shouldn't necessarily have to be mod.
-
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
         if not generalSettings.isTriviaGameEnabled() or not generalSettings.isSuperTriviaGameEnabled():
             return ChatCommandResult.IGNORED
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
@@ -92,23 +88,25 @@ class SuperTriviaChatCommand(AbsChatCommand2):
             try:
                 numberOfGames = int(numberOfGamesStr)
             except Exception as e:
-                self.__timber.log('SuperTriviaChatCommand', f'Unable to convert the numberOfGamesStr argument into an int ({chatMessage=}) ({splits=}) ({numberOfGamesStr=})', e, traceback.format_exc())
                 self.__twitchChatMessenger.send(
                     text = f'⚠ Error converting the given count into an int. Example: !supertrivia 2',
                     twitchChannelId = chatMessage.twitchChannelId,
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
+
+                self.__timber.log(self.commandName, f'Unable to convert the numberOfGamesStr argument into an int ({numberOfGames=}) ({numberOfGamesStr=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
                 return ChatCommandResult.HANDLED
 
             maxNumberOfGames = await self.__triviaSettings.getMaxSuperTriviaGameQueueSize()
 
             if numberOfGames < 1 or numberOfGames > maxNumberOfGames:
-                self.__timber.log('SuperTriviaChatCommand', f'The numberOfGames argument is out of bounds ({chatMessage=}) ({splits=}) ({numberOfGamesStr=}) ({numberOfGames=})')
                 self.__twitchChatMessenger.send(
                     text = f'⚠ The given count is an unexpected number, please try again. Example: !supertrivia 2',
                     twitchChannelId = chatMessage.twitchChannelId,
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
+
+                self.__timber.log(self.commandName, f'The numberOfGames argument is out of bounds ({numberOfGames=}) ({numberOfGamesStr=}) ({splits=}) ({chatMessage=})')
                 return ChatCommandResult.HANDLED
 
         triviaSource: TriviaSource | None = None
@@ -134,7 +132,7 @@ class SuperTriviaChatCommand(AbsChatCommand2):
             return ChatCommandResult.IGNORED
 
         self.__triviaGameMachine.submitAction(action)
-        self.__timber.log(self.commandName, f'Handled ({chatMessage=}) ({numberOfGames=}) ({triviaSource=})')
+        self.__timber.log(self.commandName, f'Handled ({numberOfGames=}) ({triviaSource=}) ({chatMessage=})')
         return ChatCommandResult.HANDLED
 
     async def __stopForPrank(
