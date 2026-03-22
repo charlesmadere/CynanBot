@@ -40,7 +40,8 @@ class ClearSuperTriviaQueueChatCommand(AbsChatCommand2):
         self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!clear(?:super)?triviaqueue\b', re.IGNORECASE),
+            re.compile(r'^\s*!clear(?:super)?trivias?\b', re.IGNORECASE),
+            re.compile(r'^\s*!clear(?:super)?trivias?queue\b', re.IGNORECASE),
         })
 
     @property
