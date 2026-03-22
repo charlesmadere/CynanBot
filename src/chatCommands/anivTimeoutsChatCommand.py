@@ -51,7 +51,7 @@ class AnivTimeoutsChatCommand(AbsChatCommand2):
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!anivtimeouts?\b', re.IGNORECASE),
+            re.compile(r'^\s*!(?:my)?anivtimeouts?\b', re.IGNORECASE),
         })
 
     @property
