@@ -57,9 +57,11 @@ from src.chatCommands.commandsChatCommand import CommandsChatCommand
 from src.chatCommands.cutenessChampionsChatCommand import CutenessChampionsChatCommand
 from src.chatCommands.cutenessChatCommand import CutenessChatCommand
 from src.chatCommands.cutenessHistoryChatCommand import CutenessHistoryChatCommand
+from src.chatCommands.cynanSourceChatCommand import CynanSourceChatCommand
 from src.chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
 from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
+from src.chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
@@ -2084,7 +2086,6 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
         twitchChatMessenger = twitchChatMessenger,
-        userIdsRepository = userIdsRepository,
     ),
     AnswerChatCommand(
         generalSettingsRepository = generalSettingsRepository,
@@ -2133,6 +2134,10 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
         userIdsRepository = userIdsRepository,
     ),
+    CynanSourceChatCommand(
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     DeleteTriviaAnswersChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
         generalSettingsRepository = generalSettingsRepository,
@@ -2153,6 +2158,14 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         triviaEmoteGenerator = triviaEmoteGenerator,
         triviaHistoryRepository = triviaHistoryRepository,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    GetTriviaControllersChatCommand(
+        administratorProvider = administratorProvider,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaGameControllersRepository = triviaGameControllersRepository,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),

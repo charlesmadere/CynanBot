@@ -1,17 +1,18 @@
 import locale
-from typing import Final
+import re
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from ..chatterInventory.models.chatterItemType import ChatterItemType
 from ..chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class ChatterInventoryChatCommand(AbsChatCommand):
+class ChatterInventoryChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -19,7 +20,6 @@ class ChatterInventoryChatCommand(AbsChatCommand):
         chatterInventorySettings: ChatterInventorySettingsInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(chatterInventoryHelper, ChatterInventoryHelperInterface):
             raise TypeError(f'chatterInventoryHelper argument is malformed: \"{chatterInventoryHelper}\"')
@@ -29,26 +29,33 @@ class ChatterInventoryChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = chatterInventoryHelper
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!(?:my)?(?:inv)?entory\b', re.IGNORECASE),
+        })
 
-        if not user.isChatterInventoryEnabled:
-            return
+    @property
+    def commandName(self) -> str:
+        return 'ChatterInventoryChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isChatterInventoryEnabled:
+            return ChatCommandResult.IGNORED
         elif not await self.__chatterInventorySettings.isEnabled():
-            return
+            return ChatCommandResult.IGNORED
 
         inventory = await self.__chatterInventoryHelper.get(
-            chatterUserId = ctx.getAuthorId(),
-            twitchChannelId = await ctx.getTwitchChannelId(),
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
         inventoryStrings: list[str] = list()
@@ -69,8 +76,9 @@ class ChatterInventoryChatCommand(AbsChatCommand):
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ Your inventory: {inventoryString}',
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            replyMessageId = await ctx.getMessageId(),
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log('ChatterInventoryChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log('ChatterInventoryChatCommand', f'Handled ({inventory=})')
+        return ChatCommandResult.HANDLED

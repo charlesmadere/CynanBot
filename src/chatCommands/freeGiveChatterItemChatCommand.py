@@ -1,10 +1,12 @@
 import locale
 import random
+import re
 import traceback
 from dataclasses import dataclass
-from typing import Final
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from ..chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from ..chatterInventory.models.chatterItemType import ChatterItemType
@@ -14,13 +16,12 @@ from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class FreeGiveChatterItemChatCommand(AbsChatCommand):
+class FreeGiveChatterItemChatCommand(AbsChatCommand2):
 
     @dataclass(frozen = True, slots = True)
     class Arguments:
@@ -40,7 +41,6 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -60,8 +60,6 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = chatterInventoryHelper
@@ -72,49 +70,56 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
+
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!freegive(?:chatter)?item\b', re.IGNORECASE),
+            re.compile(r'^\s*!free(?:chatter)?item(?:give)?\b', re.IGNORECASE),
+        })
 
     async def __chooseRandomEnabledItemType(self) -> str:
         enabledItemTypes = await self.__chatterInventorySettings.getEnabledItemTypes()
         randomItemType = random.choice(list(enabledItemTypes))
         return await self.__chatterInventoryMapper.serializeItemType(randomItemType)
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+    @property
+    def commandName(self) -> str:
+        return 'FreeGiveChatterItemChatCommand'
 
-        if not user.isChatterInventoryEnabled:
-            return
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isChatterInventoryEnabled:
+            return ChatCommandResult.IGNORED
         elif not await self.__chatterInventorySettings.isEnabled():
-            return
-
-        twitchChannelId = await ctx.getTwitchChannelId()
-        editorIds = await self.__twitchChannelEditorsRepository.fetchEditorIds(twitchChannelId)
-        administratorId = await self.__administratorProvider.getAdministratorUserId()
-
-        if ctx.getAuthorId() != twitchChannelId and ctx.getAuthorId() != administratorId and ctx.getAuthorId() not in editorIds:
-            self.__timber.log('FreeGiveChatterItemChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
-            return
+            return ChatCommandResult.IGNORED
+        elif not await self.__hasPermissions(
+            chatMessage = chatMessage,
+        ):
+            return ChatCommandResult.IGNORED
 
         arguments = await self.__parseArguments(
-            messageContent = ctx.getMessageContent(),
-            twitchChannelId = twitchChannelId,
+            messageContent = chatMessage.text,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
         if arguments is None:
             randomItemType = await self.__chooseRandomEnabledItemType()
 
             self.__twitchChatMessenger.send(
-                text = f'⚠ Invalid arguments! Example use: !freegive @{ctx.getAuthorName()} {randomItemType}',
-                twitchChannelId = twitchChannelId,
-                replyMessageId = await ctx.getMessageId(),
+                text = f'⚠ Invalid arguments! Example use: !freegive @{chatMessage.chatterUserName} {randomItemType}',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+
+            return ChatCommandResult.HANDLED
 
         updatedInventory = await self.__chatterInventoryHelper.give(
             itemType = arguments.itemType,
             giveAmount = arguments.giveAmount,
             chatterUserId = arguments.chatterUserId,
-            twitchChannelId = twitchChannelId,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
         inventoryStrings: list[str] = list()
@@ -135,11 +140,24 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ Updated inventory for @{updatedInventory.chatterUserName} — {inventoryString}',
-            twitchChannelId = twitchChannelId,
-            replyMessageId = await ctx.getMessageId(),
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log('FreeGiveChatterItemChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({updatedInventory=}) ({arguments=})')
+        return ChatCommandResult.HANDLED
+
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+
+        isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
+
+        isEditor = await self.__twitchChannelEditorsRepository.isEditor(
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
+        )
+
+        return isStreamer or isAdministrator or isEditor
 
     async def __parseArguments(
         self,

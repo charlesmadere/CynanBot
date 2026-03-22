@@ -54,7 +54,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
                 VALUES ($1, $2)
                 ON CONFLICT (twitchchannelid, userid) DO NOTHING
             ''',
-            twitchChannelId, userId
+            twitchChannelId, userId,
         )
 
         await connection.close()
@@ -83,7 +83,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
                 SELECT userid FROM triviagamecontrollers
                 WHERE triviagamecontrollers.twitchchannelid = $1
             ''',
-            twitchChannelId
+            twitchChannelId,
         )
 
         await connection.close()
@@ -161,7 +161,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
                 DELETE FROM triviagamecontrollers
                 WHERE twitchchannelid = $1 AND userid = $2
             ''',
-            twitchChannelId, userId
+            twitchChannelId, userId,
         )
 
         await connection.close()

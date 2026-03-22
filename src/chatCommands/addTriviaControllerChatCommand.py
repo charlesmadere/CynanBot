@@ -146,5 +146,5 @@ class AddTriviaControllerChatCommand(AbsChatCommand2):
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
-        self.__timber.log(self.commandName, f'Handled ({result=}) ({targetUserId=}) ({targetUserName=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Handled ({result=}) ({targetUserId=}) ({targetUserName=})')
         return ChatCommandResult.HANDLED

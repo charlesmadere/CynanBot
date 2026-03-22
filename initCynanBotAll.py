@@ -62,18 +62,23 @@ from src.chatCommands.addTriviaControllerChatCommand import AddTriviaControllerC
 from src.chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
 from src.chatCommands.answerChatCommand import AnswerChatCommand
 from src.chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
+from src.chatCommands.chatterInventoryChatCommand import ChatterInventoryChatCommand
 from src.chatCommands.clearSuperTriviaQueueChatCommand import ClearSuperTriviaQueueChatCommand
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
 from src.chatCommands.cutenessChampionsChatCommand import CutenessChampionsChatCommand
 from src.chatCommands.cutenessChatCommand import CutenessChatCommand
 from src.chatCommands.cutenessHistoryChatCommand import CutenessHistoryChatCommand
+from src.chatCommands.cynanSourceChatCommand import CynanSourceChatCommand
 from src.chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
+from src.chatCommands.freeGiveChatterItemChatCommand import FreeGiveChatterItemChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
+from src.chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
+from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from src.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
@@ -3316,7 +3321,6 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
         twitchChatMessenger = twitchChatMessenger,
-        userIdsRepository = userIdsRepository,
     ),
     AnswerChatCommand(
         generalSettingsRepository = generalSettingsRepository,
@@ -3340,6 +3344,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaGameMachine = triviaGameMachine,
         triviaIdGenerator = triviaIdGenerator,
         triviaUtils = triviaUtils,
+    ),
+    ChatterInventoryChatCommand(
+        chatterInventoryHelper = chatterInventoryHelper,
+        chatterInventorySettings = chatterInventorySettings,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
     ),
     CommandsChatCommand(
         timber = timber,
@@ -3365,6 +3375,10 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
         userIdsRepository = userIdsRepository,
     ),
+    CynanSourceChatCommand(
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     DeleteTriviaAnswersChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
         generalSettingsRepository = generalSettingsRepository,
@@ -3379,6 +3393,17 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    FreeGiveChatterItemChatCommand(
+        administratorProvider = administratorProvider,
+        chatterInventoryHelper = chatterInventoryHelper,
+        chatterInventoryMapper = chatterInventoryMapper,
+        chatterInventorySettings = chatterInventorySettings,
+        timber = timber,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
+    ),
     GetGashaponItemChatCommand(
         gashaponRewardHelper = gashaponRewardHelper,
         soundPlayerManagerProvider = soundPlayerManagerProvider,
@@ -3392,6 +3417,14 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         triviaEmoteGenerator = triviaEmoteGenerator,
         triviaHistoryRepository = triviaHistoryRepository,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    GetTriviaControllersChatCommand(
+        administratorProvider = administratorProvider,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaGameControllersRepository = triviaGameControllersRepository,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
@@ -3413,6 +3446,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         cutenessUtils = cutenessUtils,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    SkipTtsChatCommand(
+        administratorProvider = administratorProvider,
+        compositeTtsManagerProvider = compositeTtsManagerProvider,
+        timber = timber,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     ),
     SuperAnswerChatCommand(
         generalSettingsRepository = generalSettingsRepository,

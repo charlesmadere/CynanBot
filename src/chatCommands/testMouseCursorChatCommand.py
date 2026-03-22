@@ -54,5 +54,5 @@ class TestMouseCursorChatCommand(AbsChatCommand2):
             twitchChannelId = chatMessage.twitchChannelId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({chatMessage=}) ({result=})')
+        self.__timber.log(self.commandName, f'Handled ({result=}) ({chatMessage=})')
         return ChatCommandResult.HANDLED
