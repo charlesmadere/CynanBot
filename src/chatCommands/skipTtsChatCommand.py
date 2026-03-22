@@ -1,19 +1,23 @@
-from .absChatCommand import AbsChatCommand
+import re
+from typing import Collection, Final, Pattern
+
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
-from ..twitch.configuration.twitchContext import TwitchContext
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class SkipTtsChatCommand(AbsChatCommand):
+class SkipTtsChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
         compositeTtsManagerProvider: CompositeTtsManagerProviderInterface,
         timber: TimberInterface,
-        twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface
+        twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -24,23 +28,45 @@ class SkipTtsChatCommand(AbsChatCommand):
         elif not isinstance(twitchChannelEditorsRepository, TwitchChannelEditorsRepositoryInterface):
             raise TypeError(f'twitchChannelEditorsRepository argument is malformed: \"{twitchChannelEditorsRepository}\"')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__compositeTtsManagerProvider: CompositeTtsManagerProviderInterface = compositeTtsManagerProvider
-        self.__timber: TimberInterface = timber
-        self.__twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface = twitchChannelEditorsRepository
+        self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
+        self.__compositeTtsManagerProvider: Final[CompositeTtsManagerProviderInterface] = compositeTtsManagerProvider
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchChannelEditorsRepository: Final[TwitchChannelEditorsRepositoryInterface] = twitchChannelEditorsRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        administrator = await self.__administratorProvider.getAdministratorUserId()
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!skiptts\b', re.IGNORECASE),
+        })
 
-        editorIds = await self.__twitchChannelEditorsRepository.fetchEditorIds(
-            twitchChannelId = await ctx.getTwitchChannelId()
-        )
+    @property
+    def commandName(self) -> str:
+        return 'SkipTtsChatCommand'
 
-        if administrator != ctx.getAuthorId() and ctx.getAuthorId() not in editorIds:
-            self.__timber.log('SkipTtsChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()} tried using this command!')
-            return
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isTtsEnabled:
+            return ChatCommandResult.IGNORED
+        elif not await self.__hasPermissions(
+            chatMessage = chatMessage,
+        ):
+            return ChatCommandResult.IGNORED
 
         compositeTtsManager = self.__compositeTtsManagerProvider.getSharedInstance()
         await compositeTtsManager.stopTtsEvent()
 
-        self.__timber.log('SkipTtsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()}')
+        self.__timber.log(self.commandName, f'Handled')
+        return ChatCommandResult.HANDLED
+
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+
+        isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
+
+        isEditor = await self.__twitchChannelEditorsRepository.isEditor(
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
+        )
+
+        return isStreamer or isAdministrator or isEditor

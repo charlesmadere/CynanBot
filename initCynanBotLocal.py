@@ -46,8 +46,10 @@ from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
 from src.chatCommands.chatterInventoryChatCommand import ChatterInventoryChatCommand
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
+from src.chatCommands.freeGiveChatterItemChatCommand import FreeGiveChatterItemChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
+from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
@@ -2335,6 +2337,17 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    FreeGiveChatterItemChatCommand(
+        administratorProvider = administratorProvider,
+        chatterInventoryHelper = chatterInventoryHelper,
+        chatterInventoryMapper = chatterInventoryMapper,
+        chatterInventorySettings = chatterInventorySettings,
+        timber = timber,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
+    ),
     GetGashaponItemChatCommand(
         gashaponRewardHelper = gashaponRewardHelper,
         soundPlayerManagerProvider = soundPlayerManagerProvider,
@@ -2346,6 +2359,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         administratorProvider = administratorProvider,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    SkipTtsChatCommand(
+        administratorProvider = administratorProvider,
+        compositeTtsManagerProvider = compositeTtsManagerProvider,
+        timber = timber,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     ),
     testMouseCursorChatCommand,
     TtsChatCommand(

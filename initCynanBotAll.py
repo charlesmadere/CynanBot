@@ -70,12 +70,14 @@ from src.chatCommands.cutenessChatCommand import CutenessChatCommand
 from src.chatCommands.cutenessHistoryChatCommand import CutenessHistoryChatCommand
 from src.chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
+from src.chatCommands.freeGiveChatterItemChatCommand import FreeGiveChatterItemChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from src.chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
+from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from src.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
@@ -3386,6 +3388,17 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    FreeGiveChatterItemChatCommand(
+        administratorProvider = administratorProvider,
+        chatterInventoryHelper = chatterInventoryHelper,
+        chatterInventoryMapper = chatterInventoryMapper,
+        chatterInventorySettings = chatterInventorySettings,
+        timber = timber,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
+    ),
     GetGashaponItemChatCommand(
         gashaponRewardHelper = gashaponRewardHelper,
         soundPlayerManagerProvider = soundPlayerManagerProvider,
@@ -3428,6 +3441,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         cutenessUtils = cutenessUtils,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    SkipTtsChatCommand(
+        administratorProvider = administratorProvider,
+        compositeTtsManagerProvider = compositeTtsManagerProvider,
+        timber = timber,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     ),
     SuperAnswerChatCommand(
         generalSettingsRepository = generalSettingsRepository,
