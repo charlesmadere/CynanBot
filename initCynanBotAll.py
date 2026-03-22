@@ -62,12 +62,15 @@ from src.chatCommands.addTriviaControllerChatCommand import AddTriviaControllerC
 from src.chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
 from src.chatCommands.answerChatCommand import AnswerChatCommand
 from src.chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
+from src.chatCommands.clearSuperTriviaQueueChatCommand import ClearSuperTriviaQueueChatCommand
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
 from src.chatCommands.cutenessChampionsChatCommand import CutenessChampionsChatCommand
 from src.chatCommands.cutenessChatCommand import CutenessChatCommand
 from src.chatCommands.cutenessHistoryChatCommand import CutenessHistoryChatCommand
+from src.chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
+from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
@@ -3331,6 +3334,13 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    ClearSuperTriviaQueueChatCommand(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaGameMachine = triviaGameMachine,
+        triviaIdGenerator = triviaIdGenerator,
+        triviaUtils = triviaUtils,
+    ),
     CommandsChatCommand(
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
@@ -3355,6 +3365,15 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
         userIdsRepository = userIdsRepository,
     ),
+    DeleteTriviaAnswersChatCommand(
+        additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaHistoryRepository = triviaHistoryRepository,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     EccoChatCommand(
         eccoHelper = eccoHelper,
         timber = timber,
@@ -3365,6 +3384,15 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         soundPlayerManagerProvider = soundPlayerManagerProvider,
         timber = timber,
         timeZoneRepository = timeZoneRepository,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    GetTriviaAnswersChatCommand(
+        additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaHistoryRepository = triviaHistoryRepository,
+        triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
     GiveCutenessChatCommand(
