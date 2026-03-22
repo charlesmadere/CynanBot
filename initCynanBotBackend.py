@@ -2085,7 +2085,6 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
         twitchChatMessenger = twitchChatMessenger,
-        userIdsRepository = userIdsRepository,
     ),
     AnswerChatCommand(
         generalSettingsRepository = generalSettingsRepository,
