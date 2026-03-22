@@ -57,6 +57,7 @@ from src.chatCommands.commandsChatCommand import CommandsChatCommand
 from src.chatCommands.cutenessChampionsChatCommand import CutenessChampionsChatCommand
 from src.chatCommands.cutenessChatCommand import CutenessChatCommand
 from src.chatCommands.cutenessHistoryChatCommand import CutenessHistoryChatCommand
+from src.chatCommands.cynanSourceChatCommand import CynanSourceChatCommand
 from src.chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
 from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
@@ -2132,6 +2133,10 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
         userIdsRepository = userIdsRepository,
+    ),
+    CynanSourceChatCommand(
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
     ),
     DeleteTriviaAnswersChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
