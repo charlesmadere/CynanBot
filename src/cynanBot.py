@@ -34,7 +34,6 @@ from .chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
 from .chatCommands.beanInstructionsChatCommand import BeanInstructionsChatCommand
 from .chatCommands.beanStatsChatCommand import BeanStatsChatCommand
 from .chatCommands.blueSkyChatCommand import BlueSkyChatCommand
-from .chatCommands.chatterInventoryChatCommand import ChatterInventoryChatCommand
 from .chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from .chatCommands.confirmChatCommand import ConfirmChatCommand
 from .chatCommands.crowdControlChatCommand import CrowdControlChatCommand
@@ -50,7 +49,6 @@ from .chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredT
 from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from .chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
 from .chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
-from .chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from .chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
 from .chatCommands.jishoChatCommand import JishoChatCommand
 from .chatCommands.pkMonChatCommand import PkMonChatCommand
@@ -799,11 +797,9 @@ class CynanBot(
             self.__beanStatsCommand: AbsChatCommand = BeanStatsChatCommand(beanStatsPresenter, beanStatsRepository, timber, twitchChatMessenger, userIdsRepository, usersRepository)
 
         if chatterInventoryHelper is None or chatterInventoryIdGenerator is None or chatterInventoryItemUseMachine is None or chatterInventoryMapper is None or chatterInventorySettings is None or gashaponRewardHelper is None or useChatterItemHelper is None:
-            self.__chatterInventoryCommand: AbsChatCommand = StubChatCommand()
             self.__freeGiveChatterItemCommand: AbsChatCommand = StubChatCommand()
             self.__giveChatterItemCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__chatterInventoryCommand: AbsChatCommand = ChatterInventoryChatCommand(chatterInventoryHelper, chatterInventorySettings, timber, twitchChatMessenger, usersRepository)
             self.__freeGiveChatterItemCommand: AbsChatCommand = FreeGiveChatterItemChatCommand(administratorProvider, chatterInventoryHelper, chatterInventoryMapper, chatterInventorySettings, timber, twitchChannelEditorsRepository, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository)
             self.__giveChatterItemCommand: AbsChatCommand = GiveChatterItemChatCommand(chatterInventoryIdGenerator, chatterInventoryItemUseMachine, chatterInventoryMapper, chatterInventorySettings, timber, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository)
 
@@ -887,13 +883,11 @@ class CynanBot(
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or cutenessUtils is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameControllersRepository is None or triviaGameGlobalControllersRepository is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaIdGenerator is None or triviaQuestionOccurrencesRepository is None or triviaScoreRepository is None or triviaSettings is None or triviaUtils is None:
             self.__getGlobalTriviaControllersCommand: AbsChatCommand = StubChatCommand()
-            self.__getTriviaControllersCommand: AbsChatCommand = StubChatCommand()
             self.__removeGlobalTriviaControllerChatCommand: AbsChatCommand = StubChatCommand()
             self.__removeTriviaControllerChatCommand: AbsChatCommand = StubChatCommand()
             self.__unbanTriviaQuestionChatCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__getGlobalTriviaControllersCommand: AbsChatCommand = GetGlobalTriviaControllersChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameGlobalControllersRepository, triviaUtils, twitchChatMessenger, usersRepository)
-            self.__getTriviaControllersCommand: AbsChatCommand = GetTriviaControllersChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, triviaUtils, twitchChatMessenger, usersRepository)
             self.__removeGlobalTriviaControllerChatCommand: AbsChatCommand = RemoveGlobalTriviaControllerChatCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
             self.__removeTriviaControllerChatCommand: AbsChatCommand = RemoveTriviaControllerChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
             self.__unbanTriviaQuestionChatCommand: AbsChatCommand = UnbanTriviaQuestionChatCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchChatMessenger, usersRepository)
@@ -1262,20 +1256,10 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getRecurringActionsCommand.handleChatCommand(context)
 
-    @commands.command(name = 'gettriviacontrollers', aliases = [ 'triviacontrollers' ])
-    async def command_gettriviacontrollers(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__getTriviaControllersCommand.handleChatCommand(context)
-
     @commands.command(name = 'giveitem', aliases = [ 'givechatteritem', 'itemgive' ])
     async def command_givechatteritem(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__giveChatterItemCommand.handleChatCommand(context)
-
-    @commands.command(name = 'inventory', aliases = [ 'inv' ])
-    async def command_chatterinventory(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__chatterInventoryCommand.handleChatCommand(context)
 
     @commands.command(name = 'jisho')
     async def command_jisho(self, ctx: Context):

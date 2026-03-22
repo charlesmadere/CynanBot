@@ -44,6 +44,7 @@ from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAn
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
+from src.chatCommands.chatterInventoryChatCommand import ChatterInventoryChatCommand
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
@@ -2324,6 +2325,12 @@ chatActions: Final[Collection[AbsChatAction2 | None]] = [
 ]
 
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
+    ChatterInventoryChatCommand(
+        chatterInventoryHelper = chatterInventoryHelper,
+        chatterInventorySettings = chatterInventorySettings,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     CommandsChatCommand(
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
