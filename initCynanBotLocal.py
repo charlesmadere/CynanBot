@@ -53,6 +53,7 @@ from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
+from src.chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
@@ -2379,6 +2380,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
         useChatterItemHelper = useChatterItemHelper,
+    ),
+    VulnerableChattersChatCommand(
+        activeChattersRepository = activeChattersRepository,
+        timber = timber,
+        timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+        twitchChatMessenger = twitchChatMessenger,
     ),
 })
 
