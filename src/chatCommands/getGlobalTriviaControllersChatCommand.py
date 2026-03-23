@@ -1,6 +1,8 @@
-from typing import Final
+import re
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
@@ -8,11 +10,10 @@ from ..trivia.gameController.triviaGameGlobalControllersRepositoryInterface impo
     TriviaGameGlobalControllersRepositoryInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class GetGlobalTriviaControllersChatCommand(AbsChatCommand):
+class GetGlobalTriviaControllersChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -22,7 +23,6 @@ class GetGlobalTriviaControllersChatCommand(AbsChatCommand):
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface,
         triviaUtils: TriviaUtilsInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
@@ -34,8 +34,6 @@ class GetGlobalTriviaControllersChatCommand(AbsChatCommand):
             raise TypeError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
@@ -43,24 +41,37 @@ class GetGlobalTriviaControllersChatCommand(AbsChatCommand):
         self.__triviaGameGlobalControllersRepository: Final[TriviaGameGlobalControllersRepositoryInterface] = triviaGameGlobalControllersRepository
         self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!(?:get)?globaltriviacontrollers?\b', re.IGNORECASE),
+        })
+
+    @property
+    def commandName(self) -> str:
+        return 'GetGlobalTriviaControllersChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
-            return
-        elif ctx.getAuthorId() != await self.__administratorProvider.getAdministratorUserId():
-            self.__timber.log('GetGlobalTriviaControllersChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
-            return
+            return ChatCommandResult.IGNORED
+        elif chatMessage.chatterUserId != await self.__administratorProvider.getAdministratorUserId():
+            return ChatCommandResult.IGNORED
 
         controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
 
-        self.__twitchChatMessenger.send(
-            text = await self.__triviaUtils.getTriviaGameGlobalControllers(controllers),
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            replyMessageId = await ctx.getMessageId(),
+        printOut = await self.__triviaUtils.getTriviaGameGlobalControllers(
+            gameControllers = controllers,
         )
 
-        self.__timber.log('GetGlobalTriviaControllersChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__twitchChatMessenger.send(
+            text = printOut,
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
+        )
+
+        self.__timber.log(self.commandName, f'Handled ({printOut=}) ({controllers=})')
+        return ChatCommandResult.HANDLED
