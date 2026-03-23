@@ -73,6 +73,7 @@ from src.chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersC
 from src.chatCommands.eccoChatCommand import EccoChatCommand
 from src.chatCommands.freeGiveChatterItemChatCommand import FreeGiveChatterItemChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
+from src.chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
 from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from src.chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
@@ -3409,6 +3410,14 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         soundPlayerManagerProvider = soundPlayerManagerProvider,
         timber = timber,
         timeZoneRepository = timeZoneRepository,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    GetGlobalTriviaControllersChatCommand(
+        administratorProvider = administratorProvider,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
+        triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
     GetTriviaAnswersChatCommand(
