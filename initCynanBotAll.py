@@ -88,6 +88,7 @@ from src.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
 from src.chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
+from src.chatCommands.weatherChatCommand import WeatherChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
@@ -3511,6 +3512,14 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
         useChatterItemHelper = useChatterItemHelper,
+    ),
+    WeatherChatCommand(
+        locationsRepository = locationsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        usersRepository = usersRepository,
+        weatherReportPresenter = weatherReportPresenter,
+        weatherRepository = weatherRepository,
     ),
     VulnerableChattersChatCommand(
         activeChattersRepository = activeChattersRepository,

@@ -1,22 +1,23 @@
+import re
 import traceback
-from datetime import timedelta
-from typing import Final
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..location.exceptions import NoSuchLocationException
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
 from ..misc import utils as utils
-from ..misc.timedDict import TimedDict
 from ..openWeather.exceptions import OpenWeatherApiKeyUnavailableException
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..weather.weatherReport import WeatherReport
 from ..weather.weatherReportPresenterInterface import WeatherReportPresenterInterface
 from ..weather.weatherRepositoryInterface import WeatherRepositoryInterface
 
 
-class WeatherChatCommand(AbsChatCommand):
+class WeatherChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -26,7 +27,6 @@ class WeatherChatCommand(AbsChatCommand):
         usersRepository: UsersRepositoryInterface,
         weatherReportPresenter: WeatherReportPresenterInterface,
         weatherRepository: WeatherRepositoryInterface,
-        cooldown: timedelta = timedelta(minutes = 1)
     ):
         if not isinstance(locationsRepository, LocationsRepositoryInterface):
             raise TypeError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
@@ -40,35 +40,41 @@ class WeatherChatCommand(AbsChatCommand):
             raise TypeError(f'weatherReportPresenter argument is malformed: \"{weatherReportPresenter}\"')
         elif not isinstance(weatherRepository, WeatherRepositoryInterface):
             raise TypeError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__locationsRepository: Final[LocationsRepositoryInterface] = locationsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
-        self.__weatherReportPresenter: WeatherReportPresenterInterface = weatherReportPresenter
-        self.__weatherRepository: WeatherRepositoryInterface = weatherRepository
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
+        self.__weatherReportPresenter: Final[WeatherReportPresenterInterface] = weatherReportPresenter
+        self.__weatherRepository: Final[WeatherRepositoryInterface] = weatherRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!weather\b', re.IGNORECASE),
+        })
 
-        if not user.isWeatherEnabled:
-            return
-        elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
-            return
+    @property
+    def commandName(self) -> str:
+        return 'WeatherChatCommand'
 
-        locationId = user.locationId
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if chatMessage.twitchUser.isWeatherEnabled:
+            return ChatCommandResult.IGNORED
+
+        locationId = chatMessage.twitchUser.locationId
         if not utils.isValidStr(locationId):
-            self.__timber.log('WeatherCommand', f'No location ID found when fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
-            return
+            return ChatCommandResult.IGNORED
 
         try:
             location = await self.__locationsRepository.getLocation(locationId)
         except NoSuchLocationException as e:
-            self.__timber.log('WeatherCommand', f'Unable to get location when fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({locationId=})', e, traceback.format_exc())
-            return
+            self.__timber.log(self.commandName, f'The given user has no location ID available ({locationId=}) ({chatMessage=})', e, traceback.format_exc())
+            return ChatCommandResult.IGNORED
+
+        weatherReport: WeatherReport | None = None
 
         try:
             weatherReport = await self.__weatherRepository.fetchWeather(
@@ -81,17 +87,18 @@ class WeatherChatCommand(AbsChatCommand):
 
             self.__twitchChatMessenger.send(
                 text = weatherReportString,
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
         except OpenWeatherApiKeyUnavailableException as e:
-            self.__timber.log('WeatherCommand', f'OpenWeather API key unavailable when fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({locationId=})', e, traceback.format_exc())
+            self.__timber.log(self.commandName, f'OpenWeather API key unavailable when fetching weather ({locationId=}) ({chatMessage=})', e, traceback.format_exc())
         except Exception as e:
-            self.__timber.log('WeatherCommand', f'Error fetching weather for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({locationId=})', e, traceback.format_exc())
+            self.__timber.log(self.commandName, f'Error fetching weather ({locationId=}) ({chatMessage=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = '⚠ Error fetching weather',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log('WeatherCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({weatherReport=})')
+        return ChatCommandResult.HANDLED
