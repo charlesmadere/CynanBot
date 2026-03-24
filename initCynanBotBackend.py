@@ -70,6 +70,7 @@ from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from src.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
 from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from src.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
+from src.chatCommands.weatherChatCommand import WeatherChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
@@ -2232,6 +2233,14 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
         userIdsRepository = userIdsRepository,
+    ),
+    WeatherChatCommand(
+        locationsRepository = locationsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        usersRepository = usersRepository,
+        weatherReportPresenter = weatherReportPresenter,
+        weatherRepository = weatherRepository,
     ),
 })
 

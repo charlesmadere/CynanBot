@@ -73,7 +73,6 @@ from .chatCommands.translateChatCommand import TranslateChatCommand
 from .chatCommands.twitchUserInfoChatCommand import TwitchUserInfoChatCommand
 from .chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
 from .chatCommands.voicemailsChatCommand import VoicemailsChatCommand
-from .chatCommands.weatherChatCommand import WeatherChatCommand
 from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
 from .chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
@@ -909,11 +908,6 @@ class CynanBot(
         else:
             self.__translateCommand: AbsChatCommand = TranslateChatCommand(languagesRepository, timber, translationHelper, twitchChatMessenger, usersRepository)
 
-        if locationsRepository is None or weatherReportPresenter is None or weatherRepository is None:
-            self.__weatherCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__weatherCommand: AbsChatCommand = WeatherChatCommand(locationsRepository, timber, twitchChatMessenger, usersRepository, weatherReportPresenter, weatherRepository)
-
         if voicemailHelper is None or voicemailsRepository is None or voicemailSettingsRepository is None:
             self.__playVoicemailCommand: AbsChatCommand = StubChatCommand()
             self.__voicemailsCommand: AbsChatCommand = StubChatCommand()
@@ -1355,11 +1349,6 @@ class CynanBot(
     async def command_voicemails(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__voicemailsCommand.handleChatCommand(context)
-
-    @commands.command(name = 'weather')
-    async def command_weather(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__weatherCommand.handleChatCommand(context)
 
     @commands.command(name = 'word')
     async def command_word(self, ctx: Context):
