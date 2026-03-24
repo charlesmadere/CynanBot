@@ -61,7 +61,7 @@ class WeatherChatCommand(AbsChatCommand2):
         return self.__commandPatterns
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
-        if chatMessage.twitchUser.isWeatherEnabled:
+        if not chatMessage.twitchUser.isWeatherEnabled:
             return ChatCommandResult.IGNORED
 
         locationId = chatMessage.twitchUser.locationId
