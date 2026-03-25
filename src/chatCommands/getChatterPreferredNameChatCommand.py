@@ -1,15 +1,16 @@
-from typing import Final
+import re
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
 from ..chatterPreferredName.settings.chatterPreferredNameSettingsInterface import ChatterPreferredNameSettingsInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class GetChatterPreferredNameChatCommand(AbsChatCommand):
+class GetChatterPreferredNameChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -17,7 +18,6 @@ class GetChatterPreferredNameChatCommand(AbsChatCommand):
         chatterPreferredNameSettings: ChatterPreferredNameSettingsInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(chatterPreferredNameHelper, ChatterPreferredNameHelperInterface):
             raise TypeError(f'chatterPreferredNameHelper argument is malformed: \"{chatterPreferredNameHelper}\"')
@@ -27,39 +27,48 @@ class GetChatterPreferredNameChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = chatterPreferredNameHelper
         self.__chatterPreferredNameSettings: Final[ChatterPreferredNameSettingsInterface] = chatterPreferredNameSettings
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        if not await self.__chatterPreferredNameSettings.isEnabled():
-            return
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!(?:get)?(?:my)?preferredname\b', re.IGNORECASE),
+            re.compile(r'^\s*!my(?:preferred)?name\b', re.IGNORECASE),
+        })
 
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        if not user.isChatterPreferredNameEnabled:
-            return
+    @property
+    def commandName(self) -> str:
+        return 'GetChatterPreferredNameChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isChatterPreferredNameEnabled:
+            return ChatCommandResult.IGNORED
+        elif not await self.__chatterPreferredNameSettings.isEnabled():
+            return ChatCommandResult.IGNORED
 
         preferredNameData = await self.__chatterPreferredNameHelper.get(
-            chatterUserId = ctx.getAuthorId(),
-            twitchChannelId = await ctx.getTwitchChannelId(),
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
         if preferredNameData is None:
             self.__twitchChatMessenger.send(
-                text = f'ⓘ You currently don\'t have a preferred name',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                text = f'ⓘ You don\'t currently have a preferred name',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
         else:
             self.__twitchChatMessenger.send(
                 text = f'ⓘ Your preferred name: {preferredNameData.preferredName}',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log('GetChatterPreferredNameChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()}')
+        self.__timber.log(self.commandName, f'Handled ({preferredNameData=})')
+        return ChatCommandResult.HANDLED

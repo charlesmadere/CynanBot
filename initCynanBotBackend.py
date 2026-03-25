@@ -66,6 +66,8 @@ from src.chatCommands.getTriviaControllersChatCommand import GetTriviaController
 from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
+from src.chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
+from src.chatCommands.removeTriviaControllerChatCommand import RemoveTriviaControllerChatCommand
 from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from src.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
 from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
@@ -2197,6 +2199,25 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         cutenessUtils = cutenessUtils,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    RemoveGlobalTriviaControllerChatCommand(
+        administratorProvider = administratorProvider,
+        timber = timber,
+        triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchHandleProvider = authRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
+    ),
+    RemoveTriviaControllerChatCommand(
+        administratorProvider = administratorProvider,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaGameControllersRepository = triviaGameControllersRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchHandleProvider = authRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
     ),
     SuperAnswerChatCommand(
         generalSettingsRepository = generalSettingsRepository,
