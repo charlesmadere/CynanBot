@@ -42,8 +42,6 @@ from .chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCo
 from .chatCommands.discordChatCommand import DiscordChatCommand
 from .chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
 from .chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
-from .chatCommands.getChatterPreferredNameChatCommand import GetChatterPreferredNameChatCommand
-from .chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredTtsChatCommand
 from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from .chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
 from .chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
@@ -55,12 +53,10 @@ from .chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTr
 from .chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
 from .chatCommands.removeChatterPreferredTtsChatCommand import RemoveChatterPreferredTtsChatCommand
 from .chatCommands.removeGameShuffleAutomatorChatCommand import RemoveGameShuffleAutomatorChatCommand
-from .chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
 from .chatCommands.removeRecurringCutenessActionChatCommand import RemoveRecurringCutenessActionChatCommand
 from .chatCommands.removeRecurringSuperTriviaActionCommand import RemoveRecurringSuperTriviaActionCommand
 from .chatCommands.removeRecurringWeatherActionCommand import RemoveRecurringWeatherActionCommand
 from .chatCommands.removeRecurringWordOfTheDayAction import RemoveRecurringWordOfTheDayActionCommand
-from .chatCommands.removeTriviaControllerChatCommand import RemoveTriviaControllerChatCommand
 from .chatCommands.removeUserChatCommand import RemoveUserChatCommand
 from .chatCommands.setChatterPreferredNameChatCommand import SetChatterPreferredNameChatCommand
 from .chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferredTtsChatCommand
@@ -855,30 +851,22 @@ class CynanBot(
             self.__removeBannedTriviaControllerCommand: AbsChatCommand = RemoveBannedTriviaControllerChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
 
         if chatterPreferredNameHelper is None or chatterPreferredNameRepository is None or chatterPreferredNameSettings is None:
-            self.__getChatterPreferredNameCommand: AbsChatCommand = StubChatCommand()
             self.__removeChatterPreferredNameCommand: AbsChatCommand = StubChatCommand()
             self.__setChatterPreferredNameCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__getChatterPreferredNameCommand: AbsChatCommand = GetChatterPreferredNameChatCommand(chatterPreferredNameHelper, chatterPreferredNameSettings, timber, twitchChatMessenger, usersRepository)
             self.__removeChatterPreferredNameCommand: AbsChatCommand = RemoveChatterPreferredNameChatCommand(chatterPreferredNameRepository, chatterPreferredNameSettings, timber, twitchChatMessenger, usersRepository)
             self.__setChatterPreferredNameCommand: AbsChatCommand = SetChatterPreferredNameChatCommand(administratorProvider, chatterPreferredNameHelper, chatterPreferredNameSettings, timber, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
 
         if chatterPreferredTtsHelper is None or chatterPreferredTtsPresenter is None or chatterPreferredTtsRepository is None or chatterPreferredTtsSettingsRepository is None or chatterPreferredTtsUserMessageHelper is None or ttsJsonMapper is None:
-            self.__getChatterPreferredTtsCommand: AbsChatCommand = StubChatCommand()
             self.__removeChatterPreferredTtsCommand: AbsChatCommand = StubChatCommand()
             self.__setChatterPreferredTtsCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__getChatterPreferredTtsCommand: AbsChatCommand = GetChatterPreferredTtsChatCommand(chatterPreferredTtsPresenter, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, timber, twitchChatMessenger, usersRepository)
             self.__removeChatterPreferredTtsCommand: AbsChatCommand = RemoveChatterPreferredTtsChatCommand(chatterPreferredTtsPresenter, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, timber, twitchChatMessenger, usersRepository)
             self.__setChatterPreferredTtsCommand: AbsChatCommand = SetChatterPreferredTtsChatCommand(administratorProvider, chatterPreferredTtsHelper, chatterPreferredTtsPresenter, chatterPreferredTtsSettingsRepository, timber, ttsJsonMapper, authRepository, twitchTokensUtils, twitchChatMessenger, userIdsRepository, usersRepository)
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or cutenessUtils is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameControllersRepository is None or triviaGameGlobalControllersRepository is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaIdGenerator is None or triviaQuestionOccurrencesRepository is None or triviaScoreRepository is None or triviaSettings is None or triviaUtils is None:
-            self.__removeGlobalTriviaControllerChatCommand: AbsChatCommand = StubChatCommand()
-            self.__removeTriviaControllerChatCommand: AbsChatCommand = StubChatCommand()
             self.__unbanTriviaQuestionChatCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__removeGlobalTriviaControllerChatCommand: AbsChatCommand = RemoveGlobalTriviaControllerChatCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
-            self.__removeTriviaControllerChatCommand: AbsChatCommand = RemoveTriviaControllerChatCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
             self.__unbanTriviaQuestionChatCommand: AbsChatCommand = UnbanTriviaQuestionChatCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchChatMessenger, usersRepository)
 
         if funtoonTokensRepository is None:
@@ -1205,16 +1193,6 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getBannedTriviaControllersCommand.handleChatCommand(context)
 
-    @commands.command(name = 'getpreferredname', aliases = [ 'getchatterpreferredname', 'myname', 'mypreferredname', 'preferredname' ])
-    async def command_getchatterpreferredname(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__getChatterPreferredNameCommand.handleChatCommand(context)
-
-    @commands.command(name = 'getpreferredtts', aliases = [ 'getchatterpreferredtts', 'mytts', 'mypreferredtts', 'preferredtts' ])
-    async def command_getchatterpreferredtts(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__getChatterPreferredTtsCommand.handleChatCommand(context)
-
     @commands.command(name = 'getcheeractions', aliases = [ 'cheeractions' ])
     async def command_getcheeractions(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1270,11 +1248,6 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeGameShuffleAutomatorCommand.handleChatCommand(context)
 
-    @commands.command(name = 'removeglobaltriviacontroller', aliases = [ 'delglobaltriviacontroller', 'deleteglobaltriviacontroller' ])
-    async def command_removeglobaltriviacontroller(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeGlobalTriviaControllerChatCommand.handleChatCommand(context)
-
     @commands.command(name = 'removerecurringcutenessaction', aliases = [ 'delrecurringcutenessaction', 'deleterecurringcutenessaction' ])
     async def command_removerecurringcutenessaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1294,11 +1267,6 @@ class CynanBot(
     async def command_removerecurringwordofthedayaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeRecurringWordOfTheDayActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'removetriviacontroller', aliases = [ 'deltriviacontroller', 'deletetriviacontroller' ])
-    async def command_removetriviacontroller(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeTriviaControllerChatCommand.handleChatCommand(context)
 
     @commands.command(name = 'setpreferredname', aliases = [ 'setname' ])
     async def command_setchatterpreferredname(self, ctx: Context):

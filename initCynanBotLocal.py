@@ -47,6 +47,8 @@ from src.chatCommands.absChatCommand2 import AbsChatCommand2
 from src.chatCommands.chatterInventoryChatCommand import ChatterInventoryChatCommand
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
 from src.chatCommands.freeGiveChatterItemChatCommand import FreeGiveChatterItemChatCommand
+from src.chatCommands.getChatterPreferredNameChatCommand import GetChatterPreferredNameChatCommand
+from src.chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredTtsChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
@@ -2348,6 +2350,19 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,
         userIdsRepository = userIdsRepository,
+    ),
+    GetChatterPreferredNameChatCommand(
+        chatterPreferredNameHelper = chatterPreferredNameHelper,
+        chatterPreferredNameSettings = chatterPreferredNameSettings,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    GetChatterPreferredTtsChatCommand(
+        chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
+        chatterPreferredTtsRepository = chatterPreferredTtsRepository,
+        chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
     ),
     GetGashaponItemChatCommand(
         gashaponRewardHelper = gashaponRewardHelper,

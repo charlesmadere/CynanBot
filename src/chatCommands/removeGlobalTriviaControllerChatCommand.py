@@ -1,6 +1,8 @@
-from typing import Final
+import re
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
@@ -8,15 +10,13 @@ from ..trivia.gameController.removeTriviaGameControllerResult import RemoveTrivi
 from ..trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ..users.exceptions import NoSuchUserException
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class RemoveGlobalTriviaControllerChatCommand(AbsChatCommand):
+class RemoveGlobalTriviaControllerChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -27,7 +27,6 @@ class RemoveGlobalTriviaControllerChatCommand(AbsChatCommand):
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -43,8 +42,6 @@ class RemoveGlobalTriviaControllerChatCommand(AbsChatCommand):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__timber: Final[TimberInterface] = timber
@@ -53,79 +50,94 @@ class RemoveGlobalTriviaControllerChatCommand(AbsChatCommand):
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!del(?:ete)?globaltriviacontroller\b', re.IGNORECASE),
+            re.compile(r'^\s*!removeglobaltriviacontroller\b', re.IGNORECASE),
+            re.compile(r'^\s*!rmglobaltriviacontroller\b', re.IGNORECASE),
+        })
+
+    @property
+    def commandName(self) -> str:
+        return 'RemoveGlobalTriviaControllerChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not await self.__hasPermissions(chatMessage):
+            return ChatCommandResult.IGNORED
+
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
 
-        if ctx.getAuthorId() != await self.__administratorProvider.getAdministratorUserId():
-            self.__timber.log('RemoveGlobalTriviaControllerChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
-            return
-
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 2:
-            self.__timber.log('RemoveGlobalTriviaControllerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but no arguments were supplied ({splits=})')
-
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to remove global trivia controller as no username argument was given. Example: !removeglobaltriviacontroller {twitchHandle}',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
 
-        userName: str | None = utils.removePreceedingAt(splits[1])
-        if not utils.isValidStr(userName) or not utils.strContainsAlphanumericCharacters(userName):
-            self.__timber.log('RemoveGlobalTriviaControllerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but username argument is malformed ({userName=})')
+            self.__timber.log(self.commandName, f'Attempted to handle command, but no arguments were supplied ({splits=}) ({chatMessage=})')
+            return ChatCommandResult.HANDLED
 
+        targetUserName: str | None = utils.removePreceedingAt(splits[1])
+        if not utils.isValidStr(targetUserName) or not utils.strContainsAlphanumericCharacters(targetUserName):
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to remove global trivia controller as an invalid username argument was given. Example: !removeglobaltriviacontroller {twitchHandle}',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
 
-        try:
-            userId = await self.__userIdsRepository.requireUserId(
-                userName = userName,
-                twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-                    twitchChannelId = await ctx.getTwitchChannelId(),
-                ),
-            )
-        except NoSuchUserException:
-            self.__timber.log('RemoveGlobalTriviaControllerChatCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}, but was unable to find user ID for the given username ({userName=})')
+            self.__timber.log(self.commandName, f'Attempted to handle command, but the given username argument is malformed ({targetUserName=}) ({splits=}) ({chatMessage=})')
+            return ChatCommandResult.HANDLED
 
+        targetUserId = await self.__userIdsRepository.fetchUserId(
+            userName = targetUserName,
+            twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+                twitchChannelId = chatMessage.twitchChannelId,
+            ),
+        )
+
+        if not utils.isValidStr(targetUserId):
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to remove global trivia controller as an invalid username argument was given. Example: !removeglobaltriviacontroller {twitchHandle}',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+
+            self.__timber.log(self.commandName, f'Attempted to handle command, but was unable to find user ID for the given username ({targetUserId=}) ({targetUserName=}) ({splits=}) ({chatMessage=})')
+            return ChatCommandResult.HANDLED
 
         result = await self.__triviaGameGlobalControllersRepository.removeController(
-            userId = userId,
+            userId = targetUserId,
         )
 
         match result:
             case RemoveTriviaGameControllerResult.DOES_NOT_EXIST:
                 self.__twitchChatMessenger.send(
-                    text = f'⚠ @{userName} is not a global trivia game controller',
-                    twitchChannelId = await ctx.getTwitchChannelId(),
-                    replyMessageId = await ctx.getMessageId(),
+                    text = f'⚠ {targetUserName} is not a global trivia game controller',
+                    twitchChannelId = chatMessage.twitchChannelId,
+                    replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
             case RemoveTriviaGameControllerResult.ERROR:
                 self.__twitchChatMessenger.send(
-                    text = f'⚠ An error occurred when trying to remove @{userName} as a global trivia game controller!',
-                    twitchChannelId = await ctx.getTwitchChannelId(),
-                    replyMessageId = await ctx.getMessageId(),
+                    text = f'⚠ An error occurred when trying to remove {targetUserName} as a global trivia game controller!',
+                    twitchChannelId = chatMessage.twitchChannelId,
+                    replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
             case RemoveTriviaGameControllerResult.REMOVED:
                 self.__twitchChatMessenger.send(
-                    text = f'ⓘ Removed @{userName} as a global trivia game controller',
-                    twitchChannelId = await ctx.getTwitchChannelId(),
-                    replyMessageId = await ctx.getMessageId(),
+                    text = f'ⓘ Removed {targetUserName} as a global trivia game controller',
+                    twitchChannelId = chatMessage.twitchChannelId,
+                    replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
-        self.__timber.log('RemoveGlobalTriviaControllerChatCommand', f'Handled command with {result} result for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({result=}) ({targetUserId=}) ({targetUserName=})')
+        return ChatCommandResult.IGNORED
+
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        return chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
