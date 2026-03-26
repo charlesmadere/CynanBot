@@ -1,9 +1,10 @@
 import re
 import traceback
 from dataclasses import dataclass
-from typing import Final, Pattern
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
 from ..chatterPreferredTts.exceptions import FailedToChooseRandomTtsException, NoEnabledTtsProvidersException, \
     TtsProviderIsNotEnabledException, UnableToParseUserMessageIntoTtsException
@@ -16,15 +17,14 @@ from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class SetChatterPreferredTtsChatCommand(AbsChatCommand):
+class SetChatterPreferredTtsChatCommand(AbsChatCommand2):
 
     @dataclass(frozen = True, slots = True)
     class LookupUserInfo:
@@ -43,7 +43,6 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -65,8 +64,6 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = chatterPreferredTtsHelper
@@ -78,65 +75,71 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
+
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!set(?:preferred)?tts(?:provider)?\b', re.IGNORECASE),
+        })
 
         self.__randomRegEx: Final[Pattern] = re.compile(r'^\s*\"?random(?:ize)?\"?\s*$', re.IGNORECASE)
+
+    @property
+    def commandName(self) -> str:
+        return 'SetChatterPreferredTtsChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
 
     async def __getExampleTtsProvider(self, user: UserInterface) -> str:
         return await self.__ttsJsonMapper.asyncSerializeProvider(
             ttsProvider = user.defaultTtsProvider
         )
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        if not await self.__chatterPreferredTtsSettingsRepository.isEnabled():
-            return
-
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        if not user.isChatterPreferredTtsEnabled:
-            return
-
-        twitchChannelId = await ctx.getTwitchChannelId()
-        administrator = await self.__administratorProvider.getAdministratorUserId()
-
-        if twitchChannelId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('SetChatterPreferredTtsChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
-            return
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isChatterPreferredTtsEnabled:
+            return ChatCommandResult.IGNORED
+        elif not await self.__chatterPreferredTtsSettingsRepository.isEnabled():
+            return ChatCommandResult.IGNORED
+        elif not await self.__hasPermissions(chatMessage):
+            return ChatCommandResult.IGNORED
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        exampleTtsProvider = await self.__getExampleTtsProvider(user)
+        exampleTtsProvider = await self.__getExampleTtsProvider(chatMessage.twitchUser)
 
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 3:
-            self.__timber.log('SetChatterPreferredTtsChatCommand', f'Less than 2 arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
-
             self.__twitchChatMessenger.send(
-                text = f'⚠ Username and preferred TTS voice is necessary for this command. Example: !setpreferredtts {twitchHandle} {exampleTtsProvider}',
-                twitchChannelId = twitchChannelId,
-                replyMessageId = await ctx.getMessageId(),
+                text = f'⚠ Username and preferred TTS voice is necessary for this command. Example: !setpreferredtts @{twitchHandle} {exampleTtsProvider}',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+
+            self.__timber.log(self.commandName, f'Less than 2 arguments given ({splits=}) ({chatMessage=})')
+            return ChatCommandResult.HANDLED
 
         lookupUser = await self.__lookupUser(
-            twitchChannelId = twitchChannelId,
+            twitchChannelId = chatMessage.twitchChannelId,
             userName = splits[1],
         )
 
         if lookupUser is None:
-            self.__timber.log('SetChatterPreferredTtsChatCommand', f'Invalid user name argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
             self.__twitchChatMessenger.send(
-                text = f'⚠ Username and preferred TTS voice is necessary for this command. Example: !setpreferredtts {twitchHandle} {exampleTtsProvider}',
-                twitchChannelId = twitchChannelId,
-                replyMessageId = await ctx.getMessageId(),
+                text = f'⚠ Username and preferred TTS voice is necessary for this command. Example: !setpreferredtts @{twitchHandle} {exampleTtsProvider}',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+
+            self.__timber.log(self.commandName, f'Encountered invalid username argument ({lookupUser=}) ({splits=}) ({chatMessage=})')
+            return ChatCommandResult.HANDLED
         elif not utils.isValidStr(lookupUser.userId):
-            self.__timber.log('SetChatterPreferredTtsChatCommand', f'Unknown user name argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
             self.__twitchChatMessenger.send(
-                text = f'⚠ Unable to find info for user \"{lookupUser.userName}\". A username and preferred TTS voice is necessary for this command. Example: !setpreferredtts {twitchHandle} {exampleTtsProvider}',
-                twitchChannelId = twitchChannelId,
-                replyMessageId = await ctx.getMessageId(),
+                text = f'⚠ Unable to find info for user \"{lookupUser.userName}\". A username and preferred TTS voice is necessary for this command. Example: !setpreferredtts @{twitchHandle} {exampleTtsProvider}',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+
+            self.__timber.log(self.commandName, f'Encountered unknown username argument ({lookupUser=}) ({splits=}) ({chatMessage=})')
+            return ChatCommandResult.HANDLED
 
         userMessage = utils.cleanStr(' '.join(splits[2:]))
         preferredTts: ChatterPreferredTts
@@ -145,30 +148,32 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
             if self.__randomRegEx.fullmatch(userMessage):
                 preferredTts = await self.__chatterPreferredTtsHelper.applyRandomPreferredTts(
                     chatterUserId = lookupUser.userId,
-                    twitchChannelId = twitchChannelId,
+                    twitchChannelId = chatMessage.twitchChannelId,
                 )
             else:
                 preferredTts = await self.__chatterPreferredTtsHelper.applyUserMessagePreferredTts(
                     chatterUserId = lookupUser.userId,
-                    twitchChannelId = twitchChannelId,
+                    twitchChannelId = chatMessage.twitchChannelId,
                     userMessage = userMessage,
                 )
         except (FailedToChooseRandomTtsException, NoEnabledTtsProvidersException, UnableToParseUserMessageIntoTtsException) as e:
-            self.__timber.log('SetChatterPreferredTtsChatCommand', f'Failed to set preferred TTS given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({lookupUser=}) ({userMessage=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to set preferred TTS for @{lookupUser.userName}! Please check your input and try again.',
-                twitchChannelId = twitchChannelId,
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+
+            self.__timber.log(self.commandName, f'Failed to set preferred TTS ({lookupUser=}) ({userMessage=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
+            return ChatCommandResult.HANDLED
         except TtsProviderIsNotEnabledException as e:
-            self.__timber.log('SetChatterPreferredTtsChatCommand', f'The TTS Provider given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}  is not enabled ({lookupUser=}) ({userMessage=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ The TTS provider requested for @{lookupUser.userName} is not available! Please try a different TTS provider.',
-                twitchChannelId = twitchChannelId,
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+
+            self.__timber.log(self.commandName, f'The given TTS Provider is not enabled ({lookupUser=}) ({userMessage=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
+            return ChatCommandResult.HANDLED
 
         printOut = await self.__chatterPreferredTtsPresenter.printOut(
             preferredTts = preferredTts,
@@ -176,11 +181,19 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ New preferred TTS set for @{lookupUser.userName} — {printOut}',
-            twitchChannelId = twitchChannelId,
-            replyMessageId = await ctx.getMessageId(),
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log('SetChatterPreferredTtsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({preferredTts=}) ({lookupUser=}) ({chatMessage=})')
+        return ChatCommandResult.HANDLED
+
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+
+        isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
+
+        return isStreamer or isAdministrator
 
     async def __lookupUser(
         self,

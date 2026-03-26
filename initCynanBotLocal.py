@@ -51,6 +51,8 @@ from src.chatCommands.getChatterPreferredNameChatCommand import GetChatterPrefer
 from src.chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredTtsChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
+from src.chatCommands.setChatterPreferredNameChatCommand import SetChatterPreferredNameChatCommand
+from src.chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferredTtsChatCommand
 from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
@@ -2375,6 +2377,28 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         administratorProvider = administratorProvider,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    SetChatterPreferredNameChatCommand(
+        administratorProvider = administratorProvider,
+        chatterPreferredNameHelper = chatterPreferredNameHelper,
+        chatterPreferredNameSettings = chatterPreferredNameSettings,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchHandleProvider = authRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
+    ),
+    SetChatterPreferredTtsChatCommand(
+        administratorProvider = administratorProvider,
+        chatterPreferredTtsHelper = chatterPreferredTtsHelper,
+        chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
+        chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
+        timber = timber,
+        ttsJsonMapper = ttsJsonMapper,
+        twitchHandleProvider = authRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        twitchChatMessenger = twitchChatMessenger,
+        userIdsRepository = userIdsRepository,
     ),
     SkipTtsChatCommand(
         administratorProvider = administratorProvider,

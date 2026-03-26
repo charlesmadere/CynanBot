@@ -1,8 +1,10 @@
+import re
 import traceback
 from dataclasses import dataclass
-from typing import Final
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..chatterPreferredName.exceptions import ChatterPreferredNameFeatureIsDisabledException, \
     ChatterPreferredNameIsInvalidException
 from ..chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
@@ -11,14 +13,13 @@ from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
 from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class SetChatterPreferredNameChatCommand(AbsChatCommand):
+class SetChatterPreferredNameChatCommand(AbsChatCommand2):
 
     @dataclass(frozen = True, slots = True)
     class LookupUserInfo:
@@ -35,7 +36,6 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -53,8 +53,6 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = chatterPreferredNameHelper
@@ -64,80 +62,87 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        if not await self.__chatterPreferredNameSettings.isEnabled():
-            return
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!set(?:preferred)?name\b', re.IGNORECASE),
+        })
 
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        if not user.isChatterPreferredNameEnabled:
-            return
+    @property
+    def commandName(self) -> str:
+        return 'SetChatterPreferredNameChatCommand'
 
-        twitchChannelId = await ctx.getTwitchChannelId()
-        administrator = await self.__administratorProvider.getAdministratorUserId()
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
 
-        if twitchChannelId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('SetChatterPreferredNameChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
-            return
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isChatterPreferredNameEnabled:
+            return ChatCommandResult.IGNORED
+        elif not await self.__chatterPreferredNameSettings.isEnabled():
+            return ChatCommandResult.IGNORED
+        elif not await self.__hasPermissions(chatMessage):
+            return ChatCommandResult.IGNORED
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
 
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 3:
-            self.__timber.log('SetChatterPreferredNameChatCommand', f'Less than 3 arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
-
             self.__twitchChatMessenger.send(
                 text = f'⚠ Username and preferred name is necessary for this command. Example: !setpreferredname {twitchHandle} example',
-                twitchChannelId = twitchChannelId,
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+
+            self.__timber.log(self.commandName, f'Less than 3 arguments given ({splits=}) ({chatMessage=})')
+            return ChatCommandResult.HANDLED
 
         lookupUser = await self.__lookupUser(
-            twitchChannelId = twitchChannelId,
+            twitchChannelId = chatMessage.twitchChannelId,
             userName = splits[1],
         )
 
         if lookupUser is None:
-            self.__timber.log('SetChatterPreferredNameChatCommand', f'Invalid user name argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
             self.__twitchChatMessenger.send(
-                text = f'⚠ Username and preferred name is necessary for this command. Example: !setpreferredname {twitchHandle} John Smith',
-                twitchChannelId = twitchChannelId,
-                replyMessageId = await ctx.getMessageId(),
+                text = f'⚠ Username and preferred name is necessary for this command. Example: !setpreferredname @{twitchHandle} John Smith',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+
+            self.__timber.log(self.commandName, f'Encountered invalid username argument ({lookupUser=}) ({splits=}) ({chatMessage=})')
+            return ChatCommandResult.HANDLED
         elif not utils.isValidStr(lookupUser.userId):
-            self.__timber.log('SetChatterPreferredNameChatCommand', f'Unknown user name argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
             self.__twitchChatMessenger.send(
-                text = f'⚠ Unable to find info for user \"{lookupUser.userName}\". A username and preferred name is necessary for this command. Example: !setpreferredname {twitchHandle} John Smith',
-                twitchChannelId = twitchChannelId,
-                replyMessageId = await ctx.getMessageId(),
+                text = f'⚠ Unable to find info for user \"{lookupUser.userName}\". A username and preferred name is necessary for this command. Example: !setpreferredname @{twitchHandle} John Smith',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+
+            self.__timber.log(self.commandName, f'Encountered unknown username argument ({lookupUser=}) ({splits=}) ({chatMessage=})')
+            return ChatCommandResult.HANDLED
 
         oldPreferredNameData = await self.__chatterPreferredNameHelper.get(
             chatterUserId = lookupUser.userId,
-            twitchChannelId = twitchChannelId,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
         try:
             newPreferredNameData = await self.__chatterPreferredNameHelper.set(
                 chatterUserId = lookupUser.userId,
                 preferredName = ' '.join(splits[2:]),
-                twitchChannelId = twitchChannelId,
+                twitchChannelId = chatMessage.twitchChannelId,
             )
         except ChatterPreferredNameFeatureIsDisabledException as e:
-            self.__timber.log('SetChatterPreferredNameChatCommand', f'This feature is disabled when handling command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}', e, traceback.format_exc())
-            return
+            self.__timber.log(self.commandName, f'This feature is currently disabled ({lookupUser=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
+            return ChatCommandResult.HANDLED
         except ChatterPreferredNameIsInvalidException as e:
-            self.__timber.log('SetChatterPreferredNameChatCommand', f'The given preferred name is invalid when handling command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ The given preferred name for @{lookupUser.userName} is invalid',
-                twitchChannelId = twitchChannelId,
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+
+            self.__timber.log(self.commandName, f'The given preferred name is invalid ({lookupUser=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
+            return ChatCommandResult.HANDLED
 
         oldPreferredNameSuffix = ''
         if oldPreferredNameData is not None:
@@ -145,11 +150,19 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ New preferred name set for @{lookupUser.userName} — {newPreferredNameData.preferredName} {oldPreferredNameSuffix}',
-            twitchChannelId = twitchChannelId,
-            replyMessageId = await ctx.getMessageId(),
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log('SetChatterPreferredNameChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({newPreferredNameData=}) ({oldPreferredNameData=}) ({lookupUser=}) ({chatMessage=})')
+        return ChatCommandResult.HANDLED
+
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+
+        isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
+
+        return isStreamer or isAdministrator
 
     async def __lookupUser(
         self,
