@@ -83,6 +83,7 @@ from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
 from src.chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
 from src.chatCommands.removeTriviaControllerChatCommand import RemoveTriviaControllerChatCommand
+from src.chatCommands.setChatterPreferredNameChatCommand import SetChatterPreferredNameChatCommand
 from src.chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferredTtsChatCommand
 from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
@@ -3489,6 +3490,16 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         triviaGameControllersRepository = triviaGameControllersRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchHandleProvider = authRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
+    ),
+    SetChatterPreferredNameChatCommand(
+        administratorProvider = administratorProvider,
+        chatterPreferredNameHelper = chatterPreferredNameHelper,
+        chatterPreferredNameSettings = chatterPreferredNameSettings,
+        timber = timber,
         twitchChatMessenger = twitchChatMessenger,
         twitchHandleProvider = authRepository,
         twitchTokensUtils = twitchTokensUtils,

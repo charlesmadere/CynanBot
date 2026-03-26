@@ -138,7 +138,7 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand2):
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-            self.__timber.log(self.commandName, f'Encountered unknown username argument given by ({lookupUser=}) ({splits=}) ({chatMessage=})')
+            self.__timber.log(self.commandName, f'Encountered unknown username argument ({lookupUser=}) ({splits=}) ({chatMessage=})')
             return ChatCommandResult.HANDLED
 
         userMessage = utils.cleanStr(' '.join(splits[2:]))
@@ -185,7 +185,7 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand2):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({preferredTts=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Handled ({preferredTts=}) ({lookupUser=}) ({chatMessage=})')
         return ChatCommandResult.HANDLED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:

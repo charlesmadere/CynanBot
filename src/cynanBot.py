@@ -58,7 +58,6 @@ from .chatCommands.removeRecurringSuperTriviaActionCommand import RemoveRecurrin
 from .chatCommands.removeRecurringWeatherActionCommand import RemoveRecurringWeatherActionCommand
 from .chatCommands.removeRecurringWordOfTheDayAction import RemoveRecurringWordOfTheDayActionCommand
 from .chatCommands.removeUserChatCommand import RemoveUserChatCommand
-from .chatCommands.setChatterPreferredNameChatCommand import SetChatterPreferredNameChatCommand
 from .chatCommands.setFuntoonTokenChatCommand import SetFuntoonTokenChatCommand
 from .chatCommands.setTwitchCodeChatCommand import SetTwitchCodeChatCommand
 from .chatCommands.stubChatCommand import StubChatCommand
@@ -851,10 +850,8 @@ class CynanBot(
 
         if chatterPreferredNameHelper is None or chatterPreferredNameRepository is None or chatterPreferredNameSettings is None:
             self.__removeChatterPreferredNameCommand: AbsChatCommand = StubChatCommand()
-            self.__setChatterPreferredNameCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__removeChatterPreferredNameCommand: AbsChatCommand = RemoveChatterPreferredNameChatCommand(chatterPreferredNameRepository, chatterPreferredNameSettings, timber, twitchChatMessenger, usersRepository)
-            self.__setChatterPreferredNameCommand: AbsChatCommand = SetChatterPreferredNameChatCommand(administratorProvider, chatterPreferredNameHelper, chatterPreferredNameSettings, timber, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
 
         if chatterPreferredTtsHelper is None or chatterPreferredTtsPresenter is None or chatterPreferredTtsRepository is None or chatterPreferredTtsSettingsRepository is None or chatterPreferredTtsUserMessageHelper is None or ttsJsonMapper is None:
             self.__removeChatterPreferredTtsCommand: AbsChatCommand = StubChatCommand()
@@ -1264,11 +1261,6 @@ class CynanBot(
     async def command_removerecurringwordofthedayaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeRecurringWordOfTheDayActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'setpreferredname', aliases = [ 'setname' ])
-    async def command_setchatterpreferredname(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__setChatterPreferredNameCommand.handleChatCommand(context)
 
     @commands.command(name = 'setfuntoontoken')
     async def command_setfuntoontoken(self, ctx: Context):
