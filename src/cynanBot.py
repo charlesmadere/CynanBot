@@ -45,7 +45,6 @@ from .chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaC
 from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from .chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
 from .chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
-from .chatCommands.jishoChatCommand import JishoChatCommand
 from .chatCommands.pkMonChatCommand import PkMonChatCommand
 from .chatCommands.pkMoveChatCommand import PkMoveChatCommand
 from .chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
@@ -868,11 +867,6 @@ class CynanBot(
         else:
             self.__setFuntoonTokenCommand: AbsChatCommand = SetFuntoonTokenChatCommand(administratorProvider, funtoonTokensRepository, timber, twitchChatMessenger, usersRepository)
 
-        if jishoHelper is None:
-            self.__jishoCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__jishoCommand: AbsChatCommand = JishoChatCommand(generalSettingsRepository, jishoHelper, timber, twitchChatMessenger, usersRepository)
-
         if pokepediaRepository is None:
             self.__pkMonCommand: AbsChatCommand = StubChatCommand()
             self.__pkMoveCommand: AbsChatCommand = StubChatCommand()
@@ -1201,11 +1195,6 @@ class CynanBot(
     async def command_givechatteritem(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__giveChatterItemCommand.handleChatCommand(context)
-
-    @commands.command(name = 'jisho')
-    async def command_jisho(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__jishoCommand.handleChatCommand(context)
 
     @commands.command(name = 'pkmon')
     async def command_pkmon(self, ctx: Context):
