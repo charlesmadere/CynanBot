@@ -59,7 +59,6 @@ from .chatCommands.removeRecurringWeatherActionCommand import RemoveRecurringWea
 from .chatCommands.removeRecurringWordOfTheDayAction import RemoveRecurringWordOfTheDayActionCommand
 from .chatCommands.removeUserChatCommand import RemoveUserChatCommand
 from .chatCommands.setChatterPreferredNameChatCommand import SetChatterPreferredNameChatCommand
-from .chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferredTtsChatCommand
 from .chatCommands.setFuntoonTokenChatCommand import SetFuntoonTokenChatCommand
 from .chatCommands.setTwitchCodeChatCommand import SetTwitchCodeChatCommand
 from .chatCommands.stubChatCommand import StubChatCommand
@@ -859,10 +858,8 @@ class CynanBot(
 
         if chatterPreferredTtsHelper is None or chatterPreferredTtsPresenter is None or chatterPreferredTtsRepository is None or chatterPreferredTtsSettingsRepository is None or chatterPreferredTtsUserMessageHelper is None or ttsJsonMapper is None:
             self.__removeChatterPreferredTtsCommand: AbsChatCommand = StubChatCommand()
-            self.__setChatterPreferredTtsCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__removeChatterPreferredTtsCommand: AbsChatCommand = RemoveChatterPreferredTtsChatCommand(chatterPreferredTtsPresenter, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, timber, twitchChatMessenger, usersRepository)
-            self.__setChatterPreferredTtsCommand: AbsChatCommand = SetChatterPreferredTtsChatCommand(administratorProvider, chatterPreferredTtsHelper, chatterPreferredTtsPresenter, chatterPreferredTtsSettingsRepository, timber, ttsJsonMapper, authRepository, twitchTokensUtils, twitchChatMessenger, userIdsRepository, usersRepository)
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or cutenessUtils is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameControllersRepository is None or triviaGameGlobalControllersRepository is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaIdGenerator is None or triviaQuestionOccurrencesRepository is None or triviaScoreRepository is None or triviaSettings is None or triviaUtils is None:
             self.__unbanTriviaQuestionChatCommand: AbsChatCommand = StubChatCommand()
@@ -1272,11 +1269,6 @@ class CynanBot(
     async def command_setchatterpreferredname(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__setChatterPreferredNameCommand.handleChatCommand(context)
-
-    @commands.command(name = 'setpreferredtts', aliases = [ 'settts' ])
-    async def command_setchatterpreferredtts(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__setChatterPreferredTtsCommand.handleChatCommand(context)
 
     @commands.command(name = 'setfuntoontoken')
     async def command_setfuntoontoken(self, ctx: Context):
