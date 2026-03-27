@@ -93,6 +93,7 @@ from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatComma
 from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from src.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
+from src.chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
 from src.chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
 from src.chatCommands.weatherChatCommand import WeatherChatCommand
@@ -3572,6 +3573,15 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         streamAlertsManager = streamAlertsManager,
         timber = timber,
         ttsJsonMapper = ttsJsonMapper,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    UnbanTriviaQuestionChatCommand(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaBanHelper = triviaBanHelper,
+        triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaHistoryRepository = triviaHistoryRepository,
+        triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
     UseChatterItemChatCommand(

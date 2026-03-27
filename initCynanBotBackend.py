@@ -73,6 +73,7 @@ from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from src.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
 from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from src.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
+from src.chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
 from src.chatCommands.weatherChatCommand import WeatherChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -2261,6 +2262,15 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
         userIdsRepository = userIdsRepository,
+    ),
+    UnbanTriviaQuestionChatCommand(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaBanHelper = triviaBanHelper,
+        triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaHistoryRepository = triviaHistoryRepository,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
     ),
     WeatherChatCommand(
         locationsRepository = locationsRepository,

@@ -64,7 +64,6 @@ from .chatCommands.swQuoteChatCommand import SwQuoteChatCommand
 from .chatCommands.timeChatCommand import TimeChatCommand
 from .chatCommands.translateChatCommand import TranslateChatCommand
 from .chatCommands.twitchUserInfoChatCommand import TwitchUserInfoChatCommand
-from .chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
 from .chatCommands.voicemailsChatCommand import VoicemailsChatCommand
 from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -857,11 +856,6 @@ class CynanBot(
         else:
             self.__removeChatterPreferredTtsCommand: AbsChatCommand = RemoveChatterPreferredTtsChatCommand(chatterPreferredTtsPresenter, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, timber, twitchChatMessenger, usersRepository)
 
-        if additionalTriviaAnswersRepository is None or cutenessRepository is None or cutenessUtils is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameControllersRepository is None or triviaGameGlobalControllersRepository is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaIdGenerator is None or triviaQuestionOccurrencesRepository is None or triviaScoreRepository is None or triviaSettings is None or triviaUtils is None:
-            self.__unbanTriviaQuestionChatCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__unbanTriviaQuestionChatCommand: AbsChatCommand = UnbanTriviaQuestionChatCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchChatMessenger, usersRepository)
-
         if funtoonTokensRepository is None:
             self.__setFuntoonTokenCommand: AbsChatCommand = StubChatCommand()
         else:
@@ -1280,11 +1274,6 @@ class CynanBot(
     async def command_twitchuserinfo(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__twitchUserInfoCommand.handleChatCommand(context)
-
-    @commands.command(name = 'unbantriviaquestion', aliases = [ 'unbantrivia' ])
-    async def command_unbantriviaquestion(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__unbanTriviaQuestionChatCommand.handleChatCommand(context)
 
     @commands.command(name = 'voicemails', aliases = [ 'voicemail' ])
     async def command_voicemails(self, ctx: Context):
