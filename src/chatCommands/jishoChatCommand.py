@@ -1,20 +1,19 @@
+import re
 import traceback
-from datetime import timedelta
-from typing import Final
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..language.jishoHelperInterface import JishoHelperInterface
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
-from ..misc.timedDict import TimedDict
 from ..network.exceptions import GenericNetworkException
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class JishoChatCommand(AbsChatCommand):
+class JishoChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -22,8 +21,6 @@ class JishoChatCommand(AbsChatCommand):
         jishoHelper: JishoHelperInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface,
-        cooldown: timedelta = timedelta(seconds = 3),
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -33,48 +30,54 @@ class JishoChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
         self.__jishoHelper: Final[JishoHelperInterface] = jishoHelper
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
-        self.__lastMessageTimes: Final[TimedDict] = TimedDict(cooldown)
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!jisho\b', re.IGNORECASE),
+        })
+
+    @property
+    def commandName(self) -> str:
+        return 'JishoChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isJishoEnabled:
+            return ChatCommandResult.IGNORED
+
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isJishoEnabled():
-            return
-        elif not user.isJishoEnabled:
-            return
-        elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReady(user.handle):
-            return
+            return ChatCommandResult.IGNORED
 
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 2:
             self.__twitchChatMessenger.send(
                 text = '⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+
+            self.__timber.log(self.commandName, f'No query was given ({splits=}) ({chatMessage=})')
+            return ChatCommandResult.HANDLED
 
         query: str | None = splits[1]
         if not utils.isValidStr(query):
             self.__twitchChatMessenger.send(
                 text = f'⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
 
-        self.__lastMessageTimes.update(user.handle)
+            self.__timber.log(self.commandName, f'Encountered invalid/missing query argument ({query=}) ({splits=}) ({chatMessage=})')
+            return ChatCommandResult.HANDLED
 
         try:
             strings = await self.__jishoHelper.search(query)
@@ -82,15 +85,18 @@ class JishoChatCommand(AbsChatCommand):
             for string in strings:
                 self.__twitchChatMessenger.send(
                     text = string,
-                    twitchChannelId = await ctx.getTwitchChannelId(),
-                    replyMessageId = await ctx.getMessageId(),
+                    twitchChannelId = chatMessage.twitchChannelId,
+                    replyMessageId = chatMessage.twitchChatMessageId,
                 )
         except GenericNetworkException as e:
-            self.__timber.log('JishoCommand', f'Error searching Jisho for \"{query}\"', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ Error searching Jisho for \"{query}\"',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log('JishoCommand', f'Handled !jisho command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+            self.__timber.log(self.commandName, f'Error searching Jisho ({query=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
+            return ChatCommandResult.HANDLED
+
+        self.__timber.log(self.commandName, f'Handled ({query=}) ({chatMessage=})')
+        return ChatCommandResult.HANDLED

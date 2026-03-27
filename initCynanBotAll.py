@@ -79,6 +79,7 @@ from src.chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriv
 from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from src.chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
+from src.chatCommands.jishoChatCommand import JishoChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
 from src.chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
@@ -3464,6 +3465,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         twitchHandleProvider = authRepository,
         twitchChatMessenger = twitchChatMessenger,
         userIdsRepository = userIdsRepository,
+    ),
+    JishoChatCommand(
+        generalSettingsRepository = generalSettingsRepository,
+        jishoHelper = jishoHelper,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
     ),
     LoremIpsumChatCommand(
         administratorProvider = administratorProvider,
