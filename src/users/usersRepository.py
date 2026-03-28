@@ -200,6 +200,7 @@ class UsersRepository(UsersRepositoryInterface):
         casualGamePollRewardId = utils.getStrFromDict(userJson, 'casualGamePollRewardId', '')
         casualGamePollUrl = utils.getStrFromDict(userJson, 'casualGamePollUrl', '')
         chatterPreferredNameRewardId = utils.getStrFromDict(userJson, 'chatterPreferredNameRewardId', '')
+        discordRewardId = utils.getStrFromDict(userJson, 'discordRewardId', '')
         discordUrl = utils.getStrFromDict(userJson, UserJsonConstant.DISCORD_URL.jsonKey, '')
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
@@ -448,6 +449,7 @@ class UsersRepository(UsersRepositoryInterface):
             chatterPreferredNameRewardId = chatterPreferredNameRewardId,
             crowdControlButtonPressRewardId = crowdControlButtonPressRewardId,
             crowdControlGameShuffleRewardId = crowdControlGameShuffleRewardId,
+            discordRewardId = discordRewardId,
             discordUrl = discordUrl,
             handle = handle,
             instagram = instagram,

@@ -105,6 +105,7 @@ class User(UserInterface):
         chatterPreferredNameRewardId: str | None,
         crowdControlButtonPressRewardId: str | None,
         crowdControlGameShuffleRewardId: str | None,
+        discordRewardId: str | None,
         discordUrl: str | None,
         handle: str,
         instagram: str | None,
@@ -295,6 +296,8 @@ class User(UserInterface):
             raise TypeError(f'crowdControlButtonPressRewardId argument is malformed: \"{crowdControlButtonPressRewardId}\"')
         elif crowdControlGameShuffleRewardId is not None and not isinstance(crowdControlGameShuffleRewardId, str):
             raise TypeError(f'crowdControlGameShuffleRewardId argument is malformed: \"{crowdControlGameShuffleRewardId}\"')
+        elif discordRewardId is not None and not isinstance(discordRewardId, str):
+            raise TypeError(f'discordRewardId argument is malformed: \"{discordRewardId}\"')
         elif discordUrl is not None and not isinstance(discordUrl, str):
             raise TypeError(f'discordUrl argument is malformed: \"{discordUrl}\"')
         elif not utils.isValidStr(handle):
@@ -427,7 +430,8 @@ class User(UserInterface):
         self.__chatterPreferredNameRewardId: Final[str | None] = chatterPreferredNameRewardId
         self.__crowdControlButtonPressRewardId: str | None = crowdControlButtonPressRewardId
         self.__crowdControlGameShuffleRewardId: str | None = crowdControlGameShuffleRewardId
-        self.__discordUrl: str | None = discordUrl
+        self.__discordRewardId: Final[str | None] = discordRewardId
+        self.__discordUrl: Final[str | None] = discordUrl
         self.__handle: Final[str] = handle
         self.__instagram: str | None = instagram
         self.__locationId: str | None = locationId
@@ -540,6 +544,10 @@ class User(UserInterface):
     @property
     def defaultLanguage(self) -> LanguageEntry:
         return self.__defaultLanguage
+
+    @property
+    def discordRewardId(self) -> str | None:
+        return self.__discordRewardId
 
     @property
     def discordUrl(self) -> str | None:

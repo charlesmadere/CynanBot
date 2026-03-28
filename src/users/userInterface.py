@@ -130,6 +130,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def discordRewardId(self) -> str | None:
+        pass
+
+    @property
+    @abstractmethod
     def discordUrl(self) -> str | None:
         pass
 
