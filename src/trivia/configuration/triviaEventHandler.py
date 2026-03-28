@@ -159,7 +159,7 @@ class TriviaEventHandler(AbsTriviaEventHandler):
         self.__twitchChatMessenger.send(
             text = text,
             twitchChannelId = event.twitchChannelId,
-            replyMessageId = event.twitchChatMessageId
+            replyMessageId = event.twitchChatMessageId,
         )
 
     async def __handleCorrectAnswerTriviaEvent(
@@ -175,7 +175,7 @@ class TriviaEventHandler(AbsTriviaEventHandler):
             emote = event.emote,
             userNameThatRedeemed = event.userName,
             twitchUser = twitchUser,
-            specialTriviaStatus = event.specialTriviaStatus
+            specialTriviaStatus = event.specialTriviaStatus,
         )
 
         self.__twitchChatMessenger.send(
@@ -225,7 +225,7 @@ class TriviaEventHandler(AbsTriviaEventHandler):
             emote = event.emote,
             outOfTimeEmote = event.outOfTimeEmote,
             userNameThatRedeemed = event.userName,
-            specialTriviaStatus = event.specialTriviaStatus
+            specialTriviaStatus = event.specialTriviaStatus,
         )
 
         self.__twitchChatMessenger.send(

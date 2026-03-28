@@ -1,6 +1,8 @@
-from typing import Final
+import re
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
 from ..chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface import \
     ChatterPreferredTtsRepositoryInterface
@@ -8,11 +10,10 @@ from ..chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterfa
     ChatterPreferredTtsSettingsRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class RemoveChatterPreferredTtsChatCommand(AbsChatCommand):
+class RemoveChatterPreferredTtsChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -21,7 +22,6 @@ class RemoveChatterPreferredTtsChatCommand(AbsChatCommand):
         chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(chatterPreferredTtsPresenter, ChatterPreferredTtsPresenter):
             raise TypeError(f'chatterPreferredTtsPresenter argument is malformed: \"{chatterPreferredTtsPresenter}\"')
@@ -33,34 +33,43 @@ class RemoveChatterPreferredTtsChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__chatterPreferredTtsPresenter: Final[ChatterPreferredTtsPresenter] = chatterPreferredTtsPresenter
         self.__chatterPreferredTtsRepository: Final[ChatterPreferredTtsRepositoryInterface] = chatterPreferredTtsRepository
         self.__chatterPreferredTtsSettingsRepository: Final[ChatterPreferredTtsSettingsRepositoryInterface] = chatterPreferredTtsSettingsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        if not await self.__chatterPreferredTtsSettingsRepository.isEnabled():
-            return
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!del(?:lete)?(?:my)?(?:chatter)?preferredtts\b', re.IGNORECASE),
+            re.compile(r'^\s*remove(?:my)?(?:chatter)?preferredtts\b', re.IGNORECASE),
+            re.compile(r'^\s*rm(?:my)?(?:chatter)?preferredtts\b', re.IGNORECASE),
+        })
 
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        if not user.isChatterPreferredTtsEnabled:
-            return
+    @property
+    def commandName(self) -> str:
+        return 'RemoveChatterPreferredTtsChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isChatterPreferredTtsEnabled:
+            return ChatCommandResult.IGNORED
+        elif not await self.__chatterPreferredTtsSettingsRepository.isEnabled():
+            return ChatCommandResult.IGNORED
 
         preferredTts = await self.__chatterPreferredTtsRepository.remove(
-            chatterUserId = ctx.getAuthorId(),
-            twitchChannelId = await ctx.getTwitchChannelId(),
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
         if preferredTts is None:
             self.__twitchChatMessenger.send(
                 text = f'ⓘ You don\'t currently have a preferred TTS to delete',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
         else:
             printOut = await self.__chatterPreferredTtsPresenter.printOut(
@@ -69,8 +78,9 @@ class RemoveChatterPreferredTtsChatCommand(AbsChatCommand):
 
             self.__twitchChatMessenger.send(
                 text = f'ⓘ Your preferred TTS was deleted, it previously was: {printOut}',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log('RemoveChatterPreferredTtsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({preferredTts=}) ({chatMessage=})')
+        return ChatCommandResult.HANDLED

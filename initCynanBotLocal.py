@@ -51,6 +51,7 @@ from src.chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferr
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
+from src.chatCommands.removeChatterPreferredTtsChatCommand import RemoveChatterPreferredTtsChatCommand
 from src.chatCommands.setChatterPreferredNameChatCommand import SetChatterPreferredNameChatCommand
 from src.chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferredTtsChatCommand
 from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
@@ -2370,6 +2371,13 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     RemoveChatterPreferredNameChatCommand(
         chatterPreferredNameRepository = chatterPreferredNameRepository,
         chatterPreferredNameSettings = chatterPreferredNameSettings,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    RemoveChatterPreferredTtsChatCommand(
+        chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
+        chatterPreferredTtsRepository = chatterPreferredTtsRepository,
+        chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),

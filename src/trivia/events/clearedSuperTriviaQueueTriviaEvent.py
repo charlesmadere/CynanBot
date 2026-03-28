@@ -16,7 +16,7 @@ class ClearedSuperTriviaQueueTriviaEvent(AbsTriviaEvent):
         eventId: str,
         twitchChannel: str,
         twitchChannelId: str,
-        twitchChatMessageId: str,
+        twitchChatMessageId: str | None,
     ):
         super().__init__(
             actionId = actionId,
@@ -35,14 +35,14 @@ class ClearedSuperTriviaQueueTriviaEvent(AbsTriviaEvent):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not utils.isValidStr(twitchChatMessageId):
+        elif twitchChatMessageId is not None and not utils.isValidStr(twitchChatMessageId):
             raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
 
         self.__numberOfGamesRemoved: Final[int] = numberOfGamesRemoved
         self.__previousQueueSize: Final[int] = previousQueueSize
         self.__twitchChannel: Final[str] = twitchChannel
         self.__twitchChannelId: Final[str] = twitchChannelId
-        self.__twitchChatMessageId: Final[str] = twitchChatMessageId
+        self.__twitchChatMessageId: Final[str | None] = twitchChatMessageId
 
     @property
     def numberOfGamesRemoved(self) -> int:
@@ -73,5 +73,5 @@ class ClearedSuperTriviaQueueTriviaEvent(AbsTriviaEvent):
         return self.__twitchChannelId
 
     @property
-    def twitchChatMessageId(self) -> str:
+    def twitchChatMessageId(self) -> str | None:
         return self.__twitchChatMessageId
