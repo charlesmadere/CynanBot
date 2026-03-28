@@ -46,7 +46,6 @@ from .chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
 from .chatCommands.pkMonChatCommand import PkMonChatCommand
 from .chatCommands.pkMoveChatCommand import PkMoveChatCommand
 from .chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
-from .chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
 from .chatCommands.removeGameShuffleAutomatorChatCommand import RemoveGameShuffleAutomatorChatCommand
 from .chatCommands.removeRecurringCutenessActionChatCommand import RemoveRecurringCutenessActionChatCommand
 from .chatCommands.removeRecurringSuperTriviaActionCommand import RemoveRecurringSuperTriviaActionCommand
@@ -833,11 +832,6 @@ class CynanBot(
             self.__removeRecurringWeatherActionCommand: AbsChatCommand = RemoveRecurringWeatherActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
             self.__removeRecurringWordOfTheDayActionCommand: AbsChatCommand = RemoveRecurringWordOfTheDayActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
 
-        if bannedTriviaGameControllersRepository is None or triviaUtils is None:
-            self.__removeBannedTriviaControllerCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__removeBannedTriviaControllerCommand: AbsChatCommand = RemoveBannedTriviaControllerChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
-
         if funtoonTokensRepository is None:
             self.__setFuntoonTokenCommand: AbsChatCommand = StubChatCommand()
         else:
@@ -1171,11 +1165,6 @@ class CynanBot(
     async def command_pkmove(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__pkMoveCommand.handleChatCommand(context)
-
-    @commands.command(name = 'removebannedtriviacontroller')
-    async def command_removebannedtriviacontroller(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeBannedTriviaControllerCommand.handleChatCommand(context)
 
     @commands.command(name = 'removegameshuffleautomator', aliases = [ 'delgameshuffleautomator', 'deletegameshuffleautomator' ])
     async def command_removegameshuffleautomator(self, ctx: Context):
