@@ -33,7 +33,6 @@ from src.beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterf
 from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
 from src.channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
-from src.channelPointRedemptions.decTalkSongPointRedemption import DecTalkSongPointRedemption
 from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from src.chatActions.absChatAction2 import AbsChatAction2
@@ -501,8 +500,6 @@ from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
 from src.users.crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from src.users.cuteness.cutenessBoosterPackJsonParser import CutenessBoosterPackJsonParser
 from src.users.cuteness.cutenessBoosterPackJsonParserInterface import CutenessBoosterPackJsonParserInterface
-from src.users.decTalkSongs.decTalkSongBoosterPackParser import DecTalkSongBoosterPackParser
-from src.users.decTalkSongs.decTalkSongBoosterPackParserInterface import DecTalkSongBoosterPackParserInterface
 from src.users.pkmn.pkmnBoosterPackJsonParser import PkmnBoosterPackJsonParser
 from src.users.pkmn.pkmnBoosterPackJsonParserInterface import PkmnBoosterPackJsonParserInterface
 from src.users.redemptionCounter.redemptionCounterBoosterPackParser import RedemptionCounterBoosterPackParser
@@ -710,8 +707,6 @@ crowdControlJsonParser: CrowdControlJsonParserInterface = CrowdControlJsonParser
 
 cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = CutenessBoosterPackJsonParser()
 
-decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = DecTalkSongBoosterPackParser()
-
 languageEntryJsonMapper: LanguageEntryJsonMapperInterface = LanguageEntryJsonMapper()
 
 pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = PkmnBoosterPackJsonParser(
@@ -739,7 +734,6 @@ ttsBoosterPackParser: Final[TtsBoosterPackParserInterface] = TtsBoosterPackParse
 usersRepository: Final[UsersRepositoryInterface] = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
-    decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,
     languageEntryJsonMapper = languageEntryJsonMapper,
     pkmnBoosterPackJsonParser = pkmnBoosterPackJsonParser,
     redemptionCounterBoosterPackParser = redemptionCounterBoosterPackParser,
@@ -759,7 +753,7 @@ twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHel
     usersRepository = usersRepository,
 )
 
-twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface = TwitchPredictionWebsocketUtils(
+twitchPredictionWebsocketUtils: Final[TwitchPredictionWebsocketUtilsInterface] = TwitchPredictionWebsocketUtils(
     timber = timber,
 )
 
@@ -768,19 +762,19 @@ addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface = AddOrRemoveUserD
     timeZoneRepository = timeZoneRepository
 )
 
-chatLogger: ChatLoggerInterface = ChatLogger(
+chatLogger: Final[ChatLoggerInterface] = ChatLogger(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
 )
 
-activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepository(
+activeChattersRepository: Final[ActiveChattersRepositoryInterface] = ActiveChattersRepository(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
 
@@ -2241,12 +2235,6 @@ chatterPreferredTtsPointRedemption: Final[ChatterPreferredTtsPointRedemption] = 
     twitchChatMessenger = twitchChatMessenger,
 )
 
-decTalkSongPointRedemption: Final[DecTalkSongPointRedemption] = DecTalkSongPointRedemption(
-    eventLoop = eventLoop,
-    streamAlertsManager = streamAlertsManager,
-    timber = timber,
-)
-
 soundAlertPointRedemption: SoundAlertPointRedemption | None = None
 
 if soundPlayerManagerProvider is not None and soundPlayerRandomizerHelper is not None and streamAlertsManager is not None:
@@ -2312,7 +2300,6 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     chatterPreferredNamePointRedemption = chatterPreferredNamePointRedemption,
     chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = None,
-    decTalkSongPointRedemption = decTalkSongPointRedemption,
     mouseCursorPointRedemption = mouseCursorPointRedemption,
     pkmnBattlePointRedemption = None,
     pkmnCatchPointRedemption = None,

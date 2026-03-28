@@ -6,7 +6,6 @@ from frozenlist import FrozenList
 
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .cuteness.cutenessBoosterPack import CutenessBoosterPack
-from .decTalkSongs.decTalkSongBoosterPack import DecTalkSongBoosterPack
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .redemptionCounter.redemptionCounterBoosterPack import RedemptionCounterBoosterPack
 from .soundAlert.soundAlertRedemption import SoundAlertRedemption
@@ -102,11 +101,6 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def cutenessBoosterPacks(self) -> frozendict[str, CutenessBoosterPack] | None:
-        pass
-
-    @property
-    @abstractmethod
-    def decTalkSongBoosterPacks(self) -> frozendict[str, DecTalkSongBoosterPack] | None:
         pass
 
     @property
@@ -352,11 +346,6 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def isCutenessEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
-    def isDecTalkSongsEnabled(self) -> bool:
         pass
 
     @property

@@ -14,7 +14,6 @@ from ...channelPointRedemptions.casualGamePollPointRedemption import CasualGameP
 from ...channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from ...channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from ...channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
-from ...channelPointRedemptions.decTalkSongPointRedemption import DecTalkSongPointRedemption
 from ...channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from ...channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
 from ...channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
@@ -42,7 +41,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         chatterPreferredNamePointRedemption: ChatterPreferredNamePointRedemption | None,
         chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None,
         cutenessPointRedemption: CutenessPointRedemption | None,
-        decTalkSongPointRedemption: DecTalkSongPointRedemption | None,
         mouseCursorPointRedemption: MouseCursorPointRedemption | None,
         pkmnBattlePointRedemption: PkmnBattlePointRedemption | None,
         pkmnCatchPointRedemption: PkmnCatchPointRedemption | None,
@@ -68,8 +66,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'chatterPreferredTtsPointRedemption argument is malformed: \"{chatterPreferredTtsPointRedemption}\"')
         elif cutenessPointRedemption is not None and not isinstance(cutenessPointRedemption, CutenessPointRedemption):
             raise TypeError(f'cutenessPointRedemption argument is malformed: \"{cutenessPointRedemption}\"')
-        elif decTalkSongPointRedemption is not None and not isinstance(decTalkSongPointRedemption, DecTalkSongPointRedemption):
-            raise TypeError(f'decTalkSongPointRedemption argument is malformed: \"{decTalkSongPointRedemption}\"')
         elif mouseCursorPointRedemption is not None and not isinstance(mouseCursorPointRedemption, MouseCursorPointRedemption):
             raise TypeError(f'mouseCursorPointRedemption argument is malformed: \"{mouseCursorPointRedemption}\"')
         elif pkmnBattlePointRedemption is not None and not isinstance(pkmnBattlePointRedemption, PkmnBattlePointRedemption):
@@ -131,11 +127,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__cutenessPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
         else:
             self.__cutenessPointRedemption: AbsChannelPointRedemption = cutenessPointRedemption
-
-        if decTalkSongPointRedemption is None:
-            self.__decTalkSongPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__decTalkSongPointRedemption: AbsChannelPointRedemption = decTalkSongPointRedemption
 
         if mouseCursorPointRedemption is None:
             self.__mouseCursorPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
@@ -218,12 +209,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.isCutenessEnabled:
             if await self.__cutenessPointRedemption.handlePointRedemption(
-                channelPointsRedemption = channelPointsRedemption,
-            ):
-                return
-
-        if user.isDecTalkSongsEnabled:
-            if await self.__decTalkSongPointRedemption.handlePointRedemption(
                 channelPointsRedemption = channelPointsRedemption,
             ):
                 return
