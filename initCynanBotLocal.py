@@ -50,6 +50,7 @@ from src.chatCommands.getChatterPreferredNameChatCommand import GetChatterPrefer
 from src.chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredTtsChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
+from src.chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
 from src.chatCommands.setChatterPreferredNameChatCommand import SetChatterPreferredNameChatCommand
 from src.chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferredTtsChatCommand
 from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
@@ -2363,6 +2364,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     ),
     LoremIpsumChatCommand(
         administratorProvider = administratorProvider,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    RemoveChatterPreferredNameChatCommand(
+        chatterPreferredNameRepository = chatterPreferredNameRepository,
+        chatterPreferredNameSettings = chatterPreferredNameSettings,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),

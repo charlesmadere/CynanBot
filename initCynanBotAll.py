@@ -82,6 +82,7 @@ from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.jishoChatCommand import JishoChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
+from src.chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
 from src.chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
 from src.chatCommands.removeTriviaControllerChatCommand import RemoveTriviaControllerChatCommand
 from src.chatCommands.setChatterPreferredNameChatCommand import SetChatterPreferredNameChatCommand
@@ -3474,6 +3475,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     MyCutenessChatCommand(
         cutenessRepository = cutenessRepository,
         cutenessUtils = cutenessUtils,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    RemoveChatterPreferredNameChatCommand(
+        chatterPreferredNameRepository = chatterPreferredNameRepository,
+        chatterPreferredNameSettings = chatterPreferredNameSettings,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),

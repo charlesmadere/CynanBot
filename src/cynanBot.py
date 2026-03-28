@@ -48,7 +48,6 @@ from .chatCommands.pkMonChatCommand import PkMonChatCommand
 from .chatCommands.pkMoveChatCommand import PkMoveChatCommand
 from .chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
 from .chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
-from .chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
 from .chatCommands.removeChatterPreferredTtsChatCommand import RemoveChatterPreferredTtsChatCommand
 from .chatCommands.removeGameShuffleAutomatorChatCommand import RemoveGameShuffleAutomatorChatCommand
 from .chatCommands.removeRecurringCutenessActionChatCommand import RemoveRecurringCutenessActionChatCommand
@@ -844,11 +843,6 @@ class CynanBot(
             self.__getBannedTriviaControllersCommand: AbsChatCommand = GetBannedTriviaControllersChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, triviaUtils, twitchChatMessenger, usersRepository)
             self.__removeBannedTriviaControllerCommand: AbsChatCommand = RemoveBannedTriviaControllerChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
 
-        if chatterPreferredNameHelper is None or chatterPreferredNameRepository is None or chatterPreferredNameSettings is None:
-            self.__removeChatterPreferredNameCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__removeChatterPreferredNameCommand: AbsChatCommand = RemoveChatterPreferredNameChatCommand(chatterPreferredNameRepository, chatterPreferredNameSettings, timber, twitchChatMessenger, usersRepository)
-
         if chatterPreferredTtsHelper is None or chatterPreferredTtsPresenter is None or chatterPreferredTtsRepository is None or chatterPreferredTtsSettingsRepository is None or chatterPreferredTtsUserMessageHelper is None or ttsJsonMapper is None:
             self.__removeChatterPreferredTtsCommand: AbsChatCommand = StubChatCommand()
         else:
@@ -1202,11 +1196,6 @@ class CynanBot(
     async def command_removebannedtriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeBannedTriviaControllerCommand.handleChatCommand(context)
-
-    @commands.command(name = 'removepreferredname', aliases = [ 'deletechatterpreferredname', 'deletemyname', 'removechatterpreferredname', 'removemyname' ])
-    async def command_removechatterpreferredname(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeChatterPreferredNameCommand.handleChatCommand(context)
 
     @commands.command(name = 'removepreferredtts', aliases = [ 'deletechatterpreferredtts', 'deletemytts', 'removechatterpreferredtts', 'removemytts' ])
     async def command_removechatterpreferredtts(self, ctx: Context):
