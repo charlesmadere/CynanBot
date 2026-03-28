@@ -36,8 +36,7 @@ class SuperAnswerChatCommand(AbsChatCommand2):
         self.__triviaIdGenerator: Final[TriviaIdGeneratorInterface] = triviaIdGenerator
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!sa\b', re.IGNORECASE),
-            re.compile(r'^\s*!superanswer\b', re.IGNORECASE),
+            re.compile(r'^\s*!s(?:uper)?a(?:nswer)?\b', re.IGNORECASE),
         })
 
     @property
@@ -49,11 +48,11 @@ class SuperAnswerChatCommand(AbsChatCommand2):
         return self.__commandPatterns
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
-        if not chatMessage.twitchUser.isTriviaGameEnabled or not chatMessage.twitchUser.isSuperTriviaGameEnabled:
+        if not chatMessage.twitchUser.isSuperTriviaGameEnabled:
             return ChatCommandResult.IGNORED
 
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        if not generalSettings.isTriviaGameEnabled() or not generalSettings.isSuperTriviaGameEnabled():
+        if not generalSettings.isSuperTriviaGameEnabled():
             return ChatCommandResult.IGNORED
 
         splits = utils.getCleanedSplits(chatMessage.text)
@@ -73,5 +72,5 @@ class SuperAnswerChatCommand(AbsChatCommand2):
             userName = chatMessage.chatterUserName,
         ))
 
-        self.__timber.log(self.commandName, f'Handled ({chatMessage=}) ({actionId=})')
+        self.__timber.log(self.commandName, f'Handled ({actionId=}) ({chatMessage=})')
         return ChatCommandResult.HANDLED

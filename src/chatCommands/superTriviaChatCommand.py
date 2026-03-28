@@ -52,11 +52,11 @@ class SuperTriviaChatCommand(AbsChatCommand2):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!supertrivia\b', re.IGNORECASE),
-            re.compile(r'^\s*!supertrivia(?:lotr)?\b', re.IGNORECASE),
+            re.compile(r'^\s*!supertrivias?\b', re.IGNORECASE),
+            re.compile(r'^\s*!supertrivias?(?:lotr)?\b', re.IGNORECASE),
         })
 
-        self.__lotrTriviaSourcePattern: Final[Pattern] = re.compile(r'^\s*!supertrivialotr\b', re.IGNORECASE)
+        self.__lotrTriviaSourcePattern: Final[Pattern] = re.compile(r'^\s*!supertrivias?lotr\b', re.IGNORECASE)
 
     @property
     def commandName(self) -> str:
@@ -67,11 +67,11 @@ class SuperTriviaChatCommand(AbsChatCommand2):
         return self.__commandPatterns
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
-        if not chatMessage.twitchUser.isTriviaGameEnabled or not chatMessage.twitchUser.isSuperTriviaGameEnabled:
+        if not chatMessage.twitchUser.isSuperTriviaGameEnabled:
             return ChatCommandResult.IGNORED
 
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        if not generalSettings.isTriviaGameEnabled() or not generalSettings.isSuperTriviaGameEnabled():
+        if not generalSettings.isSuperTriviaGameEnabled():
             return ChatCommandResult.IGNORED
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannelId = chatMessage.twitchChannelId,
@@ -79,8 +79,8 @@ class SuperTriviaChatCommand(AbsChatCommand2):
         ):
             return ChatCommandResult.IGNORED
 
-        numberOfGames = 1
         splits = utils.getCleanedSplits(chatMessage.text)
+        numberOfGames = 1
 
         if len(splits) >= 2:
             numberOfGamesStr: str | None = splits[1]
@@ -128,11 +128,10 @@ class SuperTriviaChatCommand(AbsChatCommand2):
             requiredTriviaSource = triviaSource,
         )
 
-        if action is None:
-            return ChatCommandResult.IGNORED
+        if action is not None:
+            self.__triviaGameMachine.submitAction(action)
 
-        self.__triviaGameMachine.submitAction(action)
-        self.__timber.log(self.commandName, f'Handled ({numberOfGames=}) ({triviaSource=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Handled ({action=}) ({triviaSource=}) ({numberOfGames=}) ({splits=}) ({chatMessage=})')
         return ChatCommandResult.HANDLED
 
     async def __stopForPrank(

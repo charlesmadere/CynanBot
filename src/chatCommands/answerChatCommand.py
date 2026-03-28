@@ -36,8 +36,7 @@ class AnswerChatCommand(AbsChatCommand2):
         self.__triviaIdGenerator: Final[TriviaIdGeneratorInterface] = triviaIdGenerator
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!a\b', re.IGNORECASE),
-            re.compile(r'^\s*!answer\b', re.IGNORECASE),
+            re.compile(r'^\s*!a(?:nswer)?\b', re.IGNORECASE),
         })
 
     @property
@@ -73,5 +72,5 @@ class AnswerChatCommand(AbsChatCommand2):
             userName = chatMessage.chatterUserName,
         ))
 
-        self.__timber.log(self.commandName, f'Handled ({chatMessage=}) ({actionId=})')
+        self.__timber.log(self.commandName, f'Handled ({actionId=}) ({chatMessage=})')
         return ChatCommandResult.HANDLED
