@@ -31,7 +31,7 @@ class DiscordPointRedemption(AbsChannelPointRedemption):
             return False
 
         self.__twitchChatMessenger.send(
-            text = f'',
+            text = f'ⓘ Discord invite link: {discordUrl}',
             twitchChannelId = channelPointsRedemption.twitchChannelId,
         )
 
