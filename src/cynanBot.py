@@ -39,7 +39,6 @@ from .chatCommands.confirmChatCommand import ConfirmChatCommand
 from .chatCommands.crowdControlChatCommand import CrowdControlChatCommand
 from .chatCommands.deleteCheerActionChatCommand import DeleteCheerActionChatCommand
 from .chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCommand
-from .chatCommands.discordChatCommand import DiscordChatCommand
 from .chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
 from .chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
 from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
@@ -64,7 +63,6 @@ from .chatCommands.swQuoteChatCommand import SwQuoteChatCommand
 from .chatCommands.timeChatCommand import TimeChatCommand
 from .chatCommands.translateChatCommand import TranslateChatCommand
 from .chatCommands.twitchUserInfoChatCommand import TwitchUserInfoChatCommand
-from .chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
 from .chatCommands.voicemailsChatCommand import VoicemailsChatCommand
 from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -766,7 +764,6 @@ class CynanBot(
         self.__blueSkyCommand: AbsChatCommand = BlueSkyChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettings, asplodieStatsRepository, authRepository, bannedTriviaGameControllersRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, guaranteedTimeoutUsersRepository, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionSettings, triviaGameControllersRepository, triviaGameGlobalControllersRepository, triviaSettings, trollmojiHelper, trollmojiSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchChatMessenger, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, voicemailsRepository, voicemailSettingsRepository, weatherRepository, wordOfTheDayRepository)
         self.__confirmCommand: AbsChatCommand = ConfirmChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, usersRepository)
-        self.__discordCommand: AbsChatCommand = DiscordChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__removeUserCommand: AbsChatCommand = RemoveUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, twitchTokensRepository, userIdsRepository, usersRepository)
         self.__setTwitchCodeCommand: AbsChatCommand = SetTwitchCodeChatCommand(administratorProvider, timber, twitchTokensRepository, twitchChatMessenger, usersRepository)
         self.__timeCommand: AbsChatCommand = TimeChatCommand(timber, twitchChatMessenger, usersRepository)
@@ -856,11 +853,6 @@ class CynanBot(
             self.__removeChatterPreferredTtsCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__removeChatterPreferredTtsCommand: AbsChatCommand = RemoveChatterPreferredTtsChatCommand(chatterPreferredTtsPresenter, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, timber, twitchChatMessenger, usersRepository)
-
-        if additionalTriviaAnswersRepository is None or cutenessRepository is None or cutenessUtils is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameControllersRepository is None or triviaGameGlobalControllersRepository is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaIdGenerator is None or triviaQuestionOccurrencesRepository is None or triviaScoreRepository is None or triviaSettings is None or triviaUtils is None:
-            self.__unbanTriviaQuestionChatCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__unbanTriviaQuestionChatCommand: AbsChatCommand = UnbanTriviaQuestionChatCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchChatMessenger, usersRepository)
 
         if funtoonTokensRepository is None:
             self.__setFuntoonTokenCommand: AbsChatCommand = StubChatCommand()
@@ -1166,11 +1158,6 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__disableCheerActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'discord', aliases = [ 'Discord' ])
-    async def command_discord(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__discordCommand.handleChatCommand(context)
-
     @commands.command(name = 'enablecheeraction')
     async def command_enablecheeraction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1280,11 +1267,6 @@ class CynanBot(
     async def command_twitchuserinfo(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__twitchUserInfoCommand.handleChatCommand(context)
-
-    @commands.command(name = 'unbantriviaquestion', aliases = [ 'unbantrivia' ])
-    async def command_unbantriviaquestion(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__unbanTriviaQuestionChatCommand.handleChatCommand(context)
 
     @commands.command(name = 'voicemails', aliases = [ 'voicemail' ])
     async def command_voicemails(self, ctx: Context):

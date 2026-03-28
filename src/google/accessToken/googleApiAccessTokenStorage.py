@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Final
 
 from .googleAccessToken import GoogleAccessToken
@@ -34,7 +34,7 @@ class GoogleApiAccessTokenStorage(GoogleApiAccessTokenStorageInterface):
         if accessToken is None:
             return None
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         expireTime = accessToken.expireTime
 
         if (now + self.__expireTimeBuffer) < expireTime:

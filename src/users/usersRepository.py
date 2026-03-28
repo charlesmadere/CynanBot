@@ -12,8 +12,6 @@ from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from .cuteness.cutenessBoosterPack import CutenessBoosterPack
 from .cuteness.cutenessBoosterPackJsonParserInterface import CutenessBoosterPackJsonParserInterface
-from .decTalkSongs.decTalkSongBoosterPack import DecTalkSongBoosterPack
-from .decTalkSongs.decTalkSongBoosterPackParserInterface import DecTalkSongBoosterPackParserInterface
 from .exceptions import BadModifyUserValueException, NoSuchUserException, NoUsersException
 from .pkmn.pkmnBoosterPackJsonParserInterface import PkmnBoosterPackJsonParserInterface
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
@@ -44,7 +42,6 @@ class UsersRepository(UsersRepositoryInterface):
         self,
         crowdControlJsonParser: CrowdControlJsonParserInterface,
         cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface,
-        decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface,
         languageEntryJsonMapper: LanguageEntryJsonMapperInterface,
         pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface,
         redemptionCounterBoosterPackParser: RedemptionCounterBoosterPackParserInterface,
@@ -61,8 +58,6 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'crowdControlJsonParser argument is malformed: \"{crowdControlJsonParser}\"')
         elif not isinstance(cutenessBoosterPackJsonParser, CutenessBoosterPackJsonParserInterface):
             raise TypeError(f'cutenessBoosterPackJsonParser argument is malformed: \"{cutenessBoosterPackJsonParser}\"')
-        elif not isinstance(decTalkSongBoosterPackParser, DecTalkSongBoosterPackParserInterface):
-            raise TypeError(f'decTalkSongBoosterPackParser argument is malformed: \"{decTalkSongBoosterPackParser}\"')
         elif not isinstance(languageEntryJsonMapper, LanguageEntryJsonMapperInterface):
             raise TypeError(f'languageEntryJsonMapper argument is malformed: \"{languageEntryJsonMapper}\"')
         elif not isinstance(pkmnBoosterPackJsonParser, PkmnBoosterPackJsonParserInterface):
@@ -88,7 +83,6 @@ class UsersRepository(UsersRepositoryInterface):
 
         self.__crowdControlJsonParser: Final[CrowdControlJsonParserInterface] = crowdControlJsonParser
         self.__cutenessBoosterPackJsonParser: Final[CutenessBoosterPackJsonParserInterface] = cutenessBoosterPackJsonParser
-        self.__decTalkSongBoosterPackParser: Final[DecTalkSongBoosterPackParserInterface] = decTalkSongBoosterPackParser
         self.__languageEntryJsonMapper: Final[LanguageEntryJsonMapperInterface] = languageEntryJsonMapper
         self.__pkmnBoosterPackJsonParser: Final[PkmnBoosterPackJsonParserInterface] = pkmnBoosterPackJsonParser
         self.__redemptionCounterBoosterPackParser: Final[RedemptionCounterBoosterPackParserInterface] = redemptionCounterBoosterPackParser
@@ -171,7 +165,6 @@ class UsersRepository(UsersRepositoryInterface):
         isCommandsCommandEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.COMMANDS_COMMAND_ENABLED.jsonKey, False)
         isCrowdControlEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CROWD_CONTROL_ENABLED.jsonKey, False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
-        isDecTalkSongsEnabled = utils.getBoolFromDict(userJson, 'decTalkSongsEnabled', False)
         isEccoEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ECCO_ENABLED.jsonKey, False)
         isEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ENABLED.jsonKey, True)
         isGiveCutenessEnabled = utils.getBoolFromDict(userJson, 'giveCutenessEnabled', False)
@@ -207,6 +200,7 @@ class UsersRepository(UsersRepositoryInterface):
         casualGamePollRewardId = utils.getStrFromDict(userJson, 'casualGamePollRewardId', '')
         casualGamePollUrl = utils.getStrFromDict(userJson, 'casualGamePollUrl', '')
         chatterPreferredNameRewardId = utils.getStrFromDict(userJson, 'chatterPreferredNameRewardId', '')
+        discordRewardId = utils.getStrFromDict(userJson, 'discordRewardId', '')
         discordUrl = utils.getStrFromDict(userJson, UserJsonConstant.DISCORD_URL.jsonKey, '')
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
@@ -245,11 +239,6 @@ class UsersRepository(UsersRepositoryInterface):
         if areRedemptionCountersEnabled:
             redemptionCounterBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('redemptionCounterBoosterPacks')
             redemptionCounterBoosterPacks = self.__redemptionCounterBoosterPackParser.parseBoosterPacks(redemptionCounterBoosterPacksJson)
-
-        decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None = None
-        if isDecTalkSongsEnabled:
-            decTalkSongBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('decTalkSongBoosterPacks')
-            decTalkSongBoosterPacks = self.__decTalkSongBoosterPackParser.parseBoosterPacks(decTalkSongBoosterPacksJson)
 
         maximumTtsCheerAmount: int | None = None
         minimumTtsCheerAmount: int | None = None
@@ -397,7 +386,6 @@ class UsersRepository(UsersRepositoryInterface):
             isCommandsCommandEnabled = isCommandsCommandEnabled,
             isCrowdControlEnabled = isCrowdControlEnabled,
             isCutenessEnabled = isCutenessEnabled,
-            isDecTalkSongsEnabled = isDecTalkSongsEnabled,
             isEccoEnabled = isEccoEnabled,
             isEnabled = isEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
@@ -461,6 +449,7 @@ class UsersRepository(UsersRepositoryInterface):
             chatterPreferredNameRewardId = chatterPreferredNameRewardId,
             crowdControlButtonPressRewardId = crowdControlButtonPressRewardId,
             crowdControlGameShuffleRewardId = crowdControlGameShuffleRewardId,
+            discordRewardId = discordRewardId,
             discordUrl = discordUrl,
             handle = handle,
             instagram = instagram,
@@ -478,7 +467,6 @@ class UsersRepository(UsersRepositoryInterface):
             defaultTtsProvider = defaultTtsProvider,
             crowdControlBoosterPacks = crowdControlBoosterPacks,
             cutenessBoosterPacks = cutenessBoosterPacks,
-            decTalkSongBoosterPacks = decTalkSongBoosterPacks,
             pkmnCatchBoosterPacks = pkmnCatchBoosterPacks,
             redemptionCounterBoosterPacks = redemptionCounterBoosterPacks,
             soundAlertRedemptions = soundAlertRedemptions,

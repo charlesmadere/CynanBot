@@ -6,7 +6,6 @@ from frozenlist import FrozenList
 
 from .crowdControl.crowdControlBoosterPack import CrowdControlBoosterPack
 from .cuteness.cutenessBoosterPack import CutenessBoosterPack
-from .decTalkSongs.decTalkSongBoosterPack import DecTalkSongBoosterPack
 from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .redemptionCounter.redemptionCounterBoosterPack import RedemptionCounterBoosterPack
 from .soundAlert.soundAlertRedemption import SoundAlertRedemption
@@ -43,7 +42,6 @@ class User(UserInterface):
         isCommandsCommandEnabled: bool,
         isCrowdControlEnabled: bool,
         isCutenessEnabled: bool,
-        isDecTalkSongsEnabled: bool,
         isEccoEnabled: bool,
         isEnabled: bool,
         isGiveCutenessEnabled: bool,
@@ -107,6 +105,7 @@ class User(UserInterface):
         chatterPreferredNameRewardId: str | None,
         crowdControlButtonPressRewardId: str | None,
         crowdControlGameShuffleRewardId: str | None,
+        discordRewardId: str | None,
         discordUrl: str | None,
         handle: str,
         instagram: str | None,
@@ -124,7 +123,6 @@ class User(UserInterface):
         defaultTtsProvider: TtsProvider,
         crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None,
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None,
-        decTalkSongBoosterPacks: frozendict[str, DecTalkSongBoosterPack] | None,
         pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None,
         redemptionCounterBoosterPacks: frozendict[str, RedemptionCounterBoosterPack] | None,
         soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None,
@@ -174,8 +172,6 @@ class User(UserInterface):
             raise TypeError(f'isCrowdControlEnabled argument is malformed: \"{isCrowdControlEnabled}\"')
         elif not utils.isValidBool(isCutenessEnabled):
             raise TypeError(f'isCutenessEnabled argument is malformed: \"{isCutenessEnabled}\"')
-        elif not utils.isValidBool(isDecTalkSongsEnabled):
-            raise TypeError(f'isDecTalkSongsEnabled argument is malformed: \"{isDecTalkSongsEnabled}\"')
         elif not utils.isValidBool(isEccoEnabled):
             raise TypeError(f'isEccoEnabled argument is malformed: \"{isEccoEnabled}\"')
         elif not utils.isValidBool(isEnabled):
@@ -300,6 +296,8 @@ class User(UserInterface):
             raise TypeError(f'crowdControlButtonPressRewardId argument is malformed: \"{crowdControlButtonPressRewardId}\"')
         elif crowdControlGameShuffleRewardId is not None and not isinstance(crowdControlGameShuffleRewardId, str):
             raise TypeError(f'crowdControlGameShuffleRewardId argument is malformed: \"{crowdControlGameShuffleRewardId}\"')
+        elif discordRewardId is not None and not isinstance(discordRewardId, str):
+            raise TypeError(f'discordRewardId argument is malformed: \"{discordRewardId}\"')
         elif discordUrl is not None and not isinstance(discordUrl, str):
             raise TypeError(f'discordUrl argument is malformed: \"{discordUrl}\"')
         elif not utils.isValidStr(handle):
@@ -332,8 +330,6 @@ class User(UserInterface):
             raise TypeError(f'crowdControlBoosterPacks argument is malformed: \"{crowdControlBoosterPacks}\"')
         elif cutenessBoosterPacks is not None and not isinstance(cutenessBoosterPacks, frozendict):
             raise TypeError(f'cutenessBoosterPacks argument is malformed: \"{cutenessBoosterPacks}\"')
-        elif decTalkSongBoosterPacks is not None and not isinstance(decTalkSongBoosterPacks, frozendict):
-            raise TypeError(f'decTalkSongBoosterPacks argument is malformed: \"{decTalkSongBoosterPacks}\"')
         elif pkmnCatchBoosterPacks is not None and not isinstance(pkmnCatchBoosterPacks, frozendict):
             raise TypeError(f'pkmnCatchBoosterPacks argument is malformed: \"{pkmnCatchBoosterPacks}\"')
         elif redemptionCounterBoosterPacks is not None and not isinstance(redemptionCounterBoosterPacks, frozendict):
@@ -371,7 +367,6 @@ class User(UserInterface):
         self.__isCommandsCommandEnabled: Final[bool] = isCommandsCommandEnabled
         self.__isCrowdControlEnabled: Final[bool] = isCrowdControlEnabled
         self.__isCutenessEnabled: Final[bool] = isCutenessEnabled
-        self.__isDecTalkSongsEnabled: Final[bool] = isDecTalkSongsEnabled
         self.__isEccoEnabled: Final[bool] = isEccoEnabled
         self.__isEnabled: Final[bool] = isEnabled
         self.__isGiveCutenessEnabled: Final[bool] = isGiveCutenessEnabled
@@ -435,7 +430,8 @@ class User(UserInterface):
         self.__chatterPreferredNameRewardId: Final[str | None] = chatterPreferredNameRewardId
         self.__crowdControlButtonPressRewardId: str | None = crowdControlButtonPressRewardId
         self.__crowdControlGameShuffleRewardId: str | None = crowdControlGameShuffleRewardId
-        self.__discordUrl: str | None = discordUrl
+        self.__discordRewardId: Final[str | None] = discordRewardId
+        self.__discordUrl: Final[str | None] = discordUrl
         self.__handle: Final[str] = handle
         self.__instagram: str | None = instagram
         self.__locationId: str | None = locationId
@@ -452,7 +448,6 @@ class User(UserInterface):
         self.__defaultTtsProvider: TtsProvider = defaultTtsProvider
         self.__crowdControlBoosterPacks: Final[frozendict[str, CrowdControlBoosterPack] | None] = crowdControlBoosterPacks
         self.__cutenessBoosterPacks: Final[frozendict[str, CutenessBoosterPack] | None] = cutenessBoosterPacks
-        self.__decTalkSongBoosterPacks: Final[frozendict[str, DecTalkSongBoosterPack] | None] = decTalkSongBoosterPacks
         self.__pkmnCatchBoosterPacks: Final[frozendict[str, PkmnCatchBoosterPack] | None] = pkmnCatchBoosterPacks
         self.__redemptionCounterBoosterPacks: Final[frozendict[str, RedemptionCounterBoosterPack] | None] = redemptionCounterBoosterPacks
         self.__soundAlertRedemptions: Final[frozendict[str, SoundAlertRedemption] | None] = soundAlertRedemptions
@@ -547,12 +542,12 @@ class User(UserInterface):
         return self.__chatterPreferredNameRewardId
 
     @property
-    def decTalkSongBoosterPacks(self) -> frozendict[str, DecTalkSongBoosterPack] | None:
-        return self.__decTalkSongBoosterPacks
-
-    @property
     def defaultLanguage(self) -> LanguageEntry:
         return self.__defaultLanguage
+
+    @property
+    def discordRewardId(self) -> str | None:
+        return self.__discordRewardId
 
     @property
     def discordUrl(self) -> str | None:
@@ -745,10 +740,6 @@ class User(UserInterface):
     @property
     def isCutenessEnabled(self) -> bool:
         return self.__isCutenessEnabled
-
-    @property
-    def isDecTalkSongsEnabled(self) -> bool:
-        return self.__isDecTalkSongsEnabled
 
     @property
     def isEccoEnabled(self) -> bool:

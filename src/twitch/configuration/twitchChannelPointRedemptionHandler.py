@@ -14,7 +14,7 @@ from ...channelPointRedemptions.casualGamePollPointRedemption import CasualGameP
 from ...channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from ...channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from ...channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
-from ...channelPointRedemptions.decTalkSongPointRedemption import DecTalkSongPointRedemption
+from ...channelPointRedemptions.discordPointRedemption import DiscordPointRedemption
 from ...channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from ...channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
 from ...channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
@@ -42,7 +42,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         chatterPreferredNamePointRedemption: ChatterPreferredNamePointRedemption | None,
         chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None,
         cutenessPointRedemption: CutenessPointRedemption | None,
-        decTalkSongPointRedemption: DecTalkSongPointRedemption | None,
+        discordPointRedemption: DiscordPointRedemption | None,
         mouseCursorPointRedemption: MouseCursorPointRedemption | None,
         pkmnBattlePointRedemption: PkmnBattlePointRedemption | None,
         pkmnCatchPointRedemption: PkmnCatchPointRedemption | None,
@@ -68,8 +68,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'chatterPreferredTtsPointRedemption argument is malformed: \"{chatterPreferredTtsPointRedemption}\"')
         elif cutenessPointRedemption is not None and not isinstance(cutenessPointRedemption, CutenessPointRedemption):
             raise TypeError(f'cutenessPointRedemption argument is malformed: \"{cutenessPointRedemption}\"')
-        elif decTalkSongPointRedemption is not None and not isinstance(decTalkSongPointRedemption, DecTalkSongPointRedemption):
-            raise TypeError(f'decTalkSongPointRedemption argument is malformed: \"{decTalkSongPointRedemption}\"')
+        elif discordPointRedemption is not None and not isinstance(discordPointRedemption, DiscordPointRedemption):
+            raise TypeError(f'discordPointRedemption argument is malformed: \"{discordPointRedemption}\"')
         elif mouseCursorPointRedemption is not None and not isinstance(mouseCursorPointRedemption, MouseCursorPointRedemption):
             raise TypeError(f'mouseCursorPointRedemption argument is malformed: \"{mouseCursorPointRedemption}\"')
         elif pkmnBattlePointRedemption is not None and not isinstance(pkmnBattlePointRedemption, PkmnBattlePointRedemption):
@@ -132,10 +132,10 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         else:
             self.__cutenessPointRedemption: AbsChannelPointRedemption = cutenessPointRedemption
 
-        if decTalkSongPointRedemption is None:
-            self.__decTalkSongPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
+        if discordPointRedemption is None:
+            self.__discordPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
         else:
-            self.__decTalkSongPointRedemption: AbsChannelPointRedemption = decTalkSongPointRedemption
+            self.__discordPointRedemption: AbsChannelPointRedemption = discordPointRedemption
 
         if mouseCursorPointRedemption is None:
             self.__mouseCursorPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
@@ -222,8 +222,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             ):
                 return
 
-        if user.isDecTalkSongsEnabled:
-            if await self.__decTalkSongPointRedemption.handlePointRedemption(
+        if channelPointsRedemption.rewardId == user.discordRewardId:
+            if await self.__discordPointRedemption.handlePointRedemption(
                 channelPointsRedemption = channelPointsRedemption,
             ):
                 return

@@ -28,6 +28,7 @@ from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRe
 from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
 from src.channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
+from src.channelPointRedemptions.discordPointRedemption import DiscordPointRedemption
 from src.channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
 from src.channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from src.channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
@@ -73,6 +74,7 @@ from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from src.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
 from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from src.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
+from src.chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
 from src.chatCommands.weatherChatCommand import WeatherChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -480,8 +482,6 @@ from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
 from src.users.crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from src.users.cuteness.cutenessBoosterPackJsonParser import CutenessBoosterPackJsonParser
 from src.users.cuteness.cutenessBoosterPackJsonParserInterface import CutenessBoosterPackJsonParserInterface
-from src.users.decTalkSongs.decTalkSongBoosterPackParser import DecTalkSongBoosterPackParser
-from src.users.decTalkSongs.decTalkSongBoosterPackParserInterface import DecTalkSongBoosterPackParserInterface
 from src.users.pkmn.pkmnBoosterPackJsonParser import PkmnBoosterPackJsonParser
 from src.users.pkmn.pkmnBoosterPackJsonParserInterface import PkmnBoosterPackJsonParserInterface
 from src.users.redemptionCounter.redemptionCounterBoosterPackParser import RedemptionCounterBoosterPackParser
@@ -679,8 +679,6 @@ crowdControlJsonParser: CrowdControlJsonParserInterface = CrowdControlJsonParser
 
 cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = CutenessBoosterPackJsonParser()
 
-decTalkSongBoosterPackParser: DecTalkSongBoosterPackParserInterface = DecTalkSongBoosterPackParser()
-
 languageEntryJsonMapper: LanguageEntryJsonMapperInterface = LanguageEntryJsonMapper()
 
 pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = PkmnBoosterPackJsonParser(
@@ -704,7 +702,6 @@ ttsBoosterPackParser: TtsBoosterPackParserInterface = StubTtsBoosterPackParser()
 usersRepository: Final[UsersRepositoryInterface] = UsersRepository(
     crowdControlJsonParser = crowdControlJsonParser,
     cutenessBoosterPackJsonParser = cutenessBoosterPackJsonParser,
-    decTalkSongBoosterPackParser = decTalkSongBoosterPackParser,
     languageEntryJsonMapper = languageEntryJsonMapper,
     pkmnBoosterPackJsonParser = pkmnBoosterPackJsonParser,
     redemptionCounterBoosterPackParser = redemptionCounterBoosterPackParser,
@@ -724,7 +721,7 @@ twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHel
     usersRepository = usersRepository,
 )
 
-twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface = TwitchPredictionWebsocketUtils(
+twitchPredictionWebsocketUtils: Final[TwitchPredictionWebsocketUtilsInterface] = TwitchPredictionWebsocketUtils(
     timber = timber,
 )
 
@@ -733,19 +730,19 @@ addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface = AddOrRemoveUserD
     timeZoneRepository = timeZoneRepository
 )
 
-chatLogger: ChatLoggerInterface = ChatLogger(
+chatLogger: Final[ChatLoggerInterface] = ChatLogger(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
 )
 
-activeChattersRepository: ActiveChattersRepositoryInterface = ActiveChattersRepository(
+activeChattersRepository: Final[ActiveChattersRepositoryInterface] = ActiveChattersRepository(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
 
@@ -2029,7 +2026,10 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     chatterPreferredNamePointRedemption = None,
     chatterPreferredTtsPointRedemption = None,
     cutenessPointRedemption = cutenessPointRedemption,
-    decTalkSongPointRedemption = None,
+    discordPointRedemption = DiscordPointRedemption(
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     mouseCursorPointRedemption = None,
     pkmnBattlePointRedemption = pkmnBattlePointRedemption,
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,
@@ -2261,6 +2261,15 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
         userIdsRepository = userIdsRepository,
+    ),
+    UnbanTriviaQuestionChatCommand(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        triviaBanHelper = triviaBanHelper,
+        triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaHistoryRepository = triviaHistoryRepository,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
     ),
     WeatherChatCommand(
         locationsRepository = locationsRepository,
