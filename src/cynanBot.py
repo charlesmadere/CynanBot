@@ -62,7 +62,6 @@ from .chatCommands.timeChatCommand import TimeChatCommand
 from .chatCommands.translateChatCommand import TranslateChatCommand
 from .chatCommands.twitchUserInfoChatCommand import TwitchUserInfoChatCommand
 from .chatCommands.voicemailsChatCommand import VoicemailsChatCommand
-from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
 from .chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
 from .chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
@@ -871,11 +870,6 @@ class CynanBot(
             self.__playVoicemailCommand: AbsChatCommand = PlayVoicemailChatCommand(compositeTtsManagerProvider, streamAlertsManager, timber, timeZoneRepository, twitchChatMessenger, usersRepository, voicemailHelper, voicemailSettingsRepository)
             self.__voicemailsCommand: AbsChatCommand = VoicemailsChatCommand(timber, timeZoneRepository, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository, voicemailHelper, voicemailSettingsRepository)
 
-        if wordOfTheDayPresenter is None or wordOfTheDayRepository is None:
-            self.__wordCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__wordCommand: AbsChatCommand = WordChatCommand(languagesRepository, timber, twitchChatMessenger, usersRepository, wordOfTheDayPresenter, wordOfTheDayRepository)
-
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireTwitchHandle()}')
 
     async def event_channel_join_failure(self, channel: str):
@@ -1250,8 +1244,3 @@ class CynanBot(
     async def command_voicemails(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__voicemailsCommand.handleChatCommand(context)
-
-    @commands.command(name = 'word')
-    async def command_word(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__wordCommand.handleChatCommand(context)

@@ -99,6 +99,7 @@ from src.chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionC
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
 from src.chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
 from src.chatCommands.weatherChatCommand import WeatherChatCommand
+from src.chatCommands.wordChatCommand import WordChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
@@ -3605,6 +3606,13 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         usersRepository = usersRepository,
         weatherReportPresenter = weatherReportPresenter,
         weatherRepository = weatherRepository,
+    ),
+    WordChatCommand(
+        languagesRepository = languagesRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        wordOfTheDayPresenter = wordOfTheDayPresenter,
+        wordOfTheDayRepository = wordOfTheDayRepository,
     ),
     VulnerableChattersChatCommand(
         activeChattersRepository = activeChattersRepository,

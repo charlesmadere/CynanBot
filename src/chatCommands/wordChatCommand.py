@@ -1,32 +1,28 @@
+import re
 import traceback
-from datetime import timedelta
-from typing import Final
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
-from ..language.exceptions import NoLanguageEntryFoundForCommandException, NoLanguageEntryFoundForWotdApiCodeException
-from ..language.languageEntry import LanguageEntry
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from ..language.wordOfTheDay.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
 from ..language.wordOfTheDay.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
+from ..language.wordOfTheDay.wordOfTheDayResponse import WordOfTheDayResponse
 from ..misc import utils as utils
-from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class WordChatCommand(AbsChatCommand):
+class WordChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
         languagesRepository: LanguagesRepositoryInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface,
         wordOfTheDayPresenter: WordOfTheDayPresenterInterface,
         wordOfTheDayRepository: WordOfTheDayRepositoryInterface,
-        cooldown: timedelta = timedelta(seconds = 3),
     ):
         if not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
@@ -34,79 +30,93 @@ class WordChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not isinstance(wordOfTheDayPresenter, WordOfTheDayPresenterInterface):
             raise TypeError(f'wordOfTheDayPresenter argument is malformed: \"{wordOfTheDayPresenter}\"')
         elif not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
             raise TypeError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__languagesRepository: Final[LanguagesRepositoryInterface] = languagesRepository
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
         self.__wordOfTheDayPresenter: Final[WordOfTheDayPresenterInterface] = wordOfTheDayPresenter
         self.__wordOfTheDayRepository: Final[WordOfTheDayRepositoryInterface] = wordOfTheDayRepository
-        self.__lastMessageTimes: Final[TimedDict] = TimedDict(cooldown)
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!word\b', re.IGNORECASE),
+            re.compile(r'^\s*!wordoftheday\b', re.IGNORECASE),
+            re.compile(r'^\s*!wotd\b', re.IGNORECASE),
+        })
 
-        if not user.isWordOfTheDayEnabled:
-            return
-        elif not ctx.isAuthorMod and not ctx.isAuthorVip and not self.__lastMessageTimes.isReadyAndUpdate(user.handle):
-            return
+    @property
+    def commandName(self) -> str:
+        return 'WordChatCommand'
 
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isWordOfTheDayEnabled:
+            return ChatCommandResult.IGNORED
+
+        splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 2:
             exampleEntry = await self.__languagesRepository.getExampleLanguageEntry(hasWotdApiCode = True)
             allWotdApiCodes = await self.__languagesRepository.getAllWotdApiCodes()
             self.__twitchChatMessenger.send(
                 text = f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.requireWotdApiCode()}. Available languages: {allWotdApiCodes}',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+            return ChatCommandResult.HANDLED
 
-        language = splits[1]
-        languageEntry: LanguageEntry
+        language: str | None = splits[1]
+        if not utils.isValidStr(language):
+
+            return ChatCommandResult.HANDLED
 
         try:
             languageEntry = await self.__languagesRepository.requireLanguageForCommand(
                 command = language,
                 hasWotdApiCode = True
             )
-        except (NoLanguageEntryFoundForCommandException, NoLanguageEntryFoundForWotdApiCodeException, RuntimeError, TypeError, ValueError) as e:
-            self.__timber.log('WordCommand', f'Error retrieving LanguageEntry ({language=})', e, traceback.format_exc())
+        except Exception as e:
             allWotdApiCodes = await self.__languagesRepository.getAllWotdApiCodes()
+
             self.__twitchChatMessenger.send(
                 text = f'⚠ The given language code is not supported by the !word command. Available languages: {allWotdApiCodes}',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+
+            self.__timber.log(self.commandName, f'Error retrieving LanguageEntry ({language=})', e, traceback.format_exc())
+            return ChatCommandResult.HANDLED
+
+        wordOfTheDayResponse: WordOfTheDayResponse | None = None
 
         try:
-            wotd = await self.__wordOfTheDayRepository.fetchWotd(languageEntry)
+            wordOfTheDayResponse = await self.__wordOfTheDayRepository.fetchWotd(
+                languageEntry = languageEntry,
+            )
 
-            wordOfTheDayString = await self.__wordOfTheDayPresenter.toString(
+            printOut = await self.__wordOfTheDayPresenter.toString(
                 includeRomaji = False,
-                wordOfTheDay = wotd,
+                wordOfTheDay = wordOfTheDayResponse,
             )
 
             self.__twitchChatMessenger.send(
-                text = wordOfTheDayString,
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                text = printOut,
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
         except Exception as e:
-            self.__timber.log('WordCommand', f'Error fetching Word Of The Day ({languageEntry=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ Error fetching Word Of The Day for \"{languageEntry.humanName}\"',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log('WordChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+            self.__timber.log(self.commandName, f'Error fetching Word Of The Day ({wordOfTheDayResponse=}) ({languageEntry=}) ({chatMessage=})', e, traceback.format_exc())
+
+        self.__timber.log(self.commandName, f'Handled ({wordOfTheDayResponse=}) ({languageEntry=}) ({chatMessage=})')
+        return ChatCommandResult.HANDLED
