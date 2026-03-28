@@ -61,6 +61,7 @@ from src.chatCommands.cutenessHistoryChatCommand import CutenessHistoryChatComma
 from src.chatCommands.cynanSourceChatCommand import CynanSourceChatCommand
 from src.chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
+from src.chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
 from src.chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
 from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from src.chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
@@ -2156,6 +2157,13 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     EccoChatCommand(
         eccoHelper = eccoHelper,
         timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    GetBannedTriviaControllersChatCommand(
+        administratorProvider = administratorProvider,
+        bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
+        timber = timber,
+        triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
     GetGlobalTriviaControllersChatCommand(

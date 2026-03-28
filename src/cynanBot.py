@@ -40,7 +40,6 @@ from .chatCommands.crowdControlChatCommand import CrowdControlChatCommand
 from .chatCommands.deleteCheerActionChatCommand import DeleteCheerActionChatCommand
 from .chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCommand
 from .chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
-from .chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
 from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from .chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
 from .chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
@@ -835,10 +834,8 @@ class CynanBot(
             self.__removeRecurringWordOfTheDayActionCommand: AbsChatCommand = RemoveRecurringWordOfTheDayActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
 
         if bannedTriviaGameControllersRepository is None or triviaUtils is None:
-            self.__getBannedTriviaControllersCommand: AbsChatCommand = StubChatCommand()
             self.__removeBannedTriviaControllerCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__getBannedTriviaControllersCommand: AbsChatCommand = GetBannedTriviaControllersChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, triviaUtils, twitchChatMessenger, usersRepository)
             self.__removeBannedTriviaControllerCommand: AbsChatCommand = RemoveBannedTriviaControllerChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
 
         if funtoonTokensRepository is None:
@@ -1144,11 +1141,6 @@ class CynanBot(
     async def command_enablecheeraction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__enableCheerActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'getbannedtriviacontrollers', aliases = [ 'bannedtriviacontrollers' ])
-    async def command_getbannedtriviacontrollers(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__getBannedTriviaControllersCommand.handleChatCommand(context)
 
     @commands.command(name = 'getcheeractions', aliases = [ 'cheeractions' ])
     async def command_getcheeractions(self, ctx: Context):

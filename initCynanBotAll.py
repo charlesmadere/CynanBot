@@ -72,6 +72,7 @@ from src.chatCommands.cynanSourceChatCommand import CynanSourceChatCommand
 from src.chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
 from src.chatCommands.freeGiveChatterItemChatCommand import FreeGiveChatterItemChatCommand
+from src.chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
 from src.chatCommands.getChatterPreferredNameChatCommand import GetChatterPreferredNameChatCommand
 from src.chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredTtsChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
@@ -3409,6 +3410,13 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,
         userIdsRepository = userIdsRepository,
+    ),
+    GetBannedTriviaControllersChatCommand(
+        administratorProvider = administratorProvider,
+        bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
+        timber = timber,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
     ),
     GetChatterPreferredNameChatCommand(
         chatterPreferredNameHelper = chatterPreferredNameHelper,
