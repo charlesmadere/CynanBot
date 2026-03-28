@@ -83,6 +83,7 @@ from src.chatCommands.jishoChatCommand import JishoChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
 from src.chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
+from src.chatCommands.removeChatterPreferredTtsChatCommand import RemoveChatterPreferredTtsChatCommand
 from src.chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
 from src.chatCommands.removeTriviaControllerChatCommand import RemoveTriviaControllerChatCommand
 from src.chatCommands.setChatterPreferredNameChatCommand import SetChatterPreferredNameChatCommand
@@ -3481,6 +3482,13 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     RemoveChatterPreferredNameChatCommand(
         chatterPreferredNameRepository = chatterPreferredNameRepository,
         chatterPreferredNameSettings = chatterPreferredNameSettings,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    RemoveChatterPreferredTtsChatCommand(
+        chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
+        chatterPreferredTtsRepository = chatterPreferredTtsRepository,
+        chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
