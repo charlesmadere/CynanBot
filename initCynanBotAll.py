@@ -33,6 +33,7 @@ from src.beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterf
 from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
+from src.channelPointRedemptions.discordPointRedemption import DiscordPointRedemption
 from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from src.channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
 from src.channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
@@ -3245,6 +3246,7 @@ testMouseCursorChatCommand: Final[TestMouseCursorChatCommand] = TestMouseCursorC
     timber = timber,
 )
 
+
 ##########################################
 ## Twitch events initialization section ##
 ##########################################
@@ -3255,6 +3257,10 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     chatterPreferredNamePointRedemption = None,
     chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = cutenessPointRedemption,
+    discordPointRedemption = DiscordPointRedemption(
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     mouseCursorPointRedemption = mouseCursorPointRedemption,
     pkmnBattlePointRedemption = pkmnBattlePointRedemption,
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,

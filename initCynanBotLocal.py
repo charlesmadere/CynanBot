@@ -2300,6 +2300,7 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     chatterPreferredNamePointRedemption = chatterPreferredNamePointRedemption,
     chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = None,
+    discordPointRedemption = None,
     mouseCursorPointRedemption = mouseCursorPointRedemption,
     pkmnBattlePointRedemption = None,
     pkmnCatchPointRedemption = None,

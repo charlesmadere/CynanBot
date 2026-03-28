@@ -28,6 +28,7 @@ from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRe
 from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
 from src.channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
+from src.channelPointRedemptions.discordPointRedemption import DiscordPointRedemption
 from src.channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
 from src.channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from src.channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
@@ -2025,6 +2026,10 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     chatterPreferredNamePointRedemption = None,
     chatterPreferredTtsPointRedemption = None,
     cutenessPointRedemption = cutenessPointRedemption,
+    discordPointRedemption = DiscordPointRedemption(
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     mouseCursorPointRedemption = None,
     pkmnBattlePointRedemption = pkmnBattlePointRedemption,
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,
