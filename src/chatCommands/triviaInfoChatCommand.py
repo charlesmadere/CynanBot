@@ -66,7 +66,7 @@ class TriviaInfoChatCommand(AbsChatCommand2):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!triviainfo\b', re.IGNORECASE),
+            re.compile(r'^\s*!(?:get)?triviainfo(?:rmation)?\b', re.IGNORECASE),
         })
 
     async def __buildTriviaInfoMessage(
@@ -121,24 +121,26 @@ class TriviaInfoChatCommand(AbsChatCommand2):
 
         splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 2:
-            self.__timber.log(self.commandName, f'Attempted to handle command, but not enough arguments were supplied ({chatMessage=}) ({splits=})')
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to get trivia question info as an invalid emote argument was given. Example: !triviainfo {self.__triviaEmoteGenerator.getRandomEmote()}',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
+
+            self.__timber.log(self.commandName, f'Attempted to handle command, but not enough arguments were supplied ({splits=}) ({chatMessage=})')
             return ChatCommandResult.HANDLED
 
         emote: str | None = splits[1]
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
-            self.__timber.log(self.commandName, f'Attempted to handle command, but an invalid emote argument was given ({emote=}) ({normalizedEmote=}) ({chatMessage=}) ({splits=})')
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to get trivia question info as an invalid emote argument was given. Example: !triviainfo {self.__triviaEmoteGenerator.getRandomEmote()}',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
+
+            self.__timber.log(self.commandName, f'Attempted to handle command, but an invalid emote argument was given ({emote=}) ({normalizedEmote=}) ({splits=}) ({chatMessage=})')
             return ChatCommandResult.HANDLED
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
@@ -147,12 +149,13 @@ class TriviaInfoChatCommand(AbsChatCommand2):
         )
 
         if reference is None:
-            self.__timber.log(self.commandName, f'Attempted to handle command, but no trivia question reference was found ({emote=}) ({normalizedEmote=}) ({reference=}) ({chatMessage=}) ({splits=})')
             self.__twitchChatMessenger.send(
                 text = f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
+
+            self.__timber.log(self.commandName, f'Attempted to handle command, but no trivia question reference was found ({emote=}) ({normalizedEmote=}) ({reference=}) ({splits=}) ({chatMessage=})')
             return ChatCommandResult.HANDLED
 
         additionalTriviaAnswers = await self.__additionalTriviaAnswersRepository.getAdditionalTriviaAnswers(
@@ -179,5 +182,5 @@ class TriviaInfoChatCommand(AbsChatCommand2):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({reference=}) ({emote=}) ({normalizedEmote=})')
+        self.__timber.log(self.commandName, f'Handled ({reference=}) ({emote=}) ({normalizedEmote=}) ({chatMessage=})')
         return ChatCommandResult.HANDLED
