@@ -61,6 +61,7 @@ from src.chatCommands.cutenessHistoryChatCommand import CutenessHistoryChatComma
 from src.chatCommands.cynanSourceChatCommand import CynanSourceChatCommand
 from src.chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
+from src.chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
 from src.chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
 from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from src.chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
@@ -68,6 +69,7 @@ from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.jishoChatCommand import JishoChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
+from src.chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
 from src.chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
 from src.chatCommands.removeTriviaControllerChatCommand import RemoveTriviaControllerChatCommand
 from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
@@ -76,6 +78,7 @@ from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from src.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from src.chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
 from src.chatCommands.weatherChatCommand import WeatherChatCommand
+from src.chatCommands.wordChatCommand import WordChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
@@ -2157,6 +2160,13 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    GetBannedTriviaControllersChatCommand(
+        administratorProvider = administratorProvider,
+        bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
+        timber = timber,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     GetGlobalTriviaControllersChatCommand(
         administratorProvider = administratorProvider,
         generalSettingsRepository = generalSettingsRepository,
@@ -2206,6 +2216,15 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         cutenessUtils = cutenessUtils,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    RemoveBannedTriviaControllerChatCommand(
+        administratorProvider = administratorProvider,
+        bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchHandleProvider = authRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
     ),
     RemoveGlobalTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
@@ -2278,6 +2297,13 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         usersRepository = usersRepository,
         weatherReportPresenter = weatherReportPresenter,
         weatherRepository = weatherRepository,
+    ),
+    WordChatCommand(
+        languagesRepository = languagesRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        wordOfTheDayPresenter = wordOfTheDayPresenter,
+        wordOfTheDayRepository = wordOfTheDayRepository,
     ),
 })
 

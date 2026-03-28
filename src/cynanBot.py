@@ -40,14 +40,12 @@ from .chatCommands.crowdControlChatCommand import CrowdControlChatCommand
 from .chatCommands.deleteCheerActionChatCommand import DeleteCheerActionChatCommand
 from .chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCommand
 from .chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
-from .chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
 from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from .chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
 from .chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
 from .chatCommands.pkMonChatCommand import PkMonChatCommand
 from .chatCommands.pkMoveChatCommand import PkMoveChatCommand
 from .chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
-from .chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
 from .chatCommands.removeGameShuffleAutomatorChatCommand import RemoveGameShuffleAutomatorChatCommand
 from .chatCommands.removeRecurringCutenessActionChatCommand import RemoveRecurringCutenessActionChatCommand
 from .chatCommands.removeRecurringSuperTriviaActionCommand import RemoveRecurringSuperTriviaActionCommand
@@ -62,7 +60,6 @@ from .chatCommands.timeChatCommand import TimeChatCommand
 from .chatCommands.translateChatCommand import TranslateChatCommand
 from .chatCommands.twitchUserInfoChatCommand import TwitchUserInfoChatCommand
 from .chatCommands.voicemailsChatCommand import VoicemailsChatCommand
-from .chatCommands.wordChatCommand import WordChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
 from .chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
 from .chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
@@ -835,13 +832,6 @@ class CynanBot(
             self.__removeRecurringWeatherActionCommand: AbsChatCommand = RemoveRecurringWeatherActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
             self.__removeRecurringWordOfTheDayActionCommand: AbsChatCommand = RemoveRecurringWordOfTheDayActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
 
-        if bannedTriviaGameControllersRepository is None or triviaUtils is None:
-            self.__getBannedTriviaControllersCommand: AbsChatCommand = StubChatCommand()
-            self.__removeBannedTriviaControllerCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__getBannedTriviaControllersCommand: AbsChatCommand = GetBannedTriviaControllersChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, triviaUtils, twitchChatMessenger, usersRepository)
-            self.__removeBannedTriviaControllerCommand: AbsChatCommand = RemoveBannedTriviaControllerChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchChatMessenger, authRepository, twitchTokensUtils, userIdsRepository, usersRepository)
-
         if funtoonTokensRepository is None:
             self.__setFuntoonTokenCommand: AbsChatCommand = StubChatCommand()
         else:
@@ -870,11 +860,6 @@ class CynanBot(
         else:
             self.__playVoicemailCommand: AbsChatCommand = PlayVoicemailChatCommand(compositeTtsManagerProvider, streamAlertsManager, timber, timeZoneRepository, twitchChatMessenger, usersRepository, voicemailHelper, voicemailSettingsRepository)
             self.__voicemailsCommand: AbsChatCommand = VoicemailsChatCommand(timber, timeZoneRepository, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository, voicemailHelper, voicemailSettingsRepository)
-
-        if wordOfTheDayPresenter is None or wordOfTheDayRepository is None:
-            self.__wordCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__wordCommand: AbsChatCommand = WordChatCommand(languagesRepository, timber, twitchChatMessenger, usersRepository, wordOfTheDayPresenter, wordOfTheDayRepository)
 
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireTwitchHandle()}')
 
@@ -1151,11 +1136,6 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__enableCheerActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'getbannedtriviacontrollers', aliases = [ 'bannedtriviacontrollers' ])
-    async def command_getbannedtriviacontrollers(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__getBannedTriviaControllersCommand.handleChatCommand(context)
-
     @commands.command(name = 'getcheeractions', aliases = [ 'cheeractions' ])
     async def command_getcheeractions(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1185,11 +1165,6 @@ class CynanBot(
     async def command_pkmove(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__pkMoveCommand.handleChatCommand(context)
-
-    @commands.command(name = 'removebannedtriviacontroller')
-    async def command_removebannedtriviacontroller(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeBannedTriviaControllerCommand.handleChatCommand(context)
 
     @commands.command(name = 'removegameshuffleautomator', aliases = [ 'delgameshuffleautomator', 'deletegameshuffleautomator' ])
     async def command_removegameshuffleautomator(self, ctx: Context):
@@ -1250,8 +1225,3 @@ class CynanBot(
     async def command_voicemails(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__voicemailsCommand.handleChatCommand(context)
-
-    @commands.command(name = 'word')
-    async def command_word(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__wordCommand.handleChatCommand(context)

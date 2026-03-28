@@ -72,6 +72,7 @@ from src.chatCommands.cynanSourceChatCommand import CynanSourceChatCommand
 from src.chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
 from src.chatCommands.freeGiveChatterItemChatCommand import FreeGiveChatterItemChatCommand
+from src.chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
 from src.chatCommands.getChatterPreferredNameChatCommand import GetChatterPreferredNameChatCommand
 from src.chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredTtsChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
@@ -82,6 +83,7 @@ from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.jishoChatCommand import JishoChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
+from src.chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
 from src.chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
 from src.chatCommands.removeChatterPreferredTtsChatCommand import RemoveChatterPreferredTtsChatCommand
 from src.chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
@@ -99,6 +101,7 @@ from src.chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionC
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
 from src.chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
 from src.chatCommands.weatherChatCommand import WeatherChatCommand
+from src.chatCommands.wordChatCommand import WordChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
@@ -3409,6 +3412,13 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         twitchTokensUtils = twitchTokensUtils,
         userIdsRepository = userIdsRepository,
     ),
+    GetBannedTriviaControllersChatCommand(
+        administratorProvider = administratorProvider,
+        bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
+        timber = timber,
+        triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     GetChatterPreferredNameChatCommand(
         chatterPreferredNameHelper = chatterPreferredNameHelper,
         chatterPreferredNameSettings = chatterPreferredNameSettings,
@@ -3478,6 +3488,15 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         cutenessUtils = cutenessUtils,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    RemoveBannedTriviaControllerChatCommand(
+        administratorProvider = administratorProvider,
+        bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchHandleProvider = authRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
     ),
     RemoveChatterPreferredNameChatCommand(
         chatterPreferredNameRepository = chatterPreferredNameRepository,
@@ -3605,6 +3624,13 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         usersRepository = usersRepository,
         weatherReportPresenter = weatherReportPresenter,
         weatherRepository = weatherRepository,
+    ),
+    WordChatCommand(
+        languagesRepository = languagesRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        wordOfTheDayPresenter = wordOfTheDayPresenter,
+        wordOfTheDayRepository = wordOfTheDayRepository,
     ),
     VulnerableChattersChatCommand(
         activeChattersRepository = activeChattersRepository,
