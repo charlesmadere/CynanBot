@@ -33,7 +33,6 @@ from .chatCommands.addVoicemailCheerActionCommand import AddVoicemailCheerAction
 from .chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
 from .chatCommands.beanInstructionsChatCommand import BeanInstructionsChatCommand
 from .chatCommands.beanStatsChatCommand import BeanStatsChatCommand
-from .chatCommands.blueSkyChatCommand import BlueSkyChatCommand
 from .chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from .chatCommands.confirmChatCommand import ConfirmChatCommand
 from .chatCommands.crowdControlChatCommand import CrowdControlChatCommand
@@ -756,7 +755,6 @@ class CynanBot(
         #######################################
 
         self.__addUserCommand: AbsChatCommand = AddUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchChatMessenger, userIdsRepository, usersRepository)
-        self.__blueSkyCommand: AbsChatCommand = BlueSkyChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettings, asplodieStatsRepository, authRepository, bannedTriviaGameControllersRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, guaranteedTimeoutUsersRepository, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionSettings, triviaGameControllersRepository, triviaGameGlobalControllersRepository, triviaSettings, trollmojiHelper, trollmojiSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchChatMessenger, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, voicemailsRepository, voicemailSettingsRepository, weatherRepository, wordOfTheDayRepository)
         self.__confirmCommand: AbsChatCommand = ConfirmChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, usersRepository)
         self.__removeUserCommand: AbsChatCommand = RemoveUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, twitchTokensRepository, userIdsRepository, usersRepository)
@@ -1100,11 +1098,6 @@ class CynanBot(
     async def command_beanstats(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__beanStatsCommand.handleChatCommand(context)
-
-    @commands.command(name = 'bluesky', aliases = [ 'BlueSky', 'blueSky', 'bsky' ])
-    async def command_bluesky(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__blueSkyCommand.handleChatCommand(context)
 
     @commands.command(name = 'clearcaches')
     async def command_clearcaches(self, ctx: Context):
