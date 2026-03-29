@@ -33,7 +33,6 @@ from .chatCommands.addVoicemailCheerActionCommand import AddVoicemailCheerAction
 from .chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
 from .chatCommands.beanInstructionsChatCommand import BeanInstructionsChatCommand
 from .chatCommands.beanStatsChatCommand import BeanStatsChatCommand
-from .chatCommands.blueSkyChatCommand import BlueSkyChatCommand
 from .chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from .chatCommands.confirmChatCommand import ConfirmChatCommand
 from .chatCommands.crowdControlChatCommand import CrowdControlChatCommand
@@ -42,7 +41,6 @@ from .chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCo
 from .chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
 from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from .chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
-from .chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
 from .chatCommands.pkMonChatCommand import PkMonChatCommand
 from .chatCommands.pkMoveChatCommand import PkMoveChatCommand
 from .chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
@@ -756,7 +754,6 @@ class CynanBot(
         #######################################
 
         self.__addUserCommand: AbsChatCommand = AddUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchChatMessenger, userIdsRepository, usersRepository)
-        self.__blueSkyCommand: AbsChatCommand = BlueSkyChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettings, asplodieStatsRepository, authRepository, bannedTriviaGameControllersRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, guaranteedTimeoutUsersRepository, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionSettings, triviaGameControllersRepository, triviaGameGlobalControllersRepository, triviaSettings, trollmojiHelper, trollmojiSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchChatMessenger, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, voicemailsRepository, voicemailSettingsRepository, weatherRepository, wordOfTheDayRepository)
         self.__confirmCommand: AbsChatCommand = ConfirmChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, usersRepository)
         self.__removeUserCommand: AbsChatCommand = RemoveUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, twitchTokensRepository, userIdsRepository, usersRepository)
@@ -773,11 +770,6 @@ class CynanBot(
             self.__beanStatsCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__beanStatsCommand: AbsChatCommand = BeanStatsChatCommand(beanStatsPresenter, beanStatsRepository, timber, twitchChatMessenger, userIdsRepository, usersRepository)
-
-        if chatterInventoryHelper is None or chatterInventoryIdGenerator is None or chatterInventoryItemUseMachine is None or chatterInventoryMapper is None or chatterInventorySettings is None or gashaponRewardHelper is None or useChatterItemHelper is None:
-            self.__giveChatterItemCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__giveChatterItemCommand: AbsChatCommand = GiveChatterItemChatCommand(chatterInventoryIdGenerator, chatterInventoryItemUseMachine, chatterInventoryMapper, chatterInventorySettings, timber, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository)
 
         if cheerActionJsonMapper is None or cheerActionsRepository is None or cheerActionsWizard is None:
             self.__addCrowdControlCheerActionCommand: AbsChatCommand = StubChatCommand()
@@ -1101,11 +1093,6 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__beanStatsCommand.handleChatCommand(context)
 
-    @commands.command(name = 'bluesky', aliases = [ 'BlueSky', 'blueSky', 'bsky' ])
-    async def command_bluesky(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__blueSkyCommand.handleChatCommand(context)
-
     @commands.command(name = 'clearcaches')
     async def command_clearcaches(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1145,11 +1132,6 @@ class CynanBot(
     async def command_getrecurringactions(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getRecurringActionsCommand.handleChatCommand(context)
-
-    @commands.command(name = 'giveitem', aliases = [ 'givechatteritem', 'itemgive' ])
-    async def command_givechatteritem(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__giveChatterItemCommand.handleChatCommand(context)
 
     @commands.command(name = 'pkmon')
     async def command_pkmon(self, ctx: Context):

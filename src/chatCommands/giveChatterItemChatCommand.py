@@ -1,9 +1,11 @@
 import random
+import re
 import traceback
 from dataclasses import dataclass
-from typing import Final
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
 from ..chatterInventory.machine.chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
 from ..chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
@@ -13,13 +15,12 @@ from ..chatterInventory.settings.chatterInventorySettingsInterface import Chatte
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class GiveChatterItemChatCommand(AbsChatCommand):
+class GiveChatterItemChatCommand(AbsChatCommand2):
 
     @dataclass(frozen = True, slots = True)
     class Arguments:
@@ -38,7 +39,6 @@ class GiveChatterItemChatCommand(AbsChatCommand):
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
             raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
@@ -56,8 +56,6 @@ class GiveChatterItemChatCommand(AbsChatCommand):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = chatterInventoryIdGenerator
         self.__chatterInventoryItemUseMachine: Final[ChatterInventoryItemUseMachineInterface] = chatterInventoryItemUseMachine
@@ -67,106 +65,114 @@ class GiveChatterItemChatCommand(AbsChatCommand):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
+
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!give(?:chatter)?item\b', re.IGNORECASE),
+            re.compile(r'^\s*!itemgive\b', re.IGNORECASE),
+        })
 
     async def __chooseRandomEnabledItemType(self) -> str:
         enabledItemTypes = await self.__chatterInventorySettings.getEnabledItemTypes()
         randomItemType = random.choice(list(enabledItemTypes))
         return await self.__chatterInventoryMapper.serializeItemType(randomItemType)
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+    @property
+    def commandName(self) -> str:
+        return 'GiveChatterItemChatCommand'
 
-        if not user.isChatterInventoryEnabled:
-            return
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isChatterInventoryEnabled:
+            return ChatCommandResult.IGNORED
         elif not await self.__chatterInventorySettings.isEnabled():
-            return
+            return ChatCommandResult.IGNORED
 
-        arguments = await self.__parseArguments(
-            messageContent = ctx.getMessageContent(),
-            twitchChannelId = await ctx.getTwitchChannelId(),
-        )
+        arguments = await self.__parseArguments(chatMessage)
 
         if arguments is None:
             randomItemType = await self.__chooseRandomEnabledItemType()
 
             self.__twitchChatMessenger.send(
-                text = f'⚠ Invalid arguments! Example use: !give @{ctx.getAuthorName()} {randomItemType}',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                text = f'⚠ Invalid arguments! Example use: !give @{chatMessage.chatterUserName} {randomItemType}',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
-        elif ctx.getAuthorId() == arguments.chatterUserId:
+
+            return ChatCommandResult.HANDLED
+
+        elif chatMessage.chatterUserId == arguments.chatterUserId:
             randomItemType = await self.__chooseRandomEnabledItemType()
 
             self.__twitchChatMessenger.send(
-                text = f'⚠ You can\'t give yourself an item! Example use: !give @{ctx.getAuthorName()} {randomItemType}',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                text = f'⚠ You can\'t give yourself an item! Example use: !give @{chatMessage.chatterUserName} {randomItemType}',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return
+
+            return ChatCommandResult.HANDLED
+
+        actionId = await self.__chatterInventoryIdGenerator.generateActionId()
 
         self.__chatterInventoryItemUseMachine.submitAction(TradeChatterItemAction(
             itemType = arguments.itemType,
             tradeAmount = arguments.giveAmount,
-            actionId = await self.__chatterInventoryIdGenerator.generateActionId(),
-            fromChatterUserId = ctx.getAuthorId(),
+            actionId = actionId,
+            fromChatterUserId = chatMessage.chatterUserId,
             toChatterUserId = arguments.chatterUserId,
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            twitchChatMessageId = await ctx.getMessageId(),
-            user = user,
+            twitchChannelId = chatMessage.twitchChannelId,
+            twitchChatMessageId = chatMessage.twitchChatMessageId,
+            user = chatMessage.twitchUser,
         ))
 
-        self.__timber.log('GiveChatterItemChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({actionId=}) ({arguments=}) ({chatMessage=})')
+        return ChatCommandResult.HANDLED
 
-    async def __parseArguments(
-        self,
-        messageContent: str | None,
-        twitchChannelId: str,
-    ) -> Arguments | None:
-        if not utils.isValidStr(messageContent):
-            return None
-
-        splits = utils.getCleanedSplits(messageContent)
+    async def __parseArguments(self, chatMessage: TwitchChatMessage) -> Arguments | None:
+        splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 3:
             return None
 
-        chatterUserName = utils.removePreceedingAt(splits[1])
-
-        try:
-            chatterUserId = await self.__userIdsRepository.requireUserId(
-                userName = chatterUserName,
-                twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-                    twitchChannelId = twitchChannelId,
-                ),
-            )
-        except:
-            self.__timber.log('GiveChatterItemChatCommand', f'Failed to fetch user ID for the given chatter username ({chatterUserName=}) ({splits=})')
+        chatterUserName: str | None = utils.removePreceedingAt(splits[1])
+        if not utils.isValidStr(chatterUserName) or not utils.strContainsAlphanumericCharacters(chatterUserName):
             return None
 
-        itemTypeString = splits[2]
+        chatterUserId = await self.__userIdsRepository.fetchUserId(
+            userName = chatterUserName,
+            twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+                twitchChannelId = chatMessage.twitchChannelId,
+            ),
+        )
+
+        if not utils.isValidStr(chatterUserId):
+            self.__timber.log(self.commandName, f'Failed to fetch user ID for the given chatter username ({chatterUserId=}) ({chatterUserName=}) ({splits=}) ({chatMessage=})')
+            return None
+
+        itemTypeString: str | None = splits[2]
 
         itemType = await self.__chatterInventoryMapper.parseItemType(
             itemType = itemTypeString,
         )
 
         if itemType is None:
-            self.__timber.log('GiveChatterItemChatCommand', f'Failed to parse itemTypeString into a ChatterItemType ({itemTypeString=}) ({splits=})')
+            self.__timber.log(self.commandName, f'Failed to parse itemTypeString into a ChatterItemType ({itemType=}) ({itemTypeString=}) ({splits=}) ({chatMessage=})')
             return None
 
         giveAmount = 1
 
         if len(splits) >= 4:
-            giveAmountString = splits[3]
+            giveAmountString: str | None = splits[3]
 
             try:
                 giveAmount = int(giveAmountString)
             except Exception as e:
-                self.__timber.log('GiveChatterItemChatCommand', f'Failed to parse giveAmountString into an int ({giveAmountString=}) ({splits=})', e, traceback.format_exc())
+                self.__timber.log(self.commandName, f'Failed to parse giveAmountString into an int ({giveAmountString=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
                 return None
 
             if giveAmount < 1 or giveAmount > utils.getShortMaxSafeSize():
-                self.__timber.log('GiveChatterItemChatCommand', f'The giveAmount value is out of bounds ({giveAmount=}) ({giveAmountString=}) ({splits=})')
+                self.__timber.log(self.commandName, f'The giveAmount value is out of bounds ({giveAmount=}) ({giveAmountString=}) ({splits=}) ({chatMessage})')
                 return None
 
         return GiveChatterItemChatCommand.Arguments(

@@ -49,6 +49,7 @@ from src.chatCommands.freeGiveChatterItemChatCommand import FreeGiveChatterItemC
 from src.chatCommands.getChatterPreferredNameChatCommand import GetChatterPreferredNameChatCommand
 from src.chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredTtsChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
+from src.chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
 from src.chatCommands.removeChatterPreferredTtsChatCommand import RemoveChatterPreferredTtsChatCommand
@@ -2362,6 +2363,16 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         timeZoneRepository = timeZoneRepository,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    GiveChatterItemChatCommand(
+        chatterInventoryIdGenerator = chatterInventoryIdGenerator,
+        chatterInventoryItemUseMachine = chatterInventoryItemUseMachine,
+        chatterInventoryMapper = chatterInventoryMapper,
+        chatterInventorySettings = chatterInventorySettings,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
     ),
     LoremIpsumChatCommand(
         administratorProvider = administratorProvider,

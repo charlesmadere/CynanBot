@@ -79,6 +79,7 @@ from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatComma
 from src.chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
 from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from src.chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
+from src.chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
 from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.jishoChatCommand import JishoChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
@@ -3463,6 +3464,16 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaGameControllersRepository = triviaGameControllersRepository,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    GiveChatterItemChatCommand(
+        chatterInventoryIdGenerator = chatterInventoryIdGenerator,
+        chatterInventoryItemUseMachine = chatterInventoryItemUseMachine,
+        chatterInventoryMapper = chatterInventoryMapper,
+        chatterInventorySettings = chatterInventorySettings,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
     ),
     GiveCutenessChatCommand(
         cutenessRepository = cutenessRepository,
