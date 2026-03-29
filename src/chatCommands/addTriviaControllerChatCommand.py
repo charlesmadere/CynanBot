@@ -13,7 +13,6 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ..users.exceptions import NoSuchUserException
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
@@ -71,7 +70,7 @@ class AddTriviaControllerChatCommand(AbsChatCommand2):
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
         if not chatMessage.twitchUser.isTriviaGameEnabled and not chatMessage.twitchUser.isSuperTriviaGameEnabled:
             return ChatCommandResult.IGNORED
-        elif chatMessage.chatterUserId != chatMessage.twitchChannelId and chatMessage.chatterUserId != await self.__administratorProvider.getAdministratorUserId():
+        elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
@@ -82,41 +81,41 @@ class AddTriviaControllerChatCommand(AbsChatCommand2):
 
         splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 2:
-            self.__timber.log(self.commandName, f'Attempted to handle command, but no arguments were supplied ({splits=}) ({chatMessage=})')
-
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to add trivia controller as no username argument was given. Example: !addtriviacontroller @{twitchHandle}',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
+
+            self.__timber.log(self.commandName, f'Attempted to handle command, but no arguments were supplied ({splits=}) ({chatMessage=})')
             return ChatCommandResult.HANDLED
 
         targetUserName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(targetUserName) or not utils.strContainsAlphanumericCharacters(targetUserName):
-            self.__timber.log(self.commandName, f'Attempted to handle command, but username argument is malformed ({targetUserName=}) ({splits=}) ({chatMessage=})')
-
             self.__twitchChatMessenger.send(
-                text = f'⚠ Unable to add trivia controller as username argument is malformed. Example: !addtriviacontroller {twitchHandle}',
+                text = f'⚠ Unable to add trivia controller as username argument is malformed. Example: !addtriviacontroller @{twitchHandle}',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
+
+            self.__timber.log(self.commandName, f'Attempted to handle command, but username argument is malformed ({targetUserName=}) ({splits=}) ({chatMessage=})')
             return ChatCommandResult.HANDLED
 
-        try:
-            targetUserId = await self.__userIdsRepository.requireUserId(
-                userName = targetUserName,
-                twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-                    twitchChannelId = chatMessage.twitchChannelId,
-                ),
-            )
-        except NoSuchUserException:
-            self.__timber.log(self.commandName, f'Failed to fetch user ID for the given username argument ({targetUserName=}) ({splits=}) ({chatMessage=})')
+        targetUserId = await self.__userIdsRepository.fetchUserId(
+            userName = targetUserName,
+            twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+                twitchChannelId = chatMessage.twitchChannelId,
+            ),
+        )
 
+        if not utils.isValidStr(targetUserId):
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to add trivia controller as no user ID could be found for the given username',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
+
+            self.__timber.log(self.commandName, f'Failed to fetch user ID for the given username argument ({targetUserId=}) ({targetUserName=}) ({splits=}) ({chatMessage=})')
             return ChatCommandResult.HANDLED
 
         result = await self.__triviaGameControllersRepository.addController(
@@ -146,5 +145,10 @@ class AddTriviaControllerChatCommand(AbsChatCommand2):
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
-        self.__timber.log(self.commandName, f'Handled ({result=}) ({targetUserId=}) ({targetUserName=})')
+        self.__timber.log(self.commandName, f'Handled ({result=}) ({targetUserId=}) ({targetUserName=}) ({chatMessage=})')
         return ChatCommandResult.HANDLED
+
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+        isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
+        return isStreamer or isAdministrator

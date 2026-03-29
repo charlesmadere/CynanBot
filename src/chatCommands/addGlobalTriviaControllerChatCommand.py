@@ -64,7 +64,7 @@ class AddGlobalTriviaControllerChatCommand(AbsChatCommand2):
         return self.__commandPatterns
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
-        if chatMessage.chatterUserId != await self.__administratorProvider.getAdministratorUserId():
+        if not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
@@ -76,6 +76,7 @@ class AddGlobalTriviaControllerChatCommand(AbsChatCommand2):
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
+
             self.__timber.log(self.commandName, f'Attempted to handle command, but no arguments were supplied ({splits=}) ({chatMessage=})')
             return ChatCommandResult.HANDLED
 
@@ -86,6 +87,7 @@ class AddGlobalTriviaControllerChatCommand(AbsChatCommand2):
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
+
             self.__timber.log(self.commandName, f'Attempted to handle command, but the username argument is malformed ({targetUserName=}) ({splits=}) ({chatMessage=})')
             return ChatCommandResult.HANDLED
 
@@ -132,5 +134,8 @@ class AddGlobalTriviaControllerChatCommand(AbsChatCommand2):
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
-        self.__timber.log(self.commandName, f'Handled ({result=}) ({targetUserId=}) ({targetUserName=})')
+        self.__timber.log(self.commandName, f'Handled ({result=}) ({targetUserId=}) ({targetUserName=}) ({chatMessage=})')
         return ChatCommandResult.HANDLED
+
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        return chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()

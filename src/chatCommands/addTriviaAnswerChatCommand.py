@@ -86,12 +86,13 @@ class AddTriviaAnswerChatCommand(AbsChatCommand2):
 
         splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 3:
-            self.__timber.log(self.commandName, f'Attempted to handle command, but not enough arguments were supplied ({splits=}) ({chatMessage=})')
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to add additional trivia answer as not enough arguments were given. Example: !addtriviaanswer {self.__triviaEmoteGenerator.getRandomEmote()} Theodore Roosevelt',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
+
+            self.__timber.log(self.commandName, f'Attempted to handle command, but not enough arguments were supplied ({splits=}) ({chatMessage=})')
             return ChatCommandResult.HANDLED
 
         emote: str | None = splits[1]
