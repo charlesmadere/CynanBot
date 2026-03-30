@@ -39,10 +39,7 @@ from src.channelPointRedemptions.superTriviaLotrGamePointRedemption import Super
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from src.chatActions.absChatAction2 import AbsChatAction2
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
-from src.chatActions.chatLoggerChatAction import ChatLoggerChatAction
 from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
-from src.chatActions.manager.chatActionsManager import ChatActionsManager
-from src.chatActions.manager.chatActionsManagerInterface import ChatActionsManagerInterface
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
@@ -1669,28 +1666,26 @@ anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
     timber = timber,
 )
 
-mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = MostRecentAnivMessageRepository(
+mostRecentAnivMessageRepository: Final[MostRecentAnivMessageRepositoryInterface] = MostRecentAnivMessageRepository(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
 )
 
-mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = None
-if mostRecentAnivMessageRepository is not None:
-    mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
-        anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
-        anivSettings = anivSettings,
-        anivUserIdsRepository = anivUserIdsRepository,
-        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
-        timber = timber,
-        timeoutActionMachine = timeoutActionMachine,
-        timeoutIdGenerator = timeoutIdGenerator,
-        timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-        timeZoneRepository = timeZoneRepository,
-        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-        twitchHandleProvider = authRepository,
-        twitchTokensRepository = twitchTokensRepository,
-        userIdsRepository = userIdsRepository,
-    )
+mostRecentAnivMessageTimeoutHelper: Final[MostRecentAnivMessageTimeoutHelperInterface] = MostRecentAnivMessageTimeoutHelper(
+    anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
+    anivSettings = anivSettings,
+    anivUserIdsRepository = anivUserIdsRepository,
+    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+    timber = timber,
+    timeoutActionMachine = timeoutActionMachine,
+    timeoutIdGenerator = timeoutIdGenerator,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    timeZoneRepository = timeZoneRepository,
+    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository,
+)
 
 
 ##############################################
@@ -1842,10 +1837,6 @@ anivCheckChatAction = AnivCheckChatAction(
     userIdsRepository = userIdsRepository,
 )
 
-chatLoggerChatAction = ChatLoggerChatAction(
-    chatLogger = chatLogger
-)
-
 cheerActionsWizard: CheerActionsWizardInterface = CheerActionsWizard(
     timber = timber,
 )
@@ -1866,25 +1857,10 @@ recurringActionsWizardChatAction = RecurringActionsWizardChatAction(
     twitchChatMessenger = twitchChatMessenger,
 )
 
-saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None = None
-if mostRecentAnivMessageRepository is not None:
-    saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
-        anivUserIdsRepository = anivUserIdsRepository,
-        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
-        timber = timber,
-    )
-
-chatActionsManager: Final[ChatActionsManagerInterface] = ChatActionsManager(
-    activeChattersRepository = activeChattersRepository,
-    cheerActionsWizardChatAction = cheerActionsWizardChatAction,
-    chatActions = None,
-    generalSettingsRepository = generalSettingsRepository,
-    mostRecentChatsRepository = mostRecentChatsRepository,
-    recurringActionsWizardChatAction = recurringActionsWizardChatAction,
+saveMostRecentAnivMessageChatAction: Final[SaveMostRecentAnivMessageChatAction] = SaveMostRecentAnivMessageChatAction(
+    anivUserIdsRepository = anivUserIdsRepository,
+    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
     timber = timber,
-    userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository,
-    voicemailChatAction = None,
 )
 
 
@@ -2047,7 +2023,7 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     userIdsRepository = userIdsRepository,
 )
 
-chatActions: Final[Collection[AbsChatAction2 | None]] = list()
+chatActions: Final[Collection[AbsChatAction2 | None]] = frozenset()
 
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     AddBannedTriviaControllerChatCommand(
@@ -2402,7 +2378,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     beanStatsPresenter = None,
     beanStatsRepository = None,
     bizhawkSettingsRepository = None,
-    chatActionsManager = chatActionsManager,
     chatLogger = chatLogger,
     chatterInventoryHelper = None,
     chatterInventoryIdGenerator = None,

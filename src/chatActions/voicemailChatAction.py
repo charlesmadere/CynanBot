@@ -1,19 +1,19 @@
 import locale
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Final
 
-from .absChatAction import AbsChatAction
+from .absChatAction2 import AbsChatAction2
+from .chatActionResult import ChatActionResult
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchMessage import TwitchMessage
-from ..users.userInterface import UserInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
 from ..voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
 
 
-class VoicemailChatAction(AbsChatAction):
+class VoicemailChatAction(AbsChatAction2):
 
     def __init__(
         self,
@@ -40,33 +40,36 @@ class VoicemailChatAction(AbsChatAction):
         self.__voicemailHelper: Final[VoicemailHelperInterface] = voicemailHelper
         self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
 
-    async def handleChat(
+    @property
+    def actionName(self) -> str:
+        return 'VoicemailChatAction'
+
+    async def handleChatAction(
         self,
         mostRecentChat: MostRecentChat | None,
-        message: TwitchMessage,
-        user: UserInterface
-    ) -> bool:
-        if not await self.__voicemailSettingsRepository.isEnabled():
-            return False
-        elif not user.isVoicemailEnabled or not user.isTtsEnabled:
-            return False
+        chatMessage: TwitchChatMessage,
+    ) -> ChatActionResult:
+        if not chatMessage.twitchUser.isVoicemailEnabled or not chatMessage.twitchUser.isTtsEnabled:
+            return ChatActionResult.IGNORED
+        elif not await self.__voicemailSettingsRepository.isEnabled():
+            return ChatActionResult.IGNORED
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         hoursBetweenNotifications = timedelta(
             hours = await self.__voicemailSettingsRepository.getHoursBetweenAutomaticVoicemailChatNotifications()
         )
 
         if mostRecentChat is not None and (mostRecentChat.mostRecentChat + hoursBetweenNotifications) > now:
-            return False
+            return ChatActionResult.IGNORED
 
         voicemails = await self.__voicemailHelper.getAllForTargetUser(
-            targetUserId = message.getAuthorId(),
-            twitchChannelId = await message.getTwitchChannelId(),
+            targetUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
         if len(voicemails) == 0:
-            return False
+            return ChatActionResult.IGNORED
 
         voicemailsLenStr = locale.format_string("%d", len(voicemails), grouping = True)
 
@@ -77,9 +80,10 @@ class VoicemailChatAction(AbsChatAction):
             voicemailsPlurality = 'voicemails'
 
         self.__twitchChatMessenger.send(
-            text = f'☎️ @{message.getAuthorName()} you\'ve got mail! Use the !playvoicemail command to play the message. You currently have {voicemailsLenStr} {voicemailsPlurality}.',
-            twitchChannelId = await message.getTwitchChannelId(),
+            text = f'☎️ @{chatMessage.chatterUserName} you\'ve got mail! Use the !playvoicemail command to play the message. You currently have {voicemailsLenStr} {voicemailsPlurality}.',
+            twitchChannelId = chatMessage.twitchChannelId,
             delaySeconds = 8,
         )
 
-        return True
+        self.__timber.log(self.actionName, f'Notified user of voicemail(s) ({voicemails=}) ({chatMessage=})')
+        return ChatActionResult.HANDLED

@@ -46,10 +46,7 @@ from src.channelPointRedemptions.superTriviaLotrGamePointRedemption import Super
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from src.chatActions.absChatAction2 import AbsChatAction2
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
-from src.chatActions.chatLoggerChatAction import ChatLoggerChatAction
 from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
-from src.chatActions.manager.chatActionsManager import ChatActionsManager
-from src.chatActions.manager.chatActionsManagerInterface import ChatActionsManagerInterface
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
@@ -2427,14 +2424,6 @@ voicemailHelper: VoicemailHelperInterface = VoicemailHelper(
     voicemailSettingsRepository = voicemailSettingsRepository
 )
 
-voicemailChatAction = VoicemailChatAction(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    twitchChatMessenger = twitchChatMessenger,
-    voicemailHelper = voicemailHelper,
-    voicemailSettingsRepository = voicemailSettingsRepository,
-)
-
 
 ########################################
 ## Pixels Dice initialization section ##
@@ -3008,10 +2997,6 @@ anivCheckChatAction = AnivCheckChatAction(
     userIdsRepository = userIdsRepository,
 )
 
-chatLoggerChatAction = ChatLoggerChatAction(
-    chatLogger = chatLogger
-)
-
 cheerActionsWizard: CheerActionsWizardInterface = CheerActionsWizard(
     timber = timber,
 )
@@ -3050,31 +3035,6 @@ supStreamerRepository: Final[SupStreamerRepositoryInterface] = SupStreamerReposi
 )
 
 supStreamerHelper: Final[SupStreamerHelperInterface] = SupStreamerHelper()
-
-supStreamerChatAction: Final[SupStreamerChatAction] = SupStreamerChatAction(
-    chatterPreferredNameHelper = chatterPreferredNameHelper,
-    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
-    streamAlertsManager = streamAlertsManager,
-    supStreamerHelper = supStreamerHelper,
-    supStreamerRepository = supStreamerRepository,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchTokensRepository = twitchTokensRepository,
-)
-
-chatActionsManager: Final[ChatActionsManagerInterface] = ChatActionsManager(
-    activeChattersRepository = activeChattersRepository,
-    cheerActionsWizardChatAction = cheerActionsWizardChatAction,
-    chatActions = None,
-    generalSettingsRepository = generalSettingsRepository,
-    mostRecentChatsRepository = mostRecentChatsRepository,
-    recurringActionsWizardChatAction = recurringActionsWizardChatAction,
-    timber = timber,
-    userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository,
-    voicemailChatAction = voicemailChatAction,
-)
 
 
 ######################################################
@@ -3281,9 +3241,26 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     userIdsRepository = userIdsRepository,
 )
 
-chatActions: Final[Collection[AbsChatAction2 | None]] = [
-    supStreamerChatAction,
-]
+chatActions: Final[Collection[AbsChatAction2 | None]] = frozenset({
+    SupStreamerChatAction(
+        chatterPreferredNameHelper = chatterPreferredNameHelper,
+        chatterPreferredTtsHelper = chatterPreferredTtsHelper,
+        streamAlertsManager = streamAlertsManager,
+        supStreamerHelper = supStreamerHelper,
+        supStreamerRepository = supStreamerRepository,
+        timber = timber,
+        timeZoneRepository = timeZoneRepository,
+        twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+        twitchTokensRepository = twitchTokensRepository,
+    ),
+    VoicemailChatAction(
+        timber = timber,
+        timeZoneRepository = timeZoneRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        voicemailHelper = voicemailHelper,
+        voicemailSettingsRepository = voicemailSettingsRepository,
+    ),
+})
 
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     AddBannedTriviaControllerChatCommand(
@@ -3746,7 +3723,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     beanStatsPresenter = beanStatsPresenter,
     beanStatsRepository = beanStatsRepository,
     bizhawkSettingsRepository = bizhawkSettingsRepository,
-    chatActionsManager = chatActionsManager,
     chatLogger = chatLogger,
     chatterInventoryHelper = chatterInventoryHelper,
     chatterInventoryIdGenerator = chatterInventoryIdGenerator,
