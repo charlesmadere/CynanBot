@@ -17,7 +17,6 @@ from .asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from .asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from .beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
 from .beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
-from .chatActions.manager.chatActionsManagerInterface import ChatActionsManagerInterface
 from .chatCommands.absChatCommand import AbsChatCommand
 from .chatCommands.addCrowdControlCheerActionChatCommand import AddCrowdControlCheerActionChatCommand
 from .chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
@@ -260,7 +259,6 @@ class CynanBot(
         beanStatsPresenter: BeanStatsPresenterInterface | None,
         beanStatsRepository: BeanStatsRepositoryInterface | None,
         bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface | None,
-        chatActionsManager: ChatActionsManagerInterface | None,
         chatLogger: ChatLoggerInterface,
         chatterInventoryHelper: ChatterInventoryHelperInterface | None,
         chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface | None,
@@ -453,8 +451,6 @@ class CynanBot(
             raise TypeError(f'beanStatsRepository argument is malformed: \"{beanStatsRepository}\"')
         elif bizhawkSettingsRepository is not None and not isinstance(bizhawkSettingsRepository, BizhawkSettingsRepositoryInterface):
             raise TypeError(f'bizhawkSettingsRepository argument is malformed: \"{bizhawkSettingsRepository}\"')
-        elif chatActionsManager is not None and not isinstance(chatActionsManager, ChatActionsManagerInterface):
-            raise TypeError(f'chatActionsManager argument is malformed: \"{chatActionsManager}\"')
         elif not isinstance(chatLogger, ChatLoggerInterface):
             raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
         elif chatterInventoryHelper is not None and not isinstance(chatterInventoryHelper, ChatterInventoryHelperInterface):
@@ -715,18 +711,13 @@ class CynanBot(
         self.__twitchRaidHandler: Final[AbsTwitchRaidHandler | None] = twitchRaidHandler
         self.__twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler | None] = twitchSubscriptionHandler
         self.__addOrRemoveUserDataHelper: Final[AddOrRemoveUserDataHelperInterface] = addOrRemoveUserDataHelper
-        self.__airStrikeCheerActionHelper: Final[AirStrikeCheerActionHelperInterface | None] = airStrikeCheerActionHelper
         self.__authRepository: Final[AuthRepository] = authRepository
-        self.__beanChanceCheerActionHelper: Final[BeanChanceCheerActionHelperInterface | None] = beanChanceCheerActionHelper
-        self.__chatActionsManager: Final[ChatActionsManagerInterface | None] = chatActionsManager
         self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
         self.__chatterInventoryItemUseMachine: Final[ChatterInventoryItemUseMachineInterface | None] = chatterInventoryItemUseMachine
         self.__chatterItemEventHandler: Final[AbsChatterItemEventHandler | None] = chatterItemEventHandler
         self.__crowdControlActionHandler: Final[CrowdControlActionHandler | None] = crowdControlActionHandler
         self.__crowdControlMachine: Final[CrowdControlMachineInterface | None] = crowdControlMachine
         self.__crowdControlMessageListener: Final[CrowdControlMessageListener | None] = crowdControlMessageListener
-        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
-        self.__mostRecentAnivMessageTimeoutHelper: Final[MostRecentAnivMessageTimeoutHelperInterface | None] = mostRecentAnivMessageTimeoutHelper
         self.__pixelsDiceEventListener: Final[PixelsDiceEventListener | None] = pixelsDiceEventListener
         self.__pixelsDiceMachine: Final[PixelsDiceMachineInterface | None] = pixelsDiceMachine
         self.__recurringActionsEventHandler: Final[AbsRecurringActionsEventHandler | None] = recurringActionsEventHandler
@@ -872,9 +863,6 @@ class CynanBot(
 
         if await twitchMessage.isMessageFromExternalSharedChat():
             return
-
-        if self.__chatActionsManager is not None:
-            await self.__chatActionsManager.handleMessage(twitchMessage)
 
         await self.handle_commands(message)
 

@@ -37,8 +37,6 @@ from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPo
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from src.chatActions.absChatAction2 import AbsChatAction2
 from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
-from src.chatActions.manager.chatActionsManager import ChatActionsManager
-from src.chatActions.manager.chatActionsManagerInterface import ChatActionsManagerInterface
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
@@ -1691,14 +1689,6 @@ voicemailHelper: VoicemailHelperInterface = VoicemailHelper(
     voicemailSettingsRepository = voicemailSettingsRepository
 )
 
-voicemailChatAction = VoicemailChatAction(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    twitchChatMessenger = twitchChatMessenger,
-    voicemailHelper = voicemailHelper,
-    voicemailSettingsRepository = voicemailSettingsRepository,
-)
-
 
 ########################################
 ## Pixels Dice initialization section ##
@@ -2189,31 +2179,6 @@ supStreamerRepository: Final[SupStreamerRepositoryInterface] = SupStreamerReposi
 
 supStreamerHelper: Final[SupStreamerHelperInterface] = SupStreamerHelper()
 
-supStreamerChatAction: Final[SupStreamerChatAction] = SupStreamerChatAction(
-    chatterPreferredNameHelper = chatterPreferredNameHelper,
-    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
-    streamAlertsManager = streamAlertsManager,
-    supStreamerHelper = supStreamerHelper,
-    supStreamerRepository = supStreamerRepository,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchTokensRepository = twitchTokensRepository,
-)
-
-chatActionsManager: Final[ChatActionsManagerInterface] = ChatActionsManager(
-    activeChattersRepository = activeChattersRepository,
-    cheerActionsWizardChatAction = cheerActionsWizardChatAction,
-    chatActions = None,
-    generalSettingsRepository = generalSettingsRepository,
-    mostRecentChatsRepository = mostRecentChatsRepository,
-    recurringActionsWizardChatAction = None,
-    timber = timber,
-    userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository,
-    voicemailChatAction = voicemailChatAction,
-)
-
 
 ######################################################
 ## Channel Point Redemptions initialization section ##
@@ -2318,9 +2283,26 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     userIdsRepository = userIdsRepository,
 )
 
-chatActions: Final[Collection[AbsChatAction2 | None]] = [
-    supStreamerChatAction,
-]
+chatActions: Final[Collection[AbsChatAction2 | None]] = frozenset({
+    SupStreamerChatAction(
+        chatterPreferredNameHelper = chatterPreferredNameHelper,
+        chatterPreferredTtsHelper = chatterPreferredTtsHelper,
+        streamAlertsManager = streamAlertsManager,
+        supStreamerHelper = supStreamerHelper,
+        supStreamerRepository = supStreamerRepository,
+        timber = timber,
+        timeZoneRepository = timeZoneRepository,
+        twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+        twitchTokensRepository = twitchTokensRepository,
+    ),
+    VoicemailChatAction(
+        timber = timber,
+        timeZoneRepository = timeZoneRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        voicemailHelper = voicemailHelper,
+        voicemailSettingsRepository = voicemailSettingsRepository,
+    ),
+})
 
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     ChatterInventoryChatCommand(
@@ -2537,7 +2519,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     beanStatsPresenter = beanStatsPresenter,
     beanStatsRepository = beanStatsRepository,
     bizhawkSettingsRepository = bizhawkSettingsRepository,
-    chatActionsManager = chatActionsManager,
     chatLogger = chatLogger,
     chatterInventoryHelper = chatterInventoryHelper,
     chatterInventoryIdGenerator = chatterInventoryIdGenerator,
