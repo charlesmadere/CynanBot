@@ -15,8 +15,6 @@ from .aniv.repositories.mostRecentAnivMessageRepositoryInterface import MostRece
 from .aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from .asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from .asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
-from .beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
-from .beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from .chatCommands.absChatCommand import AbsChatCommand
 from .chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
 from .chatCommands.addRecurringCutenessActionChatCommand import AddRecurringCutenessActionChatCommand
@@ -25,7 +23,6 @@ from .chatCommands.addRecurringWeatherActionChatCommand import AddRecurringWeath
 from .chatCommands.addRecurringWordOfTheDayActionChatCommand import AddRecurringWordOfTheDayActionChatCommand
 from .chatCommands.addUserChatCommand import AddUserChatCommand
 from .chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
-from .chatCommands.beanStatsChatCommand import BeanStatsChatCommand
 from .chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from .chatCommands.confirmChatCommand import ConfirmChatCommand
 from .chatCommands.crowdControlChatCommand import CrowdControlChatCommand
@@ -72,7 +69,6 @@ from .chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface impo
 from .chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterface import \
     ChatterPreferredTtsSettingsRepositoryInterface
 from .cheerActions.airStrike.airStrikeCheerActionHelperInterface import AirStrikeCheerActionHelperInterface
-from .cheerActions.beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from .cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
@@ -247,9 +243,6 @@ class CynanBot(
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface | None,
         bannedWordsRepository: BannedWordsRepositoryInterface | None,
-        beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None,
-        beanStatsPresenter: BeanStatsPresenterInterface | None,
-        beanStatsRepository: BeanStatsRepositoryInterface | None,
         bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface | None,
         chatLogger: ChatLoggerInterface,
         chatterInventoryHelper: ChatterInventoryHelperInterface | None,
@@ -434,12 +427,6 @@ class CynanBot(
             raise TypeError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
         elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
             raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
-        elif beanChanceCheerActionHelper is not None and not isinstance(beanChanceCheerActionHelper, BeanChanceCheerActionHelperInterface):
-            raise TypeError(f'beanChanceCheerActionHelper argument is malformed: \"{beanChanceCheerActionHelper}\"')
-        elif beanStatsPresenter is not None and not isinstance(beanStatsPresenter, BeanStatsPresenterInterface):
-            raise TypeError(f'beanStatsPresenter argument is malformed: \"{beanStatsPresenter}\"')
-        elif beanStatsRepository is not None and not isinstance(beanStatsRepository, BeanStatsRepositoryInterface):
-            raise TypeError(f'beanStatsRepository argument is malformed: \"{beanStatsRepository}\"')
         elif bizhawkSettingsRepository is not None and not isinstance(bizhawkSettingsRepository, BizhawkSettingsRepositoryInterface):
             raise TypeError(f'bizhawkSettingsRepository argument is malformed: \"{bizhawkSettingsRepository}\"')
         elif not isinstance(chatLogger, ChatLoggerInterface):
@@ -746,11 +733,6 @@ class CynanBot(
         else:
             self.__asplodieStatsCommand: AbsChatCommand = AsplodieStatsChatCommand(asplodieStatsPresenter, asplodieStatsRepository, timber, twitchChatMessenger, userIdsRepository, usersRepository)
 
-        if beanStatsPresenter is None or beanStatsRepository is None:
-            self.__beanStatsCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__beanStatsCommand: AbsChatCommand = BeanStatsChatCommand(beanStatsPresenter, beanStatsRepository, timber, twitchChatMessenger, userIdsRepository, usersRepository)
-
         if cheerActionJsonMapper is None or cheerActionsRepository is None:
             self.__disableCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__enableCheerActionCommand: AbsChatCommand = StubChatCommand()
@@ -1045,16 +1027,6 @@ class CynanBot(
     async def command_asplodiestats(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__asplodieStatsCommand.handleChatCommand(context)
-
-    @commands.command(name = 'beans')
-    async def command_beans(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__beanInstructionsCommand.handleChatCommand(context)
-
-    @commands.command(name = 'beanstats')
-    async def command_beanstats(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__beanStatsCommand.handleChatCommand(context)
 
     @commands.command(name = 'clearcaches')
     async def command_clearcaches(self, ctx: Context):

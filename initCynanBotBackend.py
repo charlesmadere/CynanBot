@@ -1771,9 +1771,8 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
     timber = timber,
 )
 
-cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
     adgeCheerActionHelper = None,
-    beanChanceCheerActionHelper = None,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = None,
     itemUseCheerActionHelper = None,
@@ -2358,9 +2357,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     backgroundTaskHelper = backgroundTaskHelper,
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     bannedWordsRepository = bannedWordsRepository,
-    beanChanceCheerActionHelper = None,
-    beanStatsPresenter = None,
-    beanStatsRepository = None,
     bizhawkSettingsRepository = None,
     chatLogger = chatLogger,
     chatterInventoryHelper = None,

@@ -26,10 +26,6 @@ from src.aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from src.asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRepository
 from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
-from src.beanStats.beanStatsPresenter import BeanStatsPresenter
-from src.beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
-from src.beanStats.beanStatsRepository import BeanStatsRepository
-from src.beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
 from src.channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
@@ -109,8 +105,6 @@ from src.chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInter
     ChatterPreferredTtsSettingsRepositoryInterface
 from src.cheerActions.airStrike.airStrikeCheerActionHelper import AirStrikeCheerActionHelper
 from src.cheerActions.airStrike.airStrikeCheerActionHelperInterface import AirStrikeCheerActionHelperInterface
-from src.cheerActions.beanChance.beanChanceCheerActionHelper import BeanChanceCheerActionHelper
-from src.cheerActions.beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from src.cheerActions.cheerActionHelper import CheerActionHelper
 from src.cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
@@ -968,20 +962,6 @@ twitchWebsocketClient: TwitchWebsocketClientInterface = TwitchWebsocketClient(
     twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper,
     twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
     twitchWebsocketSubscriptionHelper = twitchWebsocketSubscriptionHelper,
-)
-
-
-#################################
-## Bean initialization section ##
-#################################
-
-beanStatsPresenter: BeanStatsPresenterInterface = BeanStatsPresenter()
-
-beanStatsRepository: BeanStatsRepositoryInterface = BeanStatsRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    userIdsRepository = userIdsRepository
 )
 
 
@@ -2127,9 +2107,8 @@ voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheer
     useChatterItemHelper = useChatterItemHelper,
 )
 
-cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
     adgeCheerActionHelper = None,
-    beanChanceCheerActionHelper = beanChanceCheerActionHelper,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = crowdControlCheerActionHelper,
     itemUseCheerActionHelper = itemUseCheerActionHelper,
@@ -2497,9 +2476,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     backgroundTaskHelper = backgroundTaskHelper,
     bannedTriviaGameControllersRepository = None,
     bannedWordsRepository = bannedWordsRepository,
-    beanChanceCheerActionHelper = beanChanceCheerActionHelper,
-    beanStatsPresenter = beanStatsPresenter,
-    beanStatsRepository = beanStatsRepository,
     bizhawkSettingsRepository = bizhawkSettingsRepository,
     chatLogger = chatLogger,
     chatterInventoryHelper = chatterInventoryHelper,
