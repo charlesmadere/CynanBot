@@ -1,7 +1,6 @@
 from typing import Final
 
 from .adge.adgeCheerActionHelperInterface import AdgeCheerActionHelperInterface
-from .beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from .cheerActionHelperInterface import CheerActionHelperInterface
 from .cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .crowdControl.crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
@@ -19,7 +18,6 @@ class CheerActionHelper(CheerActionHelperInterface):
     def __init__(
         self,
         adgeCheerActionHelper: AdgeCheerActionHelperInterface | None,
-        beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface | None,
         cheerActionsRepository: CheerActionsRepositoryInterface,
         crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface | None,
         itemUseCheerActionHelper: ItemUseCheerActionHelperInterface | None,
@@ -30,8 +28,6 @@ class CheerActionHelper(CheerActionHelperInterface):
     ):
         if adgeCheerActionHelper is not None and not isinstance(adgeCheerActionHelper, AdgeCheerActionHelperInterface):
             raise TypeError(f'adgeCheerActionHelper argument is malformed: \"{adgeCheerActionHelper}\"')
-        elif beanChanceCheerActionHelper is not None and not isinstance(beanChanceCheerActionHelper, BeanChanceCheerActionHelperInterface):
-            raise TypeError(f'beanChanceCheerActionHelper argument is malformed: \"{beanChanceCheerActionHelper}\"')
         elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif crowdControlCheerActionHelper is not None and not isinstance(crowdControlCheerActionHelper, CrowdControlCheerActionHelperInterface):
@@ -48,7 +44,6 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__adgeCheerActionHelper: Final[AdgeCheerActionHelperInterface | None] = adgeCheerActionHelper
-        self.__beanChanceCheerActionHelper: Final[BeanChanceCheerActionHelperInterface | None] = beanChanceCheerActionHelper
         self.__cheerActionsRepository: Final[CheerActionsRepositoryInterface] = cheerActionsRepository
         self.__crowdControlCheerActionHelper: Final[CrowdControlCheerActionHelperInterface | None] = crowdControlCheerActionHelper
         self.__itemUseCheerActionHelper: Final[ItemUseCheerActionHelperInterface | None] = itemUseCheerActionHelper
@@ -108,21 +103,6 @@ class CheerActionHelper(CheerActionHelperInterface):
             return False
 
         elif self.__adgeCheerActionHelper is not None and await self.__adgeCheerActionHelper.handleAdgeCheerAction(
-            actions = actions,
-            bits = bits,
-            cheerUserId = cheerUserId,
-            cheerUserName = cheerUserName,
-            message = message,
-            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
-            moderatorUserId = moderatorUserId,
-            twitchChannelId = twitchChannelId,
-            twitchChatMessageId = twitchChatMessageId,
-            userTwitchAccessToken = userTwitchAccessToken,
-            user = user,
-        ):
-            return True
-
-        elif self.__beanChanceCheerActionHelper is not None and await self.__beanChanceCheerActionHelper.handleBeanChanceCheerAction(
             actions = actions,
             bits = bits,
             cheerUserId = cheerUserId,

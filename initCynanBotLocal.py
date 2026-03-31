@@ -26,17 +26,12 @@ from src.aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from src.asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRepository
 from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
-from src.beanStats.beanStatsPresenter import BeanStatsPresenter
-from src.beanStats.beanStatsPresenterInterface import BeanStatsPresenterInterface
-from src.beanStats.beanStatsRepository import BeanStatsRepository
-from src.beanStats.beanStatsRepositoryInterface import BeanStatsRepositoryInterface
 from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
 from src.channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from src.chatActions.absChatAction2 import AbsChatAction2
-from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
@@ -110,16 +105,12 @@ from src.chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInter
     ChatterPreferredTtsSettingsRepositoryInterface
 from src.cheerActions.airStrike.airStrikeCheerActionHelper import AirStrikeCheerActionHelper
 from src.cheerActions.airStrike.airStrikeCheerActionHelperInterface import AirStrikeCheerActionHelperInterface
-from src.cheerActions.beanChance.beanChanceCheerActionHelper import BeanChanceCheerActionHelper
-from src.cheerActions.beanChance.beanChanceCheerActionHelperInterface import BeanChanceCheerActionHelperInterface
 from src.cheerActions.cheerActionHelper import CheerActionHelper
 from src.cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
 from src.cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from src.cheerActions.cheerActionsRepository import CheerActionsRepository
 from src.cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
-from src.cheerActions.cheerActionsWizard import CheerActionsWizard
-from src.cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from src.cheerActions.crowdControl.crowdControlCheerActionHelper import CrowdControlCheerActionHelper
 from src.cheerActions.crowdControl.crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
 from src.cheerActions.itemUse.itemUseCheerActionHelper import ItemUseCheerActionHelper
@@ -974,20 +965,6 @@ twitchWebsocketClient: TwitchWebsocketClientInterface = TwitchWebsocketClient(
 )
 
 
-#################################
-## Bean initialization section ##
-#################################
-
-beanStatsPresenter: BeanStatsPresenterInterface = BeanStatsPresenter()
-
-beanStatsRepository: BeanStatsRepositoryInterface = BeanStatsRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    userIdsRepository = userIdsRepository
-)
-
-
 #########################################
 ## Sound Player initialization section ##
 #########################################
@@ -1572,7 +1549,7 @@ ttsMonsterTtsManagerProvider: TtsMonsterTtsManagerProviderInterface = TtsMonster
 ## Composite TTS Provider initialization section ##
 ###################################################
 
-compositeTtsManagerProvider: CompositeTtsManagerProviderInterface = CompositeTtsManagerProvider(
+compositeTtsManagerProvider: Final[CompositeTtsManagerProviderInterface] = CompositeTtsManagerProvider(
     backgroundTaskHelper = backgroundTaskHelper,
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     commodoreSamTtsManagerProvider = commodoreSamTtsManagerProvider,
@@ -1593,14 +1570,14 @@ compositeTtsManagerProvider: CompositeTtsManagerProviderInterface = CompositeTts
 ## Stream Alerts Manager initialization section ##
 ##################################################
 
-streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = StreamAlertsSettingsRepository(
+streamAlertsSettingsRepository: Final[StreamAlertsSettingsRepositoryInterface] = StreamAlertsSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/streamAlertsSettingsRepository.json',
     ),
 )
 
-streamAlertsManager: StreamAlertsManagerInterface = StreamAlertsManager(
+streamAlertsManager: Final[StreamAlertsManagerInterface] = StreamAlertsManager(
     backgroundTaskHelper = backgroundTaskHelper,
     compositeTtsManagerProvider = compositeTtsManagerProvider,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
@@ -1641,7 +1618,7 @@ guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = Gu
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
 )
 
-twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
+twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = TwitchTimeoutHelper(
     activeChattersRepository = activeChattersRepository,
     globalTwitchConstants = globalTwitchConstants,
     timber = timber,
@@ -1652,7 +1629,7 @@ twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
     userIdsRepository = userIdsRepository,
 )
 
-timeoutActionSettings: TimeoutActionSettingsInterface = TimeoutActionSettings(
+timeoutActionSettings: Final[TimeoutActionSettingsInterface] = TimeoutActionSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/timeoutActionSettings.json',
@@ -1664,29 +1641,29 @@ timeoutActionSettings: TimeoutActionSettingsInterface = TimeoutActionSettings(
 ## Voicemail initialization section ##
 ######################################
 
-voicemailSettingsRepository: VoicemailSettingsRepositoryInterface = VoicemailSettingsRepository(
+voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = VoicemailSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/voicemailSettingsRepository.json'
-    )
+        fileName = '../config/voicemailSettingsRepository.json',
+    ),
 )
 
-voicemailIdGenerator: VoicemailIdGeneratorInterface = VoicemailIdGenerator()
+voicemailIdGenerator: Final[VoicemailIdGeneratorInterface] = VoicemailIdGenerator()
 
-voicemailsRepository: VoicemailsRepositoryInterface = VoicemailsRepository(
+voicemailsRepository: Final[VoicemailsRepositoryInterface] = VoicemailsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
-    voicemailIdGenerator = voicemailIdGenerator
+    voicemailIdGenerator = voicemailIdGenerator,
 )
 
-voicemailHelper: VoicemailHelperInterface = VoicemailHelper(
+voicemailHelper: Final[VoicemailHelperInterface] = VoicemailHelper(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
     voicemailsRepository = voicemailsRepository,
-    voicemailSettingsRepository = voicemailSettingsRepository
+    voicemailSettingsRepository = voicemailSettingsRepository,
 )
 
 
@@ -1807,7 +1784,7 @@ anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInte
     timeZoneRepository = timeZoneRepository,
 )
 
-timeoutActionMachine: TimeoutActionMachineInterface = TimeoutActionMachine(
+timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachine(
     anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
     asplodieStatsRepository = asplodieStatsRepository,
     backgroundTaskHelper = backgroundTaskHelper,
@@ -1830,7 +1807,7 @@ timeoutActionMachine: TimeoutActionMachineInterface = TimeoutActionMachine(
     userIdsRepository = userIdsRepository,
 )
 
-timeoutEventHandler: AbsTimeoutEventHandler = TimeoutEventHandler(
+timeoutEventHandler: Final[AbsTimeoutEventHandler] = TimeoutEventHandler(
     backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     streamAlertsManager = streamAlertsManager,
@@ -1929,12 +1906,12 @@ anivUserIdsRepository: AnivUserIdsRepositoryInterface = AnivUserIdsRepository(
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
 )
 
-anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
+anivContentScanner: Final[AnivContentScannerInterface] = AnivContentScanner(
     contentScanner = contentScanner,
     timber = timber,
 )
 
-mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = MostRecentAnivMessageRepository(
+mostRecentAnivMessageRepository: Final[MostRecentAnivMessageRepositoryInterface] = MostRecentAnivMessageRepository(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
 )
@@ -2130,9 +2107,8 @@ voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheer
     useChatterItemHelper = useChatterItemHelper,
 )
 
-cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
     adgeCheerActionHelper = None,
-    beanChanceCheerActionHelper = beanChanceCheerActionHelper,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = crowdControlCheerActionHelper,
     itemUseCheerActionHelper = itemUseCheerActionHelper,
@@ -2146,19 +2122,6 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 #########################################
 ## Chat Actions initialization section ##
 #########################################
-
-cheerActionsWizard: CheerActionsWizardInterface = CheerActionsWizard(
-    timber = timber,
-)
-
-cheerActionsWizardChatAction = CheerActionsWizardChatAction(
-    chatterInventoryMapper = chatterInventoryMapper,
-    cheerActionJsonMapper = cheerActionJsonMapper,
-    cheerActionsRepository = cheerActionsRepository,
-    cheerActionsWizard = cheerActionsWizard,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
 
 saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
     anivUserIdsRepository = anivUserIdsRepository,
@@ -2247,12 +2210,6 @@ mouseCursorHelper: Final[MouseCursorHelperInterface] = MouseCursorHelper(
 )
 
 mouseCursorPointRedemption: Final[MouseCursorPointRedemption] = MouseCursorPointRedemption(
-    mouseCursorHelper = mouseCursorHelper,
-    timber = timber,
-)
-
-testMouseCursorChatCommand: Final[TestMouseCursorChatCommand] = TestMouseCursorChatCommand(
-    administratorProvider = administratorProvider,
     mouseCursorHelper = mouseCursorHelper,
     timber = timber,
 )
@@ -2402,7 +2359,11 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     ),
-    testMouseCursorChatCommand,
+    TestMouseCursorChatCommand(
+        administratorProvider = administratorProvider,
+        mouseCursorHelper = mouseCursorHelper,
+        timber = timber,
+    ),
     TtsChatCommand(
         administratorProvider = administratorProvider,
         streamAlertsManager = streamAlertsManager,
@@ -2515,9 +2476,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     backgroundTaskHelper = backgroundTaskHelper,
     bannedTriviaGameControllersRepository = None,
     bannedWordsRepository = bannedWordsRepository,
-    beanChanceCheerActionHelper = beanChanceCheerActionHelper,
-    beanStatsPresenter = beanStatsPresenter,
-    beanStatsRepository = beanStatsRepository,
     bizhawkSettingsRepository = bizhawkSettingsRepository,
     chatLogger = chatLogger,
     chatterInventoryHelper = chatterInventoryHelper,
@@ -2538,7 +2496,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     cheerActionJsonMapper = cheerActionJsonMapper,
     cheerActionSettingsRepository = cheerActionSettingsRepository,
     cheerActionsRepository = cheerActionsRepository,
-    cheerActionsWizard = cheerActionsWizard,
     commodoreSamSettingsRepository = commodoreSamSettingsRepository,
     compositeTtsManagerProvider = compositeTtsManagerProvider,
     crowdControlActionHandler = crowdControlActionHandler,

@@ -39,7 +39,6 @@ from src.channelPointRedemptions.superTriviaLotrGamePointRedemption import Super
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from src.chatActions.absChatAction2 import AbsChatAction2
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
-from src.chatActions.cheerActionsWizardChatAction import CheerActionsWizardChatAction
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
@@ -88,8 +87,6 @@ from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
 from src.cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from src.cheerActions.cheerActionsRepository import CheerActionsRepository
 from src.cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
-from src.cheerActions.cheerActionsWizard import CheerActionsWizard
-from src.cheerActions.cheerActionsWizardInterface import CheerActionsWizardInterface
 from src.cheerActions.settings.cheerActionSettingsRepository import CheerActionSettingsRepository
 from src.cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
@@ -750,14 +747,14 @@ activeChattersRepository: Final[ActiveChattersRepositoryInterface] = ActiveChatt
 ## Cuteness initialization section ##
 #####################################
 
-cutenessPresenter: CutenessPresenterInterface = CutenessPresenter()
+cutenessPresenter: Final[CutenessPresenterInterface] = CutenessPresenter()
 
-cutenessRepository: CutenessRepositoryInterface = CutenessRepository(
+cutenessRepository: Final[CutenessRepositoryInterface] = CutenessRepository(
     backingDatabase = backingDatabase,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
-cutenessUtils: CutenessUtilsInterface = CutenessUtils()
+cutenessUtils: Final[CutenessUtilsInterface] = CutenessUtils()
 
 
 ####################################
@@ -1059,14 +1056,14 @@ soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = StubSoundPlaye
 ## Composite TTS Provider initialization section ##
 ###################################################
 
-compositeTtsManagerProvider: CompositeTtsManagerProviderInterface = StubCompositeTtsManagerProvider()
+compositeTtsManagerProvider: Final[CompositeTtsManagerProviderInterface] = StubCompositeTtsManagerProvider()
 
 
 ##################################################
 ## Stream Alerts Manager initialization section ##
 ##################################################
 
-streamAlertsManager: StreamAlertsManagerInterface = StubStreamAlertsManager()
+streamAlertsManager: Final[StreamAlertsManagerInterface] = StubStreamAlertsManager()
 
 
 ####################################
@@ -1224,7 +1221,7 @@ triviaScoreRepository: TriviaScoreRepositoryInterface = TriviaScoreRepository(
 
 triviaQuestionPresenter: TriviaQuestionPresenterInterface = TriviaQuestionPresenter()
 
-triviaUtils: TriviaUtilsInterface = TriviaUtils(
+triviaUtils: Final[TriviaUtilsInterface] = TriviaUtils(
     administratorProvider = administratorProvider,
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     timber = timber,
@@ -1407,7 +1404,7 @@ triviaQuestionOccurrencesRepository: Final[TriviaQuestionOccurrencesRepositoryIn
     triviaSourceParser = triviaSourceParser,
 )
 
-triviaRepository: TriviaRepositoryInterface = TriviaRepository(
+triviaRepository: Final[TriviaRepositoryInterface] = TriviaRepository(
     backgroundTaskHelper = backgroundTaskHelper,
     bongoTriviaQuestionRepository = bongoTriviaQuestionRepository,
     funtoonTriviaQuestionRepository = FuntoonTriviaQuestionRepository(
@@ -1457,9 +1454,9 @@ triviaTwitchEmoteHelper: Final[TriviaTwitchEmoteHelperInterface] = TriviaTwitchE
     trollmojiHelper = trollmojiHelper,
 )
 
-triviaGameStore: TriviaGameStoreInterface = TriviaGameStore()
+triviaGameStore: Final[TriviaGameStoreInterface] = TriviaGameStore()
 
-triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
+triviaGameMachine: Final[TriviaGameMachineInterface] = TriviaGameMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     cutenessRepository = cutenessRepository,
     queuedTriviaGameStore = QueuedTriviaGameStore(
@@ -1491,7 +1488,7 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
     userIdsRepository = userIdsRepository,
 )
 
-triviaEventHandler: AbsTriviaEventHandler = TriviaEventHandler(
+triviaEventHandler: Final[AbsTriviaEventHandler] = TriviaEventHandler(
     timber = timber,
     triviaUtils = triviaUtils,
     twitchChatMessenger = twitchChatMessenger,
@@ -1605,7 +1602,7 @@ anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInte
     timeZoneRepository = timeZoneRepository,
 )
 
-timeoutActionMachine: TimeoutActionMachineInterface = TimeoutActionMachine(
+timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachine(
     anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
     asplodieStatsRepository = asplodieStatsRepository,
     backgroundTaskHelper = backgroundTaskHelper,
@@ -1628,7 +1625,7 @@ timeoutActionMachine: TimeoutActionMachineInterface = TimeoutActionMachine(
     userIdsRepository = userIdsRepository,
 )
 
-timeoutEventHandler: AbsTimeoutEventHandler = TimeoutEventHandler(
+timeoutEventHandler: Final[AbsTimeoutEventHandler] = TimeoutEventHandler(
     backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     streamAlertsManager = streamAlertsManager,
@@ -1774,9 +1771,8 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
     timber = timber,
 )
 
-cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
     adgeCheerActionHelper = None,
-    beanChanceCheerActionHelper = None,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = None,
     itemUseCheerActionHelper = None,
@@ -1835,19 +1831,6 @@ anivCheckChatAction = AnivCheckChatAction(
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
-)
-
-cheerActionsWizard: CheerActionsWizardInterface = CheerActionsWizard(
-    timber = timber,
-)
-
-cheerActionsWizardChatAction = CheerActionsWizardChatAction(
-    chatterInventoryMapper = chatterInventoryMapper,
-    cheerActionJsonMapper = cheerActionJsonMapper,
-    cheerActionsRepository = cheerActionsRepository,
-    cheerActionsWizard = cheerActionsWizard,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
 )
 
 recurringActionsWizardChatAction = RecurringActionsWizardChatAction(
@@ -2374,9 +2357,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     backgroundTaskHelper = backgroundTaskHelper,
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     bannedWordsRepository = bannedWordsRepository,
-    beanChanceCheerActionHelper = None,
-    beanStatsPresenter = None,
-    beanStatsRepository = None,
     bizhawkSettingsRepository = None,
     chatLogger = chatLogger,
     chatterInventoryHelper = None,
@@ -2397,7 +2377,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     cheerActionJsonMapper = cheerActionJsonMapper,
     cheerActionSettingsRepository = cheerActionSettingsRepository,
     cheerActionsRepository = cheerActionsRepository,
-    cheerActionsWizard = cheerActionsWizard,
     commodoreSamSettingsRepository = None,
     compositeTtsManagerProvider = compositeTtsManagerProvider,
     crowdControlActionHandler = None,

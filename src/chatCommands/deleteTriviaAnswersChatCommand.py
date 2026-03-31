@@ -57,6 +57,7 @@ class DeleteTriviaAnswersChatCommand(AbsChatCommand2):
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
             re.compile(r'^\s*!del(?:ete)?triviaanswers?\b', re.IGNORECASE),
             re.compile(r'^\s*!removetriviaanswers?\b', re.IGNORECASE),
+            re.compile(r'^\s*!rmtriviaanswers?\b', re.IGNORECASE),
         })
 
     @property
@@ -140,5 +141,5 @@ class DeleteTriviaAnswersChatCommand(AbsChatCommand2):
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log(self.commandName, f'Handled ({reference=}) ({emote=}) ({normalizedEmote=})')
+        self.__timber.log(self.commandName, f'Handled ({reference=}) ({emote=}) ({normalizedEmote=}) ({chatMessage=})')
         return ChatCommandResult.HANDLED
