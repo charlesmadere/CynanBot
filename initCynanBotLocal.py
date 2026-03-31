@@ -2073,14 +2073,6 @@ airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheer
     useChatterItemHelper = useChatterItemHelper,
 )
 
-beanChanceCheerActionHelper: BeanChanceCheerActionHelperInterface = BeanChanceCheerActionHelper(
-    beanStatsRepository = beanStatsRepository,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    timber = timber,
-    trollmojiHelper = trollmojiHelper,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
 itemUseCheerActionHelper: ItemUseCheerActionHelperInterface = ItemUseCheerActionHelper(
     chatterInventoryIdGenerator = chatterInventoryIdGenerator,
     chatterInventorySettings = chatterInventorySettings,
