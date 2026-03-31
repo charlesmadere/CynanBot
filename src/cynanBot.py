@@ -968,25 +968,10 @@ class CynanBot(
     async def waitForReady(self):
         await self.wait_for_ready()
 
-    @commands.command(name = 'addcrowdcontrolcheeraction', aliases = [ 'addcrowdcontrolaction' ])
-    async def command_addcrowdcontrolaction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addCrowdControlCheerActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'addgameshufflecheeraction', aliases = [ 'addgameshuffleaction' ])
-    async def command_addgameshufflecheeraction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addGameShuffleCheerActionCommand.handleChatCommand(context)
-
     @commands.command(name = 'addgameshuffleautomator')
     async def command_addgameshuffleautomator(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addGameShuffleAutomatorCommand.handleChatCommand(context)
-
-    @commands.command(name = 'additemusecheeraction', aliases = [ 'additemuseaction' ])
-    async def command_additemusecheeraction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addItemUseCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'addrecurringcutenessaction')
     async def command_addrecurringcutenessaction(self, ctx: Context):
@@ -1008,20 +993,10 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addRecurringWordOfTheDayActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'addsoundalertcheeraction', aliases = [ 'addsoundalertaction' ])
-    async def command_addsoundalertcheeraction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addSoundAlertCheerActionCommand.handleChatCommand(context)
-
     @commands.command(name = 'adduser')
     async def command_adduser(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addUserCommand.handleChatCommand(context)
-
-    @commands.command(name = 'addvoicemailcheeraction')
-    async def command_addvoicemailcheeraction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addVoicemailCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'asplodiestats', aliases = [ 'asplodies', 'asplodiesstats', 'getasplodiestats' ])
     async def command_asplodiestats(self, ctx: Context):
@@ -1042,11 +1017,6 @@ class CynanBot(
     async def command_crowdcontrol(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__crowdControlCommand.handleChatCommand(context)
-
-    @commands.command(name = 'deletecheeraction', aliases = [ 'delcheeraction', 'removecheeraction' ])
-    async def command_deletecheeraction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__deleteCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'disablecheeraction')
     async def command_disablecheeraction(self, ctx: Context):
