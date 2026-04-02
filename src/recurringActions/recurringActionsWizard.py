@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import Final
 
 from .actions.recurringActionType import RecurringActionType
 from .recurringActionsWizardInterface import RecurringActionsWizardInterface
@@ -17,15 +18,15 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        timePerStep: timedelta = timedelta(minutes = 1)
+        timePerStep: timedelta = timedelta(minutes = 1),
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timePerStep, timedelta):
             raise TypeError(f'timePerStep argument is malformed: \"{timePerStep}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__wizards: TimedDict[AbsWizard] = TimedDict(timePerStep)
+        self.__timber: Final[TimberInterface] = timber
+        self.__wizards: Final[TimedDict[AbsWizard]] = TimedDict(timePerStep)
 
     async def complete(self, twitchChannelId: str):
         if not utils.isValidStr(twitchChannelId):
@@ -43,7 +44,7 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
         self,
         recurringActionType: RecurringActionType,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AbsWizard:
         if not isinstance(recurringActionType, RecurringActionType):
             raise TypeError(f'recurringActionType argument is malformed: \"{recurringActionType}\"')
@@ -55,31 +56,31 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
         existingWizard = self.__wizards[twitchChannelId]
 
         if existingWizard is not None:
-            self.__timber.log('RecurringActionsWizard', f'Starting a new \"{recurringActionType}\" wizard for {twitchChannel}:{twitchChannelId}, which will clobber an existing wizard: \"{existingWizard}\"')
+            self.__timber.log('RecurringActionsWizard', f'Starting a new wizard, which will clobber an existing wizard ({existingWizard=}) ({recurringActionType=}) ({twitchChannel=}) ({twitchChannelId=})')
 
         match recurringActionType:
             case RecurringActionType.CUTENESS:
                 return await self.__startNewCutenessWizard(
                     twitchChannel = twitchChannel,
-                    twitchChannelId = twitchChannelId
+                    twitchChannelId = twitchChannelId,
                 )
 
             case RecurringActionType.SUPER_TRIVIA:
                 return await self.__startNewSuperTriviaWizard(
                     twitchChannel = twitchChannel,
-                    twitchChannelId = twitchChannelId
+                    twitchChannelId = twitchChannelId,
                 )
 
             case RecurringActionType.WEATHER:
                 return await self.__startNewWeatherWizard(
                     twitchChannel = twitchChannel,
-                    twitchChannelId = twitchChannelId
+                    twitchChannelId = twitchChannelId,
                 )
 
             case RecurringActionType.WORD_OF_THE_DAY:
                 return await self.__startNewWordOfTheDayWizard(
                     twitchChannel = twitchChannel,
-                    twitchChannelId = twitchChannelId
+                    twitchChannelId = twitchChannelId,
                 )
 
             case _:
@@ -88,7 +89,7 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
     async def __startNewCutenessWizard(
         self,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CutenessWizard:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -97,7 +98,7 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
 
         wizard = CutenessWizard(
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         self.__wizards[twitchChannelId] = wizard
@@ -108,7 +109,7 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
     async def __startNewSuperTriviaWizard(
         self,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> SuperTriviaWizard:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -117,7 +118,7 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
 
         wizard = SuperTriviaWizard(
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         self.__wizards[twitchChannelId] = wizard
@@ -128,7 +129,7 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
     async def __startNewWeatherWizard(
         self,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> WeatherWizard:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -137,7 +138,7 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
 
         wizard = WeatherWizard(
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         self.__wizards[twitchChannelId] = wizard
@@ -148,7 +149,7 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
     async def __startNewWordOfTheDayWizard(
         self,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> WordOfTheDayWizard:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -157,7 +158,7 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
 
         wizard = WordOfTheDayWizard(
             twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         self.__wizards[twitchChannelId] = wizard

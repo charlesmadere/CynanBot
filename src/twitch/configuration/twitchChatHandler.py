@@ -28,9 +28,7 @@ from ..localModels.twitchCheerMetadata import TwitchCheerMetadata
 from ..localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ...aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from ...chatActions.absChatAction2 import AbsChatAction2
-from ...chatActions.anivCheckChatAction import AnivCheckChatAction
 from ...chatActions.chatActionResult import ChatActionResult
-from ...chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from ...chatCommands.absChatCommand2 import AbsChatCommand2
 from ...chatCommands.chatCommandResult import ChatCommandResult
 from ...chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -56,12 +54,10 @@ class TwitchChatHandler(AbsTwitchChatHandler):
     def __init__(
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
-        anivCheckChatAction: AnivCheckChatAction | None,
         chatLogger: ChatLoggerInterface,
         cheerActionHelper: CheerActionHelperInterface | None,
         mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface,
-        saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
@@ -71,8 +67,6 @@ class TwitchChatHandler(AbsTwitchChatHandler):
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
-        elif anivCheckChatAction is not None and not isinstance(anivCheckChatAction, AnivCheckChatAction):
-            raise TypeError(f'anivCheckChatAction argument is malformed: \"{anivCheckChatAction}\"')
         elif not isinstance(chatLogger, ChatLoggerInterface):
             raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
         elif cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
@@ -81,8 +75,6 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             raise TypeError(f'mostRecentAnivMessageTimeoutHelper argument is malformed: \"{mostRecentAnivMessageTimeoutHelper}\"')
         elif not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
             raise TypeError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
-        elif saveMostRecentAnivMessageChatAction is not None and not isinstance(saveMostRecentAnivMessageChatAction, SaveMostRecentAnivMessageChatAction):
-            raise TypeError(f'saveMostRecentAnivMessageChatAction argument is malformed: \"{saveMostRecentAnivMessageChatAction}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -97,12 +89,10 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             raise TypeError(f'chatCommands argument is malformed: \"{chatCommands}\"')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
-        self.__anivCheckChatAction: Final[AbsChatAction2 | None] = anivCheckChatAction
         self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
         self.__cheerActionHelper: Final[CheerActionHelperInterface | None] = cheerActionHelper
         self.__mostRecentAnivMessageTimeoutHelper: Final[MostRecentAnivMessageTimeoutHelperInterface | None] = mostRecentAnivMessageTimeoutHelper
         self.__mostRecentChatsRepository: Final[MostRecentChatsRepositoryInterface] = mostRecentChatsRepository
-        self.__saveMostRecentAnivMessageChatAction: Final[AbsChatAction2 | None] = saveMostRecentAnivMessageChatAction
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface | None] = triviaGameBuilder
@@ -285,25 +275,13 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         mostRecentChat: MostRecentChat | None,
         chatMessage: TwitchChatMessage,
     ):
-        if self.__saveMostRecentAnivMessageChatAction is not None:
-            await self.__saveMostRecentAnivMessageChatAction.handleChatAction(
-                mostRecentChat = mostRecentChat,
-                chatMessage = chatMessage,
-            )
-
-            if self.__mostRecentAnivMessageTimeoutHelper is not None:
-                await self.__mostRecentAnivMessageTimeoutHelper.checkMessageAndMaybeTimeout(
-                    chatterMessage = chatMessage.text,
-                    chatterUserId = chatMessage.chatterUserId,
-                    chatterUserName = chatMessage.chatterUserName,
-                    twitchChannelId = chatMessage.twitchChannelId,
-                    user = chatMessage.twitchUser,
-                )
-
-        if self.__anivCheckChatAction is not None:
-            await self.__anivCheckChatAction.handleChatAction(
-                mostRecentChat = mostRecentChat,
-                chatMessage = chatMessage,
+        if self.__mostRecentAnivMessageTimeoutHelper is not None:
+            await self.__mostRecentAnivMessageTimeoutHelper.checkMessageAndMaybeTimeout(
+                chatterMessage = chatMessage.text,
+                chatterUserId = chatMessage.chatterUserId,
+                chatterUserName = chatMessage.chatterUserName,
+                twitchChannelId = chatMessage.twitchChannelId,
+                user = chatMessage.twitchUser,
             )
 
     async def __processChatActions(

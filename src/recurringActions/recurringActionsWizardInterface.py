@@ -19,6 +19,6 @@ class RecurringActionsWizardInterface(ABC):
         self,
         recurringActionType: RecurringActionType,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> AbsWizard:
         pass
