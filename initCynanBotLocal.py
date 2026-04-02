@@ -31,7 +31,7 @@ from src.channelPointRedemptions.chatterPreferredNamePointRedemption import Chat
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
-from src.chatActions.absChatAction2 import AbsChatAction2
+from src.chatActions.absChatAction import AbsChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
@@ -2230,7 +2230,7 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     userIdsRepository = userIdsRepository,
 )
 
-chatActions: Final[Collection[AbsChatAction2 | None]] = frozenset({
+chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
     SupStreamerChatAction(
         chatterPreferredNameHelper = chatterPreferredNameHelper,
         chatterPreferredTtsHelper = chatterPreferredTtsHelper,

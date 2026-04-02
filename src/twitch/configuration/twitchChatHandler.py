@@ -27,7 +27,7 @@ from ..localModels.twitchChatMessageFragmentType import TwitchChatMessageFragmen
 from ..localModels.twitchCheerMetadata import TwitchCheerMetadata
 from ..localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ...aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
-from ...chatActions.absChatAction2 import AbsChatAction2
+from ...chatActions.absChatAction import AbsChatAction
 from ...chatActions.chatActionResult import ChatActionResult
 from ...chatCommands.absChatCommand2 import AbsChatCommand2
 from ...chatCommands.chatCommandResult import ChatCommandResult
@@ -100,27 +100,27 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
         self.__chatCommandPrefixRegEx: Final[Pattern] = re.compile(r'^\s*!\w+\.*', re.IGNORECASE)
 
-        self.__chatActions: Final[Collection[AbsChatAction2]] = self.__buildChatActionsCollection(chatActions)
+        self.__chatActions: Final[Collection[AbsChatAction]] = self.__buildChatActionsCollection(chatActions)
         self.__chatCommands: Final[Collection[AbsChatCommand2]] = self.__buildChatCommandsCollection(chatCommands)
 
     def __buildChatActionsCollection(
         self,
-        chatActions: Collection[AbsChatAction2 | Any | None] | None,
-    ) -> Collection[AbsChatAction2]:
+        chatActions: Collection[AbsChatAction | Any | None] | None,
+    ) -> Collection[AbsChatAction]:
         if chatActions is None:
-            emptyChatActions: FrozenList[AbsChatAction2] = FrozenList()
+            emptyChatActions: FrozenList[AbsChatAction] = FrozenList()
             emptyChatActions.freeze()
             return emptyChatActions
 
-        frozenChatActions: FrozenList[AbsChatAction2 | Any | None] = FrozenList(chatActions)
+        frozenChatActions: FrozenList[AbsChatAction | Any | None] = FrozenList(chatActions)
         frozenChatActions.freeze()
 
-        validChatActions: FrozenList[AbsChatAction2] = FrozenList()
+        validChatActions: FrozenList[AbsChatAction] = FrozenList()
 
         for index, chatAction in enumerate(frozenChatActions):
             if chatAction is None:
                 continue
-            elif isinstance(chatAction, AbsChatAction2):
+            elif isinstance(chatAction, AbsChatAction):
                 validChatActions.append(chatAction)
             else:
                 exception = TypeError(f'Encountered an invalid AbsChatAction2 instance ({index=}) ({chatAction=}) ({frozenChatActions=})')

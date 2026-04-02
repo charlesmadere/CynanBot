@@ -1,6 +1,6 @@
 from typing import Final
 
-from .absChatAction2 import AbsChatAction2
+from .absChatAction import AbsChatAction
 from .chatActionResult import ChatActionResult
 from ..aniv.contentScanner.anivContentScannerInterface import AnivContentScannerInterface
 from ..aniv.models.anivContentCode import AnivContentCode
@@ -20,7 +20,7 @@ from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensReposito
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
-class AnivCheckChatAction(AbsChatAction2):
+class AnivCheckChatAction(AbsChatAction):
 
     def __init__(
         self,

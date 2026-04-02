@@ -2,7 +2,7 @@ import locale
 from datetime import timedelta
 from typing import Final
 
-from .absChatAction2 import AbsChatAction2
+from .absChatAction import AbsChatAction
 from .chatActionResult import ChatActionResult
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..mostRecentChat.mostRecentChat import MostRecentChat
@@ -13,7 +13,7 @@ from ..voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterfac
 from ..voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
 
 
-class VoicemailChatAction(AbsChatAction2):
+class VoicemailChatAction(AbsChatAction):
 
     def __init__(
         self,

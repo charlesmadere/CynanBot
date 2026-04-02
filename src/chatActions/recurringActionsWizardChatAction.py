@@ -1,7 +1,7 @@
 import traceback
 from typing import Final
 
-from .absChatAction2 import AbsChatAction2
+from .absChatAction import AbsChatAction
 from .chatActionResult import ChatActionResult
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
@@ -23,7 +23,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class RecurringActionsWizardChatAction(AbsChatAction2):
+class RecurringActionsWizardChatAction(AbsChatAction):
 
     def __init__(
         self,

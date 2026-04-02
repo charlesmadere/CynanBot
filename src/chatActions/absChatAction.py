@@ -5,7 +5,7 @@ from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class AbsChatAction2(ABC):
+class AbsChatAction(ABC):
 
     @property
     @abstractmethod

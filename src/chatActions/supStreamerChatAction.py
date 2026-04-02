@@ -2,7 +2,7 @@ import random
 from datetime import datetime, timedelta
 from typing import Final
 
-from .absChatAction2 import AbsChatAction2
+from .absChatAction import AbsChatAction
 from .chatActionResult import ChatActionResult
 from ..chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
 from ..chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
@@ -23,7 +23,7 @@ from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensReposito
 from ..users.supStreamer.supStreamerBoosterPack import SupStreamerBoosterPack
 
 
-class SupStreamerChatAction(AbsChatAction2):
+class SupStreamerChatAction(AbsChatAction):
 
     def __init__(
         self,

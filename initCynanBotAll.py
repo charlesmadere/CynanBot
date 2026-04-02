@@ -40,7 +40,7 @@ from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPoin
 from src.channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
 from src.channelPointRedemptions.superTriviaLotrGamePointRedemption import SuperTriviaLotrGamePointRedemption
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
-from src.chatActions.absChatAction2 import AbsChatAction2
+from src.chatActions.absChatAction import AbsChatAction
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
@@ -3164,7 +3164,7 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     userIdsRepository = userIdsRepository,
 )
 
-chatActions: Final[Collection[AbsChatAction2 | None]] = frozenset({
+chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
     AnivCheckChatAction(
         anivContentScanner = anivContentScanner,
         anivUserIdsRepository = anivUserIdsRepository,

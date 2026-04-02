@@ -1,10 +1,10 @@
-from ..absChatAction2 import AbsChatAction2
+from ..absChatAction import AbsChatAction
 from ..chatActionResult import ChatActionResult
 from ...mostRecentChat.mostRecentChat import MostRecentChat
 from ...twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class StubChatAction2(AbsChatAction2):
+class StubChatAction(AbsChatAction):
 
     @property
     def actionName(self) -> str:
