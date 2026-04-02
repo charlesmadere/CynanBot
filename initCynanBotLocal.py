@@ -31,7 +31,7 @@ from src.channelPointRedemptions.chatterPreferredNamePointRedemption import Chat
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
-from src.chatActions.absChatAction2 import AbsChatAction2
+from src.chatActions.absChatAction import AbsChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
@@ -1902,7 +1902,7 @@ anivCopyMessageTimeoutScoreHelper: AnivCopyMessageTimeoutScoreHelperInterface = 
 
 anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface = AnivCopyMessageTimeoutScorePresenter()
 
-anivUserIdsRepository: AnivUserIdsRepositoryInterface = AnivUserIdsRepository(
+anivUserIdsRepository: Final[AnivUserIdsRepositoryInterface] = AnivUserIdsRepository(
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
 )
 
@@ -1916,23 +1916,21 @@ mostRecentAnivMessageRepository: Final[MostRecentAnivMessageRepositoryInterface]
     timeZoneRepository = timeZoneRepository,
 )
 
-mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = None
-if mostRecentAnivMessageRepository is not None:
-    mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
-        anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
-        anivSettings = anivSettings,
-        anivUserIdsRepository = anivUserIdsRepository,
-        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
-        timber = timber,
-        timeoutActionMachine = timeoutActionMachine,
-        timeoutIdGenerator = timeoutIdGenerator,
-        timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-        timeZoneRepository = timeZoneRepository,
-        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-        twitchHandleProvider = authRepository,
-        twitchTokensRepository = twitchTokensRepository,
-        userIdsRepository = userIdsRepository,
-    )
+mostRecentAnivMessageTimeoutHelper: Final[MostRecentAnivMessageTimeoutHelperInterface] = MostRecentAnivMessageTimeoutHelper(
+    anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
+    anivSettings = anivSettings,
+    anivUserIdsRepository = anivUserIdsRepository,
+    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+    timber = timber,
+    timeoutActionMachine = timeoutActionMachine,
+    timeoutIdGenerator = timeoutIdGenerator,
+    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    timeZoneRepository = timeZoneRepository,
+    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository,
+)
 
 
 ##########################################
@@ -2115,7 +2113,7 @@ cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
 ## Chat Actions initialization section ##
 #########################################
 
-saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
+saveMostRecentAnivMessageChatAction: Final[SaveMostRecentAnivMessageChatAction] = SaveMostRecentAnivMessageChatAction(
     anivUserIdsRepository = anivUserIdsRepository,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
     timber = timber,
@@ -2160,7 +2158,7 @@ chatterPreferredTtsPointRedemption: Final[ChatterPreferredTtsPointRedemption] = 
 
 soundAlertPointRedemption: SoundAlertPointRedemption | None = None
 
-if soundPlayerManagerProvider is not None and soundPlayerRandomizerHelper is not None and streamAlertsManager is not None:
+if soundPlayerManagerProvider is not None and soundPlayerRandomizerHelper is not None:
     soundAlertPointRedemption = SoundAlertPointRedemption(
         soundPlayerManagerProvider = soundPlayerManagerProvider,
         soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
@@ -2232,7 +2230,7 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     userIdsRepository = userIdsRepository,
 )
 
-chatActions: Final[Collection[AbsChatAction2 | None]] = frozenset({
+chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
     SupStreamerChatAction(
         chatterPreferredNameHelper = chatterPreferredNameHelper,
         chatterPreferredTtsHelper = chatterPreferredTtsHelper,
@@ -2379,12 +2377,10 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
 
 twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
     activeChattersRepository = activeChattersRepository,
-    anivCheckChatAction = None,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
     mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
-    saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = None,

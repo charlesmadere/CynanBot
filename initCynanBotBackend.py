@@ -37,7 +37,7 @@ from src.channelPointRedemptions.redemptionCounterPointRedemption import Redempt
 from src.channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
 from src.channelPointRedemptions.superTriviaLotrGamePointRedemption import SuperTriviaLotrGamePointRedemption
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
-from src.chatActions.absChatAction2 import AbsChatAction2
+from src.chatActions.absChatAction import AbsChatAction
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
@@ -1176,14 +1176,16 @@ triviaContentScanner: TriviaContentScannerInterface = TriviaContentScanner(
 triviaEmoteRepository: TriviaEmoteRepositoryInterface = TriviaEmoteRepository(
     backingDatabase = backingDatabase
 )
-triviaEmoteGenerator: TriviaEmoteGeneratorInterface = TriviaEmoteGenerator(
+
+triviaEmoteGenerator: Final[TriviaEmoteGeneratorInterface] = TriviaEmoteGenerator(
     timber = timber,
-    triviaEmoteRepository = triviaEmoteRepository
+    triviaEmoteRepository = triviaEmoteRepository,
 )
-triviaGameBuilder: TriviaGameBuilderInterface = TriviaGameBuilder(
+
+triviaGameBuilder: Final[TriviaGameBuilderInterface] = TriviaGameBuilder(
     triviaGameBuilderSettings = generalSettingsRepository,
     triviaIdGenerator = triviaIdGenerator,
-    usersRepository = usersRepository
+    usersRepository = usersRepository,
 )
 
 bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface = BannedTriviaGameControllersRepository(
@@ -1654,11 +1656,11 @@ anivCopyMessageTimeoutScoreHelper: AnivCopyMessageTimeoutScoreHelperInterface = 
 
 anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface = AnivCopyMessageTimeoutScorePresenter()
 
-anivUserIdsRepository: AnivUserIdsRepositoryInterface = AnivUserIdsRepository(
+anivUserIdsRepository: Final[AnivUserIdsRepositoryInterface] = AnivUserIdsRepository(
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
 )
 
-anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
+anivContentScanner: Final[AnivContentScannerInterface] = AnivContentScanner(
     contentScanner = contentScanner,
     timber = timber,
 )
@@ -1822,24 +1824,6 @@ jishoHelper: JishoHelperInterface = JishoHelper(
 ## Chat Actions initialization section ##
 #########################################
 
-anivCheckChatAction = AnivCheckChatAction(
-    anivContentScanner = anivContentScanner,
-    anivUserIdsRepository = anivUserIdsRepository,
-    timber = timber,
-    timeoutActionMachine = timeoutActionMachine,
-    timeoutIdGenerator = timeoutIdGenerator,
-    twitchHandleProvider = authRepository,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
-)
-
-recurringActionsWizardChatAction = RecurringActionsWizardChatAction(
-    recurringActionsRepository = recurringActionsRepository,
-    recurringActionsWizard = recurringActionsWizard,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
 saveMostRecentAnivMessageChatAction: Final[SaveMostRecentAnivMessageChatAction] = SaveMostRecentAnivMessageChatAction(
     anivUserIdsRepository = anivUserIdsRepository,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
@@ -1890,30 +1874,23 @@ pkmnShinyPointRedemption: Final[PkmnShinyPointRedemption] = PkmnShinyPointRedemp
     twitchChatMessenger = twitchChatMessenger,
 )
 
-superTriviaGamePointRedemption: SuperTriviaGamePointRedemption | None = None
+superTriviaGamePointRedemption: Final[SuperTriviaGamePointRedemption] = SuperTriviaGamePointRedemption(
+    timber = timber,
+    triviaGameBuilder = triviaGameBuilder,
+    triviaGameMachine = triviaGameMachine,
+)
 
-superTriviaLotrGamePointRedemption: SuperTriviaLotrGamePointRedemption | None = None
+superTriviaLotrGamePointRedemption: Final[SuperTriviaLotrGamePointRedemption] = SuperTriviaLotrGamePointRedemption(
+    timber = timber,
+    triviaGameBuilder = triviaGameBuilder,
+    triviaGameMachine = triviaGameMachine,
+)
 
-triviaGamePointRedemption: TriviaGamePointRedemption | None = None
-
-if cutenessRepository is not None and triviaGameBuilder is not None and triviaGameMachine is not None and triviaScoreRepository is not None and triviaUtils is not None:
-    superTriviaGamePointRedemption = SuperTriviaGamePointRedemption(
-        timber = timber,
-        triviaGameBuilder = triviaGameBuilder,
-        triviaGameMachine = triviaGameMachine,
-    )
-
-    superTriviaLotrGamePointRedemption = SuperTriviaLotrGamePointRedemption(
-        timber = timber,
-        triviaGameBuilder = triviaGameBuilder,
-        triviaGameMachine = triviaGameMachine,
-    )
-
-    triviaGamePointRedemption = TriviaGamePointRedemption(
-        timber = timber,
-        triviaGameBuilder = triviaGameBuilder,
-        triviaGameMachine = triviaGameMachine,
-    )
+triviaGamePointRedemption: Final[TriviaGamePointRedemption] = TriviaGamePointRedemption(
+    timber = timber,
+    triviaGameBuilder = triviaGameBuilder,
+    triviaGameMachine = triviaGameMachine,
+)
 
 
 #################################
@@ -2006,7 +1983,24 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     userIdsRepository = userIdsRepository,
 )
 
-chatActions: Final[Collection[AbsChatAction2 | None]] = frozenset()
+chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
+    AnivCheckChatAction(
+        anivContentScanner = anivContentScanner,
+        anivUserIdsRepository = anivUserIdsRepository,
+        timber = timber,
+        timeoutActionMachine = timeoutActionMachine,
+        timeoutIdGenerator = timeoutIdGenerator,
+        twitchHandleProvider = authRepository,
+        twitchTokensRepository = twitchTokensRepository,
+        userIdsRepository = userIdsRepository,
+    ),
+    RecurringActionsWizardChatAction(
+        recurringActionsRepository = recurringActionsRepository,
+        recurringActionsWizard = recurringActionsWizard,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+})
 
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     AddBannedTriviaControllerChatCommand(
@@ -2268,12 +2262,10 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
 
 twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
     activeChattersRepository = activeChattersRepository,
-    anivCheckChatAction = anivCheckChatAction,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
     mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
-    saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,

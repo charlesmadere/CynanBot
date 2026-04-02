@@ -2,6 +2,7 @@ import traceback
 from typing import Final
 
 from .absChatAction import AbsChatAction
+from .chatActionResult import ChatActionResult
 from ..misc import utils as utils
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..recurringActions.actions.cutenessRecurringAction import CutenessRecurringAction
@@ -9,7 +10,6 @@ from ..recurringActions.actions.superTriviaRecurringAction import SuperTriviaRec
 from ..recurringActions.actions.weatherRecurringAction import WeatherRecurringAction
 from ..recurringActions.recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
 from ..recurringActions.recurringActionsWizardInterface import RecurringActionsWizardInterface
-from ..recurringActions.wizards.absWizard import AbsWizard
 from ..recurringActions.wizards.cuteness.cutenessStep import CutenessStep
 from ..recurringActions.wizards.cuteness.cutenessWizard import CutenessWizard
 from ..recurringActions.wizards.stepResult import StepResult
@@ -20,8 +20,7 @@ from ..recurringActions.wizards.weather.weatherWizard import WeatherWizard
 from ..recurringActions.wizards.wordOfTheDay.wordOfTheDayWizard import WordOfTheDayWizard
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchMessage import TwitchMessage
-from ..users.userInterface import UserInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
 class RecurringActionsWizardChatAction(AbsChatAction):
@@ -47,24 +46,27 @@ class RecurringActionsWizardChatAction(AbsChatAction):
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
+    @property
+    def actionName(self) -> str:
+        return 'RecurringActionsWizardChatAction'
+
     async def __configureCutenessWizard(
         self,
         wizard: CutenessWizard,
-        content: str,
-        message: TwitchMessage,
-    ) -> bool:
+        chatMessage: TwitchChatMessage,
+    ) -> ChatActionResult:
         steps = wizard.steps
 
         match steps.currentStep:
             case CutenessStep.MINUTES_BETWEEN:
                 try:
-                    minutesBetween = int(content)
+                    minutesBetween = int(chatMessage.text)
                     wizard.setMinutesBetween(minutesBetween)
                 except Exception as e:
-                    self.__timber.log('RecurringActionsWizardChatAction', f'Unable to parse/set minutesBetween value for Cuteness wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
-                    await self.__send(wizard, f'⚠ The Cuteness wizard encountered an error, please try again', message)
+                    self.__timber.log('RecurringActionsWizardChatAction', f'Unable to parse/set minutesBetween value for Cuteness wizard ({wizard=}) ({chatMessage=})', e, traceback.format_exc())
+                    await self.__send(chatMessage, f'⚠ The Cuteness wizard encountered an error, please try again')
                     await self.__recurringActionsWizard.complete(wizard.twitchChannelId)
-                    return True
+                    return ChatActionResult.HANDLED
 
         stepResult = steps.stepForward()
 
@@ -76,37 +78,36 @@ class RecurringActionsWizardChatAction(AbsChatAction):
                     enabled = True,
                     twitchChannel = wizard.twitchChannel,
                     twitchChannelId = wizard.twitchChannelId,
-                    minutesBetween = wizard.requireMinutesBetween()
+                    minutesBetween = wizard.requireMinutesBetween(),
                 ))
 
-                self.__timber.log('RecurringActionsWizardChatAction', f'Finished configuring Cuteness wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
-                await self.__send(wizard, f'ⓘ Finished configuring Cuteness wizard ({wizard.printOut()})', message)
-                return True
+                self.__timber.log('RecurringActionsWizardChatAction', f'Finished configuring Cuteness wizard ({wizard=}) ({chatMessage=})')
+                await self.__send(chatMessage, f'ⓘ Finished configuring Cuteness wizard ({wizard.printOut()})')
+                return ChatActionResult.HANDLED
 
             case StepResult.NEXT:
-                self.__timber.log('RecurringActionsWizardChatAction', f'Cuteness wizard is in an invalid state ({wizard=})')
-                await self.__send(wizard, f'⚠ The Cuteness wizard is in an invalid state, please try again', message)
+                self.__timber.log('RecurringActionsWizardChatAction', f'Cuteness wizard is in an invalid state ({wizard=}) ({chatMessage=})')
+                await self.__send(chatMessage, f'⚠ The Cuteness wizard is in an invalid state, please try again')
                 await self.__recurringActionsWizard.complete(wizard.twitchChannelId)
-                return True
+                return ChatActionResult.HANDLED
 
     async def __configureSuperTriviaWizard(
         self,
-        content: str,
         wizard: SuperTriviaWizard,
-        message: TwitchMessage,
-    ) -> bool:
+        chatMessage: TwitchChatMessage,
+    ) -> ChatActionResult:
         steps = wizard.steps
 
         match steps.currentStep:
             case SuperTriviaStep.MINUTES_BETWEEN:
                 try:
-                    minutesBetween = int(content)
+                    minutesBetween = int(chatMessage.text)
                     wizard.setMinutesBetween(minutesBetween)
                 except Exception as e:
-                    self.__timber.log('RecurringActionsWizardChatAction', f'Unable to parse/set minutesBetween value for Super Trivia wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
-                    await self.__send(wizard, f'⚠ The Super Trivia wizard encountered an error, please try again', message)
+                    self.__timber.log('RecurringActionsWizardChatAction', f'Unable to parse/set minutesBetween value for Super Trivia wizard ({wizard=}) ({chatMessage=})', e, traceback.format_exc())
+                    await self.__send(chatMessage, f'⚠ The Super Trivia wizard encountered an error, please try again')
                     await self.__recurringActionsWizard.complete(wizard.twitchChannelId)
-                    return True
+                    return ChatActionResult.HANDLED
 
         stepResult = steps.stepForward()
 
@@ -118,47 +119,46 @@ class RecurringActionsWizardChatAction(AbsChatAction):
                     enabled = True,
                     twitchChannel = wizard.twitchChannel,
                     twitchChannelId = wizard.twitchChannelId,
-                    minutesBetween = wizard.requireMinutesBetween()
+                    minutesBetween = wizard.requireMinutesBetween(),
                 ))
 
-                self.__timber.log('RecurringActionsWizardChatAction', f'Finished configuring Super Trivia wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
-                await self.__send(wizard, f'ⓘ Finished configuring Super Trivia ({wizard.printOut()})', message)
-                return True
+                self.__timber.log('RecurringActionsWizardChatAction', f'Finished configuring Super Trivia wizard ({wizard=}) ({chatMessage=})')
+                await self.__send(chatMessage, f'ⓘ Finished configuring Super Trivia ({wizard.printOut()})')
+                return ChatActionResult.HANDLED
 
             case StepResult.NEXT:
-                self.__timber.log('RecurringActionsWizardChatAction', f'Super Trivia wizard is in an invalid state ({wizard=})')
-                await self.__send(wizard, f'⚠ The Super Trivia wizard is in an invalid state, please try again', message)
+                self.__timber.log('RecurringActionsWizardChatAction', f'Super Trivia wizard is in an invalid state ({wizard=}) ({chatMessage=})')
+                await self.__send(chatMessage, f'⚠ The Super Trivia wizard is in an invalid state, please try again')
                 await self.__recurringActionsWizard.complete(wizard.twitchChannelId)
-                return True
+                return ChatActionResult.HANDLED
 
     async def __configureWeatherWizard(
         self,
-        content: str,
-        message: TwitchMessage,
+        chatMessage: TwitchChatMessage,
         wizard: WeatherWizard,
-    ) -> bool:
+    ) -> ChatActionResult:
         steps = wizard.steps
 
         match steps.currentStep:
             case WeatherStep.MINUTES_BETWEEN:
                 try:
-                    minutesBetween = int(content)
+                    minutesBetween = int(chatMessage.text)
                     wizard.setMinutesBetween(minutesBetween)
                 except Exception as e:
-                    self.__timber.log('RecurringActionsWizardChatAction', f'Unable to parse/set minutesBetween value for Weather wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
-                    await self.__send(wizard, f'⚠ The Weather wizard encountered an error, please try again', message)
+                    self.__timber.log('RecurringActionsWizardChatAction', f'Unable to parse/set minutesBetween value for Weather wizard ({wizard=}) ({chatMessage=})', e, traceback.format_exc())
+                    await self.__send(chatMessage, f'⚠ The Weather wizard encountered an error, please try again')
                     await self.__recurringActionsWizard.complete(wizard.twitchChannelId)
-                    return True
+                    return ChatActionResult.HANDLED
 
             case WeatherStep.ALERTS_ONLY:
                 try:
-                    alertsOnly = utils.strToBool(content)
+                    alertsOnly = utils.strToBool(chatMessage.text)
                     wizard.setAlertsOnly(alertsOnly)
                 except Exception as e:
-                    self.__timber.log('RecurringActionsWizardChatAction', f'Unable to parse/set alertsOnly value for Weather wizard ({wizard=}) ({content=}): {e}', e, traceback.format_exc())
-                    await self.__send(wizard, f'⚠ The Weather wizard encountered an error, please try again', message)
+                    self.__timber.log('RecurringActionsWizardChatAction', f'Unable to parse/set alertsOnly value for Weather wizard ({wizard=}) ({chatMessage=})', e, traceback.format_exc())
+                    await self.__send(chatMessage, f'⚠ The Weather wizard encountered an error, please try again')
                     await self.__recurringActionsWizard.complete(wizard.twitchChannelId)
-                    return True
+                    return ChatActionResult.HANDLED
 
         stepResult = steps.stepForward()
 
@@ -174,81 +174,72 @@ class RecurringActionsWizardChatAction(AbsChatAction):
                     minutesBetween = wizard.requireMinutesBetween(),
                 ))
 
-                self.__timber.log('RecurringActionsWizardChatAction', f'Finished configuring Weather wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
-                await self.__send(wizard, f'ⓘ Finished configuring Weather wizard ({wizard.printOut()})', message)
-                return True
+                self.__timber.log('RecurringActionsWizardChatAction', f'Finished configuring Weather wizard ({wizard=}) ({chatMessage=})')
+                await self.__send(chatMessage, f'ⓘ Finished configuring Weather wizard ({wizard.printOut()})')
+                return ChatActionResult.HANDLED
 
             case StepResult.NEXT:
                 match steps.currentStep:
                     case WeatherStep.ALERTS_ONLY:
-                        await self.__send(wizard, f'ⓘ Please specify if Weather prompts are for Alerts Only (the default is True)', message)
-                        return True
+                        await self.__send(chatMessage, f'ⓘ Please specify if Weather prompts are for Alerts Only (the default is True)')
+                        return ChatActionResult.HANDLED
 
                     case _:
-                        self.__timber.log('RecurringActionsWizardChatAction', f'Weather wizard is in an invalid state ({wizard=})')
-                        await self.__send(wizard, f'⚠ The Weather wizard is in an invalid state, please try again', message)
+                        self.__timber.log('RecurringActionsWizardChatAction', f'Weather wizard is in an invalid state ({wizard=}) ({chatMessage=})')
+                        await self.__send(chatMessage, f'⚠ The Weather wizard is in an invalid state, please try again')
                         await self.__recurringActionsWizard.complete(wizard.twitchChannelId)
-                        return True
+                        return ChatActionResult.HANDLED
 
     async def __configureWordOfTheDayWizard(
         self,
-        content: str,
-        message: TwitchMessage,
+        chatMessage: TwitchChatMessage,
         wizard: WordOfTheDayWizard,
-    ) -> bool:
+    ) -> ChatActionResult:
         # TODO
-        return False
+        return ChatActionResult.IGNORED
 
-    async def handleChat(
+    async def handleChatAction(
         self,
         mostRecentChat: MostRecentChat | None,
-        message: TwitchMessage,
-        user: UserInterface
-    ) -> bool:
-        content = message.getContent()
-        twitchChannelId = await message.getTwitchChannelId()
-        wizard = await self.__recurringActionsWizard.get(twitchChannelId)
+        chatMessage: TwitchChatMessage,
+    ) -> ChatActionResult:
+        wizard = await self.__recurringActionsWizard.get(chatMessage.twitchChannelId)
 
-        if not utils.isValidStr(content) or twitchChannelId != message.getAuthorId() or wizard is None:
-            return False
+        if wizard is None or not utils.isValidStr(chatMessage.text) or chatMessage.twitchChannelId != chatMessage.chatterUserId:
+            return ChatActionResult.IGNORED
 
         if isinstance(wizard, CutenessWizard):
             return await self.__configureCutenessWizard(
                 wizard = wizard,
-                content = content,
-                message = message,
+                chatMessage = chatMessage,
             )
 
         elif isinstance(wizard, SuperTriviaWizard):
             return await self.__configureSuperTriviaWizard(
-                content = content,
                 wizard = wizard,
-                message = message,
+                chatMessage = chatMessage,
             )
 
         elif isinstance(wizard, WeatherWizard):
             return await self.__configureWeatherWizard(
-                content = content,
-                message = message,
+                chatMessage = chatMessage,
                 wizard = wizard,
             )
 
         elif isinstance(wizard, WordOfTheDayWizard):
             return await self.__configureWordOfTheDayWizard(
-                content = content,
-                message = message,
+                chatMessage = chatMessage,
                 wizard = wizard,
             )
 
         else:
-            self.__timber.log('RecurringActionsWizardChatAction', f'Received unknown AbsWizard type: \"{wizard}\" ({message.getAuthorName()=}) ({message.getAuthorName()=}) ({twitchChannelId=}) ({message.getTwitchChannelName()=})')
-            return False
+            self.__timber.log(self.actionName, f'Encountered unknown AbsWizard type ({wizard=}) ({chatMessage=})')
+            await self.__recurringActionsWizard.complete(chatMessage.twitchChannelId)
+            return ChatActionResult.IGNORED
 
-    async def __send(self, wizard: AbsWizard, chat: str, message: TwitchMessage):
-        replyMessageId = await message.getMessageId()
-
+    async def __send(self, chatMessage: TwitchChatMessage, chat: str):
         self.__twitchChatMessenger.send(
             text = chat,
-            twitchChannelId = wizard.twitchChannelId,
-            replyMessageId = replyMessageId,
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )

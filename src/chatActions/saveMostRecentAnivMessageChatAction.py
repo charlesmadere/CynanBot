@@ -1,6 +1,6 @@
 from typing import Final
 
-from .absChatAction2 import AbsChatAction2
+from .absChatAction import AbsChatAction
 from .chatActionResult import ChatActionResult
 from ..aniv.repositories.anivUserIdsRepositoryInterface import AnivUserIdsRepositoryInterface
 from ..aniv.repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
@@ -10,7 +10,7 @@ from ..timber.timberInterface import TimberInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class SaveMostRecentAnivMessageChatAction(AbsChatAction2):
+class SaveMostRecentAnivMessageChatAction(AbsChatAction):
 
     def __init__(
         self,

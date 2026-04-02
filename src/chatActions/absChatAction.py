@@ -1,17 +1,21 @@
 from abc import ABC, abstractmethod
 
+from .chatActionResult import ChatActionResult
 from ..mostRecentChat.mostRecentChat import MostRecentChat
-from ..twitch.configuration.twitchMessage import TwitchMessage
-from ..users.userInterface import UserInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
 class AbsChatAction(ABC):
 
+    @property
     @abstractmethod
-    async def handleChat(
+    def actionName(self) -> str:
+        pass
+
+    @abstractmethod
+    async def handleChatAction(
         self,
         mostRecentChat: MostRecentChat | None,
-        message: TwitchMessage,
-        user: UserInterface,
-    ) -> bool:
+        chatMessage: TwitchChatMessage,
+    ) -> ChatActionResult:
         pass
