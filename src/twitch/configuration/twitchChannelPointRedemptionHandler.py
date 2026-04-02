@@ -2,7 +2,7 @@ import asyncio
 import queue
 import traceback
 from queue import SimpleQueue
-from typing import Final
+from typing import Any, Collection, Final
 
 from frozenlist import FrozenList
 
@@ -10,7 +10,9 @@ from ..absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemp
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 from ...channelPointRedemptions.absChannelPointRedemption import AbsChannelPointRedemption
+from ...channelPointRedemptions.absChannelPointsRedemption2 import AbsChannelPointRedemption2
 from ...channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
+from ...channelPointRedemptions.channelPointRedemptionResult import ChannelPointRedemptionResult
 from ...channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from ...channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from ...channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
@@ -55,6 +57,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         triviaGamePointRedemption: TriviaGamePointRedemption | None,
         timber: TimberInterface,
         userIdsRepository: UserIdsRepositoryInterface,
+        pointRedemptions: Collection[AbsChannelPointRedemption2 | Any | None] | None,
         queueSleepTimeSeconds: float = 1,
         queueTimeoutSeconds: float = 3,
     ):
@@ -94,6 +97,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif pointRedemptions is not None and not isinstance(pointRedemptions, Collection):
+            raise TypeError(f'pointRedemptions argument is malformed: \"{pointRedemptions}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 15:
@@ -108,6 +113,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__queueSleepTimeSeconds: Final[float] = queueSleepTimeSeconds
         self.__queueTimeoutSeconds: Final[float] = queueTimeoutSeconds
+        self.__pointRedemptions: Final[Collection[AbsChannelPointRedemption2]] = self.__buildPointRedemptionsCollection(pointRedemptions)
 
         self.__isStarted: bool = False
         self.__channelPointsRedemptionsQueue: Final[SimpleQueue[TwitchChannelPointsRedemption]] = SimpleQueue()
@@ -186,6 +192,33 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__triviaGamePointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
         else:
             self.__triviaGamePointRedemption: AbsChannelPointRedemption = triviaGamePointRedemption
+
+    def __buildPointRedemptionsCollection(
+        self,
+        pointRedemptions: Collection[AbsChannelPointRedemption2 | Any | None] | None,
+    ) -> Collection[AbsChannelPointRedemption2]:
+        if pointRedemptions is None:
+            emptyPointRedemptions: FrozenList[AbsChannelPointRedemption2] = FrozenList()
+            emptyPointRedemptions.freeze()
+            return emptyPointRedemptions
+
+        frozenPointRedemptions: FrozenList[AbsChannelPointRedemption2 | Any | None] = FrozenList(pointRedemptions)
+        frozenPointRedemptions.freeze()
+
+        validPointRedemptions: FrozenList[AbsChannelPointRedemption2] = FrozenList()
+
+        for index, pointRedemption in enumerate(frozenPointRedemptions):
+            if pointRedemption is None:
+                continue
+            elif isinstance(pointRedemption, AbsChannelPointRedemption2):
+                validPointRedemptions.append(pointRedemption)
+            else:
+                exception = TypeError(f'Encountered an invalid AbsChannelPointRedemption2 instance ({index=}) ({pointRedemption=}) ({frozenPointRedemptions=})')
+                self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered an invalid AbsChannelPointRedemption2 instance ({index=}) ({pointRedemption=}) ({frozenPointRedemptions=})', exception, traceback.format_exc())
+                raise exception
+
+        validPointRedemptions.freeze()
+        return validPointRedemptions
 
     async def __handleChannelPointsRedemption(self, channelPointsRedemption: TwitchChannelPointsRedemption):
         if not isinstance(channelPointsRedemption, TwitchChannelPointsRedemption):
@@ -282,6 +315,26 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
                 channelPointsRedemption = channelPointsRedemption,
             ):
                 return
+
+        for index, pointRedemption in enumerate(self.__pointRedemptions):
+            try:
+                relevantRewardIds = pointRedemption.relevantRewardIds(
+                    twitchUser = channelPointsRedemption.twitchUser,
+                )
+
+                if channelPointsRedemption.rewardId not in relevantRewardIds:
+                    continue
+
+                result = await pointRedemption.handlePointsRedemption(
+                    pointsRedemption = channelPointsRedemption,
+                )
+
+                match result:
+                    case ChannelPointRedemptionResult.CONSUMED: return
+                    case ChannelPointRedemptionResult.HANDLED: continue
+                    case ChannelPointRedemptionResult.IGNORED: pass
+            except Exception as e:
+                self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered an unexpected error while handling a point redemption ({index=}) ({pointRedemption=}) ({channelPointsRedemption=})', e, traceback.format_exc())
 
     async def onNewChannelPointsRedemption(self, channelPointsRedemption: TwitchChannelPointsRedemption):
         if not isinstance(channelPointsRedemption, TwitchChannelPointsRedemption):

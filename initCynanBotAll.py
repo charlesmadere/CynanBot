@@ -26,6 +26,7 @@ from src.aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from src.asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRepository
 from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
+from src.channelPointRedemptions.absChannelPointsRedemption2 import AbsChannelPointRedemption2
 from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
@@ -3140,6 +3141,8 @@ mouseCursorPointRedemption: Final[MouseCursorPointRedemption] = MouseCursorPoint
 ## Twitch events initialization section ##
 ##########################################
 
+pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozenset()
+
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
     casualGamePollPointRedemption = casualGamePollPointRedemption,
@@ -3162,6 +3165,7 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     triviaGamePointRedemption = triviaGamePointRedemption,
     timber = timber,
     userIdsRepository = userIdsRepository,
+    pointRedemptions = pointRedemptions,
 )
 
 chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
