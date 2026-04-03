@@ -27,7 +27,6 @@ from src.asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRepository
 from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from src.channelPointRedemptions.absChannelPointsRedemption2 import AbsChannelPointRedemption2
-from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
 from src.channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
@@ -2138,11 +2137,6 @@ supStreamerHelper: Final[SupStreamerHelperInterface] = SupStreamerHelper()
 ## Channel Point Redemptions initialization section ##
 ######################################################
 
-casualGamePollPointRedemption: Final[CasualGamePollPointRedemption] = CasualGamePollPointRedemption(
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
 chatterPreferredNamePointRedemption: Final[ChatterPreferredNamePointRedemption] = ChatterPreferredNamePointRedemption(
     chatterPreferredNameHelper = chatterPreferredNameHelper,
     timber = timber,
@@ -2200,26 +2194,23 @@ mouseCursorHelper: Final[MouseCursorHelperInterface] = MouseCursorHelper(
     websocketConnectionServer = websocketConnectionServer,
 )
 
-mouseCursorPointRedemption: Final[MouseCursorPointRedemption] = MouseCursorPointRedemption(
-    mouseCursorHelper = mouseCursorHelper,
-    timber = timber,
-)
-
 
 ##########################################
 ## Twitch events initialization section ##
 ##########################################
 
-pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozenset()
+pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozenset({
+    MouseCursorPointRedemption(
+        mouseCursorHelper = mouseCursorHelper,
+        timber = timber,
+    ),
+})
 
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
-    casualGamePollPointRedemption = casualGamePollPointRedemption,
     chatterPreferredNamePointRedemption = chatterPreferredNamePointRedemption,
     chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = None,
-    discordPointRedemption = None,
-    mouseCursorPointRedemption = mouseCursorPointRedemption,
     pkmnBattlePointRedemption = None,
     pkmnCatchPointRedemption = None,
     pkmnEvolvePointRedemption = None,

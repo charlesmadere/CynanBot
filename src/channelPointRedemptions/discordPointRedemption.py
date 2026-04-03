@@ -1,13 +1,15 @@
 from typing import Final
 
-from .absChannelPointRedemption import AbsChannelPointRedemption
+from .absChannelPointsRedemption2 import AbsChannelPointRedemption2
+from .pointsRedemptionResult import PointsRedemptionResult
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
+from ..users.userInterface import UserInterface
 
 
-class DiscordPointRedemption(AbsChannelPointRedemption):
+class DiscordPointRedemption(AbsChannelPointRedemption2):
 
     def __init__(
         self,
@@ -22,18 +24,33 @@ class DiscordPointRedemption(AbsChannelPointRedemption):
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
-    async def handlePointRedemption(
+    async def handlePointsRedemption(
         self,
         channelPointsRedemption: TwitchChannelPointsRedemption,
-    ) -> bool:
+    ) -> PointsRedemptionResult:
         discordUrl = channelPointsRedemption.twitchUser.discordUrl
         if not utils.isValidUrl(discordUrl):
-            return False
+            return PointsRedemptionResult.IGNORED
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ Discord invite link: {discordUrl}',
             twitchChannelId = channelPointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log('DiscordPointRedemption', f'Redeemed ({channelPointsRedemption=})')
-        return True
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({channelPointsRedemption=})')
+        return PointsRedemptionResult.CONSUMED
+
+    @property
+    def pointsRedemptionName(self) -> str:
+        return 'DiscordPointRedemption'
+
+    def relevantRewardIds(
+        self,
+        twitchUser: UserInterface,
+    ) -> frozenset[str]:
+        rewardId = twitchUser.discordRewardId
+
+        if utils.isValidStr(rewardId):
+            return frozenset({ rewardId })
+        else:
+            return frozenset()

@@ -3131,29 +3131,31 @@ mouseCursorHelper: Final[MouseCursorHelperInterface] = MouseCursorHelper(
     websocketConnectionServer = websocketConnectionServer,
 )
 
-mouseCursorPointRedemption: Final[MouseCursorPointRedemption] = MouseCursorPointRedemption(
-    mouseCursorHelper = mouseCursorHelper,
-    timber = timber,
-)
-
 
 ##########################################
 ## Twitch events initialization section ##
 ##########################################
 
-pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozenset()
-
-twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
-    backgroundTaskHelper = backgroundTaskHelper,
-    casualGamePollPointRedemption = casualGamePollPointRedemption,
-    chatterPreferredNamePointRedemption = None,
-    chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
-    cutenessPointRedemption = cutenessPointRedemption,
-    discordPointRedemption = DiscordPointRedemption(
+pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozenset({
+    CasualGamePollPointRedemption(
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
-    mouseCursorPointRedemption = mouseCursorPointRedemption,
+    DiscordPointRedemption(
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    MouseCursorPointRedemption(
+        mouseCursorHelper = mouseCursorHelper,
+        timber = timber,
+    ),
+})
+
+twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
+    backgroundTaskHelper = backgroundTaskHelper,
+    chatterPreferredNamePointRedemption = None,
+    chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
+    cutenessPointRedemption = cutenessPointRedemption,
     pkmnBattlePointRedemption = pkmnBattlePointRedemption,
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,
     pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,

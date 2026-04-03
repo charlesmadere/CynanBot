@@ -11,13 +11,10 @@ from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 from ...channelPointRedemptions.absChannelPointRedemption import AbsChannelPointRedemption
 from ...channelPointRedemptions.absChannelPointsRedemption2 import AbsChannelPointRedemption2
-from ...channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
 from ...channelPointRedemptions.channelPointRedemptionResult import ChannelPointRedemptionResult
 from ...channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from ...channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from ...channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
-from ...channelPointRedemptions.discordPointRedemption import DiscordPointRedemption
-from ...channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from ...channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
 from ...channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from ...channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
@@ -40,12 +37,9 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        casualGamePollPointRedemption: CasualGamePollPointRedemption | None,
         chatterPreferredNamePointRedemption: ChatterPreferredNamePointRedemption | None,
         chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None,
         cutenessPointRedemption: CutenessPointRedemption | None,
-        discordPointRedemption: DiscordPointRedemption | None,
-        mouseCursorPointRedemption: MouseCursorPointRedemption | None,
         pkmnBattlePointRedemption: PkmnBattlePointRedemption | None,
         pkmnCatchPointRedemption: PkmnCatchPointRedemption | None,
         pkmnEvolvePointRedemption: PkmnEvolvePointRedemption | None,
@@ -63,18 +57,12 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif casualGamePollPointRedemption is not None and not isinstance(casualGamePollPointRedemption, CasualGamePollPointRedemption):
-            raise TypeError(f'casualGamePollPointRedemption argument is malformed: \"{casualGamePollPointRedemption}\"')
         elif chatterPreferredNamePointRedemption is not None and not isinstance(chatterPreferredNamePointRedemption, ChatterPreferredNamePointRedemption):
             raise TypeError(f'chatterPreferredNamePointRedemption argument is malformed: \"{chatterPreferredNamePointRedemption}\"')
         elif chatterPreferredTtsPointRedemption is not None and not isinstance(chatterPreferredTtsPointRedemption, ChatterPreferredTtsPointRedemption):
             raise TypeError(f'chatterPreferredTtsPointRedemption argument is malformed: \"{chatterPreferredTtsPointRedemption}\"')
         elif cutenessPointRedemption is not None and not isinstance(cutenessPointRedemption, CutenessPointRedemption):
             raise TypeError(f'cutenessPointRedemption argument is malformed: \"{cutenessPointRedemption}\"')
-        elif discordPointRedemption is not None and not isinstance(discordPointRedemption, DiscordPointRedemption):
-            raise TypeError(f'discordPointRedemption argument is malformed: \"{discordPointRedemption}\"')
-        elif mouseCursorPointRedemption is not None and not isinstance(mouseCursorPointRedemption, MouseCursorPointRedemption):
-            raise TypeError(f'mouseCursorPointRedemption argument is malformed: \"{mouseCursorPointRedemption}\"')
         elif pkmnBattlePointRedemption is not None and not isinstance(pkmnBattlePointRedemption, PkmnBattlePointRedemption):
             raise TypeError(f'pkmnBattlePointRedemption argument is malformed: \"{pkmnBattlePointRedemption}\"')
         elif pkmnCatchPointRedemption is not None and not isinstance(pkmnCatchPointRedemption, PkmnCatchPointRedemption):
@@ -118,11 +106,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         self.__isStarted: bool = False
         self.__channelPointsRedemptionsQueue: Final[SimpleQueue[TwitchChannelPointsRedemption]] = SimpleQueue()
 
-        if casualGamePollPointRedemption is None:
-            self.__casualGamePollPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__casualGamePollPointRedemption: AbsChannelPointRedemption = casualGamePollPointRedemption
-
         if chatterPreferredNamePointRedemption is None:
             self.__chatterPreferredNamePointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
         else:
@@ -137,16 +120,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__cutenessPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
         else:
             self.__cutenessPointRedemption: AbsChannelPointRedemption = cutenessPointRedemption
-
-        if discordPointRedemption is None:
-            self.__discordPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__discordPointRedemption: AbsChannelPointRedemption = discordPointRedemption
-
-        if mouseCursorPointRedemption is None:
-            self.__mouseCursorPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__mouseCursorPointRedemption: AbsChannelPointRedemption = mouseCursorPointRedemption
 
         if pkmnBattlePointRedemption is None:
             self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
@@ -231,12 +204,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
                 channelPointsRedemption = channelPointsRedemption,
             )
 
-        if user.isCasualGamePollEnabled and channelPointsRedemption.rewardId == user.casualGamePollRewardId:
-            if await self.__casualGamePollPointRedemption.handlePointRedemption(
-                channelPointsRedemption = channelPointsRedemption,
-            ):
-                return
-
         if channelPointsRedemption.rewardId == user.chatterPreferredNameRewardId:
             if await self.__chatterPreferredNamePointRedemption.handlePointRedemption(
                 channelPointsRedemption = channelPointsRedemption,
@@ -251,18 +218,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.isCutenessEnabled:
             if await self.__cutenessPointRedemption.handlePointRedemption(
-                channelPointsRedemption = channelPointsRedemption,
-            ):
-                return
-
-        if channelPointsRedemption.rewardId == user.discordRewardId:
-            if await self.__discordPointRedemption.handlePointRedemption(
-                channelPointsRedemption = channelPointsRedemption,
-            ):
-                return
-
-        if user.isMouseCursorEnabled and channelPointsRedemption.rewardId == user.mouseCursorRewardId:
-            if await self.__mouseCursorPointRedemption.handlePointRedemption(
                 channelPointsRedemption = channelPointsRedemption,
             ):
                 return
@@ -432,4 +387,4 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         try:
             self.__channelPointsRedemptionsQueue.put(channelPointsRedemption, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered queue.Full when submitting a new action ({channelPointsRedemption}) into the action queue (queue size: {self.__channelPointsRedemptionsQueue.qsize()})', e, traceback.format_exc())
+            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered queue.Full when submitting a new points redemption ({channelPointsRedemption}) into the redemption queue (queue size: {self.__channelPointsRedemptionsQueue.qsize()})', e, traceback.format_exc())
