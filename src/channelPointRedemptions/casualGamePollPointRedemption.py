@@ -1,21 +1,23 @@
 from datetime import timedelta
 from typing import Final
 
-from .absChannelPointRedemption import AbsChannelPointRedemption
+from .absChannelPointsRedemption2 import AbsChannelPointRedemption2
+from .pointsRedemptionResult import PointsRedemptionResult
 from ..misc import utils as utils
 from ..misc.timedDict import TimedDict
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
+from ..users.userInterface import UserInterface
 
 
-class CasualGamePollPointRedemption(AbsChannelPointRedemption):
+class CasualGamePollPointRedemption(AbsChannelPointRedemption2):
 
     def __init__(
         self,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        cooldown: timedelta = timedelta(seconds = 45),
+        cooldown: timedelta = timedelta(minutes = 1, seconds = 30),
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -28,25 +30,40 @@ class CasualGamePollPointRedemption(AbsChannelPointRedemption):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__lastMessageTimes: Final[TimedDict] = TimedDict(cooldown)
 
-    async def handlePointRedemption(
+    async def handlePointsRedemption(
         self,
         channelPointsRedemption: TwitchChannelPointsRedemption,
-    ) -> bool:
+    ) -> PointsRedemptionResult:
         twitchUser = channelPointsRedemption.twitchUser
         if not twitchUser.isCasualGamePollEnabled:
-            return False
+            return PointsRedemptionResult.IGNORED
 
         casualGamePollUrl = twitchUser.casualGamePollUrl
         if not utils.isValidUrl(casualGamePollUrl):
-            return False
+            return PointsRedemptionResult.IGNORED
 
         if not self.__lastMessageTimes.isReadyAndUpdate(channelPointsRedemption.twitchChannelId):
-            return False
+            return PointsRedemptionResult.IGNORED
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ Here\'s the current list of casual games: {casualGamePollUrl}',
             twitchChannelId = channelPointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log('CasualGamePollPointRedemption', f'Redeemed ({channelPointsRedemption=})')
-        return True
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({channelPointsRedemption=})')
+        return PointsRedemptionResult.CONSUMED
+
+    @property
+    def pointsRedemptionName(self) -> str:
+        return 'CasualGamePollPointRedemption'
+
+    def relevantRewardIds(
+        self,
+        twitchUser: UserInterface,
+    ) -> frozenset[str]:
+        rewardId = twitchUser.casualGamePollRewardId
+
+        if utils.isValidStr(rewardId):
+            return frozenset({ rewardId })
+        else:
+            return frozenset()

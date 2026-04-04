@@ -26,7 +26,7 @@ from src.aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from src.asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRepository
 from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
-from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
+from src.channelPointRedemptions.absChannelPointsRedemption2 import AbsChannelPointRedemption2
 from src.channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
 from src.channelPointRedemptions.discordPointRedemption import DiscordPointRedemption
 from src.channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
@@ -1835,11 +1835,6 @@ saveMostRecentAnivMessageChatAction: Final[SaveMostRecentAnivMessageChatAction] 
 ## Channel Point Redemptions initialization section ##
 ######################################################
 
-casualGamePollPointRedemption: Final[CasualGamePollPointRedemption] = CasualGamePollPointRedemption(
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
 cutenessPointRedemption: Final[CutenessPointRedemption] = CutenessPointRedemption(
     cutenessRepository = cutenessRepository,
     timber = timber,
@@ -1959,17 +1954,18 @@ redemptionCounterPointRedemption = RedemptionCounterPointRedemption(
 ## Twitch events initialization section ##
 ##########################################
 
-twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
-    backgroundTaskHelper = backgroundTaskHelper,
-    casualGamePollPointRedemption = casualGamePollPointRedemption,
-    chatterPreferredNamePointRedemption = None,
-    chatterPreferredTtsPointRedemption = None,
-    cutenessPointRedemption = cutenessPointRedemption,
-    discordPointRedemption = DiscordPointRedemption(
+pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozenset({
+    DiscordPointRedemption(
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
-    mouseCursorPointRedemption = None,
+})
+
+twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
+    backgroundTaskHelper = backgroundTaskHelper,
+    chatterPreferredNamePointRedemption = None,
+    chatterPreferredTtsPointRedemption = None,
+    cutenessPointRedemption = cutenessPointRedemption,
     pkmnBattlePointRedemption = pkmnBattlePointRedemption,
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,
     pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,
@@ -1981,6 +1977,7 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     triviaGamePointRedemption = triviaGamePointRedemption,
     timber = timber,
     userIdsRepository = userIdsRepository,
+    pointRedemptions = pointRedemptions,
 )
 
 chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
