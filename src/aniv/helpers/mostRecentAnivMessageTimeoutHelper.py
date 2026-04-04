@@ -118,7 +118,10 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             return False
         elif not user.isAnivMessageCopyTimeoutEnabled:
             return False
-        elif chatterUserId == twitchChannelId:
+        elif await self.__isImmuneChatter(
+            chatterUserId = chatterUserId,
+            twitchChannelId = twitchChannelId,
+        ):
             return False
 
         allAnivUsers = await self.__anivUserIdsRepository.getAllUsers()
@@ -140,14 +143,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         anivUserId = allAnivUsers.get(copiedAnivMessage.whichAnivUser, None)
         if not utils.isValidStr(anivUserId):
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, failed to fetch user ID for {copiedAnivMessage.whichAnivUser} when potentially trying to time out {chatterUserName}:{chatterUserId} for copying a message ({copiedAnivMessage=})')
-            return False
-
-        if await self.__isImmuneChatter(
-            chatterUserId = chatterUserId,
-            twitchChannelId = twitchChannelId,
-        ):
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, not proceeding with potentially timing out {chatterUserName}:{chatterUserId}, as they are an immune chatter ({copiedAnivMessage=})')
+            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, failed to fetch user ID for {copiedAnivMessage.whichAnivUser} when potentially trying to time out {chatterUserName}:{chatterUserId} for copying a message ({anivUserId=}) ({copiedAnivMessage=})')
             return False
 
         userTwitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
@@ -155,7 +151,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         )
 
         if not utils.isValidStr(userTwitchAccessToken):
-            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, failed to fetch Twitch access token when potentially trying to time out {chatterUserName}:{chatterUserId} for copying a message ({copiedAnivMessage=})')
+            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, failed to fetch Twitch access token when potentially trying to time out {chatterUserName}:{chatterUserId} for copying a message ({anivUserId=}) ({copiedAnivMessage=})')
             return False
 
         timeoutRng = await self.__rollTimeoutRng(user)
@@ -165,9 +161,8 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
                 chatterUserId = chatterUserId,
                 twitchChannelId = twitchChannelId,
             )
-            return False
 
-        self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, {chatterUserName}:{chatterUserId} will be timed out for copying a message ({copiedAnivMessage=}) ({timeoutRng=})')
+            return False
 
         moderatorUserId = await self.__userIdsRepository.requireUserId(
             userName = await self.__twitchHandleProvider.getTwitchHandle(),
@@ -182,9 +177,13 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             user = user,
         )
 
+        actionId = await self.__timeoutIdGenerator.generateActionId()
+
+        self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, {chatterUserName}:{chatterUserId} will be timed out for copying an aniv message ({actionId=}) ({timeoutDuration=}) ({timeoutRng=}) ({anivUserId=}) ({copiedAnivMessage=})')
+
         self.__timeoutActionMachine.submitAction(CopyAnivMessageTimeoutAction(
             timeoutDuration = timeoutDuration,
-            actionId = await self.__timeoutIdGenerator.generateActionId(),
+            actionId = actionId,
             anivUserId = anivUserId,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
@@ -264,7 +263,9 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         chatterUserId: str,
         twitchChannelId: str,
     ) -> bool:
-        if await self.__timeoutImmuneUserIdsRepository.isImmune(
+        if chatterUserId == twitchChannelId:
+            return True
+        elif await self.__timeoutImmuneUserIdsRepository.isImmune(
             userId = chatterUserId,
         ):
             return True
