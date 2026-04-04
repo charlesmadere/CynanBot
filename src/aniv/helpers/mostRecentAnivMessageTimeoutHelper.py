@@ -289,7 +289,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if not utils.isValidInt(maxAgeSeconds):
             maxAgeSeconds = await self.__anivSettings.getCopyMessageMaxAgeSeconds()
 
-        for anivUser, mostRecentMessage in anivMessages.items():
+        for mostRecentMessage in anivMessages.values():
             if mostRecentMessage is None:
                 continue
 
