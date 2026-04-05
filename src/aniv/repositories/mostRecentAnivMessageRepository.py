@@ -1,5 +1,4 @@
 from collections import defaultdict
-from datetime import datetime
 from typing import Final
 
 from frozendict import frozendict
@@ -59,7 +58,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
 
         if utils.isValidStr(cleanedMessage):
             self.__cache[twitchChannelId][whichAnivUser] = MostRecentAnivMessage(
-                dateTime = datetime.now(self.__timeZoneRepository.getDefault()),
+                dateTime = self.__timeZoneRepository.getNow(),
                 message = cleanedMessage,
                 whichAnivUser = whichAnivUser,
             )
