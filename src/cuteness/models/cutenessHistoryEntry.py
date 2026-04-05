@@ -5,9 +5,9 @@ from .cutenessEntry import CutenessEntry
 
 
 @dataclass(frozen = True, slots = True)
-class CutenessResult(CutenessEntry):
+class CutenessHistoryEntry(CutenessEntry):
     cutenessDate: datetime
-    cuteness: int | None
+    cuteness: int
     chatterUserId: str
     twitchChannelId: str
 
@@ -15,13 +15,7 @@ class CutenessResult(CutenessEntry):
         return self.chatterUserId
 
     def getCuteness(self) -> int:
-        return self.requireCuteness()
+        return self.cuteness
 
     def getTwitchChannelId(self) -> str:
         return self.twitchChannelId
-
-    def requireCuteness(self) -> int:
-        if self.cuteness is None:
-            raise RuntimeError(f'No cuteness value is available ({self=})')
-
-        return self.cuteness

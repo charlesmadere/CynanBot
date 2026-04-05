@@ -9,12 +9,16 @@ class CutenessLeaderboardEntry(CutenessEntry):
     cuteness: int
     rank: int
     chatterUserId: str
+    twitchChannelId: str
 
     def getChatterUserId(self) -> str:
         return self.chatterUserId
 
     def getCuteness(self) -> int:
         return self.cuteness
+
+    def getTwitchChannelId(self) -> str:
+        return self.twitchChannelId
 
     @property
     def rankStr(self) -> str:

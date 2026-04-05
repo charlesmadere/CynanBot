@@ -1,18 +1,22 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from .cutenessResult import CutenessResult
-from ..cutenessDate import CutenessDate
 from ...twitch.localModels.twitchUserInterface import TwitchUserInterface
 
 
 @dataclass(frozen = True, slots = True)
 class PreparedCutenessResult(TwitchUserInterface):
     cutenessResult: CutenessResult
-    userLogin: str
-    userName: str
+    chatterUserLogin: str
+    chatterUserName: str
 
     @property
-    def cutenessDate(self) -> CutenessDate:
+    def chatterUserId(self) -> str:
+        return self.cutenessResult.chatterUserId
+
+    @property
+    def cutenessDate(self) -> datetime:
         return self.cutenessResult.cutenessDate
 
     @property
@@ -20,13 +24,13 @@ class PreparedCutenessResult(TwitchUserInterface):
         return self.cutenessResult.cutenessStr
 
     def getUserId(self) -> str:
-        return self.userId
+        return self.chatterUserId
 
     def getUserLogin(self) -> str:
-        return self.userLogin
+        return self.chatterUserLogin
 
     def getUserName(self) -> str:
-        return self.userName
+        return self.chatterUserName
 
     def requireCuteness(self) -> int:
         return self.cutenessResult.requireCuteness()
@@ -34,7 +38,3 @@ class PreparedCutenessResult(TwitchUserInterface):
     @property
     def twitchChannelId(self) -> str:
         return self.cutenessResult.twitchChannelId
-
-    @property
-    def userId(self) -> str:
-        return self.cutenessResult.userId

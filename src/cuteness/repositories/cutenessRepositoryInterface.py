@@ -9,8 +9,8 @@ class CutenessRepositoryInterface(ABC):
     @abstractmethod
     async def fetchCuteness(
         self,
+        chatterUserId: str,
         twitchChannelId: str,
-        userId: str,
     ) -> CutenessResult:
         pass
 
@@ -19,4 +19,12 @@ class CutenessRepositoryInterface(ABC):
         self,
         twitchChannelId: str,
     ) -> CutenessChampionsResult:
+        pass
+
+    @abstractmethod
+    async def fetchCutenessHistory(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str,
+    ) -> CutenessHistoryResult:
         pass

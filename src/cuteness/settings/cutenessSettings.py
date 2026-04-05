@@ -18,6 +18,14 @@ class CutenessSettings(CutenessSettingsInterface):
     async def clearCaches(self):
         self.__cache = None
 
+    async def getHistorySize(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'historySize', fallback = 5)
+
+    async def getLeaderboardSize(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'leaderboardSize', fallback = 10)
+
     async def isEnabled(self) -> bool:
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'enabled', fallback = True)

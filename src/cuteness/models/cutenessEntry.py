@@ -15,3 +15,7 @@ class CutenessEntry(ABC):
     @abstractmethod
     def getCuteness(self) -> int:
         pass
+
+    @abstractmethod
+    def getTwitchChannelId(self) -> str:
+        pass
