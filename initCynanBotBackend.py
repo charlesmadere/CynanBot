@@ -1820,17 +1820,6 @@ jishoHelper: JishoHelperInterface = JishoHelper(
 )
 
 
-#########################################
-## Chat Actions initialization section ##
-#########################################
-
-saveMostRecentAnivMessageChatAction: Final[SaveMostRecentAnivMessageChatAction] = SaveMostRecentAnivMessageChatAction(
-    anivUserIdsRepository = anivUserIdsRepository,
-    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
-    timber = timber,
-)
-
-
 ######################################################
 ## Channel Point Redemptions initialization section ##
 ######################################################
@@ -1996,6 +1985,11 @@ chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
         recurringActionsWizard = recurringActionsWizard,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    SaveMostRecentAnivMessageChatAction(
+        anivUserIdsRepository = anivUserIdsRepository,
+        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+        timber = timber,
     ),
 })
 
