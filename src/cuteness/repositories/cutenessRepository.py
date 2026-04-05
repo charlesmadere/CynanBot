@@ -6,6 +6,7 @@ from frozenlist import FrozenList
 
 from .cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..models.cutenessChampionsResult import CutenessChampionsResult
+from ..models.cutenessHistoryEntry import CutenessHistoryEntry
 from ..models.cutenessHistoryResult import CutenessHistoryResult
 from ..models.cutenessLeaderboardEntry import CutenessLeaderboardEntry
 from ..models.cutenessResult import CutenessResult
@@ -153,8 +154,99 @@ class CutenessRepository(CutenessRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        # TODO
-        raise RuntimeError()
+        historySize = await self.__cutenessSettings.getHistorySize()
+
+        connection = await self.__getDatabaseConnection()
+        records = await connection.fetchRows(
+            '''
+                SELECT cuteness, utcyearandmonth FROM cuteness
+                WHERE twitchchannelid = $1 AND userid = $2 AND cuteness IS NOT NULL AND cuteness >= 1
+                ORDER BY utcyearandmonth DESC
+                LIMIT $3
+            ''',
+            twitchChannelId, chatterUserId, historySize,
+        )
+
+        historyEntries: FrozenList[CutenessHistoryEntry] = FrozenList()
+
+        if records is None or len(records) == 0:
+            await connection.close()
+            historyEntries.freeze()
+
+            return CutenessHistoryResult(
+                bestCuteness = None,
+                historyEntries = historyEntries,
+                totalCuteness = None,
+                chatterUserId = chatterUserId,
+                twitchChannelId = twitchChannelId,
+            )
+
+        for record in records:
+            cutenessDate = datetime.strptime(record[1], '%Y-%m').replace(
+                tzinfo = self.__timeZoneRepository.getDefault(),
+            )
+
+            cuteness = int(round(record[0]))
+
+            historyEntries.append(CutenessHistoryEntry(
+                cutenessDate = cutenessDate,
+                cuteness = cuteness,
+                chatterUserId = chatterUserId,
+                twitchChannelId = twitchChannelId,
+            ))
+
+        historyEntries.freeze()
+
+        record = await connection.fetchRow(
+            '''
+                SELECT SUM(cuteness) FROM cuteness
+                WHERE twitchchannelid = $1 AND userid = $2 AND cuteness IS NOT NULL AND cuteness >= 1
+                LIMIT 1
+            ''',
+            twitchChannelId, chatterUserId,
+        )
+
+        totalCuteness = 0
+
+        if record is not None and len(record) >= 1:
+            totalCuteness = int(round(record[0]))
+
+        record = await connection.fetchRow(
+            '''
+                SELECT cuteness, utcyearandmonth FROM cuteness
+                WHERE twitchchannelid = $1 AND userid = $2 AND cuteness IS NOT NULL AND cuteness >= 1
+                ORDER BY cuteness DESC
+                LIMIT 1
+            ''',
+            twitchChannelId, chatterUserId,
+        )
+
+        bestCuteness: CutenessHistoryEntry | None = None
+
+        if record is not None and len(record) >= 1:
+            bestCutenessDate = datetime.strptime(record[1], '%Y-%m').replace(
+                tzinfo = self.__timeZoneRepository.getDefault(),
+            )
+
+            # again, this should be impossible here, but let's just be safe
+            bestCutenessAmount = int(round(record[0]))
+
+            bestCuteness = CutenessHistoryEntry(
+                cutenessDate = bestCutenessDate,
+                cuteness = bestCutenessAmount,
+                chatterUserId = chatterUserId,
+                twitchChannelId = twitchChannelId,
+            )
+
+        await connection.close()
+
+        return CutenessHistoryResult(
+            bestCuteness = bestCuteness,
+            historyEntries = historyEntries,
+            totalCuteness = totalCuteness,
+            chatterUserId = chatterUserId,
+            twitchChannelId = twitchChannelId,
+        )
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()
