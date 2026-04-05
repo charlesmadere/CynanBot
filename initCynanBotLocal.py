@@ -2110,17 +2110,6 @@ cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
 
 
 #########################################
-## Chat Actions initialization section ##
-#########################################
-
-saveMostRecentAnivMessageChatAction: Final[SaveMostRecentAnivMessageChatAction] = SaveMostRecentAnivMessageChatAction(
-    anivUserIdsRepository = anivUserIdsRepository,
-    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
-    timber = timber,
-)
-
-
-#########################################
 ## Sup Streamer initialization section ##
 #########################################
 
@@ -2226,6 +2215,11 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
 )
 
 chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
+    SaveMostRecentAnivMessageChatAction(
+        anivUserIdsRepository = anivUserIdsRepository,
+        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+        timber = timber,
+    ),
     SupStreamerChatAction(
         chatterPreferredNameHelper = chatterPreferredNameHelper,
         chatterPreferredTtsHelper = chatterPreferredTtsHelper,

@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Final
 
 from ..supStreamerChatter import SupStreamerChatter
@@ -29,7 +28,7 @@ class StubSupStreamerRepository(SupStreamerRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         return SupStreamerChatter(
             mostRecentSup = now,

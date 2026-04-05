@@ -134,7 +134,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        mostRecentSup = datetime.now(self.__timeZoneRepository.getDefault())
+        mostRecentSup = self.__timeZoneRepository.getNow()
 
         self.__caches[twitchChannelId][chatterUserId] = SupStreamerChatter(
             mostRecentSup = mostRecentSup,
