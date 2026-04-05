@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from ..models.cutenessChampionsResult import CutenessChampionsResult
+from ..models.cutenessHistoryResult import CutenessHistoryResult
 from ..models.cutenessResult import CutenessResult
 
 

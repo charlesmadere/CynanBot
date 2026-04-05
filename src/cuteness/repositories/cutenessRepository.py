@@ -1,7 +1,13 @@
+from dataclasses import dataclass
+from datetime import datetime
 from typing import Final
+
+from frozenlist import FrozenList
 
 from .cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..models.cutenessChampionsResult import CutenessChampionsResult
+from ..models.cutenessHistoryResult import CutenessHistoryResult
+from ..models.cutenessLeaderboardEntry import CutenessLeaderboardEntry
 from ..models.cutenessResult import CutenessResult
 from ..settings.cutenessSettingsInterface import CutenessSettingsInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -13,6 +19,18 @@ from ...timber.timberInterface import TimberInterface
 
 
 class CutenessRepository(CutenessRepositoryInterface):
+
+    @dataclass(frozen = True, slots = True)
+    class CutenessDate:
+        dateTime: datetime
+
+        @property
+        def databaseString(self) -> str:
+            return self.dateTime.strftime('%Y-%m')
+
+        @property
+        def humanString(self) -> str:
+            return self.dateTime.strftime('%b %Y')
 
     def __init__(
         self,
@@ -47,14 +65,92 @@ class CutenessRepository(CutenessRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        # TODO
-        raise RuntimeError()
+        now = self.__timeZoneRepository.getNow()
+        cutenessDate = CutenessRepository.CutenessDate(dateTime = now)
+
+        connection = await self.__getDatabaseConnection()
+        record = await connection.fetchRow(
+            '''
+                SELECT cuteness FROM cuteness
+                WHERE twitchchannelid = $1 AND userid = $2 AND utcyearandmonth = $3
+                LIMIT 1
+            ''',
+            twitchChannelId, chatterUserId, cutenessDate.databaseString,
+        )
+
+        await connection.close()
+
+        cuteness: int | None = None
+
+        if record is not None and len(record) >= 1:
+            cuteness = record[0]
+
+        return CutenessResult(
+            cutenessDate = now,
+            cuteness = cuteness,
+            chatterUserId = chatterUserId,
+            twitchChannelId = twitchChannelId,
+        )
 
     async def fetchCutenessChampions(
         self,
         twitchChannelId: str,
     ) -> CutenessChampionsResult:
         if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        leaderboardSize = await self.__cutenessSettings.getLeaderboardSize()
+
+        connection = await self.__getDatabaseConnection()
+        records = await connection.fetchRows(
+            '''
+                SELECT userid, SUM(cuteness) AS totalcuteness FROM cuteness
+                WHERE twitchchannelid = $1 AND userid != $2
+                ORDER BY totalcuteness DESC
+                LIMIT $3
+            ''',
+            twitchChannelId, twitchChannelId, leaderboardSize,
+        )
+
+        await connection.close()
+
+        champions: FrozenList[CutenessLeaderboardEntry] = FrozenList()
+
+        if records is None or len(records) == 0:
+            champions.freeze()
+
+            return CutenessChampionsResult(
+                champions = champions,
+                twitchChannelId = twitchChannelId,
+            )
+
+        for index, record in enumerate(records):
+            # Cuteness can potentially arrive from the database as a decimal.Decimal type,
+            # so let's make sure to convert that value into an int.
+            cuteness = int(round(record[1]))
+
+            champions.append(CutenessLeaderboardEntry(
+                cuteness = cuteness,
+                rank = index + 1,
+                chatterUserId = record[0],
+                twitchChannelId = twitchChannelId,
+            ))
+
+        champions.freeze()
+
+        return CutenessChampionsResult(
+            champions = champions,
+            twitchChannelId = twitchChannelId,
+        )
+
+    async def fetchCutenessHistory(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str,
+    ) -> CutenessHistoryResult:
+        if not utils.isValidStr(chatterUserId):
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         # TODO
