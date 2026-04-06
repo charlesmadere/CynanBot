@@ -1,6 +1,6 @@
 import traceback
 from datetime import datetime
-from typing import Final, Any
+from typing import Any, Final
 
 from .cutenessMapperInterface import CutenessMapperInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
