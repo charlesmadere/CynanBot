@@ -72,7 +72,7 @@ class CutenessRepository(CutenessRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         now = self.__timeZoneRepository.getNow()
-        cutenessDate = CutenessRepository.CutenessDate(dateTime = now)
+        utcYearAndMonth = await self.__cutenessMapper.serializeToUtcYearAndMonth(now)
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
@@ -81,7 +81,7 @@ class CutenessRepository(CutenessRepositoryInterface):
                 WHERE twitchchannelid = $1 AND userid = $2 AND utcyearandmonth = $3
                 LIMIT 1
             ''',
-            twitchChannelId, chatterUserId, cutenessDate.databaseString,
+            twitchChannelId, chatterUserId, utcYearAndMonth,
         )
 
         await connection.close()

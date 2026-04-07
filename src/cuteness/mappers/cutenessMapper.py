@@ -50,3 +50,12 @@ class CutenessMapper(CutenessMapperInterface):
             raise ValueError(f'Failed to parse the given utcYearAndMonthString ({utcYearAndMonthString=})')
 
         return result
+
+    async def serializeToUtcYearAndMonth(
+        self,
+        dateTime: datetime,
+    ) -> str:
+        if not isinstance(dateTime, datetime):
+            raise TypeError(f'dateTime argument is malformed: \"{dateTime}\"')
+
+        return dateTime.strftime('%Y-%m')

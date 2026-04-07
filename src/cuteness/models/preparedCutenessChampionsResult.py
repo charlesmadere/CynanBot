@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 from frozenlist import FrozenList
 
-from users.userInterface import UserInterface
 from .preparedCutenessLeaderboardEntry import PreparedCutenessLeaderboardEntry
+from ...users.userInterface import UserInterface
 
 
 @dataclass(frozen = True, slots = True)

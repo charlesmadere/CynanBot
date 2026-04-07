@@ -18,3 +18,10 @@ class CutenessMapperInterface(ABC):
         utcYearAndMonthString: str | Any | None,
     ) -> datetime:
         pass
+
+    @abstractmethod
+    async def serializeToUtcYearAndMonth(
+        self,
+        dateTime: datetime,
+    ) -> str:
+        pass
