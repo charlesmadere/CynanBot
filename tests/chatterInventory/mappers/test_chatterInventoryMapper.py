@@ -1031,6 +1031,64 @@ class TestChatterInventoryMapper:
 
         assert result is None
 
+    @pytest.mark.asyncio
+    async def test_requireItemTypes_withEmptyList(self):
+        result = await self.mapper.requireItemTypes(list())
+        assert isinstance(result, frozenset)
+        assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_requireItemTypes_withEmptySet(self):
+        result = await self.mapper.requireItemTypes(set())
+        assert isinstance(result, frozenset)
+        assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_requireItemTypes_withNone(self):
+        result = await self.mapper.requireItemTypes(None)
+        assert isinstance(result, frozenset)
+        assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_requireItemTypes_withValidItemTypesList1(self):
+        result = await self.mapper.requireItemTypes(
+            itemTypes = [
+                await self.mapper.serializeItemType(ChatterItemType.GASHAPON)
+            ],
+        )
+
+        assert isinstance(result, frozenset)
+        assert len(result) == 1
+        assert ChatterItemType.GASHAPON in result
+
+    @pytest.mark.asyncio
+    async def test_requireItemTypes_withValidItemTypesList2(self):
+        result = await self.mapper.requireItemTypes(
+            itemTypes = [
+                await self.mapper.serializeItemType(ChatterItemType.AIR_STRIKE),
+                await self.mapper.serializeItemType(ChatterItemType.GRENADE),
+            ],
+        )
+
+        assert isinstance(result, frozenset)
+        assert len(result) == 2
+        assert ChatterItemType.AIR_STRIKE in result
+        assert ChatterItemType.GRENADE in result
+
+    @pytest.mark.asyncio
+    async def test_requireItemTypes_withValidItemTypesList3(self):
+        result = await self.mapper.requireItemTypes(
+            itemTypes = [
+                await self.mapper.serializeItemType(ChatterItemType.BANANA),
+                await self.mapper.serializeItemType(ChatterItemType.BANANA),
+                await self.mapper.serializeItemType(ChatterItemType.BANANA),
+            ],
+        )
+
+        assert isinstance(result, frozenset)
+        assert len(result) == 1
+        assert ChatterItemType.BANANA in result
+
     def test_sanity(self):
         assert self.mapper is not None
         assert isinstance(self.mapper, ChatterInventoryMapper)

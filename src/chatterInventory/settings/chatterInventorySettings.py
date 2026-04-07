@@ -196,13 +196,8 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
         if enabledItemTypesStrings is None:
             return self.__defaultEnabledItemTypes
-
-        enabledItemTypes: set[ChatterItemType] = set()
-
-        for enabledItemTypeString in enabledItemTypesStrings:
-            enabledItemTypes.add(await self.__chatterInventoryMapper.requireItemType(enabledItemTypeString))
-
-        return frozenset(enabledItemTypes)
+        else:
+            return await self.__chatterInventoryMapper.requireItemTypes(enabledItemTypesStrings)
 
     async def getGashaponItemDetails(self) -> GashaponItemDetails:
         jsonContents = await self.__readJson()

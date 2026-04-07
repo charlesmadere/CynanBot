@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Collection
 
 from frozendict import frozendict
 
@@ -98,6 +98,13 @@ class ChatterInventoryMapperInterface(ABC):
         self,
         itemType: str | Any | None,
     ) -> ChatterItemType:
+        pass
+
+    @abstractmethod
+    async def requireItemTypes(
+        self,
+        itemTypes: Collection[str | Any | None] | Any | None,
+    ) -> frozenset[ChatterItemType]:
         pass
 
     @abstractmethod

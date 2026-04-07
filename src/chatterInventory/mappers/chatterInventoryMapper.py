@@ -271,6 +271,21 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
         return result
 
+    async def requireItemTypes(
+        self,
+        itemTypes: Collection[str | Any | None] | Any | None,
+    ) -> frozenset[ChatterItemType]:
+        if not isinstance(itemTypes, Collection):
+            return frozenset()
+
+        parsedItemTypes: set[ChatterItemType] = set()
+
+        for itemTypeString in itemTypes:
+            itemType = await self.requireItemType(itemTypeString)
+            parsedItemTypes.add(itemType)
+
+        return frozenset(parsedItemTypes)
+
     async def serializeInventory(
         self,
         inventory: dict[ChatterItemType, int] | frozendict[ChatterItemType, int],
