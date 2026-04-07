@@ -200,13 +200,13 @@ class UsersRepository(UsersRepositoryInterface):
         casualGamePollRewardId = utils.getStrFromDict(userJson, 'casualGamePollRewardId', '')
         casualGamePollUrl = utils.getStrFromDict(userJson, 'casualGamePollUrl', '')
         chatterPreferredNameRewardId = utils.getStrFromDict(userJson, 'chatterPreferredNameRewardId', '')
+        chatterPreferredTtsRewardId = utils.getStrFromDict(userJson, 'chatterPreferredTtsRewardId', '')
         discordRewardId = utils.getStrFromDict(userJson, 'discordRewardId', '')
         discordUrl = utils.getStrFromDict(userJson, UserJsonConstant.DISCORD_URL.jsonKey, '')
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
         mastodonUrl = utils.getStrFromDict(userJson, UserJsonConstant.MASTODON_URL.jsonKey, '')
         randomSoundAlertRewardId = utils.getStrFromDict(userJson, 'randomSoundAlertRewardId', '')
-        setChatterPreferredTtsRewardId = utils.getStrFromDict(userJson, 'setChatterPreferredTtsRewardId', '')
         soundAlertRewardId = utils.getStrFromDict(userJson, 'soundAlertRewardId', '')
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
 
@@ -447,6 +447,7 @@ class UsersRepository(UsersRepositoryInterface):
             casualGamePollRewardId = casualGamePollRewardId,
             casualGamePollUrl = casualGamePollUrl,
             chatterPreferredNameRewardId = chatterPreferredNameRewardId,
+            chatterPreferredTtsRewardId = chatterPreferredTtsRewardId,
             crowdControlButtonPressRewardId = crowdControlButtonPressRewardId,
             crowdControlGameShuffleRewardId = crowdControlGameShuffleRewardId,
             discordRewardId = discordRewardId,
@@ -460,7 +461,6 @@ class UsersRepository(UsersRepositoryInterface):
             pkmnEvolveRewardId = pkmnEvolveRewardId,
             pkmnShinyRewardId = pkmnShinyRewardId,
             randomSoundAlertRewardId = randomSoundAlertRewardId,
-            setChatterPreferredTtsRewardId = setChatterPreferredTtsRewardId,
             speedrunProfile = speedrunProfile,
             soundAlertRewardId = soundAlertRewardId,
             triviaGameRewardId = triviaGameRewardId,

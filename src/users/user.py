@@ -103,6 +103,7 @@ class User(UserInterface):
         casualGamePollRewardId: str | None,
         casualGamePollUrl: str | None,
         chatterPreferredNameRewardId: str | None,
+        chatterPreferredTtsRewardId: str | None,
         crowdControlButtonPressRewardId: str | None,
         crowdControlGameShuffleRewardId: str | None,
         discordRewardId: str | None,
@@ -116,7 +117,6 @@ class User(UserInterface):
         pkmnEvolveRewardId: str | None,
         pkmnShinyRewardId: str | None,
         randomSoundAlertRewardId: str | None,
-        setChatterPreferredTtsRewardId: str | None,
         soundAlertRewardId: str | None,
         speedrunProfile: str | None,
         triviaGameRewardId: str | None,
@@ -292,6 +292,8 @@ class User(UserInterface):
             raise TypeError(f'casualGamePollUrl argument is malformed: \"{casualGamePollUrl}\"')
         elif chatterPreferredNameRewardId is not None and not isinstance(chatterPreferredNameRewardId, str):
             raise TypeError(f'chatterPreferredNameRewardId argument is malformed: \"{chatterPreferredNameRewardId}\"')
+        elif chatterPreferredTtsRewardId is not None and not isinstance(chatterPreferredTtsRewardId, str):
+            raise TypeError(f'chatterPreferredTtsRewardId argument is malformed: \"{chatterPreferredTtsRewardId}\"')
         elif crowdControlButtonPressRewardId is not None and not isinstance(crowdControlButtonPressRewardId, str):
             raise TypeError(f'crowdControlButtonPressRewardId argument is malformed: \"{crowdControlButtonPressRewardId}\"')
         elif crowdControlGameShuffleRewardId is not None and not isinstance(crowdControlGameShuffleRewardId, str):
@@ -316,8 +318,6 @@ class User(UserInterface):
             raise TypeError(f'pkmnShinyRewardId argument is malformed: \"{pkmnShinyRewardId}\"')
         elif randomSoundAlertRewardId is not None and not isinstance(randomSoundAlertRewardId, str):
             raise TypeError(f'randomSoundAlertRewardId argument is malformed: \"{randomSoundAlertRewardId}\"')
-        elif setChatterPreferredTtsRewardId is not None and not isinstance(setChatterPreferredTtsRewardId, str):
-            raise TypeError(f'setChatterPreferredTtsRewardId argument is malformed: \"{setChatterPreferredTtsRewardId}\"')
         elif soundAlertRewardId is not None and not isinstance(soundAlertRewardId, str):
             raise TypeError(f'soundAlertRewardId argument is malformed: \"{soundAlertRewardId}\"')
         elif speedrunProfile is not None and not isinstance(speedrunProfile, str):
@@ -428,6 +428,7 @@ class User(UserInterface):
         self.__casualGamePollRewardId: str | None = casualGamePollRewardId
         self.__casualGamePollUrl: str | None = casualGamePollUrl
         self.__chatterPreferredNameRewardId: Final[str | None] = chatterPreferredNameRewardId
+        self.__chatterPreferredTtsRewardId: Final[str | None] = chatterPreferredTtsRewardId
         self.__crowdControlButtonPressRewardId: str | None = crowdControlButtonPressRewardId
         self.__crowdControlGameShuffleRewardId: str | None = crowdControlGameShuffleRewardId
         self.__discordRewardId: Final[str | None] = discordRewardId
@@ -441,7 +442,6 @@ class User(UserInterface):
         self.__pkmnEvolveRewardId: str | None = pkmnEvolveRewardId
         self.__pkmnShinyRewardId: str | None = pkmnShinyRewardId
         self.__randomSoundAlertRewardId: str | None = randomSoundAlertRewardId
-        self.__setChatterPreferredTtsRewardId: str | None = setChatterPreferredTtsRewardId
         self.__soundAlertRewardId: str | None = soundAlertRewardId
         self.__speedrunProfile: str | None = speedrunProfile
         self.__triviaGameRewardId: str | None = triviaGameRewardId
@@ -540,6 +540,10 @@ class User(UserInterface):
     @property
     def chatterPreferredNameRewardId(self) -> str | None:
         return self.__chatterPreferredNameRewardId
+
+    @property
+    def chatterPreferredTtsRewardId(self) -> str | None:
+        return self.__chatterPreferredTtsRewardId
 
     @property
     def defaultLanguage(self) -> LanguageEntry:
@@ -895,10 +899,6 @@ class User(UserInterface):
     @property
     def redemptionCounterBoosterPacks(self) -> frozendict[str, RedemptionCounterBoosterPack] | None:
         return self.__redemptionCounterBoosterPacks
-
-    @property
-    def setChatterPreferredTtsRewardId(self) -> str | None:
-        return self.__setChatterPreferredTtsRewardId
 
     @property
     def soundAlertRedemptions(self) -> frozendict[str, SoundAlertRedemption] | None:
