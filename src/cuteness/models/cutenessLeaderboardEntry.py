@@ -1,13 +1,13 @@
+import locale
 from dataclasses import dataclass
-from datetime import datetime
 
 from .cutenessEntry import CutenessEntry
 
 
 @dataclass(frozen = True, slots = True)
-class CutenessResult(CutenessEntry):
-    cutenessDate: datetime
-    cuteness: int | None
+class CutenessLeaderboardEntry(CutenessEntry):
+    cuteness: int
+    rank: int
     chatterUserId: str
     twitchChannelId: str
 
@@ -15,13 +15,11 @@ class CutenessResult(CutenessEntry):
         return self.chatterUserId
 
     def getCuteness(self) -> int:
-        return self.requireCuteness()
+        return self.cuteness
 
     def getTwitchChannelId(self) -> str:
         return self.twitchChannelId
 
-    def requireCuteness(self) -> int:
-        if self.cuteness is None:
-            raise RuntimeError(f'No cuteness value is available ({self=})')
-
-        return self.cuteness
+    @property
+    def rankStr(self) -> str:
+        return locale.format_string("%d", self.rank, grouping = True)

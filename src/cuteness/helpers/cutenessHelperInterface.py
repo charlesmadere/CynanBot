@@ -8,7 +8,7 @@ class CutenessHelperInterface(ABC):
     @abstractmethod
     async def fetchCuteness(
         self,
+        chatterUserId: str,
         twitchChannelId: str,
-        userId: str,
     ) -> PreparedCutenessResult:
         pass

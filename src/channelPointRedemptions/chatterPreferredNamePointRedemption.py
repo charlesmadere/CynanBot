@@ -1,16 +1,19 @@
 import traceback
 from typing import Final
 
-from .absChannelPointRedemption import AbsChannelPointRedemption
+from .absChannelPointsRedemption2 import AbsChannelPointRedemption2
+from .pointsRedemptionResult import PointsRedemptionResult
 from ..chatterPreferredName.exceptions import ChatterPreferredNameFeatureIsDisabledException, \
     ChatterPreferredNameIsInvalidException
 from ..chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
+from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
+from ..users.userInterface import UserInterface
 
 
-class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption):
+class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption2):
 
     def __init__(
         self,
@@ -29,13 +32,13 @@ class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption):
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
-    async def handlePointRedemption(
+    async def handlePointsRedemption(
         self,
         channelPointsRedemption: TwitchChannelPointsRedemption,
-    ) -> bool:
+    ) -> PointsRedemptionResult:
         twitchUser = channelPointsRedemption.twitchUser
         if not twitchUser.isChatterPreferredNameEnabled:
-            return False
+            return PointsRedemptionResult.IGNORED
 
         try:
             preferredNameData = await self.__chatterPreferredNameHelper.set(
@@ -44,20 +47,35 @@ class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption):
                 twitchChannelId = channelPointsRedemption.twitchChannelId,
             )
         except ChatterPreferredNameFeatureIsDisabledException as e:
-            self.__timber.log('ChatterPreferredNamePointRedemption', f'Preferred name feature is disabled ({channelPointsRedemption=})', e, traceback.format_exc())
-            return False
+            self.__timber.log(self.pointsRedemptionName, f'Preferred name feature is disabled ({channelPointsRedemption=})', e, traceback.format_exc())
+            return PointsRedemptionResult.IGNORED
         except ChatterPreferredNameIsInvalidException as e:
-            self.__timber.log('ChatterPreferredNamePointRedemption', f'The given preferred name is invalid ({channelPointsRedemption=})', e, traceback.format_exc())
+            self.__timber.log(self.pointsRedemptionName, f'The given preferred name is invalid ({channelPointsRedemption=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ @{channelPointsRedemption.redemptionUserName} unable to set your preferred name! Please check your input and try again.',
                 twitchChannelId = channelPointsRedemption.twitchChannelId,
             )
-            return False
+            return PointsRedemptionResult.IGNORED
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ @{channelPointsRedemption.redemptionUserName} here\'s your new preferred name: {preferredNameData.preferredName}',
             twitchChannelId = channelPointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log('ChatterPreferredNamePointRedemption', f'Redeemed ({channelPointsRedemption=}) ({preferredNameData=})')
-        return True
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({channelPointsRedemption=}) ({preferredNameData=})')
+        return PointsRedemptionResult.HANDLED
+
+    @property
+    def pointsRedemptionName(self) -> str:
+        return 'ChatterPreferredNamePointRedemption'
+
+    def relevantRewardIds(
+        self,
+        twitchUser: UserInterface,
+    ) -> frozenset[str]:
+        rewardId = twitchUser.chatterPreferredNameRewardId
+
+        if utils.isValidStr(rewardId):
+            return frozenset({ rewardId })
+        else:
+            return frozenset()

@@ -28,6 +28,7 @@ from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRe
 from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from src.channelPointRedemptions.absChannelPointsRedemption2 import AbsChannelPointRedemption2
 from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
+from src.channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
 from src.channelPointRedemptions.discordPointRedemption import DiscordPointRedemption
@@ -2982,14 +2983,6 @@ cutenessPointRedemption: Final[CutenessPointRedemption] = CutenessPointRedemptio
     twitchChatMessenger = twitchChatMessenger,
 )
 
-chatterPreferredTtsPointRedemption: Final[ChatterPreferredTtsPointRedemption] = ChatterPreferredTtsPointRedemption(
-    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
-    chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
-    chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
 pkmnBattlePointRedemption: Final[PkmnBattlePointRedemption] = PkmnBattlePointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
@@ -3141,6 +3134,18 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    ChatterPreferredNamePointRedemption(
+        chatterPreferredNameHelper = chatterPreferredNameHelper,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    ChatterPreferredTtsPointRedemption(
+        chatterPreferredTtsHelper = chatterPreferredTtsHelper,
+        chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
+        chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     DiscordPointRedemption(
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
@@ -3153,8 +3158,6 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
 
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
-    chatterPreferredNamePointRedemption = None,
-    chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = cutenessPointRedemption,
     pkmnBattlePointRedemption = pkmnBattlePointRedemption,
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,
