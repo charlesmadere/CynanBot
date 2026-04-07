@@ -85,6 +85,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def chatterPreferredTtsRewardId(self) -> str | None:
+        pass
+
+    @property
+    @abstractmethod
     def crowdControlBoosterPacks(self) -> frozendict[str, CrowdControlBoosterPack] | None:
         pass
 
@@ -541,11 +546,6 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def redemptionCounterBoosterPacks(self) -> frozendict[str, RedemptionCounterBoosterPack] | None:
-        pass
-
-    @property
-    @abstractmethod
-    def setChatterPreferredTtsRewardId(self) -> str | None:
         pass
 
     @property

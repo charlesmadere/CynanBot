@@ -108,7 +108,7 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption2):
         self,
         twitchUser: UserInterface,
     ) -> frozenset[str]:
-        rewardId = twitchUser.setChatterPreferredTtsRewardId
+        rewardId = twitchUser.chatterPreferredTtsRewardId
 
         if utils.isValidStr(rewardId):
             return frozenset({ rewardId })
