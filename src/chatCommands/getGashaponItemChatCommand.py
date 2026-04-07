@@ -1,7 +1,6 @@
 import locale
 import math
 import re
-from datetime import datetime
 from typing import Collection, Final, Pattern
 
 from .absChatCommand2 import AbsChatCommand2
@@ -122,7 +121,7 @@ class GetGashaponItemChatCommand(AbsChatCommand2):
         chatMessage: TwitchChatMessage,
         gashaponResult: NotReadyGashaponResult,
     ):
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         remainingTime = gashaponResult.nextGashaponAvailability - now
         totalRemainingSeconds = int(math.floor(remainingTime.total_seconds()))
         remainingDays = int(math.floor(float(totalRemainingSeconds) / float(24 * 60 * 60)))
@@ -162,7 +161,7 @@ class GetGashaponItemChatCommand(AbsChatCommand2):
 
         if gashaponAmount > 1:
             gashaponAmountString = locale.format_string("%d", gashaponAmount, grouping = True)
-            suffixString = f'You now have {gashaponAmountString} gashapons.'
+            suffixString = f'You now have {gashaponAmountString} {ChatterItemType.GASHAPON.pluralHumanName}.'
 
         self.__twitchChatMessenger.send(
             text = f'{gashaponResult.hypeEmote} Congrats, gashapon get! {suffixString}',

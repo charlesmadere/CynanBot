@@ -98,7 +98,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             minDurationSeconds = 1200, # 20 minutes
         ),
         defaultVoreItemDetails: VoreItemDetails = VoreItemDetails(
-            timeoutDurationSeconds = 86400, # 1 day
+            timeoutDurationSeconds = 3600, # 1 hour
         ),
         defaultEnabledItemTypes: frozenset[ChatterItemType] = frozenset({
             ChatterItemType.AIR_STRIKE,
