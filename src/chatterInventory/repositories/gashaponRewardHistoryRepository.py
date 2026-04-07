@@ -95,7 +95,7 @@ class GashaponRewardHistoryRepository(GashaponRewardHistoryRepositoryInterface):
                             twitchchannelid text NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -107,7 +107,7 @@ class GashaponRewardHistoryRepository(GashaponRewardHistoryRepositoryInterface):
                             twitchchannelid TEXT NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:
@@ -125,7 +125,7 @@ class GashaponRewardHistoryRepository(GashaponRewardHistoryRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        mostRecentReward = datetime.now(self.__timeZoneRepository.getDefault())
+        mostRecentReward = self.__timeZoneRepository.getNow()
         mostRecentRewardString = mostRecentReward.isoformat()
 
         connection = await self.__getDatabaseConnection()

@@ -98,7 +98,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             minDurationSeconds = 1200, # 20 minutes
         ),
         defaultVoreItemDetails: VoreItemDetails = VoreItemDetails(
-            timeoutDurationSeconds = 86400, # 1 day
+            timeoutDurationSeconds = 3600, # 1 hour
         ),
         defaultEnabledItemTypes: frozenset[ChatterItemType] = frozenset({
             ChatterItemType.AIR_STRIKE,
@@ -196,13 +196,8 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
         if enabledItemTypesStrings is None:
             return self.__defaultEnabledItemTypes
-
-        enabledItemTypes: set[ChatterItemType] = set()
-
-        for enabledItemTypeString in enabledItemTypesStrings:
-            enabledItemTypes.add(await self.__chatterInventoryMapper.requireItemType(enabledItemTypeString))
-
-        return frozenset(enabledItemTypes)
+        else:
+            return await self.__chatterInventoryMapper.requireItemTypes(enabledItemTypesStrings)
 
     async def getGashaponItemDetails(self) -> GashaponItemDetails:
         jsonContents = await self.__readJson()
