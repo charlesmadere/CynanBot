@@ -2,7 +2,8 @@ import re
 import traceback
 from typing import Final, Pattern
 
-from .absChannelPointRedemption import AbsChannelPointRedemption
+from .absChannelPointsRedemption2 import AbsChannelPointRedemption2
+from .pointsRedemptionResult import PointsRedemptionResult
 from ..chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
 from ..chatterPreferredTts.exceptions import FailedToChooseRandomTtsException, NoEnabledTtsProvidersException, \
     TtsProviderIsNotEnabledException, UnableToParseUserMessageIntoTtsException
@@ -14,9 +15,10 @@ from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
+from ..users.userInterface import UserInterface
 
 
-class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
+class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption2):
 
     def __init__(
         self,
@@ -45,16 +47,16 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
 
         self.__randomRegEx: Final[Pattern] = re.compile(r'^\s*\"?random(?:ize)?\"?\s*$', re.IGNORECASE)
 
-    async def handlePointRedemption(
+    async def handlePointsRedemption(
         self,
         channelPointsRedemption: TwitchChannelPointsRedemption,
-    ) -> bool:
+    ) -> PointsRedemptionResult:
         if not await self.__chatterPreferredTtsSettingsRepository.isEnabled():
-            return False
+            return PointsRedemptionResult.IGNORED
 
         twitchUser = channelPointsRedemption.twitchUser
         if not twitchUser.isChatterPreferredTtsEnabled:
-            return False
+            return PointsRedemptionResult.IGNORED
 
         userMessage = utils.cleanStr(channelPointsRedemption.redemptionMessage)
         preferredTts: ChatterPreferredTts
@@ -72,19 +74,19 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
                     userMessage = userMessage,
                 )
         except (FailedToChooseRandomTtsException, NoEnabledTtsProvidersException, UnableToParseUserMessageIntoTtsException) as e:
-            self.__timber.log('ChatterPreferredTtsPointRedemption', f'Failed to set preferred TTS given ({channelPointsRedemption=}) ({userMessage=})', e, traceback.format_exc())
+            self.__timber.log(self.pointsRedemptionName, f'Failed to set preferred TTS given ({channelPointsRedemption=}) ({userMessage=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ @{channelPointsRedemption.redemptionUserName} unable to set your preferred TTS! Please check your input and try again.',
                 twitchChannelId = channelPointsRedemption.twitchChannelId,
             )
-            return True
+            return PointsRedemptionResult.IGNORED
         except TtsProviderIsNotEnabledException as e:
-            self.__timber.log('ChatterPreferredTtsPointRedemption', f'The TTS Provider requested is not enabled ({channelPointsRedemption=}) ({userMessage=})', e, traceback.format_exc())
+            self.__timber.log(self.pointsRedemptionName, f'The TTS Provider requested is not enabled ({channelPointsRedemption=}) ({userMessage=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ @{channelPointsRedemption.redemptionUserName} the TTS provider you requested is not available! Please try a different TTS provider.',
                 twitchChannelId = channelPointsRedemption.twitchChannelId,
             )
-            return True
+            return PointsRedemptionResult.IGNORED
 
         printOut = await self.__chatterPreferredTtsPresenter.printOut(
             preferredTts = preferredTts,
@@ -95,5 +97,20 @@ class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
             twitchChannelId = channelPointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log('ChatterPreferredTtsPointRedemption', f'Redeemed ({channelPointsRedemption=}) ({userMessage=}) ({preferredTts=})')
-        return True
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({channelPointsRedemption=}) ({userMessage=}) ({preferredTts=})')
+        return PointsRedemptionResult.HANDLED
+
+    @property
+    def pointsRedemptionName(self) -> str:
+        return 'ChatterPreferredTtsPointRedemption'
+
+    def relevantRewardIds(
+        self,
+        twitchUser: UserInterface,
+    ) -> frozenset[str]:
+        rewardId = twitchUser.setChatterPreferredTtsRewardId
+
+        if utils.isValidStr(rewardId):
+            return frozenset({ rewardId })
+        else:
+            return frozenset()

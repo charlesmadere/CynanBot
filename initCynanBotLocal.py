@@ -2126,20 +2126,6 @@ supStreamerHelper: Final[SupStreamerHelperInterface] = SupStreamerHelper()
 ## Channel Point Redemptions initialization section ##
 ######################################################
 
-chatterPreferredNamePointRedemption: Final[ChatterPreferredNamePointRedemption] = ChatterPreferredNamePointRedemption(
-    chatterPreferredNameHelper = chatterPreferredNameHelper,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
-chatterPreferredTtsPointRedemption: Final[ChatterPreferredTtsPointRedemption] = ChatterPreferredTtsPointRedemption(
-    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
-    chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
-    chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
 soundAlertPointRedemption: SoundAlertPointRedemption | None = None
 
 if soundPlayerManagerProvider is not None and soundPlayerRandomizerHelper is not None:
@@ -2189,6 +2175,18 @@ mouseCursorHelper: Final[MouseCursorHelperInterface] = MouseCursorHelper(
 ##########################################
 
 pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozenset({
+    ChatterPreferredNamePointRedemption(
+        chatterPreferredNameHelper = chatterPreferredNameHelper,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    ChatterPreferredTtsPointRedemption(
+        chatterPreferredTtsHelper = chatterPreferredTtsHelper,
+        chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
+        chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     MouseCursorPointRedemption(
         mouseCursorHelper = mouseCursorHelper,
         timber = timber,
@@ -2197,8 +2195,6 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
 
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
-    chatterPreferredNamePointRedemption = chatterPreferredNamePointRedemption,
-    chatterPreferredTtsPointRedemption = chatterPreferredTtsPointRedemption,
     cutenessPointRedemption = None,
     pkmnBattlePointRedemption = None,
     pkmnCatchPointRedemption = None,

@@ -12,8 +12,6 @@ from ..localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedem
 from ...channelPointRedemptions.absChannelPointRedemption import AbsChannelPointRedemption
 from ...channelPointRedemptions.absChannelPointsRedemption2 import AbsChannelPointRedemption2
 from ...channelPointRedemptions.channelPointRedemptionResult import ChannelPointRedemptionResult
-from ...channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
-from ...channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from ...channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
 from ...channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
 from ...channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
@@ -37,8 +35,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        chatterPreferredNamePointRedemption: ChatterPreferredNamePointRedemption | None,
-        chatterPreferredTtsPointRedemption: ChatterPreferredTtsPointRedemption | None,
         cutenessPointRedemption: CutenessPointRedemption | None,
         pkmnBattlePointRedemption: PkmnBattlePointRedemption | None,
         pkmnCatchPointRedemption: PkmnCatchPointRedemption | None,
@@ -57,10 +53,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif chatterPreferredNamePointRedemption is not None and not isinstance(chatterPreferredNamePointRedemption, ChatterPreferredNamePointRedemption):
-            raise TypeError(f'chatterPreferredNamePointRedemption argument is malformed: \"{chatterPreferredNamePointRedemption}\"')
-        elif chatterPreferredTtsPointRedemption is not None and not isinstance(chatterPreferredTtsPointRedemption, ChatterPreferredTtsPointRedemption):
-            raise TypeError(f'chatterPreferredTtsPointRedemption argument is malformed: \"{chatterPreferredTtsPointRedemption}\"')
         elif cutenessPointRedemption is not None and not isinstance(cutenessPointRedemption, CutenessPointRedemption):
             raise TypeError(f'cutenessPointRedemption argument is malformed: \"{cutenessPointRedemption}\"')
         elif pkmnBattlePointRedemption is not None and not isinstance(pkmnBattlePointRedemption, PkmnBattlePointRedemption):
@@ -105,16 +97,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         self.__isStarted: bool = False
         self.__channelPointsRedemptionsQueue: Final[SimpleQueue[TwitchChannelPointsRedemption]] = SimpleQueue()
-
-        if chatterPreferredNamePointRedemption is None:
-            self.__chatterPreferredNamePointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__chatterPreferredNamePointRedemption: AbsChannelPointRedemption = chatterPreferredNamePointRedemption
-
-        if chatterPreferredTtsPointRedemption is None:
-            self.__chatterPreferredTtsPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__chatterPreferredTtsPointRedemption: AbsChannelPointRedemption = chatterPreferredTtsPointRedemption
 
         if cutenessPointRedemption is None:
             self.__cutenessPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
@@ -203,18 +185,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             await self.__redemptionCounterPointRedemption.handlePointRedemption(
                 channelPointsRedemption = channelPointsRedemption,
             )
-
-        if channelPointsRedemption.rewardId == user.chatterPreferredNameRewardId:
-            if await self.__chatterPreferredNamePointRedemption.handlePointRedemption(
-                channelPointsRedemption = channelPointsRedemption,
-            ):
-                return
-
-        if user.isChatterPreferredTtsEnabled and channelPointsRedemption.rewardId == user.setChatterPreferredTtsRewardId:
-            if await self.__chatterPreferredTtsPointRedemption.handlePointRedemption(
-                channelPointsRedemption = channelPointsRedemption,
-            ):
-                return
 
         if user.isCutenessEnabled:
             if await self.__cutenessPointRedemption.handlePointRedemption(
