@@ -2451,16 +2451,16 @@ pixelsDiceMachine: PixelsDiceMachineInterface = PixelsDiceMachine(
 ## Chatter Inventory initialization section ##
 ##############################################
 
-chatterInventoryMapper: ChatterInventoryMapperInterface = ChatterInventoryMapper()
+chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = ChatterInventoryMapper()
 
-chatterInventoryRepository: ChatterInventoryRepositoryInterface = ChatterInventoryRepository(
+chatterInventoryRepository: Final[ChatterInventoryRepositoryInterface] = ChatterInventoryRepository(
     backingDatabase = backingDatabase,
     chatterInventoryMapper = chatterInventoryMapper,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
 )
 
-chatterInventorySettings: ChatterInventorySettingsInterface = ChatterInventorySettings(
+chatterInventorySettings: Final[ChatterInventorySettingsInterface] = ChatterInventorySettings(
     chatterInventoryMapper = chatterInventoryMapper,
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
@@ -2468,7 +2468,7 @@ chatterInventorySettings: ChatterInventorySettingsInterface = ChatterInventorySe
     ),
 )
 
-chatterInventoryHelper: ChatterInventoryHelperInterface = ChatterInventoryHelper(
+chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = ChatterInventoryHelper(
     chatterInventoryRepository = chatterInventoryRepository,
     chatterInventorySettings = chatterInventorySettings,
     twitchTokensUtils = twitchTokensUtils,

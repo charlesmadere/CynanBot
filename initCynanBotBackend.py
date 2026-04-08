@@ -1747,7 +1747,7 @@ recurringActionsEventHandler: AbsRecurringActionsEventHandler = RecurringActions
 ## Chatter Inventory initialization section ##
 ##############################################
 
-chatterInventoryMapper: ChatterInventoryMapperInterface = ChatterInventoryMapper()
+chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = ChatterInventoryMapper()
 
 
 ##########################################
