@@ -25,6 +25,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def anivMessageCopyRipBozoEmote(self) -> str | None:
+        pass
+
+    @property
+    @abstractmethod
     def anivMessageCopyTimeoutProbability(self) -> float | None:
         pass
 

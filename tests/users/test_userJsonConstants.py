@@ -15,6 +15,10 @@ class TestUserJsonConstants:
         result = UserJsonConstant.ANIV_CONTENT_SCANNING_ENABLED.jsonKey
         assert result == 'anivContentScanningEnabled'
 
+    def test_jsonKey_withAnivMessageCopyRipBozoEmote(self):
+        result = UserJsonConstant.ANIV_MESSAGE_COPY_RIP_BOZO_EMOTE.jsonKey
+        assert result == 'anivMessageCopyRipBozoEmote'
+
     def test_jsonKey_withAnivMessageCopyTimeoutChatReportingEnabled(self):
         result = UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_CHAT_REPORTING_ENABLED.jsonKey
         assert result == 'anivMessageCopyTimeoutChatReportingEnabled'

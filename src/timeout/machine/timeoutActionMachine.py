@@ -589,13 +589,17 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             twitchChannelId = action.twitchChannelId,
         )
 
+        ripBozoEmote = action.user.anivMessageCopyRipBozoEmote
+        if not utils.isValidStr(ripBozoEmote):
+            ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup()
+
         await self.__submitEvent(CopyAnivMessageTimeoutEvent(
             copyMessageTimeoutScore = copyMessageTimeoutScore,
             originatingAction = action,
             timeoutDuration = timeoutDuration,
             anivUserName = anivUserName,
             eventId = await self.__timeoutIdGenerator.generateEventId(),
-            ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup(),
+            ripBozoEmote = ripBozoEmote,
             targetUserName = targetUserName,
             timeoutResult = timeoutResult,
         ))

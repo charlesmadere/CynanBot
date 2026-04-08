@@ -99,6 +99,7 @@ class User(UserInterface):
         waitForSuperTriviaAnswerDelay: int | None,
         waitForTriviaAnswerDelay: int | None,
         defaultLanguage: LanguageEntry,
+        anivMessageCopyRipBozoEmote: str | None,
         blueSkyUrl: str | None,
         casualGamePollRewardId: str | None,
         casualGamePollUrl: str | None,
@@ -285,6 +286,8 @@ class User(UserInterface):
             raise TypeError(f'waitForTriviaAnswerDelay argument is malformed: \"{waitForTriviaAnswerDelay}\"')
         elif not isinstance(defaultLanguage, LanguageEntry):
             raise TypeError(f'defaultLanguage argument is malformed: \"{defaultLanguage}\"')
+        elif anivMessageCopyRipBozoEmote is not None and not isinstance(anivMessageCopyRipBozoEmote, str):
+            raise TypeError(f'anivMessageCopyRipBozoEmote argument is malformed: \"{anivMessageCopyRipBozoEmote}\"')
         elif blueSkyUrl is not None and not isinstance(blueSkyUrl, str):
             raise TypeError(f'blueSkyUrl argument is malformed: \"{blueSkyUrl}\"')
         elif casualGamePollRewardId is not None and not isinstance(casualGamePollRewardId, str):
@@ -426,8 +429,9 @@ class User(UserInterface):
         self.__triviaGameShinyMultiplier: int | None = triviaGameShinyMultiplier
         self.__waitForTriviaAnswerDelay: int | None = waitForTriviaAnswerDelay
         self.__waitForSuperTriviaAnswerDelay: int | None = waitForSuperTriviaAnswerDelay
-        self.__defaultLanguage: LanguageEntry = defaultLanguage
-        self.__blueSkyUrl: str | None = blueSkyUrl
+        self.__defaultLanguage: Final[LanguageEntry] = defaultLanguage
+        self.__anivMessageCopyRipBozoEmote: Final[str | None] = anivMessageCopyRipBozoEmote
+        self.__blueSkyUrl: Final[str | None] = blueSkyUrl
         self.__casualGamePollRewardId: str | None = casualGamePollRewardId
         self.__casualGamePollUrl: str | None = casualGamePollUrl
         self.__chatterPreferredNameRewardId: Final[str | None] = chatterPreferredNameRewardId
