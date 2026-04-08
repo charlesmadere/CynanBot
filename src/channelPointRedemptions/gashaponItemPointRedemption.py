@@ -4,6 +4,7 @@ from .absChannelPointsRedemption2 import AbsChannelPointRedemption2
 from .pointsRedemptionResult import PointsRedemptionResult
 from ..chatterInventory.models.chatterItemType import ChatterItemType
 from ..chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
+from ..misc import utils as utils
 from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
@@ -49,5 +50,9 @@ class GashaponItemPointRedemption(AbsChannelPointRedemption2):
         self,
         twitchUser: UserInterface,
     ) -> frozenset[str]:
-        # TODO
-        return frozenset()
+        rewardId = twitchUser.gashaponItemRewardId
+
+        if utils.isValidStr(rewardId):
+            return frozenset({ rewardId })
+        else:
+            return frozenset()

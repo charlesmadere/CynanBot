@@ -203,6 +203,7 @@ class UsersRepository(UsersRepositoryInterface):
         chatterPreferredTtsRewardId = utils.getStrFromDict(userJson, 'chatterPreferredTtsRewardId', '')
         discordRewardId = utils.getStrFromDict(userJson, 'discordRewardId', '')
         discordUrl = utils.getStrFromDict(userJson, UserJsonConstant.DISCORD_URL.jsonKey, '')
+        gashaponItemRewardId = utils.getStrFromDict(userJson, 'gashaponItemRewardId', '')
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
         mastodonUrl = utils.getStrFromDict(userJson, UserJsonConstant.MASTODON_URL.jsonKey, '')
@@ -452,6 +453,7 @@ class UsersRepository(UsersRepositoryInterface):
             crowdControlGameShuffleRewardId = crowdControlGameShuffleRewardId,
             discordRewardId = discordRewardId,
             discordUrl = discordUrl,
+            gashaponItemRewardId = gashaponItemRewardId,
             handle = handle,
             instagram = instagram,
             locationId = locationId,
