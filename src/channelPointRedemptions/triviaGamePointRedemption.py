@@ -1,13 +1,16 @@
 from typing import Final
 
-from .absChannelPointRedemption import AbsChannelPointRedemption
+from .absChannelPointsRedemption2 import AbsChannelPointRedemption2
+from .pointsRedemptionResult import PointsRedemptionResult
+from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
+from ..users.userInterface import UserInterface
 
 
-class TriviaGamePointRedemption(AbsChannelPointRedemption):
+class TriviaGamePointRedemption(AbsChannelPointRedemption2):
 
     def __init__(
         self,
@@ -26,10 +29,10 @@ class TriviaGamePointRedemption(AbsChannelPointRedemption):
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface] = triviaGameBuilder
         self.__triviaGameMachine: Final[TriviaGameMachineInterface] = triviaGameMachine
 
-    async def handlePointRedemption(
+    async def handlePointsRedemption(
         self,
         channelPointsRedemption: TwitchChannelPointsRedemption,
-    ) -> bool:
+    ) -> PointsRedemptionResult:
         action = await self.__triviaGameBuilder.createNewTriviaGame(
             twitchChannel = channelPointsRedemption.twitchChannel,
             twitchChannelId = channelPointsRedemption.twitchChannelId,
@@ -38,8 +41,23 @@ class TriviaGamePointRedemption(AbsChannelPointRedemption):
         )
 
         if action is None:
-            return False
+            return PointsRedemptionResult.IGNORED
 
         self.__triviaGameMachine.submitAction(action)
-        self.__timber.log('TriviaGamePointRedemption', f'Redeemed ({channelPointsRedemption=}) ({action=})')
-        return True
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({action=}) ({channelPointsRedemption=})')
+        return PointsRedemptionResult.HANDLED
+
+    @property
+    def pointsRedemptionName(self) -> str:
+        return 'TriviaGamePointRedemption'
+
+    def relevantRewardIds(
+        self,
+        twitchUser: UserInterface,
+    ) -> frozenset[str]:
+        rewardId = twitchUser.triviaGameRewardId
+
+        if utils.isValidStr(rewardId):
+            return frozenset({ rewardId })
+        else:
+            return frozenset()

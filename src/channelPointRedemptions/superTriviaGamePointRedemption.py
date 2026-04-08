@@ -1,13 +1,17 @@
 from typing import Final
 
-from .absChannelPointRedemption import AbsChannelPointRedemption
+from .absChannelPointsRedemption2 import AbsChannelPointRedemption2
+from .pointsRedemptionResult import PointsRedemptionResult
+from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
+from ..trivia.questions.triviaSource import TriviaSource
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
+from ..users.userInterface import UserInterface
 
 
-class SuperTriviaGamePointRedemption(AbsChannelPointRedemption):
+class SuperTriviaGamePointRedemption(AbsChannelPointRedemption2):
 
     def __init__(
         self,
@@ -26,18 +30,56 @@ class SuperTriviaGamePointRedemption(AbsChannelPointRedemption):
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface] = triviaGameBuilder
         self.__triviaGameMachine: Final[TriviaGameMachineInterface] = triviaGameMachine
 
-    async def handlePointRedemption(
+    async def __determineRequiredTriviaSource(
         self,
         channelPointsRedemption: TwitchChannelPointsRedemption,
-    ) -> bool:
+    ) -> TriviaSource | None:
+        superTriviaLotrGameRewardId = channelPointsRedemption.twitchUser.superTriviaLotrGameRewardId
+
+        if not utils.isValidStr(superTriviaLotrGameRewardId):
+            return None
+        elif superTriviaLotrGameRewardId == channelPointsRedemption.rewardId:
+            return TriviaSource.LORD_OF_THE_RINGS
+        else:
+            return None
+
+    async def handlePointsRedemption(
+        self,
+        channelPointsRedemption: TwitchChannelPointsRedemption,
+    ) -> PointsRedemptionResult:
+        requiredTriviaSource = await self.__determineRequiredTriviaSource(
+            channelPointsRedemption = channelPointsRedemption,
+        )
+
         action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = channelPointsRedemption.twitchChannel,
             twitchChannelId = channelPointsRedemption.twitchChannelId,
+            requiredTriviaSource = requiredTriviaSource,
         )
 
         if action is None:
-            return False
+            return PointsRedemptionResult.IGNORED
 
         self.__triviaGameMachine.submitAction(action)
-        self.__timber.log('SuperTriviaGameRedemption', f'Redeemed ({channelPointsRedemption=}) ({action=})')
-        return True
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({action=}) ({channelPointsRedemption=})')
+        return PointsRedemptionResult.HANDLED
+
+    @property
+    def pointsRedemptionName(self) -> str:
+        return 'SuperTriviaGamePointRedemption'
+
+    def relevantRewardIds(
+        self,
+        twitchUser: UserInterface,
+    ) -> frozenset[str]:
+        rewardIds: set[str] = set()
+
+        superTriviaGameRewardId = twitchUser.superTriviaGameRewardId
+        if utils.isValidStr(superTriviaGameRewardId):
+            rewardIds.add(superTriviaGameRewardId)
+
+        superTriviaLotrGameRewardId = twitchUser.superTriviaLotrGameRewardId
+        if utils.isValidStr(superTriviaLotrGameRewardId):
+            rewardIds.add(superTriviaLotrGameRewardId)
+
+        return frozenset(rewardIds)
