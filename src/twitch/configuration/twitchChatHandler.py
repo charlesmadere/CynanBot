@@ -98,7 +98,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface | None] = triviaGameBuilder
         self.__triviaGameMachine: Final[TriviaGameMachineInterface | None] = triviaGameMachine
 
-        self.__chatCommandPrefixRegEx: Final[Pattern] = re.compile(r'^\s*!\w+\.*', re.IGNORECASE)
+        self.__chatCommandPrefixRegEx: Final[Pattern] = re.compile(r'^\s*!\w+\b', re.IGNORECASE)
 
         self.__chatActions: Final[Collection[AbsChatAction]] = self.__buildChatActionsCollection(chatActions)
         self.__chatCommands: Final[Collection[AbsChatCommand2]] = self.__buildChatCommandsCollection(chatCommands)
@@ -195,25 +195,35 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             twitchChannelId = chatMessage.twitchChannelId,
         )
 
+        if chatMessage.twitchUser.isChatLoggingEnabled:
+            await self.__logChat(
+                chatMessage = chatMessage,
+            )
+
         await self.__processChatActions(
             mostRecentChat = mostRecentChat,
             chatMessage = chatMessage,
         )
 
-        if chatMessage.twitchUser.isChatLoggingEnabled:
-            await self.__logChat(chatMessage)
-
         if chatMessage.twitchUser.areCheerActionsEnabled:
-            await self.__processCheerAction(chatMessage)
+            await self.__processCheerAction(
+                chatMessage = chatMessage,
+            )
 
         if chatMessage.twitchUser.isSuperTriviaGameEnabled:
-            await self.__processSuperTriviaEvent(chatMessage)
+            await self.__processSuperTriviaEvent(
+                chatMessage = chatMessage,
+            )
 
         if chatMessage.twitchUser.isTtsEnabled:
-            await self.__processTtsEvent(chatMessage)
+            await self.__processTtsEvent(
+                chatMessage = chatMessage,
+            )
 
         if self.__chatCommandPrefixRegEx.match(chatMessage.text):
-            await self.__processChatCommand(chatMessage)
+            await self.__processChatCommand(
+                chatMessage = chatMessage,
+            )
 
         await self.__processAnivChatActions(
             mostRecentChat = mostRecentChat,
