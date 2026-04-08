@@ -196,6 +196,7 @@ class UsersRepository(UsersRepositoryInterface):
         isWeatherEnabled = utils.getBoolFromDict(userJson, 'weatherEnabled', False)
         isWordOfTheDayEnabled = utils.getBoolFromDict(userJson, 'wordOfTheDayEnabled', False)
         minimumRaidViewersForNotification = utils.getIntFromDict(userJson, 'minimumRaidViewersForNotification', 2)
+        anivMessageCopyRipBozoEmote = utils.getStrFromDict(userJson, UserJsonConstant.ANIV_MESSAGE_COPY_RIP_BOZO_EMOTE.jsonKey, '')
         blueSkyUrl = utils.getStrFromDict(userJson, UserJsonConstant.BLUE_SKY_URL.jsonKey, '')
         casualGamePollRewardId = utils.getStrFromDict(userJson, 'casualGamePollRewardId', '')
         casualGamePollUrl = utils.getStrFromDict(userJson, 'casualGamePollUrl', '')
@@ -444,6 +445,7 @@ class UsersRepository(UsersRepositoryInterface):
             waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
             defaultLanguage = defaultLanguage,
+            anivMessageCopyRipBozoEmote = anivMessageCopyRipBozoEmote,
             blueSkyUrl = blueSkyUrl,
             casualGamePollRewardId = casualGamePollRewardId,
             casualGamePollUrl = casualGamePollUrl,
