@@ -2611,7 +2611,7 @@ gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface]
 )
 
 gashaponRewardHelper: Final[GashaponRewardHelperInterface] = GashaponRewardHelper(
-    chatterInventoryRepository = chatterInventoryRepository,
+    chatterInventoryHelper = chatterInventoryHelper,
     chatterInventorySettings = chatterInventorySettings,
     gashaponRewardHistoryRepository = gashaponRewardHistoryRepository,
     timber = timber,

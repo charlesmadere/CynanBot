@@ -1,6 +1,7 @@
 from datetime import timedelta
 from typing import Final
 
+from .chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from .gashaponRewardHelperInterface import GashaponRewardHelperInterface
 from ..models.chatterItemType import ChatterItemType
 from ..models.gashaponResults.absGashaponResult import AbsGashaponResult
@@ -10,7 +11,6 @@ from ..models.gashaponResults.gashaponRewardedGashaponResult import GashaponRewa
 from ..models.gashaponResults.notFollowingGashaponResult import NotFollowingGashaponResult
 from ..models.gashaponResults.notReadyGashaponResult import NotReadyGashaponResult
 from ..models.gashaponResults.notSubscribedGashaponResult import NotSubscribedGashaponResult
-from ..repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
 from ..repositories.gashaponRewardHistoryRepositoryInterface import GashaponRewardHistoryRepositoryInterface
 from ..settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -26,7 +26,7 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
 
     def __init__(
         self,
-        chatterInventoryRepository: ChatterInventoryRepositoryInterface,
+        chatterInventoryHelper: ChatterInventoryHelperInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
         gashaponRewardHistoryRepository: GashaponRewardHistoryRepositoryInterface,
         timber: TimberInterface,
@@ -36,8 +36,8 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
         twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
     ):
-        if not isinstance(chatterInventoryRepository, ChatterInventoryRepositoryInterface):
-            raise TypeError(f'chatterInventoryRepository argument is malformed: \"{chatterInventoryRepository}\"')
+        if not isinstance(chatterInventoryHelper, ChatterInventoryHelperInterface):
+            raise TypeError(f'chatterInventoryHelper argument is malformed: \"{chatterInventoryHelper}\"')
         elif not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
         elif not isinstance(gashaponRewardHistoryRepository, GashaponRewardHistoryRepositoryInterface):
@@ -55,7 +55,7 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
 
-        self.__chatterInventoryRepository: Final[ChatterInventoryRepositoryInterface] = chatterInventoryRepository
+        self.__chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = chatterInventoryHelper
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface] = gashaponRewardHistoryRepository
         self.__timber: Final[TimberInterface] = timber
@@ -122,9 +122,9 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
                     twitchChannelId = twitchChannelId,
                 )
 
-        chatterInventory = await self.__chatterInventoryRepository.update(
+        giveResult = await self.__chatterInventoryHelper.give(
             itemType = ChatterItemType.GASHAPON,
-            changeAmount = 1,
+            giveAmount = 1,
             chatterUserId = chatterUserId,
             twitchChannelId = twitchChannelId,
         )
@@ -135,11 +135,11 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
         )
 
         rewardResult = GashaponRewardedGashaponResult(
-            chatterInventory = chatterInventory,
+            chatterInventory = giveResult.chatterInventory,
             chatterUserId = chatterUserId,
             hypeEmote = await self.__trollmojiHelper.getHypeEmoteOrBackup(),
             twitchChannelId = twitchChannelId,
         )
 
-        self.__timber.log('GashaponRewardHelper', f'Gashapon rewarded ({rewardResult=})')
+        self.__timber.log('GashaponRewardHelper', f'Gashapon rewarded ({rewardResult=}) ({giveResult=})')
         return rewardResult
