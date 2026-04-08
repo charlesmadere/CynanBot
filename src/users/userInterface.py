@@ -145,6 +145,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def gashaponItemRewardId(self) -> str | None:
+        pass
+
+    @property
+    @abstractmethod
     def handle(self) -> str:
         pass
 

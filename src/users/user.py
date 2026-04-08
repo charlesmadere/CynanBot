@@ -108,6 +108,7 @@ class User(UserInterface):
         crowdControlGameShuffleRewardId: str | None,
         discordRewardId: str | None,
         discordUrl: str | None,
+        gashaponItemRewardId: str | None,
         handle: str,
         instagram: str | None,
         locationId: str | None,
@@ -302,6 +303,8 @@ class User(UserInterface):
             raise TypeError(f'discordRewardId argument is malformed: \"{discordRewardId}\"')
         elif discordUrl is not None and not isinstance(discordUrl, str):
             raise TypeError(f'discordUrl argument is malformed: \"{discordUrl}\"')
+        elif gashaponItemRewardId is not None and not isinstance(gashaponItemRewardId, str):
+            raise TypeError(f'gashaponItemRewardId argument is malformed: \"{gashaponItemRewardId}\"')
         elif not utils.isValidStr(handle):
             raise TypeError(f'handle argument is malformed: \"{handle}\"')
         elif locationId is not None and not isinstance(locationId, str):
@@ -433,6 +436,7 @@ class User(UserInterface):
         self.__crowdControlGameShuffleRewardId: str | None = crowdControlGameShuffleRewardId
         self.__discordRewardId: Final[str | None] = discordRewardId
         self.__discordUrl: Final[str | None] = discordUrl
+        self.__gashaponItemRewardId: Final[str | None] = gashaponItemRewardId
         self.__handle: Final[str] = handle
         self.__instagram: str | None = instagram
         self.__locationId: str | None = locationId
@@ -556,6 +560,10 @@ class User(UserInterface):
     @property
     def discordUrl(self) -> str | None:
         return self.__discordUrl
+
+    @property
+    def gashaponItemRewardId(self) -> str | None:
+        return self.__gashaponItemRewardId
 
     @property
     def handle(self) -> str:
