@@ -40,7 +40,6 @@ from src.channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointR
 from src.channelPointRedemptions.redemptionCounterPointRedemption import RedemptionCounterPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from src.channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
-from src.channelPointRedemptions.superTriviaLotrGamePointRedemption import SuperTriviaLotrGamePointRedemption
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from src.chatActions.absChatAction import AbsChatAction
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
@@ -3018,24 +3017,6 @@ soundAlertPointRedemption: Final[SoundAlertPointRedemption] = SoundAlertPointRed
     timber = timber,
 )
 
-superTriviaGamePointRedemption: Final[SuperTriviaGamePointRedemption] = SuperTriviaGamePointRedemption(
-    timber = timber,
-    triviaGameBuilder = triviaGameBuilder,
-    triviaGameMachine = triviaGameMachine
-)
-
-superTriviaLotrGamePointRedemption: Final[SuperTriviaLotrGamePointRedemption] = SuperTriviaLotrGamePointRedemption(
-    timber = timber,
-    triviaGameBuilder = triviaGameBuilder,
-    triviaGameMachine = triviaGameMachine,
-)
-
-triviaGamePointRedemption: Final[TriviaGamePointRedemption] = TriviaGamePointRedemption(
-    timber = timber,
-    triviaGameBuilder = triviaGameBuilder,
-    triviaGameMachine = triviaGameMachine,
-)
-
 
 #################################
 ## Ecco initialization section ##
@@ -3154,6 +3135,16 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
         mouseCursorHelper = mouseCursorHelper,
         timber = timber,
     ),
+    SuperTriviaGamePointRedemption(
+        timber = timber,
+        triviaGameBuilder = triviaGameBuilder,
+        triviaGameMachine = triviaGameMachine,
+    ),
+    TriviaGamePointRedemption(
+        timber = timber,
+        triviaGameBuilder = triviaGameBuilder,
+        triviaGameMachine = triviaGameMachine,
+    ),
 })
 
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
@@ -3165,9 +3156,6 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     pkmnShinyPointRedemption = pkmnShinyPointRedemption,
     redemptionCounterPointRedemption = redemptionCounterPointRedemption,
     soundAlertPointRedemption = soundAlertPointRedemption,
-    superTriviaGamePointRedemption = superTriviaGamePointRedemption,
-    superTriviaLotrGamePointRedemption = superTriviaLotrGamePointRedemption,
-    triviaGamePointRedemption = triviaGamePointRedemption,
     timber = timber,
     userIdsRepository = userIdsRepository,
     pointRedemptions = pointRedemptions,

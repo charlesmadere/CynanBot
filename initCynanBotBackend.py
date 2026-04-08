@@ -35,7 +35,6 @@ from src.channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePoin
 from src.channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
 from src.channelPointRedemptions.redemptionCounterPointRedemption import RedemptionCounterPointRedemption
 from src.channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
-from src.channelPointRedemptions.superTriviaLotrGamePointRedemption import SuperTriviaLotrGamePointRedemption
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
 from src.chatActions.absChatAction import AbsChatAction
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
@@ -1858,24 +1857,6 @@ pkmnShinyPointRedemption: Final[PkmnShinyPointRedemption] = PkmnShinyPointRedemp
     twitchChatMessenger = twitchChatMessenger,
 )
 
-superTriviaGamePointRedemption: Final[SuperTriviaGamePointRedemption] = SuperTriviaGamePointRedemption(
-    timber = timber,
-    triviaGameBuilder = triviaGameBuilder,
-    triviaGameMachine = triviaGameMachine,
-)
-
-superTriviaLotrGamePointRedemption: Final[SuperTriviaLotrGamePointRedemption] = SuperTriviaLotrGamePointRedemption(
-    timber = timber,
-    triviaGameBuilder = triviaGameBuilder,
-    triviaGameMachine = triviaGameMachine,
-)
-
-triviaGamePointRedemption: Final[TriviaGamePointRedemption] = TriviaGamePointRedemption(
-    timber = timber,
-    triviaGameBuilder = triviaGameBuilder,
-    triviaGameMachine = triviaGameMachine,
-)
-
 
 #################################
 ## Ecco initialization section ##
@@ -1948,6 +1929,16 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    SuperTriviaGamePointRedemption(
+        timber = timber,
+        triviaGameBuilder = triviaGameBuilder,
+        triviaGameMachine = triviaGameMachine,
+    ),
+    TriviaGamePointRedemption(
+        timber = timber,
+        triviaGameBuilder = triviaGameBuilder,
+        triviaGameMachine = triviaGameMachine,
+    ),
 })
 
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
@@ -1959,9 +1950,6 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     pkmnShinyPointRedemption = pkmnShinyPointRedemption,
     redemptionCounterPointRedemption = redemptionCounterPointRedemption,
     soundAlertPointRedemption = None,
-    superTriviaGamePointRedemption = superTriviaGamePointRedemption,
-    superTriviaLotrGamePointRedemption = superTriviaLotrGamePointRedemption,
-    triviaGamePointRedemption = triviaGamePointRedemption,
     timber = timber,
     userIdsRepository = userIdsRepository,
     pointRedemptions = pointRedemptions,

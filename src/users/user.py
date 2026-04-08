@@ -470,6 +470,10 @@ class User(UserInterface):
         return self.__anivMessageCopyMaxAgeSeconds
 
     @property
+    def anivMessageCopyRipBozoEmote(self) -> str | None:
+        return self.__anivMessageCopyRipBozoEmote
+
+    @property
     def anivMessageCopyTimeoutMinSeconds(self) -> int | None:
         return self.__anivMessageCopyTimeoutMinSeconds
 
