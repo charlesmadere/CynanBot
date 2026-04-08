@@ -27,7 +27,9 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
         if not isinstance(followData, AbsTwitchFollowHandler.FollowData):
             raise TypeError(f'followData argument is malformed: \"{followData}\"')
 
-        await self.__persistFollowingStatus(followData)
+        await self.__persistFollowingStatus(
+            followData = followData,
+        )
 
     async def onNewFollowDataBundle(
         self,
