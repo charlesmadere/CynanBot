@@ -1947,7 +1947,6 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,
     pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,
     pkmnShinyPointRedemption = pkmnShinyPointRedemption,
-    soundAlertPointRedemption = None,
     timber = timber,
     userIdsRepository = userIdsRepository,
     pointRedemptions = pointRedemptions,

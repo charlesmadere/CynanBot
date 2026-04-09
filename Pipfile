@@ -17,7 +17,7 @@ frozendict = "2.4.7"
 frozenlist = "1.8.0"
 librosa = { version = "0.11.0", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
 lru-dict = "1.4.1"
-lxml = "6.0.2"
+lxml = "6.0.3"
 num2words = "0.5.14"
 polyleven = "0.11.0"
 psutil = "7.2.2"

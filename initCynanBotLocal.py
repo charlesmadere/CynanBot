@@ -2122,21 +2122,6 @@ supStreamerRepository: Final[SupStreamerRepositoryInterface] = SupStreamerReposi
 supStreamerHelper: Final[SupStreamerHelperInterface] = SupStreamerHelper()
 
 
-######################################################
-## Channel Point Redemptions initialization section ##
-######################################################
-
-soundAlertPointRedemption: SoundAlertPointRedemption | None = None
-
-if soundPlayerManagerProvider is not None and soundPlayerRandomizerHelper is not None:
-    soundAlertPointRedemption = SoundAlertPointRedemption(
-        soundPlayerManagerProvider = soundPlayerManagerProvider,
-        soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-        streamAlertsManager = streamAlertsManager,
-        timber = timber,
-    )
-
-
 ########################################################
 ## Websocket Connection Server initialization section ##
 ########################################################
@@ -2191,6 +2176,12 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
         mouseCursorHelper = mouseCursorHelper,
         timber = timber,
     ),
+    SoundAlertPointRedemption(
+        soundPlayerManagerProvider = soundPlayerManagerProvider,
+        soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
+        streamAlertsManager = streamAlertsManager,
+        timber = timber,
+    ),
 })
 
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
@@ -2200,7 +2191,6 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     pkmnCatchPointRedemption = None,
     pkmnEvolvePointRedemption = None,
     pkmnShinyPointRedemption = None,
-    soundAlertPointRedemption = soundAlertPointRedemption,
     timber = timber,
     userIdsRepository = userIdsRepository,
     pointRedemptions = pointRedemptions,
