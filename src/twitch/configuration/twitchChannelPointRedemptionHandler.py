@@ -11,13 +11,12 @@ from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 from ...channelPointRedemptions.absChannelPointRedemption import AbsChannelPointRedemption
 from ...channelPointRedemptions.absChannelPointsRedemption2 import AbsChannelPointRedemption2
-from ...channelPointRedemptions.channelPointRedemptionResult import ChannelPointRedemptionResult
 from ...channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
 from ...channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
 from ...channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from ...channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
 from ...channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
-from ...channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
+from ...channelPointRedemptions.pointsRedemptionResult import PointsRedemptionResult
 from ...channelPointRedemptions.stub.stubChannelPointRedemption import StubChannelPointRedemption
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -36,7 +35,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         pkmnCatchPointRedemption: PkmnCatchPointRedemption | None,
         pkmnEvolvePointRedemption: PkmnEvolvePointRedemption | None,
         pkmnShinyPointRedemption: PkmnShinyPointRedemption | None,
-        soundAlertPointRedemption: SoundAlertPointRedemption | None,
         timber: TimberInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         pointRedemptions: Collection[AbsChannelPointRedemption2 | Any | None] | None,
@@ -55,8 +53,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'pkmnEvolvePointRedemption argument is malformed: \"{pkmnEvolvePointRedemption}\"')
         elif pkmnShinyPointRedemption is not None and not isinstance(pkmnShinyPointRedemption, PkmnShinyPointRedemption):
             raise TypeError(f'pkmnShinyPointRedemption argument is malformed: \"{pkmnShinyPointRedemption}\"')
-        elif soundAlertPointRedemption is not None and not isinstance(soundAlertPointRedemption, SoundAlertPointRedemption):
-            raise TypeError(f'soundAlertPointRedemption argument is malformed: \"{soundAlertPointRedemption}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -106,11 +102,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
         else:
             self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = pkmnShinyPointRedemption
-
-        if soundAlertPointRedemption is None:
-            self.__soundAlertPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__soundAlertPointRedemption: AbsChannelPointRedemption = soundAlertPointRedemption
 
     def __buildPointRedemptionsCollection(
         self,
@@ -175,12 +166,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
                 ):
                     return
 
-        if user.areSoundAlertsEnabled:
-            if await self.__soundAlertPointRedemption.handlePointRedemption(
-                channelPointsRedemption = channelPointsRedemption,
-            ):
-                return
-
         for index, pointRedemption in enumerate(self.__pointRedemptions):
             try:
                 relevantRewardIds = pointRedemption.relevantRewardIds(
@@ -195,9 +180,9 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
                 )
 
                 match result:
-                    case ChannelPointRedemptionResult.CONSUMED: return
-                    case ChannelPointRedemptionResult.HANDLED: continue
-                    case ChannelPointRedemptionResult.IGNORED: pass
+                    case PointsRedemptionResult.CONSUMED: return
+                    case PointsRedemptionResult.HANDLED: continue
+                    case PointsRedemptionResult.IGNORED: pass
             except Exception as e:
                 self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered an unexpected error while handling a point redemption ({index=}) ({pointRedemption=}) ({channelPointsRedemption=})', e, traceback.format_exc())
 

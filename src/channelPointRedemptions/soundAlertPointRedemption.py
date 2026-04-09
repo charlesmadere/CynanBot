@@ -1,6 +1,7 @@
 from typing import Final
 
-from .absChannelPointRedemption import AbsChannelPointRedemption
+from .absChannelPointsRedemption2 import AbsChannelPointRedemption2
+from .pointsRedemptionResult import PointsRedemptionResult
 from ..misc import utils as utils
 from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
@@ -14,7 +15,7 @@ from ..users.soundAlert.soundAlertRedemption import SoundAlertRedemption
 from ..users.userInterface import UserInterface
 
 
-class SoundAlertPointRedemption(AbsChannelPointRedemption):
+class SoundAlertPointRedemption(AbsChannelPointRedemption2):
 
     def __init__(
         self,
@@ -39,39 +40,34 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
 
     async def __findSoundAlertRedemption(
         self,
-        channelPointsRedemption: TwitchChannelPointsRedemption,
+        pointsRedemption: TwitchChannelPointsRedemption,
         user: UserInterface,
     ) -> SoundAlertRedemption | None:
-        if not isinstance(channelPointsRedemption, TwitchChannelPointsRedemption):
-            raise TypeError(f'channelPointsRedemption argument is malformed: \"{channelPointsRedemption}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-
         soundAlertRedemptions = user.soundAlertRedemptions
         if soundAlertRedemptions is None or len(soundAlertRedemptions) == 0:
             return None
 
-        return soundAlertRedemptions.get(channelPointsRedemption.rewardId, None)
+        return soundAlertRedemptions.get(pointsRedemption.rewardId, None)
 
-    async def handlePointRedemption(
+    async def handlePointsRedemption(
         self,
-        channelPointsRedemption: TwitchChannelPointsRedemption,
-    ) -> bool:
-        user = channelPointsRedemption.twitchUser
+        pointsRedemption: TwitchChannelPointsRedemption,
+    ) -> PointsRedemptionResult:
+        user = pointsRedemption.twitchUser
         if not user.areSoundAlertsEnabled:
-            return False
+            return PointsRedemptionResult.IGNORED
 
         isImmediate = False
         soundAlert: SoundAlert | None = None
         soundAlertRedemption: SoundAlertRedemption | None = None
         filePath: str | None = None
 
-        if channelPointsRedemption.rewardId == user.randomSoundAlertRewardId:
+        if pointsRedemption.rewardId == user.randomSoundAlertRewardId:
             soundAlert = await self.__soundPlayerRandomizerHelper.chooseRandomSoundAlert()
 
         if soundAlert is None:
             soundAlertRedemption = await self.__findSoundAlertRedemption(
-                channelPointsRedemption = channelPointsRedemption,
+                pointsRedemption = pointsRedemption,
                 user = user,
             )
 
@@ -86,7 +82,7 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
                 soundAlert = soundAlertRedemption.soundAlert
 
         if soundAlert is None and filePath is None:
-            return False
+            return PointsRedemptionResult.IGNORED
 
         if isImmediate:
             soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
@@ -98,10 +94,30 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         else:
             self.__streamAlertsManager.submitAlert(StreamAlert(
                 soundAlert = soundAlert,
-                twitchChannel = channelPointsRedemption.twitchChannel,
-                twitchChannelId = channelPointsRedemption.twitchChannelId,
+                twitchChannel = pointsRedemption.twitchChannel,
+                twitchChannelId = pointsRedemption.twitchChannelId,
                 ttsEvent = None,
             ))
 
-        self.__timber.log('SoundAlertPointRedemption', f'Redeemed ({channelPointsRedemption=}) ({soundAlert=}) ({filePath=}) ({isImmediate=})')
-        return True
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({isImmediate=}) ({filePath=}) ({soundAlert=}) ({pointsRedemption=})')
+        return PointsRedemptionResult.CONSUMED
+
+    @property
+    def pointsRedemptionName(self) -> str:
+        return 'SoundAlertPointRedemption'
+
+    def relevantRewardIds(
+        self,
+        twitchUser: UserInterface,
+    ) -> frozenset[str]:
+        rewardIds: set[str] = set()
+
+        randomSoundAlertRewardId = twitchUser.randomSoundAlertRewardId
+        if utils.isValidStr(randomSoundAlertRewardId):
+            rewardIds.add(randomSoundAlertRewardId)
+
+        soundAlertRedemptions = twitchUser.soundAlertRedemptions
+        if soundAlertRedemptions is not None and len(soundAlertRedemptions) >= 1:
+            rewardIds.update(soundAlertRedemptions.keys())
+
+        return frozenset(rewardIds)

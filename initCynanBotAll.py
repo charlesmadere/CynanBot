@@ -3010,13 +3010,6 @@ pkmnShinyPointRedemption: Final[PkmnShinyPointRedemption] = PkmnShinyPointRedemp
     twitchChatMessenger = twitchChatMessenger,
 )
 
-soundAlertPointRedemption: Final[SoundAlertPointRedemption] = SoundAlertPointRedemption(
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-    streamAlertsManager = streamAlertsManager,
-    timber = timber,
-)
-
 
 #################################
 ## Ecco initialization section ##
@@ -3134,6 +3127,12 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
         trollmojiHelper = trollmojiHelper,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    SoundAlertPointRedemption(
+        soundPlayerManagerProvider = soundPlayerManagerProvider,
+        soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
+        streamAlertsManager = streamAlertsManager,
+        timber = timber,
+    ),
     SuperTriviaGamePointRedemption(
         timber = timber,
         triviaGameBuilder = triviaGameBuilder,
@@ -3153,7 +3152,6 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,
     pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,
     pkmnShinyPointRedemption = pkmnShinyPointRedemption,
-    soundAlertPointRedemption = soundAlertPointRedemption,
     timber = timber,
     userIdsRepository = userIdsRepository,
     pointRedemptions = pointRedemptions,
