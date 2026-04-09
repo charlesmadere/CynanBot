@@ -1,7 +1,8 @@
 import random
+import re
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Final
+from typing import Final, Pattern
 
 from frozendict import frozendict
 from frozenlist import FrozenList
@@ -95,6 +96,9 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
+        # a regular expression intended to prevent timeouts of chatters using a chat command
+        self.__commandPattern: Final[Pattern] = re.compile(r'^\s*!\S', re.IGNORECASE)
+
     async def checkMessageAndMaybeTimeout(
         self,
         chatterMessage: str | None,
@@ -130,6 +134,8 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         cleanedMessage = utils.cleanStr(chatterMessage)
         if not utils.isValidStr(cleanedMessage):
+            return False
+        elif self.__commandPattern.match(cleanedMessage):
             return False
 
         copiedAnivMessage = await self.__findMatchingCopiedAnivMessage(
