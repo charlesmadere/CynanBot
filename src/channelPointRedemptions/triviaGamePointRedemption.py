@@ -31,21 +31,21 @@ class TriviaGamePointRedemption(AbsChannelPointRedemption2):
 
     async def handlePointsRedemption(
         self,
-        channelPointsRedemption: TwitchChannelPointsRedemption,
+        pointsRedemption: TwitchChannelPointsRedemption,
     ) -> PointsRedemptionResult:
         action = await self.__triviaGameBuilder.createNewTriviaGame(
-            twitchChannel = channelPointsRedemption.twitchChannel,
-            twitchChannelId = channelPointsRedemption.twitchChannelId,
-            userId = channelPointsRedemption.redemptionUserId,
-            userName = channelPointsRedemption.redemptionUserName,
+            twitchChannel = pointsRedemption.twitchChannel,
+            twitchChannelId = pointsRedemption.twitchChannelId,
+            userId = pointsRedemption.redemptionUserId,
+            userName = pointsRedemption.redemptionUserName,
         )
 
         if action is None:
             return PointsRedemptionResult.IGNORED
 
         self.__triviaGameMachine.submitAction(action)
-        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({action=}) ({channelPointsRedemption=})')
-        return PointsRedemptionResult.HANDLED
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({action=}) ({pointsRedemption=})')
+        return PointsRedemptionResult.CONSUMED
 
     @property
     def pointsRedemptionName(self) -> str:

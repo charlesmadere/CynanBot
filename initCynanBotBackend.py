@@ -1911,14 +1911,6 @@ redemptionCounterHelper: RedemptionCounterHelperInterface = RedemptionCounterHel
     userIdsRepository = userIdsRepository,
 )
 
-redemptionCounterPointRedemption = RedemptionCounterPointRedemption(
-    redemptionCounterHelper = redemptionCounterHelper,
-    redemptionCounterSettings = redemptionCounterSettings,
-    timber = timber,
-    trollmojiHelper = trollmojiHelper,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
 
 ##########################################
 ## Twitch events initialization section ##
@@ -1927,6 +1919,13 @@ redemptionCounterPointRedemption = RedemptionCounterPointRedemption(
 pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozenset({
     DiscordPointRedemption(
         timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    RedemptionCounterPointRedemption(
+        redemptionCounterHelper = redemptionCounterHelper,
+        redemptionCounterSettings = redemptionCounterSettings,
+        timber = timber,
+        trollmojiHelper = trollmojiHelper,
         twitchChatMessenger = twitchChatMessenger,
     ),
     SuperTriviaGamePointRedemption(
@@ -1948,7 +1947,6 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,
     pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,
     pkmnShinyPointRedemption = pkmnShinyPointRedemption,
-    redemptionCounterPointRedemption = redemptionCounterPointRedemption,
     soundAlertPointRedemption = None,
     timber = timber,
     userIdsRepository = userIdsRepository,

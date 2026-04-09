@@ -17,7 +17,6 @@ from ...channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePoint
 from ...channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from ...channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
 from ...channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
-from ...channelPointRedemptions.redemptionCounterPointRedemption import RedemptionCounterPointRedemption
 from ...channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from ...channelPointRedemptions.stub.stubChannelPointRedemption import StubChannelPointRedemption
 from ...misc import utils as utils
@@ -37,7 +36,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         pkmnCatchPointRedemption: PkmnCatchPointRedemption | None,
         pkmnEvolvePointRedemption: PkmnEvolvePointRedemption | None,
         pkmnShinyPointRedemption: PkmnShinyPointRedemption | None,
-        redemptionCounterPointRedemption: RedemptionCounterPointRedemption | None,
         soundAlertPointRedemption: SoundAlertPointRedemption | None,
         timber: TimberInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -57,8 +55,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'pkmnEvolvePointRedemption argument is malformed: \"{pkmnEvolvePointRedemption}\"')
         elif pkmnShinyPointRedemption is not None and not isinstance(pkmnShinyPointRedemption, PkmnShinyPointRedemption):
             raise TypeError(f'pkmnShinyPointRedemption argument is malformed: \"{pkmnShinyPointRedemption}\"')
-        elif redemptionCounterPointRedemption is not None and not isinstance(redemptionCounterPointRedemption, RedemptionCounterPointRedemption):
-            raise TypeError(f'redemptionCounterPointRedemption argument is malformed: \"{redemptionCounterPointRedemption}\"')
         elif soundAlertPointRedemption is not None and not isinstance(soundAlertPointRedemption, SoundAlertPointRedemption):
             raise TypeError(f'soundAlertPointRedemption argument is malformed: \"{soundAlertPointRedemption}\"')
         elif not isinstance(timber, TimberInterface):
@@ -111,11 +107,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         else:
             self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = pkmnShinyPointRedemption
 
-        if redemptionCounterPointRedemption is None:
-            self.__redemptionCounterPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__redemptionCounterPointRedemption: AbsChannelPointRedemption = redemptionCounterPointRedemption
-
         if soundAlertPointRedemption is None:
             self.__soundAlertPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
         else:
@@ -153,11 +144,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'channelPointsRedemption argument is malformed: \"{channelPointsRedemption}\"')
 
         user = channelPointsRedemption.twitchUser
-
-        if user.areRedemptionCountersEnabled:
-            await self.__redemptionCounterPointRedemption.handlePointRedemption(
-                channelPointsRedemption = channelPointsRedemption,
-            )
 
         if user.isCutenessEnabled:
             if await self.__cutenessPointRedemption.handlePointRedemption(

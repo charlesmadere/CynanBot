@@ -2200,7 +2200,6 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     pkmnCatchPointRedemption = None,
     pkmnEvolvePointRedemption = None,
     pkmnShinyPointRedemption = None,
-    redemptionCounterPointRedemption = None,
     soundAlertPointRedemption = soundAlertPointRedemption,
     timber = timber,
     userIdsRepository = userIdsRepository,

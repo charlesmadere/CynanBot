@@ -32,28 +32,28 @@ class SuperTriviaGamePointRedemption(AbsChannelPointRedemption2):
 
     async def __determineRequiredTriviaSource(
         self,
-        channelPointsRedemption: TwitchChannelPointsRedemption,
+        pointsRedemption: TwitchChannelPointsRedemption,
     ) -> TriviaSource | None:
-        superTriviaLotrGameRewardId = channelPointsRedemption.twitchUser.superTriviaLotrGameRewardId
+        superTriviaLotrGameRewardId = pointsRedemption.twitchUser.superTriviaLotrGameRewardId
 
         if not utils.isValidStr(superTriviaLotrGameRewardId):
             return None
-        elif superTriviaLotrGameRewardId == channelPointsRedemption.rewardId:
+        elif superTriviaLotrGameRewardId == pointsRedemption.rewardId:
             return TriviaSource.LORD_OF_THE_RINGS
         else:
             return None
 
     async def handlePointsRedemption(
         self,
-        channelPointsRedemption: TwitchChannelPointsRedemption,
+        pointsRedemption: TwitchChannelPointsRedemption,
     ) -> PointsRedemptionResult:
         requiredTriviaSource = await self.__determineRequiredTriviaSource(
-            channelPointsRedemption = channelPointsRedemption,
+            pointsRedemption = pointsRedemption,
         )
 
         action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
-            twitchChannel = channelPointsRedemption.twitchChannel,
-            twitchChannelId = channelPointsRedemption.twitchChannelId,
+            twitchChannel = pointsRedemption.twitchChannel,
+            twitchChannelId = pointsRedemption.twitchChannelId,
             requiredTriviaSource = requiredTriviaSource,
         )
 
@@ -61,8 +61,8 @@ class SuperTriviaGamePointRedemption(AbsChannelPointRedemption2):
             return PointsRedemptionResult.IGNORED
 
         self.__triviaGameMachine.submitAction(action)
-        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({action=}) ({channelPointsRedemption=})')
-        return PointsRedemptionResult.HANDLED
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({action=}) ({pointsRedemption=})')
+        return PointsRedemptionResult.CONSUMED
 
     @property
     def pointsRedemptionName(self) -> str:
