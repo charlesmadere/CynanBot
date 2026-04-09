@@ -26,18 +26,18 @@ class DiscordPointRedemption(AbsChannelPointRedemption2):
 
     async def handlePointsRedemption(
         self,
-        channelPointsRedemption: TwitchChannelPointsRedemption,
+        pointsRedemption: TwitchChannelPointsRedemption,
     ) -> PointsRedemptionResult:
-        discordUrl = channelPointsRedemption.twitchUser.discordUrl
+        discordUrl = pointsRedemption.twitchUser.discordUrl
         if not utils.isValidUrl(discordUrl):
             return PointsRedemptionResult.IGNORED
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ Discord invite link: {discordUrl}',
-            twitchChannelId = channelPointsRedemption.twitchChannelId,
+            twitchChannelId = pointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({channelPointsRedemption=})')
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({pointsRedemption=})')
         return PointsRedemptionResult.CONSUMED
 
     @property

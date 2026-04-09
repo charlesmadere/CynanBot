@@ -34,36 +34,35 @@ class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption2):
 
     async def handlePointsRedemption(
         self,
-        channelPointsRedemption: TwitchChannelPointsRedemption,
+        pointsRedemption: TwitchChannelPointsRedemption,
     ) -> PointsRedemptionResult:
-        twitchUser = channelPointsRedemption.twitchUser
-        if not twitchUser.isChatterPreferredNameEnabled:
+        if not pointsRedemption.twitchUser.isChatterPreferredNameEnabled:
             return PointsRedemptionResult.IGNORED
 
         try:
             preferredNameData = await self.__chatterPreferredNameHelper.set(
-                chatterUserId = channelPointsRedemption.redemptionUserId,
-                preferredName = channelPointsRedemption.redemptionMessage,
-                twitchChannelId = channelPointsRedemption.twitchChannelId,
+                chatterUserId = pointsRedemption.redemptionUserId,
+                preferredName = pointsRedemption.redemptionMessage,
+                twitchChannelId = pointsRedemption.twitchChannelId,
             )
         except ChatterPreferredNameFeatureIsDisabledException as e:
-            self.__timber.log(self.pointsRedemptionName, f'Preferred name feature is disabled ({channelPointsRedemption=})', e, traceback.format_exc())
+            self.__timber.log(self.pointsRedemptionName, f'Preferred name feature is disabled ({pointsRedemption=})', e, traceback.format_exc())
             return PointsRedemptionResult.IGNORED
         except ChatterPreferredNameIsInvalidException as e:
-            self.__timber.log(self.pointsRedemptionName, f'The given preferred name is invalid ({channelPointsRedemption=})', e, traceback.format_exc())
+            self.__timber.log(self.pointsRedemptionName, f'The given preferred name is invalid ({pointsRedemption=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
-                text = f'⚠ @{channelPointsRedemption.redemptionUserName} unable to set your preferred name! Please check your input and try again.',
-                twitchChannelId = channelPointsRedemption.twitchChannelId,
+                text = f'⚠ @{pointsRedemption.redemptionUserName} unable to set your preferred name! Please check your input and try again.',
+                twitchChannelId = pointsRedemption.twitchChannelId,
             )
             return PointsRedemptionResult.IGNORED
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ @{channelPointsRedemption.redemptionUserName} here\'s your new preferred name: {preferredNameData.preferredName}',
-            twitchChannelId = channelPointsRedemption.twitchChannelId,
+            text = f'ⓘ @{pointsRedemption.redemptionUserName} here\'s your new preferred name: {preferredNameData.preferredName}',
+            twitchChannelId = pointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({channelPointsRedemption=}) ({preferredNameData=})')
-        return PointsRedemptionResult.HANDLED
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({pointsRedemption=}) ({preferredNameData=})')
+        return PointsRedemptionResult.CONSUMED
 
     @property
     def pointsRedemptionName(self) -> str:

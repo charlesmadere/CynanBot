@@ -47,6 +47,8 @@ class GashaponItemPointRedemption(AbsChannelPointRedemption2):
     ) -> PointsRedemptionResult:
         if not pointsRedemption.twitchUser.isChatterInventoryEnabled:
             return PointsRedemptionResult.IGNORED
+        elif not await self.__chatterInventorySettings.isEnabled():
+            return PointsRedemptionResult.IGNORED
         elif ChatterItemType.GASHAPON not in await self.__chatterInventorySettings.getEnabledItemTypes():
             return PointsRedemptionResult.IGNORED
 
@@ -64,8 +66,8 @@ class GashaponItemPointRedemption(AbsChannelPointRedemption2):
             twitchChannelId = pointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log(self.pointsRedemptionName, f'Handled ({giveResult=}) ({pointsRedemption=})')
-        return PointsRedemptionResult.HANDLED
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({giveResult=}) ({pointsRedemption=})')
+        return PointsRedemptionResult.CONSUMED
 
     async def __playSoundAlert(self):
         if self.__soundPlayerManagerProvider is None:

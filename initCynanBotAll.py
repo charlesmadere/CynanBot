@@ -3086,14 +3086,6 @@ redemptionCounterHelper: RedemptionCounterHelperInterface = RedemptionCounterHel
     userIdsRepository = userIdsRepository,
 )
 
-redemptionCounterPointRedemption = RedemptionCounterPointRedemption(
-    redemptionCounterHelper = redemptionCounterHelper,
-    redemptionCounterSettings = redemptionCounterSettings,
-    timber = timber,
-    trollmojiHelper = trollmojiHelper,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
 
 #########################################
 ## Mouse Cursor initialization section ##
@@ -3135,6 +3127,13 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
         mouseCursorHelper = mouseCursorHelper,
         timber = timber,
     ),
+    RedemptionCounterPointRedemption(
+        redemptionCounterHelper = redemptionCounterHelper,
+        redemptionCounterSettings = redemptionCounterSettings,
+        timber = timber,
+        trollmojiHelper = trollmojiHelper,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     SuperTriviaGamePointRedemption(
         timber = timber,
         triviaGameBuilder = triviaGameBuilder,
@@ -3154,7 +3153,6 @@ twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandle
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,
     pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,
     pkmnShinyPointRedemption = pkmnShinyPointRedemption,
-    redemptionCounterPointRedemption = redemptionCounterPointRedemption,
     soundAlertPointRedemption = soundAlertPointRedemption,
     timber = timber,
     userIdsRepository = userIdsRepository,

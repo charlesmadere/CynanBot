@@ -26,18 +26,17 @@ class MouseCursorPointRedemption(AbsChannelPointRedemption2):
 
     async def handlePointsRedemption(
         self,
-        channelPointsRedemption: TwitchChannelPointsRedemption,
+        pointsRedemption: TwitchChannelPointsRedemption,
     ) -> PointsRedemptionResult:
-        twitchUser = channelPointsRedemption.twitchUser
-        if not twitchUser.isMouseCursorEnabled:
+        if not pointsRedemption.twitchUser.isMouseCursorEnabled:
             return PointsRedemptionResult.IGNORED
 
         result = await self.__mouseCursorHelper.applyMouseCursor(
-            twitchChannel = channelPointsRedemption.twitchChannel,
-            twitchChannelId = channelPointsRedemption.twitchChannelId,
+            twitchChannel = pointsRedemption.twitchChannel,
+            twitchChannelId = pointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({result=}) ({channelPointsRedemption=})')
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({result=}) ({pointsRedemption=})')
         return PointsRedemptionResult.CONSUMED
 
     @property

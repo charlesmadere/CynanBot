@@ -32,9 +32,9 @@ class CasualGamePollPointRedemption(AbsChannelPointRedemption2):
 
     async def handlePointsRedemption(
         self,
-        channelPointsRedemption: TwitchChannelPointsRedemption,
+        pointsRedemption: TwitchChannelPointsRedemption,
     ) -> PointsRedemptionResult:
-        twitchUser = channelPointsRedemption.twitchUser
+        twitchUser = pointsRedemption.twitchUser
         if not twitchUser.isCasualGamePollEnabled:
             return PointsRedemptionResult.IGNORED
 
@@ -42,15 +42,15 @@ class CasualGamePollPointRedemption(AbsChannelPointRedemption2):
         if not utils.isValidUrl(casualGamePollUrl):
             return PointsRedemptionResult.IGNORED
 
-        if not self.__lastMessageTimes.isReadyAndUpdate(channelPointsRedemption.twitchChannelId):
+        if not self.__lastMessageTimes.isReadyAndUpdate(pointsRedemption.twitchChannelId):
             return PointsRedemptionResult.IGNORED
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ Here\'s the current list of casual games: {casualGamePollUrl}',
-            twitchChannelId = channelPointsRedemption.twitchChannelId,
+            twitchChannelId = pointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({channelPointsRedemption=})')
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({pointsRedemption=})')
         return PointsRedemptionResult.CONSUMED
 
     @property
