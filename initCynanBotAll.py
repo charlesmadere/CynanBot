@@ -88,6 +88,7 @@ from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from src.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
+from src.chatCommands.translateChatCommand import TranslateChatCommand
 from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from src.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
@@ -3502,6 +3503,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         administratorProvider = administratorProvider,
         mouseCursorHelper = mouseCursorHelper,
         timber = timber,
+    ),
+    TranslateChatCommand(
+        languagesRepository = languagesRepository,
+        timber = timber,
+        translationHelper = translationHelper,
+        twitchChatMessenger = twitchChatMessenger,
     ),
     TriviaInfoChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,

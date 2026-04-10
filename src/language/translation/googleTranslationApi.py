@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from frozenlist import FrozenList
 
@@ -23,7 +24,7 @@ class GoogleTranslationApi(TranslationApi):
         googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface,
         languagesRepository: LanguagesRepositoryInterface,
         timber: TimberInterface,
-        mimeType: str = 'text/plain'
+        mimeType: str = 'text/plain',
     ):
         if not isinstance(googleApiService, GoogleApiServiceInterface):
             raise TypeError(f'googleApiService argument is malformed: \"{googleApiService}\"')
@@ -36,11 +37,11 @@ class GoogleTranslationApi(TranslationApi):
         elif not utils.isValidStr(mimeType):
             raise TypeError(f'mimeType argument is malformed: \"{mimeType}\"')
 
-        self.__googleApiService: GoogleApiServiceInterface = googleApiService
-        self.__googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = googleCloudProjectCredentialsProvider
-        self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
-        self.__timber: TimberInterface = timber
-        self.__mimeType: str = mimeType
+        self.__googleApiService: Final[GoogleApiServiceInterface] = googleApiService
+        self.__googleCloudProjectCredentialsProvider: Final[GoogleCloudProjectCredentialsProviderInterface] = googleCloudProjectCredentialsProvider
+        self.__languagesRepository: Final[LanguagesRepositoryInterface] = languagesRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__mimeType: Final[str] = mimeType
 
     async def isAvailable(self) -> bool:
         projectId = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudProjectId()
@@ -79,7 +80,7 @@ class GoogleTranslationApi(TranslationApi):
             mimeType = self.__mimeType,
             model = None,
             sourceLanguageCode = None,
-            targetLanguageCode = targetLanguage.iso6391Code,
+            targetLanguageCode = targetLanguage.requireIso6391Code(),
             transliterationConfig = None,
         )
 

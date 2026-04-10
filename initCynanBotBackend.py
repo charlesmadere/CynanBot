@@ -69,6 +69,7 @@ from src.chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGloba
 from src.chatCommands.removeTriviaControllerChatCommand import RemoveTriviaControllerChatCommand
 from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from src.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
+from src.chatCommands.translateChatCommand import TranslateChatCommand
 from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from src.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from src.chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
@@ -2185,6 +2186,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaGameMachine = triviaGameMachine,
         triviaSettings = triviaSettings,
         triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    TranslateChatCommand(
+        languagesRepository = languagesRepository,
+        timber = timber,
+        translationHelper = translationHelper,
         twitchChatMessenger = twitchChatMessenger,
     ),
     TriviaInfoChatCommand(

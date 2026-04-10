@@ -40,7 +40,7 @@ class TranslationEngineUnavailableException(Exception):
     def __init__(
         self,
         message: str,
-        translationApiSource: TranslationApiSource
+        translationApiSource: TranslationApiSource,
     ):
         if not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -55,7 +55,7 @@ class TranslationLanguageHasNoIso6391Code(Exception):
     def __init__(
         self,
         languageEntry: LanguageEntry,
-        message: str
+        message: str,
     ):
         if not isinstance(languageEntry, LanguageEntry):
             raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
@@ -70,7 +70,7 @@ class TranslationException(Exception):
     def __init__(
         self,
         message: str,
-        translationApiSource: TranslationApiSource
+        translationApiSource: TranslationApiSource,
     ):
         if not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
