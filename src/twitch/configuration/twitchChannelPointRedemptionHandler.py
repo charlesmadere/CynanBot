@@ -9,12 +9,8 @@ from frozenlist import FrozenList
 from ..absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
-from ...channelPointRedemptions.absChannelPointRedemption import AbsChannelPointRedemption
 from ...channelPointRedemptions.absChannelPointsRedemption2 import AbsChannelPointRedemption2
-from ...channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
-from ...channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
 from ...channelPointRedemptions.pointsRedemptionResult import PointsRedemptionResult
-from ...channelPointRedemptions.stub.stubChannelPointRedemption import StubChannelPointRedemption
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
@@ -27,8 +23,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        pkmnEvolvePointRedemption: PkmnEvolvePointRedemption | None,
-        pkmnShinyPointRedemption: PkmnShinyPointRedemption | None,
         timber: TimberInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         pointRedemptions: Collection[AbsChannelPointRedemption2 | Any | None] | None,
@@ -37,10 +31,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif pkmnEvolvePointRedemption is not None and not isinstance(pkmnEvolvePointRedemption, PkmnEvolvePointRedemption):
-            raise TypeError(f'pkmnEvolvePointRedemption argument is malformed: \"{pkmnEvolvePointRedemption}\"')
-        elif pkmnShinyPointRedemption is not None and not isinstance(pkmnShinyPointRedemption, PkmnShinyPointRedemption):
-            raise TypeError(f'pkmnShinyPointRedemption argument is malformed: \"{pkmnShinyPointRedemption}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -65,16 +55,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         self.__isStarted: bool = False
         self.__channelPointsRedemptionsQueue: Final[SimpleQueue[TwitchChannelPointsRedemption]] = SimpleQueue()
-
-        if pkmnEvolvePointRedemption is None:
-            self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = pkmnEvolvePointRedemption
-
-        if pkmnShinyPointRedemption is None:
-            self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = pkmnShinyPointRedemption
 
     def __buildPointRedemptionsCollection(
         self,
@@ -106,27 +86,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     async def __handleChannelPointsRedemption(self, channelPointsRedemption: TwitchChannelPointsRedemption):
         if not isinstance(channelPointsRedemption, TwitchChannelPointsRedemption):
             raise TypeError(f'channelPointsRedemption argument is malformed: \"{channelPointsRedemption}\"')
-
-        user = channelPointsRedemption.twitchUser
-
-        if user.isPkmnEnabled:
-            if channelPointsRedemption.rewardId == user.pkmnBattleRewardId:
-                if await self.__pkmnBattlePointRedemption.handlePointRedemption(
-                    channelPointsRedemption = channelPointsRedemption,
-                ):
-                    return
-
-            if channelPointsRedemption.rewardId == user.pkmnEvolveRewardId:
-                if await self.__pkmnEvolvePointRedemption.handlePointRedemption(
-                    channelPointsRedemption = channelPointsRedemption,
-                ):
-                    return
-
-            if channelPointsRedemption.rewardId == user.pkmnShinyRewardId:
-                if await self.__pkmnShinyPointRedemption.handlePointRedemption(
-                    channelPointsRedemption = channelPointsRedemption,
-                ):
-                    return
 
         for index, pointRedemption in enumerate(self.__pointRedemptions):
             try:

@@ -1820,25 +1820,6 @@ jishoHelper: JishoHelperInterface = JishoHelper(
 )
 
 
-######################################################
-## Channel Point Redemptions initialization section ##
-######################################################
-
-pkmnEvolvePointRedemption: Final[PkmnEvolvePointRedemption] = PkmnEvolvePointRedemption(
-    funtoonHelper = funtoonHelper,
-    generalSettingsRepository = generalSettingsRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
-pkmnShinyPointRedemption: Final[PkmnShinyPointRedemption] = PkmnShinyPointRedemption(
-    funtoonHelper = funtoonHelper,
-    generalSettingsRepository = generalSettingsRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
-
 #################################
 ## Ecco initialization section ##
 #################################
@@ -1919,6 +1900,18 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    PkmnEvolvePointRedemption(
+        funtoonHelper = funtoonHelper,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    PkmnShinyPointRedemption(
+        funtoonHelper = funtoonHelper,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     RedemptionCounterPointRedemption(
         redemptionCounterHelper = redemptionCounterHelper,
         redemptionCounterSettings = redemptionCounterSettings,
@@ -1940,8 +1933,6 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
 
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
-    pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,
-    pkmnShinyPointRedemption = pkmnShinyPointRedemption,
     timber = timber,
     userIdsRepository = userIdsRepository,
     pointRedemptions = pointRedemptions,

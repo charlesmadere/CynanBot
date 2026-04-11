@@ -2968,32 +2968,6 @@ supStreamerRepository: Final[SupStreamerRepositoryInterface] = SupStreamerReposi
 supStreamerHelper: Final[SupStreamerHelperInterface] = SupStreamerHelper()
 
 
-######################################################
-## Channel Point Redemptions initialization section ##
-######################################################
-
-pkmnBattlePointRedemption: Final[PkmnBattlePointRedemption] = PkmnBattlePointRedemption(
-    funtoonHelper = funtoonHelper,
-    generalSettingsRepository = generalSettingsRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
-pkmnEvolvePointRedemption: Final[PkmnEvolvePointRedemption] = PkmnEvolvePointRedemption(
-    funtoonHelper = funtoonHelper,
-    generalSettingsRepository = generalSettingsRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
-pkmnShinyPointRedemption: Final[PkmnShinyPointRedemption] = PkmnShinyPointRedemption(
-    funtoonHelper = funtoonHelper,
-    generalSettingsRepository = generalSettingsRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
-
 #################################
 ## Ecco initialization section ##
 #################################
@@ -3108,7 +3082,25 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
         mouseCursorHelper = mouseCursorHelper,
         timber = timber,
     ),
+    PkmnBattlePointRedemption(
+        funtoonHelper = funtoonHelper,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     PkmnCatchPointRedemption(
+        funtoonHelper = funtoonHelper,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    PkmnEvolvePointRedemption(
+        funtoonHelper = funtoonHelper,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    PkmnShinyPointRedemption(
         funtoonHelper = funtoonHelper,
         generalSettingsRepository = generalSettingsRepository,
         timber = timber,
@@ -3141,8 +3133,6 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
 
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
-    pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,
-    pkmnShinyPointRedemption = pkmnShinyPointRedemption,
     timber = timber,
     userIdsRepository = userIdsRepository,
     pointRedemptions = pointRedemptions,
