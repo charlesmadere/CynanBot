@@ -1,6 +1,7 @@
 from typing import Final
 
-from .absChannelPointRedemption import AbsChannelPointRedemption
+from .absChannelPointsRedemption2 import AbsChannelPointRedemption2
+from .pointsRedemptionResult import PointsRedemptionResult
 from ..crowdControl.actions.buttonPressCrowdControlAction import ButtonPressCrowdControlAction
 from ..crowdControl.actions.crowdControlButton import CrowdControlButton
 from ..crowdControl.actions.gameShuffleCrowdControlAction import GameShuffleCrowdControlAction
@@ -9,12 +10,14 @@ from ..crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdCon
 from ..crowdControl.mapper.crowdControlInputTypeMapperInterface import CrowdControlInputTypeMapperInterface
 from ..crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdControlUserInputUtilsInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 from ..users.crowdControl.crowdControlInputType import CrowdControlInputType
+from ..users.userInterface import UserInterface
 
 
-class CrowdControlPointRedemption(AbsChannelPointRedemption):
+class CrowdControlPointRedemption(AbsChannelPointRedemption2):
 
     def __init__(
         self,
@@ -45,21 +48,21 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
 
-    async def handlePointRedemption(
+    async def handlePointsRedemption(
         self,
-        channelPointsRedemption: TwitchChannelPointsRedemption,
-    ) -> bool:
-        twitchUser = channelPointsRedemption.twitchUser
+        pointsRedemption: TwitchChannelPointsRedemption,
+    ) -> PointsRedemptionResult:
+        twitchUser = pointsRedemption.twitchUser
         if not twitchUser.isCrowdControlEnabled:
-            return False
+            return PointsRedemptionResult.IGNORED
 
         boosterPacks = twitchUser.crowdControlBoosterPacks
         if boosterPacks is None or len(boosterPacks) == 0:
-            return False
+            return PointsRedemptionResult.IGNORED
 
-        boosterPack = boosterPacks.get(channelPointsRedemption.rewardId, None)
+        boosterPack = boosterPacks.get(pointsRedemption.rewardId, None)
         if boosterPack is None:
-            return False
+            return PointsRedemptionResult.IGNORED
 
         now = self.__timeZoneRepository.getNow()
         actionId = await self.__crowdControlIdGenerator.generateActionId()
@@ -70,21 +73,21 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
                 entryWithinGigaShuffle = False,
                 startOfGigaShuffleSize = None,
                 actionId = actionId,
-                chatterUserId = channelPointsRedemption.redemptionUserId,
-                chatterUserName = channelPointsRedemption.redemptionUserName,
-                twitchChannel = channelPointsRedemption.twitchChannel,
-                twitchChannelId = channelPointsRedemption.twitchChannelId,
+                chatterUserId = pointsRedemption.redemptionUserId,
+                chatterUserName = pointsRedemption.redemptionUserName,
+                twitchChannel = pointsRedemption.twitchChannel,
+                twitchChannelId = pointsRedemption.twitchChannelId,
                 twitchChatMessageId = None,
             ))
 
-            self.__timber.log('CrowdControlPointRedemption', f'Redeemed ({channelPointsRedemption=}) ({boosterPack=})')
-            return True
+            self.__timber.log(self.pointsRedemptionName, f'Redeemed ({actionId=}) ({boosterPack=}) ({pointsRedemption=})')
+            return PointsRedemptionResult.CONSUMED
 
         button: CrowdControlButton | None
 
         if boosterPack.inputType is CrowdControlInputType.USER_INPUT_BUTTON:
             button = await self.__crowdControlUserInputUtils.parseButtonFromUserInput(
-                userInput = channelPointsRedemption.redemptionMessage,
+                userInput = pointsRedemption.redemptionMessage,
             )
         else:
             button = await self.__crowdControlInputTypeMapper.toButton(
@@ -92,19 +95,39 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
             )
 
         if button is None:
-            self.__timber.log('CrowdControlPointRedemption', f'Unable to redeem ({channelPointsRedemption=}) ({boosterPack=}) ({button=})')
-            return False
+            self.__timber.log(self.pointsRedemptionName, f'Unable to redeem ({button=}) ({actionId=}) ({boosterPack=}) ({pointsRedemption=})')
+            return PointsRedemptionResult.IGNORED
 
         self.__crowdControlMachine.submitAction(ButtonPressCrowdControlAction(
             button = button,
             dateTime = now,
             actionId = actionId,
-            chatterUserId = channelPointsRedemption.redemptionUserId,
-            chatterUserName = channelPointsRedemption.redemptionUserName,
-            twitchChannel = channelPointsRedemption.twitchChannel,
-            twitchChannelId = channelPointsRedemption.twitchChannelId,
+            chatterUserId = pointsRedemption.redemptionUserId,
+            chatterUserName = pointsRedemption.redemptionUserName,
+            twitchChannel = pointsRedemption.twitchChannel,
+            twitchChannelId = pointsRedemption.twitchChannelId,
             twitchChatMessageId = None,
         ))
 
-        self.__timber.log('CrowdControlPointRedemption', f'Redeemed ({channelPointsRedemption=}) ({boosterPack=}) ({button=})')
-        return True
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({button=}) ({actionId=}) ({boosterPack=}) ({pointsRedemption=})')
+        return PointsRedemptionResult.CONSUMED
+
+    @property
+    def pointsRedemptionName(self) -> str:
+        return 'CrowdControlPointRedemption'
+
+    def relevantRewardIds(
+        self,
+        twitchUser: UserInterface,
+    ) -> frozenset[str]:
+        rewardIds: set[str] = set()
+
+        buttonPressRewardId = twitchUser.crowdControlButtonPressRewardId
+        if utils.isValidStr(buttonPressRewardId):
+            rewardIds.add(buttonPressRewardId)
+
+        shuffleRewardId = twitchUser.crowdControlGameShuffleRewardId
+        if utils.isValidStr(shuffleRewardId):
+            rewardIds.add(shuffleRewardId)
+
+        return frozenset(rewardIds)
