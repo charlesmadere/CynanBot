@@ -1,5 +1,5 @@
 import random
-from typing import Final
+from typing import Collection, Final
 
 from frozenlist import FrozenList
 
@@ -12,11 +12,11 @@ from ..misc import utils as utils
 class LanguagesRepository(LanguagesRepositoryInterface):
 
     def __init__(self):
-        self.__languageList: Final[FrozenList[LanguageEntry]] = self.__createLanguageList()
+        self.__languageList: Final[Collection[LanguageEntry]] = self.__createLanguageList()
 
-    def __createLanguageList(self) -> FrozenList[LanguageEntry]:
+    def __createLanguageList(self) -> Collection[LanguageEntry]:
         languagesList: list[LanguageEntry] = list(LanguageEntry)
-        languagesList.sort(key = lambda element: element.name.casefold())
+        languagesList.sort(key = lambda element: element.humanName.casefold())
 
         frozenLanguagesList: FrozenList[LanguageEntry] = FrozenList(languagesList)
         frozenLanguagesList.freeze()
