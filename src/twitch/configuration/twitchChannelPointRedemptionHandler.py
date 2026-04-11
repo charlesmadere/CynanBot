@@ -11,7 +11,6 @@ from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 from ...channelPointRedemptions.absChannelPointRedemption import AbsChannelPointRedemption
 from ...channelPointRedemptions.absChannelPointsRedemption2 import AbsChannelPointRedemption2
-from ...channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
 from ...channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
 from ...channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
 from ...channelPointRedemptions.pointsRedemptionResult import PointsRedemptionResult
@@ -28,7 +27,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        pkmnBattlePointRedemption: PkmnBattlePointRedemption | None,
         pkmnEvolvePointRedemption: PkmnEvolvePointRedemption | None,
         pkmnShinyPointRedemption: PkmnShinyPointRedemption | None,
         timber: TimberInterface,
@@ -39,8 +37,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif pkmnBattlePointRedemption is not None and not isinstance(pkmnBattlePointRedemption, PkmnBattlePointRedemption):
-            raise TypeError(f'pkmnBattlePointRedemption argument is malformed: \"{pkmnBattlePointRedemption}\"')
         elif pkmnEvolvePointRedemption is not None and not isinstance(pkmnEvolvePointRedemption, PkmnEvolvePointRedemption):
             raise TypeError(f'pkmnEvolvePointRedemption argument is malformed: \"{pkmnEvolvePointRedemption}\"')
         elif pkmnShinyPointRedemption is not None and not isinstance(pkmnShinyPointRedemption, PkmnShinyPointRedemption):
@@ -69,11 +65,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         self.__isStarted: bool = False
         self.__channelPointsRedemptionsQueue: Final[SimpleQueue[TwitchChannelPointsRedemption]] = SimpleQueue()
-
-        if pkmnBattlePointRedemption is None:
-            self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = pkmnBattlePointRedemption
 
         if pkmnEvolvePointRedemption is None:
             self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()

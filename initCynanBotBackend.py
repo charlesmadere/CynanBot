@@ -1824,13 +1824,6 @@ jishoHelper: JishoHelperInterface = JishoHelper(
 ## Channel Point Redemptions initialization section ##
 ######################################################
 
-pkmnBattlePointRedemption: Final[PkmnBattlePointRedemption] = PkmnBattlePointRedemption(
-    funtoonHelper = funtoonHelper,
-    generalSettingsRepository = generalSettingsRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
 pkmnEvolvePointRedemption: Final[PkmnEvolvePointRedemption] = PkmnEvolvePointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
@@ -1914,6 +1907,12 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    PkmnBattlePointRedemption(
+        funtoonHelper = funtoonHelper,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     PkmnCatchPointRedemption(
         funtoonHelper = funtoonHelper,
         generalSettingsRepository = generalSettingsRepository,
@@ -1941,7 +1940,6 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
 
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
-    pkmnBattlePointRedemption = pkmnBattlePointRedemption,
     pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,
     pkmnShinyPointRedemption = pkmnShinyPointRedemption,
     timber = timber,
