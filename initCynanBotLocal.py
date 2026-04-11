@@ -26,7 +26,7 @@ from src.aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from src.asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRepository
 from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
-from src.channelPointRedemptions.absChannelPointsRedemption2 import AbsChannelPointRedemption2
+from src.channelPointRedemptions.absChannelPointsRedemption import AbsChannelPointRedemption
 from src.channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
@@ -2159,7 +2159,7 @@ mouseCursorHelper: Final[MouseCursorHelperInterface] = MouseCursorHelper(
 ## Twitch events initialization section ##
 ##########################################
 
-pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozenset({
+pointRedemptions: Final[Collection[AbsChannelPointRedemption | None]] = frozenset({
     ChatterPreferredNamePointRedemption(
         chatterPreferredNameHelper = chatterPreferredNameHelper,
         timber = timber,

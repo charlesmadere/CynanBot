@@ -1,7 +1,7 @@
 import traceback
 from typing import Final
 
-from .absChannelPointsRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointsRedemption import AbsChannelPointRedemption
 from .pointsRedemptionResult import PointsRedemptionResult
 from ..crowdControl.actions.buttonPressCrowdControlAction import ButtonPressCrowdControlAction
 from ..crowdControl.actions.crowdControlButton import CrowdControlButton
@@ -18,7 +18,7 @@ from ..users.crowdControl.crowdControlInputType import CrowdControlInputType
 from ..users.userInterface import UserInterface
 
 
-class CrowdControlPointRedemption(AbsChannelPointRedemption2):
+class CrowdControlPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,

@@ -1,6 +1,6 @@
 from typing import Final
 
-from .absChannelPointsRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointsRedemption import AbsChannelPointRedemption
 from .pointsRedemptionResult import PointsRedemptionResult
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
@@ -11,7 +11,7 @@ from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPoin
 from ..users.userInterface import UserInterface
 
 
-class SuperTriviaGamePointRedemption(AbsChannelPointRedemption2):
+class SuperTriviaGamePointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,

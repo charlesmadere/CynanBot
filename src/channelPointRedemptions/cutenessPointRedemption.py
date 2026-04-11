@@ -1,7 +1,7 @@
 import traceback
 from typing import Final
 
-from .absChannelPointsRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointsRedemption import AbsChannelPointRedemption
 from .pointsRedemptionResult import PointsRedemptionResult
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..timber.timberInterface import TimberInterface
@@ -10,7 +10,7 @@ from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPoin
 from ..users.userInterface import UserInterface
 
 
-class CutenessPointRedemption(AbsChannelPointRedemption2):
+class CutenessPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
