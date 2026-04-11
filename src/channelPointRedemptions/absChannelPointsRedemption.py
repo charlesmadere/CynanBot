@@ -5,7 +5,7 @@ from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPoin
 from ..users.userInterface import UserInterface
 
 
-class AbsChannelPointRedemption2(ABC):
+class AbsChannelPointRedemption(ABC):
 
     @property
     @abstractmethod

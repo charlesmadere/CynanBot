@@ -1,11 +1,13 @@
 import traceback
 from typing import Final
 
-from .absChannelPointRedemption import AbsChannelPointRedemption
+from .absChannelPointsRedemption import AbsChannelPointRedemption
+from .pointsRedemptionResult import PointsRedemptionResult
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
+from ..users.userInterface import UserInterface
 
 
 class CutenessPointRedemption(AbsChannelPointRedemption):
@@ -27,39 +29,53 @@ class CutenessPointRedemption(AbsChannelPointRedemption):
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
-    async def handlePointRedemption(
+    async def handlePointsRedemption(
         self,
-        channelPointsRedemption: TwitchChannelPointsRedemption,
-    ) -> bool:
-        twitchUser = channelPointsRedemption.twitchUser
+        pointsRedemption: TwitchChannelPointsRedemption,
+    ) -> PointsRedemptionResult:
+        twitchUser = pointsRedemption.twitchUser
         if not twitchUser.isCutenessEnabled:
-            return False
+            return PointsRedemptionResult.IGNORED
 
         cutenessBoosterPacks = twitchUser.cutenessBoosterPacks
         if cutenessBoosterPacks is None or len(cutenessBoosterPacks) == 0:
-            return False
+            return PointsRedemptionResult.IGNORED
 
-        cutenessBoosterPack = cutenessBoosterPacks.get(channelPointsRedemption.rewardId, None)
+        cutenessBoosterPack = cutenessBoosterPacks.get(pointsRedemption.rewardId, None)
         if cutenessBoosterPack is None:
-            return False
-
-        incrementAmount = cutenessBoosterPack.amount
+            return PointsRedemptionResult.IGNORED
 
         try:
             await self.__cutenessRepository.fetchCutenessIncrementedBy(
-                incrementAmount = incrementAmount,
-                twitchChannel = channelPointsRedemption.twitchChannel,
-                twitchChannelId = channelPointsRedemption.twitchChannelId,
-                userId = channelPointsRedemption.redemptionUserId,
-                userName = channelPointsRedemption.redemptionUserName,
+                incrementAmount = cutenessBoosterPack.amount,
+                twitchChannel = pointsRedemption.twitchChannel,
+                twitchChannelId = pointsRedemption.twitchChannelId,
+                userId = pointsRedemption.redemptionUserId,
+                userName = pointsRedemption.redemptionUserName,
             )
 
-            self.__timber.log('CutenessRedemption', f'Redeemed ({channelPointsRedemption=}) ({incrementAmount=})')
+            self.__timber.log(self.pointsRedemptionName, f'Redeemed ({cutenessBoosterPack=}) ({pointsRedemption=})')
         except Exception as e:
-            self.__timber.log('CutenessRedemption', f'Error redeeming ({channelPointsRedemption=}) ({incrementAmount=})', e, traceback.format_exc())
+            self.__timber.log(self.pointsRedemptionName, f'Error redeeming ({cutenessBoosterPack=}) ({pointsRedemption=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
-                text = f'⚠ Error increasing cuteness for @{channelPointsRedemption.redemptionUserName}',
-                twitchChannelId = channelPointsRedemption.twitchChannelId,
+                text = f'⚠ Error increasing cuteness for @{pointsRedemption.redemptionUserName}',
+                twitchChannelId = pointsRedemption.twitchChannelId,
             )
 
-        return True
+        return PointsRedemptionResult.CONSUMED
+
+    @property
+    def pointsRedemptionName(self) -> str:
+        return 'CutenessPointRedemption'
+
+    def relevantRewardIds(
+        self,
+        twitchUser: UserInterface,
+    ) -> frozenset[str]:
+        boosterPacks = twitchUser.cutenessBoosterPacks
+        rewardIds: set[str] = set()
+
+        if boosterPacks is not None and len(boosterPacks.keys()) >= 1:
+            rewardIds.update(boosterPacks.keys())
+
+        return frozenset(rewardIds)

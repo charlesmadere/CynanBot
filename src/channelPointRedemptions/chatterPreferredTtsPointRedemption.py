@@ -2,7 +2,7 @@ import re
 import traceback
 from typing import Final, Pattern
 
-from .absChannelPointsRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointsRedemption import AbsChannelPointRedemption
 from .pointsRedemptionResult import PointsRedemptionResult
 from ..chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
 from ..chatterPreferredTts.exceptions import FailedToChooseRandomTtsException, NoEnabledTtsProvidersException, \
@@ -18,7 +18,7 @@ from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPoin
 from ..users.userInterface import UserInterface
 
 
-class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption2):
+class ChatterPreferredTtsPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,

@@ -9,15 +9,8 @@ from frozenlist import FrozenList
 from ..absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
-from ...channelPointRedemptions.absChannelPointRedemption import AbsChannelPointRedemption
-from ...channelPointRedemptions.absChannelPointsRedemption2 import AbsChannelPointRedemption2
-from ...channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
-from ...channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
-from ...channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
-from ...channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
-from ...channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
+from ...channelPointRedemptions.absChannelPointsRedemption import AbsChannelPointRedemption
 from ...channelPointRedemptions.pointsRedemptionResult import PointsRedemptionResult
-from ...channelPointRedemptions.stub.stubChannelPointRedemption import StubChannelPointRedemption
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
@@ -30,29 +23,14 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        cutenessPointRedemption: CutenessPointRedemption | None,
-        pkmnBattlePointRedemption: PkmnBattlePointRedemption | None,
-        pkmnCatchPointRedemption: PkmnCatchPointRedemption | None,
-        pkmnEvolvePointRedemption: PkmnEvolvePointRedemption | None,
-        pkmnShinyPointRedemption: PkmnShinyPointRedemption | None,
         timber: TimberInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        pointRedemptions: Collection[AbsChannelPointRedemption2 | Any | None] | None,
+        pointRedemptions: Collection[AbsChannelPointRedemption | Any | None] | None,
         queueSleepTimeSeconds: float = 1,
         queueTimeoutSeconds: float = 3,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif cutenessPointRedemption is not None and not isinstance(cutenessPointRedemption, CutenessPointRedemption):
-            raise TypeError(f'cutenessPointRedemption argument is malformed: \"{cutenessPointRedemption}\"')
-        elif pkmnBattlePointRedemption is not None and not isinstance(pkmnBattlePointRedemption, PkmnBattlePointRedemption):
-            raise TypeError(f'pkmnBattlePointRedemption argument is malformed: \"{pkmnBattlePointRedemption}\"')
-        elif pkmnCatchPointRedemption is not None and not isinstance(pkmnCatchPointRedemption, PkmnCatchPointRedemption):
-            raise TypeError(f'pkmnCatchPointRedemption argument is malformed: \"{pkmnCatchPointRedemption}\"')
-        elif pkmnEvolvePointRedemption is not None and not isinstance(pkmnEvolvePointRedemption, PkmnEvolvePointRedemption):
-            raise TypeError(f'pkmnEvolvePointRedemption argument is malformed: \"{pkmnEvolvePointRedemption}\"')
-        elif pkmnShinyPointRedemption is not None and not isinstance(pkmnShinyPointRedemption, PkmnShinyPointRedemption):
-            raise TypeError(f'pkmnShinyPointRedemption argument is malformed: \"{pkmnShinyPointRedemption}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -73,58 +51,33 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__queueSleepTimeSeconds: Final[float] = queueSleepTimeSeconds
         self.__queueTimeoutSeconds: Final[float] = queueTimeoutSeconds
-        self.__pointRedemptions: Final[Collection[AbsChannelPointRedemption2]] = self.__buildPointRedemptionsCollection(pointRedemptions)
+        self.__pointRedemptions: Final[Collection[AbsChannelPointRedemption]] = self.__buildPointRedemptionsCollection(pointRedemptions)
 
         self.__isStarted: bool = False
         self.__channelPointsRedemptionsQueue: Final[SimpleQueue[TwitchChannelPointsRedemption]] = SimpleQueue()
 
-        if cutenessPointRedemption is None:
-            self.__cutenessPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__cutenessPointRedemption: AbsChannelPointRedemption = cutenessPointRedemption
-
-        if pkmnBattlePointRedemption is None:
-            self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = pkmnBattlePointRedemption
-
-        if pkmnCatchPointRedemption is None:
-            self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = pkmnCatchPointRedemption
-
-        if pkmnEvolvePointRedemption is None:
-            self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = pkmnEvolvePointRedemption
-
-        if pkmnShinyPointRedemption is None:
-            self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = pkmnShinyPointRedemption
-
     def __buildPointRedemptionsCollection(
         self,
-        pointRedemptions: Collection[AbsChannelPointRedemption2 | Any | None] | None,
-    ) -> Collection[AbsChannelPointRedemption2]:
+        pointRedemptions: Collection[AbsChannelPointRedemption | Any | None] | None,
+    ) -> Collection[AbsChannelPointRedemption]:
         if pointRedemptions is None:
-            emptyPointRedemptions: FrozenList[AbsChannelPointRedemption2] = FrozenList()
+            emptyPointRedemptions: FrozenList[AbsChannelPointRedemption] = FrozenList()
             emptyPointRedemptions.freeze()
             return emptyPointRedemptions
 
-        frozenPointRedemptions: FrozenList[AbsChannelPointRedemption2 | Any | None] = FrozenList(pointRedemptions)
+        frozenPointRedemptions: FrozenList[AbsChannelPointRedemption | Any | None] = FrozenList(pointRedemptions)
         frozenPointRedemptions.freeze()
 
-        validPointRedemptions: FrozenList[AbsChannelPointRedemption2] = FrozenList()
+        validPointRedemptions: FrozenList[AbsChannelPointRedemption] = FrozenList()
 
         for index, pointRedemption in enumerate(frozenPointRedemptions):
             if pointRedemption is None:
                 continue
-            elif isinstance(pointRedemption, AbsChannelPointRedemption2):
+            elif isinstance(pointRedemption, AbsChannelPointRedemption):
                 validPointRedemptions.append(pointRedemption)
             else:
-                exception = TypeError(f'Encountered an invalid AbsChannelPointRedemption2 instance ({index=}) ({pointRedemption=}) ({frozenPointRedemptions=})')
-                self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered an invalid AbsChannelPointRedemption2 instance ({index=}) ({pointRedemption=}) ({frozenPointRedemptions=})', exception, traceback.format_exc())
+                exception = TypeError(f'Encountered an invalid AbsChannelPointRedemption instance ({index=}) ({pointRedemption=}) ({frozenPointRedemptions=})')
+                self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered an invalid AbsChannelPointRedemption instance ({index=}) ({pointRedemption=}) ({frozenPointRedemptions=})', exception, traceback.format_exc())
                 raise exception
 
         validPointRedemptions.freeze()
@@ -133,38 +86,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     async def __handleChannelPointsRedemption(self, channelPointsRedemption: TwitchChannelPointsRedemption):
         if not isinstance(channelPointsRedemption, TwitchChannelPointsRedemption):
             raise TypeError(f'channelPointsRedemption argument is malformed: \"{channelPointsRedemption}\"')
-
-        user = channelPointsRedemption.twitchUser
-
-        if user.isCutenessEnabled:
-            if await self.__cutenessPointRedemption.handlePointRedemption(
-                channelPointsRedemption = channelPointsRedemption,
-            ):
-                return
-
-        if user.isPkmnEnabled:
-            if channelPointsRedemption.rewardId == user.pkmnBattleRewardId:
-                if await self.__pkmnBattlePointRedemption.handlePointRedemption(
-                    channelPointsRedemption = channelPointsRedemption,
-                ):
-                    return
-
-            if await self.__pkmnCatchPointRedemption.handlePointRedemption(
-                channelPointsRedemption = channelPointsRedemption,
-            ):
-                return
-
-            if channelPointsRedemption.rewardId == user.pkmnEvolveRewardId:
-                if await self.__pkmnEvolvePointRedemption.handlePointRedemption(
-                    channelPointsRedemption = channelPointsRedemption,
-                ):
-                    return
-
-            if channelPointsRedemption.rewardId == user.pkmnShinyRewardId:
-                if await self.__pkmnShinyPointRedemption.handlePointRedemption(
-                    channelPointsRedemption = channelPointsRedemption,
-                ):
-                    return
 
         for index, pointRedemption in enumerate(self.__pointRedemptions):
             try:

@@ -1,6 +1,6 @@
 from typing import Final
 
-from .absChannelPointsRedemption2 import AbsChannelPointRedemption2
+from .absChannelPointsRedemption import AbsChannelPointRedemption
 from .pointsRedemptionResult import PointsRedemptionResult
 from ..misc import utils as utils
 from ..mouseCursor.mouseCursorHelperInterface import MouseCursorHelperInterface
@@ -9,7 +9,7 @@ from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPoin
 from ..users.userInterface import UserInterface
 
 
-class MouseCursorPointRedemption(AbsChannelPointRedemption2):
+class MouseCursorPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,

@@ -26,7 +26,7 @@ from src.aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from src.asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRepository
 from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
-from src.channelPointRedemptions.absChannelPointsRedemption2 import AbsChannelPointRedemption2
+from src.channelPointRedemptions.absChannelPointsRedemption import AbsChannelPointRedemption
 from src.channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
 from src.channelPointRedemptions.discordPointRedemption import DiscordPointRedemption
 from src.channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
@@ -69,6 +69,7 @@ from src.chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGloba
 from src.chatCommands.removeTriviaControllerChatCommand import RemoveTriviaControllerChatCommand
 from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from src.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
+from src.chatCommands.translateChatCommand import TranslateChatCommand
 from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from src.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from src.chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
@@ -1819,45 +1820,6 @@ jishoHelper: JishoHelperInterface = JishoHelper(
 )
 
 
-######################################################
-## Channel Point Redemptions initialization section ##
-######################################################
-
-cutenessPointRedemption: Final[CutenessPointRedemption] = CutenessPointRedemption(
-    cutenessRepository = cutenessRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
-pkmnBattlePointRedemption: Final[PkmnBattlePointRedemption] = PkmnBattlePointRedemption(
-    funtoonHelper = funtoonHelper,
-    generalSettingsRepository = generalSettingsRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
-pkmnCatchPointRedemption: Final[PkmnCatchPointRedemption] = PkmnCatchPointRedemption(
-    funtoonHelper = funtoonHelper,
-    generalSettingsRepository = generalSettingsRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
-pkmnEvolvePointRedemption: Final[PkmnEvolvePointRedemption] = PkmnEvolvePointRedemption(
-    funtoonHelper = funtoonHelper,
-    generalSettingsRepository = generalSettingsRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
-pkmnShinyPointRedemption: Final[PkmnShinyPointRedemption] = PkmnShinyPointRedemption(
-    funtoonHelper = funtoonHelper,
-    generalSettingsRepository = generalSettingsRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
-
 #################################
 ## Ecco initialization section ##
 #################################
@@ -1916,8 +1878,37 @@ redemptionCounterHelper: RedemptionCounterHelperInterface = RedemptionCounterHel
 ## Twitch events initialization section ##
 ##########################################
 
-pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozenset({
+pointRedemptions: Final[Collection[AbsChannelPointRedemption | None]] = frozenset({
+    CutenessPointRedemption(
+        cutenessRepository = cutenessRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     DiscordPointRedemption(
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    PkmnBattlePointRedemption(
+        funtoonHelper = funtoonHelper,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    PkmnCatchPointRedemption(
+        funtoonHelper = funtoonHelper,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    PkmnEvolvePointRedemption(
+        funtoonHelper = funtoonHelper,
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    PkmnShinyPointRedemption(
+        funtoonHelper = funtoonHelper,
+        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
@@ -1942,11 +1933,6 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
 
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
-    cutenessPointRedemption = cutenessPointRedemption,
-    pkmnBattlePointRedemption = pkmnBattlePointRedemption,
-    pkmnCatchPointRedemption = pkmnCatchPointRedemption,
-    pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,
-    pkmnShinyPointRedemption = pkmnShinyPointRedemption,
     timber = timber,
     userIdsRepository = userIdsRepository,
     pointRedemptions = pointRedemptions,
@@ -2185,6 +2171,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaGameMachine = triviaGameMachine,
         triviaSettings = triviaSettings,
         triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    TranslateChatCommand(
+        languagesRepository = languagesRepository,
+        timber = timber,
+        translationHelper = translationHelper,
         twitchChatMessenger = twitchChatMessenger,
     ),
     TriviaInfoChatCommand(

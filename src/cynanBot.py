@@ -44,7 +44,6 @@ from .chatCommands.setTwitchCodeChatCommand import SetTwitchCodeChatCommand
 from .chatCommands.stubChatCommand import StubChatCommand
 from .chatCommands.swQuoteChatCommand import SwQuoteChatCommand
 from .chatCommands.timeChatCommand import TimeChatCommand
-from .chatCommands.translateChatCommand import TranslateChatCommand
 from .chatCommands.twitchUserInfoChatCommand import TwitchUserInfoChatCommand
 from .chatCommands.voicemailsChatCommand import VoicemailsChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -789,11 +788,6 @@ class CynanBot(
         else:
             self.__swQuoteCommand: AbsChatCommand = SwQuoteChatCommand(starWarsQuotesRepository, timber, twitchChatMessenger, usersRepository)
 
-        if translationHelper is None:
-            self.__translateCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__translateCommand: AbsChatCommand = TranslateChatCommand(languagesRepository, timber, translationHelper, twitchChatMessenger, usersRepository)
-
         if voicemailHelper is None or voicemailsRepository is None or voicemailSettingsRepository is None:
             self.__playVoicemailCommand: AbsChatCommand = StubChatCommand()
             self.__voicemailsCommand: AbsChatCommand = StubChatCommand()
@@ -1097,11 +1091,6 @@ class CynanBot(
     async def command_time(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__timeCommand.handleChatCommand(context)
-
-    @commands.command(name = 'translate')
-    async def command_translate(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__translateCommand.handleChatCommand(context)
 
     @commands.command(name = 'twitchuserinfo', aliases = [ 'twitchinfo', 'userinfo' ])
     async def command_twitchuserinfo(self, ctx: Context):

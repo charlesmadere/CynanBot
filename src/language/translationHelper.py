@@ -22,7 +22,7 @@ class TranslationHelper(TranslationHelperInterface):
         deepLTranslationApi: DeepLTranslationApi,
         googleTranslationApi: GoogleTranslationApi,
         languagesRepository: LanguagesRepositoryInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(deepLTranslationApi, DeepLTranslationApi):
             raise TypeError(f'deepLTranslationApi argument is malformed: \"{deepLTranslationApi}\"')
