@@ -11,7 +11,6 @@ from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
 from ...channelPointRedemptions.absChannelPointRedemption import AbsChannelPointRedemption
 from ...channelPointRedemptions.absChannelPointsRedemption2 import AbsChannelPointRedemption2
-from ...channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
 from ...channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
 from ...channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from ...channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
@@ -30,7 +29,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        cutenessPointRedemption: CutenessPointRedemption | None,
         pkmnBattlePointRedemption: PkmnBattlePointRedemption | None,
         pkmnCatchPointRedemption: PkmnCatchPointRedemption | None,
         pkmnEvolvePointRedemption: PkmnEvolvePointRedemption | None,
@@ -43,8 +41,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif cutenessPointRedemption is not None and not isinstance(cutenessPointRedemption, CutenessPointRedemption):
-            raise TypeError(f'cutenessPointRedemption argument is malformed: \"{cutenessPointRedemption}\"')
         elif pkmnBattlePointRedemption is not None and not isinstance(pkmnBattlePointRedemption, PkmnBattlePointRedemption):
             raise TypeError(f'pkmnBattlePointRedemption argument is malformed: \"{pkmnBattlePointRedemption}\"')
         elif pkmnCatchPointRedemption is not None and not isinstance(pkmnCatchPointRedemption, PkmnCatchPointRedemption):
@@ -77,11 +73,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         self.__isStarted: bool = False
         self.__channelPointsRedemptionsQueue: Final[SimpleQueue[TwitchChannelPointsRedemption]] = SimpleQueue()
-
-        if cutenessPointRedemption is None:
-            self.__cutenessPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__cutenessPointRedemption: AbsChannelPointRedemption = cutenessPointRedemption
 
         if pkmnBattlePointRedemption is None:
             self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
@@ -135,12 +126,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'channelPointsRedemption argument is malformed: \"{channelPointsRedemption}\"')
 
         user = channelPointsRedemption.twitchUser
-
-        if user.isCutenessEnabled:
-            if await self.__cutenessPointRedemption.handlePointRedemption(
-                channelPointsRedemption = channelPointsRedemption,
-            ):
-                return
 
         if user.isPkmnEnabled:
             if channelPointsRedemption.rewardId == user.pkmnBattleRewardId:

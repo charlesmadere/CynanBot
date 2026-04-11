@@ -2972,17 +2972,6 @@ supStreamerHelper: Final[SupStreamerHelperInterface] = SupStreamerHelper()
 ## Channel Point Redemptions initialization section ##
 ######################################################
 
-casualGamePollPointRedemption: Final[CasualGamePollPointRedemption] = CasualGamePollPointRedemption(
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
-cutenessPointRedemption: Final[CutenessPointRedemption] = CutenessPointRedemption(
-    cutenessRepository = cutenessRepository,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
 pkmnBattlePointRedemption: Final[PkmnBattlePointRedemption] = PkmnBattlePointRedemption(
     funtoonHelper = funtoonHelper,
     generalSettingsRepository = generalSettingsRepository,
@@ -3113,6 +3102,11 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    CutenessPointRedemption(
+        cutenessRepository = cutenessRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     DiscordPointRedemption(
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
@@ -3148,7 +3142,6 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
 
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
-    cutenessPointRedemption = cutenessPointRedemption,
     pkmnBattlePointRedemption = pkmnBattlePointRedemption,
     pkmnCatchPointRedemption = pkmnCatchPointRedemption,
     pkmnEvolvePointRedemption = pkmnEvolvePointRedemption,
