@@ -2187,7 +2187,6 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption2 | None]] = frozens
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
     pkmnBattlePointRedemption = None,
-    pkmnCatchPointRedemption = None,
     pkmnEvolvePointRedemption = None,
     pkmnShinyPointRedemption = None,
     timber = timber,

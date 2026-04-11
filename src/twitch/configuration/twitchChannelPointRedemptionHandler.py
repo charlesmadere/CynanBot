@@ -12,7 +12,6 @@ from ..localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedem
 from ...channelPointRedemptions.absChannelPointRedemption import AbsChannelPointRedemption
 from ...channelPointRedemptions.absChannelPointsRedemption2 import AbsChannelPointRedemption2
 from ...channelPointRedemptions.pkmnBattlePointRedemption import PkmnBattlePointRedemption
-from ...channelPointRedemptions.pkmnCatchPointRedemption import PkmnCatchPointRedemption
 from ...channelPointRedemptions.pkmnEvolvePointRedemption import PkmnEvolvePointRedemption
 from ...channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointRedemption
 from ...channelPointRedemptions.pointsRedemptionResult import PointsRedemptionResult
@@ -30,7 +29,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         pkmnBattlePointRedemption: PkmnBattlePointRedemption | None,
-        pkmnCatchPointRedemption: PkmnCatchPointRedemption | None,
         pkmnEvolvePointRedemption: PkmnEvolvePointRedemption | None,
         pkmnShinyPointRedemption: PkmnShinyPointRedemption | None,
         timber: TimberInterface,
@@ -43,8 +41,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif pkmnBattlePointRedemption is not None and not isinstance(pkmnBattlePointRedemption, PkmnBattlePointRedemption):
             raise TypeError(f'pkmnBattlePointRedemption argument is malformed: \"{pkmnBattlePointRedemption}\"')
-        elif pkmnCatchPointRedemption is not None and not isinstance(pkmnCatchPointRedemption, PkmnCatchPointRedemption):
-            raise TypeError(f'pkmnCatchPointRedemption argument is malformed: \"{pkmnCatchPointRedemption}\"')
         elif pkmnEvolvePointRedemption is not None and not isinstance(pkmnEvolvePointRedemption, PkmnEvolvePointRedemption):
             raise TypeError(f'pkmnEvolvePointRedemption argument is malformed: \"{pkmnEvolvePointRedemption}\"')
         elif pkmnShinyPointRedemption is not None and not isinstance(pkmnShinyPointRedemption, PkmnShinyPointRedemption):
@@ -78,11 +74,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
         else:
             self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = pkmnBattlePointRedemption
-
-        if pkmnCatchPointRedemption is None:
-            self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
-        else:
-            self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = pkmnCatchPointRedemption
 
         if pkmnEvolvePointRedemption is None:
             self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = StubChannelPointRedemption()
@@ -133,11 +124,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
                     channelPointsRedemption = channelPointsRedemption,
                 ):
                     return
-
-            if await self.__pkmnCatchPointRedemption.handlePointRedemption(
-                channelPointsRedemption = channelPointsRedemption,
-            ):
-                return
 
             if channelPointsRedemption.rewardId == user.pkmnEvolveRewardId:
                 if await self.__pkmnEvolvePointRedemption.handlePointRedemption(
