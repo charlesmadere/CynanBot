@@ -1,3 +1,4 @@
+import traceback
 from typing import Final
 
 from .absChannelPointsRedemption2 import AbsChannelPointRedemption2
@@ -90,9 +91,13 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption2):
                 userInput = pointsRedemption.redemptionMessage,
             )
         else:
-            button = await self.__crowdControlInputTypeMapper.toButton(
-                inputType = boosterPack.inputType,
-            )
+            try:
+                button = await self.__crowdControlInputTypeMapper.toButton(
+                    inputType = boosterPack.inputType,
+                )
+            except ValueError as e:
+                self.__timber.log(self.pointsRedemptionName, f'Failed to convert the given booster pack\'s input type into a crowd control button ({actionId=}) ({boosterPack=}) ({pointsRedemption=})', e, traceback.format_exc())
+                return PointsRedemptionResult.IGNORED
 
         if button is None:
             self.__timber.log(self.pointsRedemptionName, f'Unable to redeem ({button=}) ({actionId=}) ({boosterPack=}) ({pointsRedemption=})')

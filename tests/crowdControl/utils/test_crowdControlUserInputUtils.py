@@ -213,12 +213,18 @@ class TestCrowdControlUserInputUtils:
         result = await self.utils.parseButtonFromUserInput('trigger_left')
         assert result is CrowdControlButton.TRIGGER_LEFT
 
+        result = await self.utils.parseButtonFromUserInput('trigger-left')
+        assert result is CrowdControlButton.TRIGGER_LEFT
+
         result = await self.utils.parseButtonFromUserInput('trigger left')
         assert result is CrowdControlButton.TRIGGER_LEFT
 
     @pytest.mark.asyncio
     async def test_parseButtonFromUserInput_withTriggerRight(self):
         result = await self.utils.parseButtonFromUserInput('trigger_right')
+        assert result is CrowdControlButton.TRIGGER_RIGHT
+
+        result = await self.utils.parseButtonFromUserInput('trigger-right')
         assert result is CrowdControlButton.TRIGGER_RIGHT
 
         result = await self.utils.parseButtonFromUserInput('trigger right')

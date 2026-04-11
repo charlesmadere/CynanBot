@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Any, Final
 
 from frozendict import frozendict
 
@@ -32,13 +32,13 @@ class CrowdControlUserInputUtils(CrowdControlUserInputUtilsInterface):
             CrowdControlButton.DPAD_UP: frozenset({ 'up', 'dpad_up', 'dpad up', 'up dpad' }),
             CrowdControlButton.SELECT: frozenset({ 'select', 'sel' }),
             CrowdControlButton.START: frozenset({ 'start', 'pause' }),
-            CrowdControlButton.TRIGGER_LEFT: frozenset({ 'left trigger', 'left_trigger', 'l trigger', 'l_trigger', 'trigger_left', 'trigger left' }),
-            CrowdControlButton.TRIGGER_RIGHT: frozenset({ 'right trigger', 'right_trigger', 'r trigger', 'r_trigger', 'trigger_right', 'trigger right' }),
+            CrowdControlButton.TRIGGER_LEFT: frozenset({ 'left trigger', 'left_trigger', 'l trigger', 'l_trigger', 'trigger_left', 'trigger-left', 'trigger left' }),
+            CrowdControlButton.TRIGGER_RIGHT: frozenset({ 'right trigger', 'right_trigger', 'r trigger', 'r_trigger', 'trigger_right', 'trigger-right', 'trigger right' }),
         })
 
     async def parseButtonFromUserInput(
         self,
-        userInput: str | None
+        userInput: str | Any | None,
     ) -> CrowdControlButton | None:
         if not utils.isValidStr(userInput):
             return None
