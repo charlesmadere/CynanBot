@@ -34,7 +34,7 @@ class TestCalculateTimeoutDurationUseCase:
     @pytest.mark.asyncio
     async def test_invoke_withRandomExponentialTimeoutDuration(self):
         timeoutDuration = RandomExponentialTimeoutDuration(
-            scale = float(10),
+            scale = float(11),
             maximumSeconds = 300,
             minimumSeconds = 30,
         )
