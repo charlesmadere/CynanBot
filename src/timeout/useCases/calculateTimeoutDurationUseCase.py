@@ -1,6 +1,7 @@
 import random
 
-from ..models.actions.absTimeoutAction import AbsTimeoutAction
+from .calculateTimeoutDurationUseCaseInterface import CalculateTimeoutDurationUseCaseInterface
+from ..models.absTimeoutDuration import AbsTimeoutDuration
 from ..models.calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ..models.exactTimeoutDuration import ExactTimeoutDuration
 from ..models.randomExponentialTimeoutDuration import RandomExponentialTimeoutDuration
@@ -8,7 +9,7 @@ from ..models.randomLinearTimeoutDuration import RandomLinearTimeoutDuration
 from ...misc import utils as utils
 
 
-class CalculateTimeoutDurationUseCase:
+class CalculateTimeoutDurationUseCase(CalculateTimeoutDurationUseCaseInterface):
 
     async def __calculateExactTimeoutDurationSeconds(
         self,
@@ -44,12 +45,11 @@ class CalculateTimeoutDurationUseCase:
 
     async def invoke(
         self,
-        timeoutAction: AbsTimeoutAction,
+        timeoutDuration: AbsTimeoutDuration,
     ) -> CalculatedTimeoutDuration:
-        if not isinstance(timeoutAction, AbsTimeoutAction):
-            raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
+        if not isinstance(timeoutDuration, AbsTimeoutDuration):
+            raise TypeError(f'timeoutDuration argument is malformed: \"{timeoutDuration}\"')
 
-        timeoutDuration = timeoutAction.getTimeoutDuration()
         durationSeconds: int
 
         if isinstance(timeoutDuration, ExactTimeoutDuration):
