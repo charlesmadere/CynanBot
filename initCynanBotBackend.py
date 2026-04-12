@@ -55,8 +55,11 @@ from src.chatCommands.cutenessChatCommand import CutenessChatCommand
 from src.chatCommands.cutenessHistoryChatCommand import CutenessHistoryChatCommand
 from src.chatCommands.cynanSourceChatCommand import CynanSourceChatCommand
 from src.chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersChatCommand
+from src.chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
+from src.chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
 from src.chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
+from src.chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from src.chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
 from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from src.chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
@@ -1756,18 +1759,18 @@ chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = ChatterInventor
 ## Cheer Actions initialization section ##
 ##########################################
 
-cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper(
+cheerActionJsonMapper: Final[CheerActionJsonMapperInterface] = CheerActionJsonMapper(
     chatterInventoryMapper = chatterInventoryMapper,
 )
 
-cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = CheerActionSettingsRepository(
+cheerActionSettingsRepository: Final[CheerActionSettingsRepositoryInterface] = CheerActionSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/cheerActionSettings.json',
     ),
 )
 
-cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository(
+cheerActionsRepository: Final[CheerActionsRepositoryInterface] = CheerActionsRepository(
     backingDatabase = backingDatabase,
     cheerActionJsonMapper = cheerActionJsonMapper,
     cheerActionSettingsRepository = cheerActionSettingsRepository,
@@ -2069,8 +2072,20 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    DisableCheerActionChatCommand(
+        administratorProvider = administratorProvider,
+        cheerActionsRepository = cheerActionsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     EccoChatCommand(
         eccoHelper = eccoHelper,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    EnableCheerActionChatCommand(
+        administratorProvider = administratorProvider,
+        cheerActionsRepository = cheerActionsRepository,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
@@ -2079,6 +2094,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
         timber = timber,
         triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    GetCheerActionsChatCommand(
+        administratorProvider = administratorProvider,
+        cheerActionsRepository = cheerActionsRepository,
+        timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
     GetGlobalTriviaControllersChatCommand(

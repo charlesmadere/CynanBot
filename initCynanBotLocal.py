@@ -38,9 +38,12 @@ from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
 from src.chatCommands.chatterInventoryChatCommand import ChatterInventoryChatCommand
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
+from src.chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCommand
+from src.chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
 from src.chatCommands.freeGiveChatterItemChatCommand import FreeGiveChatterItemChatCommand
 from src.chatCommands.getChatterPreferredNameChatCommand import GetChatterPreferredNameChatCommand
 from src.chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredTtsChatCommand
+from src.chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from src.chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
@@ -2046,22 +2049,22 @@ translationHelper: TranslationHelperInterface = TranslationHelper(
 ## Cheer Actions initialization section ##
 ##########################################
 
-cheerActionJsonMapper: CheerActionJsonMapperInterface = CheerActionJsonMapper(
+cheerActionJsonMapper: Final[CheerActionJsonMapperInterface] = CheerActionJsonMapper(
     chatterInventoryMapper = chatterInventoryMapper,
 )
 
-cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface = CheerActionSettingsRepository(
+cheerActionSettingsRepository: Final[CheerActionSettingsRepositoryInterface] = CheerActionSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/cheerActionSettings.json'
-    )
+        fileName = '../config/cheerActionSettings.json',
+    ),
 )
 
-cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository(
+cheerActionsRepository: Final[CheerActionsRepositoryInterface] = CheerActionsRepository(
     backingDatabase = backingDatabase,
     cheerActionJsonMapper = cheerActionJsonMapper,
     cheerActionSettingsRepository = cheerActionSettingsRepository,
-    timber = timber
+    timber = timber,
 )
 
 airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheerActionHelper(
@@ -2227,6 +2230,18 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    DisableCheerActionChatCommand(
+        administratorProvider = administratorProvider,
+        cheerActionsRepository = cheerActionsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    EnableCheerActionChatCommand(
+        administratorProvider = administratorProvider,
+        cheerActionsRepository = cheerActionsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     FreeGiveChatterItemChatCommand(
         administratorProvider = administratorProvider,
         chatterInventoryHelper = chatterInventoryHelper,
@@ -2248,6 +2263,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
         chatterPreferredTtsRepository = chatterPreferredTtsRepository,
         chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    GetCheerActionsChatCommand(
+        administratorProvider = administratorProvider,
+        cheerActionsRepository = cheerActionsRepository,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),

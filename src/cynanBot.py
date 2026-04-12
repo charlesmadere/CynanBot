@@ -26,9 +26,6 @@ from .chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
 from .chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from .chatCommands.confirmChatCommand import ConfirmChatCommand
 from .chatCommands.crowdControlChatCommand import CrowdControlChatCommand
-from .chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCommand
-from .chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
-from .chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from .chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
 from .chatCommands.pkMonChatCommand import PkMonChatCommand
 from .chatCommands.pkMoveChatCommand import PkMoveChatCommand
@@ -732,15 +729,6 @@ class CynanBot(
         else:
             self.__asplodieStatsCommand: AbsChatCommand = AsplodieStatsChatCommand(asplodieStatsPresenter, asplodieStatsRepository, timber, twitchChatMessenger, userIdsRepository, usersRepository)
 
-        if cheerActionJsonMapper is None or cheerActionsRepository is None:
-            self.__disableCheerActionCommand: AbsChatCommand = StubChatCommand()
-            self.__enableCheerActionCommand: AbsChatCommand = StubChatCommand()
-            self.__getCheerActionsCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__disableCheerActionCommand: AbsChatCommand = DisableCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchChatMessenger, usersRepository)
-            self.__enableCheerActionCommand: AbsChatCommand = EnableCheerActionChatCommand(administratorProvider, cheerActionsRepository, timber, twitchChatMessenger, usersRepository)
-            self.__getCheerActionsCommand: AbsChatCommand = GetCheerActionsChatCommand(administratorProvider, cheerActionsRepository, timber, twitchChatMessenger, usersRepository)
-
         if crowdControlAutomator is None or crowdControlIdGenerator is None or crowdControlMachine is None or crowdControlUserInputUtils is None:
             self.__addGameShuffleAutomatorCommand: AbsChatCommand = StubChatCommand()
             self.__crowdControlCommand: AbsChatCommand = StubChatCommand()
@@ -1011,21 +999,6 @@ class CynanBot(
     async def command_crowdcontrol(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__crowdControlCommand.handleChatCommand(context)
-
-    @commands.command(name = 'disablecheeraction')
-    async def command_disablecheeraction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__disableCheerActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'enablecheeraction')
-    async def command_enablecheeraction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__enableCheerActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'getcheeractions', aliases = [ 'cheeractions' ])
-    async def command_getcheeractions(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__getCheerActionsCommand.handleChatCommand(context)
 
     @commands.command(name = 'getrecurringactions', aliases = [ 'recurringactions' ])
     async def command_getrecurringactions(self, ctx: Context):
