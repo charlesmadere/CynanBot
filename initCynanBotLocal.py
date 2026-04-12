@@ -1975,9 +1975,7 @@ crowdControlAutomator: Final[CrowdControlAutomatorInterface] = CrowdControlAutom
     usersRepository = usersRepository,
 )
 
-crowdControlUserInputUtils: Final[CrowdControlUserInputUtilsInterface] = CrowdControlUserInputUtils(
-    twitchMessageStringUtils = twitchMessageStringUtils,
-)
+crowdControlUserInputUtils: Final[CrowdControlUserInputUtilsInterface] = CrowdControlUserInputUtils()
 
 crowdControlCheerActionHelper: Final[CrowdControlCheerActionHelperInterface] = CrowdControlCheerActionHelper(
     crowdControlIdGenerator = crowdControlIdGenerator,
