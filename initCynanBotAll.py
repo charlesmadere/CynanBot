@@ -452,6 +452,7 @@ from src.timeout.repositories.chatterTimeoutHistoryRepositoryInterface import Ch
 from src.timeout.settings.timeoutActionSettings import TimeoutActionSettings
 from src.timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from src.timeout.useCases.calculateTimeoutDurationUseCase import CalculateTimeoutDurationUseCase
+from src.timeout.useCases.calculateTimeoutDurationUseCaseInterface import CalculateTimeoutDurationUseCaseInterface
 from src.timeout.useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
 from src.timeout.useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
 from src.timeout.useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
@@ -2485,7 +2486,7 @@ chatterTimeoutHistoryRepository: ChatterTimeoutHistoryRepositoryInterface = Chat
     timeZoneRepository = timeZoneRepository,
 )
 
-calculateTimeoutDurationUseCase = CalculateTimeoutDurationUseCase()
+calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface] = CalculateTimeoutDurationUseCase()
 
 determineAirStrikeTargetsUseCase = DetermineAirStrikeTargetsUseCase(
     activeChattersRepository = activeChattersRepository,

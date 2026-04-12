@@ -54,7 +54,7 @@ from ..models.timeoutDiceRoll import TimeoutDiceRoll
 from ..models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ..models.timeoutTarget import TimeoutTarget
 from ..repositories.chatterTimeoutHistoryRepositoryInterface import ChatterTimeoutHistoryRepositoryInterface
-from ..useCases.calculateTimeoutDurationUseCase import CalculateTimeoutDurationUseCase
+from ..useCases.calculateTimeoutDurationUseCaseInterface import CalculateTimeoutDurationUseCaseInterface
 from ..useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
 from ..useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
 from ..useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
@@ -88,7 +88,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface,
         asplodieStatsRepository: AsplodieStatsRepositoryInterface,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        calculateTimeoutDurationUseCase: CalculateTimeoutDurationUseCase,
+        calculateTimeoutDurationUseCase: CalculateTimeoutDurationUseCaseInterface,
         chatterInventoryHelper: ChatterInventoryHelperInterface,
         chatterTimeoutHistoryRepository: ChatterTimeoutHistoryRepositoryInterface,
         determineAirStrikeTargetsUseCase: DetermineAirStrikeTargetsUseCase,
@@ -114,7 +114,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'asplodieStatsRepository argument is malformed: \"{asplodieStatsRepository}\"')
         elif not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(calculateTimeoutDurationUseCase, CalculateTimeoutDurationUseCase):
+        elif not isinstance(calculateTimeoutDurationUseCase, CalculateTimeoutDurationUseCaseInterface):
             raise TypeError(f'calculateTimeoutDurationUseCase argument is malformed: \"{calculateTimeoutDurationUseCase}\"')
         elif not isinstance(chatterInventoryHelper, ChatterInventoryHelperInterface):
             raise TypeError(f'chatterInventoryHelper argument is malformed: \"{chatterInventoryHelper}\"')
@@ -160,7 +160,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__anivCopyMessageTimeoutScoreRepository: Final[AnivCopyMessageTimeoutScoreRepositoryInterface] = anivCopyMessageTimeoutScoreRepository
         self.__asplodieStatsRepository: Final[AsplodieStatsRepositoryInterface] = asplodieStatsRepository
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
-        self.__calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCase] = calculateTimeoutDurationUseCase
+        self.__calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface] = calculateTimeoutDurationUseCase
         self.__chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = chatterInventoryHelper
         self.__chatterTimeoutHistoryRepository: Final[ChatterTimeoutHistoryRepositoryInterface] = chatterTimeoutHistoryRepository
         self.__determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCase] = determineAirStrikeTargetsUseCase
@@ -228,7 +228,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             return
 
         timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
-            timeoutAction = action,
+            timeoutDuration = action.getTimeoutDuration(),
         )
 
         timeoutResults: dict[TimeoutTarget, TwitchTimeoutResult] = dict()
@@ -415,7 +415,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             return
 
         timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
-            timeoutAction = action,
+            timeoutDuration = action.getTimeoutDuration(),
         )
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
@@ -508,7 +508,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         )
 
         timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
-            timeoutAction = action,
+            timeoutDuration = action.getTimeoutDuration(),
         )
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
@@ -560,7 +560,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         )
 
         timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
-            timeoutAction = action,
+            timeoutDuration = action.getTimeoutDuration(),
         )
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
@@ -648,7 +648,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             return
 
         timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
-            timeoutAction = action,
+            timeoutDuration = action.getTimeoutDuration(),
         )
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
@@ -775,7 +775,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 return
 
         timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
-            timeoutAction = action,
+            timeoutDuration = action.getTimeoutDuration(),
         )
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
@@ -897,7 +897,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 return
 
         timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
-            timeoutAction = action,
+            timeoutDuration = action.getTimeoutDuration(),
         )
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(

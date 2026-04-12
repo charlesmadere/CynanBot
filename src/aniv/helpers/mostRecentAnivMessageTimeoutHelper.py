@@ -216,7 +216,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             maximumSeconds = await self.__anivSettings.getCopyMessageTimeoutMaxSeconds()
 
         return RandomExponentialTimeoutDuration(
-            scale = 9,
+            scale = float(10),
             maximumSeconds = maximumSeconds,
             minimumSeconds = minimumSeconds,
         )
