@@ -103,12 +103,14 @@ class TestCheerChatCommand(AbsChatCommand2):
             self.__timber.log(self.commandName, f'Invalid arguments given ({arguments=}) ({chatMessage=})')
             return ChatCommandResult.HANDLED
 
+        eventId = await self.__generateEventId()
+
         newTwitchChatMessage = TwitchChatMessage(
             messageFragments = await self.__generateMessageFragments(arguments),
             chatterUserId = chatMessage.chatterUserId,
             chatterUserLogin = chatMessage.chatterUserLogin,
             chatterUserName = chatMessage.chatterUserName,
-            eventId = await self.__generateEventId(),
+            eventId = eventId,
             sourceMessageId = None,
             text = arguments.fullText,
             textWithoutCheers = arguments.text,
@@ -128,7 +130,7 @@ class TestCheerChatCommand(AbsChatCommand2):
             )
         except Exception as e:
             exception = e
-            self.__timber.log(self.commandName, f'Encountered exception when attempting to run onNewChat() ({arguments=}) ({newTwitchChatMessage=}) ({chatMessage=})', e, traceback.format_exc())
+            self.__timber.log(self.commandName, f'Encountered exception when attempting to run onNewChat() ({eventId=}) ({arguments=}) ({newTwitchChatMessage=}) ({chatMessage=})', e, traceback.format_exc())
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ Cheer test results ({arguments=}) ({exception=})',
@@ -136,7 +138,7 @@ class TestCheerChatCommand(AbsChatCommand2):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({arguments=}) ({newTwitchChatMessage=}) ({chatMessage=}) ({exception=})')
+        self.__timber.log(self.commandName, f'Handled ({eventId=}) ({arguments=}) ({newTwitchChatMessage=}) ({chatMessage=}) ({exception=})')
         return ChatCommandResult.HANDLED
 
     async def __parseArguments(self, chatMessage: TwitchChatMessage) -> Arguments | None:
