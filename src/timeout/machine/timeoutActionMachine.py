@@ -58,7 +58,7 @@ from ..useCases.calculateTimeoutDurationUseCaseInterface import CalculateTimeout
 from ..useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
 from ..useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
 from ..useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
-from ..useCases.determineTimeoutTargetUseCase import DetermineTimeoutTargetUseCase
+from ..useCases.determineTimeoutTargetUseCaseInterface import DetermineTimeoutTargetUseCaseInterface
 from ..useCases.determineTm36SplashTargetUseCase import DetermineTm36SplashTargetUseCase
 from ...aniv.repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
     AnivCopyMessageTimeoutScoreRepositoryInterface
@@ -94,7 +94,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         determineAirStrikeTargetsUseCase: DetermineAirStrikeTargetsUseCase,
         determineBananaTargetUseCase: DetermineBananaTargetUseCase,
         determineGrenadeTargetUseCase: DetermineGrenadeTargetUseCase,
-        determineTimeoutTargetUseCase: DetermineTimeoutTargetUseCase,
+        determineTimeoutTargetUseCase: DetermineTimeoutTargetUseCaseInterface,
         determineTm36SplashTargetUseCase: DetermineTm36SplashTargetUseCase,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
@@ -126,7 +126,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'determineBananaTargetUseCase argument is malformed: \"{determineBananaTargetUseCase}\"')
         elif not isinstance(determineGrenadeTargetUseCase, DetermineGrenadeTargetUseCase):
             raise TypeError(f'determineGrenadeTargetUseCase argument is malformed: \"{determineGrenadeTargetUseCase}\"')
-        elif not isinstance(determineTimeoutTargetUseCase, DetermineTimeoutTargetUseCase):
+        elif not isinstance(determineTimeoutTargetUseCase, DetermineTimeoutTargetUseCaseInterface):
             raise TypeError(f'determineTimeoutTargetUseCase argument is malformed: \"{determineTimeoutTargetUseCase}\"')
         elif not isinstance(determineTm36SplashTargetUseCase, DetermineTm36SplashTargetUseCase):
             raise TypeError(f'determineTm36SplashTargetUseCase argument is malformed: \"{determineTm36SplashTargetUseCase}\"')
@@ -166,7 +166,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCase] = determineAirStrikeTargetsUseCase
         self.__determineBananaTargetUseCase: Final[DetermineBananaTargetUseCase] = determineBananaTargetUseCase
         self.__determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCase] = determineGrenadeTargetUseCase
-        self.__determineTimeoutTargetUseCase: Final[DetermineTimeoutTargetUseCase] = determineTimeoutTargetUseCase
+        self.__determineTimeoutTargetUseCase: Final[DetermineTimeoutTargetUseCaseInterface] = determineTimeoutTargetUseCase
         self.__determineTm36SplashTargetUseCase: Final[DetermineTm36SplashTargetUseCase] = determineTm36SplashTargetUseCase
         self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository

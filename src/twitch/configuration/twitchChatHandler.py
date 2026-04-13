@@ -123,8 +123,8 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             elif isinstance(chatAction, AbsChatAction):
                 validChatActions.append(chatAction)
             else:
-                exception = TypeError(f'Encountered an invalid AbsChatAction2 instance ({index=}) ({chatAction=}) ({frozenChatActions=})')
-                self.__timber.log('TwitchChatHandler', f'Encountered an invalid AbsChatAction2 instance ({index=}) ({chatAction=}) ({frozenChatActions=})', exception, traceback.format_exc())
+                exception = TypeError(f'Encountered an invalid AbsChatAction instance ({index=}) ({chatAction=}) ({frozenChatActions=})')
+                self.__timber.log('TwitchChatHandler', f'Encountered an invalid AbsChatAction instance ({index=}) ({chatAction=}) ({frozenChatActions=})', exception, traceback.format_exc())
                 raise exception
 
         validChatActions.freeze()
@@ -179,6 +179,11 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             # change this. But for now, it's better/easier to just ignore these messages completely.
             return
 
+        if chatMessage.twitchUser.isChatLoggingEnabled:
+            await self.__logChat(
+                chatMessage = chatMessage,
+            )
+
         await self.__activeChattersRepository.add(
             chatterUserId = chatMessage.chatterUserId,
             chatterUserName = chatMessage.chatterUserName,
@@ -194,11 +199,6 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             chatterUserId = chatMessage.chatterUserId,
             twitchChannelId = chatMessage.twitchChannelId,
         )
-
-        if chatMessage.twitchUser.isChatLoggingEnabled:
-            await self.__logChat(
-                chatMessage = chatMessage,
-            )
 
         await self.__processChatActions(
             mostRecentChat = mostRecentChat,
@@ -260,6 +260,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             return
 
         messageFragments = await self.__mapApiMessageFragments(chatMessage.fragments)
+        textWithoutCheers = await self.__purgeChatMessageOfCheers(messageFragments)
         cheer = await self.__mapApiCheerMetadata(event.cheer)
 
         chatMessage = TwitchChatMessage(
@@ -270,6 +271,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             eventId = eventId,
             sourceMessageId = event.sourceMessageId,
             text = chatMessage.text,
+            textWithoutCheers = textWithoutCheers,
             twitchChannelId = twitchChannelId,
             twitchChatMessageId = event.messageId,
             cheerMetadata = cheer,
@@ -346,9 +348,6 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         cheer = chatMessage.cheerMetadata
         if cheer is None or cheer.bits < 1:
             return False
-
-        messageWithoutCheerText = await self.__purgeChatMessageOfCheers(chatMessage)
-        self.__timber.log('TwitchChatHandler', f'Purged message of cheers ({messageWithoutCheerText=}) ({chatMessage=})')
 
         return await self.__cheerActionHelper.handleCheerAction(
             bits = cheer.bits,
@@ -436,10 +435,16 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             ),
         ))
 
-    async def __purgeChatMessageOfCheers(self, message: TwitchChatMessage) -> str:
+    async def __purgeChatMessageOfCheers(
+        self,
+        messageFragments: Collection[TwitchChatMessageFragment] | None,
+    ) -> str:
+        if messageFragments is None:
+            return ''
+
         chunks: list[str] = list()
 
-        for messageFragment in message.messageFragments:
+        for messageFragment in messageFragments:
             if messageFragment.fragmentType is not TwitchChatMessageFragmentType.CHEERMOTE:
                 chunks.append(messageFragment.text)
 

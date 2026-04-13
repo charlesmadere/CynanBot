@@ -111,6 +111,7 @@ class TestCheerChatCommand(AbsChatCommand2):
             eventId = await self.__generateEventId(),
             sourceMessageId = None,
             text = arguments.fullText,
+            textWithoutCheers = arguments.text,
             twitchChannelId = chatMessage.twitchChannelId,
             twitchChatMessageId = None,
             cheerMetadata = TwitchCheerMetadata(

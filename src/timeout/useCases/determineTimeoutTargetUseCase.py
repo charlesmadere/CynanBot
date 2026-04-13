@@ -2,6 +2,7 @@ import re
 import traceback
 from typing import Final, Pattern
 
+from .determineTimeoutTargetUseCaseInterface import DetermineTimeoutTargetUseCaseInterface
 from ..exceptions import UnknownTimeoutTargetException, ImmuneTimeoutTargetException
 from ..models.actions.absTimeoutAction import AbsTimeoutAction
 from ..models.timeoutTarget import TimeoutTarget
@@ -9,18 +10,16 @@ from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ...twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 from ...users.exceptions import NoSuchUserException
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
-class DetermineTimeoutTargetUseCase:
+class DetermineTimeoutTargetUseCase(DetermineTimeoutTargetUseCaseInterface):
 
     def __init__(
         self,
         timber: TimberInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
-        twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
     ):
@@ -28,8 +27,6 @@ class DetermineTimeoutTargetUseCase:
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
-        elif not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
-            raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -37,7 +34,6 @@ class DetermineTimeoutTargetUseCase:
 
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
-        self.__twitchMessageStringUtils: Final[TwitchMessageStringUtilsInterface] = twitchMessageStringUtils
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
@@ -48,10 +44,6 @@ class DetermineTimeoutTargetUseCase:
         timeoutAction: AbsTimeoutAction,
     ) -> str:
         messageContainingTarget: str | None = timeoutAction.getChatMessage()
-        if not utils.isValidStr(messageContainingTarget):
-            raise UnknownTimeoutTargetException(f'Given empty/blank/malformed timeout target message ({timeoutAction=}) ({messageContainingTarget=})')
-
-        messageContainingTarget = await self.__twitchMessageStringUtils.removeCheerStrings(messageContainingTarget)
         if not utils.isValidStr(messageContainingTarget):
             raise UnknownTimeoutTargetException(f'Given empty/blank/malformed timeout target message ({timeoutAction=}) ({messageContainingTarget=})')
 

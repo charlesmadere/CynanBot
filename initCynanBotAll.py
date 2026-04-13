@@ -2521,7 +2521,6 @@ determineGrenadeTargetUseCase = DetermineGrenadeTargetUseCase(
 determineTimeoutTargetUseCase = DetermineTimeoutTargetUseCase(
     timber = timber,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
 )
