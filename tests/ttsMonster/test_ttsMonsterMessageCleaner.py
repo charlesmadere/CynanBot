@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.storage.jsonStaticReader import JsonStaticReader
@@ -9,28 +11,23 @@ from src.tts.settings.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from src.ttsMonster.ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
 from src.ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
-from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
-from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 
 class TestTtsMonsterMessageCleaner:
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
+    ttsJsonMapper: Final[TtsJsonMapperInterface] = TtsJsonMapper(
         timber = timber,
     )
 
-    ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
+    ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = TtsSettingsRepository(
         settingsJsonReader = JsonStaticReader(dict()),
         ttsJsonMapper = ttsJsonMapper,
     )
 
-    twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
-
-    cleaner: TtsMonsterMessageCleanerInterface = TtsMonsterMessageCleaner(
+    cleaner: Final[TtsMonsterMessageCleanerInterface] = TtsMonsterMessageCleaner(
         ttsSettingsRepository = ttsSettingsRepository,
-        twitchMessageStringUtils = twitchMessageStringUtils
     )
 
     @pytest.mark.asyncio
@@ -47,3 +44,8 @@ class TestTtsMonsterMessageCleaner:
     async def test_clean_withWhitespaceString(self):
         result = await self.cleaner.clean(' ')
         assert result is None
+
+    def test_sanity(self):
+        assert self.cleaner is not None
+        assert isinstance(self.cleaner, TtsMonsterMessageCleaner)
+        assert isinstance(self.cleaner, TtsMonsterMessageCleanerInterface)

@@ -17,6 +17,7 @@ class TwitchChatMessage(TwitchUserInterface):
     eventId: str
     sourceMessageId: str | None
     text: str
+    textWithoutCheers: str
     twitchChannelId: str
     twitchChatMessageId: str | None
     cheerMetadata: TwitchCheerMetadata | None

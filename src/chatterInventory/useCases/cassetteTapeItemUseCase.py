@@ -11,7 +11,6 @@ from ...misc import utils as utils
 from ...twitch.exceptions import TwitchAccessTokenMissingException
 from ...twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ...twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 from ...users.exceptions import NoSuchUserException
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
@@ -30,7 +29,6 @@ class CassetteTapeItemUseCase:
     def __init__(
         self,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
-        twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         voicemailHelper: VoicemailHelperInterface,
@@ -38,8 +36,6 @@ class CassetteTapeItemUseCase:
     ):
         if not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
-        elif not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
-            raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -50,7 +46,6 @@ class CassetteTapeItemUseCase:
             raise TypeError(f'voicemailSettingsRepository argument is malformed: \"{voicemailSettingsRepository}\"')
 
         self.__twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface] = twitchFollowingStatusRepository
-        self.__twitchMessageStringUtils: Final[TwitchMessageStringUtilsInterface] = twitchMessageStringUtils
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__voicemailHelper: Final[VoicemailHelperInterface] = voicemailHelper
@@ -132,15 +127,7 @@ class CassetteTapeItemUseCase:
         userTwitchAccessToken: str,
         action: UseChatterItemAction,
     ) -> ParsedVoicemailRequest:
-        if not utils.isValidStr(action.chatMessage):
-            raise VoicemailMessageIsEmptyException(
-                message = action.chatMessage,
-                originatingAction = action,
-            )
-
-        cleanedMessage = await self.__twitchMessageStringUtils.removeCheerStrings(
-            message = action.chatMessage,
-        )
+        cleanedMessage = utils.cleanStr(action.chatMessage)
 
         if not utils.isValidStr(cleanedMessage):
             raise VoicemailMessageIsEmptyException(

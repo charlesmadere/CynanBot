@@ -15,7 +15,7 @@ class SoundAlertCheerActionHelperInterface(ABC):
         bits: int,
         cheerUserId: str,
         cheerUserName: str,
-        message: str,
+        message: str | None,
         moderatorTwitchAccessToken: str,
         moderatorUserId: str,
         twitchChannelId: str,

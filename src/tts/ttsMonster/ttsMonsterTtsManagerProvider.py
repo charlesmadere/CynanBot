@@ -26,7 +26,7 @@ class TtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
         ttsMonsterHelper: TtsMonsterHelperInterface,
         ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface,
         ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')

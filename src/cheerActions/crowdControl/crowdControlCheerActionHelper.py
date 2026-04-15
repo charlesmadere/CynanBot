@@ -1,5 +1,4 @@
 import random
-from datetime import datetime
 from typing import Collection, Final
 
 from frozendict import frozendict
@@ -62,7 +61,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
         twitchChannelId: str,
         twitchChatMessageId: str | None,
     ) -> Collection[CrowdControlAction]:
-        dateTime = datetime.now(self.__timeZoneRepository.getDefault())
+        dateTime = self.__timeZoneRepository.getNow()
         actions: FrozenList[CrowdControlAction] = FrozenList()
 
         gigaShuffleChance = action.gigaShuffleChance
@@ -144,7 +143,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
             raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
-        elif not utils.isValidStr(message):
+        elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(moderatorTwitchAccessToken):
             raise TypeError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
@@ -164,6 +163,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
 
         if action is None or not action.isEnabled:
             return False
+
         elif isinstance(action, CrowdControlButtonPressCheerAction):
             return await self.__inputButtonPressIntoCrowdControl(
                 action = action,
@@ -174,6 +174,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                 twitchChatMessageId = twitchChatMessageId,
                 user = user,
             )
+
         elif isinstance(action, CrowdControlGameShuffleCheerAction):
             return await self.__inputGameShuffleIntoCrowdControl(
                 action = action,
@@ -183,6 +184,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
                 twitchChatMessageId = twitchChatMessageId,
                 user = user,
             )
+
         else:
             return False
 
@@ -204,7 +206,7 @@ class CrowdControlCheerActionHelper(CrowdControlCheerActionHelperInterface):
             self.__timber.log('CrowdControlCheerActionHelper', f'Unable to parse user input into CrowdControlButton ({action=}) ({chatterUserId=}) ({chatterUserName=}) ({message=}) ({user=})')
             return False
 
-        dateTime = datetime.now(self.__timeZoneRepository.getDefault())
+        dateTime = self.__timeZoneRepository.getNow()
         actionId = await self.__crowdControlIdGenerator.generateActionId()
 
         self.__crowdControlMachine.submitAction(ButtonPressCrowdControlAction(

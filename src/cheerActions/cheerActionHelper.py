@@ -57,7 +57,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         bits: int,
         cheerUserId: str,
         cheerUserName: str,
-        message: str,
+        message: str | None,
         twitchChannelId: str,
         twitchChatMessageId: str | None,
         user: UserInterface,
@@ -70,7 +70,7 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
             raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
-        elif not utils.isValidStr(message):
+        elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')

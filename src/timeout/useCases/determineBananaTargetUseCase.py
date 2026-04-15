@@ -13,7 +13,6 @@ from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInter
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ...twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 
 class DetermineBananaTargetUseCase:
@@ -31,7 +30,6 @@ class DetermineBananaTargetUseCase:
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         timber: TimberInterface,
         timeoutActionSettings: TimeoutActionSettingsInterface,
-        twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
     ):
         if not isinstance(chatterTimeoutHistoryRepository, ChatterTimeoutHistoryRepositoryInterface):
@@ -42,8 +40,6 @@ class DetermineBananaTargetUseCase:
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
             raise TypeError(f'timeoutActionSettings argument is malformed: \"{timeoutActionSettings}\"')
-        elif not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
-            raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
 
@@ -51,7 +47,6 @@ class DetermineBananaTargetUseCase:
         self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionSettings: Final[TimeoutActionSettingsInterface] = timeoutActionSettings
-        self.__twitchMessageStringUtils: Final[TwitchMessageStringUtilsInterface] = twitchMessageStringUtils
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
 
     async def __fetchBullyOccurrenceCount(

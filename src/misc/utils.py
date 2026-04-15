@@ -7,7 +7,6 @@ from typing import Any, Final, Generator, Pattern, Sized, TypeVar, overload
 from urllib.parse import urlparse
 
 from frozendict import frozendict
-from frozenlist import FrozenList
 from typing_extensions import TypeGuard
 
 
@@ -445,27 +444,6 @@ def permuteSubArrays(array: list[Any], pos: int = 0) -> Generator[list[Any], Non
 
 def randomBool() -> bool:
     return bool(random.getrandbits(1))
-
-CHEER_REG_EXES: Final[FrozenList[Pattern]] = FrozenList([
-    re.compile(r'(^|\s+)bitboss\d+(\s+|$)', re.IGNORECASE),
-    re.compile(r'(^|\s+)cheer\d+(\s+|$)', re.IGNORECASE),
-    re.compile(r'(^|\s+)doodlecheer\d+(\s+|$)', re.IGNORECASE),
-    re.compile(r'(^|\s+)muxy\d+(\s+|$)', re.IGNORECASE),
-    re.compile(r'(^|\s+)streamlabs\d+(\s+|$)', re.IGNORECASE),
-    re.compile(r'(^|\s+)uni\d+(\s+|$)', re.IGNORECASE)
-])
-CHEER_REG_EXES.freeze()
-
-def removeCheerStrings(s: str, repl: str = ' ') -> str:
-    if not isinstance(s, str):
-        raise TypeError(f's argument is malformed: \"{s}\"')
-    elif not isinstance(repl, str):
-        raise TypeError(f'repl argument is malformed: \"{repl}\"')
-
-    for cheerRegEx in CHEER_REG_EXES:
-        s = cheerRegEx.sub(repl, s.strip()).strip()
-
-    return s.strip()
 
 @overload
 def removePreceedingAt(s: None) -> None:

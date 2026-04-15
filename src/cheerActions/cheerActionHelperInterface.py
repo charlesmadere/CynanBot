@@ -11,7 +11,7 @@ class CheerActionHelperInterface(ABC):
         bits: int,
         cheerUserId: str,
         cheerUserName: str,
-        message: str,
+        message: str | None,
         twitchChannelId: str,
         twitchChatMessageId: str | None,
         user: UserInterface,
