@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.decTalk.decTalkMessageCleaner import DecTalkMessageCleaner
@@ -13,21 +15,19 @@ from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
 from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.tts.settings.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
-from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 
 class TestDecTalkMessageCleaner:
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    emojiRepository: EmojiRepositoryInterface = EmojiRepository(
+    emojiRepository: Final[EmojiRepositoryInterface] = EmojiRepository(
         emojiJsonReader = JsonStaticReader(
             jsonContents = {
                 'emojis': [
                     {
                         'code': [
-                            "1F600"
+                            "1F600",
                         ],
                         'emoji': '😀',
                         'name': 'grinning face',
@@ -36,12 +36,12 @@ class TestDecTalkMessageCleaner:
                         'support': {
                             'apple': True,
                             'google': True,
-                            'windows': True
-                        }
+                            'windows': True,
+                        },
                     },
                     {
                         'code': [
-                            "1F988"
+                            "1F988",
                         ],
                         'emoji': '🦈',
                         'name': 'shark',
@@ -50,35 +50,32 @@ class TestDecTalkMessageCleaner:
                         'support': {
                             'apple': True,
                             'google': True,
-                            'windows': True
-                        }
-                    }
-                ]
-            }
+                            'windows': True,
+                        },
+                    },
+                ],
+            },
         ),
-        timber = timber
-    )
-
-    emojiHelper: EmojiHelperInterface = EmojiHelper(
-        emojiRepository = emojiRepository
-    )
-
-    ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
         timber = timber,
     )
 
-    ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
+    emojiHelper: Final[EmojiHelperInterface] = EmojiHelper(
+        emojiRepository = emojiRepository
+    )
+
+    ttsJsonMapper: Final[TtsJsonMapperInterface] = TtsJsonMapper(
+        timber = timber,
+    )
+
+    ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = TtsSettingsRepository(
         settingsJsonReader = JsonStaticReader(dict()),
         ttsJsonMapper = ttsJsonMapper,
     )
 
-    twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
-
-    cleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
+    cleaner: Final[DecTalkMessageCleanerInterface] = DecTalkMessageCleaner(
         emojiHelper = emojiHelper,
         timber = timber,
         ttsSettingsRepository = ttsSettingsRepository,
-        twitchMessageStringUtils = twitchMessageStringUtils
     )
 
     @pytest.mark.asyncio
@@ -213,7 +210,6 @@ class TestDecTalkMessageCleaner:
             emojiHelper = self.emojiHelper,
             timber = self.timber,
             ttsSettingsRepository = ttsSettingsRepository,
-            twitchMessageStringUtils = self.twitchMessageStringUtils
         )
 
         result = await cleaner.clean('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac velit neque. Suspendisse sed scelerisque metus, eget ultrices mi. Quisque accumsan laoreet sapien, eget euismod ex hendrerit a. Ut mattis ipsum enim, eget ultrices nisl pulvinar at. Sed eu ornare neque. Quisque nec commodo enim. Interdum et malesuada fames ac ante ipsum primis in faucibus. Maecenas efficitur odio arcu, vel vestibulum metus porttitor ac. Mauris sollicitudin, velit in malesuada scelerisque, magna nisi posuere nisi, ac sodales dolor massa vitae ex. Sed fermentum purus vel purus efficitur varius id ut lacus. Duis eu neque dapibus, ornare mauris porta, placerat enim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut et nisi mi. Donec efficitur sapien a bibendum tincidunt.')
@@ -265,18 +261,13 @@ class TestDecTalkMessageCleaner:
         assert result == 'this is a different tone inline command:'
 
     @pytest.mark.asyncio
-    async def test_clean_withUniText(self):
-        result = await self.cleaner.clean('hello world uni5')
-        assert result == 'hello world'
-
-    @pytest.mark.asyncio
     async def test_clean_withWhitespaceString(self):
         result = await self.cleaner.clean(' ')
         assert result is None
 
     @pytest.mark.asyncio
     async def test_clean_withWildNestedInlineCommands(self):
-        result = await self.cleaner.clean('hello [[[:play \"C:\\song.wav\"]:volume set 10]: dv qwerty] [:pitch 10] world uni5')
+        result = await self.cleaner.clean('hello [[[:play \"C:\\song.wav\"]:volume set 10]: dv qwerty] [:pitch 10] world')
         assert result == 'hello world'
 
     @pytest.mark.asyncio

@@ -1,12 +1,11 @@
 import re
-from typing import Any, Collection, Pattern
+from typing import Any, Collection, Final, Pattern
 
 from frozenlist import FrozenList
 
 from .commodoreSamMessageCleanerInterface import CommodoreSamMessageCleanerInterface
 from ..misc import utils as utils
 from ..tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from ..twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 
 class CommodoreSamMessageCleaner(CommodoreSamMessageCleanerInterface):
@@ -14,18 +13,14 @@ class CommodoreSamMessageCleaner(CommodoreSamMessageCleanerInterface):
     def __init__(
         self,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
-        twitchMessageStringUtils: TwitchMessageStringUtilsInterface,
     ):
         if not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
-        elif not isinstance(twitchMessageStringUtils, TwitchMessageStringUtilsInterface):
-            raise TypeError(f'twitchMessageStringUtils argument is malformed: \"{twitchMessageStringUtils}\"')
 
-        self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
-        self.__twitchMessageStringUtils: TwitchMessageStringUtilsInterface = twitchMessageStringUtils
+        self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
-        self.__commodoreSamInputArgumentRegExes: Collection[Pattern] = self.__buildCommodoreSamInputArgumentRegExes()
-        self.__terminalExploitRegExes: Collection[Pattern] = self.__buildTerminalExploitRegExes()
+        self.__commodoreSamInputArgumentRegExes: Final[Collection[Pattern]] = self.__buildCommodoreSamInputArgumentRegExes()
+        self.__terminalExploitRegExes: Final[Collection[Pattern]] = self.__buildTerminalExploitRegExes()
 
     def __buildCommodoreSamInputArgumentRegExes(self) -> FrozenList[Pattern]:
         regExes: FrozenList[Pattern] = FrozenList()
@@ -62,7 +57,6 @@ class CommodoreSamMessageCleaner(CommodoreSamMessageCleanerInterface):
             return None
 
         message = utils.cleanStr(message)
-        message = await self.__twitchMessageStringUtils.removeCheerStrings(message)
         if not utils.isValidStr(message):
             return None
 
@@ -75,8 +69,8 @@ class CommodoreSamMessageCleaner(CommodoreSamMessageCleanerInterface):
             return None
 
         message = utils.cleanStr(message)
-
         maximumMessageSize = await self.__ttsSettingsRepository.getMaximumMessageSize()
+
         if len(message) > maximumMessageSize:
             message = message[0:maximumMessageSize].strip()
 

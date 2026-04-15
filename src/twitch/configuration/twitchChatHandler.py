@@ -337,27 +337,28 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             except Exception as e:
                 self.__timber.log('TwitchChatHandler', f'Encountered an unexpected error while handling a chat command ({index=}) ({chatCommand=}) ({chatMessage=})', e, traceback.format_exc())
 
-    async def __processCheerAction(self, chatMessage: TwitchChatMessage) -> bool:
-        user = chatMessage.twitchUser
-
-        if not user.areCheerActionsEnabled:
-            return False
-        elif self.__cheerActionHelper is None:
-            return False
+    async def __processCheerAction(self, chatMessage: TwitchChatMessage):
+        if self.__cheerActionHelper is None:
+            return
+        elif not chatMessage.twitchUser.areCheerActionsEnabled:
+            return
 
         cheer = chatMessage.cheerMetadata
         if cheer is None or cheer.bits < 1:
-            return False
+            return
 
-        return await self.__cheerActionHelper.handleCheerAction(
+        result = await self.__cheerActionHelper.handleCheerAction(
             bits = cheer.bits,
             cheerUserId = chatMessage.chatterUserId,
             cheerUserName = chatMessage.chatterUserLogin,
-            message = chatMessage.text,
+            message = chatMessage.textWithoutCheers,
             twitchChannelId = chatMessage.twitchChannelId,
             twitchChatMessageId = chatMessage.twitchChatMessageId,
-            user = user,
+            user = chatMessage.twitchUser,
         )
+
+        if result:
+            self.__timber.log('TwitchChatHandler', f'Handled chat message\'s cheer action ({chatMessage=})')
 
     async def __processSuperTriviaEvent(self, chatMessage: TwitchChatMessage):
         user = chatMessage.twitchUser
@@ -394,8 +395,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             self.__triviaGameMachine.submitAction(action)
 
     async def __processTtsEvent(self, chatMessage: TwitchChatMessage):
-        user = chatMessage.twitchUser
-        if not user.isTtsEnabled:
+        if not chatMessage.twitchUser.isTtsEnabled:
             return
 
         cheer = chatMessage.cheerMetadata
@@ -403,7 +403,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             return
 
         provider: TtsProvider | None = None
-        ttsBoosterPacks = user.ttsBoosterPacks
+        ttsBoosterPacks = chatMessage.twitchUser.ttsBoosterPacks
 
         if ttsBoosterPacks is None or len(ttsBoosterPacks) == 0:
             return
@@ -421,7 +421,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             twitchChannel = chatMessage.twitchChannel,
             twitchChannelId = chatMessage.twitchChannelId,
             ttsEvent = TtsEvent(
-                message = chatMessage.text,
+                message = chatMessage.textWithoutCheers,
                 twitchChannel = chatMessage.twitchChannel,
                 twitchChannelId = chatMessage.twitchChannelId,
                 userId = chatMessage.chatterUserId,

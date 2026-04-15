@@ -444,8 +444,6 @@ from src.twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensReposi
 from src.twitch.tokens.twitchTokensUtils import TwitchTokensUtils
 from src.twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from src.twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
-from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
-from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 from src.twitch.twitchPredictionWebsocketUtils import TwitchPredictionWebsocketUtils
 from src.twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilder import TwitchWebsocketConditionBuilder
@@ -872,8 +870,6 @@ twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = TwitchTimeoutRemod
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
 )
-
-twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
 
 globalTwitchConstants = GlobalTwitchConstants()
 
@@ -1571,7 +1567,6 @@ determineBananaTargetUseCase = DetermineBananaTargetUseCase(
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
-    twitchMessageStringUtils = twitchMessageStringUtils,
     twitchTokensUtils = twitchTokensUtils,
 )
 
@@ -2442,7 +2437,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
     twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,
     twitchTimeoutHelper = twitchTimeoutHelper,

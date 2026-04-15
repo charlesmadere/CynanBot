@@ -1,5 +1,5 @@
 import traceback
-from typing import TypedDict
+from typing import Final, TypedDict
 
 from .emojiInfo import EmojiInfo
 from .emojiRepositoryInterface import EmojiRepositoryInterface
@@ -26,18 +26,18 @@ class EmojiRepository(EmojiRepositoryInterface):
     def __init__(
         self,
         emojiJsonReader: JsonReaderInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(emojiJsonReader, JsonReaderInterface):
             raise TypeError(f'emojiJsonReader argument is malformed: \"{emojiJsonReader}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__emojiJsonReader: JsonReaderInterface = emojiJsonReader
-        self.__timber: TimberInterface = timber
+        self.__emojiJsonReader: Final[JsonReaderInterface] = emojiJsonReader
+        self.__timber: Final[TimberInterface] = timber
 
         self.__isLoaded: bool = False
-        self.__emojiInfoData: dict[str, EmojiInfo | None] = dict()
+        self.__emojiInfoData: Final[dict[str, EmojiInfo | None]] = dict()
 
     async def fetchEmojiInfo(self, emoji: str | None) -> EmojiInfo | None:
         if emoji is None:

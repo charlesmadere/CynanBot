@@ -9,8 +9,6 @@ from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
 from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from src.tts.settings.ttsSettingsRepository import TtsSettingsRepository
 from src.tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
-from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 
 
 class TestCommodoreSamMessageCleaner:
@@ -26,26 +24,13 @@ class TestCommodoreSamMessageCleaner:
         ttsJsonMapper = ttsJsonMapper,
     )
 
-    twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
-
     cleaner: CommodoreSamMessageCleanerInterface = CommodoreSamMessageCleaner(
         ttsSettingsRepository = ttsSettingsRepository,
-        twitchMessageStringUtils = twitchMessageStringUtils
     )
 
     @pytest.mark.asyncio
     async def test_clean_withBasicMessage1(self):
         result = await self.cleaner.clean('Hello, World!')
-        assert result == 'Hello, World!'
-
-    @pytest.mark.asyncio
-    async def test_clean_withCheerMessage1(self):
-        result = await self.cleaner.clean('cheer100 Hello, World!')
-        assert result == 'Hello, World!'
-
-    @pytest.mark.asyncio
-    async def test_clean_withCheerMessage2(self):
-        result = await self.cleaner.clean('cheer100 Hello, cheer50 World!\ncheer123456')
         assert result == 'Hello, World!'
 
     @pytest.mark.asyncio

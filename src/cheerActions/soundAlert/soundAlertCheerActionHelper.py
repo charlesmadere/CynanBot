@@ -48,7 +48,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         bits: int,
         cheerUserId: str,
         cheerUserName: str,
-        message: str,
+        message: str | None,
         moderatorTwitchAccessToken: str,
         moderatorUserId: str,
         twitchChannelId: str,
@@ -65,7 +65,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
             raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
-        elif not utils.isValidStr(message):
+        elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(moderatorTwitchAccessToken):
             raise TypeError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
@@ -86,7 +86,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         if not isinstance(action, SoundAlertCheerAction) or not action.isEnabled:
             return False
         elif not await self.__isLiveOnTwitchRepository.isLive(twitchChannelId):
-            self.__timber.log('SoundAlertCheerActionHelper', f'Received a sound alert CheerAction but the streamer is not currently live ({user.handle=}) ({action=})')
+            self.__timber.log('SoundAlertCheerActionHelper', f'Received a sound alert CheerAction but the streamer is not currently live ({action=}) ({bits=}) ({cheerUserId=}) ({cheerUserName=}) ({user=})')
             return False
 
         self.__backgroundTaskHelper.createTask(self.__playSoundAlert(
@@ -112,7 +112,7 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         if not utils.isValidStr(soundAlertPath):
             return
 
-        self.__timber.log('SoundAlertCheerActionHelper', f'Playing sound alert CheerAction from {cheerUserName}:{cheerUserId} ({soundAlertPath=}) ({user.handle=}) ({action=})')
+        self.__timber.log('SoundAlertCheerActionHelper', f'Playing sound alert CheerAction ({soundAlertPath=}) ({action=}) ({cheerUserId=}) ({cheerUserName=}) ({user=})')
 
         soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
         await soundPlayerManager.playSoundFile(soundAlertPath)

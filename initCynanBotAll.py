@@ -701,8 +701,6 @@ from src.twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensReposi
 from src.twitch.tokens.twitchTokensUtils import TwitchTokensUtils
 from src.twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from src.twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
-from src.twitch.twitchMessageStringUtils import TwitchMessageStringUtils
-from src.twitch.twitchMessageStringUtilsInterface import TwitchMessageStringUtilsInterface
 from src.twitch.twitchPredictionWebsocketUtils import TwitchPredictionWebsocketUtils
 from src.twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilder import TwitchWebsocketConditionBuilder
@@ -1140,8 +1138,6 @@ twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = TwitchTimeoutRemod
     userIdsRepository = userIdsRepository,
 )
 
-twitchMessageStringUtils: TwitchMessageStringUtilsInterface = TwitchMessageStringUtils()
-
 globalTwitchConstants = GlobalTwitchConstants()
 
 twitchChatMessenger: Final[TwitchChatMessengerInterface] = TwitchChatMessenger(
@@ -1462,9 +1458,8 @@ commodoreSamHelper: CommodoreSamHelperInterface = CommodoreSamHelper(
     timeZoneRepository = timeZoneRepository,
 )
 
-commodoreSamMessageCleaner: CommodoreSamMessageCleanerInterface = CommodoreSamMessageCleaner(
+commodoreSamMessageCleaner: Final[CommodoreSamMessageCleanerInterface] = CommodoreSamMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
 )
 
 commodoreSamTtsManagerProvider: CommodoreSamTtsManagerProviderInterface = CommodoreSamTtsManagerProvider(
@@ -1504,14 +1499,13 @@ decTalkHelper: DecTalkHelperInterface = DecTalkHelper(
     timeZoneRepository = timeZoneRepository
 )
 
-decTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
+decTalkMessageCleaner: Final[DecTalkMessageCleanerInterface] = DecTalkMessageCleaner(
     emojiHelper = emojiHelper,
     timber = timber,
     ttsSettingsRepository = ttsSettingsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
 )
 
-decTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface = DecTalkTtsManagerProvider(
+decTalkTtsManagerProvider: Final[DecTalkTtsManagerProviderInterface] = DecTalkTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = decTalkMessageCleaner,
@@ -1519,18 +1513,17 @@ decTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface = DecTalkTtsManage
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
 )
 
-unrestrictedDecTalkMessageCleaner: DecTalkMessageCleanerInterface = DecTalkMessageCleaner(
+unrestrictedDecTalkMessageCleaner: Final[DecTalkMessageCleanerInterface] = DecTalkMessageCleaner(
     emojiHelper = emojiHelper,
     timber = timber,
     ttsSettingsRepository = ttsSettingsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
     isUnrestricted = True,
 )
 
-unrestrictedDecTalkTtsManagerProvider: DecTalkTtsManagerProviderInterface = UnrestrictedDecTalkTtsManagerProvider(
+unrestrictedDecTalkTtsManagerProvider: Final[DecTalkTtsManagerProviderInterface] = UnrestrictedDecTalkTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = unrestrictedDecTalkMessageCleaner,
@@ -1550,7 +1543,6 @@ googleFileExtensionHelper: Final[GoogleFileExtensionHelperInterface] = GoogleFil
 
 googleTtsMessageCleaner: Final[GoogleTtsMessageCleanerInterface] = GoogleTtsMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
 )
 
 googleApiAccessTokenStorage: Final[GoogleApiAccessTokenStorageInterface] = GoogleApiAccessTokenStorage(
@@ -1630,9 +1622,8 @@ halfLifeTtsHelper: HalfLifeTtsHelperInterface = HalfLifeTtsHelper(
     halfLifeTtsService = halfLifeTtsService,
 )
 
-halfLifeMessageCleaner: HalfLifeMessageCleanerInterface = HalfLifeMessageCleaner(
+halfLifeMessageCleaner: Final[HalfLifeMessageCleanerInterface] = HalfLifeMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils
 )
 
 halfLifeTtsManagerProvider: HalfLifeTtsManagerProviderInterface = HalfLifeTtsManagerProvider(
@@ -1682,9 +1673,8 @@ microsoftTtsHelper: MicrosoftTtsHelperInterface = MicrosoftTtsHelper(
     timber = timber
 )
 
-microsoftTtsMessageCleaner: MicrosoftTtsMessageCleanerInterface = MicrosoftTtsMessageCleaner(
+microsoftTtsMessageCleaner: Final[MicrosoftTtsMessageCleanerInterface] = MicrosoftTtsMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils
 )
 
 microsoftTtsManagerProvider: MicrosoftTtsManagerProviderInterface = MicrosoftTtsManagerProvider(
@@ -1725,7 +1715,7 @@ microsoftSamMessageVoiceParser: Final[MicrosoftSamMessageVoiceParserInterface] =
     microsoftSamJsonParser = microsoftSamJsonParser,
 )
 
-microsoftSamHelper: MicrosoftSamHelperInterface = MicrosoftSamHelper(
+microsoftSamHelper: Final[MicrosoftSamHelperInterface] = MicrosoftSamHelper(
     eventLoop = eventLoop,
     glacialTtsFileRetriever = glacialTtsFileRetriever,
     microsoftSamApiHelper = microsoftSamApiHelper,
@@ -1735,12 +1725,11 @@ microsoftSamHelper: MicrosoftSamHelperInterface = MicrosoftSamHelper(
     timber = timber,
 )
 
-microsoftSamMessageCleaner: MicrosoftSamMessageCleanerInterface = MicrosoftSamMessageCleaner(
+microsoftSamMessageCleaner: Final[MicrosoftSamMessageCleanerInterface] = MicrosoftSamMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
 )
 
-microsoftSamTtsManagerProvider: MicrosoftSamTtsManagerProviderInterface = MicrosoftSamTtsManagerProvider(
+microsoftSamTtsManagerProvider: Final[MicrosoftSamTtsManagerProviderInterface] = MicrosoftSamTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     microsoftSamHelper = microsoftSamHelper,
     microsoftSamMessageCleaner = microsoftSamMessageCleaner,
@@ -1761,9 +1750,8 @@ streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiS
     timber = timber
 )
 
-streamElementsMessageCleaner: StreamElementsMessageCleanerInterface = StreamElementsMessageCleaner(
+streamElementsMessageCleaner: Final[StreamElementsMessageCleanerInterface] = StreamElementsMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils
 )
 
 streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser(
@@ -1861,12 +1849,11 @@ ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
     ttsMonsterSettingsRepository = ttsMonsterSettingsRepository
 )
 
-ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface = TtsMonsterMessageCleaner(
+ttsMonsterMessageCleaner: Final[TtsMonsterMessageCleanerInterface] = TtsMonsterMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
 )
 
-ttsMonsterTtsManagerProvider: TtsMonsterTtsManagerProviderInterface = TtsMonsterTtsManagerProvider(
+ttsMonsterTtsManagerProvider: Final[TtsMonsterTtsManagerProviderInterface] = TtsMonsterTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
@@ -2505,7 +2492,6 @@ determineBananaTargetUseCase = DetermineBananaTargetUseCase(
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
-    twitchMessageStringUtils = twitchMessageStringUtils,
     twitchTokensUtils = twitchTokensUtils,
 )
 
@@ -2574,7 +2560,6 @@ timeoutEventHandler: AbsTimeoutEventHandler = TimeoutEventHandler(
 
 cassetteTapeItemUseCase = CassetteTapeItemUseCase(
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
     voicemailHelper = voicemailHelper,
@@ -2903,9 +2888,8 @@ timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerAction
     useChatterItemHelper = useChatterItemHelper,
 )
 
-voicemailCheerActionHelper: VoicemailCheerActionHelperInterface = VoicemailCheerActionHelper(
+voicemailCheerActionHelper: Final[VoicemailCheerActionHelperInterface] = VoicemailCheerActionHelper(
     chatterInventoryIdGenerator = chatterInventoryIdGenerator,
-    twitchMessageStringUtils = twitchMessageStringUtils,
     useChatterItemHelper = useChatterItemHelper,
 )
 
@@ -3770,7 +3754,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
-    twitchMessageStringUtils = twitchMessageStringUtils,
     twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,
     twitchTimeoutHelper = twitchTimeoutHelper,
