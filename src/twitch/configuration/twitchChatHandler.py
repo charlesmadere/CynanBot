@@ -62,7 +62,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
         triviaGameMachine: TriviaGameMachineInterface | None,
-        chatActions: Collection[AbsChatCommand2 | Any | None] | None,
+        chatActions: Collection[AbsChatAction | Any | None] | None,
         chatCommands: Collection[AbsChatCommand2 | Any | None] | None,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
