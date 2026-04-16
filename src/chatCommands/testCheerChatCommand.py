@@ -119,6 +119,7 @@ class TestCheerChatCommand(AbsChatCommand2):
             cheerMetadata = TwitchCheerMetadata(
                 bits = arguments.bits,
             ),
+            watchStreak = None,
             twitchUser = chatMessage.twitchUser,
         )
 

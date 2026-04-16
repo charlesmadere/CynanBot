@@ -15,3 +15,4 @@ class TwitchNoticeType(Enum):
     SUB = auto()
     SUB_GIFT = auto()
     UN_RAID = auto()
+    WATCH_STREAK = auto()

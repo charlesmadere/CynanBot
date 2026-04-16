@@ -1135,6 +1135,11 @@ class TestTwitchJsonMapper:
         assert result is TwitchNoticeType.UN_RAID
 
     @pytest.mark.asyncio
+    async def test_parseNoticeType_withWatchStreakString(self):
+        result = await self.jsonMapper.parseNoticeType('watch_streak')
+        assert result is TwitchNoticeType.WATCH_STREAK
+
+    @pytest.mark.asyncio
     async def test_parseNoticeType_withWhitespaceString(self):
         result = await self.jsonMapper.parseNoticeType(' ')
         assert result is None
@@ -1906,6 +1911,42 @@ class TestTwitchJsonMapper:
         assert result is TwitchUserType.NORMAL
 
     @pytest.mark.asyncio
+    async def test_parseWatchStreak(self):
+        channelPointsAwarded = 450
+        streakCount = 10
+
+        result = await self.jsonMapper.parseWatchStreak({
+            'channel_points_awarded': channelPointsAwarded,
+            'streak_count': streakCount,
+        })
+
+        assert result is not None
+        assert result.channelPointsAwarded == channelPointsAwarded
+        assert result.streakCount == streakCount
+
+    @pytest.mark.asyncio
+    async def test_parseWatchStreak_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseWatchStreak(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseWatchStreak_withMissingChannelPointsAwarded(self):
+        streakCount = 3
+
+        result = await self.jsonMapper.parseWatchStreak({
+            'streak_count': streakCount,
+        })
+
+        assert result is not None
+        assert result.channelPointsAwarded == 0
+        assert result.streakCount == streakCount
+
+    @pytest.mark.asyncio
+    async def test_parseWatchStreak_withNone(self):
+        result = await self.jsonMapper.parseWatchStreak(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseWebsocketMessageType_withEmptyString(self):
         result = await self.jsonMapper.parseWebsocketMessageType('')
         assert result is None
@@ -2247,6 +2288,11 @@ class TestTwitchJsonMapper:
     async def test_requireNoticeType_withSubGiftString(self):
         result = await self.jsonMapper.requireNoticeType('sub_gift')
         assert result is TwitchNoticeType.SUB_GIFT
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withWatchStreakString(self):
+        result = await self.jsonMapper.requireNoticeType('watch_streak')
+        assert result is TwitchNoticeType.WATCH_STREAK
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withUnraidString(self):

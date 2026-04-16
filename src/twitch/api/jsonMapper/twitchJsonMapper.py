@@ -87,6 +87,7 @@ from ..models.twitchUserSubscriptionsResponse import TwitchUserSubscriptionsResp
 from ..models.twitchUserType import TwitchUserType
 from ..models.twitchUsersResponse import TwitchUsersResponse
 from ..models.twitchValidationResponse import TwitchValidationResponse
+from ..models.twitchWatchStreak import TwitchWatchStreak
 from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from ..models.twitchWebsocketMessageType import TwitchWebsocketMessageType
@@ -162,7 +163,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseApiScope(
         self,
-        apiScope: str | Any | None
+        apiScope: str | Any | None,
     ) -> TwitchApiScope | None:
         if not utils.isValidStr(apiScope):
             return None
@@ -1252,6 +1253,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'sub': return TwitchNoticeType.SUB
             case 'sub_gift': return TwitchNoticeType.SUB_GIFT
             case 'unraid': return TwitchNoticeType.UN_RAID
+            case 'watch_streak': return TwitchNoticeType.WATCH_STREAK
             case _: return None
 
     async def parseOutcome(
@@ -2241,6 +2243,21 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userId = userId,
         )
 
+    async def parseWatchStreak(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchWatchStreak | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        channelPointsAwarded = utils.getIntFromDict(jsonResponse, 'channel_points_awarded', fallback = 0)
+        streakCount = utils.getIntFromDict(jsonResponse, 'streak_count')
+
+        return TwitchWatchStreak(
+            channelPointsAwarded = channelPointsAwarded,
+            streakCount = streakCount,
+        )
+
     async def parseWebsocketCondition(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -2416,7 +2433,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def requireNoticeType(
         self,
-        noticeType: str | Any | None
+        noticeType: str | Any | None,
     ) -> TwitchNoticeType:
         result = await self.parseNoticeType(noticeType)
 

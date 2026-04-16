@@ -96,7 +96,7 @@ class WatchStreaksHelper(WatchStreaksHelperInterface):
             twitchChannel = user.handle,
             twitchChannelId = twitchChannelId,
             ttsEvent = TtsEvent(
-                message = f'Thanks {callOutUserName} for the {watchStreak} watch streak!',
+                message = f'Thanks {callOutUserName} for the watch streak of {watchStreak}!',
                 twitchChannel = user.handle,
                 twitchChannelId = twitchChannelId,
                 userId = chatterUserId,

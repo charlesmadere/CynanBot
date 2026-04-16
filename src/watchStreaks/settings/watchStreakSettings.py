@@ -10,7 +10,7 @@ class WatchStreakSettings(WatchStreakSettingsInterface):
     def __init__(
         self,
         settingsJsonReader: JsonReaderInterface,
-        defaultMinimumWatchStreakForTts: int = 3,
+        defaultMinimumWatchStreakForTts: int = 5,
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
@@ -27,18 +27,18 @@ class WatchStreakSettings(WatchStreakSettingsInterface):
     async def clearCaches(self):
         self.__cache = None
 
-    async def isEnabled(self) -> bool:
-        jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'enabled', False)
-
     async def getMinimumWatchStreakForTts(self) -> int:
         jsonContents = await self.__readJson()
-        minimumWatchStreakForTts = jsonContents.get('minimumWatchStreakForTts', None)
 
-        if utils.isValidInt(minimumWatchStreakForTts):
-            return minimumWatchStreakForTts
-        else:
-            return self.__defaultMinimumWatchStreakForTts
+        return utils.getIntFromDict(
+            d = jsonContents,
+            key = 'minimumWatchStreakForTts',
+            fallback = self.__defaultMinimumWatchStreakForTts,
+        )
+
+    async def isEnabled(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'enabled', fallback = True)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:

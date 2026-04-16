@@ -5,6 +5,7 @@ from frozenlist import FrozenList
 from .twitchChatMessageFragment import TwitchChatMessageFragment
 from .twitchCheerMetadata import TwitchCheerMetadata
 from .twitchUserInterface import TwitchUserInterface
+from .twitchWatchStreak import TwitchWatchStreak
 from ...users.userInterface import UserInterface
 
 
@@ -21,6 +22,7 @@ class TwitchChatMessage(TwitchUserInterface):
     twitchChannelId: str
     twitchChatMessageId: str | None
     cheerMetadata: TwitchCheerMetadata | None
+    watchStreak: TwitchWatchStreak | None
     twitchUser: UserInterface
 
     def getUserId(self) -> str:
