@@ -53,6 +53,7 @@ from src.chatCommands.removeChatterPreferredTtsChatCommand import RemoveChatterP
 from src.chatCommands.setChatterPreferredNameChatCommand import SetChatterPreferredNameChatCommand
 from src.chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferredTtsChatCommand
 from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
+from src.chatCommands.testCheerChatCommand import TestCheerChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
@@ -435,11 +436,11 @@ from src.twitch.followingStatus.twitchFollowingStatusRepository import TwitchFol
 from src.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
-from src.twitch.globalTwitchConstants import GlobalTwitchConstants
 from src.twitch.ircTagsParser.twitchIrcTagsParser import TwitchIrcTagsParser
 from src.twitch.ircTagsParser.twitchIrcTagsParserInterface import TwitchIrcTagsParserInterface
 from src.twitch.isLive.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from src.twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
+from src.twitch.misc.globalTwitchConstants import GlobalTwitchConstants
 from src.twitch.officialAccounts.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
 from src.twitch.officialAccounts.officialTwitchAccountUserIdProviderInterface import \
     OfficialTwitchAccountUserIdProviderInterface
@@ -2346,6 +2347,11 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         compositeTtsManagerProvider = compositeTtsManagerProvider,
         timber = timber,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+    ),
+    TestCheerChatCommand(
+        cheerActionHelper = cheerActionHelper,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
     ),
     TestMouseCursorChatCommand(
         administratorProvider = administratorProvider,

@@ -91,6 +91,7 @@ from src.chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferr
 from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from src.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
+from src.chatCommands.testCheerChatCommand import TestCheerChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatCommands.translateChatCommand import TranslateChatCommand
 from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
@@ -679,11 +680,11 @@ from src.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import 
     TwitchFollowingStatusRepositoryInterface
 from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
-from src.twitch.globalTwitchConstants import GlobalTwitchConstants
 from src.twitch.ircTagsParser.twitchIrcTagsParser import TwitchIrcTagsParser
 from src.twitch.ircTagsParser.twitchIrcTagsParserInterface import TwitchIrcTagsParserInterface
 from src.twitch.isLive.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from src.twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
+from src.twitch.misc.globalTwitchConstants import GlobalTwitchConstants
 from src.twitch.officialAccounts.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
 from src.twitch.officialAccounts.officialTwitchAccountUserIdProviderInterface import \
     OfficialTwitchAccountUserIdProviderInterface
@@ -3508,6 +3509,11 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaGameMachine = triviaGameMachine,
         triviaSettings = triviaSettings,
         triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    TestCheerChatCommand(
+        cheerActionHelper = cheerActionHelper,
+        timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
     TestMouseCursorChatCommand(
