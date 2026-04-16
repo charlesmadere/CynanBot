@@ -53,5 +53,5 @@ class SaveMostRecentAnivMessageChatAction(AbsChatAction):
             whichAnivUser = whichAnivUser,
         )
 
-        self.__timber.log(self.actionName, f'Updated most recent aniv message ({chatMessage=}) ({whichAnivUser=})')
+        self.__timber.log(self.actionName, f'Updated most recent aniv message ({whichAnivUser=}) ({chatMessage=})')
         return ChatActionResult.HANDLED
