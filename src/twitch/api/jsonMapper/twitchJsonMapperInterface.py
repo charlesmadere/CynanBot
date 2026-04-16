@@ -83,6 +83,7 @@ from ..models.twitchUserSubscriptionsResponse import TwitchUserSubscriptionsResp
 from ..models.twitchUserType import TwitchUserType
 from ..models.twitchUsersResponse import TwitchUsersResponse
 from ..models.twitchValidationResponse import TwitchValidationResponse
+from ..models.twitchWatchStreak import TwitchWatchStreak
 from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from ..models.twitchWebsocketMessageType import TwitchWebsocketMessageType
@@ -105,7 +106,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseApiScope(
         self,
-        apiScope: str | Any | None
+        apiScope: str | Any | None,
     ) -> TwitchApiScope | None:
         pass
 
@@ -660,6 +661,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchValidationResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseWatchStreak(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchWatchStreak | None:
         pass
 
     @abstractmethod

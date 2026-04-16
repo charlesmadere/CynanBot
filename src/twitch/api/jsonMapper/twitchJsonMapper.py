@@ -87,6 +87,7 @@ from ..models.twitchUserSubscriptionsResponse import TwitchUserSubscriptionsResp
 from ..models.twitchUserType import TwitchUserType
 from ..models.twitchUsersResponse import TwitchUsersResponse
 from ..models.twitchValidationResponse import TwitchValidationResponse
+from ..models.twitchWatchStreak import TwitchWatchStreak
 from ..models.twitchWebsocketCondition import TwitchWebsocketCondition
 from ..models.twitchWebsocketConnectionStatus import TwitchWebsocketConnectionStatus
 from ..models.twitchWebsocketMessageType import TwitchWebsocketMessageType
@@ -162,7 +163,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseApiScope(
         self,
-        apiScope: str | Any | None
+        apiScope: str | Any | None,
     ) -> TwitchApiScope | None:
         if not utils.isValidStr(apiScope):
             return None
@@ -2240,6 +2241,21 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             clientId = clientId,
             login = login,
             userId = userId,
+        )
+
+    async def parseWatchStreak(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchWatchStreak | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        channelPointsAwarded = utils.getIntFromDict(jsonResponse, 'channel_points_awarded', fallback = 0)
+        streakCount = utils.getIntFromDict(jsonResponse, 'streak_count')
+
+        return TwitchWatchStreak(
+            channelPointsAwarded = channelPointsAwarded,
+            streakCount = streakCount,
         )
 
     async def parseWebsocketCondition(

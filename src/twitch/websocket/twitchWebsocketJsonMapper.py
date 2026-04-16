@@ -28,6 +28,7 @@ from ..api.models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStat
 from ..api.models.twitchSub import TwitchSub
 from ..api.models.twitchSubGift import TwitchSubGift
 from ..api.models.twitchSubscriberTier import TwitchSubscriberTier
+from ..api.models.twitchWatchStreak import TwitchWatchStreak
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketEvent import TwitchWebsocketEvent
 from ..api.models.twitchWebsocketPayload import TwitchWebsocketPayload
@@ -472,6 +473,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'tier' in eventJson and utils.isValidStr(eventJson.get('tier')):
             tier = await self.__twitchJsonMapper.parseSubscriberTier(eventJson.get('tier'))
 
+        watchStreak: TwitchWatchStreak | None = None
+        if 'watch_streak' in eventJson:
+            watchStreak = await self.__twitchJsonMapper.parseWatchStreak(eventJson.get('watch_streak'))
+
         return TwitchWebsocketEvent(
             isAnonymous = isAnonymous,
             isChatterAnonymous = isChatterAnonymous,
@@ -551,6 +556,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             sub = sub,
             subGift = subGift,
             tier = tier,
+            watchStreak = watchStreak,
         )
 
     async def parseWebsocketPayload(

@@ -25,6 +25,7 @@ from .twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
 from .twitchSub import TwitchSub
 from .twitchSubGift import TwitchSubGift
 from .twitchSubscriberTier import TwitchSubscriberTier
+from .twitchWatchStreak import TwitchWatchStreak
 
 
 @dataclass(frozen = True, slots = True)
@@ -107,3 +108,4 @@ class TwitchWebsocketEvent:
     sub: TwitchSub | None = None
     subGift: TwitchSubGift | None = None
     tier: TwitchSubscriberTier | None = None
+    watchStreak: TwitchWatchStreak | None = None

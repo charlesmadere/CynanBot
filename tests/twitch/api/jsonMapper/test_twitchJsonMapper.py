@@ -1911,6 +1911,42 @@ class TestTwitchJsonMapper:
         assert result is TwitchUserType.NORMAL
 
     @pytest.mark.asyncio
+    async def test_parseWatchStreak(self):
+        channelPointsAwarded = 450
+        streakCount = 10
+
+        result = await self.jsonMapper.parseWatchStreak({
+            'channel_points_awarded': channelPointsAwarded,
+            'streak_count': streakCount,
+        })
+
+        assert result is not None
+        assert result.channelPointsAwarded == channelPointsAwarded
+        assert result.streakCount == streakCount
+
+    @pytest.mark.asyncio
+    async def test_parseWatchStreak_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseWatchStreak(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseWatchStreak_withMissingChannelPointsAwarded(self):
+        streakCount = 3
+
+        result = await self.jsonMapper.parseWatchStreak({
+            'streak_count': streakCount,
+        })
+
+        assert result is not None
+        assert result.channelPointsAwarded == 0
+        assert result.streakCount == streakCount
+
+    @pytest.mark.asyncio
+    async def test_parseWatchStreak_withNone(self):
+        result = await self.jsonMapper.parseWatchStreak(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseWebsocketMessageType_withEmptyString(self):
         result = await self.jsonMapper.parseWebsocketMessageType('')
         assert result is None
