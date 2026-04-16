@@ -417,8 +417,8 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         hypeTrainType: TwitchHypeTrainType | None = None
         if 'type' in eventJson and utils.isValidStr(eventJson.get('type')):
-            typeString = utils.getStrFromDict(eventJson, 'type')
-            hypeTrainType = await self.__twitchJsonMapper.parseHypeTrainType(typeString)
+            hypeTrainTypeString = utils.getStrFromDict(eventJson, 'type')
+            hypeTrainType = await self.__twitchJsonMapper.parseHypeTrainType(hypeTrainTypeString)
 
         noticeType: TwitchNoticeType | None = None
         if 'notice_type' in eventJson and utils.isValidStr(eventJson.get('notice_type')):
