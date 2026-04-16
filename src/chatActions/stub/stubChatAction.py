@@ -8,7 +8,7 @@ class StubChatAction(AbsChatAction):
 
     @property
     def actionName(self) -> str:
-        return "StubChatAction2"
+        return 'StubChatAction'
 
     async def handleChatAction(
         self,
