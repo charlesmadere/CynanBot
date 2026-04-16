@@ -161,10 +161,11 @@ async def main():
 
     print(f'text to speech results: ({message=}) ({fileReference=})')
 
-    await soundPlayerManager.playSoundFile(
-        filePath = fileReference.filePath,
-        volume = await streamElementsSettingsRepository.getMediaPlayerVolume(),
-    )
+    if fileReference is not None:
+        await soundPlayerManager.playSoundFile(
+            filePath = fileReference.filePath,
+            volume = await streamElementsSettingsRepository.getMediaPlayerVolume(),
+        )
 
     pass
 
