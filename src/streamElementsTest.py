@@ -60,29 +60,29 @@ class FakeStreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterfa
     async def set(self, userKey: str | None, twitchChannelId: str):
         raise RuntimeError('Not implemented')
 
-eventLoop: AbstractEventLoop = asyncio.new_event_loop()
+eventLoop: Final[AbstractEventLoop] = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
 
-timber: TimberInterface = TimberStub()
+timber: Final[TimberInterface] = TimberStub()
 
-timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
+timeZoneRepository: Final[TimeZoneRepositoryInterface] = TimeZoneRepository()
 
 aioHttpCookieJarProvider = AioHttpCookieJarProvider(
     eventLoop = eventLoop,
 )
 
-networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
+networkClientProvider: Final[NetworkClientProvider] = AioHttpClientProvider(
     eventLoop = eventLoop,
     cookieJarProvider = aioHttpCookieJarProvider,
     timber = timber,
 )
 
-googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
+googleJsonMapper: Final[GoogleJsonMapperInterface] = GoogleJsonMapper(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
 )
 
-ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
+ttsJsonMapper: Final[TtsJsonMapperInterface] = TtsJsonMapper(
     timber = timber,
 )
 
