@@ -53,6 +53,7 @@ from src.chatCommands.removeChatterPreferredTtsChatCommand import RemoveChatterP
 from src.chatCommands.setChatterPreferredNameChatCommand import SetChatterPreferredNameChatCommand
 from src.chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferredTtsChatCommand
 from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
+from src.chatCommands.testCheerChatCommand import TestCheerChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
@@ -2346,6 +2347,11 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         compositeTtsManagerProvider = compositeTtsManagerProvider,
         timber = timber,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+    ),
+    TestCheerChatCommand(
+        cheerActionHelper = cheerActionHelper,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
     ),
     TestMouseCursorChatCommand(
         administratorProvider = administratorProvider,

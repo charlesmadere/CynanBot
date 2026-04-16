@@ -8,9 +8,9 @@ from frozenlist import FrozenList
 
 from .absChatCommand2 import AbsChatCommand2
 from .chatCommandResult import ChatCommandResult
+from ..cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
-from ..twitch.absTwitchChatHandler import AbsTwitchChatHandler
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.localModels.twitchChatMessageFragment import TwitchChatMessageFragment
@@ -31,18 +31,18 @@ class TestCheerChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
-        twitchChatHandler: AbsTwitchChatHandler,
+        cheerActionHelper: CheerActionHelperInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
-        if not isinstance(twitchChatHandler, AbsTwitchChatHandler):
-            raise TypeError(f'twitchChatHandler argument is malformed: \"{twitchChatHandler}\"')
+        if not isinstance(cheerActionHelper, CheerActionHelperInterface):
+            raise TypeError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
-        self.__twitchChatHandler: Final[AbsTwitchChatHandler] = twitchChatHandler
+        self.__cheerActionHelper: Final[CheerActionHelperInterface] = cheerActionHelper
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
@@ -103,14 +103,12 @@ class TestCheerChatCommand(AbsChatCommand2):
             self.__timber.log(self.commandName, f'Invalid arguments given ({arguments=}) ({chatMessage=})')
             return ChatCommandResult.HANDLED
 
-        eventId = await self.__generateEventId()
-
         newTwitchChatMessage = TwitchChatMessage(
             messageFragments = await self.__generateMessageFragments(arguments),
             chatterUserId = chatMessage.chatterUserId,
             chatterUserLogin = chatMessage.chatterUserLogin,
             chatterUserName = chatMessage.chatterUserName,
-            eventId = eventId,
+            eventId = await self.__generateEventId(),
             sourceMessageId = None,
             text = arguments.fullText,
             textWithoutCheers = arguments.text,
@@ -123,23 +121,30 @@ class TestCheerChatCommand(AbsChatCommand2):
             twitchUser = chatMessage.twitchUser,
         )
 
+        handled: bool | None = None
         exception: Exception | None = None
 
         try:
-            await self.__twitchChatHandler.onNewChat(
-                chatMessage = newTwitchChatMessage,
+            handled = await self.__cheerActionHelper.handleCheerAction(
+                bits =  arguments.bits,
+                cheerUserId = chatMessage.chatterUserId,
+                cheerUserName = chatMessage.chatterUserName,
+                message = arguments.text,
+                twitchChannelId = chatMessage.twitchChannelId,
+                twitchChatMessageId = chatMessage.twitchChatMessageId,
+                user = chatMessage.twitchUser,
             )
         except Exception as e:
             exception = e
-            self.__timber.log(self.commandName, f'Encountered exception when attempting to run onNewChat() ({eventId=}) ({arguments=}) ({newTwitchChatMessage=}) ({chatMessage=})', e, traceback.format_exc())
+            self.__timber.log(self.commandName, f'Encountered exception when attempting to run handleCheerAction() ({handled=}) ({exception=}) ({newTwitchChatMessage=}) ({arguments=}) ({chatMessage=})', e, traceback.format_exc())
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ Cheer test results ({arguments=}) ({exception=})',
+            text = f'ⓘ Cheer test results ({handled=}) ({exception=}) ({arguments=})',
             twitchChannelId = chatMessage.twitchChannelId,
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({eventId=}) ({arguments=}) ({newTwitchChatMessage=}) ({chatMessage=}) ({exception=})')
+        self.__timber.log(self.commandName, f'Handled ({handled=}) ({exception=}) ({newTwitchChatMessage=}) ({arguments=}) ({chatMessage=})')
         return ChatCommandResult.HANDLED
 
     async def __parseArguments(self, chatMessage: TwitchChatMessage) -> Arguments | None:

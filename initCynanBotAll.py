@@ -91,6 +91,7 @@ from src.chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferr
 from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from src.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from src.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
+from src.chatCommands.testCheerChatCommand import TestCheerChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatCommands.translateChatCommand import TranslateChatCommand
 from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
@@ -3508,6 +3509,11 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaGameMachine = triviaGameMachine,
         triviaSettings = triviaSettings,
         triviaUtils = triviaUtils,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    TestCheerChatCommand(
+        cheerActionHelper = cheerActionHelper,
+        timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
     TestMouseCursorChatCommand(
