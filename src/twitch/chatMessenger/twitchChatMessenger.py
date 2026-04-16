@@ -12,8 +12,8 @@ from .twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..api.models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from ..api.models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
-from ..globalTwitchConstants import GlobalTwitchConstants
 from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ..misc.globalTwitchConstants import GlobalTwitchConstants
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
