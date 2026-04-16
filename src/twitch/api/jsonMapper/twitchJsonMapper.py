@@ -1252,6 +1252,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'sub': return TwitchNoticeType.SUB
             case 'sub_gift': return TwitchNoticeType.SUB_GIFT
             case 'unraid': return TwitchNoticeType.UN_RAID
+            case 'watch_streak': return TwitchNoticeType.WATCH_STREAK
             case _: return None
 
     async def parseOutcome(
@@ -2416,7 +2417,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def requireNoticeType(
         self,
-        noticeType: str | Any | None
+        noticeType: str | Any | None,
     ) -> TwitchNoticeType:
         result = await self.parseNoticeType(noticeType)
 

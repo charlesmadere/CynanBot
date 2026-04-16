@@ -1135,6 +1135,11 @@ class TestTwitchJsonMapper:
         assert result is TwitchNoticeType.UN_RAID
 
     @pytest.mark.asyncio
+    async def test_parseNoticeType_withWatchStreakString(self):
+        result = await self.jsonMapper.parseNoticeType('watch_streak')
+        assert result is TwitchNoticeType.WATCH_STREAK
+
+    @pytest.mark.asyncio
     async def test_parseNoticeType_withWhitespaceString(self):
         result = await self.jsonMapper.parseNoticeType(' ')
         assert result is None
@@ -2247,6 +2252,11 @@ class TestTwitchJsonMapper:
     async def test_requireNoticeType_withSubGiftString(self):
         result = await self.jsonMapper.requireNoticeType('sub_gift')
         assert result is TwitchNoticeType.SUB_GIFT
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withWatchStreakString(self):
+        result = await self.jsonMapper.requireNoticeType('watch_streak')
+        assert result is TwitchNoticeType.WATCH_STREAK
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withUnraidString(self):

@@ -707,7 +707,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def requireNoticeType(
         self,
-        noticeType: str | Any | None
+        noticeType: str | Any | None,
     ) -> TwitchNoticeType:
         pass
 
