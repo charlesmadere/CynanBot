@@ -17,6 +17,7 @@ from ..api.models.twitchChatMessageFragmentMention import \
 from ..api.models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType as ApiTwitchChatMessageFragmentType
 from ..api.models.twitchCheerMetadata import TwitchCheerMetadata as ApiTwitchCheerMetadata
 from ..api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiTwitchEmoteImageFormat
+from ..api.models.twitchWatchStreak import TwitchWatchStreak as ApiTwitchWatchStreak
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..localModels.twitchChatMessage import TwitchChatMessage
 from ..localModels.twitchChatMessageFragment import TwitchChatMessageFragment
@@ -26,6 +27,7 @@ from ..localModels.twitchChatMessageFragmentMention import TwitchChatMessageFrag
 from ..localModels.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 from ..localModels.twitchCheerMetadata import TwitchCheerMetadata
 from ..localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat
+from ..localModels.twitchWatchStreak import TwitchWatchStreak
 from ...aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from ...chatActions.absChatAction import AbsChatAction
 from ...chatActions.chatActionResult import ChatActionResult
@@ -261,7 +263,8 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
         messageFragments = await self.__mapApiMessageFragments(chatMessage.fragments)
         textWithoutCheers = await self.__purgeChatMessageOfCheers(messageFragments)
-        cheer = await self.__mapApiCheerMetadata(event.cheer)
+        cheerMetadata = await self.__mapApiCheerMetadata(event.cheer)
+        watchStreak = await self.__mapApiWatchStreak(event.watchStreak)
 
         chatMessage = TwitchChatMessage(
             messageFragments = messageFragments,
@@ -274,7 +277,8 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             textWithoutCheers = textWithoutCheers,
             twitchChannelId = twitchChannelId,
             twitchChatMessageId = event.messageId,
-            cheerMetadata = cheer,
+            cheerMetadata = cheerMetadata,
+            watchStreak = watchStreak,
             twitchUser = user,
         )
 
@@ -557,3 +561,15 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             case ApiTwitchChatMessageFragmentType.MENTION: return TwitchChatMessageFragmentType.MENTION
             case ApiTwitchChatMessageFragmentType.TEXT: return TwitchChatMessageFragmentType.TEXT
             case _: raise ValueError(f'Encountered unknown ApiTwitchChatMessageFragmentType: \"{apiFragmentType}\"')
+
+    async def __mapApiWatchStreak(
+        self,
+        apiWatchStreak: ApiTwitchWatchStreak | None,
+    ) -> TwitchWatchStreak | None:
+        if apiWatchStreak is None or apiWatchStreak.streakCount < 1:
+            return None
+
+        return TwitchWatchStreak(
+            channelPointsAwarded = apiWatchStreak.channelPointsAwarded,
+            streakCount = apiWatchStreak.streakCount,
+        )

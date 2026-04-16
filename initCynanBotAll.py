@@ -47,6 +47,7 @@ from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWiz
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
+from src.chatActions.watchStreakAnnounceChatAction import WatchStreakAnnounceChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
 from src.chatCommands.addBannedTriviaControllerChatCommand import AddBannedTriviaControllerChatCommand
 from src.chatCommands.addGlobalTriviaControllerChatCommand import AddGlobalTriviaControllerChatCommand
@@ -763,6 +764,10 @@ from src.voicemail.repositories.voicemailsRepository import VoicemailsRepository
 from src.voicemail.repositories.voicemailsRepositoryInterface import VoicemailsRepositoryInterface
 from src.voicemail.settings.voicemailSettingsRepository import VoicemailSettingsRepository
 from src.voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
+from src.watchStreaks.helper.watchStreaksHelper import WatchStreaksHelper
+from src.watchStreaks.helper.watchStreaksHelperInterface import WatchStreaksHelperInterface
+from src.watchStreaks.settings.watchStreakSettings import WatchStreakSettings
+from src.watchStreaks.settings.watchStreakSettingsInterface import WatchStreakSettingsInterface
 from src.weather.weatherReportPresenter import WeatherReportPresenter
 from src.weather.weatherReportPresenterInterface import WeatherReportPresenterInterface
 from src.weather.weatherRepository import WeatherRepository
@@ -3034,6 +3039,25 @@ mouseCursorHelper: Final[MouseCursorHelperInterface] = MouseCursorHelper(
 
 
 ##########################################
+## Watch Streaks initialization section ##
+##########################################
+
+watchStreakSettings: Final[WatchStreakSettingsInterface] = WatchStreakSettings(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/watchStreakSettings.json',
+    ),
+)
+
+watchStreaksHelper: Final[WatchStreaksHelperInterface] = WatchStreaksHelper(
+    chatterPreferredNameHelper = chatterPreferredNameHelper,
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    watchStreakSettings = watchStreakSettings,
+)
+
+
+##########################################
 ## Twitch events initialization section ##
 ##########################################
 
@@ -3162,6 +3186,10 @@ chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
         voicemailHelper = voicemailHelper,
         voicemailSettingsRepository = voicemailSettingsRepository,
+    ),
+    WatchStreakAnnounceChatAction(
+        timber = timber,
+        watchStreaksHelper = watchStreaksHelper,
     ),
 })
 
