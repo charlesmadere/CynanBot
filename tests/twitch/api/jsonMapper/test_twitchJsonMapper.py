@@ -301,6 +301,27 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseBitsBadgeTier(self):
+        tier = 100
+
+        result = await self.jsonMapper.parseBitsBadgeTier({
+            'tier': tier,
+        })
+
+        assert result is not None
+        assert result.tier == tier
+
+    @pytest.mark.asyncio
+    async def test_parseBitsBadgeTier_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseBitsBadgeTier(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBitsBadgeTier_withNone(self):
+        result = await self.jsonMapper.parseBitsBadgeTier(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseBroadcasterSubscription(self):
         broadcasterSubscription = TwitchBroadcasterSubscription(
             isGift = False,
@@ -1736,9 +1757,19 @@ class TestTwitchJsonMapper:
         assert result is TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE
 
     @pytest.mark.asyncio
+    async def test_parseSubscriptionType_withChannelChatNotification(self):
+        result = await self.jsonMapper.parseSubscriptionType('channel.chat.notification')
+        assert result is TwitchWebsocketSubscriptionType.CHANNEL_CHAT_NOTIFICATION
+
+    @pytest.mark.asyncio
     async def test_parseSubscriptionType_withChannelCheerString(self):
         result = await self.jsonMapper.parseSubscriptionType('channel.cheer')
         assert result is TwitchWebsocketSubscriptionType.CHANNEL_CHEER
+
+    @pytest.mark.asyncio
+    async def test_parseSubscriptionType_withChannelFollowString(self):
+        result = await self.jsonMapper.parseSubscriptionType('channel.follow')
+        assert result is TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW
 
     @pytest.mark.asyncio
     async def test_parseSubscriptionType_withChannelHypeTrainBegin(self):
@@ -1766,14 +1797,9 @@ class TestTwitchJsonMapper:
         assert result is TwitchWebsocketSubscriptionType.CHANNEL_POLL_END
 
     @pytest.mark.asyncio
-    async def test_parseSubscriptionType_withChannelProgressString(self):
+    async def test_parseSubscriptionType_withChannelPollProgressString(self):
         result = await self.jsonMapper.parseSubscriptionType('channel.poll.progress')
         assert result is TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS
-
-    @pytest.mark.asyncio
-    async def test_parseSubscriptionType_withChannelFollowString(self):
-        result = await self.jsonMapper.parseSubscriptionType('channel.follow')
-        assert result is TwitchWebsocketSubscriptionType.FOLLOW
 
     @pytest.mark.asyncio
     async def test_parseSubscriptionType_withChannelPredictionBeginString(self):
@@ -2913,9 +2939,19 @@ class TestTwitchJsonMapper:
         assert string == 'channel.chat.message'
 
     @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withChannelChatNotification(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_CHAT_NOTIFICATION)
+        assert string == 'channel.chat.notification'
+
+    @pytest.mark.asyncio
     async def test_serializeSubscriptionType_withChannelCheer(self):
         string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_CHEER)
         assert string == 'channel.cheer'
+
+    @pytest.mark.asyncio
+    async def test_serializeSubscriptionType_withChannelFollow(self):
+        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW)
+        assert string == 'channel.follow'
 
     @pytest.mark.asyncio
     async def test_serializeSubscriptionType_withChannelHypeTrainBegin(self):
@@ -2971,11 +3007,6 @@ class TestTwitchJsonMapper:
     async def test_serializeSubscriptionType_withChannelPredictionProgress(self):
         string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS)
         assert string == 'channel.prediction.progress'
-
-    @pytest.mark.asyncio
-    async def test_serializeSubscriptionType_withFollow(self):
-        string = await self.jsonMapper.serializeSubscriptionType(TwitchWebsocketSubscriptionType.FOLLOW)
-        assert string == 'channel.follow'
 
     @pytest.mark.asyncio
     async def test_serializeSubscriptionType_withRaid(self):

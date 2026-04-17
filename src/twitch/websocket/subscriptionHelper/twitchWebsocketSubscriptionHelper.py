@@ -64,7 +64,9 @@ class TwitchWebsocketSubscriptionHelper(TwitchWebsocketSubscriptionHelperInterfa
             return
 
         try:
-            userTwitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(user.userId)
+            userTwitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
+                twitchChannelId = user.userId,
+            )
         except TwitchAccessTokenMissingException as e:
             self.__timber.log('TwitchWebsocketSubscriptionHelper', f'Skipping creation of {len(subscriptionTypes)} EventSub subscription(s) as we failed to fetch this user\'s Twitch access token ({user=}) ({sessionId=})', e, traceback.format_exc())
             return

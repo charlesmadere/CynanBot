@@ -22,6 +22,18 @@ class TwitchWebsocketConditionBuilder(TwitchWebsocketConditionBuilderInterface):
                 userId = user.userId,
             )
 
+        elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CHAT_NOTIFICATION:
+            return TwitchWebsocketCondition(
+                broadcasterUserId = user.userId,
+                userId = user.userId,
+            )
+
+        elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW:
+            return TwitchWebsocketCondition(
+                broadcasterUserId = user.userId,
+                moderatorUserId = user.userId,
+            )
+
         elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
             return TwitchWebsocketCondition(
                 broadcasterUserId = user.userId,
@@ -45,12 +57,6 @@ class TwitchWebsocketConditionBuilder(TwitchWebsocketConditionBuilderInterface):
         elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_UPDATE:
             return TwitchWebsocketCondition(
                 broadcasterUserId = user.userId,
-            )
-
-        elif subscriptionType is TwitchWebsocketSubscriptionType.FOLLOW:
-            return TwitchWebsocketCondition(
-                broadcasterUserId = user.userId,
-                moderatorUserId = user.userId,
             )
 
         elif subscriptionType is TwitchWebsocketSubscriptionType.RAID:

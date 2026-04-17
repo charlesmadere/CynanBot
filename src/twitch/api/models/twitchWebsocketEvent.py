@@ -3,6 +3,7 @@ from datetime import datetime
 
 from frozenlist import FrozenList
 
+from .twitchBitsBadgeTier import TwitchBitsBadgeTier
 from .twitchChannelPointsVoting import TwitchChannelPointsVoting
 from .twitchChatBadge import TwitchChatBadge
 from .twitchChatMessage import TwitchChatMessage
@@ -90,6 +91,7 @@ class TwitchWebsocketEvent:
     userLogin: str | None = None
     userName: str | None = None
     winningOutcomeId: str | None = None
+    bitsBadgeTier: TwitchBitsBadgeTier | None = None
     channelPointsVoting: TwitchChannelPointsVoting | None = None
     chatMessage: TwitchChatMessage | None = None
     chatMessageType: TwitchChatMessageType | None = None

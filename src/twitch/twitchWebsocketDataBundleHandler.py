@@ -79,13 +79,14 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         self,
         subscriptionType: TwitchWebsocketSubscriptionType | None
     ) -> bool:
-        return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE
+        return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE \
+            or subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CHAT_NOTIFICATION
 
     async def __isFollowType(
         self,
         subscriptionType: TwitchWebsocketSubscriptionType | None
     ) -> bool:
-        return subscriptionType is TwitchWebsocketSubscriptionType.FOLLOW
+        return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW
 
     async def __isHypeTrainType(
         self,
