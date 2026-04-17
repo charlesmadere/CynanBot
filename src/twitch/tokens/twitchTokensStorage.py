@@ -7,8 +7,6 @@ from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
 from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
-from ...storage.jsonFileReader import JsonFileReader
-from ...storage.jsonReaderInterface import JsonReaderInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -102,12 +100,14 @@ class TwitchTokensStorage(TwitchTokensStorageInterface):
     async def set(
         self,
         twitchChannelId: str,
-        twitchTokensDetails: TwitchTokensDetails | None,
+        tokensDetails: TwitchTokensDetails | None,
     ):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif tokensDetails is not None and not isinstance(tokensDetails, TwitchTokensDetails):
+            raise TypeError(f'tokensDetails argument is malformed: \"{tokensDetails}\"')
 
-        if twitchTokensDetails is None:
+        if tokensDetails is None:
             await self.remove(
                 twitchChannelId = twitchChannelId,
             )

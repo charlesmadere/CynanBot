@@ -23,6 +23,6 @@ class TwitchTokensStorageInterface(ABC):
     async def set(
         self,
         twitchChannelId: str,
-        twitchTokensDetails: TwitchTokensDetails | None,
+        tokensDetails: TwitchTokensDetails | None,
     ):
         pass
