@@ -48,7 +48,7 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
         defaultVoice = utils.getStrFromDict(
             d = jsonContents,
             key = 'default_voice',
-            fallback = self.__halfLifeJsonParser.serializeVoice(self.__defaultVoice)
+            fallback = self.__halfLifeJsonParser.serializeVoice(self.__defaultVoice),
         )
 
         return self.__halfLifeJsonParser.requireVoice(defaultVoice)
