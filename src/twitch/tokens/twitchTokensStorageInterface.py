@@ -1,0 +1,28 @@
+from abc import ABC, abstractmethod
+
+from ..localModels.twitchTokensDetails import TwitchTokensDetails
+
+
+class TwitchTokensStorageInterface(ABC):
+
+    @abstractmethod
+    async def get(
+        self,
+        twitchChannelId: str,
+    ) -> TwitchTokensDetails | None:
+        pass
+
+    @abstractmethod
+    async def remove(
+        self,
+        twitchChannelId: str,
+    ):
+        pass
+
+    @abstractmethod
+    async def set(
+        self,
+        twitchChannelId: str,
+        twitchTokensDetails: TwitchTokensDetails | None,
+    ):
+        pass

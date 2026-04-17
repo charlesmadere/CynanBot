@@ -18,6 +18,8 @@ class TwitchWebsocketSettingsRepository(TwitchWebsocketSettingsRepositoryInterfa
         twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface,
         defaultSubscriptionTypes: frozenset[TwitchWebsocketSubscriptionType] = frozenset({
             TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE,
+            TwitchWebsocketSubscriptionType.CHANNEL_CHAT_NOTIFICATION,
+            TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW,
             TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,
             TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN,
             TwitchWebsocketSubscriptionType.CHANNEL_POLL_END,
@@ -25,7 +27,6 @@ class TwitchWebsocketSettingsRepository(TwitchWebsocketSettingsRepositoryInterfa
             TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN,
             TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END,
             TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS,
-            TwitchWebsocketSubscriptionType.FOLLOW,
             TwitchWebsocketSubscriptionType.RAID,
             TwitchWebsocketSubscriptionType.SUBSCRIBE,
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT,
@@ -61,7 +62,7 @@ class TwitchWebsocketSettingsRepository(TwitchWebsocketSettingsRepositoryInterfa
         loggingLevelStr = utils.getStrFromDict(
             d = jsonContents,
             key = 'loggingLevel',
-            fallback = await self.__twitchWebsocketJsonMapper.serializeLoggingLevel(self.__defaultJsonLoggingLevel)
+            fallback = await self.__twitchWebsocketJsonMapper.serializeLoggingLevel(self.__defaultJsonLoggingLevel),
         )
 
         return await self.__twitchWebsocketJsonMapper.parseLoggingLevel(loggingLevelStr)

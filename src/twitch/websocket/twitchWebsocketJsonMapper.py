@@ -6,6 +6,7 @@ from frozenlist import FrozenList
 from .twitchWebsocketJsonLoggingLevel import TwitchWebsocketJsonLoggingLevel
 from .twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from ..api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from ..api.models.twitchBitsBadgeTier import TwitchBitsBadgeTier
 from ..api.models.twitchChannelPointsVoting import TwitchChannelPointsVoting
 from ..api.models.twitchChatBadge import TwitchChatBadge
 from ..api.models.twitchChatMessage import TwitchChatMessage
@@ -396,6 +397,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'winning_outcome_id' in eventJson and utils.isValidStr(eventJson.get('winning_outcome_id')):
             winningOutcomeId = utils.getStrFromDict(eventJson, 'winning_outcome_id')
 
+        bitsBadgeTier: TwitchBitsBadgeTier | None = None
+        if 'bits_badge_tier' in eventJson:
+            bitsBadgeTier = await self.__twitchJsonMapper.parseBitsBadgeTier(eventJson.get('bits_badge_tier'))
+
         channelPointsVoting: TwitchChannelPointsVoting | None = None
         if 'channel_points_voting' in eventJson:
             channelPointsVoting = await self.__twitchJsonMapper.parseChannelPointsVoting(eventJson.get('channel_points_voting'))
@@ -538,6 +543,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userLogin = userLogin,
             userName = userName,
             winningOutcomeId = winningOutcomeId,
+            bitsBadgeTier = bitsBadgeTier,
             channelPointsVoting = channelPointsVoting,
             chatMessage = chatMessage,
             chatMessageType = chatMessageType,

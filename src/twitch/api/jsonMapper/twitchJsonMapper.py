@@ -11,6 +11,7 @@ from ..models.twitchBanResponse import TwitchBanResponse
 from ..models.twitchBanResponseEntry import TwitchBanResponseEntry
 from ..models.twitchBannedUser import TwitchBannedUser
 from ..models.twitchBannedUsersReponse import TwitchBannedUsersResponse
+from ..models.twitchBitsBadgeTier import TwitchBitsBadgeTier
 from ..models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from ..models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
@@ -332,6 +333,19 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             pagination = pagination,
         )
 
+    async def parseBitsBadgeTier(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchBitsBadgeTier | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        tier = utils.getIntFromDict(jsonResponse, 'tier')
+
+        return TwitchBitsBadgeTier(
+            tier = tier,
+        )
+
     async def parseBroadcasterSubscription(
         self,
         jsonResponse: dict[str, Any] | Any | None,
@@ -556,8 +570,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         )
 
         if len(text) == 0 or text.isspace():
-            # it's possible for a message fragment to be blank, so in those cases,
-            # let's use a 1 space string instead
+            # it's possible for a message fragment to be empty or blank,
+            # so in those cases, let's use a 1 space string instead
             text = ' '
 
         cheermote: TwitchChatMessageFragmentCheermote | None = None
@@ -649,7 +663,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseChatMessageFragmentType(
         self,
-        fragmentType: str | Any | None
+        fragmentType: str | Any | None,
     ) -> TwitchChatMessageFragmentType | None:
         if not utils.isValidStr(fragmentType):
             return None
@@ -665,7 +679,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseChatMessageType(
         self,
-        messageType: str | Any | None
+        messageType: str | Any | None,
     ) -> TwitchChatMessageType | None:
         if not utils.isValidStr(messageType):
             return None
@@ -1900,7 +1914,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseSubscriptionType(
         self,
-        subscriptionType: str | Any | None
+        subscriptionType: str | Any | None,
     ) -> TwitchWebsocketSubscriptionType | None:
         if not utils.isValidStr(subscriptionType):
             return None
@@ -1910,12 +1924,16 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         match subscriptionType:
             case 'channel.bits.use':
                 return TwitchWebsocketSubscriptionType.CHANNEL_BITS_USE
-            case 'channel.chat.message':
-                return TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE
-            case 'channel.cheer':
-                return TwitchWebsocketSubscriptionType.CHANNEL_CHEER
             case 'channel.channel_points_custom_reward_redemption.add':
                 return TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
+            case 'channel.chat.message':
+                return TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE
+            case 'channel.chat.notification':
+                return TwitchWebsocketSubscriptionType.CHANNEL_CHAT_NOTIFICATION
+            case 'channel.cheer':
+                return TwitchWebsocketSubscriptionType.CHANNEL_CHEER
+            case 'channel.follow':
+                return TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW
             case 'channel.hype_train.begin':
                 return TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_BEGIN
             case 'channel.hype_train.end':
@@ -1938,8 +1956,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS
             case 'channel.update':
                 return TwitchWebsocketSubscriptionType.CHANNEL_UPDATE
-            case 'channel.follow':
-                return TwitchWebsocketSubscriptionType.FOLLOW
             case 'channel.raid':
                 return TwitchWebsocketSubscriptionType.RAID
             case 'stream.offline':
@@ -1978,10 +1994,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        expirationTime = await self.__calculateExpirationTime(
-            expiresInSeconds = utils.getIntFromDict(jsonResponse, 'expires_in', fallback = -1),
-        )
-
         accessToken: str | None = None
         if 'access_token' in jsonResponse and utils.isValidStr(jsonResponse.get('access_token')):
             accessToken = utils.getStrFromDict(jsonResponse, 'access_token')
@@ -1993,6 +2005,10 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not utils.isValidStr(accessToken) or not utils.isValidStr(refreshToken):
             self.__timber.log('TwitchJsonMapper', f'Tokens details JSON data is missing required \"access_token\" or \"refresh_token\" values ({accessToken=}) ({refreshToken=}) ({jsonResponse=})')
             return None
+
+        expirationTime = await self.__calculateExpirationTime(
+            expiresInSeconds = utils.getIntFromDict(jsonResponse, 'expires_in', fallback = -1),
+        )
 
         return TwitchTokensDetails(
             expirationTime = expirationTime,
@@ -2677,8 +2693,12 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return 'channel.bits.use'
             case TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE:
                 return 'channel.chat.message'
+            case TwitchWebsocketSubscriptionType.CHANNEL_CHAT_NOTIFICATION:
+                return 'channel.chat.notification'
             case TwitchWebsocketSubscriptionType.CHANNEL_CHEER:
                 return 'channel.cheer'
+            case TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW:
+                return 'channel.follow'
             case TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
                 return 'channel.channel_points_custom_reward_redemption.add'
             case TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_BEGIN:
@@ -2703,8 +2723,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return 'channel.prediction.progress'
             case TwitchWebsocketSubscriptionType.CHANNEL_UPDATE:
                 return 'channel.update'
-            case TwitchWebsocketSubscriptionType.FOLLOW:
-                return 'channel.follow'
             case TwitchWebsocketSubscriptionType.RAID:
                 return 'channel.raid'
             case TwitchWebsocketSubscriptionType.STREAM_OFFLINE:

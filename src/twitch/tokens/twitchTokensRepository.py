@@ -618,7 +618,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             )
         except GenericNetworkException as e:
             self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to validate Twitch tokens ({twitchChannelId=}) ({tokensDetails=})', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to validate Twitch tokens ({twitchChannelId=}) ({tokensDetails=})')
+            raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to validate Twitch tokens ({twitchChannelId=}) ({tokensDetails=}): {e}')
         except TwitchStatusCodeException:
             # this is an expected error
             pass

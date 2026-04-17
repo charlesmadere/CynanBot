@@ -7,6 +7,7 @@ from ..models.twitchBanResponse import TwitchBanResponse
 from ..models.twitchBanResponseEntry import TwitchBanResponseEntry
 from ..models.twitchBannedUser import TwitchBannedUser
 from ..models.twitchBannedUsersReponse import TwitchBannedUsersResponse
+from ..models.twitchBitsBadgeTier import TwitchBitsBadgeTier
 from ..models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from ..models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
@@ -139,6 +140,13 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseBitsBadgeTier(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchBitsBadgeTier | None:
+        pass
+
+    @abstractmethod
     async def parseBroadcasterSubscription(
         self,
         jsonResponse: dict[str, Any] | Any | None,
@@ -225,14 +233,14 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseChatMessageFragmentType(
         self,
-        fragmentType: str | Any | None
+        fragmentType: str | Any | None,
     ) -> TwitchChatMessageFragmentType | None:
         pass
 
     @abstractmethod
     async def parseChatMessageType(
         self,
-        messageType: str | Any | None
+        messageType: str | Any | None,
     ) -> TwitchChatMessageType | None:
         pass
 
@@ -589,7 +597,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseSubscriptionType(
         self,
-        subscriptionType: str | Any | None
+        subscriptionType: str | Any | None,
     ) -> TwitchWebsocketSubscriptionType | None:
         pass
 

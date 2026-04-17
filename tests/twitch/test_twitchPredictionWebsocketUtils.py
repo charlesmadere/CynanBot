@@ -213,7 +213,7 @@ class TestTwitchPredictionWebsocketUtils:
 
         with pytest.raises(ValueError):
             result = await self.utils.websocketSubscriptionTypeToString(
-               subscriptionType = TwitchWebsocketSubscriptionType.FOLLOW
+               subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW
             )
 
         assert result is None
