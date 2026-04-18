@@ -216,7 +216,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             maximumSeconds = await self.__anivSettings.getCopyMessageTimeoutMaxSeconds()
 
         return RandomExponentialTimeoutDuration(
-            scale = float(12),
+            scale = float(13),
             maximumSeconds = maximumSeconds,
             minimumSeconds = minimumSeconds,
         )
@@ -225,9 +225,6 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         self,
         user: UserInterface,
     ) -> TimeoutRoll:
-        if not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-
         timeoutProbability = user.anivMessageCopyTimeoutProbability
         if not utils.isValidNum(timeoutProbability):
             timeoutProbability = await self.__anivSettings.getCopyMessageTimeoutProbability()
