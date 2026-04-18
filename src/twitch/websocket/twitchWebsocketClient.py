@@ -49,7 +49,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         twitchWebsocketSubscriptionHelper: TwitchWebsocketSubscriptionHelperInterface,
         queueSleepTimeSeconds: float = 0.25,
         queueTimeoutSeconds: float = 3,
-        websocketCreationDelayTimeSeconds: float = 0.5,
+        websocketCreationDelayTimeSeconds: float = 1,
         websocketRetrySleepTimeSeconds: float = 3,
         twitchWebsocketInstabilityThreshold: int = 3,
         twitchWebsocketMessageIdCacheSize: int = 1024,
@@ -79,7 +79,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'twitchWebsocketSubscriptionHelper argument is malformed: \"{twitchWebsocketSubscriptionHelper}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
-        elif queueSleepTimeSeconds < 0.25 or queueSleepTimeSeconds > 4:
+        elif queueSleepTimeSeconds < 0.125 or queueSleepTimeSeconds > 4:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
         elif not utils.isValidNum(queueTimeoutSeconds):
             raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
@@ -87,7 +87,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
         elif not utils.isValidNum(websocketCreationDelayTimeSeconds):
             raise TypeError(f'websocketCreationDelayTimeSeconds argument is malformed: \"{websocketCreationDelayTimeSeconds}\"')
-        elif websocketCreationDelayTimeSeconds < 0.1 or websocketCreationDelayTimeSeconds > 8:
+        elif websocketCreationDelayTimeSeconds < 0.25 or websocketCreationDelayTimeSeconds > 8:
             raise ValueError(f'websocketCreationDelayTimeSeconds argument is out of bounds: {websocketCreationDelayTimeSeconds}')
         elif not utils.isValidNum(websocketRetrySleepTimeSeconds):
             raise TypeError(f'websocketRetrySleepTimeSeconds argument is malformed: \"{websocketRetrySleepTimeSeconds}\"')
