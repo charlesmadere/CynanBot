@@ -1019,7 +1019,7 @@ twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface = 
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
 )
 
-twitchWebsocketSubscriptionHelper: TwitchWebsocketSubscriptionHelperInterface = TwitchWebsocketSubscriptionHelper(
+twitchWebsocketSubscriptionHelper: Final[TwitchWebsocketSubscriptionHelperInterface] = TwitchWebsocketSubscriptionHelper(
     timber = timber,
     twitchApiService = twitchApiService,
     twitchTokensRepository = twitchTokensRepository,
@@ -1028,7 +1028,7 @@ twitchWebsocketSubscriptionHelper: TwitchWebsocketSubscriptionHelperInterface = 
     twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
 )
 
-twitchWebsocketClient: TwitchWebsocketClientInterface = TwitchWebsocketClient(
+twitchWebsocketClient: Final[TwitchWebsocketClientInterface] = TwitchWebsocketClient(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber,
     timeZoneRepository = timeZoneRepository,

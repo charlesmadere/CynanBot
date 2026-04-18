@@ -94,9 +94,7 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand2):
             return ChatCommandResult.IGNORED
         elif not await self.__chatterInventorySettings.isEnabled():
             return ChatCommandResult.IGNORED
-        elif not await self.__hasPermissions(
-            chatMessage = chatMessage,
-        ):
+        elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
         arguments = await self.__parseArguments(

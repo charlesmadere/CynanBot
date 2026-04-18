@@ -25,7 +25,6 @@ from .chatCommands.addUserChatCommand import AddUserChatCommand
 from .chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
 from .chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from .chatCommands.confirmChatCommand import ConfirmChatCommand
-from .chatCommands.crowdControlChatCommand import CrowdControlChatCommand
 from .chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
 from .chatCommands.pkMonChatCommand import PkMonChatCommand
 from .chatCommands.pkMoveChatCommand import PkMoveChatCommand
@@ -727,11 +726,9 @@ class CynanBot(
 
         if crowdControlAutomator is None or crowdControlIdGenerator is None or crowdControlMachine is None or crowdControlUserInputUtils is None:
             self.__addGameShuffleAutomatorCommand: AbsChatCommand = StubChatCommand()
-            self.__crowdControlCommand: AbsChatCommand = StubChatCommand()
             self.__removeGameShuffleAutomatorCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__addGameShuffleAutomatorCommand: AbsChatCommand = AddGameShuffleAutomatorChatCommand(administratorProvider, crowdControlAutomator, timber, twitchChatMessenger, usersRepository)
-            self.__crowdControlCommand: AbsChatCommand = CrowdControlChatCommand(administratorProvider, crowdControlIdGenerator, crowdControlMachine, crowdControlUserInputUtils, timber, timeZoneRepository, twitchChatMessenger, usersRepository)
             self.__removeGameShuffleAutomatorCommand: AbsChatCommand = RemoveGameShuffleAutomatorChatCommand(administratorProvider, crowdControlAutomator, timber, twitchChatMessenger, usersRepository)
 
         if recurringActionsHelper is None or recurringActionsMachine is None or recurringActionsRepository is None or recurringActionsWizard is None:
@@ -990,11 +987,6 @@ class CynanBot(
     async def command_confirm(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__confirmCommand.handleChatCommand(context)
-
-    @commands.command(name = 'crowdcontrol')
-    async def command_crowdcontrol(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__crowdControlCommand.handleChatCommand(context)
 
     @commands.command(name = 'getrecurringactions', aliases = [ 'recurringactions' ])
     async def command_getrecurringactions(self, ctx: Context):

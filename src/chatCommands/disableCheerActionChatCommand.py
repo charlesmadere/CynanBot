@@ -55,9 +55,7 @@ class DisableCheerActionChatCommand(AbsChatCommand2):
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
         if not chatMessage.twitchUser.areCheerActionsEnabled:
             return ChatCommandResult.IGNORED
-        elif not await self.__hasPermissions(
-            chatMessage = chatMessage,
-        ):
+        elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
         splits = utils.getCleanedSplits(chatMessage.text)
