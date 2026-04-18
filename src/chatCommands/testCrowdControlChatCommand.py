@@ -53,7 +53,7 @@ class TestCrowdControlChatCommand(AbsChatCommand2):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!(?:test)?crowdcontrol\b', re.IGNORECASE),
+            re.compile(r'^\s*!testcrowdcontrol\b', re.IGNORECASE),
         })
 
     @property
@@ -116,7 +116,7 @@ class TestCrowdControlChatCommand(AbsChatCommand2):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({button=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Handled ({crowdControlAction=}) ({button=}) ({chatMessage=})')
         return ChatCommandResult.HANDLED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
