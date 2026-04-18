@@ -54,6 +54,7 @@ from src.chatCommands.setChatterPreferredNameChatCommand import SetChatterPrefer
 from src.chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferredTtsChatCommand
 from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
 from src.chatCommands.testCheerChatCommand import TestCheerChatCommand
+from src.chatCommands.testCrowdControlChatCommand import TestCrowdControlChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
@@ -947,7 +948,7 @@ twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface = 
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
 )
 
-twitchWebsocketSubscriptionHelper: TwitchWebsocketSubscriptionHelperInterface = TwitchWebsocketSubscriptionHelper(
+twitchWebsocketSubscriptionHelper: Final[TwitchWebsocketSubscriptionHelperInterface] = TwitchWebsocketSubscriptionHelper(
     timber = timber,
     twitchApiService = twitchApiService,
     twitchTokensRepository = twitchTokensRepository,
@@ -956,7 +957,7 @@ twitchWebsocketSubscriptionHelper: TwitchWebsocketSubscriptionHelperInterface = 
     twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
 )
 
-twitchWebsocketClient: TwitchWebsocketClientInterface = TwitchWebsocketClient(
+twitchWebsocketClient: Final[TwitchWebsocketClientInterface] = TwitchWebsocketClient(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
@@ -2351,6 +2352,15 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     TestCheerChatCommand(
         cheerActionHelper = cheerActionHelper,
         timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    TestCrowdControlChatCommand(
+        administratorProvider = administratorProvider,
+        crowdControlIdGenerator = crowdControlIdGenerator,
+        crowdControlMachine = crowdControlMachine,
+        crowdControlUserInputUtils = crowdControlUserInputUtils,
+        timber = timber,
+        timeZoneRepository = timeZoneRepository,
         twitchChatMessenger = twitchChatMessenger,
     ),
     TestMouseCursorChatCommand(

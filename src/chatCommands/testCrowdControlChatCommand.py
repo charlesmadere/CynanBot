@@ -1,7 +1,8 @@
-from datetime import datetime
-from typing import Final
+import re
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..crowdControl.actions.buttonPressCrowdControlAction import ButtonPressCrowdControlAction
 from ..crowdControl.actions.crowdControlAction import CrowdControlAction
 from ..crowdControl.actions.gameShuffleCrowdControlAction import GameShuffleCrowdControlAction
@@ -13,11 +14,10 @@ from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class CrowdControlChatCommand(AbsChatCommand):
+class TestCrowdControlChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -28,7 +28,6 @@ class CrowdControlChatCommand(AbsChatCommand):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -44,8 +43,6 @@ class CrowdControlChatCommand(AbsChatCommand):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__crowdControlIdGenerator: Final[CrowdControlIdGeneratorInterface] = crowdControlIdGenerator
@@ -54,29 +51,36 @@ class CrowdControlChatCommand(AbsChatCommand):
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!(?:test)?crowdcontrol\b', re.IGNORECASE),
+        })
 
-        if not user.isCrowdControlEnabled:
-            return
+    @property
+    def commandName(self) -> str:
+        return 'TestCrowdControlChatCommand'
 
-        twitchChannelId = await ctx.getTwitchChannelId()
-        administrator = await self.__administratorProvider.getAdministratorUserId()
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
 
-        if twitchChannelId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('CrowdControlChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
-            return
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.isCrowdControlEnabled:
+            return ChatCommandResult.IGNORED
+        elif not await self.__hasPermissions(chatMessage):
+            return ChatCommandResult.IGNORED
 
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        splits = utils.getCleanedSplits(chatMessage.text)
 
-        message: str | None = None
+        userInput: str | None = None
         if len(splits) >= 2:
-            message = splits[1].strip()
+            userInput = splits[1].strip()
 
-        button = await self.__crowdControlUserInputUtils.parseButtonFromUserInput(message)
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        button = await self.__crowdControlUserInputUtils.parseButtonFromUserInput(
+            userInput = userInput,
+        )
+
+        now = self.__timeZoneRepository.getNow()
         actionId = await self.__crowdControlIdGenerator.generateActionId()
         crowdControlAction: CrowdControlAction
 
@@ -86,30 +90,36 @@ class CrowdControlChatCommand(AbsChatCommand):
                 entryWithinGigaShuffle = False,
                 startOfGigaShuffleSize = None,
                 actionId = actionId,
-                chatterUserId = ctx.getAuthorId(),
-                chatterUserName = ctx.getAuthorName(),
-                twitchChannel = user.handle,
-                twitchChannelId = twitchChannelId,
-                twitchChatMessageId = await ctx.getMessageId(),
+                chatterUserId = chatMessage.chatterUserId,
+                chatterUserName = chatMessage.chatterUserName,
+                twitchChannel = chatMessage.twitchChannel,
+                twitchChannelId = chatMessage.twitchChannelId,
+                twitchChatMessageId = chatMessage.twitchChatMessageId,
             )
         else:
             crowdControlAction = ButtonPressCrowdControlAction(
                 button = button,
                 dateTime = now,
                 actionId = actionId,
-                chatterUserId = ctx.getAuthorId(),
-                chatterUserName = ctx.getAuthorName(),
-                twitchChannel = user.handle,
-                twitchChannelId = twitchChannelId,
-                twitchChatMessageId = await ctx.getMessageId(),
+                chatterUserId = chatMessage.chatterUserId,
+                chatterUserName = chatMessage.chatterUserName,
+                twitchChannel = chatMessage.twitchChannel,
+                twitchChannelId = chatMessage.twitchChannelId,
+                twitchChatMessageId = chatMessage.twitchChatMessageId,
             )
 
         self.__crowdControlMachine.submitAction(crowdControlAction)
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ Handled crowd control action ({button=}) ({crowdControlAction.actionType=})',
-            twitchChannelId = twitchChannelId,
-            replyMessageId = await ctx.getMessageId(),
+            text = f'ⓘ Submitted crowd control action ({button=}) ({crowdControlAction.actionType=})',
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log('CrowdControlChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({button=})')
+        self.__timber.log(self.commandName, f'Handled ({button=}) ({chatMessage=})')
+        return ChatCommandResult.HANDLED
+
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+        isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
+        return isStreamer or isAdministrator
