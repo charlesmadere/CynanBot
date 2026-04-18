@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from typing import Final
 
 from .twitchTokensStorageInterface import TwitchTokensStorageInterface
@@ -35,6 +36,10 @@ class TwitchTokensStorage(TwitchTokensStorageInterface):
         # TODO
         pass
 
+    async def __createExpiredExpirationTime(self) -> datetime:
+        now = self.__timeZoneRepository.getNow()
+        return now - timedelta(weeks = 1)
+
     async def get(
         self,
         twitchChannelId: str,
@@ -42,8 +47,31 @@ class TwitchTokensStorage(TwitchTokensStorageInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        # TODO
-        return None
+        connection = await self.__getDatabaseConnection()
+        record = await connection.fetchRow(
+            '''
+                SELECT expirationtime, accesstoken, refreshtoken FROM twitchtokens
+                WHERE twitchchannelid = $1
+                LIMIT 1
+            ''',
+            twitchChannelId,
+        )
+
+        await connection.close()
+
+        if record is None or len(record) == 0:
+            return None
+
+        expirationTime = datetime.fromisoformat(record[0])
+
+        if expirationTime is None:
+            expirationTime = await self.__createExpiredExpirationTime()
+
+        return TwitchTokensDetails(
+            expirationTime = expirationTime,
+            accessToken = record[1],
+            refreshToken = record[2],
+        )
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()
@@ -94,8 +122,17 @@ class TwitchTokensStorage(TwitchTokensStorageInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        # TODO
-        pass
+        connection = await self.__getDatabaseConnection()
+        await connection.execute(
+            '''
+                DELETE FROM twitchtokens
+                WHERE twitchchannelid = $1
+            ''',
+            twitchChannelId,
+        )
+
+        await connection.close()
+        self.__timber.log('TwitchTokensStorage', f'Removed user ({twitchChannelId=})')
 
     async def set(
         self,
