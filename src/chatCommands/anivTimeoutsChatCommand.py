@@ -62,30 +62,19 @@ class AnivTimeoutsChatCommand(AbsChatCommand2):
         elif not await self.__anivSettings.areCopyMessageTimeoutsEnabled():
             return ChatCommandResult.IGNORED
 
+        printOut: str
+
         if await self.__twitchChannelEditorsRepository.isEditor(
             chatterUserId = chatMessage.chatterUserId,
             twitchChannelId =  chatMessage.twitchChannelId,
         ):
-            printOut = await self.__anivCopyMessageTimeoutScorePresenter.getChannelEditorsCantPlayString(
-                language = chatMessage.twitchUser.defaultLanguage,
+            printOut = await self.__handleChatCommandAsEditor(
+                chatMessage = chatMessage,
             )
-
-            self.__twitchChatMessenger.send(
-                text = printOut,
-                twitchChannelId = chatMessage.twitchChannelId,
-                replyMessageId = chatMessage.twitchChatMessageId,
+        else:
+            printOut = await self.__handleChatCommandAsRegularChatter(
+                chatMessage = chatMessage,
             )
-            return ChatCommandResult.HANDLED
-
-        preparedScore = await self.__anivCopyMessageTimeoutScoreHelper.getScore(
-            chatterUserId = chatMessage.chatterUserId,
-            twitchChannelId = chatMessage.twitchChannelId,
-        )
-
-        printOut = await self.__anivCopyMessageTimeoutScorePresenter.getScoreString(
-            language = chatMessage.twitchUser.defaultLanguage,
-            preparedScore = preparedScore,
-        )
 
         self.__twitchChatMessenger.send(
             text = printOut,
@@ -93,5 +82,21 @@ class AnivTimeoutsChatCommand(AbsChatCommand2):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({preparedScore=}) ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Handled ({chatMessage=})')
+        return ChatCommandResult.CONSUMED
+
+    async def __handleChatCommandAsEditor(self, chatMessage: TwitchChatMessage) -> str:
+        return await self.__anivCopyMessageTimeoutScorePresenter.getChannelEditorsCantPlayString(
+            language = chatMessage.twitchUser.defaultLanguage,
+        )
+
+    async def __handleChatCommandAsRegularChatter(self, chatMessage: TwitchChatMessage) -> str:
+        preparedScore = await self.__anivCopyMessageTimeoutScoreHelper.getScore(
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
+        )
+
+        return await self.__anivCopyMessageTimeoutScorePresenter.getScoreString(
+            language = chatMessage.twitchUser.defaultLanguage,
+            preparedScore = preparedScore,
+        )
