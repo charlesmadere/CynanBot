@@ -36,7 +36,7 @@ class ChatterInventoryChatCommand(AbsChatCommand2):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!(?:my)?(?:inv)?entory\b', re.IGNORECASE),
+            re.compile(r'^\s*!(?:my)?inv(?:entory)?\b', re.IGNORECASE),
         })
 
     @property
