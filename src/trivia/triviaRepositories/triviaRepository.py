@@ -76,7 +76,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         willFryTriviaQuestionRepository: WillFryTriviaQuestionRepository,
         wwtbamTriviaQuestionRepository: WwtbamTriviaQuestionRepository,
         spoolerLoopSleepTimeSeconds: float = 120,
-        triviaRetrySleepTimeSeconds: float = 0.25
+        triviaRetrySleepTimeSeconds: float = 0.25,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -167,7 +167,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
     async def __chooseRandomTriviaSource(
         self,
-        triviaFetchOptions: TriviaFetchOptions
+        triviaFetchOptions: TriviaFetchOptions,
     ) -> TriviaQuestionRepositoryInterface:
         if not isinstance(triviaFetchOptions, TriviaFetchOptions):
             raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
@@ -175,7 +175,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         allTriviaSourcesAndProperties = await self.__triviaSettings.getTriviaSourcesAndProperties()
 
         currentlyInvalidTriviaSources = await self.__getCurrentlyInvalidTriviaSources(
-            triviaFetchOptions = triviaFetchOptions
+            triviaFetchOptions = triviaFetchOptions,
         )
 
         triviaSources: list[TriviaSource] = list()
@@ -247,13 +247,13 @@ class TriviaRepository(TriviaRepositoryInterface):
                 return triviaSource
 
         return await self.__chooseRandomTriviaSource(
-            triviaFetchOptions = triviaFetchOptions
+            triviaFetchOptions = triviaFetchOptions,
         )
 
     async def fetchTrivia(
         self,
         emote: str,
-        triviaFetchOptions: TriviaFetchOptions
+        triviaFetchOptions: TriviaFetchOptions,
     ) -> AbsTriviaQuestion | None:
         if not utils.isValidStr(emote):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
@@ -269,12 +269,14 @@ class TriviaRepository(TriviaRepositoryInterface):
             if triviaFetchOptions.requiredTriviaSource is not None:
                 question = None
             else:
-                question = await self.__retrieveSpooledTriviaQuestion(triviaFetchOptions)
+                question = await self.__retrieveSpooledTriviaQuestion(
+                    triviaFetchOptions = triviaFetchOptions,
+                )
 
             if question is None:
                 try:
                     triviaQuestionRepository = await self.__getTriviaSource(
-                        triviaFetchOptions = triviaFetchOptions
+                        triviaFetchOptions = triviaFetchOptions,
                     )
                 except UnavailableTriviaSourceException as e:
                     self.__timber.log('TriviaRepository', f'Failed to get trivia source ({triviaFetchOptions=}): {e}', e, traceback.format_exc())
@@ -299,14 +301,14 @@ class TriviaRepository(TriviaRepositoryInterface):
 
             if question is not None and await self.__verifyTriviaQuestionContent(
                 question = question,
-                triviaFetchOptions = triviaFetchOptions
+                triviaFetchOptions = triviaFetchOptions,
             ):
                 await self.__scrapeAndStore(question)
 
                 if await self.__verifyTriviaQuestionIsNotDuplicate(
                     question = question,
                     emote = emote,
-                    triviaFetchOptions = triviaFetchOptions
+                    triviaFetchOptions = triviaFetchOptions,
                 ):
                     return question
 
@@ -318,7 +320,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
     async def __getCurrentlyInvalidTriviaSources(
         self,
-        triviaFetchOptions: TriviaFetchOptions
+        triviaFetchOptions: TriviaFetchOptions,
     ) -> frozenset[TriviaSource]:
         if not isinstance(triviaFetchOptions, TriviaFetchOptions):
             raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
@@ -541,7 +543,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         self.__timber.log('TriviaRepository', f'Finished spooling up a trivia question (new qsize: {self.__triviaQuestionSpool.qsize()})')
         await self.__scrapeAndStore(question)
 
-    def startSpooler(self):
+    def start(self):
         if self.__isSpoolerStarted:
             self.__timber.log('TriviaRepository', 'Not starting spooler as it has already been started')
             return

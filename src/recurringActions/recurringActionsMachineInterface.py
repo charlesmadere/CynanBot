@@ -1,14 +1,11 @@
 from abc import ABC, abstractmethod
 
 from .recurringActionEventListener import RecurringActionEventListener
+from ..misc.startable import Startable
 
 
-class RecurringActionsMachineInterface(ABC):
+class RecurringActionsMachineInterface(Startable, ABC):
 
     @abstractmethod
     def setEventListener(self, listener: RecurringActionEventListener | None):
-        pass
-
-    @abstractmethod
-    def startMachine(self):
         pass

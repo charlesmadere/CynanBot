@@ -976,7 +976,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
             await asyncio.sleep(self.__sleepTimeSeconds)
 
-    def startMachine(self):
+    def start(self):
         if self.__isStarted:
             self.__timber.log('TriviaGameMachine', 'Not starting TriviaGameMachine as it has already been started')
             return

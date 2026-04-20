@@ -898,17 +898,17 @@ class CynanBot(
 
         if self.__triviaGameMachine is not None:
             self.__triviaGameMachine.setEventListener(self.__triviaEventHandler)
-            self.__triviaGameMachine.startMachine()
+            self.__triviaGameMachine.start()
 
         if self.__triviaRepository is not None:
-            self.__triviaRepository.startSpooler()
+            self.__triviaRepository.start()
 
         if self.__recurringActionsEventHandler is not None:
             self.__recurringActionsEventHandler.setTwitchConnectionReadinessProvider(self)
 
         if self.__recurringActionsMachine is not None:
             self.__recurringActionsMachine.setEventListener(self.__recurringActionsEventHandler)
-            self.__recurringActionsMachine.startMachine()
+            self.__recurringActionsMachine.start()
 
         if self.__pixelsDiceMachine is not None:
             self.__pixelsDiceMachine.setEventListener(self.__pixelsDiceEventListener)
