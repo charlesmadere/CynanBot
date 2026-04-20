@@ -39,7 +39,6 @@ from .chatCommands.setFuntoonTokenChatCommand import SetFuntoonTokenChatCommand
 from .chatCommands.setTwitchCodeChatCommand import SetTwitchCodeChatCommand
 from .chatCommands.stubChatCommand import StubChatCommand
 from .chatCommands.swQuoteChatCommand import SwQuoteChatCommand
-from .chatCommands.timeChatCommand import TimeChatCommand
 from .chatCommands.twitchUserInfoChatCommand import TwitchUserInfoChatCommand
 from .chatCommands.voicemailsChatCommand import VoicemailsChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -716,7 +715,6 @@ class CynanBot(
         self.__confirmCommand: AbsChatCommand = ConfirmChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, usersRepository)
         self.__removeUserCommand: AbsChatCommand = RemoveUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, twitchTokensRepository, userIdsRepository, usersRepository)
         self.__setTwitchCodeCommand: AbsChatCommand = SetTwitchCodeChatCommand(administratorProvider, timber, twitchTokensRepository, twitchChatMessenger, usersRepository)
-        self.__timeCommand: AbsChatCommand = TimeChatCommand(timber, twitchChatMessenger, usersRepository)
         self.__twitchUserInfoCommand: AbsChatCommand = TwitchUserInfoChatCommand(administratorProvider, timber, twitchApiService, twitchChatMessenger, authRepository, twitchTokensRepository, usersRepository)
 
         if asplodieStatsPresenter is None or asplodieStatsRepository is None:
@@ -1047,11 +1045,6 @@ class CynanBot(
     async def command_swquote(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__swQuoteCommand.handleChatCommand(context)
-
-    @commands.command(name = 'time')
-    async def command_time(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__timeCommand.handleChatCommand(context)
 
     @commands.command(name = 'twitchuserinfo', aliases = [ 'twitchinfo', 'userinfo' ])
     async def command_twitchuserinfo(self, ctx: Context):
