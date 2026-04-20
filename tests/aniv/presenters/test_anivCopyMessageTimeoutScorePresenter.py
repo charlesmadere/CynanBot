@@ -42,7 +42,7 @@ class TestAnivCopyMessageTimeoutScorePresenter:
             preparedScore = preparedScore,
         )
 
-        assert printOut == f'ⓘ @{preparedScore.chatterUserName} has no aniv timeouts'
+        assert printOut == f'ⓘ You have no aniv timeouts'
 
     @pytest.mark.asyncio
     async def test_getScoreString_with0Dodges0TimeoutsScoreAndSpanish(self):
@@ -64,7 +64,7 @@ class TestAnivCopyMessageTimeoutScorePresenter:
             preparedScore = preparedScore,
         )
 
-        assert printOut == f'ⓘ @{preparedScore.chatterUserName} no tiene suspensiones de aniv'
+        assert printOut == f'ⓘ No tiene suspensiones de aniv'
 
     def test_sanity(self):
         assert self.presenter is not None
