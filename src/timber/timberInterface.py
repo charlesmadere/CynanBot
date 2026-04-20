@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 
+from ..misc.startable import Startable
 
-class TimberInterface(ABC):
+
+class TimberInterface(Startable, ABC):
 
     @abstractmethod
     def log(
@@ -11,8 +13,4 @@ class TimberInterface(ABC):
         exception: Exception | None = None,
         traceback: str | None = None,
     ):
-        pass
-
-    @abstractmethod
-    def start(self):
         pass

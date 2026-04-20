@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 
 from ...misc.clearable import Clearable
+from ...misc.startable import Startable
 
 
-class TwitchTokensRepositoryInterface(Clearable, ABC):
+class TwitchTokensRepositoryInterface(Clearable, Startable, ABC):
 
     @abstractmethod
     async def addUser(
@@ -68,8 +69,4 @@ class TwitchTokensRepositoryInterface(Clearable, ABC):
         self,
         twitchChannelId: str,
     ) -> str:
-        pass
-
-    @abstractmethod
-    def start(self):
         pass

@@ -45,7 +45,7 @@ class AnivCopyMessageTimeoutScorePresenter(AnivCopyMessageTimeoutScorePresenterI
         preparedScore: PreparedAnivCopyMessageTimeoutScore,
     ) -> str:
         if preparedScore.dodgeScore == 0 and preparedScore.timeoutScore == 0:
-            return f'ⓘ @{preparedScore.chatterUserName} has no aniv timeouts'
+            return f'ⓘ You have no aniv timeouts'
 
         dodgesString: str
         if preparedScore.dodgeScore == 1:
@@ -69,14 +69,14 @@ class AnivCopyMessageTimeoutScorePresenter(AnivCopyMessageTimeoutScorePresenterI
             dodgePercent = round((float(preparedScore.dodgeScore) / float(totalDodgesAndTimeouts)) * float(100), 2)
             dodgePercentString = f'{dodgePercent}%'
 
-        return f'ⓘ aniv timeout scores for @{preparedScore.chatterUserName} — {dodgesString} and {timeoutsString} (that\'s a {dodgePercentString} dodge rate)'
+        return f'ⓘ Your aniv timeout scores — {dodgesString} and {timeoutsString} (that\'s a {dodgePercentString} dodge rate)'
 
     async def __getScoreStringSpanish(
         self,
         preparedScore: PreparedAnivCopyMessageTimeoutScore,
     ) -> str:
         if preparedScore.dodgeScore == 0 and preparedScore.timeoutScore == 0:
-            return f'ⓘ @{preparedScore.chatterUserName} no tiene suspensiones de aniv'
+            return f'ⓘ No tiene suspensiones de aniv'
 
         dodgesString: str
         if preparedScore.dodgeScore == 1:
@@ -100,4 +100,4 @@ class AnivCopyMessageTimeoutScorePresenter(AnivCopyMessageTimeoutScorePresenterI
             dodgePercent = round((float(preparedScore.dodgeScore) / float(totalDodgesAndTimeouts)) * float(100), 2)
             dodgePercentString = f'{dodgePercent}%'
 
-        return f'ⓘ el puntaje de suspension de aniv es @{preparedScore.chatterUserName} — {dodgesString} y {timeoutsString} (tasa de esquive de {dodgePercentString})'
+        return f'ⓘ el puntaje de suspension de aniv — {dodgesString} y {timeoutsString} (tasa de esquive de {dodgePercentString})'

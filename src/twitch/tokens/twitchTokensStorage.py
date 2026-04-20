@@ -32,10 +32,6 @@ class TwitchTokensStorage(TwitchTokensStorageInterface):
 
         self.__isDatabaseReady: bool = False
 
-    async def __consumeSeedFile(self):
-        # TODO
-        pass
-
     async def __createExpiredExpirationTime(self) -> datetime:
         now = self.__timeZoneRepository.getNow()
         return now - timedelta(weeks = 1)
@@ -113,7 +109,6 @@ class TwitchTokensStorage(TwitchTokensStorageInterface):
                 raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.databaseType}\"')
 
         await connection.close()
-        await self.__consumeSeedFile()
 
     async def remove(
         self,
@@ -134,7 +129,7 @@ class TwitchTokensStorage(TwitchTokensStorageInterface):
         await connection.close()
         self.__timber.log('TwitchTokensStorage', f'Removed user ({twitchChannelId=})')
 
-    async def set(
+    async def setTokensDetails(
         self,
         twitchChannelId: str,
         tokensDetails: TwitchTokensDetails | None,
@@ -150,5 +145,40 @@ class TwitchTokensStorage(TwitchTokensStorageInterface):
             )
             return
 
-        # TODO
-        pass
+        expirationTime = tokensDetails.expirationTime
+
+        connection = await self.__getDatabaseConnection()
+        await connection.execute(
+            '''
+                INSERT INTO twitchtokens (expirationtime, accesstoken, refreshtoken, twitchchannelid)
+                VALUES ($1, $2, $3, $4)
+                ON CONFLICT (twitchchannelid) DO UPDATE SET expirationtime = EXCLUDED.expirationtime, accesstoken = EXCLUDED.accesstoken, refreshtoken = EXCLUDED.refreshtoken
+            ''',
+            expirationTime.isoformat(), tokensDetails.accessToken, tokensDetails.refreshToken, twitchChannelId,
+        )
+
+        await connection.close()
+        self.__timber.log('TwitchTokensStorage', f'Set Twitch tokens details ({twitchChannelId=})')
+
+    async def updateExpirationTime(
+        self,
+        expirationTime: datetime,
+        twitchChannelId: str,
+    ):
+        if not isinstance(expirationTime, datetime):
+            raise TypeError(f'expirationTime argument is malformed: \"{expirationTime}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        connection = await self.__getDatabaseConnection()
+        await connection.execute(
+            '''
+                UPDATE twitchtokens
+                SET expirationtime = $1
+                WHERE twitchchannelid = $2
+            ''',
+            expirationTime.isoformat(), twitchChannelId,
+        )
+
+        await connection.close()
+        self.__timber.log('TwitchTokensStorage', f'Updated Twitch tokens expiration time ({twitchChannelId=}) ({expirationTime=})')

@@ -2,16 +2,13 @@ from abc import ABC, abstractmethod
 
 from ..listener.timeoutEventListener import TimeoutEventListener
 from ..models.actions.absTimeoutAction import AbsTimeoutAction
+from ...misc.startable import Startable
 
 
-class TimeoutActionMachineInterface(ABC):
+class TimeoutActionMachineInterface(Startable, ABC):
 
     @abstractmethod
     def setEventListener(self, listener: TimeoutEventListener | None):
-        pass
-
-    @abstractmethod
-    def start(self):
         pass
 
     @abstractmethod

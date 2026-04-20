@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 
 from ..localModels.twitchTokensDetails import TwitchTokensDetails
 
@@ -20,9 +21,17 @@ class TwitchTokensStorageInterface(ABC):
         pass
 
     @abstractmethod
-    async def set(
+    async def setTokensDetails(
         self,
         twitchChannelId: str,
         tokensDetails: TwitchTokensDetails | None,
+    ):
+        pass
+
+    @abstractmethod
+    async def updateExpirationTime(
+        self,
+        expirationTime: datetime,
+        twitchChannelId: str,
     ):
         pass

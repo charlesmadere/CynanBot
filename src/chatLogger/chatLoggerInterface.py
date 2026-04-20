@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 
+from ..misc.startable import Startable
 
-class ChatLoggerInterface(ABC):
+
+class ChatLoggerInterface(Startable, ABC):
 
     @abstractmethod
     def logMessage(
@@ -24,8 +26,4 @@ class ChatLoggerInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
     ):
-        pass
-
-    @abstractmethod
-    def start(self):
         pass

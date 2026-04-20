@@ -2,18 +2,15 @@ from abc import ABC, abstractmethod
 
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..triviaFetchOptions import TriviaFetchOptions
+from ...misc.startable import Startable
 
 
-class TriviaRepositoryInterface(ABC):
+class TriviaRepositoryInterface(Startable, ABC):
 
     @abstractmethod
     async def fetchTrivia(
         self,
         emote: str,
-        triviaFetchOptions: TriviaFetchOptions
+        triviaFetchOptions: TriviaFetchOptions,
     ) -> AbsTriviaQuestion | None:
-        pass
-
-    @abstractmethod
-    def startSpooler(self):
         pass
