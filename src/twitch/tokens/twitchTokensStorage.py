@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import Final
 
 from .twitchTokensStorageInterface import TwitchTokensStorageInterface
-from ..localModels.twitchTokensDetails import TwitchTokensDetails
+from ..api.models.twitchTokensDetails import TwitchTokensDetails
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase

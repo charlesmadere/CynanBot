@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-from ..localModels.twitchTokensDetails import TwitchTokensDetails
+from ..api.models.twitchTokensDetails import TwitchTokensDetails
 
 
 class TwitchTokensStorageInterface(ABC):
