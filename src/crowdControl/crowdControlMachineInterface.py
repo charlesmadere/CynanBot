@@ -3,9 +3,10 @@ from abc import ABC, abstractmethod
 from .actions.crowdControlAction import CrowdControlAction
 from .crowdControlActionHandler import CrowdControlActionHandler
 from .message.crowdControlMessageListener import CrowdControlMessageListener
+from ..misc.startable import Startable
 
 
-class CrowdControlMachineInterface(ABC):
+class CrowdControlMachineInterface(Startable, ABC):
 
     @property
     @abstractmethod
@@ -26,10 +27,6 @@ class CrowdControlMachineInterface(ABC):
 
     @abstractmethod
     def setMessageListener(self, messageListener: CrowdControlMessageListener | None):
-        pass
-
-    @abstractmethod
-    def start(self):
         pass
 
     @abstractmethod

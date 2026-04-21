@@ -262,6 +262,7 @@ from src.misc.authRepository import AuthRepository
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
+from src.misc.startable import Startable
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
 from src.mouseCursor.mouseCursorHelper import MouseCursorHelper
@@ -457,6 +458,8 @@ from src.twitch.timeout.twitchTimeoutRemodRepository import TwitchTimeoutRemodRe
 from src.twitch.timeout.twitchTimeoutRemodRepositoryInterface import TwitchTimeoutRemodRepositoryInterface
 from src.twitch.tokens.twitchTokensRepository import TwitchTokensRepository
 from src.twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from src.twitch.tokens.twitchTokensStorage import TwitchTokensStorage
+from src.twitch.tokens.twitchTokensStorageInterface import TwitchTokensStorageInterface
 from src.twitch.tokens.twitchTokensUtils import TwitchTokensUtils
 from src.twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from src.twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
@@ -491,8 +494,6 @@ from src.twitch.websocket.twitchWebsocketClient import TwitchWebsocketClient
 from src.twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
 from src.twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
 from src.twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
-from src.users.addOrRemoveUserDataHelper import AddOrRemoveUserDataHelper
-from src.users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
 from src.users.crowdControl.crowdControlJsonParser import CrowdControlJsonParser
 from src.users.crowdControl.crowdControlJsonParserInterface import CrowdControlJsonParserInterface
 from src.users.cuteness.cutenessBoosterPackJsonParser import CutenessBoosterPackJsonParser
@@ -639,12 +640,18 @@ userIdsRepository: Final[UserIdsRepositoryInterface] = UserIdsRepository(
     twitchApiService = twitchApiService,
 )
 
-twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = TwitchTokensRepository(
-    backgroundTaskHelper = backgroundTaskHelper,
+twitchTokensStorage: Final[TwitchTokensStorageInterface] = TwitchTokensStorage(
     backingDatabase = backingDatabase,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
+)
+
+twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = TwitchTokensRepository(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
+    twitchTokensStorage = twitchTokensStorage,
     userIdsRepository = userIdsRepository,
     seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
@@ -756,11 +763,6 @@ twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHel
 
 twitchPredictionWebsocketUtils: Final[TwitchPredictionWebsocketUtilsInterface] = TwitchPredictionWebsocketUtils(
     timber = timber,
-)
-
-addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface = AddOrRemoveUserDataHelper(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository
 )
 
 chatLogger: Final[ChatLoggerInterface] = ChatLogger(
@@ -2450,6 +2452,15 @@ twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscript
 )
 
 
+#######################################
+## Startables initialization section ##
+#######################################
+
+startables: Final[Collection[Startable | None]] = frozenset({
+    # TODO
+})
+
+
 #####################################
 ## CynanBot initialization section ##
 #####################################
@@ -2466,7 +2477,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     twitchSubscriptionHandler = twitchSubscriptionHandler,
     activeChattersRepository = activeChattersRepository,
     additionalTriviaAnswersRepository = None,
-    addOrRemoveUserDataHelper = addOrRemoveUserDataHelper,
     administratorProvider = administratorProvider,
     airStrikeCheerActionHelper = airStrikeCheerActionHelper,
     anivCopyMessageTimeoutScoreHelper = anivCopyMessageTimeoutScoreHelper,
@@ -2603,6 +2613,7 @@ cynanBot: Final[CynanBot] = CynanBot(
     websocketConnectionServer = websocketConnectionServer,
     wordOfTheDayPresenter = None,
     wordOfTheDayRepository = None,
+    startables = startables,
 )
 
 

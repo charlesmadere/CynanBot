@@ -2,9 +2,10 @@ from abc import ABC, abstractmethod
 from typing import Collection
 
 from .messageMethod import MessageMethod
+from ..misc.startable import Startable
 
 
-class SentMessageLoggerInterface(ABC):
+class SentMessageLoggerInterface(Startable, ABC):
 
     @abstractmethod
     def log(
@@ -17,8 +18,4 @@ class SentMessageLoggerInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
     ):
-        pass
-
-    @abstractmethod
-    def start(self):
         pass
