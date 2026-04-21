@@ -3,9 +3,10 @@ from abc import ABC, abstractmethod
 from .crowdControlAutomatorAddResult import CrowdControlAutomatorAddResult
 from .crowdControlAutomatorData import CrowdControlAutomatorData
 from .crowdControlAutomatorRemovalResult import CrowdControlAutomatorRemovalResult
+from ...misc.startable import Startable
 
 
-class CrowdControlAutomatorInterface(ABC):
+class CrowdControlAutomatorInterface(Startable, ABC):
 
     @abstractmethod
     async def addGameShuffleAutomator(
@@ -19,8 +20,4 @@ class CrowdControlAutomatorInterface(ABC):
         self,
         twitchChannelId: str,
     ) -> CrowdControlAutomatorRemovalResult:
-        pass
-
-    @abstractmethod
-    def start(self):
         pass

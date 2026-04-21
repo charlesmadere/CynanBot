@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 
+from ...misc.startable import Startable
 
-class TwitchChatMessengerInterface(ABC):
+
+class TwitchChatMessengerInterface(Startable, ABC):
 
     @abstractmethod
     def send(
@@ -11,8 +13,4 @@ class TwitchChatMessengerInterface(ABC):
         delaySeconds: int | None = None,
         replyMessageId: str | None = None,
     ):
-        pass
-
-    @abstractmethod
-    def start(self):
         pass

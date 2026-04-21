@@ -2,10 +2,11 @@ from abc import ABC, abstractmethod
 
 from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from .localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
+from ..misc.startable import Startable
 from ..users.userInterface import UserInterface
 
 
-class AbsTwitchChannelPointRedemptionHandler(ABC):
+class AbsTwitchChannelPointRedemptionHandler(Startable, ABC):
 
     @abstractmethod
     async def onNewChannelPointsRedemption(self, channelPointsRedemption: TwitchChannelPointsRedemption):
@@ -18,8 +19,4 @@ class AbsTwitchChannelPointRedemptionHandler(ABC):
         user: UserInterface,
         dataBundle: TwitchWebsocketDataBundle,
     ):
-        pass
-
-    @abstractmethod
-    def start(self):
         pass

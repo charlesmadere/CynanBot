@@ -58,9 +58,12 @@ class TwitchTokensStorage(TwitchTokensStorageInterface):
         if record is None or len(record) == 0:
             return None
 
-        expirationTime = datetime.fromisoformat(record[0])
+        expirationTimeString: str | None = record[0]
+        expirationTime: datetime
 
-        if expirationTime is None:
+        if utils.isValidStr(expirationTimeString):
+            expirationTime = datetime.fromisoformat(expirationTimeString)
+        else:
             expirationTime = await self.__createExpiredExpirationTime()
 
         return TwitchTokensDetails(
@@ -181,4 +184,4 @@ class TwitchTokensStorage(TwitchTokensStorageInterface):
         )
 
         await connection.close()
-        self.__timber.log('TwitchTokensStorage', f'Updated Twitch tokens expiration time ({twitchChannelId=}) ({expirationTime=})')
+        self.__timber.log('TwitchTokensStorage', f'Updated Twitch tokens expiration time ({expirationTime=}) ({twitchChannelId=})')

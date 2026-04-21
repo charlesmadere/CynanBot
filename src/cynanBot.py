@@ -1,7 +1,8 @@
 import traceback
 from asyncio import AbstractEventLoop
-from typing import Final
+from typing import Any, Collection, Final
 
+from frozenlist import FrozenList
 from twitchio import Message
 from twitchio.ext import commands
 from twitchio.ext.commands import Context
@@ -19,12 +20,7 @@ from .chatCommands.absChatCommand import AbsChatCommand
 from .chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
 from .chatCommands.addRecurringCutenessActionChatCommand import AddRecurringCutenessActionChatCommand
 from .chatCommands.addRecurringSuperTriviaActionChatCommand import AddRecurringSuperTriviaActionChatCommand
-from .chatCommands.addRecurringWeatherActionChatCommand import AddRecurringWeatherActionChatCommand
-from .chatCommands.addRecurringWordOfTheDayActionChatCommand import AddRecurringWordOfTheDayActionChatCommand
-from .chatCommands.addUserChatCommand import AddUserChatCommand
 from .chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
-from .chatCommands.clearCachesChatCommand import ClearCachesChatCommand
-from .chatCommands.confirmChatCommand import ConfirmChatCommand
 from .chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
 from .chatCommands.pkMonChatCommand import PkMonChatCommand
 from .chatCommands.pkMoveChatCommand import PkMoveChatCommand
@@ -32,9 +28,6 @@ from .chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
 from .chatCommands.removeGameShuffleAutomatorChatCommand import RemoveGameShuffleAutomatorChatCommand
 from .chatCommands.removeRecurringCutenessActionChatCommand import RemoveRecurringCutenessActionChatCommand
 from .chatCommands.removeRecurringSuperTriviaActionCommand import RemoveRecurringSuperTriviaActionCommand
-from .chatCommands.removeRecurringWeatherActionCommand import RemoveRecurringWeatherActionCommand
-from .chatCommands.removeRecurringWordOfTheDayAction import RemoveRecurringWordOfTheDayActionCommand
-from .chatCommands.removeUserChatCommand import RemoveUserChatCommand
 from .chatCommands.setFuntoonTokenChatCommand import SetFuntoonTokenChatCommand
 from .chatCommands.setTwitchCodeChatCommand import SetTwitchCodeChatCommand
 from .chatCommands.stubChatCommand import StubChatCommand
@@ -98,6 +91,7 @@ from .misc.administratorProviderInterface import AdministratorProviderInterface
 from .misc.authRepository import AuthRepository
 from .misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from .misc.generalSettingsRepository import GeneralSettingsRepository
+from .misc.startable import Startable
 from .mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
 from .pixelsDice.listeners.pixelsDiceEventListener import PixelsDiceEventListener
 from .pixelsDice.machine.pixelsDiceMachineInterface import PixelsDiceMachineInterface
@@ -190,10 +184,6 @@ from .twitch.twitchWebsocketDataBundleHandler import TwitchWebsocketDataBundleHa
 from .twitch.websocket.settings.twitchWebsocketSettingsRepositoryInterface import \
     TwitchWebsocketSettingsRepositoryInterface
 from .twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
-from .users.addOrRemoveUserActionType import AddOrRemoveUserActionType
-from .users.addOrRemoveUserData import AddOrRemoveUserData
-from .users.addOrRemoveUserDataHelperInterface import AddOrRemoveUserDataHelperInterface
-from .users.addOrRemoveUserEventListener import AddOrRemoveUserEventListener
 from .users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from .users.usersRepositoryInterface import UsersRepositoryInterface
 from .voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
@@ -206,7 +196,6 @@ from .websocketConnection.websocketConnectionServerInterface import WebsocketCon
 
 class CynanBot(
     commands.Bot,
-    AddOrRemoveUserEventListener,
     ChannelJoinListener,
     TwitchConnectionReadinessProvider,
 ):
@@ -224,7 +213,6 @@ class CynanBot(
         twitchSubscriptionHandler: AbsTwitchSubscriptionHandler | None,
         activeChattersRepository: ActiveChattersRepositoryInterface,
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface | None,
-        addOrRemoveUserDataHelper: AddOrRemoveUserDataHelperInterface,
         administratorProvider: AdministratorProviderInterface,
         airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface | None,
         anivCopyMessageTimeoutScoreHelper: AnivCopyMessageTimeoutScoreHelperInterface | None,
@@ -361,6 +349,7 @@ class CynanBot(
         websocketConnectionServer: WebsocketConnectionServerInterface | None,
         wordOfTheDayPresenter: WordOfTheDayPresenterInterface | None,
         wordOfTheDayRepository: WordOfTheDayRepositoryInterface | None,
+        startables: Collection[Startable | Any | None] | None,
     ):
         super().__init__(
             client_secret = authRepository.getAll().requireTwitchClientSecret(),
@@ -395,8 +384,6 @@ class CynanBot(
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
         elif additionalTriviaAnswersRepository is not None and not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
             raise TypeError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
-        elif not isinstance(addOrRemoveUserDataHelper, AddOrRemoveUserDataHelperInterface):
-            raise TypeError(f'addOrRemoveUserDataHelper argument is malformed: \"{addOrRemoveUserDataHelper}\"')
         elif airStrikeCheerActionHelper is not None and not isinstance(airStrikeCheerActionHelper, AirStrikeCheerActionHelperInterface):
             raise TypeError(f'airStrikeCheerActionHelper argument is malformed: \"{airStrikeCheerActionHelper}\"')
         elif not isinstance(administratorProvider, AdministratorProviderInterface):
@@ -667,6 +654,8 @@ class CynanBot(
             raise TypeError(f'wordOfTheDayPresenter argument is malformed: \"{wordOfTheDayPresenter}\"')
         elif wordOfTheDayRepository is not None and not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
             raise TypeError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
+        elif startables is not None and not isinstance(startables, Collection):
+            raise TypeError(f'startables argument is malformed: \"{startables}\"')
 
         self.__twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler | None] = twitchChannelPointRedemptionHandler
         self.__twitchChatHandler: Final[AbsTwitchChatHandler | None] = twitchChatHandler
@@ -676,7 +665,6 @@ class CynanBot(
         self.__twitchPredictionHandler: Final[AbsTwitchPredictionHandler | None] = twitchPredictionHandler
         self.__twitchRaidHandler: Final[AbsTwitchRaidHandler | None] = twitchRaidHandler
         self.__twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler | None] = twitchSubscriptionHandler
-        self.__addOrRemoveUserDataHelper: Final[AddOrRemoveUserDataHelperInterface] = addOrRemoveUserDataHelper
         self.__authRepository: Final[AuthRepository] = authRepository
         self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
         self.__chatterInventoryItemUseMachine: Final[ChatterInventoryItemUseMachineInterface | None] = chatterInventoryItemUseMachine
@@ -705,15 +693,12 @@ class CynanBot(
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
         self.__websocketConnectionServer: Final[WebsocketConnectionServerInterface | None] = websocketConnectionServer
+        self.__startables: Final[FrozenList[Startable]] = self.__buildStartablesCollection(startables)
 
         #######################################
         ## Initialization of command objects ##
         #######################################
 
-        self.__addUserCommand: AbsChatCommand = AddUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchTokensRepository, twitchChatMessenger, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(addOrRemoveUserDataHelper, administratorProvider, anivSettings, asplodieStatsRepository, authRepository, bannedTriviaGameControllersRepository, bannedWordsRepository, bizhawkSettingsRepository, chatterPreferredTtsRepository, chatterPreferredTtsSettingsRepository, cheerActionSettingsRepository, cheerActionsRepository, commodoreSamSettingsRepository, crowdControlSettingsRepository, decTalkSettingsRepository, funtoonTokensRepository, generalSettingsRepository, googleSettingsRepository, guaranteedTimeoutUsersRepository, halfLifeSettingsRepository, isLiveOnTwitchRepository, locationsRepository, microsoftSamSettingsRepository, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseSessionTokenRepository, psqlCredentialsProvider, soundPlayerRandomizerHelper, soundPlayerSettingsRepository, streamAlertsSettingsRepository, streamElementsSettingsRepository, streamElementsUserKeyRepository, supStreamerRepository, timber, timeoutActionSettings, triviaGameControllersRepository, triviaGameGlobalControllersRepository, triviaSettings, trollmojiHelper, trollmojiSettingsRepository, ttsMonsterSettingsRepository, ttsMonsterTokensRepository, ttsSettingsRepository, twitchChannelEditorsRepository, twitchEmotesHelper, twitchFollowingStatusRepository, twitchSubscriptionsRepository, twitchTokensRepository, twitchChatMessenger, twitchWebsocketSettingsRepository, userIdsRepository, usersRepository, voicemailsRepository, voicemailSettingsRepository, weatherRepository, wordOfTheDayRepository)
-        self.__confirmCommand: AbsChatCommand = ConfirmChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, usersRepository)
-        self.__removeUserCommand: AbsChatCommand = RemoveUserChatCommand(addOrRemoveUserDataHelper, administratorProvider, timber, twitchChatMessenger, twitchTokensRepository, userIdsRepository, usersRepository)
         self.__setTwitchCodeCommand: AbsChatCommand = SetTwitchCodeChatCommand(administratorProvider, timber, twitchTokensRepository, twitchChatMessenger, usersRepository)
         self.__twitchUserInfoCommand: AbsChatCommand = TwitchUserInfoChatCommand(administratorProvider, timber, twitchApiService, twitchChatMessenger, authRepository, twitchTokensRepository, usersRepository)
 
@@ -732,23 +717,15 @@ class CynanBot(
         if recurringActionsHelper is None or recurringActionsMachine is None or recurringActionsRepository is None or recurringActionsWizard is None:
             self.__addRecurringCutenessActionCommand: AbsChatCommand = StubChatCommand()
             self.__addRecurringSuperTriviaActionCommand: AbsChatCommand = StubChatCommand()
-            self.__addRecurringWeatherActionCommand: AbsChatCommand = StubChatCommand()
-            self.__addRecurringWordOfTheDayActionCommand: AbsChatCommand = StubChatCommand()
             self.__getRecurringActionsCommand: AbsChatCommand = StubChatCommand()
             self.__removeRecurringCutenessActionCommand: AbsChatCommand = StubChatCommand()
             self.__removeRecurringSuperTriviaActionCommand: AbsChatCommand = StubChatCommand()
-            self.__removeRecurringWeatherActionCommand: AbsChatCommand = StubChatCommand()
-            self.__removeRecurringWordOfTheDayActionCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__addRecurringCutenessActionCommand: AbsChatCommand = AddRecurringCutenessActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchChatMessenger, usersRepository)
             self.__addRecurringSuperTriviaActionCommand: AbsChatCommand = AddRecurringSuperTriviaActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchChatMessenger, usersRepository)
-            self.__addRecurringWeatherActionCommand: AbsChatCommand = AddRecurringWeatherActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchChatMessenger, usersRepository)
-            self.__addRecurringWordOfTheDayActionCommand: AbsChatCommand = AddRecurringWordOfTheDayActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchChatMessenger, usersRepository)
             self.__getRecurringActionsCommand: AbsChatCommand = GetRecurringActionsChatCommand(administratorProvider, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
             self.__removeRecurringCutenessActionCommand: AbsChatCommand = RemoveRecurringCutenessActionChatCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
             self.__removeRecurringSuperTriviaActionCommand: AbsChatCommand = RemoveRecurringSuperTriviaActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
-            self.__removeRecurringWeatherActionCommand: AbsChatCommand = RemoveRecurringWeatherActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
-            self.__removeRecurringWordOfTheDayActionCommand: AbsChatCommand = RemoveRecurringWordOfTheDayActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
 
         if funtoonTokensRepository is None:
             self.__setFuntoonTokenCommand: AbsChatCommand = StubChatCommand()
@@ -775,6 +752,33 @@ class CynanBot(
             self.__voicemailsCommand: AbsChatCommand = VoicemailsChatCommand(timber, timeZoneRepository, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository, voicemailHelper, voicemailSettingsRepository)
 
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireTwitchHandle()}')
+
+    def __buildStartablesCollection(
+        self,
+        startables: Collection[Startable | Any | None] | None,
+    ) -> FrozenList[Startable]:
+        if startables is None:
+            emptyStartables: FrozenList[Startable] = FrozenList()
+            emptyStartables.freeze()
+            return emptyStartables
+
+        frozenStartables: FrozenList[Startable | Any | None] = FrozenList(startables)
+        frozenStartables.freeze()
+
+        validStartables: FrozenList[Startable] = FrozenList()
+
+        for index, startable in enumerate(frozenStartables):
+            if startable is None:
+                continue
+            elif isinstance(startable, Startable):
+                validStartables.append(startable)
+            else:
+                exception = TypeError(f'Encountered an invalid Startable instance ({index=}) ({startable=}) ({frozenStartables=})')
+                self.__timber.log('CynanBot', f'Encountered an invalid Startable instance ({index=}) ({startable=}) ({frozenStartables=})', exception, traceback.format_exc())
+                raise exception
+
+        validStartables.freeze()
+        return validStartables
 
     async def event_channel_join_failure(self, channel: str):
         self.__timber.log('CynanBot', f'Encountered channel join failure ({channel=})')
@@ -826,25 +830,6 @@ class CynanBot(
             self.__timber.log('CynanBot', f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e, traceback.format_exc())
             raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e, traceback.format_exc())
 
-    async def onAddOrRemoveUserEvent(self, event: AddOrRemoveUserData):
-        self.__timber.log('CynanBot', f'Received new modify user data event ({event=})')
-
-        await self.waitForReady()
-
-        match event.actionType:
-            case AddOrRemoveUserActionType.ADD:
-                channels: list[str] = list()
-                channels.append(event.userName)
-                await self.join_channels(channels)
-
-            case AddOrRemoveUserActionType.REMOVE:
-                channels: list[str] = list()
-                channels.append(event.userName)
-                await self.part_channels(channels)
-
-            case _:
-                raise RuntimeError(f'unknown AddOrRemoveUserData type: ({event=})')
-
     async def onNewChannelJoinEvent(self, event: AbsChannelJoinEvent):
         self.__timber.log('CynanBot', f'Received new channel join event ({event=})')
 
@@ -860,7 +845,6 @@ class CynanBot(
 
         await self.waitForReady()
 
-        self.__addOrRemoveUserDataHelper.setAddOrRemoveUserEventListener(self)
         self.__timber.start()
         self.__twitchTokensRepository.start()
         self.__sentMessageLogger.start()
@@ -934,6 +918,11 @@ class CynanBot(
 
             self.__twitchWebsocketClient.start()
 
+        for startable in self.__startables:
+            startable.start()
+
+        self.__timber.log('CynanBot', f'Finished starting all {len(self.__startables)} startable(s)')
+
     async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
         self.__timber.log('CynanBot', f'Joining channels: {event}')
         await self.join_channels(event.channels)
@@ -956,35 +945,10 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addRecurringSuperTriviaActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'addrecurringweatheraction')
-    async def command_addrecurringweatheraction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addRecurringWeatherActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'addrecurringwordofthedayaction', aliases = [ 'addrecurringwordaction', 'addrecurringwotdaction' ])
-    async def command_addrecurringwordofthedayaction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addRecurringWordOfTheDayActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'adduser')
-    async def command_adduser(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addUserCommand.handleChatCommand(context)
-
     @commands.command(name = 'asplodiestats', aliases = [ 'asplodies', 'asplodiesstats', 'getasplodiestats' ])
     async def command_asplodiestats(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__asplodieStatsCommand.handleChatCommand(context)
-
-    @commands.command(name = 'clearcaches')
-    async def command_clearcaches(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__clearCachesCommand.handleChatCommand(context)
-
-    @commands.command(name = 'confirm')
-    async def command_confirm(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__confirmCommand.handleChatCommand(context)
 
     @commands.command(name = 'getrecurringactions', aliases = [ 'recurringactions' ])
     async def command_getrecurringactions(self, ctx: Context):
@@ -1020,16 +984,6 @@ class CynanBot(
     async def command_removerecurringsupertriviaaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeRecurringSuperTriviaActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'removerecurringweatheraction', aliases = [ 'deleterecurringweatheraction' ])
-    async def command_removeweatherrecurringaction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeRecurringWeatherActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'removerecurringwordofthedayaction', aliases = [ 'deleterecurringwordaction', 'deleterecurringwordofthedayaction', 'deleterecurringwotdaction', 'removerecurringwordaction', 'removerecurringwotdaction' ])
-    async def command_removerecurringwordofthedayaction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeRecurringWordOfTheDayActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'setfuntoontoken')
     async def command_setfuntoontoken(self, ctx: Context):

@@ -1,11 +1,9 @@
 from abc import ABC, abstractmethod
 
+from ...misc.startable import Startable
 
-class TwitchTimeoutRemodHelperInterface(ABC):
 
-    @abstractmethod
-    def start(self):
-        pass
+class TwitchTimeoutRemodHelperInterface(Startable, ABC):
 
     @abstractmethod
     async def submitRemodData(

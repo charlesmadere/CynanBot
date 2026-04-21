@@ -2,13 +2,10 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from .websocketEventType import WebsocketEventType
+from ..misc.startable import Startable
 
 
-class WebsocketConnectionServerInterface(ABC):
-
-    @abstractmethod
-    def start(self):
-        pass
+class WebsocketConnectionServerInterface(Startable, ABC):
 
     @abstractmethod
     def submitEvent(
