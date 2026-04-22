@@ -113,7 +113,9 @@ class SoundPlayerRandomizerHelper(SoundPlayerRandomizerHelperInterface):
         cache: dict[SoundAlert, str | None] = dict()
 
         for soundAlert in self.__pointRedemptionSoundAlerts:
-            filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(soundAlert)
+            filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(
+                soundAlert = soundAlert,
+            )
 
             if not utils.isValidStr(filePath):
                 continue
