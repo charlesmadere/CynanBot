@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from frozendict import frozendict
 
@@ -12,16 +12,16 @@ class SoundAlertRedemptionJsonParser(SoundAlertRedemptionJsonParserInterface):
 
     def __init__(
         self,
-        soundAlertJsonMapper: SoundAlertJsonMapperInterface
+        soundAlertJsonMapper: SoundAlertJsonMapperInterface,
     ):
         if not isinstance(soundAlertJsonMapper, SoundAlertJsonMapperInterface):
             raise TypeError(f'soundAlertJsonMapper argument is malformed: \"{soundAlertJsonMapper}\"')
 
-        self.__soundAlertJsonMapper: SoundAlertJsonMapperInterface = soundAlertJsonMapper
+        self.__soundAlertJsonMapper: Final[SoundAlertJsonMapperInterface] = soundAlertJsonMapper
 
     def parseRedemption(
         self,
-        jsonContents: dict[str, Any]
+        jsonContents: dict[str, Any],
     ) -> SoundAlertRedemption:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
@@ -41,12 +41,12 @@ class SoundAlertRedemptionJsonParser(SoundAlertRedemptionJsonParserInterface):
             isImmediate = isImmediate,
             soundAlert = soundAlert,
             directoryPath = directoryPath,
-            rewardId = rewardId
+            rewardId = rewardId,
         )
 
     def parseRedemptions(
         self,
-        jsonContents: list[dict[str, Any]] | Any | None
+        jsonContents: list[dict[str, Any]] | Any | None,
     ) -> frozendict[str, SoundAlertRedemption] | None:
         if not isinstance(jsonContents, list) or len(jsonContents) == 0:
             return None

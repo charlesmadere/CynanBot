@@ -98,7 +98,9 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
             return False
 
-        filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(alert)
+        filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(
+            soundAlert = alert,
+        )
 
         if not utils.isValidStr(filePath):
             self.__timber.log('VlcSoundPlayerManager', f'No file path available for sound alert ({alert=}) ({filePath=})')
