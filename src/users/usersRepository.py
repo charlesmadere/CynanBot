@@ -181,7 +181,6 @@ class UsersRepository(UsersRepositoryInterface):
         isPkmnEnabled = utils.getBoolFromDict(userJson, 'pkmnEnabled', False)
         isPokepediaEnabled = utils.getBoolFromDict(userJson, 'pokepediaEnabled', False)
         isRaceEnabled = utils.getBoolFromDict(userJson, 'raceEnabled', False)
-        isStarWarsQuotesEnabled = utils.getBoolFromDict(userJson, 'starWarsQuotesEnabled', False)
         isSubGiftThankingEnabled = utils.getBoolFromDict(userJson, 'subGiftThankingEnabled', True)
         isSupStreamerEnabled = utils.getBoolFromDict(userJson, 'supStreamerEnabled', False)
         isTimeoutCheerActionIncreasedBullyFailureEnabled = utils.getBoolFromDict(userJson, 'timeoutCheerActionIncreasedBullyFailureEnabled', True)
@@ -405,7 +404,6 @@ class UsersRepository(UsersRepositoryInterface):
             isPokepediaEnabled = isPokepediaEnabled,
             isRaceEnabled = isRaceEnabled,
             isShinyTriviaEnabled = isShinyTriviaEnabled,
-            isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isSubGiftThankingEnabled = isSubGiftThankingEnabled,
             isSuperTriviaGameEnabled = isSuperTriviaGameEnabled,
             isSupStreamerEnabled = isSupStreamerEnabled,

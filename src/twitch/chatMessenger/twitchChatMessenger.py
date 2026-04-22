@@ -171,7 +171,6 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
             raise TypeError(f'replyMessageId argument is malformed: \"{replyMessageId}\"')
 
         cleanedText = utils.cleanStr(text)
-
         if not utils.isValidStr(cleanedText):
             self.__timber.log('TwitchChatMessenger', f'Encountered blank chat message ({cleanedText=}) ({text=}) ({twitchChannelId=}) ({delaySeconds=}) ({replyMessageId=})')
             return
@@ -290,7 +289,7 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
                     chatMessage = self.__messageQueue.get_nowait()
                     chatMessages.append(chatMessage)
             except queue.Empty as e:
-                self.__timber.log('TwitchChatMessenger', f'Encountered queue.Empty when building up chat messages list (queue size: {self.__messageQueue.qsize()}) ({len(chatMessages)=}): {e}', e, traceback.format_exc())
+                self.__timber.log('TwitchChatMessenger', f'Encountered queue.Empty when building up chat messages list (queue size: {self.__messageQueue.qsize()}) ({len(chatMessages)=})', e, traceback.format_exc())
 
             chatMessages.freeze()
 
@@ -298,7 +297,7 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
                 try:
                     await self.__handleChatMessage(chatMessage)
                 except Exception as e:
-                    self.__timber.log('TwitchChatMessenger', f'Encountered unknown Exception when looping through chat messages (queue size: {self.__messageQueue.qsize()}) ({len(chatMessages)=}) ({index=}) ({chatMessage=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('TwitchChatMessenger', f'Encountered unknown Exception when looping through chat messages (queue size: {self.__messageQueue.qsize()}) ({len(chatMessages)=}) ({index=}) ({chatMessage=})', e, traceback.format_exc())
 
             await asyncio.sleep(self.__sleepTimeSeconds)
 
@@ -313,4 +312,4 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
                 timeout = self.__queueTimeoutSeconds,
             )
         except queue.Full as e:
-            self.__timber.log('TwitchChatMessenger', f'Encountered queue.Full when submitting a new chat message ({chatMessage}) into the action queue (queue size: {self.__messageQueue.qsize()}): {e}', e, traceback.format_exc())
+            self.__timber.log('TwitchChatMessenger', f'Encountered queue.Full when submitting a new chat message ({chatMessage}) into the action queue (queue size: {self.__messageQueue.qsize()})', e, traceback.format_exc())

@@ -59,7 +59,6 @@ class User(UserInterface):
         isPokepediaEnabled: bool,
         isRaceEnabled: bool,
         isShinyTriviaEnabled: bool,
-        isStarWarsQuotesEnabled: bool,
         isSubGiftThankingEnabled: bool,
         isSuperTriviaGameEnabled: bool,
         isSupStreamerEnabled: bool,
@@ -208,8 +207,6 @@ class User(UserInterface):
             raise TypeError(f'isRaceEnabled argument is malformed: \"{isRaceEnabled}\"')
         elif not utils.isValidBool(isShinyTriviaEnabled):
             raise TypeError(f'isShinyTriviaEnabled argument is malformed: \"{isShinyTriviaEnabled}\"')
-        elif not utils.isValidBool(isStarWarsQuotesEnabled):
-            raise TypeError(f'isStarWarsQuotesEnabled argument is malformed: \"{isStarWarsQuotesEnabled}\"')
         elif not utils.isValidBool(isSubGiftThankingEnabled):
             raise TypeError(f'isSubGiftThankingEnabled argument is malformed: \"{isSubGiftThankingEnabled}\"')
         elif not utils.isValidBool(isSuperTriviaGameEnabled):
@@ -390,7 +387,6 @@ class User(UserInterface):
         self.__isPokepediaEnabled: Final[bool] = isPokepediaEnabled
         self.__isRaceEnabled: Final[bool] = isRaceEnabled
         self.__isShinyTriviaEnabled: Final[bool] = isShinyTriviaEnabled
-        self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
         self.__isSuperTriviaGameEnabled: Final[bool] = isSuperTriviaGameEnabled
         self.__isSupStreamerEnabled: bool = isSupStreamerEnabled
@@ -828,10 +824,6 @@ class User(UserInterface):
     @property
     def isShinyTriviaEnabled(self) -> bool:
         return self.__isShinyTriviaEnabled
-
-    @property
-    def isStarWarsQuotesEnabled(self) -> bool:
-        return self.__isStarWarsQuotesEnabled
 
     @property
     def isSubGiftThankingEnabled(self) -> bool:
