@@ -11,13 +11,13 @@ class SoundAlertRedemptionJsonParserInterface(ABC):
     @abstractmethod
     def parseRedemption(
         self,
-        jsonContents: dict[str, Any]
+        jsonContents: dict[str, Any],
     ) -> SoundAlertRedemption:
         pass
 
     @abstractmethod
     def parseRedemptions(
         self,
-        jsonContents: list[dict[str, Any]] | Any | None
+        jsonContents: list[dict[str, Any]] | Any | None,
     ) -> frozendict[str, SoundAlertRedemption] | None:
         pass
