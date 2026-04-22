@@ -81,6 +81,7 @@ from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.jishoChatCommand import JishoChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
+from src.chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
 from src.chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
 from src.chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
 from src.chatCommands.removeChatterPreferredTtsChatCommand import RemoveChatterPreferredTtsChatCommand
@@ -101,6 +102,7 @@ from src.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
 from src.chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
+from src.chatCommands.voicemailsChatCommand import VoicemailsChatCommand
 from src.chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
 from src.chatCommands.weatherChatCommand import WeatherChatCommand
 from src.chatCommands.wordChatCommand import WordChatCommand
@@ -404,8 +406,6 @@ from src.soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterfac
 from src.soundPlayerManager.settings.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
 from src.soundPlayerManager.settings.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
-from src.starWars.starWarsQuotesRepository import StarWarsQuotesRepository
-from src.starWars.starWarsQuotesRepositoryInterface import StarWarsQuotesRepositoryInterface
 from src.storage.backingDatabase import BackingDatabase
 from src.storage.databaseType import DatabaseType
 from src.storage.jsonFileReader import JsonFileReader
@@ -2915,18 +2915,6 @@ cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
 )
 
 
-#############################################
-## Star Wars Quotes initialization section ##
-#############################################
-
-starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = StarWarsQuotesRepository(
-    quotesJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = 'starWarsQuotesRepository.json',
-    ),
-)
-
-
 ##################################
 ## Jisho initialization section ##
 ##################################
@@ -3431,6 +3419,15 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    PlayVoicemailChatCommand(
+        compositeTtsManagerProvider = compositeTtsManagerProvider,
+        streamAlertsManager = streamAlertsManager,
+        timber = timber,
+        timeZoneRepository = timeZoneRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        voicemailHelper = voicemailHelper,
+        voicemailSettingsRepository = voicemailSettingsRepository,
+    ),
     RemoveBannedTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
         bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
@@ -3602,6 +3599,15 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         wordOfTheDayPresenter = wordOfTheDayPresenter,
         wordOfTheDayRepository = wordOfTheDayRepository,
     ),
+    VoicemailsChatCommand(
+        timber = timber,
+        timeZoneRepository = timeZoneRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
+        voicemailHelper = voicemailHelper,
+        voicemailSettingsRepository = voicemailSettingsRepository,
+    ),
     VulnerableChattersChatCommand(
         activeChattersRepository = activeChattersRepository,
         timber = timber,
@@ -3770,7 +3776,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
-    starWarsQuotesRepository = starWarsQuotesRepository,
     streamAlertsManager = streamAlertsManager,
     streamAlertsSettingsRepository = streamAlertsSettingsRepository,
     streamElementsSettingsRepository = streamElementsSettingsRepository,

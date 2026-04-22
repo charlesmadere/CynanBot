@@ -210,8 +210,6 @@ from src.soundPlayerManager.provider.stub.stubSoundPlayerManagerProvider import 
 from src.soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
     SoundPlayerRandomizerHelperInterface
 from src.soundPlayerManager.randomizerHelper.stub.stubSoundPlayerRandomizerHelper import StubSoundPlayerRandomizerHelper
-from src.starWars.starWarsQuotesRepository import StarWarsQuotesRepository
-from src.starWars.starWarsQuotesRepositoryInterface import StarWarsQuotesRepositoryInterface
 from src.storage.backingDatabase import BackingDatabase
 from src.storage.databaseType import DatabaseType
 from src.storage.jsonFileReader import JsonFileReader
@@ -1786,18 +1784,6 @@ cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
 )
 
 
-#############################################
-## Star Wars Quotes initialization section ##
-#############################################
-
-starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = StarWarsQuotesRepository(
-    quotesJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = 'starWarsQuotesRepository.json',
-    ),
-)
-
-
 ##################################
 ## Jisho initialization section ##
 ##################################
@@ -2409,7 +2395,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     soundPlayerSettingsRepository = None,
-    starWarsQuotesRepository = starWarsQuotesRepository,
     streamAlertsManager = streamAlertsManager,
     streamAlertsSettingsRepository = None,
     streamElementsSettingsRepository = None,

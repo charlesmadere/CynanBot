@@ -1,27 +1,28 @@
 import locale
+import re
 import traceback
 from dataclasses import dataclass
-from typing import Final
+from typing import Collection, Final, Pattern
 
 from frozenlist import FrozenList
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.simpleDateTime import SimpleDateTime
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..users.exceptions import NoSuchUserException
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
 from ..voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
 from ..voicemail.models.preparedVoicemailData import PreparedVoicemailData
 from ..voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
 
 
-class VoicemailsChatCommand(AbsChatCommand):
+class VoicemailsChatCommand(AbsChatCommand2):
 
     @dataclass(frozen = True, slots = True)
     class VoicemailLookupData:
@@ -36,7 +37,6 @@ class VoicemailsChatCommand(AbsChatCommand):
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
         voicemailHelper: VoicemailHelperInterface,
         voicemailSettingsRepository: VoicemailSettingsRepositoryInterface,
     ):
@@ -50,8 +50,6 @@ class VoicemailsChatCommand(AbsChatCommand):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not isinstance(voicemailHelper, VoicemailHelperInterface):
             raise TypeError(f'voicemailHelper argument is malformed: \"{voicemailHelper}\"')
         elif not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
@@ -62,48 +60,58 @@ class VoicemailsChatCommand(AbsChatCommand):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
         self.__voicemailHelper: Final[VoicemailHelperInterface] = voicemailHelper
         self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!voicemails?\b', re.IGNORECASE),
+        })
+
+    @property
+    def commandName(self) -> str:
+        return 'VoicemailsChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
         if not await self.__voicemailSettingsRepository.isEnabled():
-            return
+            return ChatCommandResult.IGNORED
+        elif not chatMessage.twitchUser.isTtsEnabled:
+            return ChatCommandResult.IGNORED
 
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        if not user.isVoicemailEnabled or not user.isTtsEnabled:
-            return
-
-        messageContent = utils.cleanStr(ctx.getMessageContent())
+        messageContent = utils.cleanStr(chatMessage.text)
 
         try:
             voicemailLookupData = await self.__lookupVoicemails(
                 messageContent = messageContent,
-                chatterUserId = ctx.getAuthorId(),
-                chatterUserName = ctx.getAuthorName(),
-                twitchChannelId = await ctx.getTwitchChannelId(),
+                chatterUserId = chatMessage.chatterUserId,
+                chatterUserName = chatMessage.chatterUserName,
+                twitchChannelId = chatMessage.twitchChannelId,
             )
         except NoSuchUserException as e:
-            self.__timber.log('VoicemailsChatCommand', f'Failed to find user ID information for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} ({messageContent=})', e, traceback.format_exc())
+            self.__timber.log(self.commandName, f'Failed to find user ID information ({messageContent=}) ({chatMessage=})', e, traceback.format_exc())
 
             self.__twitchChatMessenger.send(
                 text = f'⚠ Failed to find voicemail info for the given user',
-                twitchChannelId = await ctx.getTwitchChannelId(),
-                replyMessageId = await ctx.getMessageId(),
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-            return
+            return ChatCommandResult.CONSUMED
 
         self.__twitchChatMessenger.send(
             text = await self.__toString(
-                ctx = ctx,
+                chatMessage = chatMessage,
                 voicemailLookupData = voicemailLookupData
             ),
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            replyMessageId = await ctx.getMessageId()
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log('VoicemailsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({chatMessage=})')
+        return ChatCommandResult.CONSUMED
 
     async def __lookupVoicemails(
         self,
@@ -122,8 +130,8 @@ class VoicemailsChatCommand(AbsChatCommand):
             lookupUserId = await self.__userIdsRepository.requireUserId(
                 userName = lookupUserName,
                 twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-                    twitchChannelId = twitchChannelId
-                )
+                    twitchChannelId = twitchChannelId,
+                ),
             )
         else:
             lookupUserName = chatterUserName
@@ -131,18 +139,18 @@ class VoicemailsChatCommand(AbsChatCommand):
 
         voicemails = await self.__voicemailHelper.getAllForTargetUser(
             targetUserId = lookupUserId,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
         return VoicemailsChatCommand.VoicemailLookupData(
             voicemails = voicemails,
             chatterUserId = lookupUserId,
-            chatterUserName = lookupUserName
+            chatterUserName = lookupUserName,
         )
 
     async def __toString(
         self,
-        ctx: TwitchContext,
+        chatMessage: TwitchChatMessage,
         voicemailLookupData: VoicemailLookupData,
     ) -> str:
         voicemailsSize = len(voicemailLookupData.voicemails)
@@ -165,7 +173,7 @@ class VoicemailsChatCommand(AbsChatCommand):
         mostRecentVoicemailDateTime = SimpleDateTime(mostRecentVoicemail.createdDateTime).getDateAndTimeStr()
 
         commandTutorialMessage: str
-        if voicemailLookupData.chatterUserId == ctx.getAuthorId():
+        if voicemailLookupData.chatterUserId == chatMessage.chatterUserId:
             commandTutorialMessage = ''
         else:
             commandTutorialMessage = ' You can play voicemails with the !playvoicemail command!'

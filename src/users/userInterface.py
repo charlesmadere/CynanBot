@@ -455,11 +455,6 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
-    def isStarWarsQuotesEnabled(self) -> bool:
-        pass
-
-    @property
-    @abstractmethod
     def isSubGiftThankingEnabled(self) -> bool:
         pass
 

@@ -48,6 +48,7 @@ from src.chatCommands.getCheerActionsChatCommand import GetCheerActionsChatComma
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from src.chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
+from src.chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
 from src.chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
 from src.chatCommands.removeChatterPreferredTtsChatCommand import RemoveChatterPreferredTtsChatCommand
 from src.chatCommands.setChatterPreferredNameChatCommand import SetChatterPreferredNameChatCommand
@@ -58,6 +59,7 @@ from src.chatCommands.testCrowdControlChatCommand import TestCrowdControlChatCom
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
+from src.chatCommands.voicemailsChatCommand import VoicemailsChatCommand
 from src.chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -2310,6 +2312,15 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    PlayVoicemailChatCommand(
+        compositeTtsManagerProvider = compositeTtsManagerProvider,
+        streamAlertsManager = streamAlertsManager,
+        timber = timber,
+        timeZoneRepository = timeZoneRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        voicemailHelper = voicemailHelper,
+        voicemailSettingsRepository = voicemailSettingsRepository,
+    ),
     RemoveChatterPreferredNameChatCommand(
         chatterPreferredNameRepository = chatterPreferredNameRepository,
         chatterPreferredNameSettings = chatterPreferredNameSettings,
@@ -2382,6 +2393,15 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
         useChatterItemHelper = useChatterItemHelper,
+    ),
+    VoicemailsChatCommand(
+        timber = timber,
+        timeZoneRepository = timeZoneRepository,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchTokensUtils = twitchTokensUtils,
+        userIdsRepository = userIdsRepository,
+        voicemailHelper = voicemailHelper,
+        voicemailSettingsRepository = voicemailSettingsRepository,
     ),
     VulnerableChattersChatCommand(
         activeChattersRepository = activeChattersRepository,
@@ -2551,7 +2571,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
-    starWarsQuotesRepository = None,
     streamAlertsManager = streamAlertsManager,
     streamAlertsSettingsRepository = streamAlertsSettingsRepository,
     streamElementsSettingsRepository = streamElementsSettingsRepository,

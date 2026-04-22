@@ -24,16 +24,10 @@ from .chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
 from .chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
 from .chatCommands.pkMonChatCommand import PkMonChatCommand
 from .chatCommands.pkMoveChatCommand import PkMoveChatCommand
-from .chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
 from .chatCommands.removeGameShuffleAutomatorChatCommand import RemoveGameShuffleAutomatorChatCommand
 from .chatCommands.removeRecurringCutenessActionChatCommand import RemoveRecurringCutenessActionChatCommand
 from .chatCommands.removeRecurringSuperTriviaActionCommand import RemoveRecurringSuperTriviaActionCommand
-from .chatCommands.setFuntoonTokenChatCommand import SetFuntoonTokenChatCommand
-from .chatCommands.setTwitchCodeChatCommand import SetTwitchCodeChatCommand
 from .chatCommands.stubChatCommand import StubChatCommand
-from .chatCommands.swQuoteChatCommand import SwQuoteChatCommand
-from .chatCommands.twitchUserInfoChatCommand import TwitchUserInfoChatCommand
-from .chatCommands.voicemailsChatCommand import VoicemailsChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
 from .chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
 from .chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
@@ -105,7 +99,6 @@ from .sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInter
 from .soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from .soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelper import SoundPlayerRandomizerHelperInterface
 from .soundPlayerManager.settings.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
-from .starWars.starWarsQuotesRepositoryInterface import StarWarsQuotesRepositoryInterface
 from .storage.psql.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
 from .streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from .streamAlertsManager.streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
@@ -287,7 +280,6 @@ class CynanBot(
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface | None,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface | None,
-        starWarsQuotesRepository: StarWarsQuotesRepositoryInterface | None,
         streamAlertsManager: StreamAlertsManagerInterface,
         streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface | None,
         streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface | None,
@@ -530,8 +522,6 @@ class CynanBot(
             raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
         elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
-        elif starWarsQuotesRepository is not None and not isinstance(starWarsQuotesRepository, StarWarsQuotesRepositoryInterface):
-            raise TypeError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif streamAlertsSettingsRepository is not None and not isinstance(streamAlertsSettingsRepository, StreamAlertsSettingsRepositoryInterface):
@@ -699,9 +689,6 @@ class CynanBot(
         ## Initialization of command objects ##
         #######################################
 
-        self.__setTwitchCodeCommand: AbsChatCommand = SetTwitchCodeChatCommand(administratorProvider, timber, twitchTokensRepository, twitchChatMessenger, usersRepository)
-        self.__twitchUserInfoCommand: AbsChatCommand = TwitchUserInfoChatCommand(administratorProvider, timber, twitchApiService, twitchChatMessenger, authRepository, twitchTokensRepository, usersRepository)
-
         if asplodieStatsPresenter is None or asplodieStatsRepository is None:
             self.__asplodieStatsCommand: AbsChatCommand = StubChatCommand()
         else:
@@ -727,29 +714,12 @@ class CynanBot(
             self.__removeRecurringCutenessActionCommand: AbsChatCommand = RemoveRecurringCutenessActionChatCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
             self.__removeRecurringSuperTriviaActionCommand: AbsChatCommand = RemoveRecurringSuperTriviaActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
 
-        if funtoonTokensRepository is None:
-            self.__setFuntoonTokenCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__setFuntoonTokenCommand: AbsChatCommand = SetFuntoonTokenChatCommand(administratorProvider, funtoonTokensRepository, timber, twitchChatMessenger, usersRepository)
-
         if pokepediaRepository is None:
             self.__pkMonCommand: AbsChatCommand = StubChatCommand()
             self.__pkMoveCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__pkMonCommand: AbsChatCommand = PkMonChatCommand(pokepediaRepository, timber, twitchChatMessenger, usersRepository)
             self.__pkMoveCommand: AbsChatCommand = PkMoveChatCommand(pokepediaRepository, timber, twitchChatMessenger, usersRepository)
-
-        if starWarsQuotesRepository is None:
-            self.__swQuoteCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__swQuoteCommand: AbsChatCommand = SwQuoteChatCommand(starWarsQuotesRepository, timber, twitchChatMessenger, usersRepository)
-
-        if voicemailHelper is None or voicemailsRepository is None or voicemailSettingsRepository is None:
-            self.__playVoicemailCommand: AbsChatCommand = StubChatCommand()
-            self.__voicemailsCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__playVoicemailCommand: AbsChatCommand = PlayVoicemailChatCommand(compositeTtsManagerProvider, streamAlertsManager, timber, timeZoneRepository, twitchChatMessenger, usersRepository, voicemailHelper, voicemailSettingsRepository)
-            self.__voicemailsCommand: AbsChatCommand = VoicemailsChatCommand(timber, timeZoneRepository, twitchChatMessenger, twitchTokensUtils, userIdsRepository, usersRepository, voicemailHelper, voicemailSettingsRepository)
 
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireTwitchHandle()}')
 
@@ -960,11 +930,6 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__pkMonCommand.handleChatCommand(context)
 
-    @commands.command(name = 'playvoicemail')
-    async def command_playvoicemail(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__playVoicemailCommand.handleChatCommand(context)
-
     @commands.command(name = 'pkmove', aliases = [ 'pkmov' ])
     async def command_pkmove(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -984,28 +949,3 @@ class CynanBot(
     async def command_removerecurringsupertriviaaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeRecurringSuperTriviaActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'setfuntoontoken')
-    async def command_setfuntoontoken(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__setFuntoonTokenCommand.handleChatCommand(context)
-
-    @commands.command(name = 'settwitchcode')
-    async def command_settwitchcode(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__setTwitchCodeCommand.handleChatCommand(context)
-
-    @commands.command(name = 'swquote')
-    async def command_swquote(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__swQuoteCommand.handleChatCommand(context)
-
-    @commands.command(name = 'twitchuserinfo', aliases = [ 'twitchinfo', 'userinfo' ])
-    async def command_twitchuserinfo(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__twitchUserInfoCommand.handleChatCommand(context)
-
-    @commands.command(name = 'voicemails', aliases = [ 'voicemail' ])
-    async def command_voicemails(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__voicemailsCommand.handleChatCommand(context)
