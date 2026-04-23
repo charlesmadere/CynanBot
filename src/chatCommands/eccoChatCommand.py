@@ -58,7 +58,7 @@ class EccoChatCommand(AbsChatCommand2):
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         self.__twitchChatMessenger.send(
             text = await self.__toString(eccoTimeRemaining),
@@ -66,8 +66,8 @@ class EccoChatCommand(AbsChatCommand2):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({chatMessage=}) ({eccoTimeRemaining=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Handled ({eccoTimeRemaining=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED
 
     async def __toString(self, eccoTimeRemaining: AbsEccoTimeRemaining) -> str:
         if isinstance(eccoTimeRemaining, EccoReleased):
