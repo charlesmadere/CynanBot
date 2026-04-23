@@ -110,6 +110,7 @@ from src.deepL.deepLJsonMapper import DeepLJsonMapper
 from src.deepL.deepLJsonMapperInterface import DeepLJsonMapperInterface
 from src.ecco.eccoApiService import EccoApiService
 from src.ecco.eccoApiServiceInterface import EccoApiServiceInterface
+from src.ecco.eccoConstants import EccoConstants
 from src.ecco.eccoHelper import EccoHelper
 from src.ecco.eccoHelperInterface import EccoHelperInterface
 from src.ecco.eccoResponseParser import EccoResponseParser
@@ -1811,12 +1812,15 @@ jishoHelper: JishoHelperInterface = JishoHelper(
 ## Ecco initialization section ##
 #################################
 
+eccoConstants: Final[EccoConstants] = EccoConstants()
+
 eccoResponseParser: Final[EccoResponseParserInterface] = EccoResponseParser(
+    eccoConstants = eccoConstants,
     timber = timber,
-    timeZoneRepository = timeZoneRepository,
 )
 
 eccoApiService: Final[EccoApiServiceInterface] = EccoApiService(
+    eccoConstants = eccoConstants,
     eccoResponseParser = eccoResponseParser,
     networkClientProvider = networkClientProvider,
     timber = timber,
