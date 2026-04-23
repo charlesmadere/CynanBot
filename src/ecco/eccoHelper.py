@@ -1,6 +1,5 @@
 import math
 import traceback
-from datetime import datetime
 from typing import Final
 
 from .eccoApiServiceInterface import EccoApiServiceInterface
@@ -40,7 +39,7 @@ class EccoHelper(EccoHelperInterface):
             self.__timber.log('EccoHelper', f'Failed to fetch Ecco timer', e, traceback.format_exc())
             raise EccoFailedToFetchTimeRemaining(f'Failed to fetch Ecco timer: {e}')
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         remainingSeconds = math.floor((timerDateTime - now).total_seconds())
 
         if remainingSeconds <= 10:
