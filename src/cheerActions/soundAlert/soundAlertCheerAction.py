@@ -1,40 +1,33 @@
-from typing import Final
+from dataclasses import dataclass
 
 from ..absCheerAction import AbsCheerAction
 from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ..cheerActionType import CheerActionType
-from ...misc import utils as utils
 
 
+@dataclass(frozen = True, slots = True)
 class SoundAlertCheerAction(AbsCheerAction):
-
-    def __init__(
-        self,
-        isEnabled: bool,
-        streamStatusRequirement: CheerActionStreamStatusRequirement,
-        bits: int,
-        directory: str,
-        twitchChannelId: str,
-    ):
-        super().__init__(
-            isEnabled = isEnabled,
-            streamStatusRequirement = streamStatusRequirement,
-            bits = bits,
-            twitchChannelId = twitchChannelId,
-        )
-
-        if not utils.isValidStr(directory):
-            raise TypeError(f'directory argument is malformed: \"{directory}\"')
-
-        self.__directory: Final[str] = directory
+    enabled: bool
+    streamStatusRequirement: CheerActionStreamStatusRequirement
+    bits: int
+    directory: str
+    twitchChannelId: str
 
     @property
     def actionType(self) -> CheerActionType:
         return CheerActionType.SOUND_ALERT
 
-    @property
-    def directory(self) -> str:
-        return self.__directory
+    def getBits(self) -> int:
+        return self.bits
+
+    def getStreamStatusRequirement(self) -> CheerActionStreamStatusRequirement:
+        return self.streamStatusRequirement
+
+    def getTwitchChannelId(self) -> str:
+        return self.twitchChannelId
+
+    def isEnabled(self) -> bool:
+        return self.enabled
 
     def printOut(self) -> str:
-        return f'isEnabled={self.isEnabled}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}, directory={self.__directory}'
+        return f'isEnabled={self.enabled}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}, directory={self.directory}'
