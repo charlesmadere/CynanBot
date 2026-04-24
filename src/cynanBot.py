@@ -49,7 +49,6 @@ from .chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface impo
     ChatterPreferredTtsRepositoryInterface
 from .chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterface import \
     ChatterPreferredTtsSettingsRepositoryInterface
-from .cheerActions.airStrike.airStrikeCheerActionHelperInterface import AirStrikeCheerActionHelperInterface
 from .cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
 from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
@@ -207,7 +206,6 @@ class CynanBot(
         activeChattersRepository: ActiveChattersRepositoryInterface,
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface | None,
         administratorProvider: AdministratorProviderInterface,
-        airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface | None,
         anivCopyMessageTimeoutScoreHelper: AnivCopyMessageTimeoutScoreHelperInterface | None,
         anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface | None,
         anivSettings: AnivSettingsInterface | None,
@@ -376,8 +374,6 @@ class CynanBot(
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
         elif additionalTriviaAnswersRepository is not None and not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
             raise TypeError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
-        elif airStrikeCheerActionHelper is not None and not isinstance(airStrikeCheerActionHelper, AirStrikeCheerActionHelperInterface):
-            raise TypeError(f'airStrikeCheerActionHelper argument is malformed: \"{airStrikeCheerActionHelper}\"')
         elif not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
         elif anivCopyMessageTimeoutScoreHelper is not None and not isinstance(anivCopyMessageTimeoutScoreHelper, AnivCopyMessageTimeoutScoreHelperInterface):
@@ -704,13 +700,11 @@ class CynanBot(
         if recurringActionsHelper is None or recurringActionsMachine is None or recurringActionsRepository is None or recurringActionsWizard is None:
             self.__addRecurringCutenessActionCommand: AbsChatCommand = StubChatCommand()
             self.__addRecurringSuperTriviaActionCommand: AbsChatCommand = StubChatCommand()
-            self.__getRecurringActionsCommand: AbsChatCommand = StubChatCommand()
             self.__removeRecurringCutenessActionCommand: AbsChatCommand = StubChatCommand()
             self.__removeRecurringSuperTriviaActionCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__addRecurringCutenessActionCommand: AbsChatCommand = AddRecurringCutenessActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchChatMessenger, usersRepository)
             self.__addRecurringSuperTriviaActionCommand: AbsChatCommand = AddRecurringSuperTriviaActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchChatMessenger, usersRepository)
-            self.__getRecurringActionsCommand: AbsChatCommand = GetRecurringActionsChatCommand(administratorProvider, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
             self.__removeRecurringCutenessActionCommand: AbsChatCommand = RemoveRecurringCutenessActionChatCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
             self.__removeRecurringSuperTriviaActionCommand: AbsChatCommand = RemoveRecurringSuperTriviaActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
 
@@ -919,11 +913,6 @@ class CynanBot(
     async def command_asplodiestats(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__asplodieStatsCommand.handleChatCommand(context)
-
-    @commands.command(name = 'getrecurringactions', aliases = [ 'recurringactions' ])
-    async def command_getrecurringactions(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__getRecurringActionsCommand.handleChatCommand(context)
 
     @commands.command(name = 'pkmon')
     async def command_pkmon(self, ctx: Context):

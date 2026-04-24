@@ -24,7 +24,7 @@ class TestCalculateTimeoutDurationUseCase:
             seconds = 30,
         )
 
-        for _ in range(100):
+        for _ in range(1_000):
             calculatedTimeoutDuration = await self.useCase.invoke(
                 timeoutDuration = timeoutDuration,
             )
@@ -34,28 +34,27 @@ class TestCalculateTimeoutDurationUseCase:
     @pytest.mark.asyncio
     async def test_invoke_withRandomExponentialTimeoutDuration(self):
         timeoutDuration = RandomExponentialTimeoutDuration(
-            scale = float(12),
-            maximumSeconds = 300,
+            exponent = 14,
+            maximumSeconds = 180,
             minimumSeconds = 30,
         )
 
         # this dictionary is just used for debugging purposes, it will
         # help us understand the distribution of timeout duration amounts
-        timeoutDistribution: dict[int, int] = OrderedDict()
+        timeoutDistribution: Final[dict[int, int]] = OrderedDict()
 
         index = timeoutDuration.minimumSeconds
         while index <= timeoutDuration.maximumSeconds:
             timeoutDistribution[index] = 0
             index += 1
 
-        for _ in range(1000):
+        for _ in range(10_000):
             calculatedTimeoutDuration = await self.useCase.invoke(
                 timeoutDuration = timeoutDuration,
             )
 
             assert calculatedTimeoutDuration.seconds >= timeoutDuration.minimumSeconds
             assert calculatedTimeoutDuration.seconds <= timeoutDuration.maximumSeconds
-
             timeoutDistribution[calculatedTimeoutDuration.seconds] = timeoutDistribution[calculatedTimeoutDuration.seconds] + 1
 
         self.timber.log('TestCalculateTimeoutDurationUseCase', f'RandomExponentialTimeoutDuration distribution:\n{timeoutDistribution}')
@@ -67,7 +66,7 @@ class TestCalculateTimeoutDurationUseCase:
             minimumSeconds = 30,
         )
 
-        for _ in range(100):
+        for _ in range(1_000):
             calculatedTimeoutDuration = await self.useCase.invoke(
                 timeoutDuration = timeoutDuration,
             )
@@ -78,3 +77,4 @@ class TestCalculateTimeoutDurationUseCase:
     def test_sanity(self):
         assert self.useCase is not None
         assert isinstance(self.useCase, CalculateTimeoutDurationUseCase)
+        assert isinstance(self.useCase, CalculateTimeoutDurationUseCaseInterface)

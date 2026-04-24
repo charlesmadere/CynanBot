@@ -3,12 +3,10 @@ from abc import ABC, abstractmethod
 
 class EditCheerActionResult(ABC):
 
-    @property
     @abstractmethod
-    def bits(self) -> int:
+    def getBits(self) -> int:
         pass
 
-    @property
     @abstractmethod
-    def twitchChannelId(self) -> str:
+    def getTwitchChannelId(self) -> str:
         pass

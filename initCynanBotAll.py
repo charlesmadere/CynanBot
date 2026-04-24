@@ -74,6 +74,7 @@ from src.chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferr
 from src.chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from src.chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
+from src.chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
 from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from src.chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from src.chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
@@ -156,8 +157,6 @@ from src.chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface i
 from src.chatterPreferredTts.settings.chatterPreferredTtsSettingsRepository import ChatterPreferredTtsSettingsRepository
 from src.chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterface import \
     ChatterPreferredTtsSettingsRepositoryInterface
-from src.cheerActions.airStrike.airStrikeCheerActionHelper import AirStrikeCheerActionHelper
-from src.cheerActions.airStrike.airStrikeCheerActionHelperInterface import AirStrikeCheerActionHelperInterface
 from src.cheerActions.cheerActionHelper import CheerActionHelper
 from src.cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
@@ -172,10 +171,6 @@ from src.cheerActions.settings.cheerActionSettingsRepository import CheerActionS
 from src.cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from src.cheerActions.soundAlert.soundAlertCheerActionHelper import SoundAlertCheerActionHelper
 from src.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
-from src.cheerActions.timeout.timeoutCheerActionHelper import TimeoutCheerActionHelper
-from src.cheerActions.timeout.timeoutCheerActionHelperInterface import TimeoutCheerActionHelperInterface
-from src.cheerActions.voicemail.voicemailCheerActionHelper import VoicemailCheerActionHelper
-from src.cheerActions.voicemail.voicemailCheerActionHelperInterface import VoicemailCheerActionHelperInterface
 from src.commodoreSam.apiService.commodoreSamApiService import CommodoreSamApiService
 from src.commodoreSam.apiService.commodoreSamApiServiceInterface import CommodoreSamApiServiceInterface
 from src.commodoreSam.commodoreSamMessageCleaner import CommodoreSamMessageCleaner
@@ -2873,12 +2868,6 @@ cheerActionsRepository: Final[CheerActionsRepositoryInterface] = CheerActionsRep
     timber = timber,
 )
 
-airStrikeCheerActionHelper: AirStrikeCheerActionHelperInterface = AirStrikeCheerActionHelper(
-    chatterInventoryIdGenerator = chatterInventoryIdGenerator,
-    chatterInventorySettings = chatterInventorySettings,
-    useChatterItemHelper = useChatterItemHelper,
-)
-
 itemUseCheerActionHelper: ItemUseCheerActionHelperInterface = ItemUseCheerActionHelper(
     chatterInventoryIdGenerator = chatterInventoryIdGenerator,
     chatterInventorySettings = chatterInventorySettings,
@@ -2893,19 +2882,7 @@ soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface = SoundAlertCh
     timber = timber,
 )
 
-timeoutCheerActionHelper: TimeoutCheerActionHelperInterface = TimeoutCheerActionHelper(
-    chatterInventoryIdGenerator = chatterInventoryIdGenerator,
-    chatterInventorySettings = chatterInventorySettings,
-    useChatterItemHelper = useChatterItemHelper,
-)
-
-voicemailCheerActionHelper: Final[VoicemailCheerActionHelperInterface] = VoicemailCheerActionHelper(
-    chatterInventoryIdGenerator = chatterInventoryIdGenerator,
-    useChatterItemHelper = useChatterItemHelper,
-)
-
 cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
-    adgeCheerActionHelper = None,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = crowdControlCheerActionHelper,
     itemUseCheerActionHelper = itemUseCheerActionHelper,
@@ -3371,6 +3348,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    GetRecurringActionsChatCommand(
+        administratorProvider = administratorProvider,
+        recurringActionsRepository = recurringActionsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     GetTriviaAnswersChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
         generalSettingsRepository = generalSettingsRepository,
@@ -3706,7 +3689,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     twitchSubscriptionHandler = twitchSubscriptionHandler,
     activeChattersRepository = activeChattersRepository,
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
-    airStrikeCheerActionHelper = airStrikeCheerActionHelper,
     administratorProvider = administratorProvider,
     anivCopyMessageTimeoutScoreHelper = anivCopyMessageTimeoutScoreHelper,
     anivCopyMessageTimeoutScorePresenter = anivCopyMessageTimeoutScorePresenter,

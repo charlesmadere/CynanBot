@@ -26,17 +26,21 @@ class AnivSettings(AnivSettingsInterface):
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'copyMessageMaxAgeSeconds', fallback = 30)
 
+    async def getCopyMessageTimeoutExponent(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'copyMessageTimeoutExponent', fallback = 14)
+
     async def getCopyMessageTimeoutProbability(self) -> float:
         jsonContents = await self.__readJson()
         return utils.getFloatFromDict(jsonContents, 'copyMessageTimeoutProbability', fallback = 0.69)
 
-    async def getCopyMessageTimeoutSeconds(self) -> int:
-        jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'copyMessageTimeoutSeconds', fallback = 30)
-
     async def getCopyMessageTimeoutMaxSeconds(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'copyMessageTimeoutMaxSeconds', fallback = 300)
+        return utils.getIntFromDict(jsonContents, 'copyMessageTimeoutMaxSeconds', fallback = 180)
+
+    async def getCopyMessageTimeoutMinSeconds(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'copyMessageTimeoutSeconds', fallback = 30)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__settingsCache is not None:

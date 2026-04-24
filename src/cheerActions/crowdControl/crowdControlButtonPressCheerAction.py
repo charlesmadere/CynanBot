@@ -1,27 +1,32 @@
+from dataclasses import dataclass
+
 from ..absCheerAction import AbsCheerAction
 from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ..cheerActionType import CheerActionType
 
 
+@dataclass(frozen = True, slots = True)
 class CrowdControlButtonPressCheerAction(AbsCheerAction):
-
-    def __init__(
-        self,
-        isEnabled: bool,
-        streamStatusRequirement: CheerActionStreamStatusRequirement,
-        bits: int,
-        twitchChannelId: str,
-    ):
-        super().__init__(
-            isEnabled = isEnabled,
-            streamStatusRequirement = streamStatusRequirement,
-            bits = bits,
-            twitchChannelId = twitchChannelId,
-        )
+    enabled: bool
+    streamStatusRequirement: CheerActionStreamStatusRequirement
+    bits: int
+    twitchChannelId: str
 
     @property
     def actionType(self) -> CheerActionType:
         return CheerActionType.CROWD_CONTROL
 
+    def getBits(self) -> int:
+        return self.bits
+
+    def getStreamStatusRequirement(self) -> CheerActionStreamStatusRequirement:
+        return self.streamStatusRequirement
+
+    def getTwitchChannelId(self) -> str:
+        return self.twitchChannelId
+
+    def isEnabled(self) -> bool:
+        return self.enabled
+
     def printOut(self) -> str:
-        return f'isEnabled={self.isEnabled}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}'
+        return f'isEnabled={self.enabled}, streamStatusRequirement={self.streamStatusRequirement}, actionType={self.actionType}, bits={self.bits}'

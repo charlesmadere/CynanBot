@@ -77,7 +77,7 @@ class GetCheerActionsChatCommand(AbsChatCommand2):
 
             for action in actions.values():
                 self.__twitchChatMessenger.send(
-                    text = f'Action {action.bits} — {action.printOut()}',
+                    text = f'Action {action.getBits()} — {action.printOut()}',
                     twitchChannelId = chatMessage.twitchChannelId,
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )

@@ -117,7 +117,7 @@ class EnableCheerActionChatCommand(AbsChatCommand2):
             )
 
         else:
-            self.__timber.log(self.commandName, f'An unknown error occurred when trying to enable cheer action ({result=}) ({bits=}) ({bitsString=}) ({chatMessage=})')
+            self.__timber.log(self.commandName, f'An unknown error occurred when trying to enable cheer action ({result=}) ({bits=}) ({chatMessage=})')
 
             self.__twitchChatMessenger.send(
                 text = f'⚠ An unknown error occurred when trying to enable cheer action {bits}',

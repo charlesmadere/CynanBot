@@ -61,6 +61,7 @@ from src.chatCommands.enableCheerActionChatCommand import EnableCheerActionChatC
 from src.chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
 from src.chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from src.chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
+from src.chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
 from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from src.chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
@@ -1774,7 +1775,6 @@ cheerActionsRepository: Final[CheerActionsRepositoryInterface] = CheerActionsRep
 )
 
 cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
-    adgeCheerActionHelper = None,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = None,
     itemUseCheerActionHelper = None,
@@ -2097,6 +2097,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
+    GetRecurringActionsChatCommand(
+        administratorProvider = administratorProvider,
+        recurringActionsRepository = recurringActionsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     GetTriviaAnswersChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
         generalSettingsRepository = generalSettingsRepository,
@@ -2325,7 +2331,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     twitchSubscriptionHandler = twitchSubscriptionHandler,
     activeChattersRepository = activeChattersRepository,
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
-    airStrikeCheerActionHelper = None,
     administratorProvider = administratorProvider,
     anivCopyMessageTimeoutScoreHelper = anivCopyMessageTimeoutScoreHelper,
     anivCopyMessageTimeoutScorePresenter = anivCopyMessageTimeoutScorePresenter,

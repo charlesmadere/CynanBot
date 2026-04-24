@@ -27,11 +27,11 @@ class CalculateTimeoutDurationUseCase(CalculateTimeoutDurationUseCaseInterface):
         if not isinstance(timeoutDuration, RandomExponentialTimeoutDuration):
             raise TypeError(f'timeoutDuration argument is malformed: \"{timeoutDuration}\"')
 
-        maxFloat = float(timeoutDuration.maximumSeconds)
-        minFloat = float(timeoutDuration.minimumSeconds)
+        maxSeconds = float(timeoutDuration.maximumSeconds)
+        minSeconds = float(timeoutDuration.minimumSeconds)
         randomScale = random.random()
 
-        timeoutDurationSeconds = pow(randomScale, timeoutDuration.scale) * (maxFloat - minFloat) + minFloat
+        timeoutDurationSeconds = pow(randomScale, timeoutDuration.exponent) * (maxSeconds - minSeconds) + minSeconds
         return int(round(timeoutDurationSeconds))
 
     async def __calculateLinearTimeoutDurationSeconds(

@@ -8,10 +8,8 @@ from ..absCheerAction import AbsCheerAction
 class AlreadyDisabledEditCheerActionResult(EditCheerActionResult):
     cheerAction: AbsCheerAction
 
-    @property
-    def bits(self) -> int:
-        return self.cheerAction.bits
+    def getBits(self) -> int:
+        return self.cheerAction.getBits()
 
-    @property
-    def twitchChannelId(self) -> str:
-        return self.cheerAction.twitchChannelId
+    def getTwitchChannelId(self) -> str:
+        return self.cheerAction.getTwitchChannelId()

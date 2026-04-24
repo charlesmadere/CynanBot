@@ -185,7 +185,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         actionId = await self.__timeoutIdGenerator.generateActionId()
 
-        self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'In {user.handle}, {chatterUserName}:{chatterUserId} will be timed out for copying an aniv message ({actionId=}) ({timeoutDuration=}) ({timeoutRng=}) ({anivUserId=}) ({copiedAnivMessage=})')
+        self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Timing out a user for copying an aniv message... ({actionId=}) ({timeoutDuration=}) ({moderatorUserId=}) ({timeoutRng=}) ({anivUserId=}) ({copiedAnivMessage=}) ({chatterUserId=}) ({chatterUserName=}) ({user=}) ({twitchChannelId=})')
 
         self.__timeoutActionMachine.submitAction(CopyAnivMessageTimeoutAction(
             timeoutDuration = timeoutDuration,
@@ -207,16 +207,18 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         self,
         user: UserInterface,
     ) -> AbsTimeoutDuration:
+        exponent = await self.__anivSettings.getCopyMessageTimeoutExponent()
+
         minimumSeconds = user.anivMessageCopyTimeoutMinSeconds
         if not utils.isValidInt(minimumSeconds):
-            minimumSeconds = await self.__anivSettings.getCopyMessageTimeoutSeconds()
+            minimumSeconds = await self.__anivSettings.getCopyMessageTimeoutMinSeconds()
 
         maximumSeconds = user.anivMessageCopyTimeoutMaxSeconds
         if not utils.isValidInt(maximumSeconds):
             maximumSeconds = await self.__anivSettings.getCopyMessageTimeoutMaxSeconds()
 
         return RandomExponentialTimeoutDuration(
-            scale = float(13),
+            exponent = exponent,
             maximumSeconds = maximumSeconds,
             minimumSeconds = minimumSeconds,
         )
