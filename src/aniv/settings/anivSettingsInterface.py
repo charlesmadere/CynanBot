@@ -14,13 +14,17 @@ class AnivSettingsInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getCopyMessageTimeoutExponent(self) -> int:
+        pass
+
+    @abstractmethod
     async def getCopyMessageTimeoutProbability(self) -> float:
         pass
 
     @abstractmethod
-    async def getCopyMessageTimeoutSeconds(self) -> int:
+    async def getCopyMessageTimeoutMaxSeconds(self) -> int:
         pass
 
     @abstractmethod
-    async def getCopyMessageTimeoutMaxSeconds(self) -> int:
+    async def getCopyMessageTimeoutMinSeconds(self) -> int:
         pass
