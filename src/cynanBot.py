@@ -18,15 +18,10 @@ from .asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from .asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from .chatCommands.absChatCommand import AbsChatCommand
 from .chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
-from .chatCommands.addRecurringCutenessActionChatCommand import AddRecurringCutenessActionChatCommand
-from .chatCommands.addRecurringSuperTriviaActionChatCommand import AddRecurringSuperTriviaActionChatCommand
 from .chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
-from .chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
 from .chatCommands.pkMonChatCommand import PkMonChatCommand
 from .chatCommands.pkMoveChatCommand import PkMoveChatCommand
 from .chatCommands.removeGameShuffleAutomatorChatCommand import RemoveGameShuffleAutomatorChatCommand
-from .chatCommands.removeRecurringCutenessActionChatCommand import RemoveRecurringCutenessActionChatCommand
-from .chatCommands.removeRecurringSuperTriviaActionCommand import RemoveRecurringSuperTriviaActionCommand
 from .chatCommands.stubChatCommand import StubChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
 from .chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
@@ -697,17 +692,6 @@ class CynanBot(
             self.__addGameShuffleAutomatorCommand: AbsChatCommand = AddGameShuffleAutomatorChatCommand(administratorProvider, crowdControlAutomator, timber, twitchChatMessenger, usersRepository)
             self.__removeGameShuffleAutomatorCommand: AbsChatCommand = RemoveGameShuffleAutomatorChatCommand(administratorProvider, crowdControlAutomator, timber, twitchChatMessenger, usersRepository)
 
-        if recurringActionsHelper is None or recurringActionsMachine is None or recurringActionsRepository is None or recurringActionsWizard is None:
-            self.__addRecurringCutenessActionCommand: AbsChatCommand = StubChatCommand()
-            self.__addRecurringSuperTriviaActionCommand: AbsChatCommand = StubChatCommand()
-            self.__removeRecurringCutenessActionCommand: AbsChatCommand = StubChatCommand()
-            self.__removeRecurringSuperTriviaActionCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__addRecurringCutenessActionCommand: AbsChatCommand = AddRecurringCutenessActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchChatMessenger, usersRepository)
-            self.__addRecurringSuperTriviaActionCommand: AbsChatCommand = AddRecurringSuperTriviaActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchChatMessenger, usersRepository)
-            self.__removeRecurringCutenessActionCommand: AbsChatCommand = RemoveRecurringCutenessActionChatCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
-            self.__removeRecurringSuperTriviaActionCommand: AbsChatCommand = RemoveRecurringSuperTriviaActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchChatMessenger, usersRepository)
-
         if pokepediaRepository is None:
             self.__pkMonCommand: AbsChatCommand = StubChatCommand()
             self.__pkMoveCommand: AbsChatCommand = StubChatCommand()
@@ -899,16 +883,6 @@ class CynanBot(
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addGameShuffleAutomatorCommand.handleChatCommand(context)
 
-    @commands.command(name = 'addrecurringcutenessaction')
-    async def command_addrecurringcutenessaction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addRecurringCutenessActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'addrecurringsupertriviaaction', aliases = [ 'addrecurringtriviaaction' ])
-    async def command_addrecurringsupertriviaaction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addRecurringSuperTriviaActionCommand.handleChatCommand(context)
-
     @commands.command(name = 'asplodiestats', aliases = [ 'asplodies', 'asplodiesstats', 'getasplodiestats' ])
     async def command_asplodiestats(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -928,13 +902,3 @@ class CynanBot(
     async def command_removegameshuffleautomator(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeGameShuffleAutomatorCommand.handleChatCommand(context)
-
-    @commands.command(name = 'removerecurringcutenessaction', aliases = [ 'delrecurringcutenessaction', 'deleterecurringcutenessaction' ])
-    async def command_removerecurringcutenessaction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeRecurringCutenessActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'removerecurringsupertriviaaction', aliases = [ 'deleterecurringsupertriviaaction', 'deleterecurringtriviaaction', 'removerecurringtriviaaction' ])
-    async def command_removerecurringsupertriviaaction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeRecurringSuperTriviaActionCommand.handleChatCommand(context)

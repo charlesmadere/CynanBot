@@ -165,7 +165,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
                             userid text NOT NULL,
                             PRIMARY KEY (twitchchannelid, userid)
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -177,7 +177,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
                             userid TEXT NOT NULL,
                             PRIMARY KEY (twitchchannelid, userid)
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:

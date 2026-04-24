@@ -1,7 +1,6 @@
 import asyncio
 import queue
 from collections import defaultdict
-from datetime import datetime
 from queue import SimpleQueue
 from typing import Final
 
@@ -96,10 +95,8 @@ class Timber(TimberInterface):
         elif traceback is not None and not isinstance(traceback, str):
             raise TypeError(f'traceback argument is malformed: \"{traceback}\"')
 
-        dateTime = datetime.now(self.__timeZoneRepository.getDefault())
-
         timberEntry = TimberEntry(
-            dateTime = dateTime,
+            dateTime = self.__timeZoneRepository.getNow(),
             exception = exception,
             msg = msg,
             tag = tag,

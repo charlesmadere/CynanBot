@@ -51,6 +51,7 @@ from ..models.twitchOutcome import TwitchOutcome
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
 from ..models.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..models.twitchPaginationResponse import TwitchPaginationResponse
+from ..models.twitchPayItForward import TwitchPayItForward
 from ..models.twitchPollChoice import TwitchPollChoice
 from ..models.twitchPollStatus import TwitchPollStatus
 from ..models.twitchPowerUp import TwitchPowerUp
@@ -268,7 +269,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseCommunitySubGift(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchCommunitySubGift | None:
         pass
 
@@ -434,6 +435,13 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parsePayItForward(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchPayItForward | None:
+        pass
+
+    @abstractmethod
     async def parsePollChoice(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -583,7 +591,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseSubGift(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchSubGift | None:
         pass
 

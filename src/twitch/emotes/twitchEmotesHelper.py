@@ -107,7 +107,7 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         self.__timber.log('TwitchEmotesHelper', f'Fetched {len(viableEmoteNames)} viable emote name(s) ({twitchChannelId=}) ({subscriptionStatus=}) ({viableEmoteNames=})')
 
         return TwitchEmotesHelper.Entry(
-            fetchDateTime = datetime.now(self.__timeZoneRepository.getDefault()),
+            fetchDateTime = self.__timeZoneRepository.getNow(),
             availableEmotes = viableEmoteNames,
             twitchChannelId = twitchChannelId,
         )
@@ -119,16 +119,20 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        cachedEntry = await self.__getCachedEntry(twitchChannelId = twitchChannelId)
+        cachedEntry = await self.__getCachedEntry(
+            twitchChannelId = twitchChannelId,
+        )
 
         if cachedEntry is not None:
             return cachedEntry.availableEmotes
 
-        entry = await self.__fetchFromTwitchApi(twitchChannelId = twitchChannelId)
+        entry = await self.__fetchFromTwitchApi(
+            twitchChannelId = twitchChannelId,
+        )
 
         if entry is None:
             entry = TwitchEmotesHelper.Entry(
-                fetchDateTime = datetime.now(self.__timeZoneRepository.getDefault()),
+                fetchDateTime = self.__timeZoneRepository.getNow(),
                 availableEmotes = frozenset(),
                 twitchChannelId = twitchChannelId,
             )
@@ -145,7 +149,7 @@ class TwitchEmotesHelper(TwitchEmotesHelperInterface):
         if cachedEntry is None:
             return None
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         if cachedEntry.fetchDateTime + self.__cacheTimeDelta >= now:
             return cachedEntry

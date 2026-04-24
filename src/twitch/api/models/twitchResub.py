@@ -10,7 +10,7 @@ class TwitchResub:
     isPrime: bool
     cumulativeMonths: int
     durationMonths: int
-    streakMonths: int
+    streakMonths: int | None
     gifterUserId: str | None
     gifterUserLogin: str | None
     gifterUserName: str | None

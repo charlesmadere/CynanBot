@@ -8,6 +8,7 @@ from .twitchChannelPointsVoting import TwitchChannelPointsVoting
 from .twitchChatBadge import TwitchChatBadge
 from .twitchChatMessage import TwitchChatMessage
 from .twitchChatMessageType import TwitchChatMessageType
+from .twitchPayItForward import TwitchPayItForward
 from .twitchCheerMetadata import TwitchCheerMetadata
 from .twitchCommunitySubGift import TwitchCommunitySubGift
 from .twitchContribution import TwitchContribution
@@ -99,6 +100,7 @@ class TwitchWebsocketEvent:
     communitySubGift: TwitchCommunitySubGift | None = None
     hypeTrainType: TwitchHypeTrainType | None = None
     noticeType: TwitchNoticeType | None = None
+    payItForward: TwitchPayItForward | None = None
     pollStatus: TwitchPollStatus | None = None
     powerUp: TwitchPowerUp | None = None
     predictionStatus: TwitchPredictionStatus | None = None
