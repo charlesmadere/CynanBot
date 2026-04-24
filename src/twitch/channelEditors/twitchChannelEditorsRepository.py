@@ -56,7 +56,7 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
         twitchChannelId: str,
     ) -> ChannelEditorsData:
         editorsData = self.__cache.get(twitchChannelId, None)
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         mustFetch: bool
 
         if editorsData is None:
