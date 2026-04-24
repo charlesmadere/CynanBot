@@ -201,7 +201,9 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         exception: Exception | None = None
 
         try:
-            dataBundle = await self.__twitchWebsocketJsonMapper.parseWebsocketDataBundle(dictionary)
+            dataBundle = await self.__twitchWebsocketJsonMapper.parseWebsocketDataBundle(
+                dataBundleJson = dictionary,
+            )
         except Exception as e:
             exception = e
 

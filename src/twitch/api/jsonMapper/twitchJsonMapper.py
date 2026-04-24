@@ -55,6 +55,7 @@ from ..models.twitchOutcome import TwitchOutcome
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
 from ..models.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..models.twitchPaginationResponse import TwitchPaginationResponse
+from ..models.twitchPayItForward import TwitchPayItForward
 from ..models.twitchPollChoice import TwitchPollChoice
 from ..models.twitchPollStatus import TwitchPollStatus
 from ..models.twitchPowerUp import TwitchPowerUp
@@ -757,7 +758,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseCommunitySubGift(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchCommunitySubGift | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -768,7 +769,10 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         total = utils.getIntFromDict(jsonResponse, 'total')
         communitySubGiftId = utils.getStrFromDict(jsonResponse, 'id')
-        subTier = await self.requireSubscriberTier(utils.getStrFromDict(jsonResponse, 'sub_tier'))
+
+        subTier = await self.requireSubscriberTier(
+            subscriberTier = utils.getStrFromDict(jsonResponse, 'sub_tier'),
+        )
 
         return TwitchCommunitySubGift(
             cumulativeTotal = cumulativeTotal,
@@ -1365,6 +1369,34 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             cursor = cursor,
         )
 
+    async def parsePayItForward(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchPayItForward | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        gifterIsAnonymous = utils.getBoolFromDict(jsonResponse, 'gifter_is_anonymous')
+
+        gifterUserId: str | None = None
+        if 'gifter_user_id' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_user_id')):
+            gifterUserId = utils.getStrFromDict(jsonResponse, 'gifter_user_id')
+
+        gifterUserLogin: str | None = None
+        if 'gifter_user_login' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_user_login')):
+            gifterUserLogin = utils.getStrFromDict(jsonResponse, 'gifter_user_login')
+
+        gifterUserName: str | None = None
+        if 'gifter_user_name' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_user_name')):
+            gifterUserName = utils.getStrFromDict(jsonResponse, 'gifter_user_name')
+
+        return TwitchPayItForward(
+            gifterIsAnonymous = gifterIsAnonymous,
+            gifterUserId = gifterUserId,
+            gifterUserLogin = gifterUserLogin,
+            gifterUserName = gifterUserName,
+        )
+
     async def parsePollChoice(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -1372,8 +1404,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        channelPointsVotes = utils.getIntFromDict(jsonResponse, 'channel_points_votes', 0)
-        votes = utils.getIntFromDict(jsonResponse, 'votes', 0)
+        channelPointsVotes = utils.getIntFromDict(jsonResponse, 'channel_points_votes', fallback = 0)
+        votes = utils.getIntFromDict(jsonResponse, 'votes', fallback = 0)
         choiceId = utils.getStrFromDict(jsonResponse, 'id')
         title = utils.getStrFromDict(jsonResponse, 'title')
 
@@ -1514,7 +1546,10 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         isPrime = utils.getBoolFromDict(jsonResponse, 'is_prime', fallback = False)
         cumulativeMonths = utils.getIntFromDict(jsonResponse, 'cumulative_months')
         durationMonths = utils.getIntFromDict(jsonResponse, 'duration_months')
-        streakMonths = utils.getIntFromDict(jsonResponse, 'streak_months')
+
+        streakMonths: int | None = None
+        if 'streak_months' in jsonResponse and utils.isValidInt(jsonResponse.get('streak_months')):
+            streakMonths = utils.getIntFromDict(jsonResponse, 'streak_months')
 
         gifterUserId: str | None = None
         if 'gifter_user_id' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_user_id')):
@@ -1528,8 +1563,9 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if 'gifter_user_name' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_user_name')):
             gifterUserName = utils.getStrFromDict(jsonResponse, 'gifter_user_name')
 
-        subTierString = utils.getStrFromDict(jsonResponse, 'sub_tier')
-        subTier = await self.requireSubscriberTier(subTierString)
+        subTier = await self.requireSubscriberTier(
+            subscriberTier = utils.getStrFromDict(jsonResponse, 'sub_tier'),
+        )
 
         return TwitchResub(
             gifterIsAnonymous = gifterIsAnonymous,
@@ -1541,7 +1577,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             gifterUserId = gifterUserId,
             gifterUserLogin = gifterUserLogin,
             gifterUserName = gifterUserName,
-            subTier = subTier
+            subTier = subTier,
         )
 
     async def parseResubscriptionMessage(
@@ -1870,7 +1906,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseSubGift(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchSubGift | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1880,11 +1916,18 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             cumulativeTotal = utils.getIntFromDict(jsonResponse, 'cumulative_total')
 
         durationMonths = utils.getIntFromDict(jsonResponse, 'duration_months')
-        communityGiftId = utils.getStrFromDict(jsonResponse, 'community_gift_id')
+
+        communityGiftId: str | None = None
+        if 'community_gift_id' in jsonResponse and utils.isValidStr(jsonResponse.get('community_gift_id')):
+            communityGiftId = utils.getStrFromDict(jsonResponse, 'community_gift_id')
+
         recipientUserId = utils.getStrFromDict(jsonResponse, 'recipient_user_id')
         recipientUserLogin = utils.getStrFromDict(jsonResponse, 'recipient_user_login')
         recipientUserName = utils.getStrFromDict(jsonResponse, 'recipient_user_name')
-        subTier = await self.requireSubscriberTier(utils.getStrFromDict(jsonResponse, 'sub_tier'))
+
+        subTier = await self.requireSubscriberTier(
+            subscriberTier = utils.getStrFromDict(jsonResponse, 'sub_tier'),
+        )
 
         return TwitchSubGift(
             cumulativeTotal = cumulativeTotal,

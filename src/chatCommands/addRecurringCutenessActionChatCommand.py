@@ -1,17 +1,18 @@
-from typing import Final
+import re
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..recurringActions.actions.recurringActionType import RecurringActionType
 from ..recurringActions.recurringActionsWizardInterface import RecurringActionsWizardInterface
 from ..recurringActions.wizards.cuteness.cutenessStep import CutenessStep
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class AddRecurringCutenessActionChatCommand(AbsChatCommand):
+class AddRecurringCutenessActionChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -19,7 +20,6 @@ class AddRecurringCutenessActionChatCommand(AbsChatCommand):
         recurringActionsWizard: RecurringActionsWizardInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -29,43 +29,49 @@ class AddRecurringCutenessActionChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__recurringActionsWizard: Final[RecurringActionsWizardInterface] = recurringActionsWizard
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        userId = await ctx.getTwitchChannelId()
-        administrator = await self.__administratorProvider.getAdministratorUserId()
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!addrecurringcuteness(?:action)?\b', re.IGNORECASE),
+        })
 
-        if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('AddRecurringCutenessActionChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle} tried using this command!')
-            return
-        elif not user.areRecurringActionsEnabled:
-            return
+    @property
+    def commandName(self) -> str:
+        return 'AddRecurringCutenessActionChatCommand'
+
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
+
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.areRecurringActionsEnabled:
+            return ChatCommandResult.IGNORED
+        elif not await self.__hasPermissions(chatMessage):
+            return ChatCommandResult.IGNORED
 
         wizard = await self.__recurringActionsWizard.start(
             recurringActionType = RecurringActionType.CUTENESS,
-            twitchChannel = user.handle,
-            twitchChannelId = userId,
+            twitchChannel = chatMessage.twitchChannel,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
-        step = wizard.currentStep
-
-        if step is not CutenessStep.MINUTES_BETWEEN:
-            raise RuntimeError(f'unknown CutenessStep: \"{step}\"')
+        if wizard.currentStep is not CutenessStep.MINUTES_BETWEEN:
+            raise RuntimeError(f'unknown starting step ({wizard=}) ({chatMessage=})')
 
         minimumRecurringActionTimingMinutes = RecurringActionType.CUTENESS.minimumRecurringActionTimingMinutes
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ Please specify the number of minutes between recurring Cuteness Leaderboard prompts (most people choose 60 - 120 minutes, minimum is {minimumRecurringActionTimingMinutes})',
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            replyMessageId = await ctx.getMessageId(),
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log('AddRecurringCutenessActionChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({wizard=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED
+
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        return chatMessage.chatterUserId == chatMessage.twitchChannelId

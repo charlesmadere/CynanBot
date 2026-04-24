@@ -1252,6 +1252,16 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parsePayItForward_withEmptyDictionary(self):
+        result = await self.jsonMapper.parsePayItForward(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePayItForward_withNone(self):
+        result = await self.jsonMapper.parsePayItForward(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parsePollStatus_withActive(self):
         result = await self.jsonMapper.parsePollStatus('active')
         assert result is TwitchPollStatus.ACTIVE

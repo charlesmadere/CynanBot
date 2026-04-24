@@ -17,6 +17,7 @@ from ..api.models.twitchContribution import TwitchContribution
 from ..api.models.twitchHypeTrainType import TwitchHypeTrainType
 from ..api.models.twitchNoticeType import TwitchNoticeType
 from ..api.models.twitchOutcome import TwitchOutcome
+from ..api.models.twitchPayItForward import TwitchPayItForward
 from ..api.models.twitchPollChoice import TwitchPollChoice
 from ..api.models.twitchPollStatus import TwitchPollStatus
 from ..api.models.twitchPowerUp import TwitchPowerUp
@@ -431,6 +432,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             noticeTypeString = utils.getStrFromDict(eventJson, 'notice_type')
             noticeType = await self.__twitchJsonMapper.parseNoticeType(noticeTypeString)
 
+        payItForward: TwitchPayItForward | None = None
+        if 'pay_it_forward' in eventJson:
+            payItForward = await self.__twitchJsonMapper.parsePayItForward(eventJson.get('pay_it_forward'))
+
         pollStatus: TwitchPollStatus | None = None
         if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
             statusString = utils.getStrFromDict(eventJson, 'status')
@@ -551,6 +556,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             communitySubGift = communitySubGift,
             hypeTrainType = hypeTrainType,
             noticeType = noticeType,
+            payItForward = payItForward,
             pollStatus = pollStatus,
             powerUp = powerUp,
             predictionStatus = predictionStatus,

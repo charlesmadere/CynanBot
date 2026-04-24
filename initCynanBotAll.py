@@ -51,6 +51,8 @@ from src.chatActions.watchStreakAnnounceChatAction import WatchStreakAnnounceCha
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
 from src.chatCommands.addBannedTriviaControllerChatCommand import AddBannedTriviaControllerChatCommand
 from src.chatCommands.addGlobalTriviaControllerChatCommand import AddGlobalTriviaControllerChatCommand
+from src.chatCommands.addRecurringCutenessActionChatCommand import AddRecurringCutenessActionChatCommand
+from src.chatCommands.addRecurringSuperTriviaActionChatCommand import AddRecurringSuperTriviaActionChatCommand
 from src.chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatCommand
 from src.chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
 from src.chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
@@ -87,6 +89,8 @@ from src.chatCommands.removeBannedTriviaControllerChatCommand import RemoveBanne
 from src.chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
 from src.chatCommands.removeChatterPreferredTtsChatCommand import RemoveChatterPreferredTtsChatCommand
 from src.chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
+from src.chatCommands.removeRecurringCutenessActionChatCommand import RemoveRecurringCutenessActionChatCommand
+from src.chatCommands.removeRecurringSuperTriviaActionCommand import RemoveRecurringSuperTriviaActionCommand
 from src.chatCommands.removeTriviaControllerChatCommand import RemoveTriviaControllerChatCommand
 from src.chatCommands.setChatterPreferredNameChatCommand import SetChatterPreferredNameChatCommand
 from src.chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferredTtsChatCommand
@@ -3186,6 +3190,18 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         twitchTokensUtils = twitchTokensUtils,
         userIdsRepository = userIdsRepository,
     ),
+    AddRecurringCutenessActionChatCommand(
+        administratorProvider = administratorProvider,
+        recurringActionsWizard = recurringActionsWizard,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    AddRecurringSuperTriviaActionChatCommand(
+        administratorProvider = administratorProvider,
+        recurringActionsWizard = recurringActionsWizard,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     AddTriviaAnswerChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
         generalSettingsRepository = generalSettingsRepository,
@@ -3445,6 +3461,20 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         twitchHandleProvider = authRepository,
         twitchTokensUtils = twitchTokensUtils,
         userIdsRepository = userIdsRepository,
+    ),
+    RemoveRecurringCutenessActionChatCommand(
+        administratorProvider = administratorProvider,
+        recurringActionsHelper = recurringActionsHelper,
+        recurringActionsRepository = recurringActionsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    RemoveRecurringSuperTriviaActionCommand(
+        administratorProvider = administratorProvider,
+        recurringActionsHelper = recurringActionsHelper,
+        recurringActionsRepository = recurringActionsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
     ),
     RemoveTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
