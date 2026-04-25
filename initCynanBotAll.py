@@ -311,20 +311,6 @@ from src.location.locationsRepository import LocationsRepository
 from src.location.locationsRepositoryInterface import LocationsRepositoryInterface
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from src.microsoft.apiService.microsoftTtsApiService import MicrosoftTtsApiService
-from src.microsoft.apiService.microsoftTtsApiServiceInterface import MicrosoftTtsApiServiceInterface
-from src.microsoft.helper.microsoftTtsApiHelper import MicrosoftTtsApiHelper
-from src.microsoft.helper.microsoftTtsApiHelperInterface import MicrosoftTtsApiHelperInterface
-from src.microsoft.helper.microsoftTtsHelper import MicrosoftTtsHelper
-from src.microsoft.helper.microsoftTtsHelperInterface import MicrosoftTtsHelperInterface
-from src.microsoft.microsoftTtsMessageCleaner import MicrosoftTtsMessageCleaner
-from src.microsoft.microsoftTtsMessageCleanerInterface import MicrosoftTtsMessageCleanerInterface
-from src.microsoft.parser.microsoftTtsJsonParser import MicrosoftTtsJsonParser
-from src.microsoft.parser.microsoftTtsJsonParserInterface import MicrosoftTtsJsonParserInterface
-from src.microsoft.parser.microsoftTtsMessageVoiceParser import MicrosoftTtsMessageVoiceParser
-from src.microsoft.parser.microsoftTtsMessageVoiceParserInterface import MicrosoftTtsMessageVoiceParserInterface
-from src.microsoft.settings.microsoftTtsSettingsRepository import MicrosoftTtsSettingsRepository
-from src.microsoft.settings.microsoftTtsSettingsRepositoryInterface import MicrosoftTtsSettingsRepositoryInterface
 from src.microsoftSam.apiService.microsoftSamApiService import MicrosoftSamApiService
 from src.microsoftSam.apiService.microsoftSamApiServiceInterface import MicrosoftSamApiServiceInterface
 from src.microsoftSam.helper.microsoftSamApiHelper import MicrosoftSamApiHelper
@@ -617,8 +603,6 @@ from src.tts.halfLife.halfLifeTtsManagerProvider import HalfLifeTtsManagerProvid
 from src.tts.halfLife.halfLifeTtsManagerProviderInterface import HalfLifeTtsManagerProviderInterface
 from src.tts.jsonMapper.ttsJsonMapper import TtsJsonMapper
 from src.tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
-from src.tts.microsoft.microsoftTtsManagerProvider import MicrosoftTtsManagerProvider
-from src.tts.microsoft.microsoftTtsManagerProviderInterface import MicrosoftTtsManagerProviderInterface
 from src.tts.microsoftSam.microsoftSamTtsManagerProvider import MicrosoftSamTtsManagerProvider
 from src.tts.microsoftSam.microsoftSamTtsManagerProviderInterface import MicrosoftSamTtsManagerProviderInterface
 from src.tts.provider.compositeTtsManagerProvider import CompositeTtsManagerProvider
@@ -1322,8 +1306,6 @@ halfLifeVoiceParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
 
 microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
 
-microsoftTtsJsonParser: MicrosoftTtsJsonParserInterface = MicrosoftTtsJsonParser()
-
 streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
 
 ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
@@ -1347,7 +1329,6 @@ chatterPreferredTtsJsonMapper: ChatterPreferredTtsJsonMapperInterface = ChatterP
     decTalkVoiceMapper = decTalkVoiceMapper,
     halfLifeVoiceParser = halfLifeVoiceParser,
     languagesRepository = languagesRepository,
-    microsoftTtsJsonParser = microsoftTtsJsonParser,
     microsoftSamJsonParser = microsoftSamJsonParser,
     streamElementsJsonParser = streamElementsJsonParser,
     ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
@@ -1365,7 +1346,6 @@ chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterf
     halfLifeVoiceParser = halfLifeVoiceParser,
     languagesRepository = languagesRepository,
     microsoftSamJsonParser = microsoftSamJsonParser,
-    microsoftTtsJsonParser = microsoftTtsJsonParser,
     streamElementsJsonParser = streamElementsJsonParser,
     timber = timber,
     ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
@@ -1647,63 +1627,11 @@ halfLifeTtsManagerProvider: HalfLifeTtsManagerProviderInterface = HalfLifeTtsMan
 )
 
 
-##########################################
-## Microsoft TTS initialization section ##
-##########################################
-
-microsoftTtsSettingsRepository: MicrosoftTtsSettingsRepositoryInterface = MicrosoftTtsSettingsRepository(
-    microsoftTtsJsonParser = microsoftTtsJsonParser,
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/microsoftTtsSettingsRepository.json'
-    )
-)
-
-microsoftTtsApiService: MicrosoftTtsApiServiceInterface = MicrosoftTtsApiService(
-    networkClientProvider = networkClientProvider,
-    timber = timber
-)
-
-microsoftTtsApiHelper: MicrosoftTtsApiHelperInterface = MicrosoftTtsApiHelper(
-    microsoftTtsApiService = microsoftTtsApiService,
-    timber = timber
-)
-
-microsoftTtsMessageVoiceParser: MicrosoftTtsMessageVoiceParserInterface = MicrosoftTtsMessageVoiceParser(
-    microsoftTtsJsonParser = microsoftTtsJsonParser
-)
-
-microsoftTtsHelper: MicrosoftTtsHelperInterface = MicrosoftTtsHelper(
-    eventLoop = eventLoop,
-    glacialTtsFileRetriever = glacialTtsFileRetriever,
-    microsoftTtsApiHelper = microsoftTtsApiHelper,
-    microsoftTtsJsonParser = microsoftTtsJsonParser,
-    microsoftTtsMessageVoiceParser = microsoftTtsMessageVoiceParser,
-    microsoftTtsSettingsRepository = microsoftTtsSettingsRepository,
-    timber = timber
-)
-
-microsoftTtsMessageCleaner: Final[MicrosoftTtsMessageCleanerInterface] = MicrosoftTtsMessageCleaner(
-    ttsSettingsRepository = ttsSettingsRepository,
-)
-
-microsoftTtsManagerProvider: MicrosoftTtsManagerProviderInterface = MicrosoftTtsManagerProvider(
-    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
-    microsoftTtsHelper = microsoftTtsHelper,
-    microsoftTtsMessageCleaner = microsoftTtsMessageCleaner,
-    microsoftTtsSettingsRepository = microsoftTtsSettingsRepository,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    timber = timber,
-    ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository
-)
-
-
 ##############################################
 ## Microsoft SAM TTS initialization section ##
 ##############################################
 
-microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface = MicrosoftSamSettingsRepository(
+microsoftSamSettingsRepository: Final[MicrosoftSamSettingsRepositoryInterface] = MicrosoftSamSettingsRepository(
     microsoftSamJsonParser = microsoftSamJsonParser,
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
@@ -1887,7 +1815,6 @@ compositeTtsManagerProvider: Final[CompositeTtsManagerProviderInterface] = Compo
     googleTtsManagerProvider = googleTtsManagerProvider,
     halfLifeTtsManagerProvider = halfLifeTtsManagerProvider,
     microsoftSamTtsManagerProvider = microsoftSamTtsManagerProvider,
-    microsoftTtsManagerProvider = microsoftTtsManagerProvider,
     unrestrictedDecTalkTtsManagerProvider= unrestrictedDecTalkTtsManagerProvider,
     streamElementsTtsManagerProvider = streamElementsTtsManagerProvider,
     timber = timber,

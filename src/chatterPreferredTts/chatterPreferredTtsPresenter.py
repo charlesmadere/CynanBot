@@ -3,7 +3,6 @@ from .models.commodoreSam.commodoreSamTtsProperties import CommodoreSamTtsProper
 from .models.decTalk.decTalkTtsProperties import DecTalkTtsProperties
 from .models.google.googleTtsProperties import GoogleTtsProperties
 from .models.halfLife.halfLifeTtsProperties import HalfLifeTtsProperties
-from .models.microsoft.microsoftTtsTtsProperties import MicrosoftTtsTtsProperties
 from .models.microsoftSam.microsoftSamTtsProperties import MicrosoftSamTtsProperties
 from .models.shotgunTts.shotgunTtsTtsProperties import ShotgunTtsTtsProperties
 from .models.streamElements.streamElementsTtsProperties import StreamElementsTtsProperties
@@ -55,14 +54,6 @@ class ChatterPreferredTtsPresenter:
 
         return f'{TtsProvider.MICROSOFT_SAM.humanName} ({voice.humanName})'
 
-    async def __microsoftTts(self, properties: MicrosoftTtsTtsProperties) -> str:
-        voice = properties.voice
-
-        if voice is None:
-            return TtsProvider.MICROSOFT.humanName
-
-        return f'{TtsProvider.MICROSOFT.humanName} ({voice.humanName})'
-
     async def __shotgunTts(self, properties: ShotgunTtsTtsProperties) -> str:
         return TtsProvider.SHOTGUN_TTS.humanName
 
@@ -105,9 +96,6 @@ class ChatterPreferredTtsPresenter:
 
         elif isinstance(properties, MicrosoftSamTtsProperties):
             return await self.__microsoftSam(properties)
-
-        elif isinstance(properties, MicrosoftTtsTtsProperties):
-            return await self.__microsoftTts(properties)
 
         elif isinstance(properties, ShotgunTtsTtsProperties):
             return await self.__shotgunTts(properties)

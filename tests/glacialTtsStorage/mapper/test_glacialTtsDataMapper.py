@@ -30,11 +30,6 @@ class TestGlacialTtsDataMapper:
         assert result is TtsProvider.HALF_LIFE
 
     @pytest.mark.asyncio
-    async def test_fromDatabaseName_withMicrosoft(self):
-        result = await self.mapper.fromDatabaseName('microsoft')
-        assert result is TtsProvider.MICROSOFT
-
-    @pytest.mark.asyncio
     async def test_fromDatabaseName_withMicrosoftSam(self):
         result = await self.mapper.fromDatabaseName('microsoft_sam')
         assert result is TtsProvider.MICROSOFT_SAM
@@ -104,11 +99,6 @@ class TestGlacialTtsDataMapper:
         assert result == 'half_life'
 
     @pytest.mark.asyncio
-    async def test_toDatabaseName_withMicrosoft(self):
-        result = await self.mapper.toDatabaseName(TtsProvider.MICROSOFT)
-        assert result == 'microsoft'
-
-    @pytest.mark.asyncio
     async def test_toDatabaseName_withMicrosoftSam(self):
         result = await self.mapper.toDatabaseName(TtsProvider.MICROSOFT_SAM)
         assert result == 'microsoft_sam'
@@ -166,11 +156,6 @@ class TestGlacialTtsDataMapper:
     async def test_toFolderName_withHalfLife(self):
         result = await self.mapper.toFolderName(TtsProvider.HALF_LIFE)
         assert result == 'half_life'
-
-    @pytest.mark.asyncio
-    async def test_toFolderName_withMicrosoft(self):
-        result = await self.mapper.toFolderName(TtsProvider.MICROSOFT)
-        assert result == 'microsoft'
 
     @pytest.mark.asyncio
     async def test_toFolderName_withMicrosoftSam(self):

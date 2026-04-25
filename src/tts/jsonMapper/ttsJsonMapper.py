@@ -72,11 +72,6 @@ class TtsJsonMapper(TtsJsonMapperInterface):
         halfLife.append(re.compile(r'^\s*hl\s*$', re.IGNORECASE))
         halfLife.freeze()
 
-        microsoft: FrozenList[Pattern] = FrozenList()
-        microsoft.append(re.compile(r'^\s*microsoft\s*$', re.IGNORECASE))
-        microsoft.append(re.compile(r'^\s*ms\s*$', re.IGNORECASE))
-        microsoft.freeze()
-
         microsoftSam: FrozenList[Pattern] = FrozenList()
         microsoftSam.append(re.compile(r'^\s*microsoft(?:\s+|_|-)?sam\s*$', re.IGNORECASE))
         microsoftSam.append(re.compile(r'^\s*ms(?:\s+|_|-)?sam\s*$', re.IGNORECASE))
@@ -108,7 +103,6 @@ class TtsJsonMapper(TtsJsonMapperInterface):
             TtsProvider.DEC_TALK: decTalk,
             TtsProvider.GOOGLE: google,
             TtsProvider.HALF_LIFE: halfLife,
-            TtsProvider.MICROSOFT: microsoft,
             TtsProvider.MICROSOFT_SAM: microsoftSam,
             TtsProvider.RANDO_TTS: randoTts,
             TtsProvider.SHOTGUN_TTS: shotgunTts,
@@ -189,7 +183,6 @@ class TtsJsonMapper(TtsJsonMapperInterface):
             case TtsProvider.DEC_TALK: return 'dec_talk'
             case TtsProvider.GOOGLE: return 'google'
             case TtsProvider.HALF_LIFE: return 'half_life'
-            case TtsProvider.MICROSOFT: return 'microsoft'
             case TtsProvider.MICROSOFT_SAM: return 'microsoft_sam'
             case TtsProvider.RANDO_TTS: return 'rando_tts'
             case TtsProvider.SHOTGUN_TTS: return 'shotgun_tts'

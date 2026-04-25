@@ -8,7 +8,6 @@ from .compositeTtsManagerInterface import CompositeTtsManagerInterface
 from .decTalk.decTalkTtsManagerInterface import DecTalkTtsManagerInterface
 from .google.googleTtsManagerInterface import GoogleTtsManagerInterface
 from .halfLife.halfLifeTtsManagerInterface import HalfLifeTtsManagerInterface
-from .microsoft.microsoftTtsManagerInterface import MicrosoftTtsManagerInterface
 from .microsoftSam.microsoftSamTtsManagerInterface import MicrosoftSamTtsManagerInterface
 from .models.shotgun.useAllShotgunParameters import UseAllShotgunParameters
 from .models.shotgun.useExactAmountShotgunParameters import UseExactAmountShotgunParameters
@@ -36,7 +35,6 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         unrestrictedDecTalkTtsManager: DecTalkTtsManagerInterface | None,
         googleTtsManager: GoogleTtsManagerInterface | None,
         halfLifeTtsManager: HalfLifeTtsManagerInterface | None,
-        microsoftTtsManager: MicrosoftTtsManagerInterface | None,
         microsoftSamTtsManager: MicrosoftSamTtsManagerInterface | None,
         streamElementsTtsManager: StreamElementsTtsManagerInterface | None,
         timber: TimberInterface,
@@ -57,8 +55,6 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             raise TypeError(f'googleTtsManager argument is malformed: \"{googleTtsManager}\"')
         elif halfLifeTtsManager is not None and not isinstance(halfLifeTtsManager, HalfLifeTtsManagerInterface):
             raise TypeError(f'halfLifeTtsManager argument is malformed: \"{halfLifeTtsManager}\"')
-        elif microsoftTtsManager is not None and not isinstance(microsoftTtsManager, MicrosoftTtsManagerInterface):
-            raise TypeError(f'microsoftTtsManager argument is malformed: \"{microsoftTtsManager}\"')
         elif microsoftSamTtsManager is not None and not isinstance(microsoftSamTtsManager, MicrosoftSamTtsManagerInterface):
             raise TypeError(f'microsoftSamTtsManager argument is malformed: \"{microsoftSamTtsManager}\"')
         elif streamElementsTtsManager is not None and not isinstance(streamElementsTtsManager, StreamElementsTtsManagerInterface):
@@ -80,7 +76,6 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             TtsProvider.DEC_TALK: decTalkTtsManager,
             TtsProvider.GOOGLE: googleTtsManager,
             TtsProvider.HALF_LIFE: halfLifeTtsManager,
-            TtsProvider.MICROSOFT: microsoftTtsManager,
             TtsProvider.MICROSOFT_SAM: microsoftSamTtsManager,
             TtsProvider.STREAM_ELEMENTS: streamElementsTtsManager,
             TtsProvider.TTS_MONSTER: ttsMonsterTtsManager,

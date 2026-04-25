@@ -39,11 +39,6 @@ class TestTtsDirectoryProvider:
         assert result == 'half_life'
 
     @pytest.mark.asyncio
-    async def test_getTtsDirectoryFor_withMicrosoft(self):
-        result = await self.directoryProvider.getTtsDirectoryFor(TtsProvider.MICROSOFT)
-        assert result == 'microsoft'
-
-    @pytest.mark.asyncio
     async def test_getTtsDirectoryFor_withMicrosoftSam(self):
         result = await self.directoryProvider.getTtsDirectoryFor(TtsProvider.MICROSOFT_SAM)
         assert result == 'microsoft_sam'

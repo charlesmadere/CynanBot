@@ -7,7 +7,6 @@ from src.chatterPreferredTts.models.commodoreSam.commodoreSamTtsProperties impor
 from src.chatterPreferredTts.models.decTalk.decTalkTtsProperties import DecTalkTtsProperties
 from src.chatterPreferredTts.models.google.googleTtsProperties import GoogleTtsProperties
 from src.chatterPreferredTts.models.halfLife.halfLifeTtsProperties import HalfLifeTtsProperties
-from src.chatterPreferredTts.models.microsoft.microsoftTtsTtsProperties import MicrosoftTtsTtsProperties
 from src.chatterPreferredTts.models.microsoftSam.microsoftSamTtsProperties import MicrosoftSamTtsProperties
 from src.chatterPreferredTts.models.randoTts.randoTtsTtsProperties import RandoTtsTtsProperties
 from src.chatterPreferredTts.models.streamElements.streamElementsTtsProperties import StreamElementsTtsProperties
@@ -21,9 +20,6 @@ from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParser
 from src.language.languageEntry import LanguageEntry
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
-from src.microsoft.models.microsoftTtsVoice import MicrosoftTtsVoice
-from src.microsoft.parser.microsoftTtsJsonParser import MicrosoftTtsJsonParser
-from src.microsoft.parser.microsoftTtsJsonParserInterface import MicrosoftTtsJsonParserInterface
 from src.microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from src.microsoftSam.parser.microsoftSamJsonParser import MicrosoftSamJsonParser
 from src.microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
@@ -47,8 +43,6 @@ class TestChatterPreferredTtsUserMessageHelper:
 
     microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
 
-    microsoftTtsJsonParser: MicrosoftTtsJsonParserInterface = MicrosoftTtsJsonParser()
-
     streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
 
     timber: TimberInterface = TimberStub()
@@ -62,7 +56,6 @@ class TestChatterPreferredTtsUserMessageHelper:
         halfLifeVoiceParser = halfLifeVoiceParser,
         languagesRepository = languagesRepository,
         microsoftSamJsonParser = microsoftSamJsonParser,
-        microsoftTtsJsonParser = microsoftTtsJsonParser,
         streamElementsJsonParser = streamElementsJsonParser,
         timber = timber,
         ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
@@ -361,36 +354,6 @@ class TestChatterPreferredTtsUserMessageHelper:
         result = await self.helper.parseUserMessage('half life scientist')
         assert isinstance(result, HalfLifeTtsProperties)
         assert result.voice is HalfLifeVoice.SCIENTIST
-
-    @pytest.mark.asyncio
-    async def test_parseUserMessage_withMicrosoftStrings(self):
-        result = await self.helper.parseUserMessage('microsoft')
-        assert isinstance(result, MicrosoftTtsTtsProperties)
-
-        result = await self.helper.parseUserMessage('ms')
-        assert isinstance(result, MicrosoftTtsTtsProperties)
-
-    @pytest.mark.asyncio
-    async def test_parseUserMessage_withMicrosoftAndDavid(self):
-        result = await self.helper.parseUserMessage('microsoft david')
-        assert isinstance(result, MicrosoftTtsTtsProperties)
-        assert result.voice is MicrosoftTtsVoice.DAVID
-
-    @pytest.mark.asyncio
-    async def test_parseUserMessage_withMicrosoftAndHaruka(self):
-        result = await self.helper.parseUserMessage('microsoft haruka')
-        assert isinstance(result, MicrosoftTtsTtsProperties)
-        assert result.voice is MicrosoftTtsVoice.HARUKA
-
-        result = await self.helper.parseUserMessage('ms haruka')
-        assert isinstance(result, MicrosoftTtsTtsProperties)
-        assert result.voice is MicrosoftTtsVoice.HARUKA
-
-    @pytest.mark.asyncio
-    async def test_parseUserMessage_withMicrosoftAndZira(self):
-        result = await self.helper.parseUserMessage('microsoft zira')
-        assert isinstance(result, MicrosoftTtsTtsProperties)
-        assert result.voice is MicrosoftTtsVoice.ZIRA
 
     @pytest.mark.asyncio
     async def test_parseUserMessage_withMicrosoftSamStrings(self):

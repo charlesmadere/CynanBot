@@ -13,7 +13,6 @@ from ..models.commodoreSam.commodoreSamTtsProperties import CommodoreSamTtsPrope
 from ..models.decTalk.decTalkTtsProperties import DecTalkTtsProperties
 from ..models.google.googleTtsProperties import GoogleTtsProperties
 from ..models.halfLife.halfLifeTtsProperties import HalfLifeTtsProperties
-from ..models.microsoft.microsoftTtsTtsProperties import MicrosoftTtsTtsProperties
 from ..models.microsoftSam.microsoftSamTtsProperties import MicrosoftSamTtsProperties
 from ..models.streamElements.streamElementsTtsProperties import StreamElementsTtsProperties
 from ..models.ttsMonster.ttsMonsterTtsProperties import TtsMonsterTtsProperties
@@ -23,7 +22,6 @@ from ...decTalk.models.decTalkVoice import DecTalkVoice
 from ...google.helpers.googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
 from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...language.languageEntry import LanguageEntry
-from ...microsoft.models.microsoftTtsVoice import MicrosoftTtsVoice
 from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ...misc import utils as utils
 from ...streamElements.models.streamElementsVoice import StreamElementsVoice
@@ -108,9 +106,6 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
 
             case TtsProvider.HALF_LIFE:
                 properties = await self.__chooseRandomHalfLifeProperties()
-
-            case TtsProvider.MICROSOFT:
-                properties = await self.__chooseRandomMicrosoftProperties()
 
             case TtsProvider.MICROSOFT_SAM:
                 properties = await self.__chooseRandomMicrosoftSamProperties()
@@ -227,14 +222,6 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         voice = random.choice(voices)
 
         return HalfLifeTtsProperties(
-            voice = voice,
-        )
-
-    async def __chooseRandomMicrosoftProperties(self) -> MicrosoftTtsTtsProperties:
-        voices: list[MicrosoftTtsVoice] = list(MicrosoftTtsVoice)
-        voice = random.choice(voices)
-
-        return MicrosoftTtsTtsProperties(
             voice = voice,
         )
 
