@@ -164,12 +164,17 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
                 return None
 
         message = await self.__emojiHelper.replaceEmojisWithHumanNames(message)
-        message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()
+
+        # this shouldn't be necessary but Python sux at type checking
+        if not utils.isValidStr(message):
+            return None
 
         maximumMessageSize = await self.__ttsSettingsRepository.getMaximumMessageSize()
+
         if len(message) > maximumMessageSize:
             message = message[0:maximumMessageSize].strip()
 
+        # this shouldn't be necessary but Python sux at type checking
         if not utils.isValidStr(message):
             return None
 
