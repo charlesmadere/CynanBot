@@ -8,7 +8,6 @@ from src.chatterPreferredTts.models.commodoreSam.commodoreSamTtsProperties impor
 from src.chatterPreferredTts.models.decTalk.decTalkTtsProperties import DecTalkTtsProperties
 from src.chatterPreferredTts.models.google.googleTtsProperties import GoogleTtsProperties
 from src.chatterPreferredTts.models.halfLife.halfLifeTtsProperties import HalfLifeTtsProperties
-from src.chatterPreferredTts.models.microsoft.microsoftTtsTtsProperties import MicrosoftTtsTtsProperties
 from src.chatterPreferredTts.models.microsoftSam.microsoftSamTtsProperties import MicrosoftSamTtsProperties
 from src.chatterPreferredTts.models.randoTts.randoTtsTtsProperties import RandoTtsTtsProperties
 from src.chatterPreferredTts.models.streamElements.streamElementsTtsProperties import StreamElementsTtsProperties
@@ -21,9 +20,6 @@ from src.halfLife.parser.halfLifeVoiceParserInterface import HalfLifeVoiceParser
 from src.language.languageEntry import LanguageEntry
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
-from src.microsoft.models.microsoftTtsVoice import MicrosoftTtsVoice
-from src.microsoft.parser.microsoftTtsJsonParser import MicrosoftTtsJsonParser
-from src.microsoft.parser.microsoftTtsJsonParserInterface import MicrosoftTtsJsonParserInterface
 from src.microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from src.microsoftSam.parser.microsoftSamJsonParser import MicrosoftSamJsonParser
 from src.microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
@@ -47,8 +43,6 @@ class TestChatterPreferredTtsJsonMapper:
 
     microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
 
-    microsoftTtsJsonParser: MicrosoftTtsJsonParserInterface = MicrosoftTtsJsonParser()
-
     streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
 
     timber: TimberInterface = TimberStub()
@@ -62,7 +56,6 @@ class TestChatterPreferredTtsJsonMapper:
         halfLifeVoiceParser = halfLifeJsonParser,
         languagesRepository = languagesRepository,
         microsoftSamJsonParser = microsoftSamJsonParser,
-        microsoftTtsJsonParser = microsoftTtsJsonParser,
         streamElementsJsonParser = streamElementsJsonParser,
         ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
     )
@@ -145,16 +138,6 @@ class TestChatterPreferredTtsJsonMapper:
 
         assert isinstance(result, HalfLifeTtsProperties)
         assert result.voice is HalfLifeVoice.SCIENTIST
-
-    @pytest.mark.asyncio
-    async def test_parseTtsProperties_withMicrosoft(self):
-        result = await self.mapper.parseTtsProperties(
-            configurationJson = dict(),
-            provider = TtsProvider.MICROSOFT
-        )
-
-        assert isinstance(result, MicrosoftTtsTtsProperties)
-        assert result.voice is None
 
     @pytest.mark.asyncio
     async def test_parseTtsProperties_withMicrosoftSam(self):
@@ -286,25 +269,6 @@ class TestChatterPreferredTtsJsonMapper:
         assert isinstance(iso6391Code, str)
 
         assert iso6391Code == LanguageEntry.SWEDISH.iso6391Code
-
-    @pytest.mark.asyncio
-    async def test_serializeTtsProperties_withMicrosoftAndHarukaVoiceEntry(self):
-        preferredTts = MicrosoftTtsTtsProperties(
-            voice = MicrosoftTtsVoice.HARUKA
-        )
-
-        result = await self.mapper.serializeTtsProperties(
-            ttsProperties = preferredTts
-        )
-
-        assert isinstance(result, dict)
-        assert len(result) == 1
-
-        microsoftTtsVoiceString: str | Any | None = result.get('microsoftTtsVoice', None)
-        assert isinstance(microsoftTtsVoiceString, str)
-
-        microsoftTtsVoice = await self.microsoftTtsJsonParser.parseVoice(microsoftTtsVoiceString)
-        assert microsoftTtsVoice is MicrosoftTtsVoice.HARUKA
 
     @pytest.mark.asyncio
     async def test_serializeTtsProperties_withMicrosoftSam(self):

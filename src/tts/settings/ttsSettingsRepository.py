@@ -18,7 +18,6 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
         defaultRandoEnabledTtsProviders: frozenset[TtsProvider] = frozenset({
             TtsProvider.DEC_TALK,
             TtsProvider.HALF_LIFE,
-            TtsProvider.MICROSOFT,
             TtsProvider.MICROSOFT_SAM,
             TtsProvider.STREAM_ELEMENTS,
             TtsProvider.TTS_MONSTER,
@@ -26,7 +25,6 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
         defaultShotgunEnabledTtsProviders: frozenset[TtsProvider] = frozenset({
             TtsProvider.DEC_TALK,
             TtsProvider.HALF_LIFE,
-            TtsProvider.MICROSOFT,
             TtsProvider.MICROSOFT_SAM,
             TtsProvider.STREAM_ELEMENTS,
             TtsProvider.TTS_MONSTER,

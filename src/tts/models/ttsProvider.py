@@ -7,7 +7,6 @@ class TtsProvider(Enum):
     DEC_TALK = auto()
     GOOGLE = auto()
     HALF_LIFE = auto()
-    MICROSOFT = auto()
     MICROSOFT_SAM = auto()
     RANDO_TTS = auto()
     SHOTGUN_TTS = auto()
@@ -22,7 +21,6 @@ class TtsProvider(Enum):
             case TtsProvider.DEC_TALK: return 'DECtalk'
             case TtsProvider.GOOGLE: return 'Google'
             case TtsProvider.HALF_LIFE: return 'Half-Life'
-            case TtsProvider.MICROSOFT: return 'Microsoft'
             case TtsProvider.MICROSOFT_SAM: return 'Microsoft Sam'
             case TtsProvider.RANDO_TTS: return 'Rando TTS'
             case TtsProvider.SHOTGUN_TTS: return 'Shotgun TTS'

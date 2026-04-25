@@ -163,13 +163,18 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
             if not utils.isValidStr(message):
                 return None
 
-        message = await self.__emojiHelper.replaceEmojisWithHumanNames(message)
-        message = self.__extraWhiteSpaceRegEx.sub(' ', message).strip()
+        message = utils.cleanStr(await self.__emojiHelper.replaceEmojisWithHumanNames(message))
+
+        # this shouldn't be necessary but Python sux at type checking
+        if not utils.isValidStr(message):
+            return None
 
         maximumMessageSize = await self.__ttsSettingsRepository.getMaximumMessageSize()
-        if len(message) > maximumMessageSize:
-            message = message[0:maximumMessageSize].strip()
 
+        if len(message) > maximumMessageSize:
+            message = utils.cleanStr(message[0:maximumMessageSize])
+
+        # this shouldn't be necessary but Python sux at type checking
         if not utils.isValidStr(message):
             return None
 
@@ -196,16 +201,15 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
             repeat = False
 
             for regEx in regExes:
-                if regEx.search(message) is None:
+                if not utils.isValidStr(message):
+                    return None
+                elif regEx.search(message) is None:
                     continue
 
                 repeat = True
                 message = regEx.sub(' ', message).strip()
 
-                if not utils.isValidStr(message):
-                    return None
-
-        if not utils.isValidStr(message):
+        if utils.isValidStr(message):
+            return message
+        else:
             return None
-
-        return message.strip()

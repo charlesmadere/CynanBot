@@ -16,7 +16,6 @@ class GlacialTtsDataMapper(GlacialTtsDataMapperInterface):
             case 'dec_talk': return TtsProvider.DEC_TALK
             case 'google': return TtsProvider.GOOGLE
             case 'half_life': return TtsProvider.HALF_LIFE
-            case 'microsoft': return TtsProvider.MICROSOFT
             case 'microsoft_sam': return TtsProvider.MICROSOFT_SAM
             case 'rando_tts': return TtsProvider.RANDO_TTS
             case 'shotgun_tts': return TtsProvider.SHOTGUN_TTS
@@ -35,7 +34,6 @@ class GlacialTtsDataMapper(GlacialTtsDataMapperInterface):
             case TtsProvider.DEC_TALK: return 'dec_talk'
             case TtsProvider.GOOGLE: return 'google'
             case TtsProvider.HALF_LIFE: return 'half_life'
-            case TtsProvider.MICROSOFT: return 'microsoft'
             case TtsProvider.MICROSOFT_SAM: return 'microsoft_sam'
             case TtsProvider.RANDO_TTS: return 'rando_tts'
             case TtsProvider.SHOTGUN_TTS: return 'shotgun_tts'
@@ -53,7 +51,6 @@ class GlacialTtsDataMapper(GlacialTtsDataMapperInterface):
             case TtsProvider.DEC_TALK: return 'dec_talk'
             case TtsProvider.GOOGLE: return 'google'
             case TtsProvider.HALF_LIFE: return 'half_life'
-            case TtsProvider.MICROSOFT: return 'microsoft'
             case TtsProvider.MICROSOFT_SAM: return 'microsoft_sam'
             case TtsProvider.RANDO_TTS: return 'rando_tts'
             case TtsProvider.SHOTGUN_TTS: return 'shotgun_tts'

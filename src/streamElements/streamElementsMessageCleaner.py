@@ -21,6 +21,11 @@ class StreamElementsMessageCleaner(StreamElementsMessageCleanerInterface):
             return None
 
         message = utils.cleanStr(message)
+
+        # this shouldn't be necessary but Python sux at type checking
+        if not utils.isValidStr(message):
+            return None
+
         maximumMessageSize = await self.__ttsSettingsRepository.getMaximumMessageSize()
 
         if len(message) > maximumMessageSize:

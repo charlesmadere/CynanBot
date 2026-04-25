@@ -87,11 +87,6 @@ class TestTtsJsonMapper:
         assert result is TtsProvider.HALF_LIFE
 
     @pytest.mark.asyncio
-    async def test_asyncParseProvider_withMicrosoftString(self):
-        result = await self.jsonMapper.asyncParseProvider('microsoft')
-        assert result is TtsProvider.MICROSOFT
-
-    @pytest.mark.asyncio
     async def test_asyncParseProvider_withMicrosoftSamString(self):
         result = await self.jsonMapper.asyncParseProvider('microsoft_sam')
         assert result is TtsProvider.MICROSOFT_SAM
@@ -271,11 +266,6 @@ class TestTtsJsonMapper:
         assert result == 'half_life'
 
     @pytest.mark.asyncio
-    async def test_asyncSerializeProvider_withMicrosoft(self):
-        result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.MICROSOFT)
-        assert result == 'microsoft'
-
-    @pytest.mark.asyncio
     async def test_asyncSerializeProvider_withMicrosoftSam(self):
         result = await self.jsonMapper.asyncSerializeProvider(TtsProvider.MICROSOFT_SAM)
         assert result == 'microsoft_sam'
@@ -330,10 +320,6 @@ class TestTtsJsonMapper:
     def test_parseProvider_withHalfLifeString(self):
         result = self.jsonMapper.parseProvider('half_life')
         assert result is TtsProvider.HALF_LIFE
-
-    def test_parseProvider_withMicrosoftString(self):
-        result = self.jsonMapper.parseProvider('microsoft')
-        assert result is TtsProvider.MICROSOFT
 
     def test_parseProvider_withMicrosoftSamString(self):
         result = self.jsonMapper.parseProvider('microsoft_sam')
@@ -446,10 +432,6 @@ class TestTtsJsonMapper:
         result = self.jsonMapper.requireProvider('half_life')
         assert result is TtsProvider.HALF_LIFE
 
-    def test_requireProvider_withMicrosoftString(self):
-        result = self.jsonMapper.requireProvider('microsoft')
-        assert result is TtsProvider.MICROSOFT
-
     def test_requireProvider_withMicrosoftSamString(self):
         result = self.jsonMapper.requireProvider('microsoft_sam')
         assert result is TtsProvider.MICROSOFT_SAM
@@ -525,10 +507,6 @@ class TestTtsJsonMapper:
     def test_serializeProvider_withHalfLife(self):
         result = self.jsonMapper.serializeProvider(TtsProvider.HALF_LIFE)
         assert result == 'half_life'
-
-    def test_serializeProvider_withMicrosoft(self):
-        result = self.jsonMapper.serializeProvider(TtsProvider.MICROSOFT)
-        assert result == 'microsoft'
 
     def test_serializeProvider_withMicrosoftSam(self):
         result = self.jsonMapper.serializeProvider(TtsProvider.MICROSOFT_SAM)
