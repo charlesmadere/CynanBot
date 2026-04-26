@@ -66,7 +66,7 @@ class JishoChatCommand(AbsChatCommand2):
             )
 
             self.__timber.log(self.commandName, f'No query was given ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         query: str | None = splits[1]
         if not utils.isValidStr(query):
@@ -77,7 +77,7 @@ class JishoChatCommand(AbsChatCommand2):
             )
 
             self.__timber.log(self.commandName, f'Encountered invalid/missing query argument ({query=}) ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         try:
             strings = await self.__jishoHelper.search(query)
@@ -96,7 +96,7 @@ class JishoChatCommand(AbsChatCommand2):
             )
 
             self.__timber.log(self.commandName, f'Error searching Jisho ({query=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         self.__timber.log(self.commandName, f'Handled ({query=}) ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        return ChatCommandResult.CONSUMED

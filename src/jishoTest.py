@@ -52,7 +52,7 @@ jishoHelper: Final[JishoHelperInterface] = JishoHelper(
 async def main():
     pass
 
-    results = await jishoHelper.search('今日は')
+    results = await jishoHelper.search('自動販売機')
 
     for result in results:
         print(result)

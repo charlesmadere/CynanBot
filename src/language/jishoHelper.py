@@ -35,7 +35,9 @@ class JishoHelper(JishoHelperInterface):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
         try:
-            response = await self.__jishoApiService.search(query)
+            response = await self.__jishoApiService.search(
+                keyword = query,
+            )
         except GenericNetworkException as e:
             self.__timber.log('JishoHelper', f'Encountered network error when searching Jisho ({query=})', e, traceback.format_exc())
             raise GenericNetworkException(f'JishoHelper encountered network error when searching Jisho ({query=}): {e}')

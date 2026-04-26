@@ -77,11 +77,11 @@ class JishoJsonMapper(JishoJsonMapperInterface):
         isCommon = utils.getBoolFromDict(jsonContents, 'is_common', fallback = False)
         attribution = await self.parseAttribution(jsonContents.get('attribution'))
 
-        japaneseArray: list[dict[str, Any]] | Any | None = jsonContents.get('japanese')
+        japaneseWordsArray: list[dict[str, Any]] | Any | None = jsonContents.get('japanese')
         japaneseWords: FrozenList[JishoJapaneseWord] = FrozenList()
 
-        if isinstance(japaneseArray, list) and len(japaneseArray) >= 1:
-            for index, japaneseWordEntry in enumerate(japaneseArray):
+        if isinstance(japaneseWordsArray, list) and len(japaneseWordsArray) >= 1:
+            for index, japaneseWordEntry in enumerate(japaneseWordsArray):
                 japaneseWord = await self.parseJapaneseWord(japaneseWordEntry)
 
                 if japaneseWord is None:
@@ -90,13 +90,8 @@ class JishoJsonMapper(JishoJsonMapperInterface):
                     japaneseWords.append(japaneseWord)
 
         japaneseWords.freeze()
-
-        if len(japaneseWords) == 0:
-            self.__timber.log('JishoJsonMapper', f'Encountered missing/invalid \"japanese\" field in JSON data: ({jsonContents=})')
-            return None
-
         jlptLevelsArray: list[str] | Any | None = jsonContents.get('jlpt')
-        frozenJlptLevels: FrozenList[JishoJlptLevel] = FrozenList()
+        jlptLevels: FrozenList[JishoJlptLevel] = FrozenList()
 
         if isinstance(jlptLevelsArray, list) and len(jlptLevelsArray) >= 1:
             jlptLevelsSet: set[JishoJlptLevel] = set()
@@ -111,9 +106,9 @@ class JishoJsonMapper(JishoJsonMapperInterface):
 
             jlptLevelsList: list[JishoJlptLevel] = list(jlptLevelsSet)
             jlptLevelsList.sort(key = lambda level: level.value)
-            frozenJlptLevels.extend(jlptLevelsList)
+            jlptLevels.extend(jlptLevelsList)
 
-        frozenJlptLevels.freeze()
+        jlptLevels.freeze()
         sensesArray: list[dict[str, Any]] | Any | None = jsonContents.get('senses')
         senses: FrozenList[JishoSense] = FrozenList()
 
@@ -128,7 +123,7 @@ class JishoJsonMapper(JishoJsonMapperInterface):
 
             senses.freeze()
 
-        if len(senses) == 0:
+        if len(japaneseWords) == 0 or len(senses) == 0:
             self.__timber.log('JishoJsonMapper', f'Encountered missing/invalid \"senses\" field in JSON data: ({jsonContents=})')
             return None
 
@@ -137,7 +132,7 @@ class JishoJsonMapper(JishoJsonMapperInterface):
         return JishoData(
             isCommon = isCommon,
             japanese = japaneseWords,
-            jlptLevels = frozenJlptLevels,
+            jlptLevels = jlptLevels,
             senses = senses,
             attribution = attribution,
             slug = slug,
@@ -206,6 +201,7 @@ class JishoJsonMapper(JishoJsonMapperInterface):
             return None
 
         meta = await self.parseMeta(jsonContents.get('meta'))
+
         if meta is None:
             self.__timber.log('JishoJsonMapper', f'Encountered missing/invalid \"meta\" field in JSON data: ({jsonContents=})')
             return None
