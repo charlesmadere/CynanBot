@@ -75,10 +75,10 @@ class ChatterInventoryChatCommand(AbsChatCommand2):
         inventoryString = ', '.join(inventoryStrings)
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ Your inventory: {inventoryString}',
+            text = f'ⓘ Your inventory — {inventoryString}',
             twitchChannelId = chatMessage.twitchChannelId,
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
         self.__timber.log('ChatterInventoryChatCommand', f'Handled ({inventory=})')
-        return ChatCommandResult.HANDLED
+        return ChatCommandResult.CONSUMED

@@ -118,4 +118,4 @@ class CutenessChatCommand(AbsChatCommand2):
             )
 
         self.__timber.log('CutenessChatCommand', f'Handled ({result=})')
-        return ChatCommandResult.HANDLED
+        return ChatCommandResult.CONSUMED
