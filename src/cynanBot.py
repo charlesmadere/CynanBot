@@ -680,11 +680,6 @@ class CynanBot(
         ## Initialization of command objects ##
         #######################################
 
-        if asplodieStatsPresenter is None or asplodieStatsRepository is None:
-            self.__asplodieStatsCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__asplodieStatsCommand: AbsChatCommand = AsplodieStatsChatCommand(asplodieStatsPresenter, asplodieStatsRepository, timber, twitchChatMessenger, userIdsRepository, usersRepository)
-
         if crowdControlAutomator is None or crowdControlIdGenerator is None or crowdControlMachine is None or crowdControlUserInputUtils is None:
             self.__addGameShuffleAutomatorCommand: AbsChatCommand = StubChatCommand()
             self.__removeGameShuffleAutomatorCommand: AbsChatCommand = StubChatCommand()
@@ -882,11 +877,6 @@ class CynanBot(
     async def command_addgameshuffleautomator(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addGameShuffleAutomatorCommand.handleChatCommand(context)
-
-    @commands.command(name = 'asplodiestats', aliases = [ 'asplodies', 'asplodiesstats', 'getasplodiestats' ])
-    async def command_asplodiestats(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__asplodieStatsCommand.handleChatCommand(context)
 
     @commands.command(name = 'pkmon')
     async def command_pkmon(self, ctx: Context):

@@ -7,12 +7,9 @@ class AsplodieStatsPresenter:
     async def printOut(
         self,
         asplodieStats: AsplodieStats,
-        chatterUserName: str
     ) -> str:
         if not isinstance(asplodieStats, AsplodieStats):
             raise TypeError(f'asplodieStats argument is malformed: \"{asplodieStats}\"')
-        elif not utils.isValidStr(chatterUserName):
-            raise TypeError(f'chatterUserName argument is malformed: \"{chatterUserName}\"')
 
         asplodiesPluralization: str
         if asplodieStats.totalAsplodies == 1:
