@@ -37,6 +37,7 @@ from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatActions.watchStreakAnnounceChatAction import WatchStreakAnnounceChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
+from src.chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
 from src.chatCommands.chatterInventoryChatCommand import ChatterInventoryChatCommand
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
 from src.chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCommand
@@ -51,6 +52,7 @@ from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
 from src.chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
 from src.chatCommands.removeChatterPreferredTtsChatCommand import RemoveChatterPreferredTtsChatCommand
+from src.chatCommands.removeGameShuffleAutomatorChatCommand import RemoveGameShuffleAutomatorChatCommand
 from src.chatCommands.setChatterPreferredNameChatCommand import SetChatterPreferredNameChatCommand
 from src.chatCommands.setChatterPreferredTtsChatCommand import SetChatterPreferredTtsChatCommand
 from src.chatCommands.skipTtsChatCommand import SkipTtsChatCommand
@@ -2198,6 +2200,12 @@ chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
 })
 
 chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
+    AddGameShuffleAutomatorChatCommand(
+        administratorProvider = administratorProvider,
+        crowdControlAutomator = crowdControlAutomator,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     ChatterInventoryChatCommand(
         chatterInventoryHelper = chatterInventoryHelper,
         chatterInventorySettings = chatterInventorySettings,
@@ -2291,6 +2299,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
         chatterPreferredTtsRepository = chatterPreferredTtsRepository,
         chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    RemoveGameShuffleAutomatorChatCommand(
+        administratorProvider = administratorProvider,
+        crowdControlAutomator = crowdControlAutomator,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
@@ -2599,5 +2613,5 @@ cynanBot: Final[CynanBot] = CynanBot(
 ## Section for starting the actual bot ##
 #########################################
 
-timber.log('initCynanBot', 'Starting CynanBot...')
+timber.log('initCynanBotLocal', 'Starting CynanBot...')
 cynanBot.run()
