@@ -1,17 +1,17 @@
-from typing import Final
+import re
+from typing import Collection, Final, Pattern
 
-from .absChatCommand import AbsChatCommand
+from .absChatCommand2 import AbsChatCommand2
+from .chatCommandResult import ChatCommandResult
 from ..asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from ..asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
-from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ..twitch.configuration.twitchContext import TwitchContext
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class AsplodieStatsChatCommand(AbsChatCommand):
+class AsplodieStatsChatCommand(AbsChatCommand2):
 
     def __init__(
         self,
@@ -20,7 +20,6 @@ class AsplodieStatsChatCommand(AbsChatCommand):
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(asplodieStatsPresenter, AsplodieStatsPresenter):
             raise TypeError(f'asplodieStatsPresenter argument is malformed: \"{asplodieStatsPresenter}\"')
@@ -32,56 +31,43 @@ class AsplodieStatsChatCommand(AbsChatCommand):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__asplodieStatsPresenter: Final[AsplodieStatsPresenter] = asplodieStatsPresenter
         self.__asplodieStatsRepository: Final[AsplodieStatsRepositoryInterface] = asplodieStatsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def handleChatCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!(?:my)?asplodiestats\b', re.IGNORECASE),
+        })
 
-        if not user.areAsplodieStatsEnabled:
-            return
+    @property
+    def commandName(self) -> str:
+        return 'AsplodieStatsChatCommand'
 
-        userId = ctx.getAuthorId()
-        userName = ctx.getAuthorName()
-        splits = utils.getCleanedSplits(ctx.getMessageContent())
+    @property
+    def commandPatterns(self) -> Collection[Pattern]:
+        return self.__commandPatterns
 
-        if len(splits) >= 2 and utils.strContainsAlphanumericCharacters(splits[1]):
-            userName = utils.removePreceedingAt(splits[1])
-
-        # this means that a user is querying for another user's asplodie stats
-        if userName.casefold() != ctx.getAuthorName().casefold():
-            userId = await self.__userIdsRepository.fetchUserId(userName = userName)
-
-            if not utils.isValidStr(userId):
-                self.__timber.log('AsplodieStatsChatCommand', f'Unable to find user ID for \"{userName}\" in the database')
-                self.__twitchChatMessenger.send(
-                    text = f'⚠ Unable to find asplodie stats score for \"{userName}\"',
-                    twitchChannelId = await ctx.getTwitchChannelId(),
-                    replyMessageId = await ctx.getMessageId(),
-                )
-                return
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
+        if not chatMessage.twitchUser.areAsplodieStatsEnabled:
+            return ChatCommandResult.IGNORED
 
         asplodieStats = await self.__asplodieStatsRepository.get(
-            chatterUserId = userId,
-            twitchChannelId = await ctx.getTwitchChannelId(),
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
         )
 
         printOut = await self.__asplodieStatsPresenter.printOut(
             asplodieStats = asplodieStats,
-            chatterUserName = userName,
         )
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ Asplodie stats for @{userName} — {printOut}',
-            twitchChannelId = await ctx.getTwitchChannelId(),
-            replyMessageId = await ctx.getMessageId(),
+            text = f'ⓘ Your asplodie stats — {printOut}',
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log('AsplodieStatsChatCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.handle}')
+        self.__timber.log(self.commandName, f'Handled ({asplodieStats=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED

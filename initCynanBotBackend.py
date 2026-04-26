@@ -49,6 +49,7 @@ from src.chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatComma
 from src.chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
 from src.chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
 from src.chatCommands.answerChatCommand import AnswerChatCommand
+from src.chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
 from src.chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
 from src.chatCommands.clearSuperTriviaQueueChatCommand import ClearSuperTriviaQueueChatCommand
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
@@ -2021,6 +2022,13 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         triviaGameMachine = triviaGameMachine,
         triviaIdGenerator = triviaIdGenerator,
     ),
+    AsplodieStatsChatCommand(
+        asplodieStatsPresenter = asplodieStatsPresenter,
+        asplodieStatsRepository = asplodieStatsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        userIdsRepository = userIdsRepository,
+    ),
     BanTriviaQuestionChatCommand(
         generalSettingsRepository = generalSettingsRepository,
         timber = timber,
@@ -2503,5 +2511,5 @@ cynanBot: Final[CynanBot] = CynanBot(
 ## Section for starting the actual bot ##
 #########################################
 
-timber.log('initCynanBot', 'Starting CynanBot...')
+timber.log('initCynanBotBackup', 'Starting CynanBot...')
 cynanBot.run()

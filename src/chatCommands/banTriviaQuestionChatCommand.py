@@ -7,7 +7,6 @@ from .chatCommandResult import ChatCommandResult
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
-from ..misc.simpleDateTime import SimpleDateTime
 from ..timber.timberInterface import TimberInterface
 from ..trivia.banned.triviaBanHelperInterface import TriviaBanHelperInterface
 from ..trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
@@ -57,8 +56,7 @@ class BanTriviaQuestionChatCommand(AbsChatCommand2):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!bantrivia\b', re.IGNORECASE),
-            re.compile(r'^\s*!bantriviaquestion\b', re.IGNORECASE),
+            re.compile(r'^\s*!bantrivia(?:question)?\b', re.IGNORECASE),
         })
 
     @property
@@ -68,6 +66,11 @@ class BanTriviaQuestionChatCommand(AbsChatCommand2):
     @property
     def commandPatterns(self) -> Collection[Pattern]:
         return self.__commandPatterns
+
+    async def __getDateAndTimeString(self, dateTime: datetime) -> str:
+        yearMonthDayString = dateTime.strftime('%Y %m %d')
+        timeString = dateTime.strftime('%H:%M:%s')
+        return f'{yearMonthDayString} {timeString}'
 
     async def __getRelativeTimeString(self, dateTime: datetime) -> str:
         now = self.__timeZoneRepository.getNow()
@@ -95,25 +98,27 @@ class BanTriviaQuestionChatCommand(AbsChatCommand2):
 
         splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 2:
-            self.__timber.log(self.commandName, f'Attempted to handle command, but no arguments were supplied ({splits=}) ({chatMessage=})')
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to ban trivia question as no emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return ChatCommandResult.HANDLED
+
+            self.__timber.log(self.commandName, f'Attempted to handle command, but no arguments were supplied ({splits=}) ({chatMessage=})')
+            return ChatCommandResult.CONSUMED
 
         emote: str | None = splits[1]
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
-            self.__timber.log(self.commandName, f'Attempted to handle command, but an invalid emote argument was given ({emote=}) ({normalizedEmote=}) ({splits=}) ({chatMessage=})')
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to ban trivia question as an invalid emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return ChatCommandResult.HANDLED
+
+            self.__timber.log(self.commandName, f'Attempted to handle command, but an invalid emote argument was given ({emote=}) ({normalizedEmote=}) ({splits=}) ({chatMessage=})')
+            return ChatCommandResult.CONSUMED
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
             emote = normalizedEmote,
@@ -121,21 +126,22 @@ class BanTriviaQuestionChatCommand(AbsChatCommand2):
         )
 
         if reference is None:
-            self.__timber.log(self.commandName, f'Attempted to handle command, but no trivia question reference was found ({emote=}) ({normalizedEmote=}) ({reference=}) ({splits=}) ({chatMessage=})')
             self.__twitchChatMessenger.send(
                 text = f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return ChatCommandResult.HANDLED
 
-        await self.__triviaBanHelper.ban(
+            self.__timber.log(self.commandName, f'Attempted to handle command, but no trivia question reference was found ({reference=}) ({emote=}) ({normalizedEmote=}) ({splits=}) ({chatMessage=})')
+            return ChatCommandResult.CONSUMED
+
+        result = await self.__triviaBanHelper.ban(
             triviaId = reference.triviaId,
             userId = chatMessage.chatterUserId,
             triviaSource = reference.triviaSource,
         )
 
-        dateAndTimeString = SimpleDateTime(reference.dateTime).getDateAndTimeStr()
+        dateAndTimeString = await self.__getDateAndTimeString(reference.dateTime)
         relativeTimeString = await self.__getRelativeTimeString(reference.dateTime)
 
         self.__twitchChatMessenger.send(
@@ -144,5 +150,5 @@ class BanTriviaQuestionChatCommand(AbsChatCommand2):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({emote=}) ({normalizedEmote=}) ({reference=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Handled ({result=}) ({reference=}) ({emote=}) ({normalizedEmote=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED

@@ -17,11 +17,8 @@ from .aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from .asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from .asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from .chatCommands.absChatCommand import AbsChatCommand
-from .chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
-from .chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
 from .chatCommands.pkMonChatCommand import PkMonChatCommand
 from .chatCommands.pkMoveChatCommand import PkMoveChatCommand
-from .chatCommands.removeGameShuffleAutomatorChatCommand import RemoveGameShuffleAutomatorChatCommand
 from .chatCommands.stubChatCommand import StubChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
 from .chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
@@ -680,18 +677,6 @@ class CynanBot(
         ## Initialization of command objects ##
         #######################################
 
-        if asplodieStatsPresenter is None or asplodieStatsRepository is None:
-            self.__asplodieStatsCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__asplodieStatsCommand: AbsChatCommand = AsplodieStatsChatCommand(asplodieStatsPresenter, asplodieStatsRepository, timber, twitchChatMessenger, userIdsRepository, usersRepository)
-
-        if crowdControlAutomator is None or crowdControlIdGenerator is None or crowdControlMachine is None or crowdControlUserInputUtils is None:
-            self.__addGameShuffleAutomatorCommand: AbsChatCommand = StubChatCommand()
-            self.__removeGameShuffleAutomatorCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__addGameShuffleAutomatorCommand: AbsChatCommand = AddGameShuffleAutomatorChatCommand(administratorProvider, crowdControlAutomator, timber, twitchChatMessenger, usersRepository)
-            self.__removeGameShuffleAutomatorCommand: AbsChatCommand = RemoveGameShuffleAutomatorChatCommand(administratorProvider, crowdControlAutomator, timber, twitchChatMessenger, usersRepository)
-
         if pokepediaRepository is None:
             self.__pkMonCommand: AbsChatCommand = StubChatCommand()
             self.__pkMoveCommand: AbsChatCommand = StubChatCommand()
@@ -878,16 +863,6 @@ class CynanBot(
     async def waitForReady(self):
         await self.wait_for_ready()
 
-    @commands.command(name = 'addgameshuffleautomator')
-    async def command_addgameshuffleautomator(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addGameShuffleAutomatorCommand.handleChatCommand(context)
-
-    @commands.command(name = 'asplodiestats', aliases = [ 'asplodies', 'asplodiesstats', 'getasplodiestats' ])
-    async def command_asplodiestats(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__asplodieStatsCommand.handleChatCommand(context)
-
     @commands.command(name = 'pkmon')
     async def command_pkmon(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -897,8 +872,3 @@ class CynanBot(
     async def command_pkmove(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__pkMoveCommand.handleChatCommand(context)
-
-    @commands.command(name = 'removegameshuffleautomator', aliases = [ 'delgameshuffleautomator', 'deletegameshuffleautomator' ])
-    async def command_removegameshuffleautomator(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeGameShuffleAutomatorCommand.handleChatCommand(context)

@@ -50,6 +50,7 @@ from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatActions.watchStreakAnnounceChatAction import WatchStreakAnnounceChatAction
 from src.chatCommands.absChatCommand2 import AbsChatCommand2
 from src.chatCommands.addBannedTriviaControllerChatCommand import AddBannedTriviaControllerChatCommand
+from src.chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
 from src.chatCommands.addGlobalTriviaControllerChatCommand import AddGlobalTriviaControllerChatCommand
 from src.chatCommands.addRecurringCutenessActionChatCommand import AddRecurringCutenessActionChatCommand
 from src.chatCommands.addRecurringSuperTriviaActionChatCommand import AddRecurringSuperTriviaActionChatCommand
@@ -57,6 +58,7 @@ from src.chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatComma
 from src.chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
 from src.chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
 from src.chatCommands.answerChatCommand import AnswerChatCommand
+from src.chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
 from src.chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
 from src.chatCommands.chatterInventoryChatCommand import ChatterInventoryChatCommand
 from src.chatCommands.clearSuperTriviaQueueChatCommand import ClearSuperTriviaQueueChatCommand
@@ -88,6 +90,7 @@ from src.chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
 from src.chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
 from src.chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
 from src.chatCommands.removeChatterPreferredTtsChatCommand import RemoveChatterPreferredTtsChatCommand
+from src.chatCommands.removeGameShuffleAutomatorChatCommand import RemoveGameShuffleAutomatorChatCommand
 from src.chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
 from src.chatCommands.removeRecurringCutenessActionChatCommand import RemoveRecurringCutenessActionChatCommand
 from src.chatCommands.removeRecurringSuperTriviaActionCommand import RemoveRecurringSuperTriviaActionCommand
@@ -3108,6 +3111,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         twitchTokensUtils = twitchTokensUtils,
         userIdsRepository = userIdsRepository,
     ),
+    AddGameShuffleAutomatorChatCommand(
+        administratorProvider = administratorProvider,
+        crowdControlAutomator = crowdControlAutomator,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     AddGlobalTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
         timber = timber,
@@ -3161,6 +3170,13 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         timber = timber,
         triviaGameMachine = triviaGameMachine,
         triviaIdGenerator = triviaIdGenerator,
+    ),
+    AsplodieStatsChatCommand(
+        asplodieStatsPresenter = asplodieStatsPresenter,
+        asplodieStatsRepository = asplodieStatsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        userIdsRepository = userIdsRepository,
     ),
     BanTriviaQuestionChatCommand(
         generalSettingsRepository = generalSettingsRepository,
@@ -3377,6 +3393,12 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
         chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
         chatterPreferredTtsRepository = chatterPreferredTtsRepository,
         chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    RemoveGameShuffleAutomatorChatCommand(
+        administratorProvider = administratorProvider,
+        crowdControlAutomator = crowdControlAutomator,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
@@ -3788,5 +3810,5 @@ cynanBot: Final[CynanBot] = CynanBot(
 ## Section for starting the actual bot ##
 #########################################
 
-timber.log('initCynanBot', 'Starting CynanBot...')
+timber.log('initCynanBotAll', 'Starting CynanBot...')
 cynanBot.run()
