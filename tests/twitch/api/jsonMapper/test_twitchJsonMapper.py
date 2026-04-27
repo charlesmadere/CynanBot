@@ -67,8 +67,18 @@ class TestTwitchJsonMapper:
 
     jsonMapper: Final[TwitchJsonMapperInterface] = TwitchJsonMapper(
         timber = timber,
-        timeZoneRepository = timeZoneRepository
+        timeZoneRepository = timeZoneRepository,
     )
+
+    @pytest.mark.asyncio
+    async def test_parseAnnouncement_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseAnnouncement(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseAnnouncement_withNone(self):
+        result = await self.jsonMapper.parseAnnouncement(None)
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_parseApiScope_withBitsReadString(self):

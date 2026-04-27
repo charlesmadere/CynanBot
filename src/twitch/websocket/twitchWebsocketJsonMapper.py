@@ -6,6 +6,7 @@ from frozenlist import FrozenList
 from .twitchWebsocketJsonLoggingLevel import TwitchWebsocketJsonLoggingLevel
 from .twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
 from ..api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from ..api.models.twitchAnnouncement import TwitchAnnouncement
 from ..api.models.twitchBitsBadgeTier import TwitchBitsBadgeTier
 from ..api.models.twitchChannelPointsVoting import TwitchChannelPointsVoting
 from ..api.models.twitchChatBadge import TwitchChatBadge
@@ -398,6 +399,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'winning_outcome_id' in eventJson and utils.isValidStr(eventJson.get('winning_outcome_id')):
             winningOutcomeId = utils.getStrFromDict(eventJson, 'winning_outcome_id')
 
+        announcement: TwitchAnnouncement | None = None
+        if 'announcement' in eventJson:
+            announcement = await self.__twitchJsonMapper.parseAnnouncement(eventJson.get('announcement'))
+
         bitsBadgeTier: TwitchBitsBadgeTier | None = None
         if 'bits_badge_tier' in eventJson:
             bitsBadgeTier = await self.__twitchJsonMapper.parseBitsBadgeTier(eventJson.get('bits_badge_tier'))
@@ -438,8 +443,8 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         pollStatus: TwitchPollStatus | None = None
         if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
-            statusString = utils.getStrFromDict(eventJson, 'status')
-            pollStatus = await self.__twitchJsonMapper.parsePollStatus(statusString)
+            pollStatusString = utils.getStrFromDict(eventJson, 'status')
+            pollStatus = await self.__twitchJsonMapper.parsePollStatus(pollStatusString)
 
         powerUp: TwitchPowerUp | None = None
         if 'power_up' in eventJson:
@@ -447,8 +452,8 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         predictionStatus: TwitchPredictionStatus | None = None
         if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
-            statusString = utils.getStrFromDict(eventJson, 'status')
-            predictionStatus = await self.__twitchJsonMapper.parsePredictionStatus(statusString)
+            predictionStatusString = utils.getStrFromDict(eventJson, 'status')
+            predictionStatus = await self.__twitchJsonMapper.parsePredictionStatus(predictionStatusString)
 
         raid: TwitchRaid | None = None
         if 'raid' in eventJson:
@@ -468,8 +473,8 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
         if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
-            statusString = utils.getStrFromDict(eventJson, 'status')
-            rewardRedemptionStatus = await self.__twitchJsonMapper.parseRewardRedemptionStatus(statusString)
+            rewardRedemptionStatusString = utils.getStrFromDict(eventJson, 'status')
+            rewardRedemptionStatus = await self.__twitchJsonMapper.parseRewardRedemptionStatus(rewardRedemptionStatusString)
 
         sub: TwitchSub | None = None
         if 'sub' in eventJson:
@@ -548,6 +553,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userLogin = userLogin,
             userName = userName,
             winningOutcomeId = winningOutcomeId,
+            announcement = announcement,
             bitsBadgeTier = bitsBadgeTier,
             channelPointsVoting = channelPointsVoting,
             chatMessage = chatMessage,

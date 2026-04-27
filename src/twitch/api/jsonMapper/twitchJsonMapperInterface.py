@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+from ..models.twitchAnnouncement import TwitchAnnouncement
 from ..models.twitchApiScope import TwitchApiScope
 from ..models.twitchBanRequest import TwitchBanRequest
 from ..models.twitchBanResponse import TwitchBanResponse
@@ -103,6 +104,13 @@ class TwitchJsonMapperInterface(ABC):
         first: TwitchEventSubResponse | None,
         second: TwitchEventSubResponse | None,
     ) -> TwitchEventSubResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseAnnouncement(
+        self,
+        jsonContents: dict[str, Any] | Any | None,
+    ) -> TwitchAnnouncement | None:
         pass
 
     @abstractmethod

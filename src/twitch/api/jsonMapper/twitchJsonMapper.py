@@ -5,6 +5,7 @@ from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .twitchJsonMapperInterface import TwitchJsonMapperInterface
+from ..models.twitchAnnouncement import TwitchAnnouncement
 from ..models.twitchApiScope import TwitchApiScope
 from ..models.twitchBanRequest import TwitchBanRequest
 from ..models.twitchBanResponse import TwitchBanResponse
@@ -161,6 +162,19 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             total = sourceResponse.total,
             totalCost = sourceResponse.totalCost,
             pagination = sourceResponse.pagination,
+        )
+
+    async def parseAnnouncement(
+        self,
+        jsonContents: dict[str, Any] | Any | None,
+    ) -> TwitchAnnouncement | None:
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
+            return None
+
+        color = utils.getStrFromDict(jsonContents, 'color')
+
+        return TwitchAnnouncement(
+            color = color,
         )
 
     async def parseApiScope(
