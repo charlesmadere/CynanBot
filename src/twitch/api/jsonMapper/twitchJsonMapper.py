@@ -1646,7 +1646,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseReward(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchReward | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1664,7 +1664,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             cost = cost,
             prompt = prompt,
             rewardId = rewardId,
-            title = title
+            title = title,
         )
 
     async def parseRewardRedemptionStatus(

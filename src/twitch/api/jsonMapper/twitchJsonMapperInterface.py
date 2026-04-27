@@ -522,7 +522,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseReward(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchReward | None:
         pass
 
