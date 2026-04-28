@@ -14,7 +14,7 @@ class RecurringActionsJsonParserInterface(ABC):
     @abstractmethod
     async def parseActionType(
         self,
-        actionType: str | Any | None
+        actionType: str | Any | None,
     ) -> RecurringActionType | None:
         pass
 
@@ -25,7 +25,7 @@ class RecurringActionsJsonParserInterface(ABC):
         minutesBetween: int | None,
         jsonString: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CutenessRecurringAction | None:
         pass
 
@@ -36,7 +36,7 @@ class RecurringActionsJsonParserInterface(ABC):
         minutesBetween: int | None,
         jsonString: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> SuperTriviaRecurringAction | None:
         pass
 
@@ -47,7 +47,7 @@ class RecurringActionsJsonParserInterface(ABC):
         minutesBetween: int | None,
         jsonString: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> WeatherRecurringAction | None:
         pass
 
@@ -58,21 +58,21 @@ class RecurringActionsJsonParserInterface(ABC):
         minutesBetween: int | None,
         jsonString: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> WordOfTheDayRecurringAction | None:
         pass
 
     @abstractmethod
     async def requireActionType(
         self,
-        actionType: str | Any | None
+        actionType: str | Any | None,
     ) -> RecurringActionType:
         pass
 
     @abstractmethod
     async def serializeActionType(
         self,
-        actionType: RecurringActionType
+        actionType: RecurringActionType,
     ) -> str:
         pass
 

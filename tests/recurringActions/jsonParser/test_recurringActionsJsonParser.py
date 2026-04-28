@@ -1,5 +1,5 @@
 import json
-from typing import Any
+from typing import Any, Final
 
 import pytest
 
@@ -18,13 +18,13 @@ from src.timber.timberStub import TimberStub
 
 class TestRecurringActionsJsonParser:
 
-    languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
+    languagesRepository: Final[LanguagesRepositoryInterface] = LanguagesRepository()
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    parser: RecurringActionsJsonParserInterface = RecurringActionsJsonParser(
+    parser: Final[RecurringActionsJsonParserInterface] = RecurringActionsJsonParser(
         languagesRepository = languagesRepository,
-        timber = timber
+        timber = timber,
     )
 
     @pytest.mark.asyncio
@@ -353,6 +353,20 @@ class TestRecurringActionsJsonParser:
     async def test_requireActionType_withWordOfTheDay(self):
         result = await self.parser.requireActionType('word_of_the_day')
         assert result is RecurringActionType.WORD_OF_THE_DAY
+
+    def test_sanity(self):
+        assert self.parser is not None
+        assert isinstance(self.parser, RecurringActionsJsonParser)
+        assert isinstance(self.parser, RecurringActionsJsonParserInterface)
+
+    @pytest.mark.asyncio
+    async def test_serializeActionType_withAll(self):
+        results: set[str] = set()
+
+        for actionType in RecurringActionType:
+            results.add(await self.parser.serializeActionType(actionType))
+
+        assert len(results) == len(RecurringActionType)
 
     @pytest.mark.asyncio
     async def test_serializeActionType_withCuteness(self):
