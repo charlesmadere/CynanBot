@@ -3,22 +3,24 @@ from datetime import datetime
 
 from frozenlist import FrozenList
 
+from .twitchAnnouncement import TwitchAnnouncement
 from .twitchBitsBadgeTier import TwitchBitsBadgeTier
 from .twitchChannelPointsVoting import TwitchChannelPointsVoting
 from .twitchChatBadge import TwitchChatBadge
 from .twitchChatMessage import TwitchChatMessage
 from .twitchChatMessageType import TwitchChatMessageType
-from .twitchPayItForward import TwitchPayItForward
 from .twitchCheerMetadata import TwitchCheerMetadata
 from .twitchCommunitySubGift import TwitchCommunitySubGift
 from .twitchContribution import TwitchContribution
 from .twitchHypeTrainType import TwitchHypeTrainType
 from .twitchNoticeType import TwitchNoticeType
 from .twitchOutcome import TwitchOutcome
+from .twitchPayItForward import TwitchPayItForward
 from .twitchPollChoice import TwitchPollChoice
 from .twitchPollStatus import TwitchPollStatus
 from .twitchPowerUp import TwitchPowerUp
 from .twitchPredictionStatus import TwitchPredictionStatus
+from .twitchPrimePaidUpgrade import TwitchPrimePaidUpgrade
 from .twitchRaid import TwitchRaid
 from .twitchResub import TwitchResub
 from .twitchResubscriptionMessage import TwitchResubscriptionMessage
@@ -92,6 +94,7 @@ class TwitchWebsocketEvent:
     userLogin: str | None = None
     userName: str | None = None
     winningOutcomeId: str | None = None
+    announcement: TwitchAnnouncement | None = None
     bitsBadgeTier: TwitchBitsBadgeTier | None = None
     channelPointsVoting: TwitchChannelPointsVoting | None = None
     chatMessage: TwitchChatMessage | None = None
@@ -104,6 +107,7 @@ class TwitchWebsocketEvent:
     pollStatus: TwitchPollStatus | None = None
     powerUp: TwitchPowerUp | None = None
     predictionStatus: TwitchPredictionStatus | None = None
+    primePaidUpgrade: TwitchPrimePaidUpgrade | None = None
     raid: TwitchRaid | None = None
     resub: TwitchResub | None = None
     resubscriptionMessage: TwitchResubscriptionMessage | None = None

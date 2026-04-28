@@ -66,7 +66,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
             self.__timber.log('GlacialTtsStorageRepository', f'Went to add a new TTS, but it\'s already been added ({glacialTtsData=})')
             return glacialTtsData
 
-        storeDateTime = datetime.now(self.__timeZoneRepository.getDefault())
+        storeDateTime = self.__timeZoneRepository.getNow()
 
         glacialId = await self.__glacialTtsIdGenerator.generateId(
             message = message,
@@ -74,7 +74,10 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
             provider = provider,
         )
 
-        providerString = await self.__glacialTtsDataMapper.toDatabaseName(provider)
+        providerString = await self.__glacialTtsDataMapper.toDatabaseName(
+            ttsProvider = provider,
+        )
+
         connection = await self.__getDatabaseConnection()
 
         await connection.execute_insert(
@@ -113,7 +116,10 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
         connection = await self.__getDatabaseConnection()
-        providerString = await self.__glacialTtsDataMapper.toDatabaseName(provider)
+
+        providerString = await self.__glacialTtsDataMapper.toDatabaseName(
+            ttsProvider = provider,
+        )
 
         if utils.isValidStr(voice):
             cursor = await connection.execute(
@@ -171,7 +177,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
                     voice TEXT DEFAULT NULL COLLATE NOCASE,
                     PRIMARY KEY (glacialId, provider)
                 ) STRICT
-            '''
+            ''',
         )
 
         await cursor.close()
@@ -188,7 +194,10 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         elif not isinstance(provider, TtsProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 
-        providerString = await self.__glacialTtsDataMapper.toDatabaseName(provider)
+        providerString = await self.__glacialTtsDataMapper.toDatabaseName(
+            ttsProvider = provider,
+        )
+
         connection = await self.__getDatabaseConnection()
 
         cursor = await connection.execute(

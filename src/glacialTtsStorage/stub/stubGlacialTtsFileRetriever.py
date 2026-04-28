@@ -1,6 +1,5 @@
 import re
 import uuid
-from datetime import datetime
 from typing import Final, Pattern
 
 from ..fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
@@ -53,10 +52,13 @@ class StubGlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         voice: str | None,
         provider: TtsProvider,
     ) -> GlacialTtsFileReference:
-        providerFolder = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(provider)
+        providerFolder = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(
+            provider = provider,
+        )
+
+        storeDateTime = self.__timeZoneRepository.getNow()
         glacialId = await self.__generateRandomId()
         filePath = f'{providerFolder}/{glacialId}.{fileExtension}'
-        storeDateTime = datetime.now(self.__timeZoneRepository.getDefault())
 
         return GlacialTtsFileReference(
             glacialTtsData = GlacialTtsData(

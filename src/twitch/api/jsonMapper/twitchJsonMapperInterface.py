@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+from ..models.twitchAnnouncement import TwitchAnnouncement
 from ..models.twitchApiScope import TwitchApiScope
 from ..models.twitchBanRequest import TwitchBanRequest
 from ..models.twitchBanResponse import TwitchBanResponse
@@ -58,6 +59,7 @@ from ..models.twitchPowerUp import TwitchPowerUp
 from ..models.twitchPowerUpEmote import TwitchPowerUpEmote
 from ..models.twitchPowerUpType import TwitchPowerUpType
 from ..models.twitchPredictionStatus import TwitchPredictionStatus
+from ..models.twitchPrimePaidUpgrade import TwitchPrimePaidUpgrade
 from ..models.twitchRaid import TwitchRaid
 from ..models.twitchResub import TwitchResub
 from ..models.twitchResubscriptionMessage import TwitchResubscriptionMessage
@@ -103,6 +105,13 @@ class TwitchJsonMapperInterface(ABC):
         first: TwitchEventSubResponse | None,
         second: TwitchEventSubResponse | None,
     ) -> TwitchEventSubResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseAnnouncement(
+        self,
+        jsonContents: dict[str, Any] | Any | None,
+    ) -> TwitchAnnouncement | None:
         pass
 
     @abstractmethod
@@ -465,14 +474,14 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parsePowerUpEmote(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchPowerUpEmote | None:
         pass
 
     @abstractmethod
     async def parsePowerUpType(
         self,
-        powerUpType: str | Any | None
+        powerUpType: str | Any | None,
     ) -> TwitchPowerUpType | None:
         pass
 
@@ -481,6 +490,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         predictionStatus: str | Any | None
     ) -> TwitchPredictionStatus | None:
+        pass
+
+    @abstractmethod
+    async def parsePrimePaidUpgrade(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchPrimePaidUpgrade | None:
         pass
 
     @abstractmethod
@@ -514,7 +530,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseReward(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchReward | None:
         pass
 
