@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
@@ -22,7 +22,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class TriviaInfoChatCommand(AbsChatCommand2):
+class TriviaInfoChatCommand(AbsChatCommand):
 
     def __init__(
         self,

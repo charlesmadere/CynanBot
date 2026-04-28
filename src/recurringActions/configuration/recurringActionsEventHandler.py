@@ -87,7 +87,9 @@ class RecurringActionsEventHandler(AbsRecurringActionsEventHandler):
         if self.__cutenessPresenter is None:
             return
 
-        leaderboardString = await self.__cutenessPresenter.printLeaderboard(event.leaderboard)
+        leaderboardString = await self.__cutenessPresenter.printLeaderboard(
+            result = event.leaderboard,
+        )
 
         self.__twitchChatMessenger.send(
             text = leaderboardString,
@@ -110,7 +112,9 @@ class RecurringActionsEventHandler(AbsRecurringActionsEventHandler):
         if self.__weatherReportPresenter is None:
             return
 
-        weatherReportString = await self.__weatherReportPresenter.toString(event.weatherReport)
+        weatherReportString = await self.__weatherReportPresenter.toString(
+            weather = event.weatherReport,
+        )
 
         self.__twitchChatMessenger.send(
             text = weatherReportString,

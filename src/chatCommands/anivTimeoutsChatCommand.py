@@ -1,7 +1,7 @@
 import re
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..aniv.helpers.anivCopyMessageTimeoutScoreHelperInterface import AnivCopyMessageTimeoutScoreHelperInterface
 from ..aniv.presenters.anivCopyMessageTimeoutScorePresenterInterface import \
@@ -13,7 +13,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class AnivTimeoutsChatCommand(AbsChatCommand2):
+class AnivTimeoutsChatCommand(AbsChatCommand):
 
     def __init__(
         self,

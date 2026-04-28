@@ -1,7 +1,7 @@
 import re
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
@@ -10,7 +10,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class GetCheerActionsChatCommand(AbsChatCommand2):
+class GetCheerActionsChatCommand(AbsChatCommand):
 
     def __init__(
         self,

@@ -2,7 +2,7 @@ import re
 import traceback
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from ..cheerActions.editCheerActionResult.alreadyEnabledEditCheerActionResult import AlreadyEnabledEditCheerActionResult
@@ -16,7 +16,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class EnableCheerActionChatCommand(AbsChatCommand2):
+class EnableCheerActionChatCommand(AbsChatCommand):
 
     def __init__(
         self,

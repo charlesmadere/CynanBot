@@ -48,7 +48,7 @@ from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAn
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatActions.watchStreakAnnounceChatAction import WatchStreakAnnounceChatAction
-from src.chatCommands.absChatCommand2 import AbsChatCommand2
+from src.chatCommands.absChatCommand import AbsChatCommand
 from src.chatCommands.addBannedTriviaControllerChatCommand import AddBannedTriviaControllerChatCommand
 from src.chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
 from src.chatCommands.addGlobalTriviaControllerChatCommand import AddGlobalTriviaControllerChatCommand
@@ -86,6 +86,8 @@ from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.jishoChatCommand import JishoChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
+from src.chatCommands.pkMonChatCommand import PkMonChatCommand
+from src.chatCommands.pkMoveChatCommand import PkMoveChatCommand
 from src.chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
 from src.chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
 from src.chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
@@ -3101,7 +3103,7 @@ chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
     ),
 })
 
-chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
+chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     AddBannedTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
         bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
@@ -3362,6 +3364,16 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     MyCutenessChatCommand(
         cutenessRepository = cutenessRepository,
         cutenessUtils = cutenessUtils,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    PkMonChatCommand(
+        pokepediaRepository = pokepediaRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    PkMoveChatCommand(
+        pokepediaRepository = pokepediaRepository,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),

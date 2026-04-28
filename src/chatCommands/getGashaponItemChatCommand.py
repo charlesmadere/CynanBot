@@ -3,7 +3,7 @@ import math
 import re
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..chatterInventory.helpers.gashaponRewardHelperInterface import GashaponRewardHelperInterface
 from ..chatterInventory.models.chatterItemType import ChatterItemType
@@ -24,7 +24,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class GetGashaponItemChatCommand(AbsChatCommand2):
+class GetGashaponItemChatCommand(AbsChatCommand):
 
     def __init__(
         self,

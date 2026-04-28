@@ -3,7 +3,7 @@ import traceback
 from dataclasses import dataclass
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..chatterPreferredName.exceptions import ChatterPreferredNameFeatureIsDisabledException, \
     ChatterPreferredNameIsInvalidException
@@ -19,7 +19,7 @@ from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterfac
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
-class SetChatterPreferredNameChatCommand(AbsChatCommand2):
+class SetChatterPreferredNameChatCommand(AbsChatCommand):
 
     @dataclass(frozen = True, slots = True)
     class LookupUserInfo:

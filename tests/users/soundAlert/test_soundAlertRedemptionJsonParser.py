@@ -22,14 +22,14 @@ class TestSoundAlertRedemptionJsonParser:
             isImmediate = True,
             soundAlert = SoundAlert.RANDOM_FROM_DIRECTORY,
             directoryPath = 'nay',
-            rewardId = 'xyz789'
+            rewardId = 'xyz789',
         )
 
         result = self.jsonParser.parseRedemption({
             'directoryPath': redemption.directoryPath,
             'isImmediate': redemption.isImmediate,
             'rewardId': redemption.rewardId,
-            'soundAlert': self.soundAlertJsonMapper.serializeSoundAlert(redemption.soundAlert)
+            'soundAlert': self.soundAlertJsonMapper.serializeSoundAlert(redemption.soundAlert),
         })
 
         assert isinstance(result, SoundAlertRedemption)
@@ -57,17 +57,17 @@ class TestSoundAlertRedemptionJsonParser:
 
     def test_parseRedemptions(self):
         redemption1 = SoundAlertRedemption(
-            isImmediate = True,
+            isImmediate = False,
             soundAlert = SoundAlert.POINT_REDEMPTION_01,
             directoryPath = None,
-            rewardId = 'abc123'
+            rewardId = 'abc123',
         )
 
         redemption2 = SoundAlertRedemption(
-            isImmediate = False,
+            isImmediate = True,
             soundAlert = SoundAlert.RANDOM_FROM_DIRECTORY,
             directoryPath = 'yay',
-            rewardId = 'def456'
+            rewardId = 'def456',
         )
 
         result = self.jsonParser.parseRedemptions([
@@ -75,13 +75,13 @@ class TestSoundAlertRedemptionJsonParser:
                 'directoryPath': redemption1.directoryPath,
                 'isImmediate': redemption1.isImmediate,
                 'rewardId': redemption1.rewardId,
-                'soundAlert': self.soundAlertJsonMapper.serializeSoundAlert(redemption1.soundAlert)
+                'soundAlert': self.soundAlertJsonMapper.serializeSoundAlert(redemption1.soundAlert),
             },
             {
                 'directoryPath': redemption2.directoryPath,
                 'rewardId': redemption2.rewardId,
-                'soundAlert': self.soundAlertJsonMapper.serializeSoundAlert(redemption2.soundAlert)
-            }
+                'soundAlert': self.soundAlertJsonMapper.serializeSoundAlert(redemption2.soundAlert),
+            },
         ])
 
         assert isinstance(result, frozendict)

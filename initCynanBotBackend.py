@@ -40,7 +40,7 @@ from src.chatActions.absChatAction import AbsChatAction
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
-from src.chatCommands.absChatCommand2 import AbsChatCommand2
+from src.chatCommands.absChatCommand import AbsChatCommand
 from src.chatCommands.addBannedTriviaControllerChatCommand import AddBannedTriviaControllerChatCommand
 from src.chatCommands.addGlobalTriviaControllerChatCommand import AddGlobalTriviaControllerChatCommand
 from src.chatCommands.addRecurringCutenessActionChatCommand import AddRecurringCutenessActionChatCommand
@@ -71,6 +71,8 @@ from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.jishoChatCommand import JishoChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
+from src.chatCommands.pkMonChatCommand import PkMonChatCommand
+from src.chatCommands.pkMoveChatCommand import PkMoveChatCommand
 from src.chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
 from src.chatCommands.removeGlobalTriviaControllerChatCommand import RemoveGlobalTriviaControllerChatCommand
 from src.chatCommands.removeRecurringCutenessActionChatCommand import RemoveRecurringCutenessActionChatCommand
@@ -1958,7 +1960,7 @@ chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
     ),
 })
 
-chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
+chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     AddBannedTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
         bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
@@ -2166,6 +2168,16 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     MyCutenessChatCommand(
         cutenessRepository = cutenessRepository,
         cutenessUtils = cutenessUtils,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    PkMonChatCommand(
+        pokepediaRepository = pokepediaRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    PkMoveChatCommand(
+        pokepediaRepository = pokepediaRepository,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),

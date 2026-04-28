@@ -1,7 +1,7 @@
 import re
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
@@ -18,7 +18,7 @@ from ..voicemail.models.preparedVoicemailData import PreparedVoicemailData
 from ..voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
 
 
-class PlayVoicemailChatCommand(AbsChatCommand2):
+class PlayVoicemailChatCommand(AbsChatCommand):
 
     def __init__(
         self,

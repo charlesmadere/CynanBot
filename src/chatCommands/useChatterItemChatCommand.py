@@ -1,7 +1,7 @@
 import re
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from ..chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
@@ -12,7 +12,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class UseChatterItemChatCommand(AbsChatCommand2):
+class UseChatterItemChatCommand(AbsChatCommand):
 
     def __init__(
         self,

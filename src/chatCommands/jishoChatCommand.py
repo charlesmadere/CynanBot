@@ -2,7 +2,7 @@ import re
 import traceback
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..language.jishoHelperInterface import JishoHelperInterface
 from ..misc import utils as utils
@@ -13,7 +13,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class JishoChatCommand(AbsChatCommand2):
+class JishoChatCommand(AbsChatCommand):
 
     def __init__(
         self,

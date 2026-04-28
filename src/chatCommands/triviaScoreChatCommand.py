@@ -1,7 +1,7 @@
 import re
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
@@ -15,7 +15,7 @@ from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
-class TriviaScoreChatCommand(AbsChatCommand2):
+class TriviaScoreChatCommand(AbsChatCommand):
 
     def __init__(
         self,

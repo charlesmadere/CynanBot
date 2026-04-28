@@ -1,10 +1,22 @@
 from abc import ABC, abstractmethod
+from typing import Collection, Pattern
 
-from ..twitch.configuration.twitchContext import TwitchContext
+from .chatCommandResult import ChatCommandResult
+from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
 class AbsChatCommand(ABC):
 
+    @property
     @abstractmethod
-    async def handleChatCommand(self, ctx: TwitchContext):
+    def commandName(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
+    def commandPatterns(self) -> Collection[Pattern]:
+        pass
+
+    @abstractmethod
+    async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
         pass

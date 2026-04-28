@@ -1,7 +1,7 @@
 import re
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from ..asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
@@ -11,7 +11,7 @@ from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
-class AsplodieStatsChatCommand(AbsChatCommand2):
+class AsplodieStatsChatCommand(AbsChatCommand):
 
     def __init__(
         self,
