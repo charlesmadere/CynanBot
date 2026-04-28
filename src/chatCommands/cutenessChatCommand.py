@@ -1,7 +1,7 @@
 import re
 from typing import Any, Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..cuteness.cutenessPresenterInterface import CutenessPresenterInterface
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
@@ -12,7 +12,7 @@ from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
-class CutenessChatCommand(AbsChatCommand2):
+class CutenessChatCommand(AbsChatCommand):
 
     def __init__(
         self,

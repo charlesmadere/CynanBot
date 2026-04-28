@@ -6,7 +6,7 @@ from typing import Collection, Final, Pattern
 
 from frozenlist import FrozenList
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
@@ -22,7 +22,7 @@ from ..voicemail.models.preparedVoicemailData import PreparedVoicemailData
 from ..voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
 
 
-class VoicemailsChatCommand(AbsChatCommand2):
+class VoicemailsChatCommand(AbsChatCommand):
 
     @dataclass(frozen = True, slots = True)
     class VoicemailLookupData:

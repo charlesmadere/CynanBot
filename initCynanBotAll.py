@@ -48,7 +48,7 @@ from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAn
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatActions.watchStreakAnnounceChatAction import WatchStreakAnnounceChatAction
-from src.chatCommands.absChatCommand2 import AbsChatCommand2
+from src.chatCommands.absChatCommand import AbsChatCommand
 from src.chatCommands.addBannedTriviaControllerChatCommand import AddBannedTriviaControllerChatCommand
 from src.chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
 from src.chatCommands.addGlobalTriviaControllerChatCommand import AddGlobalTriviaControllerChatCommand
@@ -3103,7 +3103,7 @@ chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
     ),
 })
 
-chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
+chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     AddBannedTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
         bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,

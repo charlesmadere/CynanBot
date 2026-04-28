@@ -3,7 +3,7 @@ import re
 import traceback
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
@@ -15,7 +15,7 @@ from ..users.userJsonConstant import UserJsonConstant
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class ChangeUserSettingChatCommand(AbsChatCommand2):
+class ChangeUserSettingChatCommand(AbsChatCommand):
 
     def __init__(
         self,

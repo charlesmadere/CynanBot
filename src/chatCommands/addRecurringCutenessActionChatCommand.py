@@ -1,7 +1,7 @@
 import re
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..recurringActions.actions.recurringActionType import RecurringActionType
@@ -12,7 +12,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class AddRecurringCutenessActionChatCommand(AbsChatCommand2):
+class AddRecurringCutenessActionChatCommand(AbsChatCommand):
 
     def __init__(
         self,

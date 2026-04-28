@@ -2,7 +2,7 @@ import re
 import traceback
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..language.languageEntry import LanguageEntry
 from ..language.languagesRepositoryInterface import LanguagesRepositoryInterface
@@ -13,7 +13,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class TranslateChatCommand(AbsChatCommand2):
+class TranslateChatCommand(AbsChatCommand):
 
     def __init__(
         self,

@@ -3,7 +3,7 @@ import traceback
 from dataclasses import dataclass
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..chatterPreferredTts.chatterPreferredTtsPresenter import ChatterPreferredTtsPresenter
 from ..chatterPreferredTts.exceptions import FailedToChooseRandomTtsException, NoEnabledTtsProvidersException, \
@@ -24,7 +24,7 @@ from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
 
 
-class SetChatterPreferredTtsChatCommand(AbsChatCommand2):
+class SetChatterPreferredTtsChatCommand(AbsChatCommand):
 
     @dataclass(frozen = True, slots = True)
     class LookupUserInfo:

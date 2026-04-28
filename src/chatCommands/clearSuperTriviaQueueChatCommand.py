@@ -1,7 +1,7 @@
 import re
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
@@ -12,7 +12,7 @@ from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class ClearSuperTriviaQueueChatCommand(AbsChatCommand2):
+class ClearSuperTriviaQueueChatCommand(AbsChatCommand):
 
     def __init__(
         self,

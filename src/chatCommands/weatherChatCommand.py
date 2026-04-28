@@ -2,7 +2,7 @@ import re
 import traceback
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..location.exceptions import NoSuchLocationException
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
@@ -17,7 +17,7 @@ from ..weather.weatherReportPresenterInterface import WeatherReportPresenterInte
 from ..weather.weatherRepositoryInterface import WeatherRepositoryInterface
 
 
-class WeatherChatCommand(AbsChatCommand2):
+class WeatherChatCommand(AbsChatCommand):
 
     def __init__(
         self,

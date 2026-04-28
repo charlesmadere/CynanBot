@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
@@ -10,7 +10,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class TimeChatCommand(AbsChatCommand2):
+class TimeChatCommand(AbsChatCommand):
 
     def __init__(
         self,

@@ -5,7 +5,7 @@ from .chatCommandResult import ChatCommandResult
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class AbsChatCommand2(ABC):
+class AbsChatCommand(ABC):
 
     @property
     @abstractmethod

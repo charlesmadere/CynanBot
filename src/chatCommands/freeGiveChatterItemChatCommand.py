@@ -5,7 +5,7 @@ import traceback
 from dataclasses import dataclass
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from ..chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
@@ -21,7 +21,7 @@ from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterfac
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
-class FreeGiveChatterItemChatCommand(AbsChatCommand2):
+class FreeGiveChatterItemChatCommand(AbsChatCommand):
 
     @dataclass(frozen = True, slots = True)
     class Arguments:

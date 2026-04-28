@@ -4,7 +4,7 @@ from typing import Any, Collection, Final, Pattern
 
 from frozenlist import FrozenList
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..misc.clearable import Clearable
@@ -13,7 +13,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class ClearCachesChatCommand(AbsChatCommand2):
+class ClearCachesChatCommand(AbsChatCommand):
 
     def __init__(
         self,

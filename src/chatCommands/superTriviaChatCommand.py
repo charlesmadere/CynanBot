@@ -2,7 +2,7 @@ import re
 import traceback
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
 from ..misc.generalSettingsRepository import GeneralSettingsRepository
@@ -16,7 +16,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class SuperTriviaChatCommand(AbsChatCommand2):
+class SuperTriviaChatCommand(AbsChatCommand):
 
     def __init__(
         self,

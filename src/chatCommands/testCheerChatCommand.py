@@ -6,7 +6,7 @@ from typing import Collection, Final, Pattern
 
 from frozenlist import FrozenList
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from ..misc import utils as utils
@@ -18,7 +18,7 @@ from ..twitch.localModels.twitchChatMessageFragmentType import TwitchChatMessage
 from ..twitch.localModels.twitchCheerMetadata import TwitchCheerMetadata
 
 
-class TestCheerChatCommand(AbsChatCommand2):
+class TestCheerChatCommand(AbsChatCommand):
 
     @dataclass(frozen = True, slots = True)
     class Arguments:

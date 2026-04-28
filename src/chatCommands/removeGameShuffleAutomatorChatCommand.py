@@ -1,7 +1,7 @@
 import re
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..crowdControl.automator.crowdControlAutomatorInterface import CrowdControlAutomatorInterface
 from ..crowdControl.automator.crowdControlAutomatorRemovalResult import CrowdControlAutomatorRemovalResult
@@ -11,7 +11,7 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
-class RemoveGameShuffleAutomatorChatCommand(AbsChatCommand2):
+class RemoveGameShuffleAutomatorChatCommand(AbsChatCommand):
 
     def __init__(
         self,

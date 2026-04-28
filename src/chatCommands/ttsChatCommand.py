@@ -2,7 +2,7 @@ import random
 import re
 from typing import Collection, Final, Pattern
 
-from .absChatCommand2 import AbsChatCommand2
+from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
@@ -18,7 +18,7 @@ from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..users.userInterface import UserInterface
 
 
-class TtsChatCommand(AbsChatCommand2):
+class TtsChatCommand(AbsChatCommand):
 
     def __init__(
         self,

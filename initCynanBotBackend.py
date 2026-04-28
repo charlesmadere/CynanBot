@@ -40,7 +40,7 @@ from src.chatActions.absChatAction import AbsChatAction
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
-from src.chatCommands.absChatCommand2 import AbsChatCommand2
+from src.chatCommands.absChatCommand import AbsChatCommand
 from src.chatCommands.addBannedTriviaControllerChatCommand import AddBannedTriviaControllerChatCommand
 from src.chatCommands.addGlobalTriviaControllerChatCommand import AddGlobalTriviaControllerChatCommand
 from src.chatCommands.addRecurringCutenessActionChatCommand import AddRecurringCutenessActionChatCommand
@@ -1960,7 +1960,7 @@ chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
     ),
 })
 
-chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
+chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     AddBannedTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
         bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,

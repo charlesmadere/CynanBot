@@ -31,7 +31,7 @@ from ..localModels.twitchWatchStreak import TwitchWatchStreak
 from ...aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from ...chatActions.absChatAction import AbsChatAction
 from ...chatActions.chatActionResult import ChatActionResult
-from ...chatCommands.absChatCommand2 import AbsChatCommand2
+from ...chatCommands.absChatCommand import AbsChatCommand
 from ...chatCommands.chatCommandResult import ChatCommandResult
 from ...chatLogger.chatLoggerInterface import ChatLoggerInterface
 from ...cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
@@ -65,7 +65,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         triviaGameBuilder: TriviaGameBuilderInterface | None,
         triviaGameMachine: TriviaGameMachineInterface | None,
         chatActions: Collection[AbsChatAction | Any | None] | None,
-        chatCommands: Collection[AbsChatCommand2 | Any | None] | None,
+        chatCommands: Collection[AbsChatCommand | Any | None] | None,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -103,7 +103,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         self.__chatCommandPrefixRegEx: Final[Pattern] = re.compile(r'^\s*!\w+\b', re.IGNORECASE)
 
         self.__chatActions: Final[Collection[AbsChatAction]] = self.__buildChatActionsCollection(chatActions)
-        self.__chatCommands: Final[Collection[AbsChatCommand2]] = self.__buildChatCommandsCollection(chatCommands)
+        self.__chatCommands: Final[Collection[AbsChatCommand]] = self.__buildChatCommandsCollection(chatCommands)
 
     def __buildChatActionsCollection(
         self,
@@ -134,24 +134,24 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
     def __buildChatCommandsCollection(
         self,
-        chatCommands: Collection[AbsChatCommand2 | Any | None] | None,
-    ) -> Collection[AbsChatCommand2]:
+        chatCommands: Collection[AbsChatCommand | Any | None] | None,
+    ) -> Collection[AbsChatCommand]:
         if chatCommands is None:
             return frozenset()
 
-        frozenChatCommands: FrozenList[AbsChatCommand2 | Any | None] = FrozenList(chatCommands)
+        frozenChatCommands: FrozenList[AbsChatCommand | Any | None] = FrozenList(chatCommands)
         frozenChatCommands.freeze()
 
-        validChatCommands: set[AbsChatCommand2] = set()
+        validChatCommands: set[AbsChatCommand] = set()
 
         for index, chatCommand in enumerate(frozenChatCommands):
             if chatCommand is None:
                 continue
-            elif isinstance(chatCommand, AbsChatCommand2):
+            elif isinstance(chatCommand, AbsChatCommand):
                 validChatCommands.add(chatCommand)
             else:
-                exception = TypeError(f'Encountered an invalid AbsChatCommand2 instance ({index=}) ({chatCommand=}) ({frozenChatCommands=})')
-                self.__timber.log('TwitchChatHandler', f'Encountered an invalid AbsChatCommand2 instance ({index=}) ({chatCommand=}) ({frozenChatCommands=})', exception, traceback.format_exc())
+                exception = TypeError(f'Encountered an invalid AbsChatCommand instance ({index=}) ({chatCommand=}) ({frozenChatCommands=})')
+                self.__timber.log('TwitchChatHandler', f'Encountered an invalid AbsChatCommand instance ({index=}) ({chatCommand=}) ({frozenChatCommands=})', exception, traceback.format_exc())
                 raise exception
 
         return frozenset(validChatCommands)
