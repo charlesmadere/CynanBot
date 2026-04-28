@@ -113,7 +113,7 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
                 WHERE chatteruserid = $1 AND twitchchannelid = $2
                 LIMIT 1
             ''',
-            chatterUserId, twitchChannelId
+            chatterUserId, twitchChannelId,
         )
 
         await connection.close()
@@ -161,7 +161,7 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
                             twitchchannelid text NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -175,7 +175,7 @@ class AsplodieStatsRepository(AsplodieStatsRepositoryInterface):
                             twitchchannelid TEXT NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:
