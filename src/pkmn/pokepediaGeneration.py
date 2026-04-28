@@ -3,6 +3,7 @@ from __future__ import annotations
 from enum import Enum, auto
 from typing import Any
 
+from .exceptions import UnknownPokepediaGenerationException
 from ..misc import utils as utils
 
 
@@ -78,29 +79,29 @@ class PokepediaGeneration(Enum):
 
         text = text.lower()
 
-        if text in ('red', 'blue', 'red-blue', 'yellow', 'green', 'generation-i'):
+        if text in { 'red', 'blue', 'blue-japan', 'red-blue', 'red-green-japan', 'yellow', 'green', 'generation-i' }:
             return PokepediaGeneration.GENERATION_1
-        elif text in ('gold', 'silver', 'gold-silver', 'crystal', 'generation-ii'):
+        elif text in { 'gold', 'silver', 'gold-silver', 'crystal', 'generation-ii' }:
             return PokepediaGeneration.GENERATION_2
-        elif text in ('ruby', 'sapphire', 'ruby-sapphire', 'emerald', 'firered', 'leafgreen', 'firered-leafgreen', 'colosseum', 'xd', 'generation-iii'):
+        elif text in { 'ruby', 'sapphire', 'ruby-sapphire', 'emerald', 'firered', 'leafgreen', 'firered-leafgreen', 'colosseum', 'xd', 'generation-iii' }:
             return PokepediaGeneration.GENERATION_3
-        elif text in ('diamond', 'pearl', 'diamond-pearl', 'platinum', 'heartgold', 'soulsilver', 'heartgold-soulsilver', 'generation-iv'):
+        elif text in { 'diamond', 'pearl', 'diamond-pearl', 'platinum', 'heartgold', 'soulsilver', 'heartgold-soulsilver', 'generation-iv' }:
             return PokepediaGeneration.GENERATION_4
-        elif text in ('black', 'white', 'black-white', 'black-2', 'white-2', 'black-2-white-2', 'generation-v'):
+        elif text in { 'black', 'white', 'black-white', 'black-2', 'white-2', 'black-2-white-2', 'generation-v' }:
             return PokepediaGeneration.GENERATION_5
-        elif text in ('x', 'y', 'x-y', 'omega-ruby', 'alpha-sapphire', 'omega-ruby-alpha-sapphire', 'generation-vi'):
+        elif text in { 'x', 'y', 'x-y', 'omega-ruby', 'alpha-sapphire', 'omega-ruby-alpha-sapphire', 'generation-vi' }:
             return PokepediaGeneration.GENERATION_6
-        elif text in ('sun', 'moon', 'sun-moon', 'ultra-sun', 'ultra-moon', 'ultra-sun-ultra-moon', 'lets-go-eevee', 'lets-go-pikachu', 'lets-go-pikachu-lets-go-eevee', 'generation-vii'):
+        elif text in { 'sun', 'moon', 'sun-moon', 'ultra-sun', 'ultra-moon', 'ultra-sun-ultra-moon', 'lets-go-eevee', 'lets-go-pikachu', 'lets-go-pikachu-lets-go-eevee', 'generation-vii' }:
             return PokepediaGeneration.GENERATION_7
-        elif text in ('sword', 'shield', 'sword-shield', 'brilliant-diamond', 'shining-pearl', 'brilliant-diamond-shining-pearl', 'the-isle-of-armor', 'the-crown-tundra', 'legends-arceus', 'generation-viii'):
+        elif text in { 'sword', 'shield', 'sword-shield', 'brilliant-diamond', 'shining-pearl', 'brilliant-diamond-shining-pearl', 'the-isle-of-armor', 'the-crown-tundra', 'legends-arceus', 'generation-viii' }:
             return PokepediaGeneration.GENERATION_8
         else:
-            raise ValueError(f'unknown PokepediaGeneration: \"{text}\"')
+            raise UnknownPokepediaGenerationException(f'unknown PokepediaGeneration: \"{text}\"')
 
     def __ge__(self, other: Any) -> bool:
         if isinstance(other, PokepediaGeneration):
-            all = list(PokepediaGeneration)
-            return all.index(self) >= all.index(other)
+            allGenerations = list(PokepediaGeneration)
+            return allGenerations.index(self) >= allGenerations.index(other)
         else:
             raise ValueError(f'`other` is an unsupported type: \"{other}\"')
 
@@ -142,29 +143,29 @@ class PokepediaGeneration(Enum):
 
     def __gt__(self, other: Any) -> bool:
         if isinstance(other, PokepediaGeneration):
-            all = list(PokepediaGeneration)
-            return all.index(self) > all.index(other)
+            allGenerations = list(PokepediaGeneration)
+            return allGenerations.index(self) > allGenerations.index(other)
         else:
             raise ValueError(f'`other` is an unsupported type: \"{other}\"')
 
     def __hash__(self) -> int:
-        all = list(PokepediaGeneration)
-        return all.index(self)
+        allGenerations = list(PokepediaGeneration)
+        return allGenerations.index(self)
 
     def isEarlyGeneration(self) -> bool:
         return self is PokepediaGeneration.GENERATION_1 or self is PokepediaGeneration.GENERATION_2 or self is PokepediaGeneration.GENERATION_3
 
     def __le__(self, other: Any) -> bool:
         if isinstance(other, PokepediaGeneration):
-            all = list(PokepediaGeneration)
-            return all.index(self) <= all.index(other)
+            allGenerations = list(PokepediaGeneration)
+            return allGenerations.index(self) <= allGenerations.index(other)
         else:
             raise ValueError(f'`other` is an unsupported type: \"{other}\"')
 
     def __lt__(self, other: Any) -> bool:
         if isinstance(other, PokepediaGeneration):
-            all = list(PokepediaGeneration)
-            return all.index(self) < all.index(other)
+            allGenerations = list(PokepediaGeneration)
+            return allGenerations.index(self) < allGenerations.index(other)
         else:
             raise ValueError(f'`other` is an unsupported type: \"{other}\"')
 
