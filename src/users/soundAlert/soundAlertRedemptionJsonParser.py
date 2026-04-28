@@ -26,7 +26,11 @@ class SoundAlertRedemptionJsonParser(SoundAlertRedemptionJsonParserInterface):
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
-        isImmediate = utils.getBoolFromDict(jsonContents, 'isImmediate', True)
+        isImmediate = utils.getBoolFromDict(jsonContents, 'isImmediate', fallback = True)
+
+        bits: int | None = None
+        if 'bits' in jsonContents and utils.isValidInt(jsonContents.get('bits')):
+            bits = utils.getIntFromDict(jsonContents, 'bits')
 
         soundAlert = self.__soundAlertJsonMapper.requireSoundAlert(
             jsonString = utils.getStrFromDict(jsonContents, 'soundAlert'),
@@ -40,6 +44,7 @@ class SoundAlertRedemptionJsonParser(SoundAlertRedemptionJsonParserInterface):
 
         return SoundAlertRedemption(
             isImmediate = isImmediate,
+            bits = bits,
             soundAlert = soundAlert,
             directoryPath = directoryPath,
             rewardId = rewardId,
