@@ -3,6 +3,7 @@ import re
 import traceback
 from typing import Any, Pattern
 
+from .exceptions import UnknownPokepediaGenerationException
 from .pokepediaContestType import PokepediaContestType
 from .pokepediaDamageClass import PokepediaDamageClass
 from .pokepediaElementType import PokepediaElementType
@@ -139,19 +140,19 @@ class PokepediaRepository(PokepediaRepositoryInterface):
         try:
             response = await clientSession.get(f'https://pokeapi.co/api/v2/machine/{machineId}')
         except GenericNetworkException as e:
-            self.__timber.log('PokepediaRepository', f'Encountered network error from PokeAPI when fetching machine with ID \"{machineId}\": {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'PokepediaRepository encountered network error from PokeAPI when fetching machine with ID \"{machineId}\": {e}')
+            self.__timber.log('PokepediaRepository', f'Encountered network error from PokeAPI when fetching machine ({machineId=})', e, traceback.format_exc())
+            raise GenericNetworkException(f'PokepediaRepository encountered network error from PokeAPI when fetching machine ({machineId=}): {e}')
 
         if response.statusCode != 200:
-            self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when fetching machine with ID \"{machineId}\": \"{response.statusCode}\"')
-            raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when fetching machine with ID \"{machineId}\": \"{response.statusCode}\"')
+            self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when fetching machine ({machineId=}) ({response=})')
+            raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when fetching machine ({machineId=}) ({response=})')
 
         jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
-            self.__timber.log('PokepediaRepository', f'Encountered data error from PokeAPI when fetching machine ({machineId=}): {jsonResponse}')
-            raise GenericNetworkException(f'PokepediaRepository encountered data error from PokeAPI when fetching machine ({machineId=}): {jsonResponse}')
+            self.__timber.log('PokepediaRepository', f'Encountered data error from PokeAPI when fetching machine ({machineId=}) ({jsonResponse=})')
+            raise GenericNetworkException(f'PokepediaRepository encountered data error from PokeAPI when fetching machine ({machineId=}) ({jsonResponse=})')
 
         return await self.__buildMachineFromJsonResponse(jsonResponse)
 
@@ -208,12 +209,17 @@ class PokepediaRepository(PokepediaRepositoryInterface):
                 self.__timber.log('PokepediaRepository', f'Encountered exception when attempting to convert a machine ID into an int: \"{machineIdStr}\": {e}', e, traceback.format_exc())
                 continue
 
-            machine = await self.fetchMachine(machineIdInt)
+            try:
+                machine = await self.fetchMachine(
+                    machineId = machineIdInt,
+                )
 
-            if machine.generation not in generationMachines:
-                generationMachines[machine.generation] = list()
+                if machine.generation not in generationMachines:
+                    generationMachines[machine.generation] = list()
 
-            generationMachines[machine.generation].append(machine)
+                generationMachines[machine.generation].append(machine)
+            except UnknownPokepediaGenerationException as e:
+                self.__timber.log('PokepediaRepository', f'Encountered unknown PokepediaGeneration when fetching machine ({machineIdInt=}) ({machinesJson=})', e, traceback.format_exc())
 
         for machines in generationMachines.values():
             machines.sort(key = lambda machine: (machine.generation, machine.machineId))
