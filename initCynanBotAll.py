@@ -86,6 +86,8 @@ from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
 from src.chatCommands.jishoChatCommand import JishoChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.myCutenessChatCommand import MyCutenessChatCommand
+from src.chatCommands.pkMonChatCommand import PkMonChatCommand
+from src.chatCommands.pkMoveChatCommand import PkMoveChatCommand
 from src.chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
 from src.chatCommands.removeBannedTriviaControllerChatCommand import RemoveBannedTriviaControllerChatCommand
 from src.chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
@@ -3362,6 +3364,16 @@ chatCommands: Final[Collection[AbsChatCommand2 | None]] = frozenset({
     MyCutenessChatCommand(
         cutenessRepository = cutenessRepository,
         cutenessUtils = cutenessUtils,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    PkMonChatCommand(
+        pokepediaRepository = pokepediaRepository,
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    PkMoveChatCommand(
+        pokepediaRepository = pokepediaRepository,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),

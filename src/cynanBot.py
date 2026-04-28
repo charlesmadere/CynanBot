@@ -16,10 +16,6 @@ from .aniv.repositories.mostRecentAnivMessageRepositoryInterface import MostRece
 from .aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from .asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from .asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
-from .chatCommands.absChatCommand import AbsChatCommand
-from .chatCommands.pkMonChatCommand import PkMonChatCommand
-from .chatCommands.pkMoveChatCommand import PkMoveChatCommand
-from .chatCommands.stubChatCommand import StubChatCommand
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
 from .chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
 from .chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
@@ -673,17 +669,6 @@ class CynanBot(
         self.__websocketConnectionServer: Final[WebsocketConnectionServerInterface | None] = websocketConnectionServer
         self.__startables: Final[FrozenList[Startable]] = self.__buildStartablesCollection(startables)
 
-        #######################################
-        ## Initialization of command objects ##
-        #######################################
-
-        if pokepediaRepository is None:
-            self.__pkMonCommand: AbsChatCommand = StubChatCommand()
-            self.__pkMoveCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__pkMonCommand: AbsChatCommand = PkMonChatCommand(pokepediaRepository, timber, twitchChatMessenger, usersRepository)
-            self.__pkMoveCommand: AbsChatCommand = PkMoveChatCommand(pokepediaRepository, timber, twitchChatMessenger, usersRepository)
-
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireTwitchHandle()}')
 
     def __buildStartablesCollection(
@@ -862,13 +847,3 @@ class CynanBot(
 
     async def waitForReady(self):
         await self.wait_for_ready()
-
-    @commands.command(name = 'pkmon')
-    async def command_pkmon(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__pkMonCommand.handleChatCommand(context)
-
-    @commands.command(name = 'pkmove', aliases = [ 'pkmov' ])
-    async def command_pkmove(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__pkMoveCommand.handleChatCommand(context)
