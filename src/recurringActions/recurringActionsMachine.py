@@ -2,9 +2,11 @@ import asyncio
 import queue
 import random
 import traceback
-from datetime import datetime, timedelta
+from datetime import timedelta
 from queue import SimpleQueue
 from typing import Final
+
+from frozenlist import FrozenList
 
 from .actions.cutenessRecurringAction import CutenessRecurringAction
 from .actions.recurringAction import RecurringAction
@@ -154,10 +156,10 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         mostRecentAction = await self.__mostRecentRecurringActionsRepository.getMostRecentRecurringAction(
             twitchChannel = user.handle,
-            twitchChannelId = twitchChannelId
+            twitchChannelId = twitchChannelId,
         )
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         while len(actionTypes) >= 1 and action is None:
             actionType = random.choice(actionTypes)
@@ -167,25 +169,25 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
                 case RecurringActionType.CUTENESS:
                     action = await self.__recurringActionsRepository.getCutenessRecurringAction(
                         twitchChannel = user.handle,
-                        twitchChannelId = twitchChannelId
+                        twitchChannelId = twitchChannelId,
                     )
 
                 case RecurringActionType.SUPER_TRIVIA:
                     action = await self.__recurringActionsRepository.getSuperTriviaRecurringAction(
                         twitchChannel = user.handle,
-                        twitchChannelId = twitchChannelId
+                        twitchChannelId = twitchChannelId,
                     )
 
                 case RecurringActionType.WEATHER:
                     action = await self.__recurringActionsRepository.getWeatherRecurringAction(
                         twitchChannel = user.handle,
-                        twitchChannelId = twitchChannelId
+                        twitchChannelId = twitchChannelId,
                     )
 
                 case RecurringActionType.WORD_OF_THE_DAY:
                     action = await self.__recurringActionsRepository.getWordOfTheDayRecurringAction(
                         twitchChannel = user.handle,
-                        twitchChannelId = twitchChannelId
+                        twitchChannelId = twitchChannelId,
                     )
 
                 case _:
@@ -214,11 +216,6 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         user: UserInterface,
         action: CutenessRecurringAction,
     ) -> bool:
-        if not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(action, CutenessRecurringAction):
-            raise TypeError(f'action argument is malformed: \"{action}\"')
-
         if self.__cutenessRepository is None:
             return False
 
@@ -229,8 +226,8 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         await self.__submitEvent(CutenessRecurringEvent(
             leaderboard = leaderboard,
-            twitchChannel = user.handle,
             twitchChannelId = action.twitchChannelId,
+            twitchUser = user,
         ))
 
         return True
@@ -281,11 +278,6 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         user: UserInterface,
         action: SuperTriviaRecurringAction,
     ) -> bool:
-        if not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(action, SuperTriviaRecurringAction):
-            raise TypeError(f'action argument is malformed: \"{action}\"')
-
         newTriviaGame = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.handle,
             twitchChannelId = action.twitchChannelId,
@@ -295,8 +287,8 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             return False
 
         await self.__submitEvent(SuperTriviaRecurringEvent(
-            twitchChannel = user.handle,
             twitchChannelId = action.twitchChannelId,
+            twitchUser = user,
         ))
 
         # delay to allow users to prepare for an incoming trivia question
@@ -310,11 +302,6 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         user: UserInterface,
         action: WeatherRecurringAction,
     ) -> bool:
-        if not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(action, WeatherRecurringAction):
-            raise TypeError(f'action argument is malformed: \"{action}\"')
-
         if self.__weatherRepository is None:
             return False
 
@@ -323,13 +310,17 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             return False
 
         try:
-            location = await self.__locationsRepository.getLocation(locationId)
+            location = await self.__locationsRepository.getLocation(
+                locationId = locationId,
+            )
         except NoSuchLocationException as e:
             self.__timber.log('RecurringActionsMachine', f'Unable to get location ({locationId=}) ({user=}) ({action=})', e, traceback.format_exc())
             return False
 
         try:
-            weatherReport = await self.__weatherRepository.fetchWeather(location)
+            weatherReport = await self.__weatherRepository.fetchWeather(
+                location = location,
+            )
         except OpenWeatherApiKeyUnavailableException as e:
             self.__timber.log('RecurringActionsMachine', f'No Open Weather API key available when fetching weather ({location=}) ({locationId=}) ({user=}) ({action=})', e, traceback.format_exc())
             return False
@@ -342,8 +333,8 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         await self.__submitEvent(WeatherRecurringEvent(
             alertsOnly = action.isAlertsOnly,
-            twitchChannel = user.handle,
             twitchChannelId = action.twitchChannelId,
+            twitchUser = user,
             weatherReport = weatherReport,
         ))
 
@@ -373,8 +364,8 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         await self.__submitEvent(WordOfTheDayRecurringEvent(
             languageEntry = languageEntry,
-            twitchChannel = user.handle,
             twitchChannelId = action.twitchChannelId,
+            twitchUser = user,
             wordOfTheDayResponse = wordOfTheDayResponse,
         ))
 
@@ -441,13 +432,15 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             eventListener = self.__eventListener
 
             if eventListener is not None:
-                events: list[RecurringEvent] = list()
+                events: FrozenList[RecurringEvent] = FrozenList()
 
                 try:
                     while not self.__eventQueue.empty():
                         events.append(self.__eventQueue.get_nowait())
                 except queue.Empty as e:
                     self.__timber.log('RecurringActionsMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) (events size: {len(events)})', e, traceback.format_exc())
+
+                events.freeze()
 
                 for event in events:
                     try:

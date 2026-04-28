@@ -1,28 +1,21 @@
-from typing import Any
+from dataclasses import dataclass
 
 from .recurringEvent import RecurringEvent
 from .recurringEventType import RecurringEventType
+from ...users.userInterface import UserInterface
 
 
+@dataclass(frozen = True, slots = True)
 class SuperTriviaRecurringEvent(RecurringEvent):
-
-    def __init__(
-        self,
-        twitchChannel: str,
-        twitchChannelId: str
-    ):
-        super().__init__(
-            twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
-        )
+    twitchChannelId: str
+    twitchUser: UserInterface
 
     @property
     def eventType(self) -> RecurringEventType:
         return RecurringEventType.SUPER_TRIVIA
 
-    def toDictionary(self) -> dict[str, Any]:
-        return {
-            'eventType': self.eventType,
-            'twitchChannel': self.twitchChannel,
-            'twitchChannelId': self.twitchChannelId
-        }
+    def getTwitchChannelId(self) -> str:
+        return self.twitchChannelId
+
+    def getTwitchUser(self) -> UserInterface:
+        return self.twitchUser
