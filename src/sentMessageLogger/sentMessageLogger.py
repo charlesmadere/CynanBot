@@ -2,7 +2,6 @@ import asyncio
 import queue
 import traceback
 from collections import defaultdict
-from datetime import datetime
 from queue import SimpleQueue
 from typing import Collection, Final
 
@@ -94,13 +93,13 @@ class SentMessageLogger(SentMessageLoggerInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        frozenExceptions: FrozenList[Exception] | None = None
+        frozenExceptions: FrozenList[Exception] = FrozenList()
 
         if exceptions is not None:
-            frozenExceptions = FrozenList(exceptions)
+            frozenExceptions.extend(exceptions)
             frozenExceptions.freeze()
 
-        dateTime = datetime.now(self.__timeZoneRepository.getDefault())
+        dateTime = self.__timeZoneRepository.getNow()
 
         self.__messageQueue.put(SentMessage(
             successfullySent = successfullySent,

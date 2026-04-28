@@ -89,7 +89,9 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         glacialId: str,
         provider: TtsProvider,
     ) -> FileReference | None:
-        providerFolder = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(provider)
+        providerFolder = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(
+            provider = provider,
+        )
 
         if not await aiofiles.ospath.exists(
             path = providerFolder,
@@ -159,7 +161,10 @@ class GlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         if glacialTtsFileReference is not None:
             self.__timber.log('GlacialTtsFileRetriever', f'Clobbering a TTS file that already exists for the given arguments ({fileExtension=}) ({message=}) ({voice=}) ({provider=}) ({glacialTtsData=}) ({glacialTtsFileReference=})')
 
-        providerFolder = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(provider)
+        providerFolder = await self.__ttsDirectoryProvider.getFullTtsDirectoryFor(
+            provider = provider,
+        )
+
         fileName = f'{glacialTtsData.glacialId}.{fileExtension}'
         filePath = f'{providerFolder}/{fileName}'
 

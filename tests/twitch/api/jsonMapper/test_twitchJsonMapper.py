@@ -1409,6 +1409,25 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parsePrimePaidUpgrade(self):
+        result = await self.jsonMapper.parsePrimePaidUpgrade({
+            'sub_tier': await self.jsonMapper.serializeSubscriberTier(TwitchSubscriberTier.TIER_ONE),
+        })
+
+        assert result is not None
+        assert result.subTier is TwitchSubscriberTier.TIER_ONE
+
+    @pytest.mark.asyncio
+    async def test_parsePrimePaidUpgrade_withEmptyDictionary(self):
+        result = await self.jsonMapper.parsePrimePaidUpgrade(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parsePrimePaidUpgrade_withNone(self):
+        result = await self.jsonMapper.parsePrimePaidUpgrade(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseRaid(self):
         userId = 'abc123'
         userLogin = 'smcharles'

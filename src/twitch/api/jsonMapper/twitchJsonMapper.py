@@ -63,6 +63,7 @@ from ..models.twitchPowerUp import TwitchPowerUp
 from ..models.twitchPowerUpEmote import TwitchPowerUpEmote
 from ..models.twitchPowerUpType import TwitchPowerUpType
 from ..models.twitchPredictionStatus import TwitchPredictionStatus
+from ..models.twitchPrimePaidUpgrade import TwitchPrimePaidUpgrade
 from ..models.twitchRaid import TwitchRaid
 from ..models.twitchResub import TwitchResub
 from ..models.twitchResubscriptionMessage import TwitchResubscriptionMessage
@@ -119,7 +120,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
 
     async def __calculateExpirationTime(self, expiresInSeconds: int | None) -> datetime:
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         if utils.isValidInt(expiresInSeconds) and expiresInSeconds > 0:
             return now + timedelta(seconds = expiresInSeconds)
@@ -1461,7 +1462,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         powerUpEmote = await self.parsePowerUpEmote(jsonResponse.get('emote'))
 
-        powerUpTypeString: str | Any | None = jsonResponse.get('power_up')
+        powerUpTypeString: str | Any | None = jsonResponse.get('type')
         powerUpType = await self.parsePowerUpType(powerUpTypeString)
 
         if powerUpType is None:
@@ -1476,7 +1477,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parsePowerUpEmote(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchPowerUpEmote | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1491,7 +1492,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parsePowerUpType(
         self,
-        powerUpType: str | Any | None
+        powerUpType: str | Any | None,
     ) -> TwitchPowerUpType | None:
         if not utils.isValidStr(powerUpType):
             return None
@@ -1519,6 +1520,21 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'locked': return TwitchPredictionStatus.LOCKED
             case 'resolved': return TwitchPredictionStatus.RESOLVED
             case _: return None
+
+    async def parsePrimePaidUpgrade(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchPrimePaidUpgrade | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        subTier = await self.requireSubscriberTier(
+            subscriberTier = utils.getStrFromDict(jsonResponse, 'sub_tier'),
+        )
+
+        return TwitchPrimePaidUpgrade(
+            subTier = subTier,
+        )
 
     async def parseRaid(
         self,

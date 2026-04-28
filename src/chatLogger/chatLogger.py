@@ -2,7 +2,6 @@ import asyncio
 import queue
 import traceback
 from collections import defaultdict
-from datetime import datetime
 from queue import SimpleQueue
 from typing import Final
 
@@ -92,7 +91,7 @@ class ChatLogger(ChatLoggerInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        dateTime = datetime.now(self.__timeZoneRepository.getDefault())
+        dateTime = self.__timeZoneRepository.getNow()
 
         self.__chatLogQueue.put(MessageChatLog(
             dateTime = dateTime,
@@ -125,7 +124,7 @@ class ChatLogger(ChatLoggerInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        dateTime = datetime.now(self.__timeZoneRepository.getDefault())
+        dateTime = self.__timeZoneRepository.getNow()
 
         self.__chatLogQueue.put(RaidChatLog(
             dateTime = dateTime,

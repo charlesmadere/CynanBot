@@ -20,6 +20,7 @@ from .twitchPollChoice import TwitchPollChoice
 from .twitchPollStatus import TwitchPollStatus
 from .twitchPowerUp import TwitchPowerUp
 from .twitchPredictionStatus import TwitchPredictionStatus
+from .twitchPrimePaidUpgrade import TwitchPrimePaidUpgrade
 from .twitchRaid import TwitchRaid
 from .twitchResub import TwitchResub
 from .twitchResubscriptionMessage import TwitchResubscriptionMessage
@@ -106,6 +107,7 @@ class TwitchWebsocketEvent:
     pollStatus: TwitchPollStatus | None = None
     powerUp: TwitchPowerUp | None = None
     predictionStatus: TwitchPredictionStatus | None = None
+    primePaidUpgrade: TwitchPrimePaidUpgrade | None = None
     raid: TwitchRaid | None = None
     resub: TwitchResub | None = None
     resubscriptionMessage: TwitchResubscriptionMessage | None = None

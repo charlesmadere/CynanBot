@@ -23,6 +23,7 @@ from ..api.models.twitchPollChoice import TwitchPollChoice
 from ..api.models.twitchPollStatus import TwitchPollStatus
 from ..api.models.twitchPowerUp import TwitchPowerUp
 from ..api.models.twitchPredictionStatus import TwitchPredictionStatus
+from ..api.models.twitchPrimePaidUpgrade import TwitchPrimePaidUpgrade
 from ..api.models.twitchRaid import TwitchRaid
 from ..api.models.twitchResub import TwitchResub
 from ..api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage
@@ -455,6 +456,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             predictionStatusString = utils.getStrFromDict(eventJson, 'status')
             predictionStatus = await self.__twitchJsonMapper.parsePredictionStatus(predictionStatusString)
 
+        primePaidUpgrade: TwitchPrimePaidUpgrade | None = None
+        if 'prime_paid_upgrade' in eventJson:
+            primePaidUpgrade = await self.__twitchJsonMapper.parsePrimePaidUpgrade(eventJson.get('prime_paid_upgrade'))
+
         raid: TwitchRaid | None = None
         if 'raid' in eventJson:
             raid = await self.__twitchJsonMapper.parseRaid(eventJson.get('raid'))
@@ -566,6 +571,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             pollStatus = pollStatus,
             powerUp = powerUp,
             predictionStatus = predictionStatus,
+            primePaidUpgrade = primePaidUpgrade,
             raid = raid,
             resub = resub,
             resubscriptionMessage = resubscriptionMessage,

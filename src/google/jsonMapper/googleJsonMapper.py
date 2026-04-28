@@ -1,5 +1,5 @@
 import traceback
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Any, Collection, Final
 
 from frozenlist import FrozenList
@@ -56,7 +56,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         expiresInSeconds = utils.getIntFromDict(jsonContents, 'expires_in')
         accessToken = utils.getStrFromDict(jsonContents, 'access_token')
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         expireTime = now + timedelta(seconds = expiresInSeconds)
 
         return GoogleAccessToken(
