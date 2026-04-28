@@ -20,12 +20,14 @@ class TestSoundAlertRedemptionJsonParser:
     def test_parseRedemption(self):
         redemption = SoundAlertRedemption(
             isImmediate = True,
+            bits = 10,
             soundAlert = SoundAlert.RANDOM_FROM_DIRECTORY,
             directoryPath = 'nay',
             rewardId = 'xyz789',
         )
 
         result = self.jsonParser.parseRedemption({
+            'bits': redemption.bits,
             'directoryPath': redemption.directoryPath,
             'isImmediate': redemption.isImmediate,
             'rewardId': redemption.rewardId,
@@ -34,6 +36,7 @@ class TestSoundAlertRedemptionJsonParser:
 
         assert isinstance(result, SoundAlertRedemption)
         assert result == redemption
+        assert result.bits == redemption.bits
         assert result.directoryPath == redemption.directoryPath
         assert result.isImmediate == redemption.isImmediate
         assert result.rewardId == redemption.rewardId
@@ -58,6 +61,7 @@ class TestSoundAlertRedemptionJsonParser:
     def test_parseRedemptions(self):
         redemption1 = SoundAlertRedemption(
             isImmediate = False,
+            bits = 50,
             soundAlert = SoundAlert.POINT_REDEMPTION_01,
             directoryPath = None,
             rewardId = 'abc123',
@@ -65,6 +69,7 @@ class TestSoundAlertRedemptionJsonParser:
 
         redemption2 = SoundAlertRedemption(
             isImmediate = True,
+            bits = None,
             soundAlert = SoundAlert.RANDOM_FROM_DIRECTORY,
             directoryPath = 'yay',
             rewardId = 'def456',
@@ -72,6 +77,7 @@ class TestSoundAlertRedemptionJsonParser:
 
         result = self.jsonParser.parseRedemptions([
             {
+                'bits': redemption1.bits,
                 'directoryPath': redemption1.directoryPath,
                 'isImmediate': redemption1.isImmediate,
                 'rewardId': redemption1.rewardId,
@@ -90,6 +96,7 @@ class TestSoundAlertRedemptionJsonParser:
         redemption = result[redemption1.rewardId]
         assert isinstance(redemption, SoundAlertRedemption)
         assert redemption == redemption1
+        assert redemption.bits == redemption1.bits
         assert redemption.directoryPath == redemption1.directoryPath
         assert redemption.isImmediate == redemption1.isImmediate
         assert redemption.rewardId == redemption1.rewardId
@@ -98,10 +105,15 @@ class TestSoundAlertRedemptionJsonParser:
         redemption = result[redemption2.rewardId]
         assert isinstance(redemption, SoundAlertRedemption)
         assert redemption == redemption2
+        assert redemption.bits == redemption2.bits
         assert redemption.directoryPath == redemption2.directoryPath
         assert redemption.isImmediate == redemption2.isImmediate
         assert redemption.rewardId == redemption2.rewardId
         assert redemption.soundAlert == redemption2.soundAlert
+
+    def test_parseRedemptions_withEmptyDictionary(self):
+        result = self.jsonParser.parseRedemptions(dict())
+        assert result is None
 
     def test_parseRedemptions_withEmptyList(self):
         result = self.jsonParser.parseRedemptions(list())
