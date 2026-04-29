@@ -2819,10 +2819,12 @@ soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface = SoundAlertCh
 )
 
 cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
+    backgroundTaskHelper = backgroundTaskHelper,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = crowdControlCheerActionHelper,
     itemUseCheerActionHelper = itemUseCheerActionHelper,
     soundAlertCheerActionHelper = soundAlertCheerActionHelper,
+    timber = timber,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
@@ -3660,7 +3662,7 @@ twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscript
 #######################################
 
 startables: Final[Collection[Startable | None]] = frozenset({
-    # TODO
+    cheerActionHelper,
 })
 
 

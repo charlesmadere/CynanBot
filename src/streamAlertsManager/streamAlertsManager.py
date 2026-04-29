@@ -43,7 +43,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
-        elif queueSleepTimeSeconds < 0.10 or queueSleepTimeSeconds > 8:
+        elif queueSleepTimeSeconds < 0.125 or queueSleepTimeSeconds > 8:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
         elif not utils.isValidNum(queueTimeoutSeconds):
             raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
