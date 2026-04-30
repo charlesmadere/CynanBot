@@ -3,7 +3,6 @@ from asyncio import AbstractEventLoop
 from typing import Any, Collection, Final
 
 from frozenlist import FrozenList
-from twitchio import Message
 from twitchio.ext import commands
 from twitchio.ext.commands import Context
 from twitchio.ext.commands.errors import CommandNotFound
@@ -67,7 +66,6 @@ from .language.wordOfTheDay.wordOfTheDayRepositoryInterface import WordOfTheDayR
 from .location.locationsRepositoryInterface import LocationsRepositoryInterface
 from .location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from .microsoftSam.settings.microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
-from .misc import utils as utils
 from .misc.administratorProviderInterface import AdministratorProviderInterface
 from .misc.authRepository import AuthRepository
 from .misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -145,8 +143,6 @@ from .twitch.configuration.absChannelJoinEvent import AbsChannelJoinEvent
 from .twitch.configuration.channelJoinListener import ChannelJoinListener
 from .twitch.configuration.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
 from .twitch.configuration.joinChannelsEvent import JoinChannelsEvent
-from .twitch.configuration.twitchChannel import TwitchChannel
-from .twitch.configuration.twitchConfiguration import TwitchConfiguration
 from .twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
 from .twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from .twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
@@ -304,7 +300,6 @@ class CynanBot(
         twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface,
         twitchChannelJoinHelper: TwitchChannelJoinHelperInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        twitchConfiguration: TwitchConfiguration,
         twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface | None,
@@ -582,8 +577,6 @@ class CynanBot(
             raise TypeError(f'twitchChannelJoinHelper argument is malformed: \"{twitchChannelJoinHelper}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(twitchConfiguration, TwitchConfiguration):
-            raise TypeError(f'twitchConfiguration argument is malformed: \"{twitchConfiguration}\"')
         elif not isinstance(twitchEmotesHelper, TwitchEmotesHelperInterface):
             raise TypeError(f'twitchEmotesHelper argument is malformed: \"{twitchEmotesHelper}\"')
         elif twitchFollowingStatusRepository is not None and not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
@@ -660,7 +653,6 @@ class CynanBot(
         self.__triviaRepository: TriviaRepositoryInterface | None = triviaRepository
         self.__twitchChannelJoinHelper: Final[TwitchChannelJoinHelperInterface] = twitchChannelJoinHelper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__twitchConfiguration: Final[TwitchConfiguration] = twitchConfiguration
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchWebsocketClient: Final[TwitchWebsocketClientInterface | None] = twitchWebsocketClient
@@ -707,17 +699,6 @@ class CynanBot(
         else:
             raise error
 
-    async def event_message(self, message: Message):
-        if message.echo:
-            return
-
-        twitchMessage = self.__twitchConfiguration.getMessage(message)
-
-        if await twitchMessage.isMessageFromExternalSharedChat():
-            return
-
-        await self.handle_commands(message)
-
     async def event_ready(self):
         await self.waitForReady()
 
@@ -729,24 +710,6 @@ class CynanBot(
 
     async def event_reconnect(self):
         self.__timber.log('CynanBot', f'Received IRC RECONNECT event')
-
-    async def __getChannel(self, twitchChannel: str) -> TwitchChannel:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-
-        await self.waitForReady()
-
-        try:
-            channel = self.get_channel(twitchChannel)
-
-            if channel is None:
-                self.__timber.log('CynanBot', f'Unable to get twitchChannel: \"{twitchChannel}\"')
-                raise RuntimeError(f'Unable to get twitchChannel: \"{twitchChannel}\"')
-            else:
-                return self.__twitchConfiguration.getChannel(channel)
-        except KeyError as e:
-            self.__timber.log('CynanBot', f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e, traceback.format_exc())
-            raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e, traceback.format_exc())
 
     async def onNewChannelJoinEvent(self, event: AbsChannelJoinEvent):
         self.__timber.log('CynanBot', f'Received new channel join event ({event=})')
