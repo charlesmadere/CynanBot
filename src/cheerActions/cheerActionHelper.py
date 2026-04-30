@@ -6,6 +6,8 @@ from .crowdControl.crowdControlCheerActionHelperInterface import CrowdControlChe
 from .itemUse.itemUseCheerActionHelperInterface import ItemUseCheerActionHelperInterface
 from .soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from ..misc import utils as utils
+from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ..timber.timberInterface import TimberInterface
 from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
@@ -16,15 +18,20 @@ class CheerActionHelper(CheerActionHelperInterface):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         cheerActionsRepository: CheerActionsRepositoryInterface,
         crowdControlCheerActionHelper: CrowdControlCheerActionHelperInterface | None,
         itemUseCheerActionHelper: ItemUseCheerActionHelperInterface | None,
         soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None,
+        timber: TimberInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
+        queueSleepTimeSeconds: float = 0.5,
     ):
-        if not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif crowdControlCheerActionHelper is not None and not isinstance(crowdControlCheerActionHelper, CrowdControlCheerActionHelperInterface):
             raise TypeError(f'crowdControlCheerActionHelper argument is malformed: \"{crowdControlCheerActionHelper}\"')
@@ -32,20 +39,31 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'itemUseCheerActionHelper argument is malformed: \"{itemUseCheerActionHelper}\"')
         elif soundAlertCheerActionHelper is not None and not isinstance(soundAlertCheerActionHelper, SoundAlertCheerActionHelperInterface):
             raise TypeError(f'soundAlertCheerActionHelper argument is malformed: \"{soundAlertCheerActionHelper}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not utils.isValidNum(queueSleepTimeSeconds):
+            raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
+        elif queueSleepTimeSeconds < 0.125 or queueSleepTimeSeconds > 8:
+            raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
 
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__cheerActionsRepository: Final[CheerActionsRepositoryInterface] = cheerActionsRepository
         self.__crowdControlCheerActionHelper: Final[CrowdControlCheerActionHelperInterface | None] = crowdControlCheerActionHelper
         self.__itemUseCheerActionHelper: Final[ItemUseCheerActionHelperInterface | None] = itemUseCheerActionHelper
         self.__soundAlertCheerActionHelper: Final[SoundAlertCheerActionHelperInterface | None] = soundAlertCheerActionHelper
+        self.__timber: Final[TimberInterface] = timber
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__queueSleepTimeSeconds: Final[float] = queueSleepTimeSeconds
+
+        self.__isStarted: bool = False
 
     async def handleCheerAction(
         self,
@@ -145,3 +163,16 @@ class CheerActionHelper(CheerActionHelperInterface):
 
         else:
             return False
+
+    def start(self):
+        if self.__isStarted:
+            self.__timber.log('CheerActionHelper', 'Not starting CheerActionHelper as it has already been started')
+            return
+
+        self.__isStarted = True
+        self.__timber.log('CheerActionHelper', 'Starting CheerActionHelper...')
+        self.__backgroundTaskHelper.createTask(self.__startActionLoop())
+
+    async def __startActionLoop(self):
+        # TODO
+        pass

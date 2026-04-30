@@ -415,10 +415,8 @@ from src.twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMess
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
 from src.twitch.configuration.twitchChannelPointRedemptionHandler import TwitchChannelPointRedemptionHandler
 from src.twitch.configuration.twitchChatHandler import TwitchChatHandler
-from src.twitch.configuration.twitchConfiguration import TwitchConfiguration
 from src.twitch.configuration.twitchFollowHandler import TwitchFollowHandler
 from src.twitch.configuration.twitchHypeTrainHandler import TwitchHypeTrainHandler
-from src.twitch.configuration.twitchIo.twitchIoConfiguration import TwitchIoConfiguration
 from src.twitch.configuration.twitchPollHandler import TwitchPollHandler
 from src.twitch.configuration.twitchPredictionHandler import TwitchPredictionHandler
 from src.twitch.configuration.twitchRaidHandler import TwitchRaidHandler
@@ -430,8 +428,6 @@ from src.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import 
     TwitchFollowingStatusRepositoryInterface
 from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
-from src.twitch.ircTagsParser.twitchIrcTagsParser import TwitchIrcTagsParser
-from src.twitch.ircTagsParser.twitchIrcTagsParserInterface import TwitchIrcTagsParserInterface
 from src.twitch.isLive.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from src.twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from src.twitch.misc.globalTwitchConstants import GlobalTwitchConstants
@@ -849,29 +845,22 @@ pokepediaJsonMapper: PokepediaJsonMapperInterface = PokepediaJsonMapper(
 pokepediaRepository: PokepediaRepositoryInterface = PokepediaRepository(
     networkClientProvider = networkClientProvider,
     pokepediaJsonMapper = pokepediaJsonMapper,
-    timber = timber
+    timber = timber,
 )
 
-twitchIrcTagsParser: TwitchIrcTagsParserInterface = TwitchIrcTagsParser()
-
-twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
-    twitchIrcTagsParser = twitchIrcTagsParser,
-    userIdsRepository = userIdsRepository
-)
-
-sentMessageLogger: SentMessageLoggerInterface = SentMessageLogger(
+sentMessageLogger: Final[SentMessageLoggerInterface] = SentMessageLogger(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-twitchTimeoutRemodRepository: TwitchTimeoutRemodRepositoryInterface = TwitchTimeoutRemodRepository(
+twitchTimeoutRemodRepository: Final[TwitchTimeoutRemodRepositoryInterface] = TwitchTimeoutRemodRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = TwitchTimeoutRemodHelper(
+twitchTimeoutRemodHelper: Final[TwitchTimeoutRemodHelperInterface] = TwitchTimeoutRemodHelper(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
@@ -1782,10 +1771,12 @@ cheerActionsRepository: Final[CheerActionsRepositoryInterface] = CheerActionsRep
 )
 
 cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
+    backgroundTaskHelper = backgroundTaskHelper,
     cheerActionsRepository = cheerActionsRepository,
     crowdControlCheerActionHelper = None,
     itemUseCheerActionHelper = None,
     soundAlertCheerActionHelper = None,
+    timber = timber,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
@@ -2361,7 +2352,7 @@ twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscript
 #######################################
 
 startables: Final[Collection[Startable | None]] = frozenset({
-    # TODO
+    cheerActionHelper,
 })
 
 
@@ -2492,7 +2483,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     twitchChannelJoinHelper = twitchChannelJoinHelper,
     twitchChatMessenger = twitchChatMessenger,
-    twitchConfiguration = twitchConfiguration,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,

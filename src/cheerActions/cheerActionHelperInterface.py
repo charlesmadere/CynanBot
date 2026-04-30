@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 
+from ..misc.startable import Startable
 from ..users.userInterface import UserInterface
 
 
-class CheerActionHelperInterface(ABC):
+class CheerActionHelperInterface(Startable, ABC):
 
     @abstractmethod
     async def handleCheerAction(
