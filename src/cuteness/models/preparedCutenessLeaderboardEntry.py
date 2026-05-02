@@ -2,14 +2,12 @@ from dataclasses import dataclass
 
 from .cutenessEntry import CutenessEntry
 from .cutenessLeaderboardEntry import CutenessLeaderboardEntry
-from ...users.userInterface import UserInterface
 
 
 @dataclass(frozen = True, slots = True)
 class PreparedCutenessLeaderboardEntry(CutenessEntry):
     cutenessLeaderboardEntry: CutenessLeaderboardEntry
     chatterUserName: str
-    twitchUser: UserInterface
 
     @property
     def chatterUserId(self) -> str:
@@ -27,10 +25,6 @@ class PreparedCutenessLeaderboardEntry(CutenessEntry):
 
     def getTwitchChannelId(self) -> str:
         return self.cutenessLeaderboardEntry.getTwitchChannelId()
-
-    @property
-    def twitchChannel(self) -> str:
-        return self.twitchUser.handle
 
     @property
     def twitchChannelId(self) -> str:

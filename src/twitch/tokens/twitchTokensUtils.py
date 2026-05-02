@@ -26,31 +26,43 @@ class TwitchTokensUtils(TwitchTokensUtilsInterface):
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
-        twitchChannelAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchChannel)
+        twitchChannelAccessToken = await self.__twitchTokensRepository.getAccessToken(
+            twitchChannel = twitchChannel,
+        )
 
         if utils.isValidStr(twitchChannelAccessToken):
             return twitchChannelAccessToken
 
         administratorUserId = await self.__administratorProvider.getAdministratorUserId()
-        return await self.__twitchTokensRepository.getAccessTokenById(administratorUserId)
+
+        return await self.__twitchTokensRepository.getAccessTokenById(
+            twitchChannelId = administratorUserId,
+        )
 
     async def getAccessTokenByIdOrFallback(self, twitchChannelId: str) -> str | None:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        twitchChannelAccessToken =  await self.__twitchTokensRepository.getAccessTokenById(twitchChannelId)
+        twitchChannelAccessToken =  await self.__twitchTokensRepository.getAccessTokenById(
+            twitchChannelId = twitchChannelId,
+        )
 
         if utils.isValidStr(twitchChannelAccessToken):
             return twitchChannelAccessToken
 
         administratorUserId = await self.__administratorProvider.getAdministratorUserId()
-        return await self.__twitchTokensRepository.getAccessTokenById(administratorUserId)
+
+        return await self.__twitchTokensRepository.getAccessTokenById(
+            twitchChannelId = administratorUserId,
+        )
 
     async def requireAccessTokenOrFallback(self, twitchChannel: str) -> str:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
-        accessToken = await self.getAccessTokenOrFallback(twitchChannel)
+        accessToken = await self.getAccessTokenOrFallback(
+            twitchChannel = twitchChannel,
+        )
 
         if not utils.isValidStr(accessToken):
             raise TwitchAccessTokenMissingException(f'Unable to find Twitch access token for \"{twitchChannel}\"')
@@ -61,7 +73,9 @@ class TwitchTokensUtils(TwitchTokensUtilsInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        accessToken = await self.getAccessTokenByIdOrFallback(twitchChannelId)
+        accessToken = await self.getAccessTokenByIdOrFallback(
+            twitchChannelId = twitchChannelId,
+        )
 
         if not utils.isValidStr(accessToken):
             raise TwitchAccessTokenMissingException(f'Unable to find Twitch access token for \"{twitchChannelId}\"')
