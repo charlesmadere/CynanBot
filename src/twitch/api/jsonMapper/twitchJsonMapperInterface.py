@@ -9,6 +9,7 @@ from ..models.twitchBanResponseEntry import TwitchBanResponseEntry
 from ..models.twitchBannedUser import TwitchBannedUser
 from ..models.twitchBannedUsersReponse import TwitchBannedUsersResponse
 from ..models.twitchBitsBadgeTier import TwitchBitsBadgeTier
+from ..models.twitchBitsUseType import TwitchBitsUseType
 from ..models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from ..models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
@@ -154,6 +155,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchBitsBadgeTier | None:
+        pass
+
+    @abstractmethod
+    async def parseBitsUseType(
+        self,
+        bitsUseType: str | Any | None,
+    ) -> TwitchBitsUseType | None:
         pass
 
     @abstractmethod
@@ -467,7 +475,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parsePowerUp(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchPowerUp | None:
         pass
 

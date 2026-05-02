@@ -12,6 +12,7 @@ from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.models.twitchApiScope import TwitchApiScope
 from src.twitch.api.models.twitchBanRequest import TwitchBanRequest
+from src.twitch.api.models.twitchBitsUseType import TwitchBitsUseType
 from src.twitch.api.models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from src.twitch.api.models.twitchBroadcasterType import TwitchBroadcasterType
 from src.twitch.api.models.twitchChannelEditor import TwitchChannelEditor
@@ -329,6 +330,36 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseBitsBadgeTier_withNone(self):
         result = await self.jsonMapper.parseBitsBadgeTier(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBitsUseType_withCheer(self):
+        result = await self.jsonMapper.parseBitsUseType('cheer')
+        assert result is TwitchBitsUseType.CHEER
+
+    @pytest.mark.asyncio
+    async def test_parseBitsUseType_withCustomPowerUp(self):
+        result = await self.jsonMapper.parseBitsUseType('custom_power_up')
+        assert result is TwitchBitsUseType.CUSTOM_POWER_UP
+
+    @pytest.mark.asyncio
+    async def test_parseBitsUseType_withEmptyString(self):
+        result = await self.jsonMapper.parseBitsUseType('')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBitsUseType_withNone(self):
+        result = await self.jsonMapper.parseBitsUseType(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseBitsUseType_withPowerUp(self):
+        result = await self.jsonMapper.parseBitsUseType('power_up')
+        assert result is TwitchBitsUseType.POWER_UP
+
+    @pytest.mark.asyncio
+    async def test_parseBitsUseType_withWhitespaceString(self):
+        result = await self.jsonMapper.parseBitsUseType(' ')
         assert result is None
 
     @pytest.mark.asyncio

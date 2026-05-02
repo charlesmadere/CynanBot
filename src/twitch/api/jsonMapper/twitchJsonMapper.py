@@ -13,6 +13,7 @@ from ..models.twitchBanResponseEntry import TwitchBanResponseEntry
 from ..models.twitchBannedUser import TwitchBannedUser
 from ..models.twitchBannedUsersReponse import TwitchBannedUsersResponse
 from ..models.twitchBitsBadgeTier import TwitchBitsBadgeTier
+from ..models.twitchBitsUseType import TwitchBitsUseType
 from ..models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from ..models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
@@ -361,6 +362,19 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         return TwitchBitsBadgeTier(
             tier = tier,
         )
+
+    async def parseBitsUseType(
+        self,
+        bitsUseType: str | Any | None,
+    ) -> TwitchBitsUseType | None:
+        if not utils.isValidStr(bitsUseType):
+            return None
+
+        match bitsUseType:
+            case 'cheer': return TwitchBitsUseType.CHEER
+            case 'custom_power_up': return TwitchBitsUseType.CUSTOM_POWER_UP
+            case 'power_up': return TwitchBitsUseType.POWER_UP
+            case _: return None
 
     async def parseBroadcasterSubscription(
         self,
@@ -1451,7 +1465,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parsePowerUp(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchPowerUp | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
