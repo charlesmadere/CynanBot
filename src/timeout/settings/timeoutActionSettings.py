@@ -15,16 +15,8 @@ class TimeoutActionSettings(TimeoutActionSettingsInterface):
 
         self.__cache: dict[str, Any] | None = None
 
-    async def areMassiveTimeoutSoundAlertsEnabled(self) -> bool:
-        jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'massiveTimeoutSoundAlertsEnabled', fallback = True)
-
     async def clearCaches(self):
         self.__cache = None
-
-    async def getActionLoopCooldownSeconds(self) -> float:
-        jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'actionLoopCooldownSeconds', fallback = 0.25)
 
     async def getDieSize(self) -> int:
         jsonContents = await self.__readJson()
@@ -32,23 +24,11 @@ class TimeoutActionSettings(TimeoutActionSettingsInterface):
 
     async def getFailureProbability(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'failureProbability', fallback = 0.20)
+        return utils.getFloatFromDict(jsonContents, 'failureProbability', fallback = 0.24)
 
     async def getGrenadeAdditionalReverseProbability(self) -> float:
         jsonContents = await self.__readJson()
         return utils.getFloatFromDict(jsonContents, 'grenadeAdditionalReverseProbability', fallback = 0.09)
-
-    async def getMassiveTimeoutHoursTransitionPoint(self) -> int | None:
-        jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'massiveTimeoutHoursTransitionPoint', fallback = 6)
-
-    async def getMaxBullyFailureOccurrences(self) -> int:
-        jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'maxBullyFailureOccurrences', fallback = 3)
-
-    async def getMaxBullyFailureProbability(self) -> float:
-        jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'maxBullyFailureProbability', fallback = 0.56)
 
     async def getReverseProbability(self) -> float:
         jsonContents = await self.__readJson()
@@ -57,10 +37,6 @@ class TimeoutActionSettings(TimeoutActionSettingsInterface):
     async def getTm36SplashDamageProbability(self) -> float:
         jsonContents = await self.__readJson()
         return utils.getFloatFromDict(jsonContents, 'tm36SplashDamageProbability', fallback = 0.20)
-
-    async def isBullyBasedIncreasedFailureRateEnabled(self) -> bool:
-        jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'bullyBasedIncreasedFailureRateEnabled', fallback = True)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:

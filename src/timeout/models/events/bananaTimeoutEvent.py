@@ -4,7 +4,6 @@ from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.bananaTimeoutAction import BananaTimeoutAction
 from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
-from ..chatterTimeoutHistory import ChatterTimeoutHistory
 from ..timeoutDiceRoll import TimeoutDiceRoll
 from ..timeoutDiceRollFailureData import TimeoutDiceRollFailureData
 from ..timeoutTarget import TimeoutTarget
@@ -20,7 +19,6 @@ class BananaTimeoutEvent(AbsTimeoutEvent):
     isReverse: bool
     timeoutDuration: CalculatedTimeoutDuration
     updatedInventory: ChatterItemGiveResult | None
-    chatterTimeoutHistory: ChatterTimeoutHistory
     eventId: str
     instigatorUserName: str
     ripBozoEmote: str
