@@ -53,7 +53,6 @@ from ..models.events.voreTimeoutFailedTimeoutEvent import VoreTimeoutFailedTimeo
 from ..models.timeoutDiceRoll import TimeoutDiceRoll
 from ..models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
 from ..models.timeoutTarget import TimeoutTarget
-from ..repositories.chatterTimeoutHistoryRepositoryInterface import ChatterTimeoutHistoryRepositoryInterface
 from ..useCases.calculateTimeoutDurationUseCaseInterface import CalculateTimeoutDurationUseCaseInterface
 from ..useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
 from ..useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
@@ -90,7 +89,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         calculateTimeoutDurationUseCase: CalculateTimeoutDurationUseCaseInterface,
         chatterInventoryHelper: ChatterInventoryHelperInterface,
-        chatterTimeoutHistoryRepository: ChatterTimeoutHistoryRepositoryInterface,
         determineAirStrikeTargetsUseCase: DetermineAirStrikeTargetsUseCase,
         determineBananaTargetUseCase: DetermineBananaTargetUseCase,
         determineGrenadeTargetUseCase: DetermineGrenadeTargetUseCase,
@@ -118,8 +116,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'calculateTimeoutDurationUseCase argument is malformed: \"{calculateTimeoutDurationUseCase}\"')
         elif not isinstance(chatterInventoryHelper, ChatterInventoryHelperInterface):
             raise TypeError(f'chatterInventoryHelper argument is malformed: \"{chatterInventoryHelper}\"')
-        elif not isinstance(chatterTimeoutHistoryRepository, ChatterTimeoutHistoryRepositoryInterface):
-            raise TypeError(f'chatterTimeoutHistoryRepository argument is malformed: \"{chatterTimeoutHistoryRepository}\"')
         elif not isinstance(determineAirStrikeTargetsUseCase, DetermineAirStrikeTargetsUseCase):
             raise TypeError(f'determineAirStrikeTargetsUseCase argument is malformed: \"{determineAirStrikeTargetsUseCase}\"')
         elif not isinstance(determineBananaTargetUseCase, DetermineBananaTargetUseCase):
@@ -162,7 +158,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface] = calculateTimeoutDurationUseCase
         self.__chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = chatterInventoryHelper
-        self.__chatterTimeoutHistoryRepository: Final[ChatterTimeoutHistoryRepositoryInterface] = chatterTimeoutHistoryRepository
         self.__determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCase] = determineAirStrikeTargetsUseCase
         self.__determineBananaTargetUseCase: Final[DetermineBananaTargetUseCase] = determineBananaTargetUseCase
         self.__determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCase] = determineGrenadeTargetUseCase
@@ -445,13 +440,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             twitchChannelId = action.twitchChannelId,
         )
 
-        chatterTimeoutHistory = await self.__chatterTimeoutHistoryRepository.add(
-            durationSeconds = timeoutDuration.seconds,
-            chatterUserId = timeoutData.timeoutTarget.userId,
-            timedOutByUserId = action.instigatorUserId,
-            twitchChannelId = action.twitchChannelId,
-        )
-
         updatedInventory: ChatterItemGiveResult | None = None
 
         if not action.ignoreInventory:
@@ -468,7 +456,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             isReverse = timeoutData.isReverse,
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
-            chatterTimeoutHistory = chatterTimeoutHistory,
             eventId = await self.__timeoutIdGenerator.generateEventId(),
             instigatorUserName = instigatorUserName,
             ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup(),
@@ -927,13 +914,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             twitchChannelId = action.twitchChannelId,
         )
 
-        chatterTimeoutHistory = await self.__chatterTimeoutHistoryRepository.add(
-            durationSeconds = timeoutDuration.seconds,
-            chatterUserId = timeoutTarget.userId,
-            timedOutByUserId = action.instigatorUserId,
-            twitchChannelId = action.twitchChannelId,
-        )
-
         updatedInventory: ChatterItemGiveResult | None = None
 
         if not action.ignoreInventory:
@@ -949,7 +929,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             timeoutTarget = timeoutTarget,
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
-            chatterTimeoutHistory = chatterTimeoutHistory,
             eventId = await self.__timeoutIdGenerator.generateEventId(),
             instigatorUserName = instigatorUserName,
             ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup(),

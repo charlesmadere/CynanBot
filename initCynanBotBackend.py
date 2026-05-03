@@ -241,10 +241,6 @@ from src.timeout.idGenerator.timeoutIdGenerator import TimeoutIdGenerator
 from src.timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
 from src.timeout.machine.timeoutActionMachine import TimeoutActionMachine
 from src.timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
-from src.timeout.mappers.chatterTimeoutHistoryMapper import ChatterTimeoutHistoryMapper
-from src.timeout.mappers.chatterTimeoutHistoryMapperInterface import ChatterTimeoutHistoryMapperInterface
-from src.timeout.repositories.chatterTimeoutHistoryRepository import ChatterTimeoutHistoryRepository
-from src.timeout.repositories.chatterTimeoutHistoryRepositoryInterface import ChatterTimeoutHistoryRepositoryInterface
 from src.timeout.settings.timeoutActionSettings import TimeoutActionSettings
 from src.timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from src.timeout.useCases.calculateTimeoutDurationUseCase import CalculateTimeoutDurationUseCase
@@ -1541,15 +1537,6 @@ chatterInventoryHelper: ChatterInventoryHelperInterface = StubChatterInventoryHe
     userIdsRepository = userIdsRepository,
 )
 
-chatterTimeoutHistoryMapper: ChatterTimeoutHistoryMapperInterface = ChatterTimeoutHistoryMapper()
-
-chatterTimeoutHistoryRepository: ChatterTimeoutHistoryRepositoryInterface = ChatterTimeoutHistoryRepository(
-    backingDatabase = backingDatabase,
-    chatterTimeoutHistoryMapper = chatterTimeoutHistoryMapper,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-)
-
 calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface] = CalculateTimeoutDurationUseCase()
 
 determineAirStrikeTargetsUseCase = DetermineAirStrikeTargetsUseCase(
@@ -1562,11 +1549,9 @@ determineAirStrikeTargetsUseCase = DetermineAirStrikeTargetsUseCase(
 )
 
 determineBananaTargetUseCase = DetermineBananaTargetUseCase(
-    chatterTimeoutHistoryRepository = chatterTimeoutHistoryRepository,
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
-    twitchTokensUtils = twitchTokensUtils,
 )
 
 determineGrenadeTargetUseCase = DetermineGrenadeTargetUseCase(
@@ -1607,7 +1592,6 @@ timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachin
     backgroundTaskHelper = backgroundTaskHelper,
     calculateTimeoutDurationUseCase = calculateTimeoutDurationUseCase,
     chatterInventoryHelper = chatterInventoryHelper,
-    chatterTimeoutHistoryRepository = chatterTimeoutHistoryRepository,
     determineAirStrikeTargetsUseCase = determineAirStrikeTargetsUseCase,
     determineBananaTargetUseCase = determineBananaTargetUseCase,
     determineGrenadeTargetUseCase = determineGrenadeTargetUseCase,

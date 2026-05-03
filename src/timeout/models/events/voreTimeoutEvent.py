@@ -4,7 +4,6 @@ from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.voreTimeoutAction import VoreTimeoutAction
 from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
-from ..chatterTimeoutHistory import ChatterTimeoutHistory
 from ..timeoutTarget import TimeoutTarget
 from ....asplodieStats.models.asplodieStats import AsplodieStats
 from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
@@ -16,7 +15,6 @@ class VoreTimeoutEvent(AbsTimeoutEvent):
     asplodieStats: AsplodieStats
     timeoutDuration: CalculatedTimeoutDuration
     updatedInventory: ChatterItemGiveResult | None
-    chatterTimeoutHistory: ChatterTimeoutHistory
     eventId: str
     instigatorUserName: str
     ripBozoEmote: str

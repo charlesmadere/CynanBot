@@ -8,11 +8,9 @@ from ..models.actions.bananaTimeoutAction import BananaTimeoutAction
 from ..models.timeoutDiceRoll import TimeoutDiceRoll
 from ..models.timeoutDiceRollFailureData import TimeoutDiceRollFailureData
 from ..models.timeoutTarget import TimeoutTarget
-from ..repositories.chatterTimeoutHistoryRepositoryInterface import ChatterTimeoutHistoryRepositoryInterface
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
-from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 
 
 class DetermineBananaTargetUseCase:
@@ -26,43 +24,20 @@ class DetermineBananaTargetUseCase:
 
     def __init__(
         self,
-        chatterTimeoutHistoryRepository: ChatterTimeoutHistoryRepositoryInterface,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         timber: TimberInterface,
         timeoutActionSettings: TimeoutActionSettingsInterface,
-        twitchTokensUtils: TwitchTokensUtilsInterface,
     ):
-        if not isinstance(chatterTimeoutHistoryRepository, ChatterTimeoutHistoryRepositoryInterface):
-            raise TypeError(f'chatterTimeoutHistoryRepository argument is malformed: \"{chatterTimeoutHistoryRepository}\"')
-        elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
+        if not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
             raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
             raise TypeError(f'timeoutActionSettings argument is malformed: \"{timeoutActionSettings}\"')
-        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
-            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
 
-        self.__chatterTimeoutHistoryRepository: Final[ChatterTimeoutHistoryRepositoryInterface] = chatterTimeoutHistoryRepository
         self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionSettings: Final[TimeoutActionSettingsInterface] = timeoutActionSettings
-        self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-
-    async def __fetchBullyOccurrenceCount(
-        self,
-        targetUserId: str,
-        twitchChannelId: str,
-    ) -> int:
-        if not await self.__timeoutActionSettings.isBullyBasedIncreasedFailureRateEnabled():
-            return 0
-
-        chatterTimeoutHistory = await self.__chatterTimeoutHistoryRepository.get(
-            chatterUserId = targetUserId,
-            twitchChannelId = twitchChannelId,
-        )
-
-        return len(chatterTimeoutHistory.entries)
 
     async def __generateDiceRoll(self) -> TimeoutDiceRoll:
         dieSize = await self.__timeoutActionSettings.getDieSize()
@@ -75,22 +50,9 @@ class DetermineBananaTargetUseCase:
 
     async def __generateDiceRollFailureData(
         self,
-        timeoutAction: BananaTimeoutAction,
-        targetUserId: str,
         diceRoll: TimeoutDiceRoll,
     ) -> TimeoutDiceRollFailureData:
-        baseFailureProbability = await self.__timeoutActionSettings.getFailureProbability()
-        maxBullyFailureProbability = await self.__timeoutActionSettings.getMaxBullyFailureProbability()
-        maxBullyFailureOccurrences = await self.__timeoutActionSettings.getMaxBullyFailureOccurrences()
-        perBullyFailureProbabilityIncrease = (maxBullyFailureProbability - baseFailureProbability) / float(maxBullyFailureOccurrences)
-
-        bullyOccurrences = await self.__fetchBullyOccurrenceCount(
-            targetUserId = targetUserId,
-            twitchChannelId = timeoutAction.twitchChannelId,
-        )
-
-        failureProbability = baseFailureProbability + (perBullyFailureProbabilityIncrease * float(bullyOccurrences))
-        failureProbability = float(min(failureProbability, maxBullyFailureProbability))
+        failureProbability = await self.__timeoutActionSettings.getFailureProbability()
         failureRoll = int(round(failureProbability * float(diceRoll.dieSize)))
         failureRoll = int(min(failureRoll, diceRoll.dieSize))
 
@@ -99,14 +61,9 @@ class DetermineBananaTargetUseCase:
         reverseRoll = int(min(reverseRoll, diceRoll.dieSize))
 
         return TimeoutDiceRollFailureData(
-            baseFailureProbability = baseFailureProbability,
             failureProbability = failureProbability,
-            maxBullyFailureProbability = maxBullyFailureProbability,
-            perBullyFailureProbabilityIncrease = perBullyFailureProbabilityIncrease,
             reverseProbability = reverseProbability,
-            bullyOccurrences = bullyOccurrences,
             failureRoll = failureRoll,
-            maxBullyFailureOccurrences = maxBullyFailureOccurrences,
             reverseRoll = reverseRoll,
         )
 
@@ -144,8 +101,6 @@ class DetermineBananaTargetUseCase:
             diceRoll = await self.__generateDiceRoll()
 
         diceRollFailureData = await self.__generateDiceRollFailureData(
-            timeoutAction = timeoutAction,
-            targetUserId = timeoutTarget.userId,
             diceRoll = diceRoll,
         )
 
