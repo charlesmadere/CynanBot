@@ -1,24 +1,11 @@
 import traceback
-from typing import Final, TypedDict
+from typing import Any, Final
 
-from .emojiInfo import EmojiInfo
+from .emojiData import EmojiData
 from .emojiRepositoryInterface import EmojiRepositoryInterface
 from ..misc import utils as utils
-from ..misc.type_check import validate_typeddict
 from ..storage.jsonReaderInterface import JsonReaderInterface
 from ..timber.timberInterface import TimberInterface
-
-
-class EmojiJson(TypedDict):
-    code: list[str]
-    category: str
-    emoji: str
-    name: str
-    subcategory: str
-
-
-class EmojiDataJson(TypedDict):
-    emojis: list[EmojiJson]
 
 
 class EmojiRepository(EmojiRepositoryInterface):
@@ -37,9 +24,9 @@ class EmojiRepository(EmojiRepositoryInterface):
         self.__timber: Final[TimberInterface] = timber
 
         self.__isLoaded: bool = False
-        self.__emojiInfoData: Final[dict[str, EmojiInfo | None]] = dict()
+        self.__emojiData: Final[dict[str, EmojiData | None]] = dict()
 
-    async def fetchEmojiInfo(self, emoji: str | None) -> EmojiInfo | None:
+    async def fetchEmojiData(self, emoji: str | None) -> EmojiData | None:
         if emoji is None:
             return None
         elif not isinstance(emoji, str):
@@ -48,24 +35,38 @@ class EmojiRepository(EmojiRepositoryInterface):
             return None
 
         await self.__readJson()
-        return self.__emojiInfoData.get(emoji)
+        return self.__emojiData.get(emoji, None)
 
-    async def __parseDictToEmojiInfo(
+    async def __parseJsonToEmojiData(
         self,
-        emojiDict: EmojiJson
-    ) -> EmojiInfo:
-        codes = frozenset(emojiDict['code'])
-        category = emojiDict['category']
-        emoji = emojiDict['emoji']
-        name = emojiDict['name']
-        subCategory = emojiDict['subcategory']
+        emojiJson: dict[str, Any],
+    ) -> EmojiData:
+        codes: set[str] = set()
+        codeArray: list[str] | Any | None = emojiJson.get('code')
+        if isinstance(codeArray, list) and len(codeArray) >= 1:
+            for index, code in enumerate(codeArray):
+                if utils.isValidStr(code):
+                    codes.add(code)
+                else:
+                    self.__timber.log('EmojiRepository', f'Encountered malformed emoji code ({index=}) ({code=}) ({emojiJson=})')
 
-        return EmojiInfo(
-            codes = codes,
+        category: str | None = None
+        if 'category' in emojiJson and utils.isValidStr(emojiJson.get('category')):
+            category = utils.getStrFromDict(emojiJson, 'category')
+
+        emoji = utils.getStrFromDict(emojiJson, 'emoji')
+        name = utils.getStrFromDict(emojiJson, 'name')
+
+        subCategory: str | None = None
+        if 'subcategory' in emojiJson and utils.isValidStr(emojiJson.get('subcategory')):
+            subCategory = utils.getStrFromDict(emojiJson, 'subcategory')
+
+        return EmojiData(
+            codes = frozenset(codes),
             category = category,
             emoji = emoji,
             name = name,
-            subCategory = subCategory
+            subCategory = subCategory,
         )
 
     async def __readJson(self):
@@ -73,31 +74,32 @@ class EmojiRepository(EmojiRepositoryInterface):
             return
 
         self.__isLoaded = True
-        self.__timber.log('EmojiRepository', f'Reading in emoji info data...')
+        self.__timber.log('EmojiRepository', f'Reading in emoji data...')
+
         jsonContents = await self.__emojiJsonReader.readJsonAsync()
-
-        if not validate_typeddict(jsonContents, EmojiDataJson):
-            self.__timber.log('EmojiRepository', f'structure of emoji data json is wrong\n{jsonContents=}')
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
+            self.__timber.log('EmojiRepository', f'Structure of emoji JSON data is wrong or malformed! ({jsonContents=})')
             return
 
-        emojisList = jsonContents['emojis']
-
-        if len(emojisList) == 0:
-            self.__timber.log('EmojiRepository', f'\"emojis\" field is empty!')
+        emojisArray: list[dict[str, Any]] | Any | None = jsonContents.get('emojis')
+        if not isinstance(emojisArray, list) or len(emojisArray) == 0:
+            self.__timber.log('EmojiRepository', f'\"emojis\" field is missing, malformed, or empty! ({emojisArray=}) ({jsonContents=})')
             return
 
-        for index, emojiDict in enumerate(emojisList):
-            emojiInfo: EmojiInfo | None = None
+        for index, emojiJson in enumerate(emojisArray):
+            emojiData: EmojiData | None = None
             exception: Exception | None = None
 
             try:
-                emojiInfo = await self.__parseDictToEmojiInfo(emojiDict)
+                emojiData = await self.__parseJsonToEmojiData(
+                    emojiJson = emojiJson,
+                )
             except Exception as e:
                 exception = e
 
-            if emojiInfo is None or exception is not None:
-                self.__timber.log('EmojiRepository', f'Failed to read in emoji info at index {index} ({emojiDict=}): {exception}', exception, traceback.format_exc())
+            if emojiData is None or exception is not None:
+                self.__timber.log('EmojiRepository', f'Failed to read in emoji data at index {index} ({emojiData=}) ({emojiJson=}) ({exception=})', exception, traceback.format_exc())
             else:
-                self.__emojiInfoData[emojiInfo.emoji] = emojiInfo
+                self.__emojiData[emojiData.emoji] = emojiData
 
-        self.__timber.log('EmojiRepository', f'Finished reading in {len(self.__emojiInfoData)} emoji(s)')
+        self.__timber.log('EmojiRepository', f'Finished reading in {len(self.__emojiData)} emoji(s)')

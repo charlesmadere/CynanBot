@@ -22,12 +22,14 @@ class EmojiHelper(EmojiHelperInterface):
         if not utils.isValidStr(emoji):
             return None
 
-        emojiInfo = await self.__emojiRepository.fetchEmojiInfo(emoji)
+        emojiData = await self.__emojiRepository.fetchEmojiData(
+            emoji = emoji,
+        )
 
-        if emojiInfo is None:
+        if emojiData is None:
             return None
         else:
-            return emojiInfo.name
+            return emojiData.name
 
     async def replaceEmojisWithHumanNames(self, text: str) -> str:
         if not utils.isValidStr(text):
@@ -49,7 +51,9 @@ class EmojiHelper(EmojiHelperInterface):
             replacementString = ''
 
             for distinctEmoji in distinctEmojis:
-                humanName = await self.getHumanNameForEmoji(distinctEmoji)
+                humanName = await self.getHumanNameForEmoji(
+                    emoji = distinctEmoji,
+                )
 
                 if humanName is not None:
                     replacementString = f'{replacementString} {humanName}'
