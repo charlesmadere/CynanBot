@@ -8,6 +8,7 @@ from .twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterfa
 from ..api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from ..api.models.twitchAnnouncement import TwitchAnnouncement
 from ..api.models.twitchBitsBadgeTier import TwitchBitsBadgeTier
+from ..api.models.twitchBitsUseType import TwitchBitsUseType
 from ..api.models.twitchChannelPointsVoting import TwitchChannelPointsVoting
 from ..api.models.twitchChatBadge import TwitchChatBadge
 from ..api.models.twitchChatMessage import TwitchChatMessage
@@ -25,6 +26,7 @@ from ..api.models.twitchPowerUp import TwitchPowerUp
 from ..api.models.twitchPredictionStatus import TwitchPredictionStatus
 from ..api.models.twitchPrimePaidUpgrade import TwitchPrimePaidUpgrade
 from ..api.models.twitchRaid import TwitchRaid
+from ..api.models.twitchReply import TwitchReply
 from ..api.models.twitchResub import TwitchResub
 from ..api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage
 from ..api.models.twitchReward import TwitchReward
@@ -408,6 +410,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'bits_badge_tier' in eventJson:
             bitsBadgeTier = await self.__twitchJsonMapper.parseBitsBadgeTier(eventJson.get('bits_badge_tier'))
 
+        bitsUseType: TwitchBitsUseType | None = None
+        if 'type' in eventJson and utils.isValidStr(eventJson.get('type')):
+            bitsUseType = await self.__twitchJsonMapper.parseBitsUseType(eventJson.get('type'))
+
         channelPointsVoting: TwitchChannelPointsVoting | None = None
         if 'channel_points_voting' in eventJson:
             channelPointsVoting = await self.__twitchJsonMapper.parseChannelPointsVoting(eventJson.get('channel_points_voting'))
@@ -463,6 +469,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         raid: TwitchRaid | None = None
         if 'raid' in eventJson:
             raid = await self.__twitchJsonMapper.parseRaid(eventJson.get('raid'))
+
+        reply: TwitchReply | None = None
+        if 'reply' in eventJson:
+            reply = await self.__twitchJsonMapper.parseReply(eventJson.get('reply'))
 
         resub: TwitchResub | None = None
         if 'resub' in eventJson:
@@ -560,6 +570,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             winningOutcomeId = winningOutcomeId,
             announcement = announcement,
             bitsBadgeTier = bitsBadgeTier,
+            bitsUseType = bitsUseType,
             channelPointsVoting = channelPointsVoting,
             chatMessage = chatMessage,
             chatMessageType = chatMessageType,
@@ -573,6 +584,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             predictionStatus = predictionStatus,
             primePaidUpgrade = primePaidUpgrade,
             raid = raid,
+            reply = reply,
             resub = resub,
             resubscriptionMessage = resubscriptionMessage,
             reward = reward,

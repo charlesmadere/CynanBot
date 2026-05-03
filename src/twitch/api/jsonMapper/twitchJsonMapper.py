@@ -13,6 +13,7 @@ from ..models.twitchBanResponseEntry import TwitchBanResponseEntry
 from ..models.twitchBannedUser import TwitchBannedUser
 from ..models.twitchBannedUsersReponse import TwitchBannedUsersResponse
 from ..models.twitchBitsBadgeTier import TwitchBitsBadgeTier
+from ..models.twitchBitsUseType import TwitchBitsUseType
 from ..models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from ..models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
@@ -65,6 +66,7 @@ from ..models.twitchPowerUpType import TwitchPowerUpType
 from ..models.twitchPredictionStatus import TwitchPredictionStatus
 from ..models.twitchPrimePaidUpgrade import TwitchPrimePaidUpgrade
 from ..models.twitchRaid import TwitchRaid
+from ..models.twitchReply import TwitchReply
 from ..models.twitchResub import TwitchResub
 from ..models.twitchResubscriptionMessage import TwitchResubscriptionMessage
 from ..models.twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote
@@ -361,6 +363,19 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         return TwitchBitsBadgeTier(
             tier = tier,
         )
+
+    async def parseBitsUseType(
+        self,
+        bitsUseType: str | Any | None,
+    ) -> TwitchBitsUseType | None:
+        if not utils.isValidStr(bitsUseType):
+            return None
+
+        match bitsUseType:
+            case 'cheer': return TwitchBitsUseType.CHEER
+            case 'custom_power_up': return TwitchBitsUseType.CUSTOM_POWER_UP
+            case 'power_up': return TwitchBitsUseType.POWER_UP
+            case _: return None
 
     async def parseBroadcasterSubscription(
         self,
@@ -1451,7 +1466,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parsePowerUp(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchPowerUp | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1559,6 +1574,38 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userId = userId,
             userLogin = userLogin,
             userName = userName,
+        )
+
+    async def parseReply(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchReply | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        parentMessageBody: str | None = None
+        if 'parent_message_body' in jsonResponse and utils.isValidStr(jsonResponse.get('parent_message_body')):
+            parentMessageBody = utils.getStrFromDict(jsonResponse, 'parent_message_body', clean = True)
+
+        parentMessageId = utils.getStrFromDict(jsonResponse, 'parent_message_id')
+        parentUserId = utils.getStrFromDict(jsonResponse, 'parent_user_id')
+        parentUserLogin = utils.getStrFromDict(jsonResponse, 'parent_user_login')
+        parentUserName = utils.getStrFromDict(jsonResponse, 'parent_user_name')
+        threadMessageId = utils.getStrFromDict(jsonResponse, 'thread_message_id')
+        threadUserId = utils.getStrFromDict(jsonResponse, 'thread_user_id')
+        threadUserLogin = utils.getStrFromDict(jsonResponse, 'thread_user_login')
+        threadUserName = utils.getStrFromDict(jsonResponse, 'thread_user_name')
+
+        return TwitchReply(
+            parentMessageBody = parentMessageBody,
+            parentMessageId = parentMessageId,
+            parentUserId = parentUserId,
+            parentUserLogin = parentUserLogin,
+            parentUserName = parentUserName,
+            threadMessageId = threadMessageId,
+            threadUserId = threadUserId,
+            threadUserLogin = threadUserLogin,
+            threadUserName = threadUserName,
         )
 
     async def parseResub(

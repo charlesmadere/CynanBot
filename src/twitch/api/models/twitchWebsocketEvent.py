@@ -5,6 +5,7 @@ from frozenlist import FrozenList
 
 from .twitchAnnouncement import TwitchAnnouncement
 from .twitchBitsBadgeTier import TwitchBitsBadgeTier
+from .twitchBitsUseType import TwitchBitsUseType
 from .twitchChannelPointsVoting import TwitchChannelPointsVoting
 from .twitchChatBadge import TwitchChatBadge
 from .twitchChatMessage import TwitchChatMessage
@@ -22,6 +23,7 @@ from .twitchPowerUp import TwitchPowerUp
 from .twitchPredictionStatus import TwitchPredictionStatus
 from .twitchPrimePaidUpgrade import TwitchPrimePaidUpgrade
 from .twitchRaid import TwitchRaid
+from .twitchReply import TwitchReply
 from .twitchResub import TwitchResub
 from .twitchResubscriptionMessage import TwitchResubscriptionMessage
 from .twitchReward import TwitchReward
@@ -96,6 +98,7 @@ class TwitchWebsocketEvent:
     winningOutcomeId: str | None = None
     announcement: TwitchAnnouncement | None = None
     bitsBadgeTier: TwitchBitsBadgeTier | None = None
+    bitsUseType: TwitchBitsUseType | None = None
     channelPointsVoting: TwitchChannelPointsVoting | None = None
     chatMessage: TwitchChatMessage | None = None
     chatMessageType: TwitchChatMessageType | None = None
@@ -109,6 +112,7 @@ class TwitchWebsocketEvent:
     predictionStatus: TwitchPredictionStatus | None = None
     primePaidUpgrade: TwitchPrimePaidUpgrade | None = None
     raid: TwitchRaid | None = None
+    reply: TwitchReply | None = None
     resub: TwitchResub | None = None
     resubscriptionMessage: TwitchResubscriptionMessage | None = None
     reward: TwitchReward | None = None

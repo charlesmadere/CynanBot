@@ -180,6 +180,8 @@ from src.cheerActions.settings.cheerActionSettingsRepository import CheerActionS
 from src.cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from src.cheerActions.soundAlert.soundAlertCheerActionHelper import SoundAlertCheerActionHelper
 from src.cheerActions.soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
+from src.cheerActions.tts.ttsCheerActionHelper import TtsCheerActionHelper
+from src.cheerActions.tts.ttsCheerActionHelperInterface import TtsCheerActionHelperInterface
 from src.commodoreSam.apiService.commodoreSamApiService import CommodoreSamApiService
 from src.commodoreSam.apiService.commodoreSamApiServiceInterface import CommodoreSamApiServiceInterface
 from src.commodoreSam.commodoreSamMessageCleaner import CommodoreSamMessageCleaner
@@ -2807,6 +2809,11 @@ soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface = SoundAlertCh
     timber = timber,
 )
 
+ttsCheerActionHelper: Final[TtsCheerActionHelperInterface] = TtsCheerActionHelper(
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+)
+
 cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
     backgroundTaskHelper = backgroundTaskHelper,
     cheerActionsRepository = cheerActionsRepository,
@@ -2814,6 +2821,7 @@ cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
     itemUseCheerActionHelper = itemUseCheerActionHelper,
     soundAlertCheerActionHelper = soundAlertCheerActionHelper,
     timber = timber,
+    ttsCheerActionHelper = ttsCheerActionHelper,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
@@ -3591,7 +3599,6 @@ twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
     cheerActionHelper = cheerActionHelper,
     mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
-    streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
     triviaGameMachine = triviaGameMachine,

@@ -38,16 +38,9 @@ from ...cheerActions.cheerActionHelperInterface import CheerActionHelperInterfac
 from ...misc import utils as utils
 from ...mostRecentChat.mostRecentChat import MostRecentChat
 from ...mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
-from ...soundPlayerManager.soundAlert import SoundAlert
-from ...streamAlertsManager.streamAlert import StreamAlert
-from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ...trivia.triviaGameMachineInterface import TriviaGameMachineInterface
-from ...tts.models.ttsCheerDonation import TtsCheerDonation
-from ...tts.models.ttsEvent import TtsEvent
-from ...tts.models.ttsProvider import TtsProvider
-from ...tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ...users.userInterface import UserInterface
 
 
@@ -60,7 +53,6 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         cheerActionHelper: CheerActionHelperInterface | None,
         mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface,
-        streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
         triviaGameMachine: TriviaGameMachineInterface | None,
@@ -77,8 +69,6 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             raise TypeError(f'mostRecentAnivMessageTimeoutHelper argument is malformed: \"{mostRecentAnivMessageTimeoutHelper}\"')
         elif not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
             raise TypeError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
-        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
-            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
@@ -95,7 +85,6 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         self.__cheerActionHelper: Final[CheerActionHelperInterface | None] = cheerActionHelper
         self.__mostRecentAnivMessageTimeoutHelper: Final[MostRecentAnivMessageTimeoutHelperInterface | None] = mostRecentAnivMessageTimeoutHelper
         self.__mostRecentChatsRepository: Final[MostRecentChatsRepositoryInterface] = mostRecentChatsRepository
-        self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface | None] = triviaGameBuilder
         self.__triviaGameMachine: Final[TriviaGameMachineInterface | None] = triviaGameMachine
@@ -214,11 +203,6 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
         if chatMessage.twitchUser.isSuperTriviaGameEnabled:
             await self.__processSuperTriviaEvent(
-                chatMessage = chatMessage,
-            )
-
-        if chatMessage.twitchUser.isTtsEnabled:
-            await self.__processTtsEvent(
                 chatMessage = chatMessage,
             )
 
@@ -397,47 +381,6 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
         if action is not None:
             self.__triviaGameMachine.submitAction(action)
-
-    async def __processTtsEvent(self, chatMessage: TwitchChatMessage):
-        if not chatMessage.twitchUser.isTtsEnabled:
-            return
-
-        cheer = chatMessage.cheerMetadata
-        if cheer is None or cheer.bits < 1:
-            return
-
-        provider: TtsProvider | None = None
-        ttsBoosterPacks = chatMessage.twitchUser.ttsBoosterPacks
-
-        if ttsBoosterPacks is None or len(ttsBoosterPacks) == 0:
-            return
-
-        for ttsBoosterPack in ttsBoosterPacks:
-            if ttsBoosterPack.isEnabled and cheer.bits >= ttsBoosterPack.cheerAmount:
-                provider = ttsBoosterPack.ttsProvider
-                break
-
-        if provider is None:
-            return
-
-        self.__streamAlertsManager.submitAlert(StreamAlert(
-            soundAlert = SoundAlert.CHEER,
-            twitchChannel = chatMessage.twitchChannel,
-            twitchChannelId = chatMessage.twitchChannelId,
-            ttsEvent = TtsEvent(
-                message = chatMessage.textWithoutCheers,
-                twitchChannel = chatMessage.twitchChannel,
-                twitchChannelId = chatMessage.twitchChannelId,
-                userId = chatMessage.chatterUserId,
-                userName = chatMessage.chatterUserLogin,
-                donation = TtsCheerDonation(
-                    bits = cheer.bits,
-                ),
-                provider = provider,
-                providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
-                raidInfo = None,
-            ),
-        ))
 
     async def __purgeChatMessageOfCheers(
         self,

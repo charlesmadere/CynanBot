@@ -5,6 +5,7 @@ from .cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from .crowdControl.crowdControlCheerActionHelperInterface import CrowdControlCheerActionHelperInterface
 from .itemUse.itemUseCheerActionHelperInterface import ItemUseCheerActionHelperInterface
 from .soundAlert.soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
+from .tts.ttsCheerActionHelperInterface import TtsCheerActionHelperInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..timber.timberInterface import TimberInterface
@@ -24,6 +25,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         itemUseCheerActionHelper: ItemUseCheerActionHelperInterface | None,
         soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface | None,
         timber: TimberInterface,
+        ttsCheerActionHelper: TtsCheerActionHelperInterface | None,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -41,6 +43,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'soundAlertCheerActionHelper argument is malformed: \"{soundAlertCheerActionHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif ttsCheerActionHelper is not None and not isinstance(ttsCheerActionHelper, TtsCheerActionHelperInterface):
+            raise TypeError(f'ttsCheerActionHelper argument is malformed: \"{ttsCheerActionHelper}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -58,6 +62,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__itemUseCheerActionHelper: Final[ItemUseCheerActionHelperInterface | None] = itemUseCheerActionHelper
         self.__soundAlertCheerActionHelper: Final[SoundAlertCheerActionHelperInterface | None] = soundAlertCheerActionHelper
         self.__timber: Final[TimberInterface] = timber
+        self.__ttsCheerActionHelper: Final[TtsCheerActionHelperInterface | None] = ttsCheerActionHelper
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
@@ -156,6 +161,17 @@ class CheerActionHelper(CheerActionHelperInterface):
             twitchChannelId = twitchChannelId,
             userTwitchAccessToken = userTwitchAccessToken,
             user = user,
+        ):
+            return True
+
+        elif self.__ttsCheerActionHelper is not None and await self.__ttsCheerActionHelper.handleTtsCheerAction(
+            actions = actions,
+            bits = bits,
+            cheerUserId = cheerUserId,
+            cheerUserName = cheerUserName,
+            message = message,
+            twitchChannelId = twitchChannelId,
+            twitchUser = user,
         ):
             return True
 

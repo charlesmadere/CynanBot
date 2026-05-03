@@ -9,6 +9,7 @@ from ..models.twitchBanResponseEntry import TwitchBanResponseEntry
 from ..models.twitchBannedUser import TwitchBannedUser
 from ..models.twitchBannedUsersReponse import TwitchBannedUsersResponse
 from ..models.twitchBitsBadgeTier import TwitchBitsBadgeTier
+from ..models.twitchBitsUseType import TwitchBitsUseType
 from ..models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from ..models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
@@ -61,6 +62,7 @@ from ..models.twitchPowerUpType import TwitchPowerUpType
 from ..models.twitchPredictionStatus import TwitchPredictionStatus
 from ..models.twitchPrimePaidUpgrade import TwitchPrimePaidUpgrade
 from ..models.twitchRaid import TwitchRaid
+from ..models.twitchReply import TwitchReply
 from ..models.twitchResub import TwitchResub
 from ..models.twitchResubscriptionMessage import TwitchResubscriptionMessage
 from ..models.twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote
@@ -154,6 +156,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchBitsBadgeTier | None:
+        pass
+
+    @abstractmethod
+    async def parseBitsUseType(
+        self,
+        bitsUseType: str | Any | None,
+    ) -> TwitchBitsUseType | None:
         pass
 
     @abstractmethod
@@ -467,7 +476,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parsePowerUp(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchPowerUp | None:
         pass
 
@@ -504,6 +513,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchRaid | None:
+        pass
+
+    @abstractmethod
+    async def parseReply(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchReply | None:
         pass
 
     @abstractmethod
