@@ -2,9 +2,9 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True, slots = True)
-class EmojiInfo:
+class EmojiData:
     codes: frozenset[str]
-    category: str
+    category: str | None
     emoji: str
     name: str
-    subCategory: str
+    subCategory: str | None

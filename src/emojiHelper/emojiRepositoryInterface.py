@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 
-from .emojiInfo import EmojiInfo
+from .emojiData import EmojiData
 
 
 class EmojiRepositoryInterface(ABC):
 
     @abstractmethod
-    async def fetchEmojiInfo(self, emoji: str | None) -> EmojiInfo | None:
+    async def fetchEmojiData(self, emoji: str | None) -> EmojiData | None:
         pass
