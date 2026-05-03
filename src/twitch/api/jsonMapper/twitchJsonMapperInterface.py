@@ -62,6 +62,7 @@ from ..models.twitchPowerUpType import TwitchPowerUpType
 from ..models.twitchPredictionStatus import TwitchPredictionStatus
 from ..models.twitchPrimePaidUpgrade import TwitchPrimePaidUpgrade
 from ..models.twitchRaid import TwitchRaid
+from ..models.twitchReply import TwitchReply
 from ..models.twitchResub import TwitchResub
 from ..models.twitchResubscriptionMessage import TwitchResubscriptionMessage
 from ..models.twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote
@@ -512,6 +513,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchRaid | None:
+        pass
+
+    @abstractmethod
+    async def parseReply(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchReply | None:
         pass
 
     @abstractmethod

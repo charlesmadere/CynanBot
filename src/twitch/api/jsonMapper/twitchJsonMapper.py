@@ -66,6 +66,7 @@ from ..models.twitchPowerUpType import TwitchPowerUpType
 from ..models.twitchPredictionStatus import TwitchPredictionStatus
 from ..models.twitchPrimePaidUpgrade import TwitchPrimePaidUpgrade
 from ..models.twitchRaid import TwitchRaid
+from ..models.twitchReply import TwitchReply
 from ..models.twitchResub import TwitchResub
 from ..models.twitchResubscriptionMessage import TwitchResubscriptionMessage
 from ..models.twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote
@@ -1573,6 +1574,38 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userId = userId,
             userLogin = userLogin,
             userName = userName,
+        )
+
+    async def parseReply(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchReply | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        parentMessageBody: str | None = None
+        if 'parent_message_body' in jsonResponse and utils.isValidStr(jsonResponse.get('parent_message_body')):
+            parentMessageBody = utils.getStrFromDict(jsonResponse, 'parent_message_body', clean = True)
+
+        parentMessageId = utils.getStrFromDict(jsonResponse, 'parent_message_id')
+        parentUserId = utils.getStrFromDict(jsonResponse, 'parent_user_id')
+        parentUserLogin = utils.getStrFromDict(jsonResponse, 'parent_user_login')
+        parentUserName = utils.getStrFromDict(jsonResponse, 'parent_user_name')
+        threadMessageId = utils.getStrFromDict(jsonResponse, 'thread_message_id')
+        threadUserId = utils.getStrFromDict(jsonResponse, 'thread_user_id')
+        threadUserLogin = utils.getStrFromDict(jsonResponse, 'thread_user_login')
+        threadUserName = utils.getStrFromDict(jsonResponse, 'thread_user_name')
+
+        return TwitchReply(
+            parentMessageBody = parentMessageBody,
+            parentMessageId = parentMessageId,
+            parentUserId = parentUserId,
+            parentUserLogin = parentUserLogin,
+            parentUserName = parentUserName,
+            threadMessageId = threadMessageId,
+            threadUserId = threadUserId,
+            threadUserLogin = threadUserLogin,
+            threadUserName = threadUserName,
         )
 
     async def parseResub(

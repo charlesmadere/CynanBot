@@ -23,6 +23,7 @@ from .twitchPowerUp import TwitchPowerUp
 from .twitchPredictionStatus import TwitchPredictionStatus
 from .twitchPrimePaidUpgrade import TwitchPrimePaidUpgrade
 from .twitchRaid import TwitchRaid
+from .twitchReply import TwitchReply
 from .twitchResub import TwitchResub
 from .twitchResubscriptionMessage import TwitchResubscriptionMessage
 from .twitchReward import TwitchReward
@@ -111,6 +112,7 @@ class TwitchWebsocketEvent:
     predictionStatus: TwitchPredictionStatus | None = None
     primePaidUpgrade: TwitchPrimePaidUpgrade | None = None
     raid: TwitchRaid | None = None
+    reply: TwitchReply | None = None
     resub: TwitchResub | None = None
     resubscriptionMessage: TwitchResubscriptionMessage | None = None
     reward: TwitchReward | None = None
