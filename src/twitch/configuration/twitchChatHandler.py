@@ -305,7 +305,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
     async def __processChatCommand(self, chatMessage: TwitchChatMessage):
         if not utils.isValidStr(chatMessage.text):
-            # this shouldn't be necessary here, but let's just be safe
+            # this probably shouldn't be necessary here, but let's just be safe
             return
 
         for index, chatCommand in enumerate(self.__chatCommands):

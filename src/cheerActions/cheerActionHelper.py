@@ -175,8 +175,6 @@ class CheerActionHelper(CheerActionHelperInterface):
         ):
             return True
 
-        # if and/or when we add more cheer actions in the future, those would go here
-
         else:
             return False
 
@@ -190,5 +188,12 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__backgroundTaskHelper.createTask(self.__startActionLoop())
 
     async def __startActionLoop(self):
+        # TODO
+        pass
+
+    def submitCheerData(self, cheerData: CheerActionHelperInterface.CheerData):
+        if not isinstance(cheerData, CheerActionHelperInterface.CheerData):
+            raise TypeError(f'cheerData argument is malformed: \"{cheerData}\"')
+
         # TODO
         pass
