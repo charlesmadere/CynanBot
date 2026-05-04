@@ -15,7 +15,6 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.localModels.twitchChatMessageFragment import TwitchChatMessageFragment
 from ..twitch.localModels.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
-from ..twitch.localModels.twitchCheerMetadata import TwitchCheerMetadata
 
 
 class TestCheerChatCommand(AbsChatCommand):
@@ -24,10 +23,6 @@ class TestCheerChatCommand(AbsChatCommand):
     class Arguments:
         bits: int
         text: str
-
-        @property
-        def fullText(self) -> str:
-            return 'cheer' + str(self.bits) + ' ' + self.text
 
     def __init__(
         self,
@@ -101,42 +96,27 @@ class TestCheerChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Invalid arguments given ({arguments=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
-
-        newTwitchChatMessage = TwitchChatMessage(
-            messageFragments = await self.__generateMessageFragments(arguments),
-            chatterUserId = chatMessage.chatterUserId,
-            chatterUserLogin = chatMessage.chatterUserLogin,
-            chatterUserName = chatMessage.chatterUserName,
-            eventId = await self.__generateEventId(),
-            sourceMessageId = None,
-            text = arguments.fullText,
-            textWithoutCheers = arguments.text,
-            twitchChannelId = chatMessage.twitchChannelId,
-            twitchChatMessageId = None,
-            cheerMetadata = TwitchCheerMetadata(
-                bits = arguments.bits,
-            ),
-            watchStreak = None,
-            twitchUser = chatMessage.twitchUser,
-        )
+            return ChatCommandResult.CONSUMED
 
         handled: bool | None = None
         exception: Exception | None = None
 
         try:
-            handled = await self.__cheerActionHelper.handleCheerAction(
-                bits =  arguments.bits,
-                cheerUserId = chatMessage.chatterUserId,
-                cheerUserName = chatMessage.chatterUserName,
-                message = arguments.text,
-                twitchChannelId = chatMessage.twitchChannelId,
-                twitchChatMessageId = chatMessage.twitchChatMessageId,
-                user = chatMessage.twitchUser,
+            handled = await self.__cheerActionHelper.handleCheer(
+                cheerInfo = CheerActionHelperInterface.CheerInfo(
+                    bits = arguments.bits,
+                    cheerUserId = chatMessage.chatterUserId,
+                    cheerUserLogin = chatMessage.chatterUserLogin,
+                    cheerUserName = chatMessage.chatterUserName,
+                    message = arguments.text,
+                    twitchChannelId = chatMessage.twitchChannelId,
+                    twitchChatMessageId = chatMessage.twitchChatMessageId,
+                    twitchUser = chatMessage.twitchUser,
+                ),
             )
         except Exception as e:
             exception = e
-            self.__timber.log(self.commandName, f'Encountered exception when attempting to run handleCheerAction() ({handled=}) ({exception=}) ({newTwitchChatMessage=}) ({arguments=}) ({chatMessage=})', e, traceback.format_exc())
+            self.__timber.log(self.commandName, f'Encountered exception when attempting to run handleCheerAction() ({handled=}) ({exception=}) ({arguments=}) ({chatMessage=})', e, traceback.format_exc())
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ Cheer test results ({handled=}) ({exception=}) ({arguments=})',
@@ -144,8 +124,8 @@ class TestCheerChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({handled=}) ({exception=}) ({newTwitchChatMessage=}) ({arguments=}) ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Handled ({handled=}) ({exception=}) ({arguments=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED
 
     async def __parseArguments(self, chatMessage: TwitchChatMessage) -> Arguments | None:
         argumentsMatch = self.__argumentFormat.fullmatch(chatMessage.text)

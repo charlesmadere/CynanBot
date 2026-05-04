@@ -1,4 +1,10 @@
+import asyncio
+import queue
+import traceback
+from queue import SimpleQueue
 from typing import Final
+
+from frozenlist import FrozenList
 
 from .cheerActionHelperInterface import CheerActionHelperInterface
 from .cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
@@ -12,7 +18,6 @@ from ..timber.timberInterface import TimberInterface
 from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ..users.userInterface import UserInterface
 
 
 class CheerActionHelper(CheerActionHelperInterface):
@@ -30,6 +35,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         queueSleepTimeSeconds: float = 0.5,
+        queueTimeoutSeconds: int = 3,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -53,8 +59,12 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
-        elif queueSleepTimeSeconds < 0.125 or queueSleepTimeSeconds > 8:
+        elif queueSleepTimeSeconds < 0.125 or queueSleepTimeSeconds > 3:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
+        elif not utils.isValidInt(queueTimeoutSeconds):
+            raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
+        elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 3:
+            raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__cheerActionsRepository: Final[CheerActionsRepositoryInterface] = cheerActionsRepository
@@ -67,41 +77,20 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__queueSleepTimeSeconds: Final[float] = queueSleepTimeSeconds
+        self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
         self.__isStarted: bool = False
+        self.__cheerQueue: Final[SimpleQueue[CheerActionHelperInterface.CheerInfo]] = SimpleQueue()
 
-    async def handleCheerAction(
-        self,
-        bits: int,
-        cheerUserId: str,
-        cheerUserName: str,
-        message: str | None,
-        twitchChannelId: str,
-        twitchChatMessageId: str | None,
-        user: UserInterface,
-    ) -> bool:
-        if not utils.isValidInt(bits):
-            raise TypeError(f'bits argument is malformed: \"{bits}\"')
-        elif bits < 1 or bits > utils.getIntMaxSafeSize():
-            raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not utils.isValidStr(cheerUserId):
-            raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
-        elif not utils.isValidStr(cheerUserName):
-            raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
-        elif message is not None and not isinstance(message, str):
-            raise TypeError(f'message argument is malformed: \"{message}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif twitchChatMessageId is not None and not isinstance(twitchChatMessageId, str):
-            raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
+    async def handleCheer(self, cheerInfo: CheerActionHelperInterface.CheerInfo) -> bool:
+        if not isinstance(cheerInfo, CheerActionHelperInterface.CheerInfo):
+            raise TypeError(f'cheerInfo argument is malformed: \"{cheerInfo}\"')
 
-        if not user.areCheerActionsEnabled:
+        if not cheerInfo.twitchUser.areCheerActionsEnabled:
             return False
 
         userTwitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
-            twitchChannelId = twitchChannelId,
+            twitchChannelId = cheerInfo.twitchChannelId,
         )
 
         moderatorUserId = await self.__userIdsRepository.requireUserId(
@@ -114,7 +103,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         )
 
         actions = await self.__cheerActionsRepository.getActions(
-            twitchChannelId = twitchChannelId,
+            twitchChannelId = cheerInfo.twitchChannelId,
         )
 
         if actions is None or len(actions) == 0:
@@ -122,56 +111,56 @@ class CheerActionHelper(CheerActionHelperInterface):
 
         elif self.__crowdControlCheerActionHelper is not None and await self.__crowdControlCheerActionHelper.handleCrowdControlCheerAction(
             actions = actions,
-            bits = bits,
-            cheerUserId = cheerUserId,
-            cheerUserName = cheerUserName,
-            message = message,
+            bits = cheerInfo.bits,
+            cheerUserId = cheerInfo.cheerUserId,
+            cheerUserName = cheerInfo.cheerUserName,
+            message = cheerInfo.message,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
-            twitchChannelId = twitchChannelId,
-            twitchChatMessageId = twitchChatMessageId,
+            twitchChannelId = cheerInfo.twitchChannelId,
+            twitchChatMessageId = cheerInfo.twitchChatMessageId,
             userTwitchAccessToken = userTwitchAccessToken,
-            user = user,
+            user = cheerInfo.twitchUser,
         ):
             return True
 
         elif self.__itemUseCheerActionHelper is not None and await self.__itemUseCheerActionHelper.handleItemUseCheerAction(
             actions = actions,
-            bits = bits,
-            cheerUserId = cheerUserId,
-            cheerUserName = cheerUserName,
-            message = message,
+            bits = cheerInfo.bits,
+            cheerUserId = cheerInfo.cheerUserId,
+            cheerUserName = cheerInfo.cheerUserName,
+            message = cheerInfo.message,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
-            twitchChannelId = twitchChannelId,
-            twitchChatMessageId = twitchChatMessageId,
+            twitchChannelId = cheerInfo.twitchChannelId,
+            twitchChatMessageId = cheerInfo.twitchChatMessageId,
             userTwitchAccessToken = userTwitchAccessToken,
-            user = user,
+            user = cheerInfo.twitchUser,
         ):
             return True
 
         elif self.__soundAlertCheerActionHelper is not None and await self.__soundAlertCheerActionHelper.handleSoundAlertCheerAction(
             actions = actions,
-            bits = bits,
-            cheerUserId = cheerUserId,
-            cheerUserName = cheerUserName,
-            message = message,
+            bits = cheerInfo.bits,
+            cheerUserId = cheerInfo.cheerUserId,
+            cheerUserName = cheerInfo.cheerUserName,
+            message = cheerInfo.message,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
-            twitchChannelId = twitchChannelId,
+            twitchChannelId = cheerInfo.twitchChannelId,
             userTwitchAccessToken = userTwitchAccessToken,
-            user = user,
+            user = cheerInfo.twitchUser,
         ):
             return True
 
         elif self.__ttsCheerActionHelper is not None and await self.__ttsCheerActionHelper.handleTtsCheerAction(
             actions = actions,
-            bits = bits,
-            cheerUserId = cheerUserId,
-            cheerUserName = cheerUserName,
-            message = message,
-            twitchChannelId = twitchChannelId,
-            twitchUser = user,
+            bits = cheerInfo.bits,
+            cheerUserId = cheerInfo.cheerUserId,
+            cheerUserName = cheerInfo.cheerUserName,
+            message = cheerInfo.message,
+            twitchChannelId = cheerInfo.twitchChannelId,
+            twitchUser = cheerInfo.twitchUser,
         ):
             return True
 
@@ -185,15 +174,35 @@ class CheerActionHelper(CheerActionHelperInterface):
 
         self.__isStarted = True
         self.__timber.log('CheerActionHelper', 'Starting CheerActionHelper...')
-        self.__backgroundTaskHelper.createTask(self.__startActionLoop())
+        self.__backgroundTaskHelper.createTask(self.__startLoop())
 
-    async def __startActionLoop(self):
-        # TODO
-        pass
+    async def __startLoop(self):
+        while True:
+            cheers: FrozenList[CheerActionHelperInterface.CheerInfo] = FrozenList()
 
-    def submitCheerData(self, cheerData: CheerActionHelperInterface.CheerData):
-        if not isinstance(cheerData, CheerActionHelperInterface.CheerData):
-            raise TypeError(f'cheerData argument is malformed: \"{cheerData}\"')
+            try:
+                while not self.__cheerQueue.empty():
+                    cheers.append(self.__cheerQueue.get_nowait())
+            except queue.Empty as e:
+                self.__timber.log('TriviaGameMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__cheerQueue.qsize()}) ({len(cheers)=}) ({cheers=}): {e}', e, traceback.format_exc())
 
-        # TODO
-        pass
+            cheers.freeze()
+
+            for index, cheerInfo in enumerate(cheers):
+                try:
+                    await self.handleCheer(
+                        cheerInfo = cheerInfo,
+                    )
+                except Exception as e:
+                    self.__timber.log('CheerActionHelper', f'Encountered unknown Exception when looping through events (queue size: {self.__cheerQueue.qsize()}) ({len(cheers)=}) ({index=}) ({cheerInfo=}): {e}', e, traceback.format_exc())
+
+            await asyncio.sleep(self.__queueSleepTimeSeconds)
+
+    def submitCheer(self, cheerInfo: CheerActionHelperInterface.CheerInfo):
+        if not isinstance(cheerInfo, CheerActionHelperInterface.CheerInfo):
+            raise TypeError(f'cheerInfo argument is malformed: \"{cheerInfo}\"')
+
+        try:
+            self.__cheerQueue.put(cheerInfo, block = True, timeout = self.__queueTimeoutSeconds)
+        except queue.Full as e:
+            self.__timber.log('CheerActionHelper', f'Encountered queue.Full when submitting a new cheer ({cheerInfo}) into the queue (queue size: {self.__cheerQueue.qsize()}): {e}', e, traceback.format_exc())

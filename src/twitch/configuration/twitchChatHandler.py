@@ -335,18 +335,16 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         if cheer is None or cheer.bits < 1:
             return
 
-        result = await self.__cheerActionHelper.handleCheerAction(
+        self.__cheerActionHelper.submitCheer(CheerActionHelperInterface.CheerInfo(
             bits = cheer.bits,
             cheerUserId = chatMessage.chatterUserId,
-            cheerUserName = chatMessage.chatterUserLogin,
+            cheerUserLogin = chatMessage.chatterUserLogin,
+            cheerUserName = chatMessage.chatterUserName,
             message = chatMessage.textWithoutCheers,
             twitchChannelId = chatMessage.twitchChannelId,
             twitchChatMessageId = chatMessage.twitchChatMessageId,
-            user = chatMessage.twitchUser,
-        )
-
-        if result:
-            self.__timber.log('TwitchChatHandler', f'Handled chat message\'s cheer action ({chatMessage=})')
+            twitchUser = chatMessage.twitchUser,
+        ))
 
     async def __processSuperTriviaEvent(self, chatMessage: TwitchChatMessage):
         user = chatMessage.twitchUser

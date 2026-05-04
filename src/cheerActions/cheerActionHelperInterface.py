@@ -8,7 +8,7 @@ from ..users.userInterface import UserInterface
 class CheerActionHelperInterface(Startable, ABC):
 
     @dataclass(frozen = True, slots = True)
-    class CheerData:
+    class CheerInfo:
         bits: int
         cheerUserId: str
         cheerUserLogin: str
@@ -19,18 +19,9 @@ class CheerActionHelperInterface(Startable, ABC):
         twitchUser: UserInterface
 
     @abstractmethod
-    async def handleCheerAction(
-        self,
-        bits: int,
-        cheerUserId: str,
-        cheerUserName: str,
-        message: str | None,
-        twitchChannelId: str,
-        twitchChatMessageId: str | None,
-        user: UserInterface,
-    ) -> bool:
+    async def handleCheer(self, cheerInfo: CheerInfo) -> bool:
         pass
 
     @abstractmethod
-    def submitCheerData(self, cheerData: CheerData):
+    def submitCheer(self, cheerInfo: CheerInfo):
         pass
