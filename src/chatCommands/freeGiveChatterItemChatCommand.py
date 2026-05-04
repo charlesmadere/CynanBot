@@ -179,14 +179,14 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
                 ),
             )
         except Exception as e:
-            self.__timber.log('FreeGiveChatterItemChatCommand', f'Failed to fetch user ID for the given chatter username ({chatterUserName=}) ({splits=})', e, traceback.format_exc())
+            self.__timber.log(self.commandName, f'Failed to fetch user ID for the given chatter username ({chatterUserName=}) ({splits=})', e, traceback.format_exc())
             return None
 
         itemTypeString = splits[2]
         itemType = await self.__chatterInventoryMapper.parseItemType(itemTypeString)
 
         if itemType is None:
-            self.__timber.log('FreeGiveChatterItemChatCommand', f'Failed to parse itemTypeString into a ChatterItemType ({itemTypeString=}) ({splits=})')
+            self.__timber.log(self.commandName, f'Failed to parse itemTypeString into a ChatterItemType ({itemTypeString=}) ({splits=})')
             return None
 
         giveAmount = 1
@@ -197,11 +197,11 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
             try:
                 giveAmount = int(giveAmountString)
             except Exception as e:
-                self.__timber.log('FreeGiveChatterItemChatCommand', f'Failed to parse giveAmountString into an int ({giveAmountString=}) ({splits=})', e, traceback.format_exc())
+                self.__timber.log(self.commandName, f'Failed to parse giveAmountString into an int ({giveAmountString=}) ({splits=})', e, traceback.format_exc())
                 return None
 
             if giveAmount < utils.getShortMinSafeSize() or giveAmount > utils.getShortMaxSafeSize():
-                self.__timber.log('FreeGiveChatterItemChatCommand', f'The giveAmount value is out of bounds ({giveAmount=}) ({giveAmountString=}) ({splits=})')
+                self.__timber.log(self.commandName, f'The giveAmount value is out of bounds ({giveAmount=}) ({giveAmountString=}) ({splits=})')
                 return None
 
         return FreeGiveChatterItemChatCommand.Arguments(

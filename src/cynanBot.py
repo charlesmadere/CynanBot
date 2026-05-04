@@ -18,7 +18,6 @@ from .asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieS
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
 from .chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
 from .chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
-from .chatterInventory.helpers.gashaponRewardHelperInterface import GashaponRewardHelperInterface
 from .chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from .chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
 from .chatterInventory.machine.chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
@@ -54,8 +53,6 @@ from .cuteness.cutenessPresenterInterface import CutenessPresenterInterface
 from .cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from .cuteness.cutenessUtilsInterface import CutenessUtilsInterface
 from .decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
-from .funtoon.funtoonHelperInterface import FuntoonHelperInterface
-from .funtoon.tokens.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
 from .google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from .halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
 from .language.jishoHelperInterface import JishoHelperInterface
@@ -232,9 +229,6 @@ class CynanBot(
         cutenessRepository: CutenessRepositoryInterface | None,
         cutenessUtils: CutenessUtilsInterface | None,
         decTalkSettingsRepository: DecTalkSettingsRepositoryInterface | None,
-        funtoonHelper: FuntoonHelperInterface | None,
-        funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
-        gashaponRewardHelper: GashaponRewardHelperInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
         googleSettingsRepository: GoogleSettingsRepositoryInterface | None,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface | None,
@@ -443,10 +437,6 @@ class CynanBot(
             raise TypeError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
         elif decTalkSettingsRepository is not None and not isinstance(decTalkSettingsRepository, DecTalkSettingsRepositoryInterface):
             raise TypeError(f'decTalkSettingsRepository argument is malformed: \"{decTalkSettingsRepository}\"')
-        elif funtoonHelper is not None and not isinstance(funtoonHelper, FuntoonHelperInterface):
-            raise TypeError(f'funtoonHelper argument is malformed: \"{funtoonHelper}\"')
-        elif gashaponRewardHelper is not None and not isinstance(gashaponRewardHelper, GashaponRewardHelperInterface):
-            raise TypeError(f'gashaponRewardHelper argument is malformed: \"{gashaponRewardHelper}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif googleSettingsRepository is not None and not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):

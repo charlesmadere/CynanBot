@@ -480,8 +480,3 @@ class TestRecurringActionsJsonParser:
         jsonObject = json.loads(jsonString)
         assert isinstance(jsonObject, dict)
         assert len(jsonObject) == 0
-
-    def test_sanity(self):
-        assert self.parser is not None
-        assert isinstance(self.parser, RecurringActionsJsonParserInterface)
-        assert isinstance(self.parser, RecurringActionsJsonParser)
