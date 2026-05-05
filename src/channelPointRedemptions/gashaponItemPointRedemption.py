@@ -6,6 +6,7 @@ from ..chatterInventory.helpers.chatterInventoryHelperInterface import ChatterIn
 from ..chatterInventory.models.chatterItemType import ChatterItemType
 from ..chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ..misc import utils as utils
+from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..soundPlayerManager.soundAlert import SoundAlert
 from ..timber.timberInterface import TimberInterface
@@ -18,13 +19,16 @@ class GashaponItemPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         chatterInventoryHelper: ChatterInventoryHelperInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface | None,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
-        if not isinstance(chatterInventoryHelper, ChatterInventoryHelperInterface):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(chatterInventoryHelper, ChatterInventoryHelperInterface):
             raise TypeError(f'chatterInventoryHelper argument is malformed: \"{chatterInventoryHelper}\"')
         elif not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
@@ -35,6 +39,7 @@ class GashaponItemPointRedemption(AbsChannelPointRedemption):
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = chatterInventoryHelper
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface | None] = soundPlayerManagerProvider
@@ -74,7 +79,7 @@ class GashaponItemPointRedemption(AbsChannelPointRedemption):
             return
 
         soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
-        await soundPlayerManager.playSoundAlert(SoundAlert.GASHAPON)
+        self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.GASHAPON))
 
     @property
     def pointsRedemptionName(self) -> str:

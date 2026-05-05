@@ -17,6 +17,7 @@ from ..chatterInventory.models.gashaponResults.notReadyGashaponResult import Not
 from ..chatterInventory.models.gashaponResults.notSubscribedGashaponResult import NotSubscribedGashaponResult
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
+from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..soundPlayerManager.soundAlert import SoundAlert
 from ..timber.timberInterface import TimberInterface
@@ -28,13 +29,16 @@ class GetGashaponItemChatCommand(AbsChatCommand):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         gashaponRewardHelper: GashaponRewardHelperInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface | None,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
-        if not isinstance(gashaponRewardHelper, GashaponRewardHelperInterface):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(gashaponRewardHelper, GashaponRewardHelperInterface):
             raise TypeError(f'gashaponRewardHelper argument is malformed: \"{gashaponRewardHelper}\"')
         elif soundPlayerManagerProvider is not None and not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
@@ -45,6 +49,7 @@ class GetGashaponItemChatCommand(AbsChatCommand):
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__gashaponRewardHelper: Final[GashaponRewardHelperInterface] = gashaponRewardHelper
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface | None] = soundPlayerManagerProvider
         self.__timber: Final[TimberInterface] = timber
@@ -154,7 +159,7 @@ class GetGashaponItemChatCommand(AbsChatCommand):
     ):
         if chatMessage.twitchUser.areSoundAlertsEnabled and self.__soundPlayerManagerProvider is not None:
             soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
-            await soundPlayerManager.playSoundAlert(SoundAlert.GASHAPON)
+            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.GASHAPON))
 
         gashaponAmount = gashaponResult.inventory[ChatterItemType.GASHAPON]
         suffixString = ''

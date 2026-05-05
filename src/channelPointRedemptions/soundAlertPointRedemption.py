@@ -3,6 +3,7 @@ from typing import Final
 from .absChannelPointsRedemption import AbsChannelPointRedemption
 from .pointsRedemptionResult import PointsRedemptionResult
 from ..misc import utils as utils
+from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
     SoundPlayerRandomizerHelperInterface
@@ -19,12 +20,15 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
     ):
-        if not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
             raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
@@ -33,6 +37,7 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
         self.__soundPlayerRandomizerHelper: Final[SoundPlayerRandomizerHelperInterface] = soundPlayerRandomizerHelper
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
@@ -88,9 +93,9 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
             soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
 
             if utils.isValidStr(filePath):
-                await soundPlayerManager.playSoundFile(filePath)
+                self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundFile(filePath))
             elif soundAlert is not None:
-                await soundPlayerManager.playSoundAlert(soundAlert)
+                self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(soundAlert))
         else:
             self.__streamAlertsManager.submitAlert(StreamAlert(
                 soundAlert = soundAlert,
