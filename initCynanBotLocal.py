@@ -591,7 +591,7 @@ aioHttpCookieJarProvider = AioHttpCookieJarProvider(
     eventLoop = eventLoop,
 )
 
-networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
+networkClientProvider: Final[NetworkClientProvider] = AioHttpClientProvider(
     eventLoop = eventLoop,
     cookieJarProvider = aioHttpCookieJarProvider,
     timber = timber,
@@ -2138,6 +2138,7 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption | None]] = frozense
         timber = timber,
     ),
     SoundAlertPointRedemption(
+        backgroundTaskHelper = backgroundTaskHelper,
         soundPlayerManagerProvider = soundPlayerManagerProvider,
         soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
         streamAlertsManager = streamAlertsManager,
@@ -2242,6 +2243,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
     ),
     GetGashaponItemChatCommand(
+        backgroundTaskHelper = backgroundTaskHelper,
         gashaponRewardHelper = gashaponRewardHelper,
         soundPlayerManagerProvider = soundPlayerManagerProvider,
         timber = timber,
@@ -2434,6 +2436,7 @@ twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscript
 
 startables: Final[Collection[Startable | None]] = frozenset({
     cheerActionHelper,
+    streamAlertsManager,
 })
 
 
@@ -2479,10 +2482,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     chatterPreferredTtsRepository = chatterPreferredTtsRepository,
     chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
     chatterPreferredTtsUserMessageHelper = chatterPreferredTtsUserMessageHelper,
-    cheerActionHelper = cheerActionHelper,
-    cheerActionJsonMapper = cheerActionJsonMapper,
-    cheerActionSettingsRepository = cheerActionSettingsRepository,
-    cheerActionsRepository = cheerActionsRepository,
     commodoreSamSettingsRepository = commodoreSamSettingsRepository,
     compositeTtsManagerProvider = compositeTtsManagerProvider,
     crowdControlActionHandler = crowdControlActionHandler,
@@ -2512,7 +2511,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     pixelsDiceEventListener = pixelsDiceEventHandler,
     pixelsDiceMachine = pixelsDiceMachine,
     pokepediaRepository = None,
-    psqlCredentialsProvider = psqlCredentialsProvider,
     recurringActionsEventHandler = None,
     recurringActionsHelper = None,
     recurringActionsMachine = None,
@@ -2520,14 +2518,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     recurringActionsWizard = None,
     sentMessageLogger = sentMessageLogger,
     shinyTriviaOccurencesRepository = None,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
-    streamAlertsManager = streamAlertsManager,
-    streamAlertsSettingsRepository = streamAlertsSettingsRepository,
-    streamElementsSettingsRepository = streamElementsSettingsRepository,
-    streamElementsUserKeyRepository = streamElementsUserKeyRepository,
-    supStreamerRepository = supStreamerRepository,
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
     timeoutActionSettings = timeoutActionSettings,

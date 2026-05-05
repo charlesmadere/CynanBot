@@ -35,10 +35,6 @@ from .chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface impo
     ChatterPreferredTtsRepositoryInterface
 from .chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterface import \
     ChatterPreferredTtsSettingsRepositoryInterface
-from .cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
-from .cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
-from .cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
-from .cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
 from .commodoreSam.settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSettingsRepositoryInterface
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .crowdControl.automator.crowdControlAutomatorInterface import CrowdControlAutomatorInterface
@@ -78,16 +74,6 @@ from .recurringActions.recurringActionsMachineInterface import RecurringActionsM
 from .recurringActions.recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
 from .recurringActions.recurringActionsWizardInterface import RecurringActionsWizardInterface
 from .sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
-from .soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
-from .soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelper import SoundPlayerRandomizerHelperInterface
-from .soundPlayerManager.settings.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
-from .storage.psql.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
-from .streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
-from .streamAlertsManager.streamAlertsSettingsRepositoryInterface import StreamAlertsSettingsRepositoryInterface
-from .streamElements.settings.streamElementsSettingsRepositoryInterface import StreamElementsSettingsRepositoryInterface
-from .streamElements.userKeyRepository.streamElementsUserKeyRepositoryInterface import \
-    StreamElementsUserKeyRepositoryInterface
-from .supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from .timber.timberInterface import TimberInterface
 from .timeout.configuration.absTimeoutEventHandler import AbsTimeoutEventHandler
 from .timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
@@ -212,10 +198,6 @@ class CynanBot(
         chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface | None,
         chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface | None,
         chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface | None,
-        cheerActionHelper: CheerActionHelperInterface | None,
-        cheerActionJsonMapper: CheerActionJsonMapperInterface | None,
-        cheerActionSettingsRepository: CheerActionSettingsRepositoryInterface | None,
-        cheerActionsRepository: CheerActionsRepositoryInterface | None,
         commodoreSamSettingsRepository: CommodoreSamSettingsRepositoryInterface | None,
         compositeTtsManagerProvider: CompositeTtsManagerProviderInterface,
         crowdControlActionHandler: CrowdControlActionHandler | None,
@@ -245,7 +227,6 @@ class CynanBot(
         pixelsDiceEventListener: PixelsDiceEventListener | None,
         pixelsDiceMachine: PixelsDiceMachineInterface | None,
         pokepediaRepository: PokepediaRepositoryInterface | None,
-        psqlCredentialsProvider: PsqlCredentialsProviderInterface | None,
         recurringActionsEventHandler: AbsRecurringActionsEventHandler | None,
         recurringActionsHelper: RecurringActionsHelperInterface | None,
         recurringActionsMachine: RecurringActionsMachineInterface | None,
@@ -253,14 +234,6 @@ class CynanBot(
         recurringActionsWizard: RecurringActionsWizardInterface | None,
         sentMessageLogger: SentMessageLoggerInterface,
         shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface | None,
-        soundPlayerManagerProvider: SoundPlayerManagerProviderInterface | None,
-        soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface | None,
-        soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface | None,
-        streamAlertsManager: StreamAlertsManagerInterface,
-        streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface | None,
-        streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface | None,
-        streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface | None,
-        supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
         timeoutActionMachine: TimeoutActionMachineInterface | None,
         timeoutActionSettings: TimeoutActionSettingsInterface | None,
@@ -403,14 +376,6 @@ class CynanBot(
             raise TypeError(f'chatterPreferredTtsSettingsRepository argument is malformed: \"{chatterPreferredTtsSettingsRepository}\"')
         elif chatterPreferredTtsUserMessageHelper is not None and not isinstance(chatterPreferredTtsUserMessageHelper, ChatterPreferredTtsUserMessageHelperInterface):
             raise TypeError(f'chatterPreferredTtsUserMessageHelper argument is malformed: \"{chatterPreferredTtsUserMessageHelper}\"')
-        elif cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
-            raise TypeError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
-        elif cheerActionJsonMapper is not None and not isinstance(cheerActionJsonMapper, CheerActionJsonMapperInterface):
-            raise TypeError(f'cheerActionJsonMapper argument is malformed: \"{cheerActionJsonMapper}\"')
-        elif cheerActionSettingsRepository is not None and not isinstance(cheerActionSettingsRepository, CheerActionSettingsRepositoryInterface):
-            raise TypeError(f'cheerActionSettingsRepository argument is malformed: \"{cheerActionSettingsRepository}\"')
-        elif cheerActionsRepository is not None and not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
-            raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif commodoreSamSettingsRepository is not None and not isinstance(commodoreSamSettingsRepository, CommodoreSamSettingsRepositoryInterface):
             raise TypeError(f'commodoreSamSettingsRepository argument is malformed: \"{commodoreSamSettingsRepository}\"')
         elif not isinstance(compositeTtsManagerProvider, CompositeTtsManagerProviderInterface):
@@ -469,8 +434,6 @@ class CynanBot(
             raise TypeError(f'pixelsDiceMachine argument is malformed:\"{pixelsDiceMachine}\"')
         elif pokepediaRepository is not None and not isinstance(pokepediaRepository, PokepediaRepositoryInterface):
             raise TypeError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
-        elif psqlCredentialsProvider is not None and not isinstance(psqlCredentialsProvider, PsqlCredentialsProviderInterface):
-            raise TypeError(f'psqlCredentialsProvider argument is malformed: \"{psqlCredentialsProvider}\"')
         elif recurringActionsEventHandler is not None and not isinstance(recurringActionsEventHandler, AbsRecurringActionsEventHandler):
             raise TypeError(f'recurringActionsEventHandler argument is malformed: \"{recurringActionsEventHandler}\"')
         elif recurringActionsHelper is not None and not isinstance(recurringActionsHelper, RecurringActionsHelperInterface):
@@ -485,22 +448,6 @@ class CynanBot(
             raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif shinyTriviaOccurencesRepository is not None and not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface):
             raise TypeError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
-        elif soundPlayerManagerProvider is not None and not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
-            raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
-        elif soundPlayerRandomizerHelper is not None and not isinstance(soundPlayerRandomizerHelper, SoundPlayerRandomizerHelperInterface):
-            raise TypeError(f'soundPlayerRandomizerHelper argument is malformed: \"{soundPlayerRandomizerHelper}\"')
-        elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
-            raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
-        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
-            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
-        elif streamAlertsSettingsRepository is not None and not isinstance(streamAlertsSettingsRepository, StreamAlertsSettingsRepositoryInterface):
-            raise TypeError(f'streamAlertsSettingsRepository argument is malformed: \"{streamAlertsSettingsRepository}\"')
-        elif streamElementsSettingsRepository is not None and not isinstance(streamElementsSettingsRepository, StreamElementsSettingsRepositoryInterface):
-            raise TypeError(f'streamElementsSettingsRepository argument is malformed: \"{streamElementsSettingsRepository}\"')
-        elif streamElementsUserKeyRepository is not None and not isinstance(streamElementsUserKeyRepository, StreamElementsUserKeyRepositoryInterface):
-            raise TypeError(f'streamElementsUserKeyRepository argument is malformed: \"{streamElementsUserKeyRepository}\"')
-        elif supStreamerRepository is not None and not isinstance(supStreamerRepository, SupStreamerRepositoryInterface):
-            raise TypeError(f'supStreamerRepository argument is malformed: \"{supStreamerRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif timeoutActionMachine is not None and not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
@@ -634,7 +581,6 @@ class CynanBot(
         self.__recurringActionsEventHandler: Final[AbsRecurringActionsEventHandler | None] = recurringActionsEventHandler
         self.__recurringActionsMachine: Final[RecurringActionsMachineInterface | None] = recurringActionsMachine
         self.__sentMessageLogger: Final[SentMessageLoggerInterface] = sentMessageLogger
-        self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface | None] = timeoutActionMachine
         self.__timeoutEventHandler: Final[AbsTimeoutEventHandler | None] = timeoutEventHandler
@@ -720,7 +666,6 @@ class CynanBot(
         self.__twitchTokensRepository.start()
         self.__sentMessageLogger.start()
         self.__chatLogger.start()
-        self.__streamAlertsManager.start()
         self.__twitchChatMessenger.start()
 
         if self.__twitchChannelPointRedemptionHandler is not None:

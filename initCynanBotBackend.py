@@ -93,7 +93,6 @@ from src.chatterInventory.helpers.chatterInventoryHelperInterface import Chatter
 from src.chatterInventory.helpers.stub.stubChatterInventoryHelper import StubChatterInventoryHelper
 from src.chatterInventory.mappers.chatterInventoryMapper import ChatterInventoryMapper
 from src.chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
-from src.cheerActions.cheerActionHelper import CheerActionHelper
 from src.cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from src.cheerActions.cheerActionJsonMapper import CheerActionJsonMapper
 from src.cheerActions.cheerActionJsonMapperInterface import CheerActionJsonMapperInterface
@@ -101,6 +100,7 @@ from src.cheerActions.cheerActionsRepository import CheerActionsRepository
 from src.cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
 from src.cheerActions.settings.cheerActionSettingsRepository import CheerActionSettingsRepository
 from src.cheerActions.settings.cheerActionSettingsRepositoryInterface import CheerActionSettingsRepositoryInterface
+from src.cheerActions.stub.stubCheerActionHelper import StubCheerActionHelper
 from src.contentScanner.bannedWordsRepository import BannedWordsRepository
 from src.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from src.contentScanner.contentScanner import ContentScanner
@@ -575,7 +575,7 @@ aioHttpCookieJarProvider = AioHttpCookieJarProvider(
     eventLoop = eventLoop,
 )
 
-networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
+networkClientProvider: Final[NetworkClientProvider] = AioHttpClientProvider(
     eventLoop = eventLoop,
     cookieJarProvider = aioHttpCookieJarProvider,
     timber = timber,
@@ -1754,18 +1754,7 @@ cheerActionsRepository: Final[CheerActionsRepositoryInterface] = CheerActionsRep
     timber = timber,
 )
 
-cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
-    backgroundTaskHelper = backgroundTaskHelper,
-    cheerActionsRepository = cheerActionsRepository,
-    crowdControlCheerActionHelper = None,
-    itemUseCheerActionHelper = None,
-    soundAlertCheerActionHelper = None,
-    timber = timber,
-    ttsCheerActionHelper = None,
-    twitchHandleProvider = authRepository,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
-)
+cheerActionHelper: Final[CheerActionHelperInterface] = StubCheerActionHelper()
 
 
 ##################################
@@ -2337,6 +2326,7 @@ twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscript
 
 startables: Final[Collection[Startable | None]] = frozenset({
     cheerActionHelper,
+    streamAlertsManager,
 })
 
 
@@ -2382,10 +2372,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     chatterPreferredTtsRepository = None,
     chatterPreferredTtsSettingsRepository = None,
     chatterPreferredTtsUserMessageHelper = None,
-    cheerActionHelper = cheerActionHelper,
-    cheerActionJsonMapper = cheerActionJsonMapper,
-    cheerActionSettingsRepository = cheerActionSettingsRepository,
-    cheerActionsRepository = cheerActionsRepository,
     commodoreSamSettingsRepository = None,
     compositeTtsManagerProvider = compositeTtsManagerProvider,
     crowdControlActionHandler = None,
@@ -2415,7 +2401,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     pokepediaRepository = pokepediaRepository,
     pixelsDiceEventListener = None,
     pixelsDiceMachine = None,
-    psqlCredentialsProvider = psqlCredentialsProvider,
     recurringActionsEventHandler = recurringActionsEventHandler,
     recurringActionsHelper = recurringActionsHelper,
     recurringActionsMachine = recurringActionsMachine,
@@ -2423,14 +2408,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     recurringActionsWizard = recurringActionsWizard,
     sentMessageLogger = sentMessageLogger,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-    soundPlayerSettingsRepository = None,
-    streamAlertsManager = streamAlertsManager,
-    streamAlertsSettingsRepository = None,
-    streamElementsSettingsRepository = None,
-    streamElementsUserKeyRepository = None,
-    supStreamerRepository = None,
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
     timeoutActionSettings = timeoutActionSettings,
