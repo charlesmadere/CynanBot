@@ -105,14 +105,6 @@ class TwitchApiServiceInterface(ABC):
         pass
 
     @abstractmethod
-    async def fetchEventSubSubscriptions(
-        self,
-        twitchAccessToken: str,
-        userId: str,
-    ) -> TwitchEventSubResponse:
-        pass
-
-    @abstractmethod
     async def fetchFollower(
         self,
         broadcasterId: str,

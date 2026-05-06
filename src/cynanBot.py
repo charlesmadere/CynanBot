@@ -35,7 +35,6 @@ from .chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface impo
     ChatterPreferredTtsRepositoryInterface
 from .chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterface import \
     ChatterPreferredTtsSettingsRepositoryInterface
-from .commodoreSam.settings.commodoreSamSettingsRepositoryInterface import CommodoreSamSettingsRepositoryInterface
 from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .crowdControl.automator.crowdControlAutomatorInterface import CrowdControlAutomatorInterface
 from .crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
@@ -45,20 +44,10 @@ from .crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdCont
 from .crowdControl.message.crowdControlMessageListener import CrowdControlMessageListener
 from .crowdControl.settings.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from .crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdControlUserInputUtilsInterface
-from .cuteness.cutenessPresenterInterface import CutenessPresenterInterface
-from .cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
-from .cuteness.cutenessUtilsInterface import CutenessUtilsInterface
-from .decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
-from .google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
-from .halfLife.settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
-from .language.jishoHelperInterface import JishoHelperInterface
 from .language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from .language.translationHelperInterface import TranslationHelperInterface
-from .language.wordOfTheDay.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
-from .language.wordOfTheDay.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from .location.locationsRepositoryInterface import LocationsRepositoryInterface
 from .location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from .microsoftSam.settings.microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
 from .misc.administratorProviderInterface import AdministratorProviderInterface
 from .misc.authRepository import AuthRepository
 from .misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -82,26 +71,10 @@ from .timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettin
 from .trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from .trivia.banned.bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
-from .trivia.banned.triviaBanHelperInterface import TriviaBanHelperInterface
-from .trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
-from .trivia.configuration.absTriviaEventHandler import AbsTriviaEventHandler
-from .trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
-from .trivia.emotes.twitch.triviaTwitchEmoteHelperInterface import TriviaTwitchEmoteHelperInterface
-from .trivia.gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
-from .trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
-    TriviaGameGlobalControllersRepositoryInterface
-from .trivia.history.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
-from .trivia.history.triviaQuestionOccurrencesRepositoryInterface import TriviaQuestionOccurrencesRepositoryInterface
-from .trivia.score.triviaScoreRepositoryInterface import TriviaScoreRepositoryInterface
-from .trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from .trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import ShinyTriviaOccurencesRepositoryInterface
 from .trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
-from .trivia.triviaGameMachineInterface import TriviaGameMachineInterface
-from .trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from .trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTokenRepositoryInterface import \
     OpenTriviaDatabaseSessionTokenRepositoryInterface
-from .trivia.triviaRepositories.triviaRepositoryInterface import TriviaRepositoryInterface
-from .trivia.triviaUtilsInterface import TriviaUtilsInterface
 from .trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from .trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
 from .tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
@@ -130,7 +103,6 @@ from .twitch.configuration.twitchConnectionReadinessProvider import TwitchConnec
 from .twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from .twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from .twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
-from .twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from .twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
 from .twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from .twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
@@ -145,11 +117,6 @@ from .twitch.websocket.settings.twitchWebsocketSettingsRepositoryInterface impor
 from .twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
 from .users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from .users.usersRepositoryInterface import UsersRepositoryInterface
-from .voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
-from .voicemail.repositories.voicemailsRepositoryInterface import VoicemailsRepositoryInterface
-from .voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
-from .weather.weatherReportPresenterInterface import WeatherReportPresenterInterface
-from .weather.weatherRepositoryInterface import WeatherRepositoryInterface
 from .websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 
 
@@ -198,7 +165,6 @@ class CynanBot(
         chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface | None,
         chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface | None,
         chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface | None,
-        commodoreSamSettingsRepository: CommodoreSamSettingsRepositoryInterface | None,
         compositeTtsManagerProvider: CompositeTtsManagerProviderInterface,
         crowdControlActionHandler: CrowdControlActionHandler | None,
         crowdControlAutomator: CrowdControlAutomatorInterface | None,
@@ -207,19 +173,10 @@ class CynanBot(
         crowdControlMessageListener: CrowdControlMessageListener | None,
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface | None,
         crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface | None,
-        cutenessPresenter: CutenessPresenterInterface | None,
-        cutenessRepository: CutenessRepositoryInterface | None,
-        cutenessUtils: CutenessUtilsInterface | None,
-        decTalkSettingsRepository: DecTalkSettingsRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
-        googleSettingsRepository: GoogleSettingsRepositoryInterface | None,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface | None,
-        halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface | None,
-        isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface | None,
-        jishoHelper: JishoHelperInterface | None,
         languagesRepository: LanguagesRepositoryInterface,
         locationsRepository: LocationsRepositoryInterface | None,
-        microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface | None,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
         mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
@@ -242,21 +199,6 @@ class CynanBot(
         timeZoneRepository: TimeZoneRepositoryInterface,
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface | None,
         translationHelper: TranslationHelperInterface | None,
-        triviaBanHelper: TriviaBanHelperInterface | None,
-        triviaEmoteGenerator: TriviaEmoteGeneratorInterface | None,
-        triviaEventHandler: AbsTriviaEventHandler | None,
-        triviaGameBuilder: TriviaGameBuilderInterface | None,
-        triviaGameControllersRepository: TriviaGameControllersRepositoryInterface | None,
-        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface | None,
-        triviaGameMachine: TriviaGameMachineInterface | None,
-        triviaHistoryRepository: TriviaHistoryRepositoryInterface | None,
-        triviaIdGenerator: TriviaIdGeneratorInterface | None,
-        triviaRepository: TriviaRepositoryInterface | None,
-        triviaQuestionOccurrencesRepository: TriviaQuestionOccurrencesRepositoryInterface | None,
-        triviaScoreRepository: TriviaScoreRepositoryInterface | None,
-        triviaSettings: TriviaSettingsInterface | None,
-        triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface | None,
-        triviaUtils: TriviaUtilsInterface | None,
         trollmojiHelper: TrollmojiHelperInterface | None,
         trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface | None,
         ttsJsonMapper: TtsJsonMapperInterface | None,
@@ -281,14 +223,7 @@ class CynanBot(
         useChatterItemHelper: UseChatterItemHelperInterface | None,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
-        voicemailHelper: VoicemailHelperInterface | None,
-        voicemailsRepository: VoicemailsRepositoryInterface | None,
-        voicemailSettingsRepository: VoicemailSettingsRepositoryInterface | None,
-        weatherReportPresenter: WeatherReportPresenterInterface | None,
-        weatherRepository: WeatherRepositoryInterface | None,
         websocketConnectionServer: WebsocketConnectionServerInterface | None,
-        wordOfTheDayPresenter: WordOfTheDayPresenterInterface | None,
-        wordOfTheDayRepository: WordOfTheDayRepositoryInterface | None,
         startables: Collection[Startable | Any | None] | None,
     ):
         super().__init__(
@@ -376,8 +311,6 @@ class CynanBot(
             raise TypeError(f'chatterPreferredTtsSettingsRepository argument is malformed: \"{chatterPreferredTtsSettingsRepository}\"')
         elif chatterPreferredTtsUserMessageHelper is not None and not isinstance(chatterPreferredTtsUserMessageHelper, ChatterPreferredTtsUserMessageHelperInterface):
             raise TypeError(f'chatterPreferredTtsUserMessageHelper argument is malformed: \"{chatterPreferredTtsUserMessageHelper}\"')
-        elif commodoreSamSettingsRepository is not None and not isinstance(commodoreSamSettingsRepository, CommodoreSamSettingsRepositoryInterface):
-            raise TypeError(f'commodoreSamSettingsRepository argument is malformed: \"{commodoreSamSettingsRepository}\"')
         elif not isinstance(compositeTtsManagerProvider, CompositeTtsManagerProviderInterface):
             raise TypeError(f'compositeTtsManagerProvider argument is malformed: \"{compositeTtsManagerProvider}\"')
         elif crowdControlActionHandler is not None and not isinstance(crowdControlActionHandler, CrowdControlActionHandler):
@@ -394,32 +327,12 @@ class CynanBot(
             raise TypeError(f'crowdControlSettingsRepository argument is malformed: \"{crowdControlSettingsRepository}\"')
         elif crowdControlUserInputUtils is not None and not isinstance(crowdControlUserInputUtils, CrowdControlUserInputUtilsInterface):
             raise TypeError(f'crowdControlUserInputUtils argument is malformed: \"{crowdControlUserInputUtils}\"')
-        elif cutenessPresenter is not None and not isinstance(cutenessPresenter, CutenessPresenterInterface):
-            raise TypeError(f'cutenessPresenter argument is malformed: \"{cutenessPresenter}\"')
-        elif cutenessRepository is not None and not isinstance(cutenessRepository, CutenessRepositoryInterface):
-            raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif cutenessUtils is not None and not isinstance(cutenessUtils, CutenessUtilsInterface):
-            raise TypeError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif decTalkSettingsRepository is not None and not isinstance(decTalkSettingsRepository, DecTalkSettingsRepositoryInterface):
-            raise TypeError(f'decTalkSettingsRepository argument is malformed: \"{decTalkSettingsRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif googleSettingsRepository is not None and not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
-            raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
-        elif guaranteedTimeoutUsersRepository is not None and not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
-            raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
-        elif halfLifeSettingsRepository is not None and not isinstance(halfLifeSettingsRepository, HalfLifeSettingsRepositoryInterface):
-            raise TypeError(f'halfLifeSettingsRepository argument is malformed: \"{halfLifeSettingsRepository}\"')
-        elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
-            raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
-        elif jishoHelper is not None and not isinstance(jishoHelper, JishoHelperInterface):
-            raise TypeError(f'jishoHelper argument is malformed: \"{jishoHelper}\"')
         elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif locationsRepository is not None and not isinstance(locationsRepository, LocationsRepositoryInterface):
             raise TypeError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
-        elif microsoftSamSettingsRepository is not None and not isinstance(microsoftSamSettingsRepository, MicrosoftSamSettingsRepositoryInterface):
-            raise TypeError(f'microsoftSamSettingsRepository argument is malformed: \"{microsoftSamSettingsRepository}\"')
         elif mostRecentAnivMessageRepository is not None and not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
             raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
         elif mostRecentAnivMessageTimeoutHelper is not None and not isinstance(mostRecentAnivMessageTimeoutHelper, MostRecentAnivMessageTimeoutHelperInterface):
@@ -464,36 +377,6 @@ class CynanBot(
             raise TypeError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
         elif translationHelper is not None and not isinstance(translationHelper, TranslationHelperInterface):
             raise TypeError(f'translationHelper argument is malformed: \"{translationHelper}\"')
-        elif triviaBanHelper is not None and not isinstance(triviaBanHelper, TriviaBanHelperInterface):
-            raise TypeError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
-        elif triviaEmoteGenerator is not None and not isinstance(triviaEmoteGenerator, TriviaEmoteGeneratorInterface):
-            raise TypeError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
-        elif triviaEventHandler is not None and not isinstance(triviaEventHandler, AbsTriviaEventHandler):
-            raise TypeError(f'triviaEventHandler argument is malformed: \"{triviaEventHandler}\"')
-        elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
-            raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
-        elif triviaGameControllersRepository is not None and not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
-            raise TypeError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
-        elif triviaGameGlobalControllersRepository is not None and not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
-            raise TypeError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
-        elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
-            raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif triviaHistoryRepository is not None and not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
-            raise TypeError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
-        elif triviaIdGenerator is not None and not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
-            raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
-        elif triviaQuestionOccurrencesRepository is not None and not isinstance(triviaQuestionOccurrencesRepository, TriviaQuestionOccurrencesRepositoryInterface):
-            raise TypeError(f'triviaQuestionOccurrencesRepository argument is malformed: \"{triviaQuestionOccurrencesRepository}\"')
-        elif triviaRepository is not None and not isinstance(triviaRepository, TriviaRepositoryInterface):
-            raise TypeError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
-        elif triviaScoreRepository is not None and not isinstance(triviaScoreRepository, TriviaScoreRepositoryInterface):
-            raise TypeError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
-        elif triviaSettings is not None and not isinstance(triviaSettings, TriviaSettingsInterface):
-            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
-        elif triviaTwitchEmoteHelper is not None and not isinstance(triviaTwitchEmoteHelper, TriviaTwitchEmoteHelperInterface):
-            raise TypeError(f'triviaTwitchEmoteHelper argument is malformed: \"{triviaTwitchEmoteHelper}\"')
-        elif triviaUtils is not None and not isinstance(triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif trollmojiHelper is not None and not isinstance(trollmojiHelper, TrollmojiHelperInterface):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif trollmojiSettingsRepository is not None and not isinstance(trollmojiSettingsRepository, TrollmojiSettingsRepositoryInterface):
@@ -542,22 +425,8 @@ class CynanBot(
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif voicemailHelper is not None and not isinstance(voicemailHelper, VoicemailHelperInterface):
-            raise TypeError(f'voicemailHelper argument is malformed: \"{voicemailHelper}\"')
-        elif voicemailsRepository is not None and not isinstance(voicemailsRepository, VoicemailsRepositoryInterface):
-            raise TypeError(f'voicemailsRepository argument is malformed: \"{voicemailsRepository}\"')
-        elif voicemailSettingsRepository is not None and not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
-            raise TypeError(f'voicemailSettingsRepository argument is malformed: \"{voicemailSettingsRepository}\"')
-        elif weatherReportPresenter is not None and not isinstance(weatherReportPresenter, WeatherReportPresenterInterface):
-            raise TypeError(f'weatherReportPresenter argument is malformed: \"{weatherReportPresenter}\"')
-        elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
-            raise TypeError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
         elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
             raise TypeError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
-        elif wordOfTheDayPresenter is not None and not isinstance(wordOfTheDayPresenter, WordOfTheDayPresenterInterface):
-            raise TypeError(f'wordOfTheDayPresenter argument is malformed: \"{wordOfTheDayPresenter}\"')
-        elif wordOfTheDayRepository is not None and not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
-            raise TypeError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
         elif startables is not None and not isinstance(startables, Collection):
             raise TypeError(f'startables argument is malformed: \"{startables}\"')
 
@@ -584,9 +453,6 @@ class CynanBot(
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface | None] = timeoutActionMachine
         self.__timeoutEventHandler: Final[AbsTimeoutEventHandler | None] = timeoutEventHandler
-        self.__triviaEventHandler: Final[AbsTriviaEventHandler | None] = triviaEventHandler
-        self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
-        self.__triviaRepository: TriviaRepositoryInterface | None = triviaRepository
         self.__twitchChannelJoinHelper: Final[TwitchChannelJoinHelperInterface] = twitchChannelJoinHelper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
@@ -692,16 +558,6 @@ class CynanBot(
 
         if self.__twitchTimeoutRemodHelper is not None:
             self.__twitchTimeoutRemodHelper.start()
-
-        if self.__triviaEventHandler is not None:
-            self.__triviaEventHandler.setTwitchConnectionReadinessProvider(self)
-
-        if self.__triviaGameMachine is not None:
-            self.__triviaGameMachine.setEventListener(self.__triviaEventHandler)
-            self.__triviaGameMachine.start()
-
-        if self.__triviaRepository is not None:
-            self.__triviaRepository.start()
 
         if self.__recurringActionsEventHandler is not None:
             self.__recurringActionsEventHandler.setTwitchConnectionReadinessProvider(self)

@@ -80,6 +80,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         toxicTriviaHelper: ToxicTriviaHelper,
         triviaAnswerChecker: TriviaAnswerCheckerInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
+        triviaEventListener: TriviaEventListener,
         triviaGameStore: TriviaGameStoreInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
         triviaRepository: TriviaRepositoryInterface,
@@ -111,6 +112,8 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise TypeError(f'triviaAnswerChecker argument is malformed: \"{triviaAnswerChecker}\"')
         elif not isinstance(triviaEmoteGenerator, TriviaEmoteGeneratorInterface):
             raise TypeError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
+        elif not isinstance(triviaEventListener, TriviaEventListener):
+            raise TypeError(f'triviaEventListener argument is malformed: \"{triviaEventListener}\"')
         elif not isinstance(triviaGameStore, TriviaGameStoreInterface):
             raise TypeError(f'triviaGameStore argument is malformed: \"{triviaGameStore}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
@@ -146,6 +149,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self.__toxicTriviaHelper: Final[ToxicTriviaHelper] = toxicTriviaHelper
         self.__triviaAnswerChecker: Final[TriviaAnswerCheckerInterface] = triviaAnswerChecker
         self.__triviaEmoteGenerator: Final[TriviaEmoteGeneratorInterface] = triviaEmoteGenerator
+        self.__triviaEventListener: Final[TriviaEventListener] = triviaEventListener
         self.__triviaGameStore: Final[TriviaGameStoreInterface] = triviaGameStore
         self.__triviaIdGenerator: Final[TriviaIdGeneratorInterface] = triviaIdGenerator
         self.__triviaRepository: Final[TriviaRepositoryInterface] = triviaRepository
@@ -158,7 +162,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
         self.__isStarted: bool = False
-        self.__eventListener: TriviaEventListener | None = None
         self.__actionQueue: Final[SimpleQueue[AbsTriviaAction]] = SimpleQueue()
         self.__eventQueue: Final[SimpleQueue[AbsTriviaEvent]] = SimpleQueue()
 
@@ -921,12 +924,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             twitchChannelId = twitchChannelId,
         )
 
-    def setEventListener(self, listener: TriviaEventListener | None):
-        if listener is not None and not isinstance(listener, TriviaEventListener):
-            raise TypeError(f'listener argument is malformed: \"{listener}\"')
-
-        self.__eventListener = listener
-
     async def __startActionLoop(self):
         while True:
             actions: FrozenList[AbsTriviaAction] = FrozenList()
@@ -955,24 +952,21 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
     async def __startEventLoop(self):
         while True:
-            eventListener = self.__eventListener
+            events: FrozenList[AbsTriviaEvent] = FrozenList()
 
-            if eventListener is not None:
-                events: FrozenList[AbsTriviaEvent] = FrozenList()
+            try:
+                while not self.__eventQueue.empty():
+                    events.append(self.__eventQueue.get_nowait())
+            except queue.Empty as e:
+                self.__timber.log('TriviaGameMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=}): {e}', e, traceback.format_exc())
 
+            events.freeze()
+
+            for index, event in enumerate(events):
                 try:
-                    while not self.__eventQueue.empty():
-                        events.append(self.__eventQueue.get_nowait())
-                except queue.Empty as e:
-                    self.__timber.log('TriviaGameMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=}): {e}', e, traceback.format_exc())
-
-                events.freeze()
-
-                for index, event in enumerate(events):
-                    try:
-                        await eventListener.onNewTriviaEvent(event)
-                    except Exception as e:
-                        self.__timber.log('TriviaGameMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({index=}) ({event=}): {e}', e, traceback.format_exc())
+                    await self.__triviaEventListener.onNewTriviaEvent(event)
+                except Exception as e:
+                    self.__timber.log('TriviaGameMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({index=}) ({event=}): {e}', e, traceback.format_exc())
 
             await asyncio.sleep(self.__sleepTimeSeconds)
 

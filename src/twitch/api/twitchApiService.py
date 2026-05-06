@@ -25,7 +25,6 @@ from .models.twitchFetchUserWithIdRequest import TwitchFetchUserWithIdRequest
 from .models.twitchFetchUserWithLoginRequest import TwitchFetchUserWithLoginRequest
 from .models.twitchFollowersResponse import TwitchFollowersResponse
 from .models.twitchModeratorsResponse import TwitchModeratorsResponse
-from .models.twitchPaginationResponse import TwitchPaginationResponse
 from .models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
 from .models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
@@ -561,78 +560,6 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching emotes ({broadcasterId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({emotesResponse=})')
 
         return emotesResponse
-
-    async def fetchEventSubSubscriptions(
-        self,
-        twitchAccessToken: str,
-        userId: str,
-    ) -> TwitchEventSubResponse:
-        if not utils.isValidStr(twitchAccessToken):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
-
-        self.__timber.log('TwitchApiService', f'Fetching EventSub subscriptions... ({userId=})')
-        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
-        clientSession = await self.__networkClientProvider.get()
-
-        isFirstRun = True
-        pagination: TwitchPaginationResponse | None = None
-        finalEventSubResponse: TwitchEventSubResponse | None = None
-
-        while isFirstRun or pagination is not None:
-            if isFirstRun:
-                isFirstRun = False
-
-            queryString = f'user_id={userId}'
-
-            if pagination is not None:
-                queryString = f'{queryString}&after={pagination.cursor}'
-
-            try:
-                response = await clientSession.get(
-                    url = f'https://api.twitch.tv/helix/eventsub/subscriptions?{queryString}',
-                    headers = {
-                        'Authorization': f'Bearer {twitchAccessToken}',
-                        'Client-Id': twitchClientId,
-                    },
-                )
-            except GenericNetworkException as e:
-                self.__timber.log('TwitchApiService', f'Encountered network error when fetching EventSub subscriptions ({userId=}) ({pagination=})', e, traceback.format_exc())
-                raise GenericNetworkException(f'TwitchApiService encountered network error when fetching EventSub subscriptions ({userId=}) ({pagination=}): {e}')
-
-            responseStatusCode = response.statusCode
-            jsonResponse = await response.json()
-            await response.close()
-
-            if responseStatusCode != 200:
-                self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching EventSub subscriptions ({userId=}) ({pagination=}) ({response=}) ({responseStatusCode=})')
-                raise GenericNetworkException(
-                    message = f'TwitchApiService encountered non-200 HTTP status code when fetching EventSub subscriptions ({userId=}) ({pagination=}) ({response=}) ({responseStatusCode=})',
-                    statusCode = responseStatusCode,
-                )
-
-            newEventSubResponse = await self.__twitchJsonMapper.parseEventSubResponse(jsonResponse)
-
-            if newEventSubResponse is None:
-                self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching EventSub subscriptions ({userId=}) ({pagination=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({newEventSubResponse=})')
-                raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching EventSub subscriptions ({userId=}) ({pagination=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({newEventSubResponse=})')
-
-            finalEventSubResponse = await self.__twitchJsonMapper.mergeEventSubResponses(
-                first = finalEventSubResponse,
-                second = newEventSubResponse,
-            )
-
-            if finalEventSubResponse is None:
-                pagination = None
-            else:
-                pagination = finalEventSubResponse.pagination
-
-        if finalEventSubResponse is None:
-            self.__timber.log('TwitchApiService', f'Encountered network error when fetching EventSub subscriptions ({userId=}) ({pagination=})')
-            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching EventSub subscriptions ({userId=}) ({pagination=})')
-
-        return finalEventSubResponse
 
     async def fetchFollower(
         self,
