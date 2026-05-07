@@ -476,7 +476,6 @@ from src.trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
 from src.trivia.compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
 from src.trivia.compilers.triviaQuestionCompiler import TriviaQuestionCompiler
 from src.trivia.compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
-from src.trivia.configuration.absTriviaEventHandler import AbsTriviaEventHandler
 from src.trivia.configuration.triviaEventHandler import TriviaEventHandler
 from src.trivia.content.triviaContentScanner import TriviaContentScanner
 from src.trivia.content.triviaContentScannerInterface import TriviaContentScannerInterface
@@ -517,6 +516,7 @@ from src.trivia.specialStatus.toxicTriviaHelper import ToxicTriviaHelper
 from src.trivia.specialStatus.toxicTriviaOccurencesRepository import ToxicTriviaOccurencesRepository
 from src.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
 from src.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
+from src.trivia.triviaEventListener import TriviaEventListener
 from src.trivia.triviaGameMachine import TriviaGameMachine
 from src.trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from src.trivia.triviaIdGenerator import TriviaIdGenerator
@@ -2228,7 +2228,14 @@ triviaTwitchEmoteHelper: Final[TriviaTwitchEmoteHelperInterface] = TriviaTwitchE
 
 triviaGameStore: TriviaGameStoreInterface = TriviaGameStore()
 
-triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
+triviaEventHandler: Final[TriviaEventListener] = TriviaEventHandler(
+    timber = timber,
+    triviaUtils = triviaUtils,
+    twitchChatMessenger = twitchChatMessenger,
+    usersRepository = usersRepository,
+)
+
+triviaGameMachine: Final[TriviaGameMachineInterface] = TriviaGameMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     cutenessRepository = cutenessRepository,
     queuedTriviaGameStore = QueuedTriviaGameStore(
@@ -2250,6 +2257,7 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
         triviaSettings = triviaSettings,
     ),
     triviaEmoteGenerator = triviaEmoteGenerator,
+    triviaEventListener = triviaEventHandler,
     triviaGameStore = triviaGameStore,
     triviaIdGenerator = triviaIdGenerator,
     triviaRepository = triviaRepository,
@@ -2258,13 +2266,6 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
     triviaTwitchEmoteHelper = triviaTwitchEmoteHelper,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
-)
-
-triviaEventHandler: AbsTriviaEventHandler = TriviaEventHandler(
-    timber = timber,
-    triviaUtils = triviaUtils,
-    twitchChatMessenger = twitchChatMessenger,
-    usersRepository = usersRepository,
 )
 
 
@@ -3646,6 +3647,8 @@ twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscript
 startables: Final[Collection[Startable | None]] = frozenset({
     cheerActionHelper,
     streamAlertsManager,
+    triviaGameMachine,
+    triviaRepository,
 })
 
 
@@ -3691,7 +3694,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     chatterPreferredTtsRepository = chatterPreferredTtsRepository,
     chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
     chatterPreferredTtsUserMessageHelper = chatterPreferredTtsUserMessageHelper,
-    commodoreSamSettingsRepository = commodoreSamSettingsRepository,
     compositeTtsManagerProvider = compositeTtsManagerProvider,
     crowdControlActionHandler = crowdControlActionHandler,
     crowdControlAutomator = crowdControlAutomator,
@@ -3700,19 +3702,10 @@ cynanBot: Final[CynanBot] = CynanBot(
     crowdControlMessageListener = crowdControlMessageListener,
     crowdControlSettingsRepository = crowdControlSettingsRepository,
     crowdControlUserInputUtils = crowdControlUserInputUtils,
-    cutenessPresenter = cutenessPresenter,
-    cutenessRepository = cutenessRepository,
-    cutenessUtils = cutenessUtils,
-    decTalkSettingsRepository = decTalkSettingsRepository,
     generalSettingsRepository = generalSettingsRepository,
-    googleSettingsRepository = googleSettingsRepository,
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
-    halfLifeSettingsRepository = halfLifeSettingsRepository,
-    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
-    jishoHelper = jishoHelper,
     languagesRepository = languagesRepository,
     locationsRepository = locationsRepository,
-    microsoftSamSettingsRepository = microsoftSamSettingsRepository,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
     mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
@@ -3735,21 +3728,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     timeZoneRepository = timeZoneRepository,
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     translationHelper = translationHelper,
-    triviaBanHelper = triviaBanHelper,
-    triviaEmoteGenerator = triviaEmoteGenerator,
-    triviaEventHandler = triviaEventHandler,
-    triviaGameBuilder = triviaGameBuilder,
-    triviaGameControllersRepository = triviaGameControllersRepository,
-    triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
-    triviaGameMachine = triviaGameMachine,
-    triviaHistoryRepository = triviaHistoryRepository,
-    triviaIdGenerator = triviaIdGenerator,
-    triviaQuestionOccurrencesRepository = triviaQuestionOccurrencesRepository,
-    triviaRepository = triviaRepository,
-    triviaScoreRepository = triviaScoreRepository,
-    triviaSettings = triviaSettings,
-    triviaTwitchEmoteHelper = triviaTwitchEmoteHelper,
-    triviaUtils = triviaUtils,
     trollmojiHelper = trollmojiHelper,
     trollmojiSettingsRepository = trollmojiSettingsRepository,
     ttsJsonMapper = ttsJsonMapper,
@@ -3774,14 +3752,7 @@ cynanBot: Final[CynanBot] = CynanBot(
     useChatterItemHelper = useChatterItemHelper,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
-    voicemailHelper = voicemailHelper,
-    voicemailsRepository = voicemailsRepository,
-    voicemailSettingsRepository = voicemailSettingsRepository,
-    weatherReportPresenter = weatherReportPresenter,
-    weatherRepository = weatherRepository,
     websocketConnectionServer = websocketConnectionServer,
-    wordOfTheDayPresenter = wordOfTheDayPresenter,
-    wordOfTheDayRepository = wordOfTheDayRepository,
     startables = startables,
 )
 

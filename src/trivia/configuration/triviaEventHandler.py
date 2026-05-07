@@ -1,6 +1,5 @@
 from typing import Final
 
-from .absTriviaEventHandler import AbsTriviaEventHandler
 from ..events.absTriviaEvent import AbsTriviaEvent
 from ..events.clearedSuperTriviaQueueTriviaEvent import ClearedSuperTriviaQueueTriviaEvent
 from ..events.correctAnswerTriviaEvent import CorrectAnswerTriviaEvent
@@ -18,6 +17,7 @@ from ..events.newTriviaGameEvent import NewTriviaGameEvent
 from ..events.outOfTimeSuperTriviaEvent import OutOfTimeSuperTriviaEvent
 from ..events.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
 from ..events.wrongUserCheckAnswerTriviaEvent import WrongUserCheckAnswerTriviaEvent
+from ..triviaEventListener import TriviaEventListener
 from ..triviaUtilsInterface import TriviaUtilsInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -26,7 +26,7 @@ from ...twitch.configuration.twitchConnectionReadinessProvider import TwitchConn
 from ...users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class TriviaEventHandler(AbsTriviaEventHandler):
+class TriviaEventHandler(TriviaEventListener):
 
     def __init__(
         self,
@@ -49,21 +49,11 @@ class TriviaEventHandler(AbsTriviaEventHandler):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-        self.__twitchConnectionReadinessProvider: TwitchConnectionReadinessProvider | None = None
-
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
         if not isinstance(event, AbsTriviaEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
         self.__timber.log('TriviaEventHandler', f'Received new trivia event ({event=})')
-
-        twitchConnectionReadinessProvider = self.__twitchConnectionReadinessProvider
-
-        if twitchConnectionReadinessProvider is None:
-            self.__timber.log('TriviaEventHandler', f'Received new trivia event, but it won\'t be handled, as the twitchConnectionReadinessProvider instance has not been set ({event=}) ({twitchConnectionReadinessProvider=})')
-            return
-
-        await twitchConnectionReadinessProvider.waitForReady()
 
         if isinstance(event, ClearedSuperTriviaQueueTriviaEvent):
             await self.__handleClearedSuperTriviaQueueTriviaEvent(
