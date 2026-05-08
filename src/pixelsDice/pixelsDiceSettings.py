@@ -46,3 +46,7 @@ class PixelsDiceSettings(PixelsDiceSettingsInterface):
 
         self.__cache = jsonContents
         return jsonContents
+
+    async def reportToChat(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'reportToChat', fallback = False)

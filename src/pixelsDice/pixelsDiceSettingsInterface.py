@@ -12,3 +12,7 @@ class PixelsDiceSettingsInterface(Clearable, ABC):
     @abstractmethod
     async def isEnabled(self) -> bool:
         pass
+
+    @abstractmethod
+    async def reportToChat(self) -> bool:
+        pass
