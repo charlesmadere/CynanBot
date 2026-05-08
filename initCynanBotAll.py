@@ -3038,7 +3038,6 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption | None]] = frozense
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber,
-    userIdsRepository = userIdsRepository,
     pointRedemptions = pointRedemptions,
 )
 

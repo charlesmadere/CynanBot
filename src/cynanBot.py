@@ -112,6 +112,8 @@ from .twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from .twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
 from .twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from .twitch.twitchWebsocketDataBundleHandler import TwitchWebsocketDataBundleHandler
+from .twitch.websocket.listener.twitchWebsocketConnectionsFinishedListener import \
+    TwitchWebsocketConnectionsFinishedListener
 from .twitch.websocket.settings.twitchWebsocketSettingsRepositoryInterface import \
     TwitchWebsocketSettingsRepositoryInterface
 from .twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
@@ -124,6 +126,7 @@ class CynanBot(
     commands.Bot,
     ChannelJoinListener,
     TwitchConnectionReadinessProvider,
+    TwitchWebsocketConnectionsFinishedListener,
 ):
 
     def __init__(
@@ -574,6 +577,8 @@ class CynanBot(
             self.__websocketConnectionServer.start()
 
         if self.__twitchWebsocketClient is not None:
+            self.__twitchWebsocketClient.setConnectionsFinishedListener(self)
+
             self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
                 channelPointRedemptionHandler = self.__twitchChannelPointRedemptionHandler,
                 chatHandler = self.__twitchChatHandler,
@@ -598,6 +603,11 @@ class CynanBot(
     async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
         self.__timber.log('CynanBot', f'Joining channels: {event}')
         await self.join_channels(event.channels)
+
+    async def onWebsocketConnectionsFinished(self, userIds: Collection[str]):
+        self.__timber.log('CynanBot', f'Finished establishing Twitch websocket connections ({userIds=})')
+        # TODO
+        pass
 
     async def waitForReady(self):
         await self.wait_for_ready()

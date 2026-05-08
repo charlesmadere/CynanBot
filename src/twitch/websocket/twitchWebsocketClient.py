@@ -14,6 +14,7 @@ from .connectionAction.twitchWebsocketConnectionActionHelperInterface import \
     TwitchWebsocketConnectionActionHelperInterface
 from .endpointHelper.twitchWebsocketEndpointHelperInterface import TwitchWebsocketEndpointHelperInterface
 from .instabilityHelper.twitchWebsocketInstabilityHelperInterface import TwitchWebsocketInstabilityHelperInterface
+from .listener.twitchWebsocketConnectionsFinishedListener import TwitchWebsocketConnectionsFinishedListener
 from .listener.twitchWebsocketDataBundleListener import TwitchWebsocketDataBundleListener
 from .sessionIdHelper.twitchWebsocketSessionIdHelperInterface import TwitchWebsocketSessionIdHelperInterface
 from .settings.twitchWebsocketSettingsRepositoryInterface import TwitchWebsocketSettingsRepositoryInterface
@@ -125,6 +126,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__isStarted: bool = False
         self.__messageIdCache: Final[LruCache] = LruCache(twitchWebsocketMessageIdCacheSize)
         self.__dataBundleQueue: Final[SimpleQueue[TwitchWebsocketDataBundle]] = SimpleQueue()
+        self.__connectionsFinishedListener: TwitchWebsocketConnectionsFinishedListener | None = None
         self.__dataBundleListener: TwitchWebsocketDataBundleListener | None = None
 
     async def __isValidDataBundle(self, dataBundle: TwitchWebsocketDataBundle) -> bool:
@@ -221,6 +223,12 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             return None
         else:
             return dataBundle
+
+    def setConnectionsFinishedListener(self, listener: TwitchWebsocketConnectionsFinishedListener | None):
+        if listener is not None and not isinstance(listener, TwitchWebsocketConnectionsFinishedListener):
+            raise TypeError(f'listener argument is malformed: \"{listener}\"')
+
+        self.__connectionsFinishedListener = listener
 
     def setDataBundleListener(self, listener: TwitchWebsocketDataBundleListener | None):
         if listener is not None and not isinstance(listener, TwitchWebsocketDataBundleListener):
@@ -338,6 +346,23 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             await asyncio.sleep(self.__websocketCreationDelayTimeSeconds)
 
         self.__timber.log('TwitchWebsocketClient', f'Finished establishing websocket connections for {len(users)} user(s)')
+        await asyncio.sleep(self.__websocketCreationDelayTimeSeconds)
+
+        connectionsFinishedListener = self.__connectionsFinishedListener
+
+        if connectionsFinishedListener is None:
+            self.__timber.log('TwitchWebsocketClient', 'No TwitchWebsocketConnectionsFinishedListener is available to notify of connections finished')
+        else:
+            userIds: FrozenList[str] = FrozenList()
+
+            for user in users:
+                userIds.append(user.userId)
+
+            userIds.freeze()
+
+            await connectionsFinishedListener.onWebsocketConnectionsFinished(
+                userIds = userIds,
+            )
 
     async def __submitDataBundle(self, dataBundle: TwitchWebsocketDataBundle):
         if not isinstance(dataBundle, TwitchWebsocketDataBundle):
