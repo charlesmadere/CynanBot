@@ -118,7 +118,6 @@ from src.chatCommands.weatherChatCommand import WeatherChatCommand
 from src.chatCommands.wordChatCommand import WordChatCommand
 from src.chatLogger.chatLogger import ChatLogger
 from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
-from src.chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
 from src.chatterInventory.configuration.chatterItemEventHandler import ChatterItemEventHandler
 from src.chatterInventory.helpers.chatterInventoryHelper import ChatterInventoryHelper
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
@@ -128,6 +127,7 @@ from src.chatterInventory.helpers.useChatterItemHelper import UseChatterItemHelp
 from src.chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from src.chatterInventory.idGenerator.chatterInventoryIdGenerator import ChatterInventoryIdGenerator
 from src.chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
+from src.chatterInventory.listeners.chatterItemEventListener import ChatterItemEventListener
 from src.chatterInventory.machine.chatterInventoryItemUseMachine import ChatterInventoryItemUseMachine
 from src.chatterInventory.machine.chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
 from src.chatterInventory.mappers.chatterInventoryMapper import ChatterInventoryMapper
@@ -2484,14 +2484,24 @@ cassetteTapeItemUseCase = CassetteTapeItemUseCase(
     voicemailSettingsRepository = voicemailSettingsRepository,
 )
 
-chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface = ChatterInventoryIdGenerator()
+chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = ChatterInventoryIdGenerator()
 
-chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface = ChatterInventoryItemUseMachine(
+chatterItemEventListener: Final[ChatterItemEventListener] = ChatterItemEventHandler(
+    backgroundTaskHelper = backgroundTaskHelper,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
+    soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
+)
+
+chatterInventoryItemUseMachine: Final[ChatterInventoryItemUseMachineInterface] = ChatterInventoryItemUseMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     cassetteTapeItemUseCase = cassetteTapeItemUseCase,
     chatterInventoryIdGenerator = chatterInventoryIdGenerator,
     chatterInventoryRepository = chatterInventoryRepository,
     chatterInventorySettings = chatterInventorySettings,
+    chatterItemEventListener = chatterItemEventListener,
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
     timeoutIdGenerator = timeoutIdGenerator,
@@ -2500,15 +2510,6 @@ chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface = Chatte
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
-)
-
-chatterItemEventHandler: Final[AbsChatterItemEventHandler] = ChatterItemEventHandler(
-    backgroundTaskHelper = backgroundTaskHelper,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
-    streamAlertsManager = streamAlertsManager,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
 )
 
 gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface] = GashaponRewardHistoryRepository(
@@ -3038,7 +3039,6 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption | None]] = frozense
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber,
-    userIdsRepository = userIdsRepository,
     pointRedemptions = pointRedemptions,
 )
 
@@ -3682,10 +3682,8 @@ cynanBot: Final[CynanBot] = CynanBot(
     chatLogger = chatLogger,
     chatterInventoryHelper = chatterInventoryHelper,
     chatterInventoryIdGenerator = chatterInventoryIdGenerator,
-    chatterInventoryItemUseMachine = chatterInventoryItemUseMachine,
     chatterInventoryMapper = chatterInventoryMapper,
     chatterInventorySettings = chatterInventorySettings,
-    chatterItemEventHandler = chatterItemEventHandler,
     chatterPreferredNameHelper = chatterPreferredNameHelper,
     chatterPreferredNameRepository = chatterPreferredNameRepository,
     chatterPreferredNameSettings = chatterPreferredNameSettings,
@@ -3703,7 +3701,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     crowdControlSettingsRepository = crowdControlSettingsRepository,
     crowdControlUserInputUtils = crowdControlUserInputUtils,
     generalSettingsRepository = generalSettingsRepository,
-    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     languagesRepository = languagesRepository,
     locationsRepository = locationsRepository,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,

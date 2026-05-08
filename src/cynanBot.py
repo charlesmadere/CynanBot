@@ -16,11 +16,9 @@ from .aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from .asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from .asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
-from .chatterInventory.configuration.absChatterItemEventHandler import AbsChatterItemEventHandler
 from .chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from .chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from .chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
-from .chatterInventory.machine.chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
 from .chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from .chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from .chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
@@ -65,7 +63,6 @@ from .recurringActions.recurringActionsWizardInterface import RecurringActionsWi
 from .sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from .timber.timberInterface import TimberInterface
 from .timeout.configuration.absTimeoutEventHandler import AbsTimeoutEventHandler
-from .timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from .timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
 from .timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from .trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
@@ -112,6 +109,8 @@ from .twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from .twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
 from .twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from .twitch.twitchWebsocketDataBundleHandler import TwitchWebsocketDataBundleHandler
+from .twitch.websocket.listener.twitchWebsocketConnectionsFinishedListener import \
+    TwitchWebsocketConnectionsFinishedListener
 from .twitch.websocket.settings.twitchWebsocketSettingsRepositoryInterface import \
     TwitchWebsocketSettingsRepositoryInterface
 from .twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
@@ -124,6 +123,7 @@ class CynanBot(
     commands.Bot,
     ChannelJoinListener,
     TwitchConnectionReadinessProvider,
+    TwitchWebsocketConnectionsFinishedListener,
 ):
 
     def __init__(
@@ -153,10 +153,8 @@ class CynanBot(
         chatLogger: ChatLoggerInterface,
         chatterInventoryHelper: ChatterInventoryHelperInterface | None,
         chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface | None,
-        chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface | None,
         chatterInventoryMapper: ChatterInventoryMapperInterface | None,
         chatterInventorySettings: ChatterInventorySettingsInterface | None,
-        chatterItemEventHandler: AbsChatterItemEventHandler | None,
         chatterPreferredNameHelper: ChatterPreferredNameHelperInterface | None,
         chatterPreferredNameRepository: ChatterPreferredNameRepositoryInterface | None,
         chatterPreferredNameSettings: ChatterPreferredNameSettingsInterface | None,
@@ -174,7 +172,6 @@ class CynanBot(
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface | None,
         crowdControlUserInputUtils: CrowdControlUserInputUtilsInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
-        guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface | None,
         languagesRepository: LanguagesRepositoryInterface,
         locationsRepository: LocationsRepositoryInterface | None,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
@@ -287,14 +284,10 @@ class CynanBot(
             raise TypeError(f'chatterInventoryHelper argument is malformed: \"{chatterInventoryHelper}\"')
         elif chatterInventoryIdGenerator is not None and not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
             raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
-        elif chatterInventoryItemUseMachine is not None and not isinstance(chatterInventoryItemUseMachine, ChatterInventoryItemUseMachineInterface):
-            raise TypeError(f'chatterInventoryItemUseMachine argument is malformed: \"{chatterInventoryItemUseMachine}\"')
         elif chatterInventoryMapper is not None and not isinstance(chatterInventoryMapper, ChatterInventoryMapperInterface):
             raise TypeError(f'chatterInventoryMapper argument is malformed: \"{chatterInventoryMapper}\"')
         elif chatterInventorySettings is not None and not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
-        elif chatterItemEventHandler is not None and not isinstance(chatterItemEventHandler, AbsChatterItemEventHandler):
-            raise TypeError(f'chatterItemEventHandler argument is malformed: \"{chatterItemEventHandler}\"')
         elif chatterPreferredNameHelper is not None and not isinstance(chatterPreferredNameHelper, ChatterPreferredNameHelperInterface):
             raise TypeError(f'chatterPreferredNameHelper argument is malformed: \"{chatterPreferredNameHelper}\"')
         elif chatterPreferredNameRepository is not None and not isinstance(chatterPreferredNameRepository, ChatterPreferredNameRepositoryInterface):
@@ -440,8 +433,6 @@ class CynanBot(
         self.__twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler | None] = twitchSubscriptionHandler
         self.__authRepository: Final[AuthRepository] = authRepository
         self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
-        self.__chatterInventoryItemUseMachine: Final[ChatterInventoryItemUseMachineInterface | None] = chatterInventoryItemUseMachine
-        self.__chatterItemEventHandler: Final[AbsChatterItemEventHandler | None] = chatterItemEventHandler
         self.__crowdControlActionHandler: Final[CrowdControlActionHandler | None] = crowdControlActionHandler
         self.__crowdControlMachine: Final[CrowdControlMachineInterface | None] = crowdControlMachine
         self.__crowdControlMessageListener: Final[CrowdControlMessageListener | None] = crowdControlMessageListener
@@ -534,15 +525,36 @@ class CynanBot(
         self.__chatLogger.start()
         self.__twitchChatMessenger.start()
 
+        if self.__twitchWebsocketClient is not None:
+            self.__twitchWebsocketClient.setConnectionsFinishedListener(self)
+
+            self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
+                channelPointRedemptionHandler = self.__twitchChannelPointRedemptionHandler,
+                chatHandler = self.__twitchChatHandler,
+                followHandler = self.__twitchFollowHandler,
+                hypeTrainHandler = self.__twitchHypeTrainHandler,
+                pollHandler = self.__twitchPollHandler,
+                predictionHandler = self.__twitchPredictionHandler,
+                raidHandler = self.__twitchRaidHandler,
+                subscriptionHandler = self.__twitchSubscriptionHandler,
+                timber = self.__timber,
+                userIdsRepository = self.__userIdsRepository,
+                usersRepository = self.__usersRepository,
+            ))
+
+            self.__twitchWebsocketClient.start()
+
+    async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
+        self.__timber.log('CynanBot', f'Joining channels: {event}')
+        await self.join_channels(event.channels)
+
+    async def onWebsocketConnectionsFinished(self, userIds: Collection[str]):
+        self.__timber.log('CynanBot', f'Finished establishing Twitch websocket connections ({userIds=})')
+
+        await self.waitForReady()
+
         if self.__twitchChannelPointRedemptionHandler is not None:
             self.__twitchChannelPointRedemptionHandler.start()
-
-        if self.__chatterItemEventHandler is not None:
-            self.__chatterItemEventHandler.setTwitchConnectionReadinessProvider(self)
-
-        if self.__chatterInventoryItemUseMachine is not None:
-            self.__chatterInventoryItemUseMachine.setEventListener(self.__chatterItemEventHandler)
-            self.__chatterInventoryItemUseMachine.start()
 
         if self.__crowdControlMachine is not None:
             self.__crowdControlMachine.setActionHandler(self.__crowdControlActionHandler)
@@ -573,31 +585,10 @@ class CynanBot(
         if self.__websocketConnectionServer is not None:
             self.__websocketConnectionServer.start()
 
-        if self.__twitchWebsocketClient is not None:
-            self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
-                channelPointRedemptionHandler = self.__twitchChannelPointRedemptionHandler,
-                chatHandler = self.__twitchChatHandler,
-                followHandler = self.__twitchFollowHandler,
-                hypeTrainHandler = self.__twitchHypeTrainHandler,
-                pollHandler = self.__twitchPollHandler,
-                predictionHandler = self.__twitchPredictionHandler,
-                raidHandler = self.__twitchRaidHandler,
-                subscriptionHandler = self.__twitchSubscriptionHandler,
-                timber = self.__timber,
-                userIdsRepository = self.__userIdsRepository,
-                usersRepository = self.__usersRepository,
-            ))
-
-            self.__twitchWebsocketClient.start()
-
         for startable in self.__startables:
             startable.start()
 
         self.__timber.log('CynanBot', f'Finished starting all {len(self.__startables)} startable(s)')
-
-    async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
-        self.__timber.log('CynanBot', f'Joining channels: {event}')
-        await self.join_channels(event.channels)
 
     async def waitForReady(self):
         await self.wait_for_ready()

@@ -1898,7 +1898,6 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption | None]] = frozense
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber,
-    userIdsRepository = userIdsRepository,
     pointRedemptions = pointRedemptions,
 )
 
@@ -2363,10 +2362,8 @@ cynanBot: Final[CynanBot] = CynanBot(
     chatLogger = chatLogger,
     chatterInventoryHelper = None,
     chatterInventoryIdGenerator = None,
-    chatterInventoryItemUseMachine = None,
     chatterInventoryMapper = None,
     chatterInventorySettings = None,
-    chatterItemEventHandler = None,
     chatterPreferredNameHelper = None,
     chatterPreferredNameRepository = None,
     chatterPreferredNameSettings = None,
@@ -2384,7 +2381,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     crowdControlSettingsRepository = None,
     crowdControlUserInputUtils = None,
     generalSettingsRepository = generalSettingsRepository,
-    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     languagesRepository = languagesRepository,
     locationsRepository = locationsRepository,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,

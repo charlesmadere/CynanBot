@@ -14,7 +14,6 @@ from ...channelPointRedemptions.pointsRedemptionResult import PointsRedemptionRe
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
 
 
@@ -24,7 +23,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         timber: TimberInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
         pointRedemptions: Collection[AbsChannelPointRedemption | Any | None] | None,
         queueSleepTimeSeconds: float = 1,
         queueTimeoutSeconds: float = 3,
@@ -33,8 +31,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif pointRedemptions is not None and not isinstance(pointRedemptions, Collection):
             raise TypeError(f'pointRedemptions argument is malformed: \"{pointRedemptions}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
@@ -48,7 +44,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__timber: Final[TimberInterface] = timber
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__queueSleepTimeSeconds: Final[float] = queueSleepTimeSeconds
         self.__queueTimeoutSeconds: Final[float] = queueTimeoutSeconds
         self.__pointRedemptions: Final[Collection[AbsChannelPointRedemption]] = self.__buildPointRedemptionsCollection(pointRedemptions)
@@ -145,11 +140,6 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             return
 
         self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a channel point redemption event: ({user=}) ({twitchChannelId=}) ({eventId=}) ({redemptionUserId=}) ({redemptionUserInput=}) ({redemptionUserLogin=}) ({reward=})')
-
-        await self.__userIdsRepository.setUser(
-            userId = redemptionUserId,
-            userName = redemptionUserLogin,
-        )
 
         channelPointsRedemption = TwitchChannelPointsRedemption(
             rewardCost = reward.cost,

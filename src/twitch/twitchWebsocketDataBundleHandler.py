@@ -255,6 +255,10 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 if fragment.mention is not None:
                     await self.__addToUserIdsToUserNames(userIdsToUserNames, fragment.mention.userId, fragment.mention.userLogin)
 
+        if event.reply is not None:
+            await self.__addToUserIdsToUserNames(userIdsToUserNames, event.reply.parentUserId, event.reply.parentUserLogin)
+            await self.__addToUserIdsToUserNames(userIdsToUserNames, event.reply.threadUserId, event.reply.threadUserLogin)
+
         if len(userIdsToUserNames) >= 1:
             await self.__userIdsRepository.setUsers(userIdsToUserNames)
 
