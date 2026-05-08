@@ -1,7 +1,7 @@
 import locale
 from typing import Final
 
-from .absChatterItemEventHandler import AbsChatterItemEventHandler
+from ..listeners.chatterItemEventListener import ChatterItemEventListener
 from ..models.chatterItemType import ChatterItemType
 from ..models.events.absChatterItemEvent import AbsChatterItemEvent
 from ..models.events.animalPetChatterItemEvent import AnimalPetChatterItemEvent
@@ -34,10 +34,9 @@ from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ...twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
 
 
-class ChatterItemEventHandler(AbsChatterItemEventHandler):
+class ChatterItemEventHandler(ChatterItemEventListener):
 
     def __init__(
         self,
@@ -68,19 +67,9 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
-        self.__twitchConnectionReadinessProvider: TwitchConnectionReadinessProvider | None = None
-
     async def onNewChatterItemEvent(self, event: AbsChatterItemEvent):
         if not isinstance(event, AbsChatterItemEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
-
-        twitchConnectionReadinessProvider = self.__twitchConnectionReadinessProvider
-
-        if twitchConnectionReadinessProvider is None:
-            self.__timber.log('ChatterItemEventHandler', f'Received new chatter item event event, but it won\'t be handled, as the twitchConnectionReadinessProvider instance has not been set ({event=}) ({twitchConnectionReadinessProvider=})')
-            return
-
-        await twitchConnectionReadinessProvider.waitForReady()
 
         if isinstance(event, AnimalPetChatterItemEvent):
             await self.__handleAnimalPetChatterItemEvent(
@@ -387,9 +376,3 @@ class ChatterItemEventHandler(AbsChatterItemEventHandler):
         # We don't handle this item use here. Instead, we handle this within the
         # TimeoutEventHandler class. It's a bit of a weird flow but... whatever :P
         pass
-
-    def setTwitchConnectionReadinessProvider(self, provider: TwitchConnectionReadinessProvider | None):
-        if provider is not None and not isinstance(provider, TwitchConnectionReadinessProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchConnectionReadinessProvider = provider

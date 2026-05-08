@@ -85,6 +85,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface,
         chatterInventoryRepository: ChatterInventoryRepositoryInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
+        chatterItemEventListener: ChatterItemEventListener,
         timber: TimberInterface,
         timeoutActionMachine: TimeoutActionMachineInterface,
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
@@ -106,6 +107,8 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             raise TypeError(f'chatterInventoryRepository argument is malformed: \"{chatterInventoryRepository}\"')
         elif not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
+        elif not isinstance(chatterItemEventListener, ChatterItemEventListener):
+            raise TypeError(f'chatterItemEventListener argument is malformed: \"{chatterItemEventListener}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
@@ -136,6 +139,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         self.__chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = chatterInventoryIdGenerator
         self.__chatterInventoryRepository: Final[ChatterInventoryRepositoryInterface] = chatterInventoryRepository
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
+        self.__chatterItemEventListener: Final[ChatterItemEventListener] = chatterItemEventListener
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
@@ -147,11 +151,9 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
+        self.__isStarted: bool = False
         self.__actionQueue: Final[SimpleQueue[AbsChatterItemAction]] = SimpleQueue()
         self.__eventQueue: Final[SimpleQueue[AbsChatterItemEvent]] = SimpleQueue()
-
-        self.__isStarted: bool = False
-        self.__eventListener: ChatterItemEventListener | None = None
 
     async def __fetchTokensAndDetails(
         self,
@@ -721,12 +723,6 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             itemDetails = itemDetails,
         ))
 
-    def setEventListener(self, listener: ChatterItemEventListener | None):
-        if listener is not None and not isinstance(listener, ChatterItemEventListener):
-            raise TypeError(f'listener argument is malformed: \"{listener}\"')
-
-        self.__eventListener = listener
-
     def start(self):
         if self.__isStarted:
             self.__timber.log('ChatterInventoryItemUseMachine', 'Not starting ChatterInventoryItemUseMachine as it has already been started')
@@ -760,25 +756,22 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
 
     async def __startEventLoop(self):
         while True:
-            eventListener = self.__eventListener
+            events: FrozenList[AbsChatterItemEvent] = FrozenList()
 
-            if eventListener is not None:
-                events: FrozenList[AbsChatterItemEvent] = FrozenList()
+            try:
+                while not self.__eventQueue.empty():
+                    event = self.__eventQueue.get_nowait()
+                    events.append(event)
+            except queue.Empty as e:
+                self.__timber.log('ChatterInventoryItemUseMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=})', e, traceback.format_exc())
 
+            events.freeze()
+
+            for index, event in enumerate(events):
                 try:
-                    while not self.__eventQueue.empty():
-                        event = self.__eventQueue.get_nowait()
-                        events.append(event)
-                except queue.Empty as e:
-                    self.__timber.log('ChatterInventoryItemUseMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=})', e, traceback.format_exc())
-
-                events.freeze()
-
-                for index, event in enumerate(events):
-                    try:
-                        await eventListener.onNewChatterItemEvent(event)
-                    except Exception as e:
-                        self.__timber.log('ChatterInventoryItemUseMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({index=}) ({event=})', e, traceback.format_exc())
+                    await self.__chatterItemEventListener.onNewChatterItemEvent(event)
+                except Exception as e:
+                    self.__timber.log('ChatterInventoryItemUseMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({index=}) ({event=})', e, traceback.format_exc())
 
             await asyncio.sleep(self.__sleepTimeSeconds)
 
