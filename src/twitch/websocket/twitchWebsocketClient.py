@@ -339,29 +339,27 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
     async def __startWebsocketConnections(self):
         users = await self.__twitchWebsocketAllowedUsersRepository.getUsers()
-        self.__timber.log('TwitchWebsocketClient', f'Retrieved {len(users)} websocket user(s): ({users=})')
+        self.__timber.log('TwitchWebsocketClient', f'Retrieved {len(users)} websocket user(s) ({users=})')
 
         for user in users:
             self.__backgroundTaskHelper.createTask(self.__startWebsocketConnectionFor(user))
             await asyncio.sleep(self.__websocketCreationDelayTimeSeconds)
 
-        self.__timber.log('TwitchWebsocketClient', f'Finished establishing websocket connections for {len(users)} user(s)')
         await asyncio.sleep(self.__websocketCreationDelayTimeSeconds)
+        self.__timber.log('TwitchWebsocketClient', f'Finished establishing websocket connections')
 
         connectionsFinishedListener = self.__connectionsFinishedListener
 
         if connectionsFinishedListener is None:
             self.__timber.log('TwitchWebsocketClient', 'No TwitchWebsocketConnectionsFinishedListener is available to notify of connections finished')
         else:
-            userIds: FrozenList[str] = FrozenList()
+            userIds: set[str] = set()
 
             for user in users:
-                userIds.append(user.userId)
-
-            userIds.freeze()
+                userIds.add(user.userId)
 
             await connectionsFinishedListener.onWebsocketConnectionsFinished(
-                userIds = userIds,
+                userIds = frozenset(userIds),
             )
 
     async def __submitDataBundle(self, dataBundle: TwitchWebsocketDataBundle):
