@@ -1641,17 +1641,18 @@ voicemailHelper: Final[VoicemailHelperInterface] = VoicemailHelper(
 ## Pixels Dice initialization section ##
 ########################################
 
-pixelsDiceEventHandler: PixelsDiceEventListener = PixelsDiceEventHandler(
-    administratorProvider = administratorProvider,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-)
-
 pixelsDiceSettings: PixelsDiceSettingsInterface = PixelsDiceSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/pixelsDiceSettings.json',
     ),
+)
+
+pixelsDiceEventHandler: PixelsDiceEventListener = PixelsDiceEventHandler(
+    administratorProvider = administratorProvider,
+    pixelsDiceSettings = pixelsDiceSettings,
+    timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 pixelsDiceStateMapper: PixelsDiceStateMapperInterface = PixelsDiceStateMapper()
