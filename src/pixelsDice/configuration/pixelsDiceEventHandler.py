@@ -5,6 +5,7 @@ from ..models.events.absPixelsDiceEvent import AbsPixelsDiceEvent
 from ..models.events.pixelsDiceClientConnectedEvent import PixelsDiceClientConnectedEvent
 from ..models.events.pixelsDiceClientDisconnectedEvent import PixelsDiceClientDisconnectedEvent
 from ..models.events.pixelsDiceRollEvent import PixelsDiceRollEvent
+from ..pixelsDiceSettingsInterface import PixelsDiceSettingsInterface
 from ...misc.administratorProviderInterface import AdministratorProviderInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
@@ -15,17 +16,21 @@ class PixelsDiceEventHandler(PixelsDiceEventListener):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
+        pixelsDiceSettings: PixelsDiceSettingsInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        if not isinstance(timber, TimberInterface):
+        elif not isinstance(pixelsDiceSettings, PixelsDiceSettingsInterface):
+            raise TypeError(f'pixelsDiceSettings argument is malformed: \"{pixelsDiceSettings}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
+        self.__pixelsDiceSettings: Final[PixelsDiceSettingsInterface] = pixelsDiceSettings
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
@@ -61,4 +66,13 @@ class PixelsDiceEventHandler(PixelsDiceEventListener):
 
     async def __handleRollEvent(self, event: PixelsDiceRollEvent):
         self.__timber.log('PixelsDiceEventHandler', f'Pixels Dice rolled ({event=})')
-        # this method is intentionally rather thin, for now at least
+
+        if not await self.__pixelsDiceSettings.reportToChat():
+            return
+
+        twitchChannelId = await self.__administratorProvider.getAdministratorUserId()
+
+        self.__twitchChatMessenger.send(
+            text = f'🎲 You rolled a {event.roll}!',
+            twitchChannelId = twitchChannelId,
+        )
