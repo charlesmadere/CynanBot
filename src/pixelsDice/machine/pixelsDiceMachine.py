@@ -22,7 +22,7 @@ from ..models.events.pixelsDiceClientConnectedEvent import PixelsDiceClientConne
 from ..models.events.pixelsDiceClientDisconnectedEvent import PixelsDiceClientDisconnectedEvent
 from ..models.events.pixelsDiceRollEvent import PixelsDiceRollEvent
 from ..models.states.pixelsDiceRollState import PixelsDiceRollState
-from ..pixelsDiceSettingsInterface import PixelsDiceSettingsInterface
+from ..settings.pixelsDiceSettingsInterface import PixelsDiceSettingsInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
@@ -33,8 +33,9 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        pixelsDiceStateMapper: PixelsDiceStateMapperInterface,
+        pixelsDiceEventListener: PixelsDiceEventListener,
         pixelsDiceSettings: PixelsDiceSettingsInterface,
+        pixelsDiceStateMapper: PixelsDiceStateMapperInterface,
         timber: TimberInterface,
         connectionLoopSleepTimeSeconds: float = 10,
         eventLoopSleepTimeSeconds: float = 0.5,
@@ -43,10 +44,12 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(pixelsDiceStateMapper, PixelsDiceStateMapperInterface):
-            raise TypeError(f'pixelsDiceStateMapper argument is malformed: \"{pixelsDiceStateMapper}\"')
+        elif not isinstance(pixelsDiceEventListener, PixelsDiceEventListener):
+            raise TypeError(f'pixelsDiceEventListener argument is malformed: \"{pixelsDiceEventListener}\"')
         elif not isinstance(pixelsDiceSettings, PixelsDiceSettingsInterface):
             raise TypeError(f'pixelsDiceSettings argument is malformed: \"{pixelsDiceSettings}\"')
+        elif not isinstance(pixelsDiceStateMapper, PixelsDiceStateMapperInterface):
+            raise TypeError(f'pixelsDiceStateMapper argument is malformed: \"{pixelsDiceStateMapper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidNum(connectionLoopSleepTimeSeconds):
@@ -65,8 +68,9 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
             raise TypeError(f'notifyCharacteristicUuid argument is malformed: \"{notifyCharacteristicUuid}\"')
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
-        self.__pixelsDiceStateMapper: Final[PixelsDiceStateMapperInterface] = pixelsDiceStateMapper
+        self.__pixelsDiceEventListener: Final[PixelsDiceEventListener] = pixelsDiceEventListener
         self.__pixelsDiceSettings: Final[PixelsDiceSettingsInterface] = pixelsDiceSettings
+        self.__pixelsDiceStateMapper: Final[PixelsDiceStateMapperInterface] = pixelsDiceStateMapper
         self.__timber: Final[TimberInterface] = timber
         self.__connectionLoopSleepTimeSeconds: Final[float] = connectionLoopSleepTimeSeconds
         self.__eventLoopSleepTimeSeconds: Final[float] = eventLoopSleepTimeSeconds
@@ -78,7 +82,6 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
 
         self.__isStarted: bool = False
         self.__connectedDice: DiceBluetoothInfo | None = None
-        self.__eventListener: PixelsDiceEventListener | None = None
 
     async def __connectToDice(self) -> DiceBluetoothInfo | None:
         if not await self.__pixelsDiceSettings.isEnabled():
@@ -159,6 +162,33 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
     def isConnected(self) -> bool:
         return self.__connectedDice is not None
 
+    async def __isConsumedAsDiceRollRequest(self, event: AbsPixelsDiceEvent) -> bool:
+        if not isinstance(event, PixelsDiceRollEvent):
+            return False
+
+        request: DiceRollRequest | None = None
+
+        if not self.__requestQueue.empty():
+            try:
+                request = self.__requestQueue.get_nowait()
+            except queue.Empty as e:
+                self.__timber.log('PixelsDiceMachine', f'Encountered queue.Empty when retrieving a dice roll request (queue size: {self.__requestQueue.qsize()}) ({event=})', e, traceback.format_exc())
+
+        if request is None:
+            return False
+
+        result = DiceRollResult(
+            remainingQueueSize = self.__requestQueue.qsize(),
+            roll = event.roll,
+        )
+
+        try:
+            await request.callback(result)
+        except Exception as e:
+            self.__timber.log('PixelsDiceMachine', f'Encountered unknown Exception when notifying pixel dice roll (queue size: {self.__requestQueue.qsize()}) ({event=}) ({request=})', e, traceback.format_exc())
+
+        return True
+
     def __onBleakClientDisconnected(self, client: BleakClient):
         self.__backgroundTaskHelper.createTask(self.__onBleakClientDisconnectedAsync(
             client = client,
@@ -203,12 +233,6 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
             # empty for now, but in the future, we may want to observe other states
             pass
 
-    def setEventListener(self, listener: PixelsDiceEventListener | None):
-        if listener is not None and not isinstance(listener, PixelsDiceEventListener):
-            raise TypeError(f'listener argument is malformed: \"{listener}\"')
-
-        self.__eventListener = listener
-
     def start(self):
         if self.__isStarted:
             self.__timber.log('PixelsDiceMachine', 'Not starting PixelsDiceMachine as it has already been started')
@@ -231,49 +255,25 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
 
     async def __startEventLoop(self):
         while True:
-            eventListener = self.__eventListener
+            events: FrozenList[AbsPixelsDiceEvent] = FrozenList()
 
-            if eventListener is not None:
-                events: FrozenList[AbsPixelsDiceEvent] = FrozenList()
+            try:
+                while not self.__eventQueue.empty():
+                    event = self.__eventQueue.get_nowait()
+                    events.append(event)
+            except queue.Empty as e:
+                self.__timber.log('PixelsDiceMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=})', e, traceback.format_exc())
+
+            events.freeze()
+
+            for index, event in enumerate(events):
+                if await self.__isConsumedAsDiceRollRequest(event):
+                    continue
 
                 try:
-                    while not self.__eventQueue.empty():
-                        event = self.__eventQueue.get_nowait()
-                        events.append(event)
-                except queue.Empty as e:
-                    self.__timber.log('PixelsDiceMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=})', e, traceback.format_exc())
-
-                events.freeze()
-
-                for index, event in enumerate(events):
-                    try:
-                        await eventListener.onNewPixelsDiceEvent(event)
-                    except Exception as e:
-                        self.__timber.log('PixelsDiceMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({index=}) ({event=})', e, traceback.format_exc())
-
-                    if not isinstance(event, PixelsDiceRollEvent):
-                        continue
-
-                    request: DiceRollRequest | None = None
-
-                    if not self.__requestQueue.empty():
-                        try:
-                            request = self.__requestQueue.get_nowait()
-                        except queue.Empty as e:
-                            self.__timber.log('PixelsDiceMachine', f'Encountered queue.Empty when retrieving a dice roll request (queue size: {self.__requestQueue.qsize()}) ({len(events)=}) ({index=}) ({event=})', e, traceback.format_exc())
-
-                    if request is None:
-                        continue
-
-                    result = DiceRollResult(
-                        remainingQueueSize = self.__requestQueue.qsize(),
-                        roll = event.roll,
-                    )
-
-                    try:
-                        await request.callback(result)
-                    except Exception as e:
-                        self.__timber.log('PixelsDiceMachine', f'Encountered unknown Exception when notifying pixel dice roll (queue size: {self.__requestQueue.qsize()}) ({len(events)=}) ({index=}) ({event=}) ({request=})', e, traceback.format_exc())
+                    await self.__pixelsDiceEventListener.onNewPixelsDiceEvent(event)
+                except Exception as e:
+                    self.__timber.log('PixelsDiceMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({index=}) ({event=})', e, traceback.format_exc())
 
             await asyncio.sleep(self.__eventLoopSleepTimeSeconds)
 

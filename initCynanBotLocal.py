@@ -276,8 +276,8 @@ from src.pixelsDice.machine.pixelsDiceMachine import PixelsDiceMachine
 from src.pixelsDice.machine.pixelsDiceMachineInterface import PixelsDiceMachineInterface
 from src.pixelsDice.mappers.pixelsDiceStateMapper import PixelsDiceStateMapper
 from src.pixelsDice.mappers.pixelsDiceStateMapperInterface import PixelsDiceStateMapperInterface
-from src.pixelsDice.pixelsDiceSettings import PixelsDiceSettings
-from src.pixelsDice.pixelsDiceSettingsInterface import PixelsDiceSettingsInterface
+from src.pixelsDice.settings.pixelsDiceSettings import PixelsDiceSettings
+from src.pixelsDice.settings.pixelsDiceSettingsInterface import PixelsDiceSettingsInterface
 from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.soundPlayerManager.jsonMapper.soundAlertJsonMapper import SoundAlertJsonMapper
@@ -331,12 +331,12 @@ from src.supStreamer.supStreamerRepository import SupStreamerRepository
 from src.supStreamer.supStreamerRepositoryInterface import SupStreamerRepositoryInterface
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
-from src.timeout.configuration.absTimeoutEventHandler import AbsTimeoutEventHandler
 from src.timeout.configuration.timeoutEventHandler import TimeoutEventHandler
 from src.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
 from src.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from src.timeout.idGenerator.timeoutIdGenerator import TimeoutIdGenerator
 from src.timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
+from src.timeout.listener.timeoutEventListener import TimeoutEventListener
 from src.timeout.machine.timeoutActionMachine import TimeoutActionMachine
 from src.timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
 from src.timeout.settings.timeoutActionSettings import TimeoutActionSettings
@@ -1641,26 +1641,27 @@ voicemailHelper: Final[VoicemailHelperInterface] = VoicemailHelper(
 ## Pixels Dice initialization section ##
 ########################################
 
-pixelsDiceSettings: PixelsDiceSettingsInterface = PixelsDiceSettings(
+pixelsDiceSettings: Final[PixelsDiceSettingsInterface] = PixelsDiceSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/pixelsDiceSettings.json',
     ),
 )
 
-pixelsDiceEventHandler: PixelsDiceEventListener = PixelsDiceEventHandler(
+pixelsDiceEventHandler: Final[PixelsDiceEventListener] = PixelsDiceEventHandler(
     administratorProvider = administratorProvider,
     pixelsDiceSettings = pixelsDiceSettings,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
 )
 
-pixelsDiceStateMapper: PixelsDiceStateMapperInterface = PixelsDiceStateMapper()
+pixelsDiceStateMapper: Final[PixelsDiceStateMapperInterface] = PixelsDiceStateMapper()
 
-pixelsDiceMachine: PixelsDiceMachineInterface = PixelsDiceMachine(
+pixelsDiceMachine: Final[PixelsDiceMachineInterface] = PixelsDiceMachine(
     backgroundTaskHelper = backgroundTaskHelper,
-    pixelsDiceStateMapper = pixelsDiceStateMapper,
+    pixelsDiceEventListener = pixelsDiceEventHandler,
     pixelsDiceSettings = pixelsDiceSettings,
+    pixelsDiceStateMapper = pixelsDiceStateMapper,
     timber = timber,
 )
 
@@ -1737,9 +1738,17 @@ determineTm36SplashTargetUseCase = DetermineTm36SplashTargetUseCase(
 
 timeoutIdGenerator: TimeoutIdGeneratorInterface = TimeoutIdGenerator()
 
-anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = AnivCopyMessageTimeoutScoreRepository(
+anivCopyMessageTimeoutScoreRepository: Final[AnivCopyMessageTimeoutScoreRepositoryInterface] = AnivCopyMessageTimeoutScoreRepository(
     backingDatabase = backingDatabase,
     timeZoneRepository = timeZoneRepository,
+)
+
+timeoutEventListener: Final[TimeoutEventListener] = TimeoutEventHandler(
+    backgroundTaskHelper = backgroundTaskHelper,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachine(
@@ -1757,19 +1766,12 @@ timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachin
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     pixelsDiceMachine = pixelsDiceMachine,
     timber = timber,
+    timeoutEventListener = timeoutEventListener,
     timeoutIdGenerator = timeoutIdGenerator,
     trollmojiHelper = trollmojiHelper,
     twitchTimeoutHelper = twitchTimeoutHelper,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
-)
-
-timeoutEventHandler: Final[AbsTimeoutEventHandler] = TimeoutEventHandler(
-    backgroundTaskHelper = backgroundTaskHelper,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    streamAlertsManager = streamAlertsManager,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
 )
 
 cassetteTapeItemUseCase = CassetteTapeItemUseCase(
@@ -2437,7 +2439,12 @@ twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscript
 
 startables: Final[Collection[Startable | None]] = frozenset({
     cheerActionHelper,
+    pixelsDiceMachine,
     streamAlertsManager,
+    timeoutActionMachine,
+    twitchChannelPointRedemptionHandler,
+    twitchTimeoutRemodHelper,
+    websocketConnectionServer,
 })
 
 
@@ -2465,9 +2472,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     asplodieStatsRepository = asplodieStatsRepository,
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
-    bannedTriviaGameControllersRepository = None,
-    bannedWordsRepository = bannedWordsRepository,
-    bizhawkSettingsRepository = bizhawkSettingsRepository,
     chatLogger = chatLogger,
     chatterInventoryHelper = chatterInventoryHelper,
     chatterInventoryIdGenerator = chatterInventoryIdGenerator,
@@ -2496,49 +2500,18 @@ cynanBot: Final[CynanBot] = CynanBot(
     mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
     openTriviaDatabaseSessionTokenRepository = None,
-    pixelsDiceEventListener = pixelsDiceEventHandler,
-    pixelsDiceMachine = pixelsDiceMachine,
     pokepediaRepository = None,
-    recurringActionsEventHandler = None,
-    recurringActionsHelper = None,
-    recurringActionsMachine = None,
-    recurringActionsRepository = None,
-    recurringActionsWizard = None,
     sentMessageLogger = sentMessageLogger,
-    shinyTriviaOccurencesRepository = None,
     timber = timber,
-    timeoutActionMachine = timeoutActionMachine,
     timeoutActionSettings = timeoutActionSettings,
-    timeoutEventHandler = timeoutEventHandler,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     timeZoneRepository = timeZoneRepository,
-    toxicTriviaOccurencesRepository = None,
-    translationHelper = translationHelper,
-    trollmojiHelper = trollmojiHelper,
-    trollmojiSettingsRepository = trollmojiSettingsRepository,
-    ttsJsonMapper = ttsJsonMapper,
-    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
-    ttsMonsterTokensRepository = ttsMonsterTokensRepository,
-    ttsSettingsRepository = ttsSettingsRepository,
-    twitchApiService = twitchApiService,
-    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     twitchChannelJoinHelper = twitchChannelJoinHelper,
     twitchChatMessenger = twitchChatMessenger,
-    twitchEmotesHelper = twitchEmotesHelper,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
-    twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
-    twitchSubscriptionsRepository = twitchSubscriptionsRepository,
-    twitchTimeoutHelper = twitchTimeoutHelper,
-    twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     twitchTokensRepository = twitchTokensRepository,
-    twitchTokensUtils = twitchTokensUtils,
     twitchWebsocketClient = twitchWebsocketClient,
-    twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
-    useChatterItemHelper = useChatterItemHelper,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
-    websocketConnectionServer = websocketConnectionServer,
     startables = startables,
 )
 

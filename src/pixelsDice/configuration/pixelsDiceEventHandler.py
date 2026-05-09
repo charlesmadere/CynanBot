@@ -5,7 +5,7 @@ from ..models.events.absPixelsDiceEvent import AbsPixelsDiceEvent
 from ..models.events.pixelsDiceClientConnectedEvent import PixelsDiceClientConnectedEvent
 from ..models.events.pixelsDiceClientDisconnectedEvent import PixelsDiceClientDisconnectedEvent
 from ..models.events.pixelsDiceRollEvent import PixelsDiceRollEvent
-from ..pixelsDiceSettingsInterface import PixelsDiceSettingsInterface
+from ..settings.pixelsDiceSettingsInterface import PixelsDiceSettingsInterface
 from ...misc.administratorProviderInterface import AdministratorProviderInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface

@@ -20,7 +20,7 @@ from .events.superTriviaRecurringEvent import SuperTriviaRecurringEvent
 from .events.weatherRecurringEvent import WeatherRecurringEvent
 from .events.wordOfTheDayRecurringEvent import WordOfTheDayRecurringEvent
 from .mostRecentRecurringActionRepositoryInterface import MostRecentRecurringActionRepositoryInterface
-from .recurringActionEventListener import RecurringActionEventListener
+from .recurringActionsEventListener import RecurringActionsEventListener
 from .recurringActionsMachineInterface import RecurringActionsMachineInterface
 from .recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
 from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
@@ -51,6 +51,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         locationsRepository: LocationsRepositoryInterface,
         mostRecentRecurringActionRepository: MostRecentRecurringActionRepositoryInterface,
+        recurringActionsEventListener: RecurringActionsEventListener,
         recurringActionsRepository: RecurringActionsRepositoryInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
@@ -76,6 +77,8 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             raise TypeError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif not isinstance(mostRecentRecurringActionRepository, MostRecentRecurringActionRepositoryInterface):
             raise TypeError(f'mostRecentRecurringActionRepository argument is malformed: \"{mostRecentRecurringActionRepository}\"')
+        elif not isinstance(recurringActionsEventListener, RecurringActionsEventListener):
+            raise TypeError(f'recurringActionsEventListener argument is malformed: \"{recurringActionsEventListener}\"')
         elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
             raise TypeError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -119,6 +122,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         self.__locationsRepository: Final[LocationsRepositoryInterface] = locationsRepository
         self.__mostRecentRecurringActionsRepository: Final[MostRecentRecurringActionRepositoryInterface] = mostRecentRecurringActionRepository
         self.__recurringActionsRepository: Final[RecurringActionsRepositoryInterface] = recurringActionsRepository
+        self.__recurringActionsEventListener: Final[RecurringActionsEventListener] = recurringActionsEventListener
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface] = triviaGameBuilder
@@ -134,7 +138,6 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         self.__cooldown: Final[timedelta] = cooldown
 
         self.__isStarted: bool = False
-        self.__eventListener: RecurringActionEventListener | None = None
         self.__eventQueue: Final[SimpleQueue[RecurringEvent]] = SimpleQueue()
 
     async def __fetchViableUsers(self) -> list[UserInterface]:
@@ -421,32 +424,23 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
             await asyncio.sleep(self.__refreshSleepTimeSeconds)
 
-    def setEventListener(self, listener: RecurringActionEventListener | None):
-        if listener is not None and not isinstance(listener, RecurringActionEventListener):
-            raise TypeError(f'listener argument is malformed: \"{listener}\"')
-
-        self.__eventListener = listener
-
     async def __startEventLoop(self):
         while True:
-            eventListener = self.__eventListener
+            events: FrozenList[RecurringEvent] = FrozenList()
 
-            if eventListener is not None:
-                events: FrozenList[RecurringEvent] = FrozenList()
+            try:
+                while not self.__eventQueue.empty():
+                    events.append(self.__eventQueue.get_nowait())
+            except queue.Empty as e:
+                self.__timber.log('RecurringActionsMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) (events size: {len(events)})', e, traceback.format_exc())
 
+            events.freeze()
+
+            for event in events:
                 try:
-                    while not self.__eventQueue.empty():
-                        events.append(self.__eventQueue.get_nowait())
-                except queue.Empty as e:
-                    self.__timber.log('RecurringActionsMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) (events size: {len(events)})', e, traceback.format_exc())
-
-                events.freeze()
-
-                for event in events:
-                    try:
-                        await eventListener.onNewRecurringActionEvent(event)
-                    except Exception as e:
-                        self.__timber.log('RecurringActionsMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({event=})', e, traceback.format_exc())
+                    await self.__recurringActionsEventListener.onNewRecurringActionEvent(event)
+                except Exception as e:
+                    self.__timber.log('RecurringActionsMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({event=})', e, traceback.format_exc())
 
             await asyncio.sleep(self.__queueSleepTimeSeconds)
 

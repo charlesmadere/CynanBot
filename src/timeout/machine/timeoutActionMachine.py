@@ -98,6 +98,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         pixelsDiceMachine: PixelsDiceMachineInterface | None,
         timber: TimberInterface,
+        timeoutEventListener: TimeoutEventListener,
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
         trollmojiHelper: TrollmojiHelperInterface,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
@@ -134,6 +135,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'pixelsDiceMachine argument is malformed: \"{pixelsDiceMachine}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeoutEventListener, TimeoutEventListener):
+            raise TypeError(f'timeoutEventListener argument is malformed: \"{timeoutEventListener}\"')
         elif not isinstance(timeoutIdGenerator, TimeoutIdGeneratorInterface):
             raise TypeError(f'timeoutIdGenerator argument is malformed: \"{timeoutIdGenerator}\"')
         elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
@@ -167,6 +170,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
         self.__pixelsDiceMachine: Final[PixelsDiceMachineInterface | None] = pixelsDiceMachine
         self.__timber: Final[TimberInterface] = timber
+        self.__timeoutEventListener: Final[TimeoutEventListener] = timeoutEventListener
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
         self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
         self.__twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = twitchTimeoutHelper
@@ -178,7 +182,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__isStarted: bool = False
         self.__actionQueue: Final[SimpleQueue[AbsTimeoutAction]] = SimpleQueue()
         self.__eventQueue: Final[SimpleQueue[AbsTimeoutEvent]] = SimpleQueue()
-        self.__eventListener: TimeoutEventListener | None = None
 
     async def __handleAirStrikeTimeoutAction(self, action: AirStrikeTimeoutAction):
         if not isinstance(action, AirStrikeTimeoutAction):
@@ -950,12 +953,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             twitchAccessToken = twitchAccessToken,
         )
 
-    def setEventListener(self, listener: TimeoutEventListener | None):
-        if listener is not None and not isinstance(listener, TimeoutEventListener):
-            raise TypeError(f'listener argument is malformed: \"{listener}\"')
-
-        self.__eventListener = listener
-
     def start(self):
         if self.__isStarted:
             self.__timber.log('TimeoutActionMachine', 'Not starting TimeoutActionMachine as it has already been started')
@@ -989,25 +986,22 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
 
     async def __startEventLoop(self):
         while True:
-            eventListener = self.__eventListener
+            events: FrozenList[AbsTimeoutEvent] = FrozenList()
 
-            if eventListener is not None:
-                events: FrozenList[AbsTimeoutEvent] = FrozenList()
+            try:
+                while not self.__eventQueue.empty():
+                    event = self.__eventQueue.get_nowait()
+                    events.append(event)
+            except queue.Empty as e:
+                self.__timber.log('TimeoutActionMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=})', e, traceback.format_exc())
 
+            events.freeze()
+
+            for index, event in enumerate(events):
                 try:
-                    while not self.__eventQueue.empty():
-                        event = self.__eventQueue.get_nowait()
-                        events.append(event)
-                except queue.Empty as e:
-                    self.__timber.log('TimeoutActionMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=})', e, traceback.format_exc())
-
-                events.freeze()
-
-                for index, event in enumerate(events):
-                    try:
-                        await eventListener.onNewTimeoutEvent(event)
-                    except Exception as e:
-                        self.__timber.log('TimeoutActionMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({index=}) ({event=})', e, traceback.format_exc())
+                    await self.__timeoutEventListener.onNewTimeoutEvent(event)
+                except Exception as e:
+                    self.__timber.log('TimeoutActionMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({index=}) ({event=})', e, traceback.format_exc())
 
             await asyncio.sleep(self.__sleepTimeSeconds)
 

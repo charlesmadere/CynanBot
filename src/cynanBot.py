@@ -17,7 +17,6 @@ from .asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from .asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
 from .chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
-from .chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from .chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
 from .chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from .chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
@@ -33,9 +32,7 @@ from .chatterPreferredTts.repository.chatterPreferredTtsRepositoryInterface impo
     ChatterPreferredTtsRepositoryInterface
 from .chatterPreferredTts.settings.chatterPreferredTtsSettingsRepositoryInterface import \
     ChatterPreferredTtsSettingsRepositoryInterface
-from .contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
 from .crowdControl.automator.crowdControlAutomatorInterface import CrowdControlAutomatorInterface
-from .crowdControl.bizhawk.bizhawkSettingsRepositoryInterface import BizhawkSettingsRepositoryInterface
 from .crowdControl.crowdControlActionHandler import CrowdControlActionHandler
 from .crowdControl.crowdControlMachineInterface import CrowdControlMachineInterface
 from .crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
@@ -43,7 +40,6 @@ from .crowdControl.message.crowdControlMessageListener import CrowdControlMessag
 from .crowdControl.settings.crowdControlSettingsRepositoryInterface import CrowdControlSettingsRepositoryInterface
 from .crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdControlUserInputUtilsInterface
 from .language.languagesRepositoryInterface import LanguagesRepositoryInterface
-from .language.translationHelperInterface import TranslationHelperInterface
 from .location.locationsRepositoryInterface import LocationsRepositoryInterface
 from .location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from .misc.administratorProviderInterface import AdministratorProviderInterface
@@ -52,34 +48,15 @@ from .misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from .misc.generalSettingsRepository import GeneralSettingsRepository
 from .misc.startable import Startable
 from .mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
-from .pixelsDice.listeners.pixelsDiceEventListener import PixelsDiceEventListener
-from .pixelsDice.machine.pixelsDiceMachineInterface import PixelsDiceMachineInterface
 from .pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
-from .recurringActions.configuration.absRecurringActionsEventHandler import AbsRecurringActionsEventHandler
-from .recurringActions.recurringActionsHelperInterface import RecurringActionsHelperInterface
-from .recurringActions.recurringActionsMachineInterface import RecurringActionsMachineInterface
-from .recurringActions.recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
-from .recurringActions.recurringActionsWizardInterface import RecurringActionsWizardInterface
 from .sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from .timber.timberInterface import TimberInterface
-from .timeout.configuration.absTimeoutEventHandler import AbsTimeoutEventHandler
-from .timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
 from .timeout.settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from .trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
-from .trivia.banned.bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
-from .trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import ShinyTriviaOccurencesRepositoryInterface
-from .trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
 from .trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseSessionTokenRepositoryInterface import \
     OpenTriviaDatabaseSessionTokenRepositoryInterface
-from .trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
-from .trollmoji.trollmojiSettingsRepositoryInterface import TrollmojiSettingsRepositoryInterface
-from .tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from .tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
-from .tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from .ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
-from .ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \
-    TtsMonsterTokensRepositoryInterface
 from .twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from .twitch.absTwitchChatHandler import AbsTwitchChatHandler
 from .twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
@@ -89,34 +66,21 @@ from .twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from .twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from .twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 from .twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
-from .twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
-from .twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from .twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from .twitch.configuration.absChannelJoinEvent import AbsChannelJoinEvent
 from .twitch.configuration.channelJoinListener import ChannelJoinListener
 from .twitch.configuration.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
 from .twitch.configuration.joinChannelsEvent import JoinChannelsEvent
 from .twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
-from .twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
-from .twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
-from .twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
-from .twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
 from .twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
-from .twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
-from .twitch.timeout.twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from .twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from .twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from .twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
-from .twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from .twitch.twitchWebsocketDataBundleHandler import TwitchWebsocketDataBundleHandler
 from .twitch.websocket.listener.twitchWebsocketConnectionsFinishedListener import \
     TwitchWebsocketConnectionsFinishedListener
-from .twitch.websocket.settings.twitchWebsocketSettingsRepositoryInterface import \
-    TwitchWebsocketSettingsRepositoryInterface
 from .twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
 from .users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from .users.usersRepositoryInterface import UsersRepositoryInterface
-from .websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
 
 
 class CynanBot(
@@ -147,9 +111,6 @@ class CynanBot(
         asplodieStatsRepository: AsplodieStatsRepositoryInterface | None,
         authRepository: AuthRepository,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface | None,
-        bannedWordsRepository: BannedWordsRepositoryInterface | None,
-        bizhawkSettingsRepository: BizhawkSettingsRepositoryInterface | None,
         chatLogger: ChatLoggerInterface,
         chatterInventoryHelper: ChatterInventoryHelperInterface | None,
         chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface | None,
@@ -178,49 +139,18 @@ class CynanBot(
         mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
         openTriviaDatabaseSessionTokenRepository: OpenTriviaDatabaseSessionTokenRepositoryInterface | None,
-        pixelsDiceEventListener: PixelsDiceEventListener | None,
-        pixelsDiceMachine: PixelsDiceMachineInterface | None,
         pokepediaRepository: PokepediaRepositoryInterface | None,
-        recurringActionsEventHandler: AbsRecurringActionsEventHandler | None,
-        recurringActionsHelper: RecurringActionsHelperInterface | None,
-        recurringActionsMachine: RecurringActionsMachineInterface | None,
-        recurringActionsRepository: RecurringActionsRepositoryInterface | None,
-        recurringActionsWizard: RecurringActionsWizardInterface | None,
         sentMessageLogger: SentMessageLoggerInterface,
-        shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface | None,
         timber: TimberInterface,
-        timeoutActionMachine: TimeoutActionMachineInterface | None,
         timeoutActionSettings: TimeoutActionSettingsInterface | None,
-        timeoutEventHandler: AbsTimeoutEventHandler | None,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface | None,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface | None,
-        translationHelper: TranslationHelperInterface | None,
-        trollmojiHelper: TrollmojiHelperInterface | None,
-        trollmojiSettingsRepository: TrollmojiSettingsRepositoryInterface | None,
-        ttsJsonMapper: TtsJsonMapperInterface | None,
-        ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface | None,
-        ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface | None,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
-        twitchApiService: TwitchApiServiceInterface,
-        twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface,
         twitchChannelJoinHelper: TwitchChannelJoinHelperInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        twitchEmotesHelper: TwitchEmotesHelperInterface,
-        twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
-        twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface | None,
-        twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
-        twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface | None,
-        twitchTimeoutHelper: TwitchTimeoutHelperInterface | None,
-        twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchWebsocketClient: TwitchWebsocketClientInterface | None,
-        twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface | None,
-        useChatterItemHelper: UseChatterItemHelperInterface | None,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
-        websocketConnectionServer: WebsocketConnectionServerInterface | None,
         startables: Collection[Startable | Any | None] | None,
     ):
         super().__init__(
@@ -272,12 +202,6 @@ class CynanBot(
             raise TypeError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif bannedTriviaGameControllersRepository is not None and not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepositoryInterface):
-            raise TypeError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
-        elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
-            raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
-        elif bizhawkSettingsRepository is not None and not isinstance(bizhawkSettingsRepository, BizhawkSettingsRepositoryInterface):
-            raise TypeError(f'bizhawkSettingsRepository argument is malformed: \"{bizhawkSettingsRepository}\"')
         elif not isinstance(chatLogger, ChatLoggerInterface):
             raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
         elif chatterInventoryHelper is not None and not isinstance(chatterInventoryHelper, ChatterInventoryHelperInterface):
@@ -334,92 +258,30 @@ class CynanBot(
             raise TypeError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
         elif openTriviaDatabaseSessionTokenRepository is not None and not isinstance(openTriviaDatabaseSessionTokenRepository, OpenTriviaDatabaseSessionTokenRepositoryInterface):
             raise TypeError(f'openTriviaDatabaseSessionTokenRepository argument is malformed: \"{openTriviaDatabaseSessionTokenRepository}\"')
-        elif pixelsDiceEventListener is not None and not isinstance(pixelsDiceEventListener, PixelsDiceEventListener):
-            raise TypeError(f'pixelsDiceEventListener argument is malformed: \"{pixelsDiceEventListener}\"')
-        elif pixelsDiceMachine is not None and not isinstance(pixelsDiceMachine, PixelsDiceMachineInterface):
-            raise TypeError(f'pixelsDiceMachine argument is malformed:\"{pixelsDiceMachine}\"')
         elif pokepediaRepository is not None and not isinstance(pokepediaRepository, PokepediaRepositoryInterface):
             raise TypeError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
-        elif recurringActionsEventHandler is not None and not isinstance(recurringActionsEventHandler, AbsRecurringActionsEventHandler):
-            raise TypeError(f'recurringActionsEventHandler argument is malformed: \"{recurringActionsEventHandler}\"')
-        elif recurringActionsHelper is not None and not isinstance(recurringActionsHelper, RecurringActionsHelperInterface):
-            raise TypeError(f'recurringActionsHelper argument is malformed: \"{recurringActionsHelper}\"')
-        elif recurringActionsMachine is not None and not isinstance(recurringActionsMachine, RecurringActionsMachineInterface):
-            raise TypeError(f'recurringActionsMachine argument is malformed: \"{recurringActionsMachine}\"')
-        elif recurringActionsRepository is not None and not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
-            raise TypeError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
-        elif recurringActionsWizard is not None and not isinstance(recurringActionsWizard, RecurringActionsWizardInterface):
-            raise TypeError(f'recurringActionsWizard argument is malformed: \"{recurringActionsWizard}\"')
         elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
             raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
-        elif shinyTriviaOccurencesRepository is not None and not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface):
-            raise TypeError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif timeoutActionMachine is not None and not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
-            raise TypeError(f'timeoutActionMachine argument is malformed: \"{timeoutActionMachine}\"')
         elif timeoutActionSettings is not None and not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
             raise TypeError(f'timeoutActionSettings argument is malformed: \"{timeoutActionSettings}\"')
-        elif timeoutEventHandler is not None and not isinstance(timeoutEventHandler, AbsTimeoutEventHandler):
-            raise TypeError(f'timeoutEventHandler argument is malformed: \"{timeoutEventHandler}\"')
         elif timeoutImmuneUserIdsRepository is not None and not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif toxicTriviaOccurencesRepository is not None and not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
-            raise TypeError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
-        elif translationHelper is not None and not isinstance(translationHelper, TranslationHelperInterface):
-            raise TypeError(f'translationHelper argument is malformed: \"{translationHelper}\"')
-        elif trollmojiHelper is not None and not isinstance(trollmojiHelper, TrollmojiHelperInterface):
-            raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
-        elif trollmojiSettingsRepository is not None and not isinstance(trollmojiSettingsRepository, TrollmojiSettingsRepositoryInterface):
-            raise TypeError(f'trollmojiSettingsRepository argument is malformed: \"{trollmojiSettingsRepository}\"')
-        elif ttsJsonMapper is not None and not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
-            raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
-        elif ttsMonsterSettingsRepository is not None and not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
-            raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
-        elif ttsMonsterTokensRepository is not None and not isinstance(ttsMonsterTokensRepository, TtsMonsterTokensRepositoryInterface):
-            raise TypeError(f'ttsMonsterTokensRepository argument is malformed: \"{ttsMonsterTokensRepository}\"')
-        elif ttsSettingsRepository is not None and not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
-            raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
-        elif not isinstance(twitchApiService, TwitchApiServiceInterface):
-            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
-        elif not isinstance(twitchChannelEditorsRepository, TwitchChannelEditorsRepositoryInterface):
-            raise TypeError(f'twitchChannelEditorsRepository argument is malformed: \"{twitchChannelEditorsRepository}\"')
         elif not isinstance(twitchChannelJoinHelper, TwitchChannelJoinHelperInterface):
             raise TypeError(f'twitchChannelJoinHelper argument is malformed: \"{twitchChannelJoinHelper}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(twitchEmotesHelper, TwitchEmotesHelperInterface):
-            raise TypeError(f'twitchEmotesHelper argument is malformed: \"{twitchEmotesHelper}\"')
-        elif twitchFollowingStatusRepository is not None and not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
-            raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
-        elif twitchFriendsUserIdRepository is not None and not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
-            raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
-        elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
-            raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
-        elif twitchSubscriptionsRepository is not None and not isinstance(twitchSubscriptionsRepository, TwitchSubscriptionsRepositoryInterface):
-            raise TypeError(f'twitchSubscriptionsRepository argument is malformed: \"{twitchSubscriptionsRepository}\"')
-        elif twitchTimeoutHelper is not None and not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
-            raise TypeError(f'twitchTimeoutHelper argument is malformed: \"{twitchTimeoutHelper}\"')
-        elif twitchTimeoutRemodHelper is not None and not isinstance(twitchTimeoutRemodHelper, TwitchTimeoutRemodHelperInterface):
-            raise TypeError(f'twitchTimeoutRemodHelper argument is malformed: \"{twitchTimeoutRemodHelper}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
-            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif twitchWebsocketClient is not None and not isinstance(twitchWebsocketClient, TwitchWebsocketClientInterface):
             raise TypeError(f'twitchWebsocketClient argument is malformed: \"{twitchWebsocketClient}\"')
-        elif twitchWebsocketSettingsRepository is not None and not isinstance(twitchWebsocketSettingsRepository, TwitchWebsocketSettingsRepositoryInterface):
-            raise TypeError(f'twitchWebsocketSettingsRepository argument is malformed: \"{twitchWebsocketSettingsRepository}\"')
-        elif useChatterItemHelper is not None and not isinstance(useChatterItemHelper, UseChatterItemHelperInterface):
-            raise TypeError(f'useChatterItemHelper argument is malformed: \"{useChatterItemHelper}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
-            raise TypeError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
         elif startables is not None and not isinstance(startables, Collection):
             raise TypeError(f'startables argument is malformed: \"{startables}\"')
 
@@ -436,22 +298,14 @@ class CynanBot(
         self.__crowdControlActionHandler: Final[CrowdControlActionHandler | None] = crowdControlActionHandler
         self.__crowdControlMachine: Final[CrowdControlMachineInterface | None] = crowdControlMachine
         self.__crowdControlMessageListener: Final[CrowdControlMessageListener | None] = crowdControlMessageListener
-        self.__pixelsDiceEventListener: Final[PixelsDiceEventListener | None] = pixelsDiceEventListener
-        self.__pixelsDiceMachine: Final[PixelsDiceMachineInterface | None] = pixelsDiceMachine
-        self.__recurringActionsEventHandler: Final[AbsRecurringActionsEventHandler | None] = recurringActionsEventHandler
-        self.__recurringActionsMachine: Final[RecurringActionsMachineInterface | None] = recurringActionsMachine
         self.__sentMessageLogger: Final[SentMessageLoggerInterface] = sentMessageLogger
         self.__timber: Final[TimberInterface] = timber
-        self.__timeoutActionMachine: Final[TimeoutActionMachineInterface | None] = timeoutActionMachine
-        self.__timeoutEventHandler: Final[AbsTimeoutEventHandler | None] = timeoutEventHandler
         self.__twitchChannelJoinHelper: Final[TwitchChannelJoinHelperInterface] = twitchChannelJoinHelper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchWebsocketClient: Final[TwitchWebsocketClientInterface | None] = twitchWebsocketClient
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
-        self.__websocketConnectionServer: Final[WebsocketConnectionServerInterface | None] = websocketConnectionServer
         self.__startables: Final[FrozenList[Startable]] = self.__buildStartablesCollection(startables)
 
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireTwitchHandle()}')
@@ -553,37 +407,10 @@ class CynanBot(
 
         await self.waitForReady()
 
-        if self.__twitchChannelPointRedemptionHandler is not None:
-            self.__twitchChannelPointRedemptionHandler.start()
-
         if self.__crowdControlMachine is not None:
             self.__crowdControlMachine.setActionHandler(self.__crowdControlActionHandler)
             self.__crowdControlMachine.setMessageListener(self.__crowdControlMessageListener)
             self.__crowdControlMachine.start()
-
-        if self.__timeoutEventHandler is not None:
-            self.__timeoutEventHandler.setTwitchConnectionReadinessProvider(self)
-
-        if self.__timeoutActionMachine is not None:
-            self.__timeoutActionMachine.setEventListener(self.__timeoutEventHandler)
-            self.__timeoutActionMachine.start()
-
-        if self.__twitchTimeoutRemodHelper is not None:
-            self.__twitchTimeoutRemodHelper.start()
-
-        if self.__recurringActionsEventHandler is not None:
-            self.__recurringActionsEventHandler.setTwitchConnectionReadinessProvider(self)
-
-        if self.__recurringActionsMachine is not None:
-            self.__recurringActionsMachine.setEventListener(self.__recurringActionsEventHandler)
-            self.__recurringActionsMachine.start()
-
-        if self.__pixelsDiceMachine is not None:
-            self.__pixelsDiceMachine.setEventListener(self.__pixelsDiceEventListener)
-            self.__pixelsDiceMachine.start()
-
-        if self.__websocketConnectionServer is not None:
-            self.__websocketConnectionServer.start()
 
         for startable in self.__startables:
             startable.start()
