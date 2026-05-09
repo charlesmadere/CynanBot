@@ -38,6 +38,8 @@ class PixelsDiceEventHandler(PixelsDiceEventListener):
         if not isinstance(event, AbsPixelsDiceEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
+        self.__timber.log('PixelsDiceEventHandler', f'Received new Pixels Dice event ({event=})')
+
         if isinstance(event, PixelsDiceClientConnectedEvent):
             await self.__handleConnectedEvent(
                 event = event,
@@ -57,22 +59,20 @@ class PixelsDiceEventHandler(PixelsDiceEventListener):
             self.__timber.log('PixelsDiceEventHandler', f'Received unhandled pixels dice event ({event=})')
 
     async def __handleConnectedEvent(self, event: PixelsDiceClientConnectedEvent):
-        self.__timber.log('PixelsDiceEventHandler', f'Pixels Dice connected ({event=})')
-        # this method is intentionally rather thin, for now at least
+        # this method is currently intentionally empty
+        pass
 
     async def __handleDisconnectedEvent(self, event: PixelsDiceClientDisconnectedEvent):
-        self.__timber.log('PixelsDiceEventHandler', f'Pixels Dice disconnected ({event=})')
-        # this method is intentionally rather thin, for now at least
+        # this method is currently intentionally empty
+        pass
 
     async def __handleRollEvent(self, event: PixelsDiceRollEvent):
-        self.__timber.log('PixelsDiceEventHandler', f'Pixels Dice rolled ({event=})')
-
         if not await self.__pixelsDiceSettings.reportToChat():
             return
 
         twitchChannelId = await self.__administratorProvider.getAdministratorUserId()
 
         self.__twitchChatMessenger.send(
-            text = f'🎲 You rolled a {event.roll}!',
+            text = f'🎲 {event.roll}!',
             twitchChannelId = twitchChannelId,
         )
