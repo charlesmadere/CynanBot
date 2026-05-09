@@ -1,8 +1,8 @@
 from typing import Any, Final
 
 from .pixelsDiceSettingsInterface import PixelsDiceSettingsInterface
-from ..misc import utils as utils
-from ..storage.jsonReaderInterface import JsonReaderInterface
+from ...misc import utils as utils
+from ...storage.jsonReaderInterface import JsonReaderInterface
 
 
 class PixelsDiceSettings(PixelsDiceSettingsInterface):

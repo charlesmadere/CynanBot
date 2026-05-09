@@ -6,7 +6,7 @@ from typing import Final
 from frozendict import frozendict
 from frozenlist import FrozenList
 
-from .absTimeoutEventHandler import AbsTimeoutEventHandler
+from ..listener.timeoutEventListener import TimeoutEventListener
 from ..models.events.absTimeoutEvent import AbsTimeoutEvent
 from ..models.events.airStrikeTimeoutEvent import AirStrikeTimeoutEvent
 from ..models.events.bananaTimeoutDiceRollFailedEvent import BananaTimeoutDiceRollFailedEvent
@@ -46,10 +46,9 @@ from ...timber.timberInterface import TimberInterface
 from ...tts.models.ttsEvent import TtsEvent
 from ...tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ...twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
 
 
-class TimeoutEventHandler(AbsTimeoutEventHandler):
+class TimeoutEventHandler(TimeoutEventListener):
 
     def __init__(
         self,
@@ -76,19 +75,9 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
-        self.__twitchConnectionReadinessProvider: TwitchConnectionReadinessProvider | None = None
-
     async def onNewTimeoutEvent(self, event: AbsTimeoutEvent):
         if not isinstance(event, AbsTimeoutEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
-
-        twitchConnectionReadinessProvider = self.__twitchConnectionReadinessProvider
-
-        if twitchConnectionReadinessProvider is None:
-            self.__timber.log('TimeoutEventHandler', f'Received new timeout event, but it won\'t be handled, as the twitchConnectionReadinessProvider instance has not been set ({event=}) ({twitchConnectionReadinessProvider=})')
-            return
-
-        await twitchConnectionReadinessProvider.waitForReady()
 
         if isinstance(event, AirStrikeTimeoutEvent):
             await self.__handleAirStrikeTimeoutEvent(
@@ -655,9 +644,3 @@ class TimeoutEventHandler(AbsTimeoutEventHandler):
     ):
         # this event type is intentionally ignored
         pass
-
-    def setTwitchConnectionReadinessProvider(self, provider: TwitchConnectionReadinessProvider | None):
-        if provider is not None and not isinstance(provider, TwitchConnectionReadinessProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchConnectionReadinessProvider = provider

@@ -1,20 +1,19 @@
 from typing import Final
 
-from .absRecurringActionsEventHandler import AbsRecurringActionsEventHandler
 from ..events.cutenessRecurringEvent import CutenessRecurringEvent
 from ..events.superTriviaRecurringEvent import SuperTriviaRecurringEvent
 from ..events.weatherRecurringEvent import WeatherRecurringEvent
 from ..events.wordOfTheDayRecurringEvent import WordOfTheDayRecurringEvent
+from ..recurringActionsEventListener import RecurringActionsEventListener
 from ...cuteness.cutenessPresenterInterface import CutenessPresenterInterface
 from ...language.wordOfTheDay.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
 from ...recurringActions.events.recurringEvent import RecurringEvent
 from ...timber.timberInterface import TimberInterface
 from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ...twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
 from ...weather.weatherReportPresenterInterface import WeatherReportPresenterInterface
 
 
-class RecurringActionsEventHandler(AbsRecurringActionsEventHandler):
+class RecurringActionsEventHandler(RecurringActionsEventListener):
 
     def __init__(
         self,
@@ -41,21 +40,11 @@ class RecurringActionsEventHandler(AbsRecurringActionsEventHandler):
         self.__weatherReportPresenter: Final[WeatherReportPresenterInterface | None] = weatherReportPresenter
         self.__wordOfTheDayPresenter: Final[WordOfTheDayPresenterInterface | None] = wordOfTheDayPresenter
 
-        self.__twitchConnectionReadinessProvider: TwitchConnectionReadinessProvider | None = None
-
     async def onNewRecurringActionEvent(self, event: RecurringEvent):
         if not isinstance(event, RecurringEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
         self.__timber.log('RecurringActionsEventHandler', f'Received new recurring action event ({event=})')
-
-        twitchConnectionReadinessProvider = self.__twitchConnectionReadinessProvider
-
-        if twitchConnectionReadinessProvider is None:
-            self.__timber.log('RecurringActionsEventHandler', f'Received new recurring action event, but it won\'t be handled, as the twitchConnectionReadinessProvider instances have not been set ({event=}) ({twitchConnectionReadinessProvider=})')
-            return
-
-        await twitchConnectionReadinessProvider.waitForReady()
 
         if isinstance(event, CutenessRecurringEvent):
             await self.__handleCutenessRecurringActionEvent(
@@ -137,9 +126,3 @@ class RecurringActionsEventHandler(AbsRecurringActionsEventHandler):
             text = wordOfTheDayString,
             twitchChannelId = event.twitchChannelId,
         )
-
-    def setTwitchConnectionReadinessProvider(self, provider: TwitchConnectionReadinessProvider | None):
-        if provider is not None and not isinstance(provider, TwitchConnectionReadinessProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchConnectionReadinessProvider = provider

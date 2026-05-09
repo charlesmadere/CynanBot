@@ -189,13 +189,13 @@ from src.pkmn.pokepediaJsonMapper import PokepediaJsonMapper
 from src.pkmn.pokepediaJsonMapperInterface import PokepediaJsonMapperInterface
 from src.pkmn.pokepediaRepository import PokepediaRepository
 from src.pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
-from src.recurringActions.configuration.absRecurringActionsEventHandler import AbsRecurringActionsEventHandler
 from src.recurringActions.configuration.recurringActionsEventHandler import RecurringActionsEventHandler
 from src.recurringActions.jsonParser.recurringActionsJsonParser import RecurringActionsJsonParser
 from src.recurringActions.jsonParser.recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
 from src.recurringActions.mostRecentRecurringActionRepository import MostRecentRecurringActionRepository
 from src.recurringActions.mostRecentRecurringActionRepositoryInterface import \
     MostRecentRecurringActionRepositoryInterface
+from src.recurringActions.recurringActionsEventListener import RecurringActionsEventListener
 from src.recurringActions.recurringActionsHelper import RecurringActionsHelper
 from src.recurringActions.recurringActionsHelperInterface import RecurringActionsHelperInterface
 from src.recurringActions.recurringActionsMachine import RecurringActionsMachine
@@ -233,12 +233,12 @@ from src.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsMan
 from src.streamAlertsManager.stub.stubStreamAlertsManager import StubStreamAlertsManager
 from src.timber.timber import Timber
 from src.timber.timberInterface import TimberInterface
-from src.timeout.configuration.absTimeoutEventHandler import AbsTimeoutEventHandler
 from src.timeout.configuration.timeoutEventHandler import TimeoutEventHandler
 from src.timeout.guaranteedTimeoutUsersRepository import GuaranteedTimeoutUsersRepository
 from src.timeout.guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from src.timeout.idGenerator.timeoutIdGenerator import TimeoutIdGenerator
 from src.timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
+from src.timeout.listener.timeoutEventListener import TimeoutEventListener
 from src.timeout.machine.timeoutActionMachine import TimeoutActionMachine
 from src.timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
 from src.timeout.settings.timeoutActionSettings import TimeoutActionSettings
@@ -1582,9 +1582,17 @@ determineTm36SplashTargetUseCase = DetermineTm36SplashTargetUseCase(
 
 timeoutIdGenerator: TimeoutIdGeneratorInterface = TimeoutIdGenerator()
 
-anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface = AnivCopyMessageTimeoutScoreRepository(
+anivCopyMessageTimeoutScoreRepository: Final[AnivCopyMessageTimeoutScoreRepositoryInterface] = AnivCopyMessageTimeoutScoreRepository(
     backingDatabase = backingDatabase,
     timeZoneRepository = timeZoneRepository,
+)
+
+timeoutEventListener: Final[TimeoutEventListener] = TimeoutEventHandler(
+    backgroundTaskHelper = backgroundTaskHelper,
+    soundPlayerManagerProvider = soundPlayerManagerProvider,
+    streamAlertsManager = streamAlertsManager,
+    timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
 )
 
 timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachine(
@@ -1602,19 +1610,12 @@ timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachin
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     pixelsDiceMachine = None,
     timber = timber,
+    timeoutEventListener = timeoutEventListener,
     timeoutIdGenerator = timeoutIdGenerator,
     trollmojiHelper = trollmojiHelper,
     twitchTimeoutHelper = twitchTimeoutHelper,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
-)
-
-timeoutEventHandler: Final[AbsTimeoutEventHandler] = TimeoutEventHandler(
-    backgroundTaskHelper = backgroundTaskHelper,
-    soundPlayerManagerProvider = soundPlayerManagerProvider,
-    streamAlertsManager = streamAlertsManager,
-    timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
 )
 
 
@@ -1691,12 +1692,21 @@ mostRecentRecurringActionRepository: MostRecentRecurringActionRepositoryInterfac
     timeZoneRepository = timeZoneRepository
 )
 
-recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMachine(
+recurringActionsEventListener: Final[RecurringActionsEventListener] = RecurringActionsEventHandler(
+    cutenessPresenter = cutenessPresenter,
+    timber = timber,
+    twitchChatMessenger = twitchChatMessenger,
+    weatherReportPresenter = weatherReportPresenter,
+    wordOfTheDayPresenter = wordOfTheDayPresenter,
+)
+
+recurringActionsMachine: Final[RecurringActionsMachineInterface] = RecurringActionsMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     cutenessRepository = cutenessRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     locationsRepository = locationsRepository,
     mostRecentRecurringActionRepository = mostRecentRecurringActionRepository,
+    recurringActionsEventListener = recurringActionsEventListener,
     recurringActionsRepository = recurringActionsRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
@@ -1708,21 +1718,13 @@ recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMach
     wordOfTheDayRepository = wordOfTheDayRepository
 )
 
-recurringActionsHelper: RecurringActionsHelperInterface = RecurringActionsHelper(
+recurringActionsHelper: Final[RecurringActionsHelperInterface] = RecurringActionsHelper(
     recurringActionsRepository = recurringActionsRepository,
-    timber = timber
-)
-
-recurringActionsWizard: RecurringActionsWizardInterface = RecurringActionsWizard(
-    timber = timber
-)
-
-recurringActionsEventHandler: AbsRecurringActionsEventHandler = RecurringActionsEventHandler(
-    cutenessPresenter = cutenessPresenter,
     timber = timber,
-    twitchChatMessenger = twitchChatMessenger,
-    weatherReportPresenter = weatherReportPresenter,
-    wordOfTheDayPresenter = wordOfTheDayPresenter,
+)
+
+recurringActionsWizard: Final[RecurringActionsWizardInterface] = RecurringActionsWizard(
+    timber = timber,
 )
 
 
@@ -2326,9 +2328,14 @@ twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscript
 
 startables: Final[Collection[Startable | None]] = frozenset({
     cheerActionHelper,
+    recurringActionsMachine,
     streamAlertsManager,
+    timeoutActionMachine,
     triviaGameMachine,
     triviaRepository,
+    twitchChannelPointRedemptionHandler,
+    twitchTimeoutRemodHelper,
+    websocketConnectionServer,
 })
 
 
@@ -2356,9 +2363,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     asplodieStatsRepository = asplodieStatsRepository,
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
-    bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
-    bannedWordsRepository = bannedWordsRepository,
-    bizhawkSettingsRepository = None,
     chatLogger = chatLogger,
     chatterInventoryHelper = None,
     chatterInventoryIdGenerator = None,
@@ -2388,48 +2392,17 @@ cynanBot: Final[CynanBot] = CynanBot(
     mostRecentChatsRepository = mostRecentChatsRepository,
     openTriviaDatabaseSessionTokenRepository = openTriviaDatabaseSessionTokenRepository,
     pokepediaRepository = pokepediaRepository,
-    pixelsDiceEventListener = None,
-    pixelsDiceMachine = None,
-    recurringActionsEventHandler = recurringActionsEventHandler,
-    recurringActionsHelper = recurringActionsHelper,
-    recurringActionsMachine = recurringActionsMachine,
-    recurringActionsRepository = recurringActionsRepository,
-    recurringActionsWizard = recurringActionsWizard,
     sentMessageLogger = sentMessageLogger,
-    shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     timber = timber,
-    timeoutActionMachine = timeoutActionMachine,
     timeoutActionSettings = timeoutActionSettings,
-    timeoutEventHandler = timeoutEventHandler,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     timeZoneRepository = timeZoneRepository,
-    toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
-    translationHelper = translationHelper,
-    trollmojiHelper = trollmojiHelper,
-    trollmojiSettingsRepository = trollmojiSettingsRepository,
-    ttsJsonMapper = None,
-    ttsMonsterSettingsRepository = None,
-    ttsMonsterTokensRepository = None,
-    ttsSettingsRepository = None,
-    twitchApiService = twitchApiService,
-    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     twitchChannelJoinHelper = twitchChannelJoinHelper,
     twitchChatMessenger = twitchChatMessenger,
-    twitchEmotesHelper = twitchEmotesHelper,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
-    twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
-    twitchSubscriptionsRepository = twitchSubscriptionsRepository,
-    twitchTimeoutHelper = twitchTimeoutHelper,
-    twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     twitchTokensRepository = twitchTokensRepository,
-    twitchTokensUtils = twitchTokensUtils,
     twitchWebsocketClient = twitchWebsocketClient,
-    twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
-    useChatterItemHelper = None,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
-    websocketConnectionServer = None,
     startables = startables,
 )
 
