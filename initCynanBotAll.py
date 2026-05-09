@@ -3649,6 +3649,7 @@ twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscript
 #######################################
 
 startables: Final[Collection[Startable | None]] = frozenset({
+    chatterInventoryItemUseMachine,
     cheerActionHelper,
     pixelsDiceMachine,
     recurringActionsMachine,
