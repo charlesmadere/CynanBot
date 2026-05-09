@@ -22,7 +22,6 @@ from ..triviaUtilsInterface import TriviaUtilsInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from ...twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
 from ...users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -403,9 +402,3 @@ class TriviaEventHandler(TriviaEventListener):
     ):
         # this is intentionally empty and currently has no intended use case
         pass
-
-    def setTwitchConnectionReadinessProvider(self, provider: TwitchConnectionReadinessProvider | None):
-        if provider is not None and not isinstance(provider, TwitchConnectionReadinessProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchConnectionReadinessProvider = provider

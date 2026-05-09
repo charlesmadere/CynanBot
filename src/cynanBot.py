@@ -71,7 +71,6 @@ from .twitch.configuration.absChannelJoinEvent import AbsChannelJoinEvent
 from .twitch.configuration.channelJoinListener import ChannelJoinListener
 from .twitch.configuration.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
 from .twitch.configuration.joinChannelsEvent import JoinChannelsEvent
-from .twitch.configuration.twitchConnectionReadinessProvider import TwitchConnectionReadinessProvider
 from .twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from .twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from .twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
@@ -86,7 +85,6 @@ from .users.usersRepositoryInterface import UsersRepositoryInterface
 class CynanBot(
     commands.Bot,
     ChannelJoinListener,
-    TwitchConnectionReadinessProvider,
     TwitchWebsocketConnectionsFinishedListener,
 ):
 
