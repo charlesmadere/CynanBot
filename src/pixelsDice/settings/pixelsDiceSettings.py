@@ -1,6 +1,7 @@
 from typing import Any, Final
 
 from .pixelsDiceSettingsInterface import PixelsDiceSettingsInterface
+from ..exceptions import PixelsDiceNameIsMissingException
 from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 
@@ -17,14 +18,6 @@ class PixelsDiceSettings(PixelsDiceSettingsInterface):
 
     async def clearCaches(self):
         self.__cache = None
-
-    async def getDiceName(self) -> str | None:
-        jsonContents = await self.__readJson()
-
-        if 'diceName' in jsonContents and utils.isValidStr(jsonContents.get('diceName')):
-            return utils.getStrFromDict(jsonContents, 'diceName')
-        else:
-            return None
 
     async def isEnabled(self) -> bool:
         jsonContents = await self.__readJson()
@@ -50,3 +43,11 @@ class PixelsDiceSettings(PixelsDiceSettingsInterface):
     async def reportToChat(self) -> bool:
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'reportToChat', fallback = False)
+
+    async def requireDiceName(self) -> str:
+        jsonContents = await self.__readJson()
+
+        if 'diceName' in jsonContents and utils.isValidStr(jsonContents.get('diceName')):
+            return utils.getStrFromDict(jsonContents, 'diceName')
+        else:
+            raise PixelsDiceNameIsMissingException(f'Valid \"diceName\" value is missing from Pixels Dice settings file: {self.__settingsJsonReader}')

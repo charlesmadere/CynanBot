@@ -11,7 +11,7 @@ from bleak.backends.scanner import AdvertisementData
 from frozenlist import FrozenList
 
 from .pixelsDiceMachineInterface import PixelsDiceMachineInterface
-from ..exceptions import PixelsDiceRequestQueueException
+from ..exceptions import PixelsDiceNameIsMissingException, PixelsDiceRequestQueueException
 from ..listeners.pixelsDiceEventListener import PixelsDiceEventListener
 from ..mappers.pixelsDiceStateMapperInterface import PixelsDiceStateMapperInterface
 from ..models.diceBluetoothInfo import DiceBluetoothInfo
@@ -87,10 +87,10 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
         if not await self.__pixelsDiceSettings.isEnabled():
             return None
 
-        diceName = await self.__pixelsDiceSettings.getDiceName()
-
-        if not utils.isValidStr(diceName):
-            self.__timber.log('PixelsDiceMachine', f'No dice name available to scan for ({diceName=})')
+        try:
+            diceName = await self.__pixelsDiceSettings.requireDiceName()
+        except PixelsDiceNameIsMissingException as e:
+            self.__timber.log('PixelsDiceMachine', f'No Pixels Dice name is available to scan for', e, traceback.format_exc())
             return None
 
         try:
