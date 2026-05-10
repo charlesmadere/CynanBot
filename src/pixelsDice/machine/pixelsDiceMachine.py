@@ -11,7 +11,7 @@ from bleak.backends.scanner import AdvertisementData
 from frozenlist import FrozenList
 
 from .pixelsDiceMachineInterface import PixelsDiceMachineInterface
-from ..exceptions import PixelsDiceRequestQueueException
+from ..exceptions import PixelsDiceNameIsMissingException, PixelsDiceRequestQueueException
 from ..listeners.pixelsDiceEventListener import PixelsDiceEventListener
 from ..mappers.pixelsDiceStateMapperInterface import PixelsDiceStateMapperInterface
 from ..models.diceBluetoothInfo import DiceBluetoothInfo
@@ -87,10 +87,10 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
         if not await self.__pixelsDiceSettings.isEnabled():
             return None
 
-        diceName = await self.__pixelsDiceSettings.getDiceName()
-
-        if not utils.isValidStr(diceName):
-            self.__timber.log('PixelsDiceMachine', f'No dice name available to scan for ({diceName=})')
+        try:
+            diceName = await self.__pixelsDiceSettings.requireDiceName()
+        except PixelsDiceNameIsMissingException as e:
+            self.__timber.log('PixelsDiceMachine', f'No Pixels Dice name is available to scan for', e, traceback.format_exc())
             return None
 
         try:
@@ -147,7 +147,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
             await client.disconnect()
             return None
 
-        await self.__submitEvent(PixelsDiceClientConnectedEvent(
+        self.__submitEvent(PixelsDiceClientConnectedEvent(
             connectedDice = connectedDice,
         ))
 
@@ -190,17 +190,12 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
         return True
 
     def __onBleakClientDisconnected(self, client: BleakClient):
-        self.__backgroundTaskHelper.createTask(self.__onBleakClientDisconnectedAsync(
-            client = client,
-        ))
-
-    async def __onBleakClientDisconnectedAsync(self, client: BleakClient):
         previouslyConnectedDice = self.__connectedDice
         self.__connectedDice = None
 
         self.__timber.log('PixelsDiceMachine', f'Pixels Dice disconnected ({client=}) ({previouslyConnectedDice=})')
 
-        await self.__submitEvent(PixelsDiceClientDisconnectedEvent(
+        self.__submitEvent(PixelsDiceClientDisconnectedEvent(
             previouslyConnectedDice = previouslyConnectedDice,
         ))
 
@@ -224,7 +219,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
         )
 
         if isinstance(state, PixelsDiceRollState):
-            await self.__submitEvent(PixelsDiceRollEvent(
+            self.__submitEvent(PixelsDiceRollEvent(
                 connectedDice = connectedDice,
                 roll = state.roll,
             ))
@@ -277,7 +272,7 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
 
             await asyncio.sleep(self.__eventLoopSleepTimeSeconds)
 
-    async def __submitEvent(self, event: AbsPixelsDiceEvent):
+    def __submitEvent(self, event: AbsPixelsDiceEvent):
         if not isinstance(event, AbsPixelsDiceEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
