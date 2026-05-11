@@ -382,12 +382,16 @@ class TimeoutEventHandler(TimeoutEventListener):
         self,
         event: BasicTimeoutEvent,
     ):
-        if utils.isValidStr(event.chatMessage):
-            self.__twitchChatMessenger.send(
-                text = event.chatMessage,
-                twitchChannelId = event.twitchChannelId,
-                replyMessageId = event.twitchChatMessageId,
-            )
+        chatMessage = event.chatMessage
+
+        if not utils.isValidStr(chatMessage):
+            return
+
+        self.__twitchChatMessenger.send(
+            text = chatMessage,
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleBasicTimeoutFailedTimeoutEvent(
         self,
