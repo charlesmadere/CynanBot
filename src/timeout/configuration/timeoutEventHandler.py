@@ -317,7 +317,7 @@ class TimeoutEventHandler(TimeoutEventListener):
             if event.isReverse:
                 chatMessage = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserName} dropped a banana but they tripped themselves up! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} but got a {event.diceRoll.roll})'
             else:
-                chatMessage = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.timeoutTarget.userName}! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, needed greater than {event.diceRollFailureData.reverseRoll})'
+                chatMessage = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.timeoutTarget.userName}! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, needed greater than {event.diceRollFailureData.failureRoll})'
         elif event.isReverse:
             chatMessage = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserName} dropped a banana but they tripped themselves up! {event.ripBozoEmote}'
         else:
@@ -382,12 +382,16 @@ class TimeoutEventHandler(TimeoutEventListener):
         self,
         event: BasicTimeoutEvent,
     ):
-        if utils.isValidStr(event.chatMessage):
-            self.__twitchChatMessenger.send(
-                text = event.chatMessage,
-                twitchChannelId = event.twitchChannelId,
-                replyMessageId = event.twitchChatMessageId,
-            )
+        chatMessage = event.chatMessage
+
+        if not utils.isValidStr(chatMessage):
+            return
+
+        self.__twitchChatMessenger.send(
+            text = chatMessage,
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleBasicTimeoutFailedTimeoutEvent(
         self,
