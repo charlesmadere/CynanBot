@@ -83,16 +83,17 @@ class DetermineBananaTargetUseCase:
         elif not isinstance(timeoutTarget, TimeoutTarget):
             raise TypeError(f'timeoutTarget argument is malformed: \"{timeoutTarget}\"')
 
-        isTryingToTimeoutThemselves = timeoutTarget.userId == timeoutAction.instigatorUserId
-
         isGuaranteedTimeoutTarget = await self.__guaranteedTimeoutUsersRepository.isGuaranteed(
             userId = timeoutTarget.userId,
         )
 
-        if isTryingToTimeoutThemselves or isGuaranteedTimeoutTarget or not timeoutAction.isRandomChanceEnabled:
+        isTryingToTimeoutThemselves = timeoutTarget.userId == timeoutAction.instigatorUserId
+        isTryingToTimeoutStreamer = timeoutTarget.userId == timeoutAction.twitchChannelId
+
+        if isGuaranteedTimeoutTarget or isTryingToTimeoutThemselves or isTryingToTimeoutStreamer or not timeoutAction.isRandomChanceEnabled:
             return DetermineBananaTargetUseCase.ResultData(
                 timeoutTarget = timeoutTarget,
-                isReverse = timeoutTarget.userId == timeoutAction.twitchChannelId or isTryingToTimeoutThemselves,
+                isReverse = isTryingToTimeoutStreamer,
                 diceRoll = None,
                 diceRollFailureData = None,
             )
@@ -116,12 +117,14 @@ class DetermineBananaTargetUseCase:
                 diceRoll = diceRoll,
                 diceRollFailureData = diceRollFailureData,
             )
+
         elif diceRoll.roll <= diceRollFailureData.failureRoll:
             raise BananaTimeoutDiceRollFailedException(
                 timeoutTarget = timeoutTarget,
                 diceRoll = diceRoll,
                 diceRollFailureData = diceRollFailureData,
             )
+
         else:
             return DetermineBananaTargetUseCase.ResultData(
                 timeoutTarget = timeoutTarget,
