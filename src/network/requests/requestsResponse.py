@@ -49,10 +49,10 @@ class RequestsResponse(NetworkResponse):
         try:
             return self.__response.json()
         except JSONDecodeError as e:
-            self.__timber.log('RequestsResponse', f'Encountered JSON error when trying to decode response into JSON ({self}): {e}', e, traceback.format_exc())
+            self.__timber.log('RequestsResponse', f'Encountered JSON error when trying to decode response into JSON ({self})', e, traceback.format_exc())
             return None
         except Exception as e:
-            self.__timber.log('RequestsResponse', f'Encountered unexpected error when trying to decode response into JSON ({self}): {e}', e, traceback.format_exc())
+            self.__timber.log('RequestsResponse', f'Encountered unexpected error when trying to decode response into JSON ({self})', e, traceback.format_exc())
             return None
 
     @property
@@ -65,7 +65,7 @@ class RequestsResponse(NetworkResponse):
         try:
             return self.__response.content
         except Exception as e:
-            self.__timber.log('RequestsResponse', f'Encountered unexpected error when trying to decode response into bytes ({self}): {e}', e, traceback.format_exc())
+            self.__timber.log('RequestsResponse', f'Encountered unexpected error when trying to decode response into bytes ({self})', e, traceback.format_exc())
             return None
 
     def __requireNotClosed(self):
@@ -83,7 +83,7 @@ class RequestsResponse(NetworkResponse):
         try:
             return self.__response.text
         except Exception as e:
-            self.__timber.log('RequestsResponse', f'Encountered unexpected error when trying to decode response into string ({self}): {e}', e, traceback.format_exc())
+            self.__timber.log('RequestsResponse', f'Encountered unexpected error when trying to decode response into string ({self})', e, traceback.format_exc())
             return None
 
     def toDictionary(self) -> dict[str, Any]:
@@ -109,5 +109,5 @@ class RequestsResponse(NetworkResponse):
 
             return xmltodict.parse(rawBytes)
         except Exception as e:
-            self.__timber.log('RequestsResponse', f'Encountered unexpected error when trying to decode response into XML ({self}): {e}', e, traceback.format_exc())
+            self.__timber.log('RequestsResponse', f'Encountered unexpected error when trying to decode response into XML ({self})', e, traceback.format_exc())
             return None

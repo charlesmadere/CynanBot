@@ -50,13 +50,13 @@ class AioHttpResponse(NetworkResponse):
         try:
             return await self.__response.json()
         except ContentTypeError as e:
-            self.__timber.log('AioHttpResponse', f'Encountered ContentTypeError when trying to decode response into JSON ({self}): {e}', e, traceback.format_exc())
+            self.__timber.log('AioHttpResponse', f'Encountered ContentTypeError when trying to decode response into JSON ({self})', e, traceback.format_exc())
             return None
         except JSONDecodeError as e:
-            self.__timber.log('AioHttpResponse', f'Encountered JSON error when trying to decode response into JSON ({self}): {e}', e, traceback.format_exc())
+            self.__timber.log('AioHttpResponse', f'Encountered JSON error when trying to decode response into JSON ({self})', e, traceback.format_exc())
             return None
         except Exception as e:
-            self.__timber.log('AioHttpResponse', f'Encountered unexpected error when trying to decode response into JSON ({self}): {e}', e, traceback.format_exc())
+            self.__timber.log('AioHttpResponse', f'Encountered unexpected error when trying to decode response into JSON ({self})', e, traceback.format_exc())
             return None
 
     @property
@@ -69,10 +69,10 @@ class AioHttpResponse(NetworkResponse):
         try:
             return await self.__response.read()
         except ContentTypeError as e:
-            self.__timber.log('AioHttpResponse', f'Encountered ContentTypeError when trying to decode response into bytes ({self}): {e}', e, traceback.format_exc())
+            self.__timber.log('AioHttpResponse', f'Encountered ContentTypeError when trying to decode response into bytes ({self})', e, traceback.format_exc())
             return None
         except Exception as e:
-            self.__timber.log('AioHttpResponse', f'Encountered unexpected error when trying to decode response into bytes ({self}): {e}', e, traceback.format_exc())
+            self.__timber.log('AioHttpResponse', f'Encountered unexpected error when trying to decode response into bytes ({self})', e, traceback.format_exc())
             return None
 
     def __requireNotClosed(self):
@@ -90,10 +90,10 @@ class AioHttpResponse(NetworkResponse):
         try:
             return await self.__response.text()
         except ContentTypeError as e:
-            self.__timber.log('AioHttpResponse', f'Encountered ContentTypeError when trying to decode response into string ({self}): {e}', e, traceback.format_exc())
+            self.__timber.log('AioHttpResponse', f'Encountered ContentTypeError when trying to decode response into string ({self})', e, traceback.format_exc())
             return None
         except Exception as e:
-            self.__timber.log('AioHttpResponse', f'Encountered unexpected error when trying to decode response into string ({self}): {e}', e, traceback.format_exc())
+            self.__timber.log('AioHttpResponse', f'Encountered unexpected error when trying to decode response into string ({self})', e, traceback.format_exc())
             return None
 
     def toDictionary(self) -> dict[str, Any]:
@@ -119,5 +119,5 @@ class AioHttpResponse(NetworkResponse):
 
             return xmltodict.parse(rawBytes)
         except Exception as e:
-            self.__timber.log('AioHttpResponse', f'Encountered unexpected error when trying to decode response into XML ({self}): {e}', e, traceback.format_exc())
+            self.__timber.log('AioHttpResponse', f'Encountered unexpected error when trying to decode response into XML ({self})', e, traceback.format_exc())
             return None
