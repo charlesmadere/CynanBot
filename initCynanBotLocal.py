@@ -924,20 +924,6 @@ twitchWebsocketConnectionActionHelper: Final[TwitchWebsocketConnectionActionHelp
     twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper,
 )
 
-twitchWebsocketDataBundleListener: Final[TwitchWebsocketDataBundleListener] = TwitchWebsocketDataBundleHandler(
-    channelPointRedemptionHandler = twitchChannelPointRedemptionHandler,
-    chatHandler = twitchChatHandler,
-    followHandler = twitchFollowHandler,
-    hypeTrainHandler = twitchHypeTrainHandler,
-    pollHandler = twitchPollHandler,
-    predictionHandler = twitchPredictionHandler,
-    raidHandler = twitchRaidHandler,
-    subscriptionHandler = twitchSubscriptionHandler,
-    timber = timber,
-    userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository,
-)
-
 twitchWebsocketSettingsRepository: Final[TwitchWebsocketSettingsRepositoryInterface] = TwitchWebsocketSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
@@ -954,21 +940,6 @@ twitchWebsocketSubscriptionHelper: Final[TwitchWebsocketSubscriptionHelperInterf
     twitchWebsocketConditionBuilder = twitchWebsocketConditionBuilder,
     twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper,
     twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
-)
-
-twitchWebsocketClient: Final[TwitchWebsocketClientInterface] = TwitchWebsocketClient(
-    backgroundTaskHelper = backgroundTaskHelper,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    twitchWebsocketAllowedUsersRepository = twitchWebsocketAllowedUsersRepository,
-    twitchWebsocketConnectionActionHelper = twitchWebsocketConnectionActionHelper,
-    twitchWebsocketDataBundleListener = twitchWebsocketDataBundleListener,
-    twitchWebsocketEndpointHelper = twitchWebsocketEndpointHelper,
-    twitchWebsocketInstabilityHelper = twitchWebsocketInstabilityHelper,
-    twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
-    twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper,
-    twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
-    twitchWebsocketSubscriptionHelper = twitchWebsocketSubscriptionHelper,
 )
 
 
@@ -2447,6 +2418,35 @@ twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscript
     twitchHandleProvider = authRepository,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
+)
+
+twitchWebsocketDataBundleListener: Final[TwitchWebsocketDataBundleListener] = TwitchWebsocketDataBundleHandler(
+    channelPointRedemptionHandler = twitchChannelPointRedemptionHandler,
+    chatHandler = twitchChatHandler,
+    followHandler = twitchFollowHandler,
+    hypeTrainHandler = twitchHypeTrainHandler,
+    pollHandler = twitchPollHandler,
+    predictionHandler = twitchPredictionHandler,
+    raidHandler = twitchRaidHandler,
+    subscriptionHandler = twitchSubscriptionHandler,
+    timber = timber,
+    userIdsRepository = userIdsRepository,
+    usersRepository = usersRepository,
+)
+
+twitchWebsocketClient: Final[TwitchWebsocketClientInterface] = TwitchWebsocketClient(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchWebsocketAllowedUsersRepository = twitchWebsocketAllowedUsersRepository,
+    twitchWebsocketConnectionActionHelper = twitchWebsocketConnectionActionHelper,
+    twitchWebsocketDataBundleListener = twitchWebsocketDataBundleListener,
+    twitchWebsocketEndpointHelper = twitchWebsocketEndpointHelper,
+    twitchWebsocketInstabilityHelper = twitchWebsocketInstabilityHelper,
+    twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
+    twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper,
+    twitchWebsocketSettingsRepository = twitchWebsocketSettingsRepository,
+    twitchWebsocketSubscriptionHelper = twitchWebsocketSubscriptionHelper,
 )
 
 
