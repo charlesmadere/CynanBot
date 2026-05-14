@@ -74,7 +74,6 @@ from .twitch.configuration.joinChannelsEvent import JoinChannelsEvent
 from .twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from .twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from .twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
-from .twitch.twitchWebsocketDataBundleHandler import TwitchWebsocketDataBundleHandler
 from .twitch.websocket.listener.twitchWebsocketConnectionsFinishedListener import \
     TwitchWebsocketConnectionsFinishedListener
 from .twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
@@ -146,7 +145,7 @@ class CynanBot(
         twitchChannelJoinHelper: TwitchChannelJoinHelperInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        twitchWebsocketClient: TwitchWebsocketClientInterface | None,
+        twitchWebsocketClient: TwitchWebsocketClientInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
         startables: Collection[Startable | Any | None] | None,
@@ -274,7 +273,7 @@ class CynanBot(
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif twitchWebsocketClient is not None and not isinstance(twitchWebsocketClient, TwitchWebsocketClientInterface):
+        elif not isinstance(twitchWebsocketClient, TwitchWebsocketClientInterface):
             raise TypeError(f'twitchWebsocketClient argument is malformed: \"{twitchWebsocketClient}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
@@ -301,7 +300,7 @@ class CynanBot(
         self.__twitchChannelJoinHelper: Final[TwitchChannelJoinHelperInterface] = twitchChannelJoinHelper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__twitchWebsocketClient: Final[TwitchWebsocketClientInterface | None] = twitchWebsocketClient
+        self.__twitchWebsocketClient: Final[TwitchWebsocketClientInterface] = twitchWebsocketClient
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
         self.__startables: Final[FrozenList[Startable]] = self.__buildStartablesCollection(startables)
@@ -379,21 +378,6 @@ class CynanBot(
 
         if self.__twitchWebsocketClient is not None:
             self.__twitchWebsocketClient.setConnectionsFinishedListener(self)
-
-            self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
-                channelPointRedemptionHandler = self.__twitchChannelPointRedemptionHandler,
-                chatHandler = self.__twitchChatHandler,
-                followHandler = self.__twitchFollowHandler,
-                hypeTrainHandler = self.__twitchHypeTrainHandler,
-                pollHandler = self.__twitchPollHandler,
-                predictionHandler = self.__twitchPredictionHandler,
-                raidHandler = self.__twitchRaidHandler,
-                subscriptionHandler = self.__twitchSubscriptionHandler,
-                timber = self.__timber,
-                userIdsRepository = self.__userIdsRepository,
-                usersRepository = self.__usersRepository,
-            ))
-
             self.__twitchWebsocketClient.start()
 
     async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
