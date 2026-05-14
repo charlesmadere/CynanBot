@@ -693,6 +693,7 @@ from src.twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterf
 from src.twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
 from src.twitch.twitchPredictionWebsocketUtils import TwitchPredictionWebsocketUtils
 from src.twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
+from src.twitch.twitchWebsocketDataBundleHandler import TwitchWebsocketDataBundleHandler
 from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilder import TwitchWebsocketConditionBuilder
 from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilderInterface import \
     TwitchWebsocketConditionBuilderInterface
@@ -706,6 +707,7 @@ from src.twitch.websocket.endpointHelper.twitchWebsocketEndpointHelperInterface 
 from src.twitch.websocket.instabilityHelper.twitchWebsocketInstabilityHelper import TwitchWebsocketInstabilityHelper
 from src.twitch.websocket.instabilityHelper.twitchWebsocketInstabilityHelperInterface import \
     TwitchWebsocketInstabilityHelperInterface
+from src.twitch.websocket.listener.twitchWebsocketDataBundleListener import TwitchWebsocketDataBundleListener
 from src.twitch.websocket.sessionIdHelper.twitchWebsocketSessionIdHelper import TwitchWebsocketSessionIdHelper
 from src.twitch.websocket.sessionIdHelper.twitchWebsocketSessionIdHelperInterface import \
     TwitchWebsocketSessionIdHelperInterface
@@ -1177,28 +1179,42 @@ twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInte
     timber = timber,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository
+    usersRepository = usersRepository,
 )
 
 twitchWebsocketConditionBuilder: TwitchWebsocketConditionBuilderInterface = TwitchWebsocketConditionBuilder()
 
 twitchWebsocketEndpointHelper: TwitchWebsocketEndpointHelperInterface = TwitchWebsocketEndpointHelper(
-    timber = timber
+    timber = timber,
 )
 
 twitchWebsocketInstabilityHelper: TwitchWebsocketInstabilityHelperInterface = TwitchWebsocketInstabilityHelper(
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-twitchWebsocketSessionIdHelper: TwitchWebsocketSessionIdHelperInterface = TwitchWebsocketSessionIdHelper(
-    timber = timber
+twitchWebsocketSessionIdHelper: Final[TwitchWebsocketSessionIdHelperInterface] = TwitchWebsocketSessionIdHelper(
+    timber = timber,
 )
 
-twitchWebsocketConnectionActionHelper: TwitchWebsocketConnectionActionHelperInterface = TwitchWebsocketConnectionActionHelper(
+twitchWebsocketConnectionActionHelper: Final[TwitchWebsocketConnectionActionHelperInterface] = TwitchWebsocketConnectionActionHelper(
     timber = timber,
     twitchWebsocketEndpointHelper = twitchWebsocketEndpointHelper,
-    twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper
+    twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper,
+)
+
+twitchWebsocketDataBundleListener: Final[TwitchWebsocketDataBundleListener] = TwitchWebsocketDataBundleHandler(
+    channelPointRedemptionHandler = twitchChannelPointRedemptionHandler,
+    chatHandler = twitchChatHandler,
+    followHandler = twitchFollowHandler,
+    hypeTrainHandler = twitchHypeTrainHandler,
+    pollHandler = twitchPollHandler,
+    predictionHandler = twitchPredictionHandler,
+    raidHandler = twitchRaidHandler,
+    subscriptionHandler = twitchSubscriptionHandler,
+    timber = timber,
+    userIdsRepository = userIdsRepository,
+    usersRepository = usersRepository,
 )
 
 twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface = TwitchWebsocketSettingsRepository(
@@ -1225,6 +1241,7 @@ twitchWebsocketClient: Final[TwitchWebsocketClientInterface] = TwitchWebsocketCl
     timeZoneRepository = timeZoneRepository,
     twitchWebsocketAllowedUsersRepository = twitchWebsocketAllowedUsersRepository,
     twitchWebsocketConnectionActionHelper = twitchWebsocketConnectionActionHelper,
+    twitchWebsocketDataBundleListener = twitchWebsocketDataBundleListener,
     twitchWebsocketEndpointHelper = twitchWebsocketEndpointHelper,
     twitchWebsocketInstabilityHelper = twitchWebsocketInstabilityHelper,
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,

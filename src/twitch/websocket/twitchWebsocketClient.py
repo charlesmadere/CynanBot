@@ -2,7 +2,7 @@ import asyncio
 import json
 import queue
 import traceback
-from datetime import datetime, timedelta
+from datetime import timedelta
 from queue import SimpleQueue
 from typing import Any, Final
 
@@ -42,6 +42,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface,
         twitchWebsocketConnectionActionHelper: TwitchWebsocketConnectionActionHelperInterface,
+        twitchWebsocketDataBundleListener: TwitchWebsocketDataBundleListener,
         twitchWebsocketEndpointHelper: TwitchWebsocketEndpointHelperInterface,
         twitchWebsocketInstabilityHelper: TwitchWebsocketInstabilityHelperInterface,
         twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface,
@@ -66,6 +67,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'twitchWebsocketAllowedUsersRepository argument is malformed: \"{twitchWebsocketAllowedUsersRepository}\"')
         elif not isinstance(twitchWebsocketConnectionActionHelper, TwitchWebsocketConnectionActionHelperInterface):
             raise TypeError(f'twitchWebsocketConnectionActionHelper argument is malformed: \"{twitchWebsocketConnectionActionHelper}\"')
+        elif not isinstance(twitchWebsocketDataBundleListener, TwitchWebsocketDataBundleListener):
+            raise TypeError(f'twitchWebsocketDataBundleListener argument is malformed: \"{twitchWebsocketDataBundleListener}\"')
         elif not isinstance(twitchWebsocketEndpointHelper, TwitchWebsocketEndpointHelperInterface):
             raise TypeError(f'twitchWebsocketEndpointHelper argument is malformed: \"{twitchWebsocketEndpointHelper}\"')
         elif not isinstance(twitchWebsocketInstabilityHelper, TwitchWebsocketInstabilityHelperInterface):
@@ -110,6 +113,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchWebsocketAllowedUsersRepository: Final[TwitchWebsocketAllowedUsersRepositoryInterface] = twitchWebsocketAllowedUsersRepository
         self.__twitchWebsocketConnectionActionHelper: Final[TwitchWebsocketConnectionActionHelperInterface] = twitchWebsocketConnectionActionHelper
+        self.__twitchWebsocketDataBundleListener: Final[TwitchWebsocketDataBundleListener] = twitchWebsocketDataBundleListener
         self.__twitchWebsocketEndpointHelper: Final[TwitchWebsocketEndpointHelperInterface] = twitchWebsocketEndpointHelper
         self.__twitchWebsocketInstabilityHelper: Final[TwitchWebsocketInstabilityHelperInterface] = twitchWebsocketInstabilityHelper
         self.__twitchWebsocketJsonMapper: Final[TwitchWebsocketJsonMapperInterface] = twitchWebsocketJsonMapper
@@ -127,7 +131,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__messageIdCache: Final[LruCache] = LruCache(twitchWebsocketMessageIdCacheSize)
         self.__dataBundleQueue: Final[SimpleQueue[TwitchWebsocketDataBundle]] = SimpleQueue()
         self.__connectionsFinishedListener: TwitchWebsocketConnectionsFinishedListener | None = None
-        self.__dataBundleListener: TwitchWebsocketDataBundleListener | None = None
 
     async def __isValidDataBundle(self, dataBundle: TwitchWebsocketDataBundle) -> bool:
         if not isinstance(dataBundle, TwitchWebsocketDataBundle):
@@ -139,7 +142,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             return False
 
         self.__messageIdCache.put(dataBundle.metadata.messageId)
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         # ensure that this message isn't gratuitously old
         if now - dataBundle.metadata.messageTimestamp >= self.__maxMessageAge:
@@ -230,12 +233,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
         self.__connectionsFinishedListener = listener
 
-    def setDataBundleListener(self, listener: TwitchWebsocketDataBundleListener | None):
-        if listener is not None and not isinstance(listener, TwitchWebsocketDataBundleListener):
-            raise TypeError(f'listener argument is malformed: \"{listener}\"')
-
-        self.__dataBundleListener = listener
-
     def start(self):
         if self.__isStarted:
             self.__timber.log('TwitchWebsocketClient', 'Not starting TwitchWebsocketClient as it has already been started')
@@ -248,25 +245,22 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
     async def __startDataBundleLoop(self):
         while True:
-            dataBundleListener = self.__dataBundleListener
+            dataBundles: FrozenList[TwitchWebsocketDataBundle] = FrozenList()
 
-            if dataBundleListener is not None:
-                dataBundles: FrozenList[TwitchWebsocketDataBundle] = FrozenList()
+            try:
+                while not self.__dataBundleQueue.empty():
+                    dataBundle = self.__dataBundleQueue.get_nowait()
+                    dataBundles.append(dataBundle)
+            except queue.Empty as e:
+                self.__timber.log('TwitchWebsocketClient', f'Encountered queue.Empty when building up dataBundles list (queue size: {self.__dataBundleQueue.qsize()}) (dataBundles size: {len(dataBundles)})', e, traceback.format_exc())
 
+            dataBundles.freeze()
+
+            for index, dataBundle in enumerate(dataBundles):
                 try:
-                    while not self.__dataBundleQueue.empty():
-                        dataBundle = self.__dataBundleQueue.get_nowait()
-                        dataBundles.append(dataBundle)
-                except queue.Empty as e:
-                    self.__timber.log('TwitchWebsocketClient', f'Encountered queue.Empty when building up dataBundles list (queue size: {self.__dataBundleQueue.qsize()}) (dataBundles size: {len(dataBundles)})', e, traceback.format_exc())
-
-                dataBundles.freeze()
-
-                for index, dataBundle in enumerate(dataBundles):
-                    try:
-                        await dataBundleListener.onNewWebsocketDataBundle(dataBundle)
-                    except Exception as e:
-                        self.__timber.log('TwitchWebsocketClient', f'Encountered unknown Exception when looping through dataBundles (queue size: {self.__dataBundleQueue.qsize()}) ({index=}) ({dataBundle=})', e, traceback.format_exc())
+                    await self.__twitchWebsocketDataBundleListener.onNewWebsocketDataBundle(dataBundle)
+                except Exception as e:
+                    self.__timber.log('TwitchWebsocketClient', f'Encountered unknown Exception when looping through dataBundles (queue size: {self.__dataBundleQueue.qsize()}) ({index=}) ({dataBundle=})', e, traceback.format_exc())
 
             await asyncio.sleep(self.__queueSleepTimeSeconds)
 
