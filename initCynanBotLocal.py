@@ -1895,6 +1895,23 @@ crowdControlMessageListener: Final[CrowdControlMessageListener] = CrowdControlMe
     twitchChatMessenger = twitchChatMessenger,
 )
 
+bizhawkKeyMapper: Final[BizhawkKeyMapperInterface] = BizhawkKeyMapper(
+    timber = timber,
+)
+
+bizhawkSettingsRepository: Final[BizhawkSettingsRepositoryInterface] = BizhawkSettingsRepository(
+    bizhawkKeyMapper = bizhawkKeyMapper,
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/bizhawkSettingsRepository.json',
+    ),
+)
+
+crowdControlActionHandler: Final[CrowdControlActionHandler] = BizhawkActionHandler(
+    bizhawkSettingsRepository = bizhawkSettingsRepository,
+    timber = timber,
+)
+
 crowdControlSettingsRepository: Final[CrowdControlSettingsRepositoryInterface] = CrowdControlSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
@@ -1904,7 +1921,9 @@ crowdControlSettingsRepository: Final[CrowdControlSettingsRepositoryInterface] =
 
 crowdControlMachine: Final[CrowdControlMachineInterface] = CrowdControlMachine(
     backgroundTaskHelper = backgroundTaskHelper,
+    crowdControlActionHandler = crowdControlActionHandler,
     crowdControlIdGenerator = crowdControlIdGenerator,
+    crowdControlMessageListener = crowdControlMessageListener,
     crowdControlSettingsRepository = crowdControlSettingsRepository,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
@@ -1931,23 +1950,6 @@ crowdControlCheerActionHelper: Final[CrowdControlCheerActionHelperInterface] = C
     crowdControlUserInputUtils = crowdControlUserInputUtils,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
-)
-
-bizhawkKeyMapper: Final[BizhawkKeyMapperInterface] = BizhawkKeyMapper(
-    timber = timber,
-)
-
-bizhawkSettingsRepository: Final[BizhawkSettingsRepositoryInterface] = BizhawkSettingsRepository(
-    bizhawkKeyMapper = bizhawkKeyMapper,
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/bizhawkSettingsRepository.json',
-    ),
-)
-
-crowdControlActionHandler: Final[CrowdControlActionHandler] = BizhawkActionHandler(
-    bizhawkSettingsRepository = bizhawkSettingsRepository,
-    timber = timber,
 )
 
 
@@ -2457,11 +2459,14 @@ twitchWebsocketClient: Final[TwitchWebsocketClientInterface] = TwitchWebsocketCl
 startables: Final[Collection[Startable | None]] = frozenset({
     chatterInventoryItemUseMachine,
     cheerActionHelper,
+    crowdControlMachine,
     pixelsDiceMachine,
     streamAlertsManager,
     timeoutActionMachine,
     twitchChannelPointRedemptionHandler,
+    twitchChatMessenger,
     twitchTimeoutRemodHelper,
+    twitchTokensRepository,
     websocketConnectionServer,
 })
 
@@ -2472,57 +2477,14 @@ startables: Final[Collection[Startable | None]] = frozenset({
 
 cynanBot: Final[CynanBot] = CynanBot(
     eventLoop = eventLoop,
-    twitchChannelPointRedemptionHandler = twitchChannelPointRedemptionHandler,
-    twitchChatHandler = twitchChatHandler,
-    twitchFollowHandler = twitchFollowHandler,
-    twitchHypeTrainHandler = twitchHypeTrainHandler,
-    twitchPollHandler = twitchPollHandler,
-    twitchPredictionHandler = twitchPredictionHandler,
-    twitchRaidHandler = twitchRaidHandler,
-    twitchSubscriptionHandler = twitchSubscriptionHandler,
-    activeChattersRepository = activeChattersRepository,
-    additionalTriviaAnswersRepository = None,
-    administratorProvider = administratorProvider,
-    anivCopyMessageTimeoutScoreHelper = anivCopyMessageTimeoutScoreHelper,
-    anivCopyMessageTimeoutScorePresenter = anivCopyMessageTimeoutScorePresenter,
-    anivSettings = anivSettings,
-    asplodieStatsPresenter = asplodieStatsPresenter,
-    asplodieStatsRepository = asplodieStatsRepository,
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     chatLogger = chatLogger,
-    chatterInventoryHelper = chatterInventoryHelper,
-    chatterInventoryIdGenerator = chatterInventoryIdGenerator,
-    chatterInventoryMapper = chatterInventoryMapper,
-    chatterInventorySettings = chatterInventorySettings,
-    chatterPreferredNameHelper = chatterPreferredNameHelper,
-    chatterPreferredNameRepository = chatterPreferredNameRepository,
-    chatterPreferredNameSettings = chatterPreferredNameSettings,
-    chatterPreferredTtsHelper = chatterPreferredTtsHelper,
-    chatterPreferredTtsPresenter = chatterPreferredTtsPresenter,
-    chatterPreferredTtsRepository = chatterPreferredTtsRepository,
-    chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
-    chatterPreferredTtsUserMessageHelper = chatterPreferredTtsUserMessageHelper,
-    compositeTtsManagerProvider = compositeTtsManagerProvider,
-    crowdControlActionHandler = crowdControlActionHandler,
-    crowdControlAutomator = crowdControlAutomator,
-    crowdControlIdGenerator = crowdControlIdGenerator,
-    crowdControlMachine = crowdControlMachine,
-    crowdControlMessageListener = crowdControlMessageListener,
-    crowdControlSettingsRepository = crowdControlSettingsRepository,
-    crowdControlUserInputUtils = crowdControlUserInputUtils,
     generalSettingsRepository = generalSettingsRepository,
     languagesRepository = languagesRepository,
     locationsRepository = locationsRepository,
-    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
-    mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
-    mostRecentChatsRepository = mostRecentChatsRepository,
-    openTriviaDatabaseSessionTokenRepository = None,
-    pokepediaRepository = None,
     sentMessageLogger = sentMessageLogger,
     timber = timber,
-    timeoutActionSettings = timeoutActionSettings,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     timeZoneRepository = timeZoneRepository,
     twitchChannelJoinHelper = twitchChannelJoinHelper,
     twitchChatMessenger = twitchChatMessenger,

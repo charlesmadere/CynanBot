@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 
 from .actions.crowdControlAction import CrowdControlAction
-from .crowdControlActionHandler import CrowdControlActionHandler
-from .message.crowdControlMessageListener import CrowdControlMessageListener
 from ..misc.startable import Startable
 
 
@@ -19,14 +17,6 @@ class CrowdControlMachineInterface(Startable, ABC):
 
     @abstractmethod
     def resume(self) -> bool:
-        pass
-
-    @abstractmethod
-    def setActionHandler(self, actionHandler: CrowdControlActionHandler | None):
-        pass
-
-    @abstractmethod
-    def setMessageListener(self, messageListener: CrowdControlMessageListener | None):
         pass
 
     @abstractmethod

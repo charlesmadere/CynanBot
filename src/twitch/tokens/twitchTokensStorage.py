@@ -34,7 +34,7 @@ class TwitchTokensStorage(TwitchTokensStorageInterface):
 
     async def __createExpiredExpirationTime(self) -> datetime:
         now = self.__timeZoneRepository.getNow()
-        return now - timedelta(weeks = 1)
+        return now - timedelta(weeks = 2)
 
     async def get(
         self,

@@ -65,7 +65,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self.__tokensExpirationBuffer: Final[timedelta] = tokensExpirationBuffer
         self.__validationExpirationBuffer: Final[timedelta] = validationExpirationBuffer
 
-        self.__isDatabaseReady: bool = False
         self.__isStarted: bool = False
         self.__cache: Final[dict[str, TwitchTokensDetails | None]] = dict()
         self.__twitchChannelIdToValidationTime: Final[dict[str, datetime | None]] = dict()
@@ -212,13 +211,9 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         self.__timber.log('TwitchTokensRepository', f'Finished reading in seed file ({seedFileReader=})')
 
-    async def __consumeSeedFileThenStartValidationLoop(self):
-        await self.__consumeSeedFile()
-        await self.__startValidationLoop()
-
     async def __createExpiredExpirationTime(self) -> datetime:
         nowDateTime = self.__timeZoneRepository.getNow()
-        return nowDateTime - timedelta(weeks = 1)
+        return nowDateTime - timedelta(weeks = 2)
 
     async def getAccessToken(
         self,
@@ -301,37 +296,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         self.__cache[twitchChannelId] = tokensDetails
         return tokensDetails
-
-    async def hasAccessToken(
-        self,
-        twitchChannel: str,
-    ) -> bool:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-
-        twitchChannelId = await self.__userIdsRepository.fetchUserId(
-            userName = twitchChannel,
-        )
-
-        if not utils.isValidStr(twitchChannelId):
-            return False
-
-        return await self.hasAccessTokenById(
-            twitchChannelId = twitchChannelId,
-        )
-
-    async def hasAccessTokenById(
-        self,
-        twitchChannelId: str,
-    ) -> bool:
-        if not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-
-        accessToken = await self.getAccessTokenById(
-            twitchChannelId = twitchChannelId,
-        )
-
-        return utils.isValidStr(accessToken)
 
     async def removeUser(
         self,
@@ -441,9 +405,11 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         self.__isStarted = True
         self.__timber.log('TwitchTokensRepository', 'Starting TwitchTokensRepository...')
-        self.__backgroundTaskHelper.createTask(self.__consumeSeedFileThenStartValidationLoop())
+        self.__backgroundTaskHelper.createTask(self.__startValidationLoop())
 
     async def __startValidationLoop(self):
+        await self.__consumeSeedFile()
+
         while True:
             await self.__checkAndValidateTokensAsNecessary()
             await asyncio.sleep(self.__sleepTime.total_seconds())

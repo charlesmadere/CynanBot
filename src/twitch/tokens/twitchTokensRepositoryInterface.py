@@ -30,20 +30,6 @@ class TwitchTokensRepositoryInterface(Clearable, Startable, ABC):
         pass
 
     @abstractmethod
-    async def hasAccessToken(
-        self,
-        twitchChannel: str,
-    ) -> bool:
-        pass
-
-    @abstractmethod
-    async def hasAccessTokenById(
-        self,
-        twitchChannelId: str,
-    ) -> bool:
-        pass
-
-    @abstractmethod
     async def removeUser(
         self,
         twitchChannel: str,
