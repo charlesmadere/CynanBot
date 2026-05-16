@@ -29,7 +29,9 @@ class CrowdControlMachine(CrowdControlMachineInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
+        crowdControlActionHandler: CrowdControlActionHandler,
         crowdControlIdGenerator: CrowdControlIdGeneratorInterface,
+        crowdControlMessageListener: CrowdControlMessageListener,
         crowdControlSettingsRepository: CrowdControlSettingsRepositoryInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
@@ -38,8 +40,12 @@ class CrowdControlMachine(CrowdControlMachineInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(crowdControlActionHandler, CrowdControlActionHandler):
+            raise TypeError(f'crowdControlActionHandler argument is malformed: \"{crowdControlActionHandler}\"')
         elif not isinstance(crowdControlIdGenerator, CrowdControlIdGeneratorInterface):
             raise TypeError(f'crowdControlIdGenerator argument is malformed: \"{crowdControlIdGenerator}\"')
+        elif not isinstance(crowdControlMessageListener, CrowdControlMessageListener):
+            raise TypeError(f'crowdControlMessageListener argument is malformed: \"{crowdControlMessageListener}\"')
         elif not isinstance(crowdControlSettingsRepository, CrowdControlSettingsRepositoryInterface):
             raise TypeError(f'crowdControlSettingsRepository argument is malformed: \"{crowdControlSettingsRepository}\"')
         elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
@@ -54,7 +60,9 @@ class CrowdControlMachine(CrowdControlMachineInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__crowdControlActionHandler: Final[CrowdControlActionHandler] = crowdControlActionHandler
         self.__crowdControlIdGenerator: Final[CrowdControlIdGeneratorInterface] = crowdControlIdGenerator
+        self.__crowdControlMessageListener: Final[CrowdControlMessageListener] = crowdControlMessageListener
         self.__crowdControlSettingsRepository: Final[CrowdControlSettingsRepositoryInterface] = crowdControlSettingsRepository
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
         self.__timber: Final[TimberInterface] = timber
@@ -63,8 +71,6 @@ class CrowdControlMachine(CrowdControlMachineInterface):
 
         self.__isPaused: bool = False
         self.__isStarted: bool = False
-        self.__actionHandler: CrowdControlActionHandler | None = None
-        self.__messageListener: CrowdControlMessageListener | None = None
         self.__actionQueue: Final[SimpleQueue[CrowdControlAction]] = SimpleQueue()
         self.__messageQueue: Final[SimpleQueue[CrowdControlMessage]] = SimpleQueue()
 
@@ -219,18 +225,6 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         # indicates to the caller that we were previously paused, but are now resumed
         return not isAlreadyResumed
 
-    def setActionHandler(self, actionHandler: CrowdControlActionHandler | None):
-        if actionHandler is not None and not isinstance(actionHandler, CrowdControlActionHandler):
-            raise TypeError(f'actionHandler argument is malformed: \"{actionHandler}\"')
-
-        self.__actionHandler = actionHandler
-
-    def setMessageListener(self, messageListener: CrowdControlMessageListener | None):
-        if messageListener is not None and not isinstance(messageListener, CrowdControlMessageListener):
-            raise TypeError(f'messageListener argument is malformed: \"{messageListener}\"')
-
-        self.__messageListener = messageListener
-
     def start(self):
         if self.__isStarted:
             self.__timber.log('CrowdControlMachine', 'Not starting CrowdControlMachine as it has already been started')
@@ -243,9 +237,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
 
     async def __startActionLoop(self):
         while True:
-            actionHandler = self.__actionHandler
-
-            if actionHandler is not None and not self.isPaused:
+            if not self.isPaused:
                 action: CrowdControlAction | None = None
 
                 try:
@@ -257,7 +249,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
                 if action is not None:
                     result = await self.__handleAction(
                         action = action,
-                        actionHandler = actionHandler,
+                        actionHandler = self.__crowdControlActionHandler,
                     )
 
                     match result:
@@ -276,19 +268,16 @@ class CrowdControlMachine(CrowdControlMachineInterface):
 
     async def __startMessageLoop(self):
         while True:
-            messageListener = self.__messageListener
+            message: CrowdControlMessage | None = None
 
-            if messageListener is not None:
-                message: CrowdControlMessage | None = None
+            try:
+                if not self.__messageQueue.empty():
+                    message = self.__messageQueue.get_nowait()
+            except queue.Empty as e:
+                self.__timber.log('CrowdControlMachine', f'Encountered queue.Empty when grabbing message (queue size: {self.__messageQueue.qsize()}) ({message=}): {e}', e, traceback.format_exc())
 
-                try:
-                    if not self.__messageQueue.empty():
-                        message = self.__messageQueue.get_nowait()
-                except queue.Empty as e:
-                    self.__timber.log('CrowdControlMachine', f'Encountered queue.Empty when grabbing message (queue size: {self.__messageQueue.qsize()}) ({message=}): {e}', e, traceback.format_exc())
-
-                if message is not None:
-                    await messageListener.onNewCrowdControlMessage(message)
+            if message is not None:
+                await self.__crowdControlMessageListener.onNewCrowdControlMessage(message)
 
             messageCooldownSeconds = await self.__crowdControlSettingsRepository.getMessageCooldownSeconds()
             await asyncio.sleep(messageCooldownSeconds)
