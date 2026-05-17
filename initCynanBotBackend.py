@@ -1885,12 +1885,6 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption | None]] = frozense
     ),
 })
 
-twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
-    backgroundTaskHelper = backgroundTaskHelper,
-    timber = timber,
-    pointRedemptions = pointRedemptions,
-)
-
 chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
     AnivCheckChatAction(
         anivContentScanner = anivContentScanner,
@@ -2249,6 +2243,12 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         wordOfTheDayRepository = wordOfTheDayRepository,
     ),
 })
+
+twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber,
+    pointRedemptions = pointRedemptions,
+)
 
 twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
     activeChattersRepository = activeChattersRepository,

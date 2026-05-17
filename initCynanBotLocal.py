@@ -3,26 +3,11 @@ import locale
 from asyncio import AbstractEventLoop
 from typing import Collection, Final
 
-from src.aniv.contentScanner.anivContentScanner import AnivContentScanner
-from src.aniv.contentScanner.anivContentScannerInterface import AnivContentScannerInterface
-from src.aniv.helpers.anivCopyMessageTimeoutScoreHelper import AnivCopyMessageTimeoutScoreHelper
-from src.aniv.helpers.anivCopyMessageTimeoutScoreHelperInterface import AnivCopyMessageTimeoutScoreHelperInterface
-from src.aniv.helpers.mostRecentAnivMessageTimeoutHelper import MostRecentAnivMessageTimeoutHelper
-from src.aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from src.aniv.mapper.anivJsonMapper import AnivJsonMapper
 from src.aniv.mapper.anivJsonMapperInterface import AnivJsonMapperInterface
-from src.aniv.presenters.anivCopyMessageTimeoutScorePresenter import AnivCopyMessageTimeoutScorePresenter
-from src.aniv.presenters.anivCopyMessageTimeoutScorePresenterInterface import \
-    AnivCopyMessageTimeoutScorePresenterInterface
 from src.aniv.repositories.anivCopyMessageTimeoutScoreRepository import AnivCopyMessageTimeoutScoreRepository
 from src.aniv.repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
     AnivCopyMessageTimeoutScoreRepositoryInterface
-from src.aniv.repositories.anivUserIdsRepository import AnivUserIdsRepository
-from src.aniv.repositories.anivUserIdsRepositoryInterface import AnivUserIdsRepositoryInterface
-from src.aniv.repositories.mostRecentAnivMessageRepository import MostRecentAnivMessageRepository
-from src.aniv.repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
-from src.aniv.settings.anivSettings import AnivSettings
-from src.aniv.settings.anivSettingsInterface import AnivSettingsInterface
 from src.asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
 from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRepository
 from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
@@ -32,7 +17,6 @@ from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import Chatt
 from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from src.chatActions.absChatAction import AbsChatAction
-from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatActions.watchStreakAnnounceChatAction import WatchStreakAnnounceChatAction
@@ -1829,57 +1813,6 @@ useChatterItemHelper: UseChatterItemHelperInterface = UseChatterItemHelper(
 )
 
 
-#################################
-## aniv initialization section ##
-#################################
-
-anivSettings: AnivSettingsInterface = AnivSettings(
-    settingsJsonReader = JsonFileReader(
-        eventLoop = eventLoop,
-        fileName = '../config/anivSettings.json',
-    ),
-)
-
-anivCopyMessageTimeoutScoreHelper: AnivCopyMessageTimeoutScoreHelperInterface = AnivCopyMessageTimeoutScoreHelper(
-    anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
-    anivSettings = anivSettings,
-    twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
-)
-
-anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface = AnivCopyMessageTimeoutScorePresenter()
-
-anivUserIdsRepository: Final[AnivUserIdsRepositoryInterface] = AnivUserIdsRepository(
-    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
-)
-
-anivContentScanner: Final[AnivContentScannerInterface] = AnivContentScanner(
-    contentScanner = contentScanner,
-    timber = timber,
-)
-
-mostRecentAnivMessageRepository: Final[MostRecentAnivMessageRepositoryInterface] = MostRecentAnivMessageRepository(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-)
-
-mostRecentAnivMessageTimeoutHelper: Final[MostRecentAnivMessageTimeoutHelperInterface] = MostRecentAnivMessageTimeoutHelper(
-    anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
-    anivSettings = anivSettings,
-    anivUserIdsRepository = anivUserIdsRepository,
-    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
-    timber = timber,
-    timeoutActionMachine = timeoutActionMachine,
-    timeoutIdGenerator = timeoutIdGenerator,
-    timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    timeZoneRepository = timeZoneRepository,
-    twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-    twitchHandleProvider = authRepository,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
-)
-
-
 ##########################################
 ## Crowd Control initialization section ##
 ##########################################
@@ -2140,18 +2073,7 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption | None]] = frozense
     ),
 })
 
-twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
-    backgroundTaskHelper = backgroundTaskHelper,
-    timber = timber,
-    pointRedemptions = pointRedemptions,
-)
-
 chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
-    SaveMostRecentAnivMessageChatAction(
-        anivUserIdsRepository = anivUserIdsRepository,
-        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
-        timber = timber,
-    ),
     SupStreamerChatAction(
         chatterPreferredNameHelper = chatterPreferredNameHelper,
         chatterPreferredTtsHelper = chatterPreferredTtsHelper,
@@ -2363,11 +2285,17 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
 })
 
+twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber,
+    pointRedemptions = pointRedemptions,
+)
+
 twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
     activeChattersRepository = activeChattersRepository,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
-    mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
+    mostRecentAnivMessageTimeoutHelper = None,
     mostRecentChatsRepository = mostRecentChatsRepository,
     timber = timber,
     triviaGameBuilder = None,
