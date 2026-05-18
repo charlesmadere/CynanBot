@@ -1,3 +1,4 @@
+import traceback
 from typing import Final
 
 from .absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
@@ -14,6 +15,7 @@ from .api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscript
 from .websocket.listener.twitchWebsocketDataBundleListener import TwitchWebsocketDataBundleListener
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
+from ..users.exceptions import NoSuchUserException
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
@@ -156,8 +158,18 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
             self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find broadcaster user information in data bundle ({twitchChannelId=}) ({twitchChannelLogin=}) ({dataBundle=})')
             return
 
-        await self.__persistUserInfo(event)
-        twitchUser = await self.__usersRepository.getUserAsync(twitchChannelLogin)
+        await self.__persistUserInfo(
+            event = event,
+        )
+
+        try:
+            twitchUser = await self.__usersRepository.getUserAsync(
+                handle = twitchChannelLogin,
+            )
+        except NoSuchUserException as e:
+            self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find user ({twitchChannelId=}) ({twitchChannelLogin=}) ({dataBundle=})', e, traceback.format_exc())
+            return
+
         subscriptionType = dataBundle.metadata.subscriptionType
 
         if await self.__isChannelPointsRedemptionType(subscriptionType):
@@ -227,12 +239,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         else:
             self.__timber.log('TwitchWebsocketDataBundleHandler', f'Received unhandled data bundle ({twitchChannelId=}) ({twitchUser=}) ({subscriptionType=}) ({dataBundle=})')
 
-    async def __persistUserInfo(self, event: TwitchWebsocketEvent | None):
-        if event is None:
-            return
-        elif not isinstance(event, TwitchWebsocketEvent):
-            raise TypeError(f'event argument is malformed: \"{event}\"')
-
+    async def __persistUserInfo(self, event: TwitchWebsocketEvent):
         userIdsToUserNames: dict[str, str] = dict()
         await self.__addToUserIdsToUserNames(userIdsToUserNames, event.broadcasterUserId, event.broadcasterUserLogin)
         await self.__addToUserIdsToUserNames(userIdsToUserNames, event.fromBroadcasterUserId, event.fromBroadcasterUserLogin)
