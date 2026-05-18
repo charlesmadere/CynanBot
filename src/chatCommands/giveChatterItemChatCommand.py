@@ -68,7 +68,7 @@ class GiveChatterItemChatCommand(AbsChatCommand):
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
             re.compile(r'^\s*!give(?:chatter)?item\b', re.IGNORECASE),
-            re.compile(r'^\s*!itemgive\b', re.IGNORECASE),
+            re.compile(r'^\s*!(?:chatter)?itemgive\b', re.IGNORECASE),
         })
 
     async def __chooseRandomEnabledItemType(self) -> str:
