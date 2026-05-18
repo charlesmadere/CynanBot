@@ -30,7 +30,6 @@ from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
     SoundPlayerRandomizerHelperInterface
-from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
@@ -262,10 +261,6 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         self,
         event: GashaponResultsChatterItemEvent,
     ):
-        if event.user.areSoundAlertsEnabled:
-            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
-            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.GASHAPON))
-
         awardedItemsStrings: list[str] = list()
 
         for itemType, amount in event.awardedItems.items():
