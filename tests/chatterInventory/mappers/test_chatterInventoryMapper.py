@@ -583,6 +583,11 @@ class TestChatterInventoryMapper:
         assert result is ChatterItemType.CASSETTE_TAPE
 
     @pytest.mark.asyncio
+    async def test_parseItemType_withChest(self):
+        result = await self.mapper.parseItemType('chest')
+        assert result is ChatterItemType.GASHAPON
+
+    @pytest.mark.asyncio
     async def test_parseItemType_withEmptyString(self):
         result = await self.mapper.parseItemType('')
         assert result is None
@@ -590,6 +595,9 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_parseItemType_withGashapon(self):
         result = await self.mapper.parseItemType('gacha')
+        assert result is ChatterItemType.GASHAPON
+
+        result = await self.mapper.parseItemType('gatcha')
         assert result is ChatterItemType.GASHAPON
 
         result = await self.mapper.parseItemType('gachas')
@@ -620,6 +628,11 @@ class TestChatterInventoryMapper:
 
         result = await self.mapper.parseItemType('grenades')
         assert result is ChatterItemType.GRENADE
+
+    @pytest.mark.asyncio
+    async def test_parseItemType_withLoot(self):
+        result = await self.mapper.parseItemType('loot')
+        assert result is ChatterItemType.GASHAPON
 
     @pytest.mark.asyncio
     async def test_parseItemType_withLootbox(self):

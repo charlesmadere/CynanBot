@@ -58,9 +58,10 @@ class GetGashaponItemChatCommand(AbsChatCommand):
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
             re.compile(r'^\s*!(?:get\s*)?chest\b', re.IGNORECASE),
-            re.compile(r'^\s*!(?:get\s*)?gacha(?:pon)?\b', re.IGNORECASE),
+            re.compile(r'^\s*!(?:get\s*)?gat?cha(?:pon)?\b', re.IGNORECASE),
             re.compile(r'^\s*!(?:get\s*)?gasha(?:pon)?\b', re.IGNORECASE),
             re.compile(r'^\s*!(?:get\s*)?loot(?:box)?\b', re.IGNORECASE),
+            re.compile(r'^\s*!(?:get\s*)?loot(?:crate)?\b', re.IGNORECASE),
         })
 
     @property
@@ -96,7 +97,7 @@ class GetGashaponItemChatCommand(AbsChatCommand):
 
         elif isinstance(gashaponResult, NotFollowingGashaponResult):
             self.__twitchChatMessenger.send(
-                text = f'⚠ Sorry, you must be following in order to receive a gashapon',
+                text = f'⚠ You must be following in order to receive a gashapon',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )

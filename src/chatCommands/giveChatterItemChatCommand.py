@@ -68,7 +68,7 @@ class GiveChatterItemChatCommand(AbsChatCommand):
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
             re.compile(r'^\s*!give(?:chatter)?item\b', re.IGNORECASE),
-            re.compile(r'^\s*!itemgive\b', re.IGNORECASE),
+            re.compile(r'^\s*!(?:chatter)?itemgive\b', re.IGNORECASE),
         })
 
     async def __chooseRandomEnabledItemType(self) -> str:
@@ -96,7 +96,7 @@ class GiveChatterItemChatCommand(AbsChatCommand):
             randomItemType = await self.__chooseRandomEnabledItemType()
 
             self.__twitchChatMessenger.send(
-                text = f'⚠ Invalid arguments! Example use: !give @{chatMessage.chatterUserName} {randomItemType}',
+                text = f'⚠ Invalid arguments! Example use: !giveitem @{chatMessage.chatterUserName} {randomItemType}',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
@@ -107,7 +107,7 @@ class GiveChatterItemChatCommand(AbsChatCommand):
             randomItemType = await self.__chooseRandomEnabledItemType()
 
             self.__twitchChatMessenger.send(
-                text = f'⚠ You can\'t give yourself an item! Example use: !give @{chatMessage.chatterUserName} {randomItemType}',
+                text = f'⚠ You can\'t give yourself an item! Example use: !giveitem @{chatMessage.chatterUserName} {randomItemType}',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
