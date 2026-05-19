@@ -376,7 +376,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             return
 
         itemDetails = await self.__chatterInventorySettings.getGashaponItemDetails()
-        awardedItems: dict[ChatterItemType, int] = defaultdict(lambda: 0)
+        awardedItems: Final[dict[ChatterItemType, int]] = defaultdict(lambda: 0)
         itemsWereAwarded = False
 
         for itemType, pullRate in itemDetails.pullRates.items():
