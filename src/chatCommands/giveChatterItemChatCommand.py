@@ -67,7 +67,7 @@ class GiveChatterItemChatCommand(AbsChatCommand):
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!give(?:chatter)?item\b', re.IGNORECASE),
+            re.compile(r'^\s*!give(?:chatter)?(?:item)?\b', re.IGNORECASE),
             re.compile(r'^\s*!(?:chatter)?itemgive\b', re.IGNORECASE),
         })
 
@@ -163,7 +163,7 @@ class GiveChatterItemChatCommand(AbsChatCommand):
         giveAmount = 1
 
         if len(splits) >= 4:
-            giveAmountString: str | None = splits[3]
+            giveAmountString = splits[3]
 
             try:
                 giveAmount = int(giveAmountString)
