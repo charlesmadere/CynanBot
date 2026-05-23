@@ -13,6 +13,7 @@ from ..tts.jsonMapper.ttsJsonMapperInterface import TtsJsonMapperInterface
 from ..tts.models.ttsEvent import TtsEvent
 from ..tts.models.ttsProvider import TtsProvider
 from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
+from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..users.userInterface import UserInterface
@@ -26,6 +27,7 @@ class TtsChatCommand(AbsChatCommand):
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         ttsJsonMapper: TtsJsonMapperInterface,
+        twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
@@ -36,6 +38,8 @@ class TtsChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsJsonMapper, TtsJsonMapperInterface):
             raise TypeError(f'ttsJsonMapper argument is malformed: \"{ttsJsonMapper}\"')
+        elif not isinstance(twitchChannelEditorsRepository, TwitchChannelEditorsRepositoryInterface):
+            raise TypeError(f'twitchChannelEditorsRepository argument is malformed: \"{twitchChannelEditorsRepository}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
@@ -43,9 +47,11 @@ class TtsChatCommand(AbsChatCommand):
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__ttsJsonMapper: Final[TtsJsonMapperInterface] = ttsJsonMapper
+        self.__twitchChannelEditorsRepository: Final[TwitchChannelEditorsRepositoryInterface] = twitchChannelEditorsRepository
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!text(?:\s+|_|-)?to(?:\s+|_|-)?speech\b', re.IGNORECASE),
             re.compile(r'^\s*!tts\b', re.IGNORECASE),
         })
 
@@ -112,21 +118,19 @@ class TtsChatCommand(AbsChatCommand):
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
         if not chatMessage.twitchUser.isTtsEnabled:
             return ChatCommandResult.IGNORED
-
-        administrator = await self.__administratorProvider.getAdministratorUserId()
-        if chatMessage.twitchChannelId != chatMessage.chatterUserId and administrator != chatMessage.chatterUserId:
+        elif not await self.__hasPermissions(chatMessage):
             await self.__displayTtsCheerAmounts(chatMessage)
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 2:
             await self.__displayTtsCheerAmounts(chatMessage)
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         message = ' '.join(splits[1:])
         if not utils.isValidStr(message):
             await self.__displayTtsCheerAmounts(chatMessage)
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         ttsProvider = chatMessage.twitchUser.defaultTtsProvider
         ttsProviderMatch = self.__ttsProviderRegEx.fullmatch(message.split()[0])
@@ -145,7 +149,7 @@ class TtsChatCommand(AbsChatCommand):
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
-                return ChatCommandResult.HANDLED
+                return ChatCommandResult.CONSUMED
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
@@ -171,4 +175,15 @@ class TtsChatCommand(AbsChatCommand):
         )
 
         self.__timber.log(self.commandName, f'Handled ({chatMessage=}) ({ttsProvider=})')
-        return ChatCommandResult.HANDLED
+        return ChatCommandResult.CONSUMED
+
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+        isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
+
+        isEditor = await self.__twitchChannelEditorsRepository.isEditor(
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
+        )
+
+        return isStreamer or isAdministrator or isEditor

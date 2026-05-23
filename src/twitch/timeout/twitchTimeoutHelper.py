@@ -185,7 +185,9 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         elif userIdToTimeout == twitchChannelId:
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout the streamer themselves ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
             return TwitchTimeoutResult.IS_STREAMER
-        elif await self.__timeoutImmuneUserIdsRepository.isImmune(userIdToTimeout):
+        elif await self.__timeoutImmuneUserIdsRepository.isImmune(
+            userId = userIdToTimeout,
+        ):
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout an immune user ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
             return TwitchTimeoutResult.IMMUNE_USER
         elif await self.__isAlreadyCurrentlyBannedOrTimedOut(

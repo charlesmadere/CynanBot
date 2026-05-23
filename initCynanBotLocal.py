@@ -2260,6 +2260,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         streamAlertsManager = streamAlertsManager,
         timber = timber,
         ttsJsonMapper = ttsJsonMapper,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
         twitchChatMessenger = twitchChatMessenger,
     ),
     UseChatterItemChatCommand(

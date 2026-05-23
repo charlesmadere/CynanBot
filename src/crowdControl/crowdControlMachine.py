@@ -136,16 +136,16 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         try:
             return await actionHandler.handleButtonPressAction(action)
         except ActionHandlerProcessCantBeConnectedToException as e:
-            self.__timber.log('CrowdControlMachine', f'Unable to connect to action handler process when handling button press action ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('CrowdControlMachine', f'Unable to connect to action handler process when handling button press action ({action=})', e, traceback.format_exc())
             return CrowdControlActionHandleResult.ABANDON
         except ActionHandlerProcessNotFoundException as e:
-            self.__timber.log('CrowdControlMachine', f'Unable to find action handler process when handling button press action ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('CrowdControlMachine', f'Unable to find action handler process when handling button press action ({action=})', e, traceback.format_exc())
             return CrowdControlActionHandleResult.ABANDON
         except PermissionError as e:
-            self.__timber.log('CrowdControlMachine', f'Don\'t have permission to handle button press action ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('CrowdControlMachine', f'Don\'t have permission to handle button press action ({action=})', e, traceback.format_exc())
             return CrowdControlActionHandleResult.ABANDON
         except Exception as e:
-            self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling button press action ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling button press action ({action=})', e, traceback.format_exc())
             return CrowdControlActionHandleResult.RETRY
 
     async def __handleGameShuffleAction(
@@ -161,16 +161,16 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         try:
             return await actionHandler.handleGameShuffleAction(action)
         except ActionHandlerProcessCantBeConnectedToException as e:
-            self.__timber.log('CrowdControlMachine', f'Unable to connect to action handler process when handling game shuffle action ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('CrowdControlMachine', f'Unable to connect to action handler process when handling game shuffle action ({action=})', e, traceback.format_exc())
             return CrowdControlActionHandleResult.ABANDON
         except ActionHandlerProcessNotFoundException as e:
-            self.__timber.log('CrowdControlMachine', f'Unable to find action handler process when handling game shuffle action ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('CrowdControlMachine', f'Unable to find action handler process when handling game shuffle action ({action=})', e, traceback.format_exc())
             return CrowdControlActionHandleResult.ABANDON
         except PermissionError as e:
-            self.__timber.log('CrowdControlMachine', f'Don\'t have permission to handle game shuffle action ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('CrowdControlMachine', f'Don\'t have permission to handle game shuffle action ({action=})', e, traceback.format_exc())
             return CrowdControlActionHandleResult.ABANDON
         except Exception as e:
-            self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling game shuffle action ({action=}): {e}', e, traceback.format_exc())
+            self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling game shuffle action ({action=})', e, traceback.format_exc())
             return CrowdControlActionHandleResult.RETRY
 
     @property
@@ -244,7 +244,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
                     if not self.__actionQueue.empty():
                         action = self.__actionQueue.get_nowait()
                 except queue.Empty as e:
-                    self.__timber.log('CrowdControlMachine', f'Encountered queue.Empty when grabbing action (queue size: {self.__actionQueue.qsize()}) ({action=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('CrowdControlMachine', f'Encountered queue.Empty when grabbing action (queue size: {self.__actionQueue.qsize()}) ({action=})', e, traceback.format_exc())
 
                 if action is not None:
                     result = await self.__handleAction(
@@ -274,10 +274,13 @@ class CrowdControlMachine(CrowdControlMachineInterface):
                 if not self.__messageQueue.empty():
                     message = self.__messageQueue.get_nowait()
             except queue.Empty as e:
-                self.__timber.log('CrowdControlMachine', f'Encountered queue.Empty when grabbing message (queue size: {self.__messageQueue.qsize()}) ({message=}): {e}', e, traceback.format_exc())
+                self.__timber.log('CrowdControlMachine', f'Encountered queue.Empty when grabbing message (queue size: {self.__messageQueue.qsize()}) ({message=})', e, traceback.format_exc())
 
             if message is not None:
-                await self.__crowdControlMessageListener.onNewCrowdControlMessage(message)
+                try:
+                    await self.__crowdControlMessageListener.onNewCrowdControlMessage(message)
+                except Exception as e:
+                    self.__timber.log('CrowdControlMachine', f'Encountered unknown Exception when handling message ({message=})', e, traceback.format_exc())
 
             messageCooldownSeconds = await self.__crowdControlSettingsRepository.getMessageCooldownSeconds()
             await asyncio.sleep(messageCooldownSeconds)
@@ -289,7 +292,7 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         try:
             self.__actionQueue.put(action, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
-            self.__timber.log('CrowdControlMachine', f'Encountered queue.Full when submitting a new action ({action}) into the action queue (queue size: {self.__actionQueue.qsize()}): {e}', e, traceback.format_exc())
+            self.__timber.log('CrowdControlMachine', f'Encountered queue.Full when submitting a new action ({action}) into the action queue (queue size: {self.__actionQueue.qsize()})', e, traceback.format_exc())
 
     async def __submitMessage(self, action: CrowdControlAction):
         if not isinstance(action, CrowdControlAction):
@@ -308,4 +311,4 @@ class CrowdControlMachine(CrowdControlMachineInterface):
         try:
             self.__messageQueue.put_nowait(message)
         except queue.Full as e:
-            self.__timber.log('CrowdControlMachine', f'Encountered queue.Full when submitting a new message ({message}) into the giga shuffle message queue (queue size: {self.__messageQueue.qsize()}): {e}', e, traceback.format_exc())
+            self.__timber.log('CrowdControlMachine', f'Encountered queue.Full when submitting a new message ({message}) into the giga shuffle message queue (queue size: {self.__messageQueue.qsize()})', e, traceback.format_exc())
