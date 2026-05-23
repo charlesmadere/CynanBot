@@ -46,9 +46,7 @@ class GetCheerActionsChatCommand(AbsChatCommand):
         return self.__commandPatterns
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
-        if not await self.__hasPermissions(
-            chatMessage = chatMessage,
-        ):
+        if not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
         actions = await self.__cheerActionsRepository.getActions(
