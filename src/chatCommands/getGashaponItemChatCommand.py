@@ -148,7 +148,7 @@ class GetGashaponItemChatCommand(AbsChatCommand):
             )
 
         self.__twitchChatMessenger.send(
-            text = f'⚠ Sorry, you can\'t receive your gashapon yet! Your next gashapon will be available in {availableWhen}',
+            text = f'⚠ Sorry, you can\'t receive your gashapon yet! Your next will be available in {availableWhen}',
             twitchChannelId = chatMessage.twitchChannelId,
             replyMessageId = chatMessage.twitchChatMessageId,
         )
