@@ -34,7 +34,7 @@ class SupStreamerHelper(SupStreamerHelperInterface):
         supStreamerVariants: set[str] = {
             f'{supStreamerMessage} ',
             f' {supStreamerMessage}',
-            f' {supStreamerMessage} '
+            f' {supStreamerMessage} ',
         }
 
         for variant in supStreamerVariants:
