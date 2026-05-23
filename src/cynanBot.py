@@ -8,12 +8,8 @@ from twitchio.ext.commands import Context
 from twitchio.ext.commands.errors import CommandNotFound
 
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
-from .language.languagesRepositoryInterface import LanguagesRepositoryInterface
-from .location.locationsRepositoryInterface import LocationsRepositoryInterface
-from .location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from .misc.authRepository import AuthRepository
 from .misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from .misc.generalSettingsRepository import GeneralSettingsRepository
 from .misc.startable import Startable
 from .sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from .timber.timberInterface import TimberInterface
@@ -27,8 +23,6 @@ from .twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInte
 from .twitch.websocket.listener.twitchWebsocketConnectionsFinishedListener import \
     TwitchWebsocketConnectionsFinishedListener
 from .twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
-from .users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from .users.usersRepositoryInterface import UsersRepositoryInterface
 
 
 class CynanBot(
@@ -43,18 +37,12 @@ class CynanBot(
         authRepository: AuthRepository,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         chatLogger: ChatLoggerInterface,
-        generalSettingsRepository: GeneralSettingsRepository,
-        languagesRepository: LanguagesRepositoryInterface,
-        locationsRepository: LocationsRepositoryInterface | None,
         sentMessageLogger: SentMessageLoggerInterface,
         timber: TimberInterface,
-        timeZoneRepository: TimeZoneRepositoryInterface,
         twitchChannelJoinHelper: TwitchChannelJoinHelperInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchWebsocketClient: TwitchWebsocketClientInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
         startables: Collection[Startable | Any | None] | None,
     ):
         super().__init__(
@@ -76,18 +64,10 @@ class CynanBot(
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(chatLogger, ChatLoggerInterface):
             raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
-            raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
-        elif locationsRepository is not None and not isinstance(locationsRepository, LocationsRepositoryInterface):
-            raise TypeError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
             raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
-            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchChannelJoinHelper, TwitchChannelJoinHelperInterface):
             raise TypeError(f'twitchChannelJoinHelper argument is malformed: \"{twitchChannelJoinHelper}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
@@ -96,10 +76,6 @@ class CynanBot(
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchWebsocketClient, TwitchWebsocketClientInterface):
             raise TypeError(f'twitchWebsocketClient argument is malformed: \"{twitchWebsocketClient}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif startables is not None and not isinstance(startables, Collection):
             raise TypeError(f'startables argument is malformed: \"{startables}\"')
 

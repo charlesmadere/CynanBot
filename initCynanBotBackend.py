@@ -2367,18 +2367,12 @@ cynanBot: Final[CynanBot] = CynanBot(
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     chatLogger = chatLogger,
-    generalSettingsRepository = generalSettingsRepository,
-    languagesRepository = languagesRepository,
-    locationsRepository = locationsRepository,
     sentMessageLogger = sentMessageLogger,
     timber = timber,
-    timeZoneRepository = timeZoneRepository,
     twitchChannelJoinHelper = twitchChannelJoinHelper,
     twitchChatMessenger = twitchChatMessenger,
     twitchTokensRepository = twitchTokensRepository,
     twitchWebsocketClient = twitchWebsocketClient,
-    userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository,
     startables = startables,
 )
 

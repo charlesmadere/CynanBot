@@ -47,17 +47,13 @@ class TestMouseCursorChatCommand(AbsChatCommand):
         elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
-        administratorUserId = await self.__administratorProvider.getAdministratorUserId()
-        if chatMessage.chatterUserId != administratorUserId:
-            return ChatCommandResult.IGNORED
-
         result = await self.__mouseCursorHelper.applyMouseCursor(
             twitchChannel = chatMessage.twitchChannel,
             twitchChannelId = chatMessage.twitchChannelId,
         )
 
         self.__timber.log(self.commandName, f'Handled ({result=}) ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
         isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId

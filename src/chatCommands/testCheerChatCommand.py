@@ -116,7 +116,7 @@ class TestCheerChatCommand(AbsChatCommand):
             )
         except Exception as e:
             exception = e
-            self.__timber.log(self.commandName, f'Encountered exception when attempting to run handleCheerAction() ({handled=}) ({exception=}) ({arguments=}) ({chatMessage=})', e, traceback.format_exc())
+            self.__timber.log(self.commandName, f'Encountered exception when attempting to run handleCheer() ({handled=}) ({exception=}) ({arguments=}) ({chatMessage=})', e, traceback.format_exc())
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ Cheer test results ({handled=}) ({exception=}) ({arguments=})',
