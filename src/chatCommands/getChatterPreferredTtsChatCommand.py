@@ -82,4 +82,4 @@ class GetChatterPreferredTtsChatCommand(AbsChatCommand):
             )
 
         self.__timber.log(self.commandName, f'Handled ({chatterPreferredTts=})')
-        return ChatCommandResult.HANDLED
+        return ChatCommandResult.CONSUMED
