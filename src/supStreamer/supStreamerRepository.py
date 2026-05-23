@@ -104,7 +104,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
                             twitchchannelid text NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -116,7 +116,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
                             twitchchannelid TEXT NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:

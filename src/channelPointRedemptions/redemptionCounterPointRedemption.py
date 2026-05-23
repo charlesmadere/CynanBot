@@ -45,6 +45,9 @@ class RedemptionCounterPointRedemption(AbsChannelPointRedemption):
         self,
         pointsRedemption: TwitchChannelPointsRedemption,
     ) -> PointsRedemptionResult:
+        if not await self.__redemptionCounterSettings.isEnabled():
+            return PointsRedemptionResult.IGNORED
+
         twitchUser = pointsRedemption.twitchUser
         if not twitchUser.areRedemptionCountersEnabled:
             return PointsRedemptionResult.IGNORED
