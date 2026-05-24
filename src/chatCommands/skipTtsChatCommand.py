@@ -34,7 +34,7 @@ class SkipTtsChatCommand(AbsChatCommand):
         self.__twitchChannelEditorsRepository: Final[TwitchChannelEditorsRepositoryInterface] = twitchChannelEditorsRepository
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!skiptts\b', re.IGNORECASE),
+            re.compile(r'^\s*!skip(?:\s+|_|-)?tts\b', re.IGNORECASE),
         })
 
     @property

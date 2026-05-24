@@ -83,7 +83,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
         numberOfGames = 1
 
         if len(splits) >= 2:
-            numberOfGamesStr: str | None = splits[1]
+            numberOfGamesStr = splits[1]
 
             try:
                 numberOfGames = int(numberOfGamesStr)

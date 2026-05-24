@@ -179,6 +179,7 @@ class TtsChatCommand(AbsChatCommand):
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
         isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+
         isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
 
         isEditor = await self.__twitchChannelEditorsRepository.isEditor(
