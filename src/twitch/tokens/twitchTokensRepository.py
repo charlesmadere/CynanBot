@@ -29,7 +29,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         twitchTokensStorage: TwitchTokensStorageInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         seedFileReader: JsonReaderInterface | None = None,
-        sleepTime: timedelta = timedelta(minutes = 55),
+        sleepTime: timedelta = timedelta(minutes = 45),
         tokensExpirationBuffer: timedelta = timedelta(minutes = 10),
         validationExpirationBuffer: timedelta = timedelta(minutes = 10),
     ):
