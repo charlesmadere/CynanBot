@@ -21,7 +21,7 @@ class TwitchTokensStorageInterface(ABC):
         pass
 
     @abstractmethod
-    async def setTokensDetails(
+    async def set(
         self,
         twitchChannelId: str,
         tokensDetails: TwitchTokensDetails | None,

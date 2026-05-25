@@ -113,6 +113,26 @@ class TwitchTokensStorage(TwitchTokensStorageInterface):
 
         await connection.close()
 
+    async def __insertOrUpdate(
+        self,
+        twitchChannelId: str,
+        tokensDetails: TwitchTokensDetails,
+    ):
+        expirationTime = tokensDetails.expirationTime
+
+        connection = await self.__getDatabaseConnection()
+        await connection.execute(
+            '''
+                INSERT INTO twitchtokens (expirationtime, accesstoken, refreshtoken, twitchchannelid)
+                VALUES ($1, $2, $3, $4)
+                ON CONFLICT (twitchchannelid) DO UPDATE SET expirationtime = EXCLUDED.expirationtime, accesstoken = EXCLUDED.accesstoken, refreshtoken = EXCLUDED.refreshtoken
+            ''',
+            expirationTime.isoformat(), tokensDetails.accessToken, tokensDetails.refreshToken, twitchChannelId,
+        )
+
+        await connection.close()
+        self.__timber.log('TwitchTokensStorage', f'Inserted or updated Twitch tokens details ({twitchChannelId=}) ({expirationTime=})')
+
     async def remove(
         self,
         twitchChannelId: str,
@@ -130,9 +150,9 @@ class TwitchTokensStorage(TwitchTokensStorageInterface):
         )
 
         await connection.close()
-        self.__timber.log('TwitchTokensStorage', f'Removed user ({twitchChannelId=})')
+        self.__timber.log('TwitchTokensStorage', f'Removed Twitch tokens details ({twitchChannelId=})')
 
-    async def setTokensDetails(
+    async def set(
         self,
         twitchChannelId: str,
         tokensDetails: TwitchTokensDetails | None,
@@ -146,22 +166,11 @@ class TwitchTokensStorage(TwitchTokensStorageInterface):
             await self.remove(
                 twitchChannelId = twitchChannelId,
             )
-            return
-
-        expirationTime = tokensDetails.expirationTime
-
-        connection = await self.__getDatabaseConnection()
-        await connection.execute(
-            '''
-                INSERT INTO twitchtokens (expirationtime, accesstoken, refreshtoken, twitchchannelid)
-                VALUES ($1, $2, $3, $4)
-                ON CONFLICT (twitchchannelid) DO UPDATE SET expirationtime = EXCLUDED.expirationtime, accesstoken = EXCLUDED.accesstoken, refreshtoken = EXCLUDED.refreshtoken
-            ''',
-            expirationTime.isoformat(), tokensDetails.accessToken, tokensDetails.refreshToken, twitchChannelId,
-        )
-
-        await connection.close()
-        self.__timber.log('TwitchTokensStorage', f'Set Twitch tokens details ({twitchChannelId=})')
+        else:
+            await self.__insertOrUpdate(
+                twitchChannelId = twitchChannelId,
+                tokensDetails = tokensDetails,
+            )
 
     async def updateExpirationTime(
         self,

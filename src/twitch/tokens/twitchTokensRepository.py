@@ -389,7 +389,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
             self.__cache.pop(twitchChannelId, None)
         else:
-            await self.__twitchTokensStorage.setTokensDetails(
+            await self.__twitchTokensStorage.set(
                 twitchChannelId = twitchChannelId,
                 tokensDetails = tokensDetails,
             )
