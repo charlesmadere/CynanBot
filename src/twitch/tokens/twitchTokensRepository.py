@@ -48,7 +48,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         elif seedFileReader is not None and not isinstance(seedFileReader, JsonReaderInterface):
             raise TypeError(f'seedFileReader argument is malformed: \"{seedFileReader}\"')
         elif not isinstance(sleepTime, timedelta):
-            raise ValueError(f'sleepTime argument is malformed: \"{sleepTime}\"')
+            raise TypeError(f'sleepTime argument is malformed: \"{sleepTime}\"')
         elif not isinstance(tokensExpirationBuffer, timedelta):
             raise TypeError(f'tokensExpirationBuffer argument is malformed: \"{tokensExpirationBuffer}\"')
         elif not isinstance(validationExpirationBuffer, timedelta):
@@ -187,9 +187,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
                 code = utils.getStrFromDict(tokensDetailsJson, 'code')
 
                 try:
-                    tokensDetails = await self.__twitchApiService.fetchTokens(
-                        code = code,
-                    )
+                    tokensDetails = await self.__twitchApiService.fetchTokens(code = code)
                 except GenericNetworkException as e:
                     self.__timber.log('TwitchTokensRepository', f'Unable to fetch tokens ({twitchChannel=}) ({code=})', e, traceback.format_exc())
             else:
