@@ -97,19 +97,20 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
     async def __areTokensDetailsCurrentlyValid(
         self,
+        nowDateTime: datetime,
         twitchChannelId: str,
-        tokensDetails: TwitchTokensDetails | None,
+        tokensDetails: TwitchTokensDetails,
     ) -> bool:
-        if not utils.isValidStr(twitchChannelId):
+        if not isinstance(nowDateTime, datetime):
+            raise TypeError(f'nowDateTime argument is malformed: \"{nowDateTime}\"')
+        elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif tokensDetails is not None and not isinstance(tokensDetails, TwitchTokensDetails):
             raise TypeError(f'tokensDetails argument is malformed: \"{tokensDetails}\"')
 
         if tokensDetails is None:
             return False
-
-        nowDateTime = self.__timeZoneRepository.getNow()
-        if nowDateTime + self.__tokensExpirationBuffer > tokensDetails.expirationTime:
+        elif nowDateTime + self.__tokensExpirationBuffer > tokensDetails.expirationTime:
             return False
 
         validationTime = self.__twitchChannelIdToValidationTime.get(twitchChannelId, None)
@@ -425,6 +426,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         nowDateTime = self.__timeZoneRepository.getNow()
 
         if await self.__areTokensDetailsCurrentlyValid(
+            nowDateTime = nowDateTime,
             twitchChannelId = twitchChannelId,
             tokensDetails = tokensDetails,
         ):
