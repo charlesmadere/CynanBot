@@ -2345,7 +2345,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseValidationResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchValidationResponse | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -2355,10 +2355,10 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         login = utils.getStrFromDict(jsonResponse, 'login')
         userId = utils.getStrFromDict(jsonResponse, 'user_id')
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         expiresAt = now + timedelta(seconds = expiresInSeconds)
 
-        scopesArray: list[str] | None = jsonResponse.get('scopes')
+        scopesArray: list[str] | Any | None = jsonResponse.get('scopes')
         scopes: set[TwitchApiScope] = set()
 
         if isinstance(scopesArray, list) and len(scopesArray) >= 1:

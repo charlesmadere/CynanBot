@@ -707,7 +707,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseValidationResponse(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchValidationResponse | None:
         pass
 
