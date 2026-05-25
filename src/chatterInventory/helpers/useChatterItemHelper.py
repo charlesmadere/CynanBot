@@ -2,7 +2,7 @@ from typing import Final
 
 from .useChatterItemHelperInterface import UseChatterItemHelperInterface
 from ..idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
-from ..machine.chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
+from ..machine.chatterInventoryMachineInterface import ChatterInventoryMachineInterface
 from ..mappers.itemRequestMessageParser import ItemRequestMessageParser
 from ..models.useChatterItemAction import UseChatterItemAction
 from ..models.useChatterItemRequest import UseChatterItemRequest
@@ -16,15 +16,15 @@ class UseChatterItemHelper(UseChatterItemHelperInterface):
     def __init__(
         self,
         chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface,
-        chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface,
+        chatterInventoryMachine: ChatterInventoryMachineInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
         itemRequestMessageParser: ItemRequestMessageParser,
         timber: TimberInterface,
     ):
         if not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
             raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
-        elif not isinstance(chatterInventoryItemUseMachine, ChatterInventoryItemUseMachineInterface):
-            raise TypeError(f'chatterInventoryItemUseMachine argument is malformed: \"{chatterInventoryItemUseMachine}\"')
+        elif not isinstance(chatterInventoryMachine, ChatterInventoryMachineInterface):
+            raise TypeError(f'chatterInventoryMachine argument is malformed: \"{chatterInventoryMachine}\"')
         elif not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
         elif not isinstance(itemRequestMessageParser, ItemRequestMessageParser):
@@ -33,7 +33,7 @@ class UseChatterItemHelper(UseChatterItemHelperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = chatterInventoryIdGenerator
-        self.__chatterInventoryItemUseMachine: Final[ChatterInventoryItemUseMachineInterface] = chatterInventoryItemUseMachine
+        self.__chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = chatterInventoryMachine
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__itemRequestMessageParser: Final[ItemRequestMessageParser] = itemRequestMessageParser
         self.__timber: Final[TimberInterface] = timber
@@ -63,7 +63,7 @@ class UseChatterItemHelper(UseChatterItemHelperInterface):
         if itemType not in await self.__chatterInventorySettings.getEnabledItemTypes():
             return UseChatterItemResult.ITEM_DISABLED
 
-        self.__chatterInventoryItemUseMachine.submitAction(UseChatterItemAction(
+        self.__chatterInventoryMachine.submitAction(UseChatterItemAction(
             ignoreInventory = request.ignoreInventory,
             itemType = itemType,
             actionId = await self.__chatterInventoryIdGenerator.generateActionId(),

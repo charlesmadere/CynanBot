@@ -59,8 +59,8 @@ from src.chatterInventory.helpers.useChatterItemHelperInterface import UseChatte
 from src.chatterInventory.idGenerator.chatterInventoryIdGenerator import ChatterInventoryIdGenerator
 from src.chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
 from src.chatterInventory.listeners.chatterItemEventListener import ChatterItemEventListener
-from src.chatterInventory.machine.chatterInventoryItemUseMachine import ChatterInventoryItemUseMachine
-from src.chatterInventory.machine.chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
+from src.chatterInventory.machine.chatterInventoryMachine import ChatterInventoryMachine
+from src.chatterInventory.machine.chatterInventoryMachineInterface import ChatterInventoryMachineInterface
 from src.chatterInventory.mappers.chatterInventoryMapper import ChatterInventoryMapper
 from src.chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from src.chatterInventory.mappers.itemRequestMessageParser import ItemRequestMessageParser
@@ -1765,7 +1765,7 @@ chatterItemEventListener: Final[ChatterItemEventListener] = ChatterItemEventHand
     twitchChatMessenger = twitchChatMessenger,
 )
 
-chatterInventoryItemUseMachine: Final[ChatterInventoryItemUseMachineInterface] = ChatterInventoryItemUseMachine(
+chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInventoryMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     cassetteTapeItemUseCase = cassetteTapeItemUseCase,
     chatterInventoryIdGenerator = chatterInventoryIdGenerator,
@@ -1804,9 +1804,9 @@ itemRequestMessageParser = ItemRequestMessageParser(
     chatterInventoryMapper = chatterInventoryMapper,
 )
 
-useChatterItemHelper: UseChatterItemHelperInterface = UseChatterItemHelper(
+useChatterItemHelper: Final[UseChatterItemHelperInterface] = UseChatterItemHelper(
     chatterInventoryIdGenerator = chatterInventoryIdGenerator,
-    chatterInventoryItemUseMachine = chatterInventoryItemUseMachine,
+    chatterInventoryMachine = chatterInventoryMachine,
     chatterInventorySettings = chatterInventorySettings,
     itemRequestMessageParser = itemRequestMessageParser,
     timber = timber,
@@ -2170,7 +2170,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     GiveChatterItemChatCommand(
         chatterInventoryIdGenerator = chatterInventoryIdGenerator,
-        chatterInventoryItemUseMachine = chatterInventoryItemUseMachine,
+        chatterInventoryMachine = chatterInventoryMachine,
         chatterInventoryMapper = chatterInventoryMapper,
         chatterInventorySettings = chatterInventorySettings,
         timber = timber,
@@ -2389,7 +2389,7 @@ twitchWebsocketClient: Final[TwitchWebsocketClientInterface] = TwitchWebsocketCl
 #######################################
 
 startables: Final[Collection[Startable | None]] = frozenset({
-    chatterInventoryItemUseMachine,
+    chatterInventoryMachine,
     cheerActionHelper,
     crowdControlMachine,
     pixelsDiceMachine,

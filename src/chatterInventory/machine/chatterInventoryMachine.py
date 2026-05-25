@@ -10,7 +10,7 @@ from typing import Final
 from frozendict import frozendict
 from frozenlist import FrozenList
 
-from .chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
+from .chatterInventoryMachineInterface import ChatterInventoryMachineInterface
 from ..exceptions import CassetteTapeFeatureIsDisabledException, CassetteTapeMessageHasNoTargetException, \
     CassetteTapeTargetIsNotFollowingException, UnknownChatterItemTypeException, \
     UserTwitchAccessTokenIsMissing, VoicemailMessageIsEmptyException, VoicemailTargetIsOriginatingUserException, \
@@ -72,7 +72,7 @@ from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterfa
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
-class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
+class ChatterInventoryMachine(ChatterInventoryMachineInterface):
 
     @dataclass(frozen = True, slots = True)
     class TokensAndDetails:
@@ -174,7 +174,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             twitchChannelId = moderatorUserId,
         )
 
-        return ChatterInventoryItemUseMachine.TokensAndDetails(
+        return ChatterInventoryMachine.TokensAndDetails(
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
             moderatorUserId = moderatorUserId,
             userTwitchAccessToken = userTwitchAccessToken,
@@ -319,7 +319,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             ))
             return
         except UserTwitchAccessTokenIsMissing as e:
-            self.__timber.log('ChatterInventoryItemUseMachine', f'No Twitch access token is available for this user ({action=})', e, traceback.format_exc())
+            self.__timber.log('ChatterInventoryMachine', f'No Twitch access token is available for this user ({action=})', e, traceback.format_exc())
             return
         except VoicemailMessageIsEmptyException:
             await self.__submitEvent(VoicemailMessageIsEmptyChatterItemEvent(
@@ -761,11 +761,11 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
 
     def start(self):
         if self.__isStarted:
-            self.__timber.log('ChatterInventoryItemUseMachine', 'Not starting ChatterInventoryItemUseMachine as it has already been started')
+            self.__timber.log('ChatterInventoryMachine', 'Not starting ChatterInventoryMachine as it has already been started')
             return
 
         self.__isStarted = True
-        self.__timber.log('ChatterInventoryItemUseMachine', 'Starting ChatterInventoryItemUseMachine...')
+        self.__timber.log('ChatterInventoryMachine', 'Starting ChatterInventoryMachine...')
         self.__backgroundTaskHelper.createTask(self.__startActionLoop())
         self.__backgroundTaskHelper.createTask(self.__startEventLoop())
 
@@ -778,7 +778,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
                     action = self.__actionQueue.get_nowait()
                     actions.append(action)
             except queue.Empty as e:
-                self.__timber.log('ChatterInventoryItemUseMachine', f'Encountered queue.Empty when building up actions list (queue size: {self.__actionQueue.qsize()}) ({len(actions)=})', e, traceback.format_exc())
+                self.__timber.log('ChatterInventoryMachine', f'Encountered queue.Empty when building up actions list (queue size: {self.__actionQueue.qsize()}) ({len(actions)=})', e, traceback.format_exc())
 
             actions.freeze()
 
@@ -786,7 +786,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
                 try:
                     await self.__handleItemAction(action)
                 except Exception as e:
-                    self.__timber.log('ChatterInventoryItemUseMachine', f'Encountered unknown Exception when looping through actions (queue size: {self.__actionQueue.qsize()}) ({len(actions)=}) ({index=}) ({action=})', e, traceback.format_exc())
+                    self.__timber.log('ChatterInventoryMachine', f'Encountered unknown Exception when looping through actions (queue size: {self.__actionQueue.qsize()}) ({len(actions)=}) ({index=}) ({action=})', e, traceback.format_exc())
 
             await asyncio.sleep(self.__sleepTimeSeconds)
 
@@ -799,7 +799,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
                     event = self.__eventQueue.get_nowait()
                     events.append(event)
             except queue.Empty as e:
-                self.__timber.log('ChatterInventoryItemUseMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=})', e, traceback.format_exc())
+                self.__timber.log('ChatterInventoryMachine', f'Encountered queue.Empty when building up events list (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({events=})', e, traceback.format_exc())
 
             events.freeze()
 
@@ -807,7 +807,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
                 try:
                     await self.__chatterItemEventListener.onNewChatterItemEvent(event)
                 except Exception as e:
-                    self.__timber.log('ChatterInventoryItemUseMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({index=}) ({event=})', e, traceback.format_exc())
+                    self.__timber.log('ChatterInventoryMachine', f'Encountered unknown Exception when looping through events (queue size: {self.__eventQueue.qsize()}) ({len(events)=}) ({index=}) ({event=})', e, traceback.format_exc())
 
             await asyncio.sleep(self.__sleepTimeSeconds)
 
@@ -818,7 +818,7 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         try:
             self.__actionQueue.put(action, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
-            self.__timber.log('ChatterInventoryItemUseMachine', f'Encountered queue.Full when submitting a new action ({action}) into the action queue (queue size: {self.__actionQueue.qsize()})', e, traceback.format_exc())
+            self.__timber.log('ChatterInventoryMachine', f'Encountered queue.Full when submitting a new action ({action}) into the action queue (queue size: {self.__actionQueue.qsize()})', e, traceback.format_exc())
 
     async def __submitEvent(self, event: AbsChatterItemEvent):
         if not isinstance(event, AbsChatterItemEvent):
@@ -827,4 +827,4 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
         try:
             self.__eventQueue.put(event, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
-            self.__timber.log('ChatterInventoryItemUseMachine', f'Encountered queue.Full when submitting a new event ({event}) into the event queue (queue size: {self.__eventQueue.qsize()})', e, traceback.format_exc())
+            self.__timber.log('ChatterInventoryMachine', f'Encountered queue.Full when submitting a new event ({event}) into the event queue (queue size: {self.__eventQueue.qsize()})', e, traceback.format_exc())
