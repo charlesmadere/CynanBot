@@ -1945,9 +1945,12 @@ cheerActionsRepository: Final[CheerActionsRepositoryInterface] = CheerActionsRep
     timber = timber,
 )
 
-itemUseCheerActionHelper: ItemUseCheerActionHelperInterface = ItemUseCheerActionHelper(
+itemUseCheerActionHelper: Final[ItemUseCheerActionHelperInterface] = ItemUseCheerActionHelper(
+    chatterInventoryHelper = chatterInventoryHelper,
     chatterInventoryIdGenerator = chatterInventoryIdGenerator,
     chatterInventorySettings = chatterInventorySettings,
+    trollmojiHelper = trollmojiHelper,
+    twitchChatMessenger = twitchChatMessenger,
     useChatterItemHelper = useChatterItemHelper,
 )
 
