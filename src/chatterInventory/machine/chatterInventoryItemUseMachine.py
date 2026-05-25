@@ -29,6 +29,7 @@ from ..models.events.cassetteTapeTargetIsNotFollowingChatterItemEvent import \
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
 from ..models.events.gashaponResultsChatterItemEvent import GashaponResultsChatterItemEvent
+from ..models.events.giveChatterItemEvent import GiveChatterItemEvent
 from ..models.events.noGashaponResultsChatterItemEvent import NoGashaponResultsChatterItemEvent
 from ..models.events.notEnoughInventoryChatterItemEvent import NotEnoughInventoryChatterItemEvent
 from ..models.events.tradeChatterItemEvent import TradeChatterItemEvent
@@ -44,6 +45,7 @@ from ..models.events.voicemailMessageIsEmptyChatterItemEvent import VoicemailMes
 from ..models.events.voicemailTargetIsOriginatingUserChatterItemEvent import \
     VoicemailTargetIsOriginatingUserChatterItemEvent
 from ..models.events.voicemailTargetIsStreamerChatterItemEvent import VoicemailTargetIsStreamerChatterItemEvent
+from ..models.giveChatterItemAction import GiveChatterItemAction
 from ..models.tradeChatterItemAction import TradeChatterItemAction
 from ..models.useChatterItemAction import UseChatterItemAction
 from ..repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
@@ -440,6 +442,35 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
             originatingAction = action,
         ))
 
+    async def __handleGiveItemAction(
+        self,
+        action: GiveChatterItemAction,
+    ):
+        if not isinstance(action, GiveChatterItemAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
+
+        updatedInventory = await self.__chatterInventoryRepository.update(
+            itemType = action.itemType,
+            changeAmount = action.changeAmount,
+            chatterUserId = action.chatterUserId,
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        chatterUserName = await self.__userIdsRepository.requireUserName(
+            userId = action.chatterUserId,
+            twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+                twitchChannelId = action.twitchChannelId,
+            ),
+        )
+
+        await self.__submitEvent(GiveChatterItemEvent(
+            updatedInventory = updatedInventory,
+            changeAmount = action.changeAmount,
+            chatterUserName = chatterUserName,
+            eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            originatingAction = action,
+        ))
+
     async def __handleGrenadeItemAction(
         self,
         chatterInventory: ChatterInventoryData | None,
@@ -485,6 +516,11 @@ class ChatterInventoryItemUseMachine(ChatterInventoryItemUseMachineInterface):
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
                 originatingAction = action,
             ))
+
+        elif isinstance(action, GiveChatterItemAction):
+            await self.__handleGiveItemAction(
+                action = action,
+            )
 
         elif isinstance(action, TradeChatterItemAction):
             await self.__handleTradeItemAction(
