@@ -12,6 +12,7 @@ from ..models.events.cassetteTapeTargetIsNotFollowingChatterItemEvent import \
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
 from ..models.events.gashaponResultsChatterItemEvent import GashaponResultsChatterItemEvent
+from ..models.events.giveChatterItemEvent import GiveChatterItemEvent
 from ..models.events.noGashaponResultsChatterItemEvent import NoGashaponResultsChatterItemEvent
 from ..models.events.notEnoughInventoryChatterItemEvent import NotEnoughInventoryChatterItemEvent
 from ..models.events.tradeChatterItemEvent import TradeChatterItemEvent
@@ -97,6 +98,11 @@ class ChatterItemEventHandler(ChatterItemEventListener):
 
         elif isinstance(event, GashaponResultsChatterItemEvent):
             await self.__handleGashaponResultsChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, GiveChatterItemEvent):
+            await self.__handleGiveChatterItemEvent(
                 event = event,
             )
 
@@ -277,7 +283,24 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         awardedItemsString = ', '.join(awardedItemsStrings)
 
         self.__twitchChatMessenger.send(
-            text = f'📮 ガチャ! {event.hypeEmote} You received {awardedItemsString}',
+            text = f'{event.hypeEmote} ガチャ!! You received {awardedItemsString}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleGiveChatterItemEvent(
+        self,
+        event: GiveChatterItemEvent,
+    ):
+        awardedItemsString: str
+
+        if event.changeAmount == 1:
+            awardedItemsString = f'{event.changeAmountString} {event.getItemType().humanName}'
+        else:
+            awardedItemsString = f'{event.changeAmountString} {event.getItemType().pluralHumanName}'
+
+        self.__twitchChatMessenger.send(
+            text = f'🪎 @{event.chatterUserName} you received {awardedItemsString}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )

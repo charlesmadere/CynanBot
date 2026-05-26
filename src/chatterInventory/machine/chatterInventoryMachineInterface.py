@@ -4,7 +4,7 @@ from ..models.absChatterItemAction import AbsChatterItemAction
 from ...misc.startable import Startable
 
 
-class ChatterInventoryItemUseMachineInterface(Startable, ABC):
+class ChatterInventoryMachineInterface(Startable, ABC):
 
     @abstractmethod
     def submitAction(self, action: AbsChatterItemAction):

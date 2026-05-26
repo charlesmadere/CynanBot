@@ -7,7 +7,7 @@ from typing import Collection, Final, Pattern
 from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
-from ..chatterInventory.machine.chatterInventoryItemUseMachineInterface import ChatterInventoryItemUseMachineInterface
+from ..chatterInventory.machine.chatterInventoryMachineInterface import ChatterInventoryMachineInterface
 from ..chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from ..chatterInventory.models.chatterItemType import ChatterItemType
 from ..chatterInventory.models.tradeChatterItemAction import TradeChatterItemAction
@@ -32,7 +32,7 @@ class GiveChatterItemChatCommand(AbsChatCommand):
     def __init__(
         self,
         chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface,
-        chatterInventoryItemUseMachine: ChatterInventoryItemUseMachineInterface,
+        chatterInventoryMachine: ChatterInventoryMachineInterface,
         chatterInventoryMapper: ChatterInventoryMapperInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
         timber: TimberInterface,
@@ -42,8 +42,8 @@ class GiveChatterItemChatCommand(AbsChatCommand):
     ):
         if not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
             raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
-        elif not isinstance(chatterInventoryItemUseMachine, ChatterInventoryItemUseMachineInterface):
-            raise TypeError(f'chatterInventoryItemUseMachine argument is malformed: \"{chatterInventoryItemUseMachine}\"')
+        elif not isinstance(chatterInventoryMachine, ChatterInventoryMachineInterface):
+            raise TypeError(f'chatterInventoryMachine argument is malformed: \"{chatterInventoryMachine}\"')
         elif not isinstance(chatterInventoryMapper, ChatterInventoryMapperInterface):
             raise TypeError(f'chatterInventoryMapper argument is malformed: \"{chatterInventoryMapper}\"')
         elif not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
@@ -58,7 +58,7 @@ class GiveChatterItemChatCommand(AbsChatCommand):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = chatterInventoryIdGenerator
-        self.__chatterInventoryItemUseMachine: Final[ChatterInventoryItemUseMachineInterface] = chatterInventoryItemUseMachine
+        self.__chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = chatterInventoryMachine
         self.__chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = chatterInventoryMapper
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__timber: Final[TimberInterface] = timber
@@ -116,7 +116,7 @@ class GiveChatterItemChatCommand(AbsChatCommand):
 
         actionId = await self.__chatterInventoryIdGenerator.generateActionId()
 
-        self.__chatterInventoryItemUseMachine.submitAction(TradeChatterItemAction(
+        self.__chatterInventoryMachine.submitAction(TradeChatterItemAction(
             itemType = arguments.itemType,
             tradeAmount = arguments.giveAmount,
             actionId = actionId,
