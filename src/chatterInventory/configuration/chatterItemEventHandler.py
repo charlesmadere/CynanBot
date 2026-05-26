@@ -292,7 +292,20 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         self,
         event: GiveChatterItemEvent,
     ):
+        if event.getItemType() is ChatterItemType.GASHAPON:
+            await self.__handleGiveChatterItemEventGashapon(
+                event = event,
+            )
+
+            return
+
         # TODO
+        pass
+
+    async def __handleGiveChatterItemEventGashapon(
+        self,
+        event: GiveChatterItemEvent,
+    ):
         pass
 
     async def __handleGrenadeChatterItemEvent(
