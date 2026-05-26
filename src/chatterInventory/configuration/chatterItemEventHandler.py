@@ -283,7 +283,7 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         awardedItemsString = ', '.join(awardedItemsStrings)
 
         self.__twitchChatMessenger.send(
-            text = f'📮 ガチャ!! {event.hypeEmote} You received {awardedItemsString}',
+            text = f'{event.hypeEmote} ガチャ!! You received {awardedItemsString}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -292,21 +292,18 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         self,
         event: GiveChatterItemEvent,
     ):
-        if event.getItemType() is ChatterItemType.GASHAPON:
-            await self.__handleGiveChatterItemEventGashapon(
-                event = event,
-            )
+        awardedItemsString: str
 
-            return
+        if event.changeAmount == 1:
+            awardedItemsString = f'{event.changeAmountString} {event.getItemType().humanName}'
+        else:
+            awardedItemsString = f'{event.changeAmountString} {event.getItemType().pluralHumanName}'
 
-        # TODO
-        pass
-
-    async def __handleGiveChatterItemEventGashapon(
-        self,
-        event: GiveChatterItemEvent,
-    ):
-        pass
+        self.__twitchChatMessenger.send(
+            text = f'🪎 @{event.chatterUserName} you received {awardedItemsString}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleGrenadeChatterItemEvent(
         self,
