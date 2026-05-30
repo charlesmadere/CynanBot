@@ -190,7 +190,7 @@ class DecTalkMessageCleaner(DecTalkMessageCleanerInterface):
     async def __purge(
         self,
         regExes: Collection[Pattern],
-        message: str | None
+        message: str | None,
     ) -> str | None:
         if not utils.isValidStr(message):
             return None

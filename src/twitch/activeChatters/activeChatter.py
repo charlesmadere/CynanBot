@@ -7,6 +7,7 @@ from typing import Any
 class ActiveChatter:
     mostRecentChat: datetime
     chatterUserId: str
+    chatterUserLogin: str
     chatterUserName: str
 
     def __eq__(self, other: Any) -> bool:

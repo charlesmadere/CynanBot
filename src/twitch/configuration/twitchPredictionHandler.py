@@ -199,18 +199,14 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         if predictionData.subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK:
             return
 
-        userIdsToUserNames: dict[str, str] = dict()
-
         for outcome in predictionData.outcomes:
             for topPredictor in outcome.topPredictors:
-                userIdsToUserNames[topPredictor.userId] = topPredictor.userLogin
-
-        for userId, userName in userIdsToUserNames.items():
-            await self.__activeChattersRepository.add(
-                chatterUserId = userId,
-                chatterUserName = userName,
-                twitchChannelId = predictionData.twitchChannelId,
-            )
+                await self.__activeChattersRepository.add(
+                    chatterUserId = topPredictor.userId,
+                    chatterUserLogin = topPredictor.userLogin,
+                    chatterUserName = topPredictor.userName,
+                    twitchChannelId = predictionData.twitchChannelId,
+                )
 
     async def __processTtsEvent(self, predictionData: AbsTwitchPredictionHandler.PredictionData):
         user = predictionData.user

@@ -177,6 +177,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
         await self.__activeChattersRepository.add(
             chatterUserId = chatMessage.chatterUserId,
+            chatterUserLogin = chatMessage.chatterUserLogin,
             chatterUserName = chatMessage.chatterUserName,
             twitchChannelId = chatMessage.twitchChannelId,
         )

@@ -12,6 +12,7 @@ class ActiveChattersRepositoryInterface(Clearable, ABC):
     async def add(
         self,
         chatterUserId: str,
+        chatterUserLogin: str,
         chatterUserName: str,
         twitchChannelId: str,
     ):
