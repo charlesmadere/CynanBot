@@ -93,11 +93,14 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
     async def add(
         self,
         chatterUserId: str,
+        chatterUserLogin: str,
         chatterUserName: str,
         twitchChannelId: str,
     ):
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(chatterUserLogin):
+            raise TypeError(f'chatterUserLogin argument is malformed: \"{chatterUserLogin}\"')
         elif not utils.isValidStr(chatterUserName):
             raise TypeError(f'chatterUserName argument is malformed: \"{chatterUserName}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -119,6 +122,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         activeChatter = ActiveChatter(
             mostRecentChat = now,
             chatterUserId = chatterUserId,
+            chatterUserLogin = chatterUserLogin,
             chatterUserName = chatterUserName,
         )
 
@@ -203,7 +207,8 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             entry.chatters.append(ActiveChatter(
                 mostRecentChat = mostRecentChat,
                 chatterUserId = chatter.userId,
-                chatterUserName = chatter.userLogin,
+                chatterUserLogin = chatter.userLogin,
+                chatterUserName = chatter.userName,
             ))
 
             index += 1

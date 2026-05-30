@@ -127,7 +127,7 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
             await self.__sendChatMessage(chatMessage)
             return
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         if now < chatMessage.sendAfter:
             self.__submitChatMessage(chatMessage)
@@ -177,7 +177,7 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
 
         sendAfter: datetime | None = None
         if delaySeconds is not None and delaySeconds >= 1:
-            now = datetime.now(self.__timeZoneRepository.getDefault())
+            now = self.__timeZoneRepository.getNow()
             sendAfter = now + timedelta(seconds = delaySeconds)
 
         chatMessage = ChatMessage(
