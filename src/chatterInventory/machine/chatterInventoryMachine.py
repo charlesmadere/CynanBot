@@ -51,7 +51,7 @@ from ..models.tradeChatterItemAction import TradeChatterItemAction
 from ..models.useChatterItemAction import UseChatterItemAction
 from ..repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
 from ..settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
-from ..useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
+from ..useCases.cassetteTapeItemUseCaseInterface import CassetteTapeItemUseCaseInterface
 from ..useCases.gashaponRewardUseCaseInterface import GashaponRewardUseCaseInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -85,7 +85,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        cassetteTapeItemUseCase: CassetteTapeItemUseCase,
+        cassetteTapeItemUseCase: CassetteTapeItemUseCaseInterface,
         chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface,
         chatterInventoryRepository: ChatterInventoryRepositoryInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
@@ -104,7 +104,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(cassetteTapeItemUseCase, CassetteTapeItemUseCase):
+        elif not isinstance(cassetteTapeItemUseCase, CassetteTapeItemUseCaseInterface):
             raise TypeError(f'cassetteTapeItemUseCase argument is malformed: \"{cassetteTapeItemUseCase}\"')
         elif not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
             raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
@@ -142,7 +142,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
-        self.__cassetteTapeItemUseCase: Final[CassetteTapeItemUseCase] = cassetteTapeItemUseCase
+        self.__cassetteTapeItemUseCase: Final[CassetteTapeItemUseCaseInterface] = cassetteTapeItemUseCase
         self.__chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = chatterInventoryIdGenerator
         self.__chatterInventoryRepository: Final[ChatterInventoryRepositoryInterface] = chatterInventoryRepository
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings

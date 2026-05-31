@@ -141,6 +141,7 @@ from src.chatterInventory.repositories.gashaponRewardHistoryRepositoryInterface 
 from src.chatterInventory.settings.chatterInventorySettings import ChatterInventorySettings
 from src.chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from src.chatterInventory.useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
+from src.chatterInventory.useCases.cassetteTapeItemUseCaseInterface import CassetteTapeItemUseCaseInterface
 from src.chatterInventory.useCases.gashaponRewardUseCase import GashaponRewardUseCase
 from src.chatterInventory.useCases.gashaponRewardUseCaseInterface import GashaponRewardUseCaseInterface
 from src.chatterPreferredName.helpers.chatterPreferredNameHelper import ChatterPreferredNameHelper
@@ -2469,7 +2470,7 @@ timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachin
     userIdsRepository = userIdsRepository,
 )
 
-cassetteTapeItemUseCase = CassetteTapeItemUseCase(
+cassetteTapeItemUseCase: Final[CassetteTapeItemUseCaseInterface] = CassetteTapeItemUseCase(
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
