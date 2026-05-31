@@ -46,11 +46,13 @@ from ..models.events.voicemailTargetIsOriginatingUserChatterItemEvent import \
     VoicemailTargetIsOriginatingUserChatterItemEvent
 from ..models.events.voicemailTargetIsStreamerChatterItemEvent import VoicemailTargetIsStreamerChatterItemEvent
 from ..models.giveChatterItemAction import GiveChatterItemAction
+from ..models.requestGashaponRewardAction import RequestGashaponRewardAction
 from ..models.tradeChatterItemAction import TradeChatterItemAction
 from ..models.useChatterItemAction import UseChatterItemAction
 from ..repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
 from ..settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ..useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
+from ..useCases.gashaponRewardUseCaseInterface import GashaponRewardUseCaseInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
@@ -88,6 +90,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         chatterInventoryRepository: ChatterInventoryRepositoryInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
         chatterItemEventListener: ChatterItemEventListener,
+        gashaponRewardUseCase: GashaponRewardUseCaseInterface,
         timber: TimberInterface,
         timeoutActionMachine: TimeoutActionMachineInterface,
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
@@ -111,6 +114,8 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
         elif not isinstance(chatterItemEventListener, ChatterItemEventListener):
             raise TypeError(f'chatterItemEventListener argument is malformed: \"{chatterItemEventListener}\"')
+        elif not isinstance(gashaponRewardUseCase, GashaponRewardUseCaseInterface):
+            raise TypeError(f'gashaponRewardUseCase argument is malformed: \"{gashaponRewardUseCase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
@@ -142,6 +147,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         self.__chatterInventoryRepository: Final[ChatterInventoryRepositoryInterface] = chatterInventoryRepository
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__chatterItemEventListener: Final[ChatterItemEventListener] = chatterItemEventListener
+        self.__gashaponRewardUseCase: Final[GashaponRewardUseCaseInterface] = gashaponRewardUseCase
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
@@ -522,6 +528,11 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
                 action = action,
             )
 
+        elif isinstance(action, RequestGashaponRewardAction):
+            await self.__handleRequestGashaponRewardAction(
+                action = action,
+            )
+
         elif isinstance(action, TradeChatterItemAction):
             await self.__handleTradeItemAction(
                 action = action,
@@ -534,6 +545,22 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
 
         else:
             raise ValueError(f'Encountered unknown AbsChatterItemAction: \"{action}\"')
+
+    async def __handleRequestGashaponRewardAction(
+        self,
+        action: RequestGashaponRewardAction,
+    ):
+        tokensAndDetails = await self.__fetchTokensAndDetails(
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        result = await self.__gashaponRewardUseCase.invoke(
+            action = action,
+            twitchAccessToken = tokensAndDetails.userTwitchAccessToken,
+        )
+
+        # TODO
+        pass
 
     async def __handleTm36ItemAction(
         self,

@@ -1,0 +1,30 @@
+from dataclasses import dataclass
+
+from .absChatterItemAction import AbsChatterItemAction
+from .chatterItemType import ChatterItemType
+from ...users.userInterface import UserInterface
+
+
+@dataclass(frozen = True, slots = True)
+class RequestGashaponRewardAction(AbsChatterItemAction):
+    actionId: str
+    chatMessage: str | None
+    chatterUserId: str
+    twitchChannelId: str
+    twitchChatMessageId: str | None
+    user: UserInterface
+
+    def getActionId(self) -> str:
+        return self.actionId
+
+    def getItemType(self) -> ChatterItemType:
+        return ChatterItemType.GASHAPON
+
+    def getTwitchChannelId(self) -> str:
+        return self.twitchChannelId
+
+    def getTwitchChatMessageId(self) -> str | None:
+        return self.twitchChatMessageId
+
+    def getUser(self) -> UserInterface:
+        return self.user

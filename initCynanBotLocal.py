@@ -72,6 +72,8 @@ from src.chatterInventory.repositories.gashaponRewardHistoryRepositoryInterface 
 from src.chatterInventory.settings.chatterInventorySettings import ChatterInventorySettings
 from src.chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from src.chatterInventory.useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
+from src.chatterInventory.useCases.gashaponRewardUseCase import GashaponRewardUseCase
+from src.chatterInventory.useCases.gashaponRewardUseCaseInterface import GashaponRewardUseCaseInterface
 from src.chatterPreferredName.helpers.chatterPreferredNameHelper import ChatterPreferredNameHelper
 from src.chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
 from src.chatterPreferredName.helpers.chatterPreferredNameStringCleaner import ChatterPreferredNameStringCleaner
@@ -1765,6 +1767,20 @@ chatterItemEventListener: Final[ChatterItemEventListener] = ChatterItemEventHand
     twitchChatMessenger = twitchChatMessenger,
 )
 
+gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface] = GashaponRewardHistoryRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+gashaponRewardUseCase: Final[GashaponRewardUseCaseInterface] = GashaponRewardUseCase(
+    chatterInventorySettings = chatterInventorySettings,
+    gashaponRewardHistoryRepository = gashaponRewardHistoryRepository,
+    timeZoneRepository = timeZoneRepository,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchSubscriptionsRepository = twitchSubscriptionsRepository,
+)
+
 chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInventoryMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     cassetteTapeItemUseCase = cassetteTapeItemUseCase,
@@ -1772,6 +1788,7 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     chatterInventoryRepository = chatterInventoryRepository,
     chatterInventorySettings = chatterInventorySettings,
     chatterItemEventListener = chatterItemEventListener,
+    gashaponRewardUseCase = gashaponRewardUseCase,
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
     timeoutIdGenerator = timeoutIdGenerator,
@@ -1780,12 +1797,6 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
-)
-
-gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface] = GashaponRewardHistoryRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
 )
 
 gashaponRewardHelper: Final[GashaponRewardHelperInterface] = GashaponRewardHelper(

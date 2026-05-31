@@ -93,6 +93,7 @@ class GashaponRewardHelper(GashaponRewardHelperInterface):
                 chatterUserId = chatterUserId,
                 twitchChannelId = twitchChannelId,
             )
+
         elif not await self.__twitchSubscriptionsRepository.isSubscribed(
             chatterUserId = chatterUserId,
             twitchAccessToken = twitchAccessToken,
