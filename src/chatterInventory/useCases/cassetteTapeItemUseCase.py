@@ -5,8 +5,8 @@ from typing import Final, Pattern
 from ..exceptions import CassetteTapeMessageHasNoTargetException, CassetteTapeFeatureIsDisabledException, \
     CassetteTapeTargetIsNotFollowingException, UserTwitchAccessTokenIsMissing, VoicemailMessageIsEmptyException, \
     VoicemailTargetInboxIsFullException, VoicemailTargetIsOriginatingUserException, VoicemailTargetIsStreamerException
-from ..models.cassetteTapeUseCaseResult import CassetteTapeUseCaseResult
 from ..models.useChatterItemAction import UseChatterItemAction
+from ..useCases.cassetteTapeItemUseCaseInterface import CassetteTapeItemUseCaseInterface
 from ...misc import utils as utils
 from ...twitch.exceptions import TwitchAccessTokenMissingException
 from ...twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
@@ -18,7 +18,7 @@ from ...voicemail.models.addVoicemailResult import AddVoicemailResult
 from ...voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
 
 
-class CassetteTapeItemUseCase:
+class CassetteTapeItemUseCase(CassetteTapeItemUseCaseInterface):
 
     @dataclass(frozen = True, slots = True)
     class ParsedVoicemailRequest:
@@ -53,7 +53,7 @@ class CassetteTapeItemUseCase:
 
         self.__targetUserNameRegEx: Final[Pattern] = re.compile(r'^\s*@?(\w+)\s*', re.IGNORECASE)
 
-    async def invoke(self, action: UseChatterItemAction) -> CassetteTapeUseCaseResult:
+    async def invoke(self, action: UseChatterItemAction) -> CassetteTapeItemUseCaseInterface.Result:
         if not isinstance(action, UseChatterItemAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
@@ -110,7 +110,7 @@ class CassetteTapeItemUseCase:
                 )
 
             case AddVoicemailResult.OK:
-                return CassetteTapeUseCaseResult(
+                return CassetteTapeItemUseCaseInterface.Result(
                     addVoicemailResult = addVoicemailResult,
                     targetUserId = parsedVoicemailRequest.targetUserId,
                     targetUserName = parsedVoicemailRequest.targetUserName,

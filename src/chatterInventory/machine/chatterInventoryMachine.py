@@ -4,6 +4,7 @@ import random
 import traceback
 from collections import defaultdict
 from dataclasses import dataclass
+from datetime import timedelta
 from queue import SimpleQueue
 from typing import Final
 
@@ -28,6 +29,12 @@ from ..models.events.cassetteTapeTargetIsNotFollowingChatterItemEvent import \
     CassetteTapeTargetIsNotFollowingChatterItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
+from ..models.events.gashaponNotRewardedNotFollowingChatterItemEvent import \
+    GashaponNotRewardedNotFollowingChatterItemEvent
+from ..models.events.gashaponNotRewardedNotReadyChatterItemEvent import \
+    GashaponNotRewardedNotReadyChatterItemEvent
+from ..models.events.gashaponNotRewardedNotSubscribedChatterItemEvent import \
+    GashaponNotRewardedNotSubscribedChatterItemEvent
 from ..models.events.gashaponResultsChatterItemEvent import GashaponResultsChatterItemEvent
 from ..models.events.giveChatterItemEvent import GiveChatterItemEvent
 from ..models.events.noGashaponResultsChatterItemEvent import NoGashaponResultsChatterItemEvent
@@ -46,11 +53,15 @@ from ..models.events.voicemailTargetIsOriginatingUserChatterItemEvent import \
     VoicemailTargetIsOriginatingUserChatterItemEvent
 from ..models.events.voicemailTargetIsStreamerChatterItemEvent import VoicemailTargetIsStreamerChatterItemEvent
 from ..models.giveChatterItemAction import GiveChatterItemAction
+from ..models.requestGashaponRewardAction import RequestGashaponRewardAction
 from ..models.tradeChatterItemAction import TradeChatterItemAction
 from ..models.useChatterItemAction import UseChatterItemAction
 from ..repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
+from ..repositories.gashaponRewardHistoryRepositoryInterface import \
+    GashaponRewardHistoryRepositoryInterface
 from ..settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
-from ..useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
+from ..useCases.cassetteTapeItemUseCaseInterface import CassetteTapeItemUseCaseInterface
+from ..useCases.gashaponRewardUseCaseInterface import GashaponRewardUseCaseInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
@@ -83,11 +94,13 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        cassetteTapeItemUseCase: CassetteTapeItemUseCase,
+        cassetteTapeItemUseCase: CassetteTapeItemUseCaseInterface,
         chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface,
         chatterInventoryRepository: ChatterInventoryRepositoryInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
         chatterItemEventListener: ChatterItemEventListener,
+        gashaponRewardHistoryRepository: GashaponRewardHistoryRepositoryInterface,
+        gashaponRewardUseCase: GashaponRewardUseCaseInterface,
         timber: TimberInterface,
         timeoutActionMachine: TimeoutActionMachineInterface,
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
@@ -101,7 +114,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(cassetteTapeItemUseCase, CassetteTapeItemUseCase):
+        elif not isinstance(cassetteTapeItemUseCase, CassetteTapeItemUseCaseInterface):
             raise TypeError(f'cassetteTapeItemUseCase argument is malformed: \"{cassetteTapeItemUseCase}\"')
         elif not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
             raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
@@ -111,6 +124,10 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
         elif not isinstance(chatterItemEventListener, ChatterItemEventListener):
             raise TypeError(f'chatterItemEventListener argument is malformed: \"{chatterItemEventListener}\"')
+        elif not isinstance(gashaponRewardHistoryRepository, GashaponRewardHistoryRepositoryInterface):
+            raise TypeError(f'gashaponRewardHistoryRepository argument is malformed: \"{gashaponRewardHistoryRepository}\"')
+        elif not isinstance(gashaponRewardUseCase, GashaponRewardUseCaseInterface):
+            raise TypeError(f'gashaponRewardUseCase argument is malformed: \"{gashaponRewardUseCase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
@@ -137,11 +154,13 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
-        self.__cassetteTapeItemUseCase: Final[CassetteTapeItemUseCase] = cassetteTapeItemUseCase
+        self.__cassetteTapeItemUseCase: Final[CassetteTapeItemUseCaseInterface] = cassetteTapeItemUseCase
         self.__chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = chatterInventoryIdGenerator
         self.__chatterInventoryRepository: Final[ChatterInventoryRepositoryInterface] = chatterInventoryRepository
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__chatterItemEventListener: Final[ChatterItemEventListener] = chatterItemEventListener
+        self.__gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface] = gashaponRewardHistoryRepository
+        self.__gashaponRewardUseCase: Final[GashaponRewardUseCaseInterface] = gashaponRewardUseCase
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
@@ -522,6 +541,11 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
                 action = action,
             )
 
+        elif isinstance(action, RequestGashaponRewardAction):
+            await self.__handleRequestGashaponRewardAction(
+                action = action,
+            )
+
         elif isinstance(action, TradeChatterItemAction):
             await self.__handleTradeItemAction(
                 action = action,
@@ -534,6 +558,53 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
 
         else:
             raise ValueError(f'Encountered unknown AbsChatterItemAction: \"{action}\"')
+
+    async def __handleRequestGashaponRewardAction(
+        self,
+        action: RequestGashaponRewardAction,
+    ):
+        tokensAndDetails = await self.__fetchTokensAndDetails(
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        result = await self.__gashaponRewardUseCase.invoke(
+            action = action,
+            twitchAccessToken = tokensAndDetails.userTwitchAccessToken,
+        )
+
+        match result:
+            case GashaponRewardUseCaseInterface.Result.NOT_FOLLOWING:
+                await self.__submitEvent(GashaponNotRewardedNotFollowingChatterItemEvent(
+                    originatingAction = action,
+                    eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                ))
+
+            case GashaponRewardUseCaseInterface.Result.NOT_READY:
+                rewardHistory = await self.__gashaponRewardHistoryRepository.getHistory(
+                    chatterUserId = action.chatterUserId,
+                    twitchChannelId = action.twitchChannelId,
+                )
+
+                # TODO this class shouldn't return an enum and should return AbsResult instead...
+
+                daysBetweenGashaponRewards = await self.__chatterInventorySettings.getDaysBetweenGashaponRewards()
+                nextGashaponAvailability = rewardHistory.mostRecentReward + timedelta(days = daysBetweenGashaponRewards)
+
+                await self.__submitEvent(GashaponNotRewardedNotReadyChatterItemEvent(
+                    nextGashaponAvailability = nextGashaponAvailability,
+                    originatingAction = action,
+                    eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                ))
+
+            case GashaponRewardUseCaseInterface.Result.NOT_SUBSCRIBED:
+                await self.__submitEvent(GashaponNotRewardedNotSubscribedChatterItemEvent(
+                    originatingAction = action,
+                    eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                ))
+
+            case GashaponRewardUseCaseInterface.Result.READY:
+                # TODO
+                pass
 
     async def __handleTm36ItemAction(
         self,
