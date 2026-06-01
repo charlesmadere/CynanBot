@@ -2510,6 +2510,7 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     chatterInventoryRepository = chatterInventoryRepository,
     chatterInventorySettings = chatterInventorySettings,
     chatterItemEventListener = chatterItemEventListener,
+    gashaponRewardHistoryRepository = gashaponRewardHistoryRepository,
     gashaponRewardUseCase = gashaponRewardUseCase,
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
