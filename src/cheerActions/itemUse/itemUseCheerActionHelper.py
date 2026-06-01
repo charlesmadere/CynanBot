@@ -88,11 +88,8 @@ class ItemUseCheerActionHelper(ItemUseCheerActionHelperInterface):
         cheerUserId: str,
         cheerUserName: str,
         message: str | None,
-        moderatorTwitchAccessToken: str,
-        moderatorUserId: str,
         twitchChannelId: str,
         twitchChatMessageId: str | None,
-        userTwitchAccessToken: str,
         user: UserInterface,
     ) -> bool:
         if not isinstance(actions, frozendict):
@@ -107,16 +104,10 @@ class ItemUseCheerActionHelper(ItemUseCheerActionHelperInterface):
             raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
         elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
-        elif not utils.isValidStr(moderatorTwitchAccessToken):
-            raise TypeError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
-        elif not utils.isValidStr(moderatorUserId):
-            raise TypeError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif twitchChatMessageId is not None and not isinstance(twitchChatMessageId, str):
             raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
-        elif not utils.isValidStr(userTwitchAccessToken):
-            raise TypeError(f'userTwitchAccessToken argument is malformed: \"{userTwitchAccessToken}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 

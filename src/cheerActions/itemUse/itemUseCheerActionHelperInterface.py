@@ -16,11 +16,8 @@ class ItemUseCheerActionHelperInterface(ABC):
         cheerUserId: str,
         cheerUserName: str,
         message: str | None,
-        moderatorTwitchAccessToken: str,
-        moderatorUserId: str,
         twitchChannelId: str,
         twitchChatMessageId: str | None,
-        userTwitchAccessToken: str,
         user: UserInterface,
     ) -> bool:
         pass

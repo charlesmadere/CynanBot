@@ -130,11 +130,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             cheerUserId = cheerInfo.cheerUserId,
             cheerUserName = cheerInfo.cheerUserName,
             message = cheerInfo.message,
-            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
-            moderatorUserId = moderatorUserId,
             twitchChannelId = cheerInfo.twitchChannelId,
             twitchChatMessageId = cheerInfo.twitchChatMessageId,
-            userTwitchAccessToken = userTwitchAccessToken,
             user = cheerInfo.twitchUser,
         ):
             return True
