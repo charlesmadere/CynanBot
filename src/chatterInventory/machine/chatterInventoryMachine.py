@@ -28,6 +28,10 @@ from ..models.events.cassetteTapeTargetIsNotFollowingChatterItemEvent import \
     CassetteTapeTargetIsNotFollowingChatterItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
+from ..models.events.gashaponNotRewardedNotFollowingChatterItemEvent import \
+    GashaponNotRewardedNotFollowingChatterItemEvent
+from ..models.events.gashaponNotRewardedNotSubscribedChatterItemEvent import \
+    GashaponNotRewardedNotSubscribedChatterItemEvent
 from ..models.events.gashaponResultsChatterItemEvent import GashaponResultsChatterItemEvent
 from ..models.events.giveChatterItemEvent import GiveChatterItemEvent
 from ..models.events.noGashaponResultsChatterItemEvent import NoGashaponResultsChatterItemEvent
@@ -559,8 +563,26 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             twitchAccessToken = tokensAndDetails.userTwitchAccessToken,
         )
 
-        # TODO
-        pass
+        match result:
+            case GashaponRewardUseCaseInterface.Result.NOT_FOLLOWING:
+                await self.__submitEvent(GashaponNotRewardedNotFollowingChatterItemEvent(
+                    originatingAction = action,
+                    eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                ))
+
+            case GashaponRewardUseCaseInterface.Result.NOT_READY:
+                # TODO
+                pass
+
+            case GashaponRewardUseCaseInterface.Result.NOT_SUBSCRIBED:
+                await self.__submitEvent(GashaponNotRewardedNotSubscribedChatterItemEvent(
+                    originatingAction = action,
+                    eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                ))
+
+            case GashaponRewardUseCaseInterface.Result.READY:
+                # TODO
+                pass
 
     async def __handleTm36ItemAction(
         self,
