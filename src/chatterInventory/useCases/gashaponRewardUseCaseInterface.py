@@ -1,22 +1,36 @@
 from abc import ABC, abstractmethod
-from enum import Enum, auto
+from dataclasses import dataclass
+from datetime import datetime
 
+from ..models.chatterInventoryData import ChatterInventoryData
 from ..models.requestGashaponRewardAction import RequestGashaponRewardAction
 
 
 class GashaponRewardUseCaseInterface(ABC):
 
-    class Result(Enum):
+    class AbsResult(ABC):
+        pass
 
-        NOT_FOLLOWING = auto()
-        NOT_READY = auto()
-        NOT_SUBSCRIBED = auto()
-        READY = auto()
+    @dataclass(frozen = True, slots = True)
+    class NotFollowingResult(AbsResult):
+        pass
+
+    @dataclass(frozen = True, slots = True)
+    class NotReadyResult(AbsResult):
+        nextGashaponAvailability: datetime
+
+    @dataclass(frozen = True, slots = True)
+    class NotSubscribedResult(AbsResult):
+        pass
+
+    @dataclass(frozen = True, slots = True)
+    class RewardedResult(AbsResult):
+        chatterInventory: ChatterInventoryData
 
     @abstractmethod
     async def invoke(
         self,
         action: RequestGashaponRewardAction,
         twitchAccessToken: str,
-    ) -> Result:
+    ) -> AbsResult:
         pass

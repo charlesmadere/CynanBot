@@ -2496,6 +2496,7 @@ gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface]
 )
 
 gashaponRewardUseCase: Final[GashaponRewardUseCaseInterface] = GashaponRewardUseCase(
+    chatterInventoryHelper = chatterInventoryHelper,
     chatterInventorySettings = chatterInventorySettings,
     gashaponRewardHistoryRepository = gashaponRewardHistoryRepository,
     timeZoneRepository = timeZoneRepository,
@@ -2510,7 +2511,6 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     chatterInventoryRepository = chatterInventoryRepository,
     chatterInventorySettings = chatterInventorySettings,
     chatterItemEventListener = chatterItemEventListener,
-    gashaponRewardHistoryRepository = gashaponRewardHistoryRepository,
     gashaponRewardUseCase = gashaponRewardUseCase,
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
