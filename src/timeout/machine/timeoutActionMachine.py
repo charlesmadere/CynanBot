@@ -212,9 +212,20 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             timeoutAction = action,
         )
 
+        updatedInventory: ChatterItemGiveResult | None = None
+
         if len(timeoutTargets) == 0:
+            if action.bits >= 1:
+                updatedInventory = await self.__chatterInventoryHelper.give(
+                    itemType = ChatterItemType.AIR_STRIKE,
+                    giveAmount = 1,
+                    chatterUserId = action.instigatorUserId,
+                    twitchChannelId = action.twitchChannelId,
+                )
+
             await self.__submitEvent(NoAirStrikeTargetsAvailableTimeoutEvent(
                 originatingAction = action,
+                updatedInventory = updatedInventory,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
                 instigatorUserName = instigatorUserName,
             ))
@@ -256,14 +267,21 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         frozenAsplodieStats: frozendict[TimeoutTarget, AsplodieStats] = frozendict(asplodieStats)
 
         if len(successfulTimeoutTargets) == 0:
+            if action.bits >= 1:
+                updatedInventory = await self.__chatterInventoryHelper.give(
+                    itemType = ChatterItemType.AIR_STRIKE,
+                    giveAmount = 1,
+                    chatterUserId = action.instigatorUserId,
+                    twitchChannelId = action.twitchChannelId,
+                )
+
             await self.__submitEvent(NoAirStrikeTargetsAvailableTimeoutEvent(
                 originatingAction = action,
+                updatedInventory = updatedInventory,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
                 instigatorUserName = instigatorUserName,
             ))
             return
-
-        updatedInventory: ChatterItemGiveResult | None = None
 
         if not action.ignoreInventory:
             updatedInventory = await self.__chatterInventoryHelper.give(
