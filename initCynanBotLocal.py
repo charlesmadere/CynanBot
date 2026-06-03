@@ -593,14 +593,14 @@ authRepository: Final[AuthRepository] = AuthRepository(
     ),
 )
 
-twitchJsonMapper: TwitchJsonMapperInterface = TwitchJsonMapper(
+twitchJsonMapper: Final[TwitchJsonMapperInterface] = TwitchJsonMapper(
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
+twitchWebsocketJsonMapper: Final[TwitchWebsocketJsonMapperInterface] = TwitchWebsocketJsonMapper(
     timber = timber,
-    twitchJsonMapper = twitchJsonMapper
+    twitchJsonMapper = twitchJsonMapper,
 )
 
 twitchApiService: Final[TwitchApiServiceInterface] = TwitchApiService(
@@ -2176,11 +2176,9 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     GetGashaponItemChatCommand(
         backgroundTaskHelper = backgroundTaskHelper,
-        gashaponRewardHelper = gashaponRewardHelper,
-        soundPlayerManagerProvider = soundPlayerManagerProvider,
+        chatterInventoryIdGenerator = chatterInventoryIdGenerator,
+        chatterInventoryMachine = chatterInventoryMachine,
         timber = timber,
-        timeZoneRepository = timeZoneRepository,
-        twitchChatMessenger = twitchChatMessenger,
     ),
     GiveChatterItemChatCommand(
         chatterInventoryIdGenerator = chatterInventoryIdGenerator,

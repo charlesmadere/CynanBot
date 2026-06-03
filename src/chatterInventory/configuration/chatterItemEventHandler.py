@@ -301,7 +301,7 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         event: GashaponNotRewardedNotFollowingChatterItemEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'⚠ You must be following in order to receive a gashapon',
+            text = f'⚠ You must be following in order to receive a {ChatterItemType.GASHAPON.humanName}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -341,7 +341,7 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         event: GashaponNotRewardedNotSubscribedChatterItemEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'⚠ Sorry, you must be subscribed in order to receive a gashapon',
+            text = f'⚠ Sorry, you must be subscribed in order to receive a {ChatterItemType.GASHAPON.humanName}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )

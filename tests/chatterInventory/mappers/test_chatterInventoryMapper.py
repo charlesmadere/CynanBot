@@ -600,6 +600,18 @@ class TestChatterInventoryMapper:
         result = await self.mapper.parseItemType('gatcha')
         assert result is ChatterItemType.GASHAPON
 
+        result = await self.mapper.parseItemType('gachi')
+        assert result is ChatterItemType.GASHAPON
+
+        result = await self.mapper.parseItemType('gachis')
+        assert result is ChatterItemType.GASHAPON
+
+        result = await self.mapper.parseItemType('gatchi')
+        assert result is ChatterItemType.GASHAPON
+
+        result = await self.mapper.parseItemType('gatchis')
+        assert result is ChatterItemType.GASHAPON
+
         result = await self.mapper.parseItemType('gachas')
         assert result is ChatterItemType.GASHAPON
 
