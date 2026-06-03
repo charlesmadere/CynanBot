@@ -1765,6 +1765,7 @@ chatterItemEventListener: Final[ChatterItemEventListener] = ChatterItemEventHand
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     twitchChatMessenger = twitchChatMessenger,
 )
 

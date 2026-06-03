@@ -12,6 +12,10 @@ class GashaponRewardUseCaseInterface(ABC):
         pass
 
     @dataclass(frozen = True, slots = True)
+    class ItemNotEnabledResult(AbsResult):
+        pass
+
+    @dataclass(frozen = True, slots = True)
     class NotFollowingResult(AbsResult):
         pass
 

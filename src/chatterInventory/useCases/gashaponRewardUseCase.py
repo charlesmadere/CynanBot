@@ -55,7 +55,10 @@ class GashaponRewardUseCase(GashaponRewardUseCaseInterface):
         elif not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
-        if not await self.__twitchFollowingStatusRepository.isFollowing(
+        if ChatterItemType.GASHAPON not in await self.__chatterInventorySettings.getEnabledItemTypes():
+            return GashaponRewardUseCaseInterface.ItemNotEnabledResult()
+
+        elif not await self.__twitchFollowingStatusRepository.isFollowing(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = action.twitchChannelId,
             userId = action.chatterUserId,

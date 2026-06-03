@@ -28,6 +28,8 @@ from ..models.events.cassetteTapeTargetIsNotFollowingChatterItemEvent import \
     CassetteTapeTargetIsNotFollowingChatterItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
+from ..models.events.gashaponNotRewardedItemDisabledChatterItemEvent import \
+    GashaponNotRewardedItemDisabledChatterItemEvent
 from ..models.events.gashaponNotRewardedNotFollowingChatterItemEvent import \
     GashaponNotRewardedNotFollowingChatterItemEvent
 from ..models.events.gashaponNotRewardedNotReadyChatterItemEvent import \
@@ -566,7 +568,13 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             twitchAccessToken = tokensAndDetails.userTwitchAccessToken,
         )
 
-        if isinstance(result, GashaponRewardUseCaseInterface.NotFollowingResult):
+        if isinstance(result, GashaponRewardUseCaseInterface.ItemNotEnabledResult):
+            await self.__submitEvent(GashaponNotRewardedItemDisabledChatterItemEvent(
+                originatingAction = action,
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            ))
+
+        elif isinstance(result, GashaponRewardUseCaseInterface.NotFollowingResult):
             await self.__submitEvent(GashaponNotRewardedNotFollowingChatterItemEvent(
                 originatingAction = action,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
@@ -594,7 +602,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             ))
 
         else:
-            raise ValueError(f'Encountered unknown GashaponRewardUseCaseInterface.AbsResult ({action=}) ({result=})')
+            raise ValueError(f'Encountered unknown GashaponRewardUseCaseInterface.AbsResult ({result=}) ({action=})')
 
     async def __handleTm36ItemAction(
         self,
