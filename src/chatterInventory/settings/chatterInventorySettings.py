@@ -148,7 +148,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
     async def areDiceRollsEnabled(self) -> bool:
         jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'diceRollsEnabled', fallback = False)
+        return utils.getBoolFromDict(jsonContents, 'diceRollsEnabled', fallback = True)
 
     async def clearCaches(self):
         self.__cache = None
