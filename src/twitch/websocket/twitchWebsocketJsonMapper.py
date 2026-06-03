@@ -16,6 +16,7 @@ from ..api.models.twitchChatMessageType import TwitchChatMessageType
 from ..api.models.twitchCheerMetadata import TwitchCheerMetadata
 from ..api.models.twitchCommunitySubGift import TwitchCommunitySubGift
 from ..api.models.twitchContribution import TwitchContribution
+from ..api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData
 from ..api.models.twitchHypeTrainType import TwitchHypeTrainType
 from ..api.models.twitchNoticeType import TwitchNoticeType
 from ..api.models.twitchOutcome import TwitchOutcome
@@ -434,6 +435,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'community_sub_gift' in eventJson:
             communitySubGift = await self.__twitchJsonMapper.parseCommunitySubGift(eventJson.get('community_sub_gift'))
 
+        customPowerUpData: TwitchCustomPowerUpData | None = None
+        if 'custom_power_up' in eventJson:
+            customPowerUpData = await self.__twitchJsonMapper.parseCustomPowerUpData(eventJson.get('custom_power_up'))
+
         hypeTrainType: TwitchHypeTrainType | None = None
         if 'type' in eventJson and utils.isValidStr(eventJson.get('type')):
             hypeTrainTypeString = utils.getStrFromDict(eventJson, 'type')
@@ -576,6 +581,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             chatMessageType = chatMessageType,
             cheer = cheer,
             communitySubGift = communitySubGift,
+            customPowerUpData = customPowerUpData,
             hypeTrainType = hypeTrainType,
             noticeType = noticeType,
             payItForward = payItForward,

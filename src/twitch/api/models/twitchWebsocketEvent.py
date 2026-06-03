@@ -13,6 +13,7 @@ from .twitchChatMessageType import TwitchChatMessageType
 from .twitchCheerMetadata import TwitchCheerMetadata
 from .twitchCommunitySubGift import TwitchCommunitySubGift
 from .twitchContribution import TwitchContribution
+from .twitchCustomPowerUpData import TwitchCustomPowerUpData
 from .twitchHypeTrainType import TwitchHypeTrainType
 from .twitchNoticeType import TwitchNoticeType
 from .twitchOutcome import TwitchOutcome
@@ -104,6 +105,7 @@ class TwitchWebsocketEvent:
     chatMessageType: TwitchChatMessageType | None = None
     cheer: TwitchCheerMetadata | None = None
     communitySubGift: TwitchCommunitySubGift | None = None
+    customPowerUpData: TwitchCustomPowerUpData | None = None
     hypeTrainType: TwitchHypeTrainType | None = None
     noticeType: TwitchNoticeType | None = None
     payItForward: TwitchPayItForward | None = None
