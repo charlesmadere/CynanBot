@@ -52,8 +52,6 @@ from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.configuration.chatterItemEventHandler import ChatterItemEventHandler
 from src.chatterInventory.helpers.chatterInventoryHelper import ChatterInventoryHelper
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
-from src.chatterInventory.helpers.gashaponRewardHelper import GashaponRewardHelper
-from src.chatterInventory.helpers.gashaponRewardHelperInterface import GashaponRewardHelperInterface
 from src.chatterInventory.helpers.useChatterItemHelper import UseChatterItemHelper
 from src.chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from src.chatterInventory.idGenerator.chatterInventoryIdGenerator import ChatterInventoryIdGenerator
@@ -1800,18 +1798,6 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
-)
-
-gashaponRewardHelper: Final[GashaponRewardHelperInterface] = GashaponRewardHelper(
-    chatterInventoryHelper = chatterInventoryHelper,
-    chatterInventorySettings = chatterInventorySettings,
-    gashaponRewardHistoryRepository = gashaponRewardHistoryRepository,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    trollmojiHelper = trollmojiHelper,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchSubscriptionsRepository = twitchSubscriptionsRepository,
-    twitchTokensRepository = twitchTokensRepository,
 )
 
 itemRequestMessageParser = ItemRequestMessageParser(
