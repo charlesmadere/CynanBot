@@ -18,10 +18,6 @@ class ChatterInventorySettingsInterface(Clearable, ABC):
         pass
 
     @abstractmethod
-    async def cheerActionItemsAreAddedToInventory(self) -> bool:
-        pass
-
-    @abstractmethod
     async def getAirStrikeItemDetails(self) -> AirStrikeItemDetails:
         pass
 

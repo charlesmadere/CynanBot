@@ -39,6 +39,7 @@ from ..models.twitchConduitResponseEntry import TwitchConduitResponseEntry
 from ..models.twitchConduitShard import TwitchConduitShard
 from ..models.twitchContribution import TwitchContribution
 from ..models.twitchContributionType import TwitchContributionType
+from ..models.twitchCustomPowerUpData import TwitchCustomPowerUpData
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -935,6 +936,21 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'other': return TwitchContributionType.OTHER
             case 'subscription': return TwitchContributionType.SUBSCRIPTION
             case _: return None
+
+    async def parseCustomPowerUpData(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchCustomPowerUpData | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        rewardId = utils.getStrFromDict(jsonResponse, 'reward_id')
+        title = utils.getStrFromDict(jsonResponse, 'title')
+
+        return TwitchCustomPowerUpData(
+            rewardId = rewardId,
+            title = title,
+        )
 
     async def parseEmoteDetails(
         self,

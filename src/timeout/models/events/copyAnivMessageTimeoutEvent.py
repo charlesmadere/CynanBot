@@ -14,8 +14,8 @@ class CopyAnivMessageTimeoutEvent(AbsTimeoutEvent):
     copyMessageTimeoutScore: AnivCopyMessageTimeoutScore
     originatingAction: CopyAnivMessageTimeoutAction
     timeoutDuration: CalculatedTimeoutDuration
-    eventId: str
     anivUserName: str
+    eventId: str
     ripBozoEmote: str
     targetUserName: str
     timeoutResult: TwitchTimeoutResult

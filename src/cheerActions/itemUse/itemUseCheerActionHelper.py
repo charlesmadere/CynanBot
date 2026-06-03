@@ -119,26 +119,16 @@ class ItemUseCheerActionHelper(ItemUseCheerActionHelperInterface):
         elif not await self.__chatterInventorySettings.isEnabled():
             return False
 
-        elif await self.__chatterInventorySettings.cheerActionItemsAreAddedToInventory():
-            await self.__awardItem(
-                action = action,
-                cheerUserId = cheerUserId,
-                twitchChannelId = twitchChannelId,
-                twitchChatMessageId = twitchChatMessageId,
-            )
+        result = await self.__useChatterItemHelper.useItem(UseChatterItemRequest(
+            ignoreInventory = True,
+            itemType = action.itemType,
+            bits = bits,
+            chatMessage = message,
+            chatterUserId = cheerUserId,
+            requestId = await self.__chatterInventoryIdGenerator.generateRequestId(),
+            twitchChannelId = twitchChannelId,
+            twitchChatMessageId = twitchChatMessageId,
+            user = user,
+        ))
 
-            return True
-
-        else:
-            result = await self.__useChatterItemHelper.useItem(UseChatterItemRequest(
-                ignoreInventory = True,
-                itemType = action.itemType,
-                chatMessage = message,
-                chatterUserId = cheerUserId,
-                requestId = await self.__chatterInventoryIdGenerator.generateRequestId(),
-                twitchChannelId = twitchChannelId,
-                twitchChatMessageId = twitchChatMessageId,
-                user = user,
-            ))
-
-            return result is UseChatterItemResult.OK
+        return result is UseChatterItemResult.OK

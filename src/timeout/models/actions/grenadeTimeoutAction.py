@@ -10,6 +10,7 @@ from ....users.userInterface import UserInterface
 class GrenadeTimeoutAction(AbsTimeoutAction):
     timeoutDuration: AbsTimeoutDuration
     ignoreInventory: bool
+    bits: int
     actionId: str
     instigatorUserId: str
     moderatorTwitchAccessToken: str

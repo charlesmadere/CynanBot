@@ -590,14 +590,14 @@ authRepository: Final[AuthRepository] = AuthRepository(
     ),
 )
 
-twitchJsonMapper: TwitchJsonMapperInterface = TwitchJsonMapper(
+twitchJsonMapper: Final[TwitchJsonMapperInterface] = TwitchJsonMapper(
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
+twitchWebsocketJsonMapper: Final[TwitchWebsocketJsonMapperInterface] = TwitchWebsocketJsonMapper(
     timber = timber,
-    twitchJsonMapper = twitchJsonMapper
+    twitchJsonMapper = twitchJsonMapper,
 )
 
 twitchApiService: Final[TwitchApiServiceInterface] = TwitchApiService(
@@ -1594,7 +1594,6 @@ timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachin
     determineGrenadeTargetUseCase = determineGrenadeTargetUseCase,
     determineTimeoutTargetUseCase = determineTimeoutTargetUseCase,
     determineTm36SplashTargetUseCase = determineTm36SplashTargetUseCase,
-    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     pixelsDiceMachine = None,
     timber = timber,

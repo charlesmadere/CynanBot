@@ -52,8 +52,6 @@ from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.configuration.chatterItemEventHandler import ChatterItemEventHandler
 from src.chatterInventory.helpers.chatterInventoryHelper import ChatterInventoryHelper
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
-from src.chatterInventory.helpers.gashaponRewardHelper import GashaponRewardHelper
-from src.chatterInventory.helpers.gashaponRewardHelperInterface import GashaponRewardHelperInterface
 from src.chatterInventory.helpers.useChatterItemHelper import UseChatterItemHelper
 from src.chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from src.chatterInventory.idGenerator.chatterInventoryIdGenerator import ChatterInventoryIdGenerator
@@ -593,14 +591,14 @@ authRepository: Final[AuthRepository] = AuthRepository(
     ),
 )
 
-twitchJsonMapper: TwitchJsonMapperInterface = TwitchJsonMapper(
+twitchJsonMapper: Final[TwitchJsonMapperInterface] = TwitchJsonMapper(
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
+twitchWebsocketJsonMapper: Final[TwitchWebsocketJsonMapperInterface] = TwitchWebsocketJsonMapper(
     timber = timber,
-    twitchJsonMapper = twitchJsonMapper
+    twitchJsonMapper = twitchJsonMapper,
 )
 
 twitchApiService: Final[TwitchApiServiceInterface] = TwitchApiService(
@@ -1737,7 +1735,6 @@ timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachin
     determineGrenadeTargetUseCase = determineGrenadeTargetUseCase,
     determineTimeoutTargetUseCase = determineTimeoutTargetUseCase,
     determineTm36SplashTargetUseCase = determineTm36SplashTargetUseCase,
-    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     pixelsDiceMachine = pixelsDiceMachine,
     timber = timber,
@@ -1765,6 +1762,7 @@ chatterItemEventListener: Final[ChatterItemEventListener] = ChatterItemEventHand
     soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     twitchChatMessenger = twitchChatMessenger,
 )
 
@@ -1775,6 +1773,7 @@ gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface]
 )
 
 gashaponRewardUseCase: Final[GashaponRewardUseCaseInterface] = GashaponRewardUseCase(
+    chatterInventoryHelper = chatterInventoryHelper,
     chatterInventorySettings = chatterInventorySettings,
     gashaponRewardHistoryRepository = gashaponRewardHistoryRepository,
     timeZoneRepository = timeZoneRepository,
@@ -1789,7 +1788,6 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     chatterInventoryRepository = chatterInventoryRepository,
     chatterInventorySettings = chatterInventorySettings,
     chatterItemEventListener = chatterItemEventListener,
-    gashaponRewardHistoryRepository = gashaponRewardHistoryRepository,
     gashaponRewardUseCase = gashaponRewardUseCase,
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
@@ -1799,18 +1797,6 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
-)
-
-gashaponRewardHelper: Final[GashaponRewardHelperInterface] = GashaponRewardHelper(
-    chatterInventoryHelper = chatterInventoryHelper,
-    chatterInventorySettings = chatterInventorySettings,
-    gashaponRewardHistoryRepository = gashaponRewardHistoryRepository,
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    trollmojiHelper = trollmojiHelper,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchSubscriptionsRepository = twitchSubscriptionsRepository,
-    twitchTokensRepository = twitchTokensRepository,
 )
 
 itemRequestMessageParser = ItemRequestMessageParser(
@@ -2175,11 +2161,9 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     GetGashaponItemChatCommand(
         backgroundTaskHelper = backgroundTaskHelper,
-        gashaponRewardHelper = gashaponRewardHelper,
-        soundPlayerManagerProvider = soundPlayerManagerProvider,
+        chatterInventoryIdGenerator = chatterInventoryIdGenerator,
+        chatterInventoryMachine = chatterInventoryMachine,
         timber = timber,
-        timeZoneRepository = timeZoneRepository,
-        twitchChatMessenger = twitchChatMessenger,
     ),
     GiveChatterItemChatCommand(
         chatterInventoryIdGenerator = chatterInventoryIdGenerator,

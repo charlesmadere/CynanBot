@@ -1,4 +1,5 @@
 import locale
+import math
 from typing import Final
 
 from ..listeners.chatterItemEventListener import ChatterItemEventListener
@@ -11,7 +12,15 @@ from ..models.events.cassetteTapeTargetIsNotFollowingChatterItemEvent import \
     CassetteTapeTargetIsNotFollowingChatterItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
+from ..models.events.gashaponNotRewardedItemDisabledChatterItemEvent import \
+    GashaponNotRewardedItemDisabledChatterItemEvent
+from ..models.events.gashaponNotRewardedNotFollowingChatterItemEvent import \
+    GashaponNotRewardedNotFollowingChatterItemEvent
+from ..models.events.gashaponNotRewardedNotReadyChatterItemEvent import GashaponNotRewardedNotReadyChatterItemEvent
+from ..models.events.gashaponNotRewardedNotSubscribedChatterItemEvent import \
+    GashaponNotRewardedNotSubscribedChatterItemEvent
 from ..models.events.gashaponResultsChatterItemEvent import GashaponResultsChatterItemEvent
+from ..models.events.gashaponRewardedChatterItemEvent import GashaponRewardedChatterItemEvent
 from ..models.events.giveChatterItemEvent import GiveChatterItemEvent
 from ..models.events.noGashaponResultsChatterItemEvent import NoGashaponResultsChatterItemEvent
 from ..models.events.notEnoughInventoryChatterItemEvent import NotEnoughInventoryChatterItemEvent
@@ -26,11 +35,13 @@ from ..models.events.voicemailMessageIsEmptyChatterItemEvent import VoicemailMes
 from ..models.events.voicemailTargetIsOriginatingUserChatterItemEvent import \
     VoicemailTargetIsOriginatingUserChatterItemEvent
 from ..models.events.voicemailTargetIsStreamerChatterItemEvent import VoicemailTargetIsStreamerChatterItemEvent
+from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
     SoundPlayerRandomizerHelperInterface
+from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
@@ -45,6 +56,7 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
@@ -57,6 +69,8 @@ class ChatterItemEventHandler(ChatterItemEventListener):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
@@ -65,6 +79,7 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         self.__soundPlayerRandomizerHelper: Final[SoundPlayerRandomizerHelperInterface] = soundPlayerRandomizerHelper
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
     async def onNewChatterItemEvent(self, event: AbsChatterItemEvent):
@@ -93,6 +108,16 @@ class ChatterItemEventHandler(ChatterItemEventListener):
 
         elif isinstance(event, DisabledItemTypeChatterItemEvent):
             await self.__handleDisabledItemTypeChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, GashaponNotRewardedItemDisabledChatterItemEvent):
+            await self.__handleGashaponNotRewardedItemDisabledChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, GashaponNotRewardedNotFollowingChatterItemEvent):
+            await self.__handleGashaponNotRewardedNotFollowingChatterItemEvent(
                 event = event,
             )
 
@@ -263,6 +288,64 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         # But maybe this should change in the future.
         pass
 
+    async def __handleGashaponNotRewardedItemDisabledChatterItemEvent(
+        self,
+        event: GashaponNotRewardedItemDisabledChatterItemEvent,
+    ):
+        # For now, let's just not output a chat message for this.
+        # But maybe this should change in the future.
+        pass
+
+    async def __handleGashaponNotRewardedNotFollowingChatterItemEvent(
+        self,
+        event: GashaponNotRewardedNotFollowingChatterItemEvent,
+    ):
+        self.__twitchChatMessenger.send(
+            text = f'⚠ You must be following in order to receive a {ChatterItemType.GASHAPON.humanName}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleGashaponNotRewardedNotReadyChatterItemEvent(
+        self,
+        event: GashaponNotRewardedNotReadyChatterItemEvent,
+    ):
+        now = self.__timeZoneRepository.getNow()
+        remainingTime = event.nextGashaponAvailability - now
+        totalRemainingSeconds = int(math.floor(remainingTime.total_seconds()))
+        remainingDays = int(math.floor(float(totalRemainingSeconds) / float(24 * 60 * 60)))
+        availableWhen: str
+
+        if remainingDays >= 7:
+            remainingDaysString = locale.format_string("%d", remainingDays, grouping = True)
+            availableWhen = f'{remainingDaysString} days'
+        elif remainingDays >= 3:
+            availableWhen = utils.secondsToDurationMessage(
+                secondsDuration = totalRemainingSeconds,
+                includeMinutesAndSeconds = False,
+            )
+        else:
+            availableWhen = utils.secondsToDurationMessage(
+                secondsDuration = totalRemainingSeconds,
+                includeMinutesAndSeconds = True,
+            )
+
+        self.__twitchChatMessenger.send(
+            text = f'⚠ Sorry, you can\'t receive your gashapon yet! Your next will be available in {availableWhen}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleGashaponNotRewardedNotSubscribedChatterItemEvent(
+        self,
+        event: GashaponNotRewardedNotSubscribedChatterItemEvent,
+    ):
+        self.__twitchChatMessenger.send(
+            text = f'⚠ Sorry, you must be subscribed in order to receive a {ChatterItemType.GASHAPON.humanName}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
     async def __handleGashaponResultsChatterItemEvent(
         self,
         event: GashaponResultsChatterItemEvent,
@@ -284,6 +367,27 @@ class ChatterItemEventHandler(ChatterItemEventListener):
 
         self.__twitchChatMessenger.send(
             text = f'{event.hypeEmote} ガチャ!! You received {awardedItemsString}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleGashaponRewardedChatterItemEvent(
+        self,
+        event: GashaponRewardedChatterItemEvent,
+    ):
+        if event.user.areSoundAlertsEnabled:
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.GASHAPON))
+
+        gashaponAmount = event.chatterInventory[ChatterItemType.GASHAPON]
+        suffixString = ''
+
+        if gashaponAmount > 1:
+            gashaponAmountString = locale.format_string("%d", gashaponAmount, grouping = True)
+            suffixString = f'You now have {gashaponAmountString} {ChatterItemType.GASHAPON.pluralHumanName}.'
+
+        self.__twitchChatMessenger.send(
+            text = f'{event.hypeEmote} Congrats, gashapon get! {suffixString}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )

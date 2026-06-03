@@ -60,6 +60,7 @@ class UseChatterItemChatCommand(AbsChatCommand):
         result = await self.__useChatterItemHelper.useItem(UseChatterItemRequest(
             ignoreInventory = False,
             itemType = None,
+            bits = 0,
             chatMessage = chatMessage.text,
             chatterUserId = chatMessage.chatterUserId,
             requestId = await self.__chatterInventoryIdGenerator.generateRequestId(),

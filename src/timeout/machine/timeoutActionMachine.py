@@ -10,7 +10,6 @@ from frozenlist import FrozenList
 from .timeoutActionMachineInterface import TimeoutActionMachineInterface
 from ..exceptions import BananaTimeoutDiceRollFailedException, ImmuneTimeoutTargetException, \
     UnknownTimeoutActionTypeException, UnknownTimeoutTargetException
-from ..guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from ..idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
 from ..listener.timeoutEventListener import TimeoutEventListener
 from ..models.actions.absTimeoutAction import AbsTimeoutAction
@@ -94,7 +93,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         determineGrenadeTargetUseCase: DetermineGrenadeTargetUseCase,
         determineTimeoutTargetUseCase: DetermineTimeoutTargetUseCaseInterface,
         determineTm36SplashTargetUseCase: DetermineTm36SplashTargetUseCase,
-        guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         pixelsDiceMachine: PixelsDiceMachineInterface | None,
         timber: TimberInterface,
@@ -127,8 +125,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'determineTimeoutTargetUseCase argument is malformed: \"{determineTimeoutTargetUseCase}\"')
         elif not isinstance(determineTm36SplashTargetUseCase, DetermineTm36SplashTargetUseCase):
             raise TypeError(f'determineTm36SplashTargetUseCase argument is malformed: \"{determineTm36SplashTargetUseCase}\"')
-        elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
-            raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif pixelsDiceMachine is not None and not isinstance(pixelsDiceMachine, PixelsDiceMachineInterface):
@@ -166,7 +162,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCase] = determineGrenadeTargetUseCase
         self.__determineTimeoutTargetUseCase: Final[DetermineTimeoutTargetUseCaseInterface] = determineTimeoutTargetUseCase
         self.__determineTm36SplashTargetUseCase: Final[DetermineTm36SplashTargetUseCase] = determineTm36SplashTargetUseCase
-        self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
         self.__pixelsDiceMachine: Final[PixelsDiceMachineInterface | None] = pixelsDiceMachine
         self.__timber: Final[TimberInterface] = timber
@@ -217,9 +212,20 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             timeoutAction = action,
         )
 
+        updatedInventory: ChatterItemGiveResult | None = None
+
         if len(timeoutTargets) == 0:
+            if action.bits >= 1:
+                updatedInventory = await self.__chatterInventoryHelper.give(
+                    itemType = ChatterItemType.AIR_STRIKE,
+                    giveAmount = 1,
+                    chatterUserId = action.instigatorUserId,
+                    twitchChannelId = action.twitchChannelId,
+                )
+
             await self.__submitEvent(NoAirStrikeTargetsAvailableTimeoutEvent(
                 originatingAction = action,
+                updatedInventory = updatedInventory,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
                 instigatorUserName = instigatorUserName,
             ))
@@ -261,14 +267,21 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         frozenAsplodieStats: frozendict[TimeoutTarget, AsplodieStats] = frozendict(asplodieStats)
 
         if len(successfulTimeoutTargets) == 0:
+            if action.bits >= 1:
+                updatedInventory = await self.__chatterInventoryHelper.give(
+                    itemType = ChatterItemType.AIR_STRIKE,
+                    giveAmount = 1,
+                    chatterUserId = action.instigatorUserId,
+                    twitchChannelId = action.twitchChannelId,
+                )
+
             await self.__submitEvent(NoAirStrikeTargetsAvailableTimeoutEvent(
                 originatingAction = action,
+                updatedInventory = updatedInventory,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
                 instigatorUserName = instigatorUserName,
             ))
             return
-
-        updatedInventory: ChatterItemGiveResult | None = None
 
         if not action.ignoreInventory:
             updatedInventory = await self.__chatterInventoryHelper.give(

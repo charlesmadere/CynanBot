@@ -35,6 +35,7 @@ from ..models.twitchConduitResponseEntry import TwitchConduitResponseEntry
 from ..models.twitchConduitShard import TwitchConduitShard
 from ..models.twitchContribution import TwitchContribution
 from ..models.twitchContributionType import TwitchContributionType
+from ..models.twitchCustomPowerUpData import TwitchCustomPowerUpData
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ..models.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -331,6 +332,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         contributionType: str | Any | None
     ) -> TwitchContributionType | None:
+        pass
+
+    @abstractmethod
+    async def parseCustomPowerUpData(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchCustomPowerUpData | None:
         pass
 
     @abstractmethod

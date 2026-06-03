@@ -10,6 +10,7 @@ from ....users.userInterface import UserInterface
 class VoreTimeoutAction(AbsTimeoutAction):
     timeoutDuration: AbsTimeoutDuration
     ignoreInventory: bool
+    bits: int
     actionId: str
     chatMessage: str | None
     instigatorUserId: str
