@@ -9,6 +9,7 @@ from ...users.userInterface import UserInterface
 class UseChatterItemAction(AbsChatterItemAction):
     ignoreInventory: bool
     itemType: ChatterItemType
+    bits: int
     actionId: str
     chatMessage: str | None
     chatterUserId: str

@@ -10,7 +10,6 @@ from frozenlist import FrozenList
 from .timeoutActionMachineInterface import TimeoutActionMachineInterface
 from ..exceptions import BananaTimeoutDiceRollFailedException, ImmuneTimeoutTargetException, \
     UnknownTimeoutActionTypeException, UnknownTimeoutTargetException
-from ..guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from ..idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
 from ..listener.timeoutEventListener import TimeoutEventListener
 from ..models.actions.absTimeoutAction import AbsTimeoutAction
@@ -94,7 +93,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         determineGrenadeTargetUseCase: DetermineGrenadeTargetUseCase,
         determineTimeoutTargetUseCase: DetermineTimeoutTargetUseCaseInterface,
         determineTm36SplashTargetUseCase: DetermineTm36SplashTargetUseCase,
-        guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         pixelsDiceMachine: PixelsDiceMachineInterface | None,
         timber: TimberInterface,
@@ -127,8 +125,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'determineTimeoutTargetUseCase argument is malformed: \"{determineTimeoutTargetUseCase}\"')
         elif not isinstance(determineTm36SplashTargetUseCase, DetermineTm36SplashTargetUseCase):
             raise TypeError(f'determineTm36SplashTargetUseCase argument is malformed: \"{determineTm36SplashTargetUseCase}\"')
-        elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
-            raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif pixelsDiceMachine is not None and not isinstance(pixelsDiceMachine, PixelsDiceMachineInterface):
@@ -166,7 +162,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCase] = determineGrenadeTargetUseCase
         self.__determineTimeoutTargetUseCase: Final[DetermineTimeoutTargetUseCaseInterface] = determineTimeoutTargetUseCase
         self.__determineTm36SplashTargetUseCase: Final[DetermineTm36SplashTargetUseCase] = determineTm36SplashTargetUseCase
-        self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
         self.__pixelsDiceMachine: Final[PixelsDiceMachineInterface | None] = pixelsDiceMachine
         self.__timber: Final[TimberInterface] = timber

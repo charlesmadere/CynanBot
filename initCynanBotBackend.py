@@ -1594,7 +1594,6 @@ timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachin
     determineGrenadeTargetUseCase = determineGrenadeTargetUseCase,
     determineTimeoutTargetUseCase = determineTimeoutTargetUseCase,
     determineTm36SplashTargetUseCase = determineTm36SplashTargetUseCase,
-    guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     pixelsDiceMachine = None,
     timber = timber,

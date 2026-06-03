@@ -214,6 +214,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         self.__timeoutActionMachine.submitAction(AirStrikeTimeoutAction(
             timeoutDuration = timeoutDuration,
             ignoreInventory = action.ignoreInventory,
+            bits = action.bits,
             maxTimeoutTargets = itemDetails.maxTargets,
             minTimeoutTargets = itemDetails.minTargets,
             actionId = await self.__timeoutIdGenerator.generateActionId(),
@@ -277,6 +278,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             ignoreInventory = action.ignoreInventory,
             isRandomChanceEnabled = itemDetails.randomChanceEnabled,
             useDiceRoll = await self.__chatterInventorySettings.areDiceRollsEnabled(),
+            bits = action.bits,
             actionId = await self.__timeoutIdGenerator.generateActionId(),
             chatMessage = action.chatMessage,
             instigatorUserId = action.chatterUserId,
@@ -505,6 +507,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         self.__timeoutActionMachine.submitAction(GrenadeTimeoutAction(
             timeoutDuration = timeoutDuration,
             ignoreInventory = action.ignoreInventory,
+            bits = action.bits,
             actionId = await self.__timeoutIdGenerator.generateActionId(),
             instigatorUserId = action.chatterUserId,
             moderatorTwitchAccessToken = tokensAndDetails.moderatorTwitchAccessToken,
@@ -810,6 +813,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         self.__timeoutActionMachine.submitAction(VoreTimeoutAction(
             timeoutDuration = timeoutDuration,
             ignoreInventory = action.ignoreInventory,
+            bits = action.bits,
             actionId = await self.__timeoutIdGenerator.generateActionId(),
             chatMessage = action.chatMessage,
             instigatorUserId = action.chatterUserId,

@@ -10,6 +10,7 @@ from ....users.userInterface import UserInterface
 class AirStrikeTimeoutAction(AbsTimeoutAction):
     timeoutDuration: AbsTimeoutDuration
     ignoreInventory: bool
+    bits: int
     maxTimeoutTargets: int
     minTimeoutTargets: int
     actionId: str

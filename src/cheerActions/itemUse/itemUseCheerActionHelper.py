@@ -120,8 +120,9 @@ class ItemUseCheerActionHelper(ItemUseCheerActionHelperInterface):
             return False
 
         result = await self.__useChatterItemHelper.useItem(UseChatterItemRequest(
-            ignoreInventory = True,
+            ignoreInventory = False,
             itemType = action.itemType,
+            bits = bits,
             chatMessage = message,
             chatterUserId = cheerUserId,
             requestId = await self.__chatterInventoryIdGenerator.generateRequestId(),
