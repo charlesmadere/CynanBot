@@ -10,6 +10,7 @@ from frozenlist import FrozenList
 from .timeoutActionMachineInterface import TimeoutActionMachineInterface
 from ..exceptions import BananaTimeoutDiceRollFailedException, ImmuneTimeoutTargetException, \
     UnknownTimeoutActionTypeException, UnknownTimeoutTargetException
+from ..guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from ..idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
 from ..listener.timeoutEventListener import TimeoutEventListener
 from ..models.actions.absTimeoutAction import AbsTimeoutAction
@@ -93,6 +94,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         determineGrenadeTargetUseCase: DetermineGrenadeTargetUseCase,
         determineTimeoutTargetUseCase: DetermineTimeoutTargetUseCaseInterface,
         determineTm36SplashTargetUseCase: DetermineTm36SplashTargetUseCase,
+        guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         pixelsDiceMachine: PixelsDiceMachineInterface | None,
         timber: TimberInterface,
@@ -125,6 +127,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'determineTimeoutTargetUseCase argument is malformed: \"{determineTimeoutTargetUseCase}\"')
         elif not isinstance(determineTm36SplashTargetUseCase, DetermineTm36SplashTargetUseCase):
             raise TypeError(f'determineTm36SplashTargetUseCase argument is malformed: \"{determineTm36SplashTargetUseCase}\"')
+        elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
+            raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif pixelsDiceMachine is not None and not isinstance(pixelsDiceMachine, PixelsDiceMachineInterface):
@@ -162,6 +166,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCase] = determineGrenadeTargetUseCase
         self.__determineTimeoutTargetUseCase: Final[DetermineTimeoutTargetUseCaseInterface] = determineTimeoutTargetUseCase
         self.__determineTm36SplashTargetUseCase: Final[DetermineTm36SplashTargetUseCase] = determineTm36SplashTargetUseCase
+        self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
         self.__pixelsDiceMachine: Final[PixelsDiceMachineInterface | None] = pixelsDiceMachine
         self.__timber: Final[TimberInterface] = timber
@@ -320,6 +325,47 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             chatterUserId = action.instigatorUserId,
         )
 
+        updatedInventory: ChatterItemGiveResult | None = None
+
+        try:
+            timeoutTarget = await self.__determineTimeoutTargetUseCase.invoke(
+                timeoutAction = action,
+            )
+        except ImmuneTimeoutTargetException as e:
+            if action.bits >= 1:
+                updatedInventory = await self.__chatterInventoryHelper.give(
+                    itemType = ChatterItemType.BANANA,
+                    giveAmount = 1,
+                    chatterUserId = action.instigatorUserId,
+                    twitchChannelId = action.twitchChannelId,
+                )
+
+            await self.__submitEvent(BananaTargetIsImmuneTimeoutEvent(
+                timeoutTarget = e.timeoutTarget,
+                updatedInventory = updatedInventory,
+                originatingAction = action,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
+        except UnknownTimeoutTargetException as e:
+            self.__timber.log('TimeoutActionMachine', f'Failed to determine banana timeout target ({action=})', e, traceback.format_exc())
+
+            if action.bits >= 1:
+                updatedInventory = await self.__chatterInventoryHelper.give(
+                    itemType = ChatterItemType.BANANA,
+                    giveAmount = 1,
+                    chatterUserId = action.instigatorUserId,
+                    twitchChannelId = action.twitchChannelId,
+                )
+
+            await self.__submitEvent(NoBananaTargetAvailableTimeoutEvent(
+                originatingAction = action,
+                updatedInventory = updatedInventory,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+                instigatorUserName = instigatorUserName,
+            ))
+            return
+
         if not action.ignoreInventory:
             inventory = await self.__chatterInventoryHelper.get(
                 chatterUserId = action.instigatorUserId,
@@ -334,27 +380,13 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 ))
                 return
 
-        try:
-            timeoutTarget = await self.__determineTimeoutTargetUseCase.invoke(
-                timeoutAction = action,
-            )
-        except ImmuneTimeoutTargetException as e:
-            await self.__submitEvent(BananaTargetIsImmuneTimeoutEvent(
-                timeoutTarget = e.timeoutTarget,
-                originatingAction = action,
-                eventId = await self.__timeoutIdGenerator.generateEventId(),
-            ))
-            return
-        except UnknownTimeoutTargetException as e:
-            self.__timber.log('TimeoutActionMachine', f'Failed to determine banana timeout target ({action=})', e, traceback.format_exc())
-            await self.__submitEvent(NoBananaTargetAvailableTimeoutEvent(
-                originatingAction = action,
-                eventId = await self.__timeoutIdGenerator.generateEventId(),
-                instigatorUserName = instigatorUserName,
-            ))
-            return
+        isGuaranteedTimeout = await self.__guaranteedTimeoutUsersRepository.isGuaranteed(
+            userId = timeoutTarget.userId,
+        )
 
-        if action.useDiceRoll and self.__pixelsDiceMachine is not None and self.__pixelsDiceMachine.isConnected:
+        pixelsDiceIsConnected = self.__pixelsDiceMachine is not None and self.__pixelsDiceMachine.isConnected
+
+        if action.useDiceRoll and not isGuaranteedTimeout and pixelsDiceIsConnected:
             async def onDiceRolled(result: DiceRollResult):
                 await self.__handleBananaTimeoutActionEnding(
                     action = action,
@@ -375,6 +407,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
                 instigatorUserName = instigatorUserName,
             ))
+
         else:
             await self.__handleBananaTimeoutActionEnding(
                 action = action,
@@ -414,14 +447,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 diceRoll = e.diceRoll,
                 diceRollFailureData = e.diceRollFailureData,
                 timeoutTarget = e.timeoutTarget,
-            ))
-            return
-        except UnknownTimeoutTargetException as e:
-            self.__timber.log('TimeoutActionMachine', f'Failed to determine banana timeout target ({action=})', e, traceback.format_exc())
-            await self.__submitEvent(NoBananaTargetAvailableTimeoutEvent(
-                originatingAction = action,
-                eventId = await self.__timeoutIdGenerator.generateEventId(),
-                instigatorUserName = instigatorUserName,
             ))
             return
 

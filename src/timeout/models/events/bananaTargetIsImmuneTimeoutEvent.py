@@ -4,11 +4,13 @@ from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.bananaTimeoutAction import BananaTimeoutAction
 from ..timeoutTarget import TimeoutTarget
+from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
 
 
 @dataclass(frozen = True, slots = True)
 class BananaTargetIsImmuneTimeoutEvent(AbsTimeoutEvent):
     originatingAction: BananaTimeoutAction
+    updatedInventory: ChatterItemGiveResult | None
     eventId: str
     timeoutTarget: TimeoutTarget
 
