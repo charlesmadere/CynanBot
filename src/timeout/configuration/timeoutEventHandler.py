@@ -491,8 +491,22 @@ class TimeoutEventHandler(TimeoutEventListener):
         self,
         event: NoAirStrikeTargetsAvailableTimeoutEvent,
     ):
+        suffix = ''
+
+        if event.updatedInventory is not None:
+            itemCount = event.updatedInventory[ChatterItemType.AIR_STRIKE]
+            itemCountString = locale.format_string("%d", itemCount, grouping = True)
+            pluralityString: str
+
+            if itemCount == 1:
+                pluralityString = ChatterItemType.AIR_STRIKE.humanName
+            else:
+                pluralityString = ChatterItemType.AIR_STRIKE.pluralHumanName
+
+            suffix = f'You now have {itemCountString} {pluralityString}'
+
         self.__twitchChatMessenger.send(
-            text = f'Sorry, there are no {ChatterItemType.AIR_STRIKE.humanName} targets available!',
+            text = f'Sorry, there are no {ChatterItemType.AIR_STRIKE.humanName} targets available! {suffix}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -511,8 +525,22 @@ class TimeoutEventHandler(TimeoutEventListener):
         self,
         event: NoBananaTargetAvailableTimeoutEvent,
     ):
+        suffix = ''
+
+        if event.updatedInventory is not None:
+            itemCount = event.updatedInventory[ChatterItemType.BANANA]
+            itemCountString = locale.format_string("%d", itemCount, grouping = True)
+            pluralityString: str
+
+            if itemCount == 1:
+                pluralityString = ChatterItemType.BANANA.humanName
+            else:
+                pluralityString = ChatterItemType.BANANA.pluralHumanName
+
+            suffix = f'You now have {itemCountString} {pluralityString}'
+
         self.__twitchChatMessenger.send(
-            text = f'Sorry, your {ChatterItemType.BANANA.humanName} target is not available!',
+            text = f'Sorry, your {ChatterItemType.BANANA.humanName} target is not available! {suffix}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
