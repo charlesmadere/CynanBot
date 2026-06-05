@@ -2022,7 +2022,6 @@ websocketConnectionServer: Final[WebsocketConnectionServerInterface] = Websocket
 
 mouseCursorHelper: Final[MouseCursorHelperInterface] = MouseCursorHelper(
     timber = timber,
-    usersRepository = usersRepository,
     websocketConnectionServer = websocketConnectionServer,
 )
 

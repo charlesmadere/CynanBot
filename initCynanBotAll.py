@@ -2925,7 +2925,6 @@ redemptionCounterHelper: RedemptionCounterHelperInterface = RedemptionCounterHel
 
 mouseCursorHelper: Final[MouseCursorHelperInterface] = MouseCursorHelper(
     timber = timber,
-    usersRepository = usersRepository,
     websocketConnectionServer = websocketConnectionServer,
 )
 
