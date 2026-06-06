@@ -583,15 +583,15 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
             ))
 
-        elif isinstance(result, GashaponRewardUseCaseInterface.NotSubscribedResult):
-            await self.__submitEvent(GashaponNotRewardedNotSubscribedChatterItemEvent(
+        elif isinstance(result, GashaponRewardUseCaseInterface.NotReadyResult):
+            await self.__submitEvent(GashaponNotRewardedNotReadyChatterItemEvent(
+                nextGashaponAvailability = result.nextGashaponAvailability,
                 originatingAction = action,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
             ))
 
-        elif isinstance(result, GashaponRewardUseCaseInterface.NotReadyResult):
-            await self.__submitEvent(GashaponNotRewardedNotReadyChatterItemEvent(
-                nextGashaponAvailability = result.nextGashaponAvailability,
+        elif isinstance(result, GashaponRewardUseCaseInterface.NotSubscribedResult):
+            await self.__submitEvent(GashaponNotRewardedNotSubscribedChatterItemEvent(
                 originatingAction = action,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
             ))
