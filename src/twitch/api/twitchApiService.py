@@ -12,6 +12,7 @@ from .models.twitchBanResponseEntry import TwitchBanResponseEntry
 from .models.twitchBannedUsersReponse import TwitchBannedUsersResponse
 from .models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from .models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
+from .models.twitchChannelInformationResponse import TwitchChannelInformationResponse
 from .models.twitchChattersRequest import TwitchChattersRequest
 from .models.twitchChattersResponse import TwitchChattersResponse
 from .models.twitchEmotesResponse import TwitchEmotesResponse
@@ -455,6 +456,55 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching channel editors ({broadcasterId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({channelEditorsResponse=})')
 
         return channelEditorsResponse
+
+    async def fetchChannelInformation(
+        self,
+        broadcasterId: str,
+        twitchAccessToken: str,
+    ) -> TwitchChannelInformationResponse:
+        if not utils.isValidStr(broadcasterId):
+            raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
+        elif not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+
+        self.__timber.log('TwitchApiService', f'Fetching channel information... ({broadcasterId=})')
+        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
+        clientSession = await self.__networkClientProvider.get()
+
+        queryString = urllib.parse.urlencode({
+            'broadcaster_id': broadcasterId,
+        })
+
+        try:
+            response = await clientSession.get(
+                url = f'https://api.twitch.tv/helix/channels?{queryString}',
+                headers = {
+                    'Authorization': f'Bearer {twitchAccessToken}',
+                    'Client-Id': twitchClientId,
+                },
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('TwitchApiService', f'Encountered network error when fetching channel information ({broadcasterId=})', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching channel information ({broadcasterId=}): {e}')
+
+        responseStatusCode = response.statusCode
+        jsonResponse = await response.json()
+        await response.close()
+
+        if responseStatusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching channel information ({broadcasterId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchStatusCodeException(
+                statusCode = responseStatusCode,
+                message = f'TwitchApiService encountered non-200 HTTP status code when fetching channel information ({broadcasterId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})',
+            )
+
+        channelInformationResponse = await self.__twitchJsonMapper.parseChannelInformationResponse(jsonResponse)
+
+        if channelInformationResponse is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching channel information ({broadcasterId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({channelInformationResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching channel information ({broadcasterId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({channelInformationResponse=})')
+
+        return channelInformationResponse
 
     async def fetchChatters(
         self,

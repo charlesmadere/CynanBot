@@ -557,7 +557,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         delaySeconds: int | None = None
         if 'delay' in jsonResponse and utils.isValidInt(jsonResponse.get('delay')):
-            delaySeconds = utils.getIntFromDict(jsonResponse, 'delay')
+            delaySeconds = utils.getIntFromDict(jsonResponse, 'delay', fallback = 0)
 
         broadcasterId = utils.getStrFromDict(jsonResponse, 'broadcaster_id')
 

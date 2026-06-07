@@ -5,6 +5,7 @@ from .models.twitchBanResponse import TwitchBanResponse
 from .models.twitchBannedUsersReponse import TwitchBannedUsersResponse
 from .models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from .models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
+from .models.twitchChannelInformationResponse import TwitchChannelInformationResponse
 from .models.twitchChattersRequest import TwitchChattersRequest
 from .models.twitchChattersResponse import TwitchChattersResponse
 from .models.twitchEmotesResponse import TwitchEmotesResponse
@@ -86,6 +87,14 @@ class TwitchApiServiceInterface(ABC):
         broadcasterId: str,
         twitchAccessToken: str,
     ) -> TwitchChannelEditorsResponse:
+        pass
+
+    @abstractmethod
+    async def fetchChannelInformation(
+        self,
+        broadcasterId: str,
+        twitchAccessToken: str,
+    ) -> TwitchChannelInformationResponse:
         pass
 
     @abstractmethod
