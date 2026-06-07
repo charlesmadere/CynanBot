@@ -48,6 +48,8 @@ from ..models.twitchEventSubRequest import TwitchEventSubRequest
 from ..models.twitchEventSubResponse import TwitchEventSubResponse
 from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
+from ..models.twitchGame import TwitchGame
+from ..models.twitchGamesResponse import TwitchGamesResponse
 from ..models.twitchHypeTrainType import TwitchHypeTrainType
 from ..models.twitchModeratorUser import TwitchModeratorUser
 from ..models.twitchModeratorsResponse import TwitchModeratorsResponse
@@ -418,6 +420,20 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchFollowersResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseGame(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchGame | None:
+        pass
+
+    @abstractmethod
+    async def parseGamesResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchGamesResponse | None:
         pass
 
     @abstractmethod

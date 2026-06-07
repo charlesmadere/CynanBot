@@ -52,6 +52,8 @@ from ..models.twitchEventSubRequest import TwitchEventSubRequest
 from ..models.twitchEventSubResponse import TwitchEventSubResponse
 from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
+from ..models.twitchGame import TwitchGame
+from ..models.twitchGamesResponse import TwitchGamesResponse
 from ..models.twitchHypeTrainType import TwitchHypeTrainType
 from ..models.twitchModeratorUser import TwitchModeratorUser
 from ..models.twitchModeratorsResponse import TwitchModeratorsResponse
@@ -1334,6 +1336,56 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             data = data,
             total = total,
             pagination = pagination,
+        )
+
+    async def parseGame(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchGame | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        boxArtUrl: str | None = None
+        if 'box_art_url' in jsonResponse and utils.isValidUrl(jsonResponse.get('box_art_url')):
+            boxArtUrl = utils.getStrFromDict(jsonResponse, 'box_art_url')
+
+        gameId = utils.getStrFromDict(jsonResponse, 'id')
+        gameName = utils.getStrFromDict(jsonResponse, 'name')
+
+        igdbId: str | None = None
+        if 'igdb_id' in jsonResponse and utils.isValidStr(jsonResponse.get('igdb_id')):
+            igdbId = utils.getStrFromDict(jsonResponse, 'igdb_id')
+
+        return TwitchGame(
+            boxArtUrl = boxArtUrl,
+            gameId = gameId,
+            gameName = gameName,
+            igdbId = igdbId,
+        )
+
+    async def parseGamesResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchGamesResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        data: FrozenList[TwitchGame] = FrozenList()
+
+        if isinstance(dataArray, list) and len(dataArray) >= 1:
+            for index, dataItem in enumerate(dataArray):
+                game = await self.parseGame(dataItem)
+
+                if game is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"data\" data ({jsonResponse=})')
+                else:
+                    data.append(game)
+
+        data.freeze()
+
+        return TwitchGamesResponse(
+            data = data,
         )
 
     async def parseHypeTrainType(
