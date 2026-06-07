@@ -140,6 +140,8 @@ from src.chatterInventory.settings.chatterInventorySettings import ChatterInvent
 from src.chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from src.chatterInventory.useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
 from src.chatterInventory.useCases.cassetteTapeItemUseCaseInterface import CassetteTapeItemUseCaseInterface
+from src.chatterInventory.useCases.gashaponItemUseCase import GashaponItemUseCase
+from src.chatterInventory.useCases.gashaponItemUseCaseInterface import GashaponItemUseCaseInterface
 from src.chatterInventory.useCases.gashaponRewardUseCase import GashaponRewardUseCase
 from src.chatterInventory.useCases.gashaponRewardUseCaseInterface import GashaponRewardUseCaseInterface
 from src.chatterPreferredName.helpers.chatterPreferredNameHelper import ChatterPreferredNameHelper
@@ -2494,6 +2496,14 @@ gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface]
     timeZoneRepository = timeZoneRepository,
 )
 
+gashaponItemUseCase: Final[GashaponItemUseCaseInterface] = GashaponItemUseCase(
+    chatterInventoryRepository = chatterInventoryRepository,
+    chatterInventorySettings = chatterInventorySettings,
+    timber = timber,
+    trollmojiHelper = trollmojiHelper,
+    twitchSubscriptionsRepository = twitchSubscriptionsRepository,
+)
+
 gashaponRewardUseCase: Final[GashaponRewardUseCaseInterface] = GashaponRewardUseCase(
     chatterInventoryHelper = chatterInventoryHelper,
     chatterInventorySettings = chatterInventorySettings,
@@ -2510,6 +2520,7 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     chatterInventoryRepository = chatterInventoryRepository,
     chatterInventorySettings = chatterInventorySettings,
     chatterItemEventListener = chatterItemEventListener,
+    gashaponItemUseCase = gashaponItemUseCase,
     gashaponRewardUseCase = gashaponRewardUseCase,
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
