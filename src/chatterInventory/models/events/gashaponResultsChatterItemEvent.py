@@ -5,6 +5,7 @@ from frozendict import frozendict
 from .absChatterItemEvent import AbsChatterItemEvent
 from ..chatterInventoryData import ChatterInventoryData
 from ..chatterItemType import ChatterItemType
+from ..gashaponTier import GashaponTier
 from ..useChatterItemAction import UseChatterItemAction
 
 
@@ -12,6 +13,7 @@ from ..useChatterItemAction import UseChatterItemAction
 class GashaponResultsChatterItemEvent(AbsChatterItemEvent):
     updatedInventory: ChatterInventoryData
     awardedItems: frozendict[ChatterItemType, int]
+    gashaponTier: GashaponTier
     eventId: str
     hypeEmote: str
     originatingAction: UseChatterItemAction

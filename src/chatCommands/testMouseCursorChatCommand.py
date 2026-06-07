@@ -48,8 +48,8 @@ class TestMouseCursorChatCommand(AbsChatCommand):
             return ChatCommandResult.IGNORED
 
         result = await self.__mouseCursorHelper.applyMouseCursor(
-            twitchChannel = chatMessage.twitchChannel,
             twitchChannelId = chatMessage.twitchChannelId,
+            twitchUser = chatMessage.twitchUser,
         )
 
         self.__timber.log(self.commandName, f'Handled ({result=}) ({chatMessage=})')

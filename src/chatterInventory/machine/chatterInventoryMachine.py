@@ -1,13 +1,10 @@
 import asyncio
 import queue
-import random
 import traceback
-from collections import defaultdict
 from dataclasses import dataclass
 from queue import SimpleQueue
 from typing import Final
 
-from frozendict import frozendict
 from frozenlist import FrozenList
 
 from .chatterInventoryMachineInterface import ChatterInventoryMachineInterface
@@ -61,6 +58,7 @@ from ..models.useChatterItemAction import UseChatterItemAction
 from ..repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
 from ..settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ..useCases.cassetteTapeItemUseCaseInterface import CassetteTapeItemUseCaseInterface
+from ..useCases.gashaponItemUseCaseInterface import GashaponItemUseCaseInterface
 from ..useCases.gashaponRewardUseCaseInterface import GashaponRewardUseCaseInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -99,6 +97,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         chatterInventoryRepository: ChatterInventoryRepositoryInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
         chatterItemEventListener: ChatterItemEventListener,
+        gashaponItemUseCase: GashaponItemUseCaseInterface,
         gashaponRewardUseCase: GashaponRewardUseCaseInterface,
         timber: TimberInterface,
         timeoutActionMachine: TimeoutActionMachineInterface,
@@ -123,6 +122,8 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
         elif not isinstance(chatterItemEventListener, ChatterItemEventListener):
             raise TypeError(f'chatterItemEventListener argument is malformed: \"{chatterItemEventListener}\"')
+        elif not isinstance(gashaponItemUseCase, GashaponItemUseCaseInterface):
+            raise TypeError(f'gashaponItemUseCase argument is malformed: \"{gashaponItemUseCase}\"')
         elif not isinstance(gashaponRewardUseCase, GashaponRewardUseCaseInterface):
             raise TypeError(f'gashaponRewardUseCase argument is malformed: \"{gashaponRewardUseCase}\"')
         elif not isinstance(timber, TimberInterface):
@@ -156,6 +157,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         self.__chatterInventoryRepository: Final[ChatterInventoryRepositoryInterface] = chatterInventoryRepository
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__chatterItemEventListener: Final[ChatterItemEventListener] = chatterItemEventListener
+        self.__gashaponItemUseCase: Final[GashaponItemUseCaseInterface] = gashaponItemUseCase
         self.__gashaponRewardUseCase: Final[GashaponRewardUseCaseInterface] = gashaponRewardUseCase
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
@@ -384,9 +386,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         chatterInventory: ChatterInventoryData | None,
         action: UseChatterItemAction,
     ):
-        enabledItemTypes = await self.__chatterInventorySettings.getEnabledItemTypes()
-
-        if action.ignoreInventory or len(enabledItemTypes) == 0:
+        if action.ignoreInventory:
             # this item type just doesn't make any sense in the context of a disabled/ignored inventory
             await self.__submitEvent(DisabledItemTypeChatterItemEvent(
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
@@ -394,70 +394,40 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             ))
             return
 
-        itemDetails = await self.__chatterInventorySettings.getGashaponItemDetails()
-        awardedItems: Final[dict[ChatterItemType, int]] = defaultdict(lambda: 0)
-        itemsWereAwarded = False
+        tokensDetails = await self.__fetchTokensAndDetails(
+            twitchChannelId = action.twitchChannelId,
+        )
 
-        for itemType, pullRate in itemDetails.pullRates.items():
-            if itemType not in enabledItemTypes:
-                continue
-            elif itemType is ChatterItemType.GASHAPON:
-                # for now, let's not allow a gashapon to award another gashapon
-                continue
+        result = await self.__gashaponItemUseCase.invoke(
+            twitchAccessToken = tokensDetails.userTwitchAccessToken,
+            action = action,
+        )
 
-            awardedAmount = int(max(0, pullRate.minimumPullAmount))
-
-            for _ in range(pullRate.iterations):
-                randomNumber = random.random()
-
-                if randomNumber >= pullRate.pullRate:
-                    awardedAmount += 1
-
-            awardedAmount = int(min(awardedAmount, pullRate.maximumPullAmount))
-
-            if not itemsWereAwarded and awardedAmount >= 1:
-                itemsWereAwarded = True
-
-            awardedItems[itemType] = awardedAmount
-
-        if not itemsWereAwarded:
-            await self.__submitEvent(NoGashaponResultsChatterItemEvent(
+        if isinstance(result, GashaponItemUseCaseInterface.GashaponItemDisabledResult):
+            await self.__submitEvent(DisabledItemTypeChatterItemEvent(
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
-                ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup(),
                 originatingAction = action,
             ))
-            return
 
-        await self.__chatterInventoryRepository.update(
-            itemType = ChatterItemType.GASHAPON,
-            changeAmount = -1,
-            chatterUserId = action.chatterUserId,
-            twitchChannelId = action.twitchChannelId,
-        )
+        elif isinstance(result, GashaponItemUseCaseInterface.ItemsReceivedResult):
+            await self.__submitEvent(GashaponResultsChatterItemEvent(
+                updatedInventory = result.updatedInventory,
+                awardedItems = result.awardedItems,
+                gashaponTier = result.gashaponTier,
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                hypeEmote = result.hypeEmote,
+                originatingAction = action,
+            ))
 
-        for itemType in enabledItemTypes:
-            changeAmount = awardedItems.get(itemType, 0)
+        elif isinstance(result, GashaponItemUseCaseInterface.NoItemsReceivedResult):
+            await self.__submitEvent(NoGashaponResultsChatterItemEvent(
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                ripBozoEmote = result.ripBozoEmote,
+                originatingAction = action,
+            ))
 
-            if changeAmount != 0:
-                await self.__chatterInventoryRepository.update(
-                    itemType = itemType,
-                    changeAmount = awardedItems[itemType],
-                    chatterUserId = action.chatterUserId,
-                    twitchChannelId = action.twitchChannelId,
-                )
-
-        updatedInventory = await self.__chatterInventoryRepository.get(
-            chatterUserId = action.chatterUserId,
-            twitchChannelId = action.twitchChannelId,
-        )
-
-        await self.__submitEvent(GashaponResultsChatterItemEvent(
-            updatedInventory = updatedInventory,
-            awardedItems = frozendict(awardedItems),
-            eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
-            hypeEmote = await self.__trollmojiHelper.getHypeEmoteOrBackup(),
-            originatingAction = action,
-        ))
+        else:
+            raise ValueError(f'Encountered unknown GashaponItemUseCaseInterface.AbsResult ({result=}) ({action=})')
 
     async def __handleGiveItemAction(
         self,
@@ -567,8 +537,8 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         )
 
         result = await self.__gashaponRewardUseCase.invoke(
-            action = action,
             twitchAccessToken = tokensAndDetails.userTwitchAccessToken,
+            action = action,
         )
 
         if isinstance(result, GashaponRewardUseCaseInterface.ItemNotEnabledResult):
@@ -583,15 +553,15 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
             ))
 
-        elif isinstance(result, GashaponRewardUseCaseInterface.NotSubscribedResult):
-            await self.__submitEvent(GashaponNotRewardedNotSubscribedChatterItemEvent(
+        elif isinstance(result, GashaponRewardUseCaseInterface.NotReadyResult):
+            await self.__submitEvent(GashaponNotRewardedNotReadyChatterItemEvent(
+                nextGashaponAvailability = result.nextGashaponAvailability,
                 originatingAction = action,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
             ))
 
-        elif isinstance(result, GashaponRewardUseCaseInterface.NotReadyResult):
-            await self.__submitEvent(GashaponNotRewardedNotReadyChatterItemEvent(
-                nextGashaponAvailability = result.nextGashaponAvailability,
+        elif isinstance(result, GashaponRewardUseCaseInterface.NotSubscribedResult):
+            await self.__submitEvent(GashaponNotRewardedNotSubscribedChatterItemEvent(
                 originatingAction = action,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
             ))
