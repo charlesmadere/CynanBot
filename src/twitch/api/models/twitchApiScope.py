@@ -8,6 +8,7 @@ class TwitchApiScope(Enum):
     CHANNEL_EDIT_COMMERCIAL = auto()
     CHANNEL_EDITOR = auto()
     CHANNEL_MANAGE_ADS = auto()
+    CHANNEL_MANAGE_BROADCAST = auto()
     CHANNEL_MANAGE_MODERATORS = auto()
     CHANNEL_MANAGE_POLLS = auto()
     CHANNEL_MANAGE_PREDICTIONS = auto()

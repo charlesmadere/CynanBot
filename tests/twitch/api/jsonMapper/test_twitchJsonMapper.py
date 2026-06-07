@@ -107,6 +107,11 @@ class TestTwitchJsonMapper:
         assert result is TwitchApiScope.CHANNEL_MANAGE_ADS
 
     @pytest.mark.asyncio
+    async def test_parseApiScope_withChannelManageBroadcastString(self):
+        result = await self.jsonMapper.parseApiScope('channel:manage:broadcast')
+        assert result is TwitchApiScope.CHANNEL_MANAGE_BROADCAST
+
+    @pytest.mark.asyncio
     async def test_parseApiScope_withChannelManageModeratorsString(self):
         result = await self.jsonMapper.parseApiScope('channel:manage:moderators')
         assert result is TwitchApiScope.CHANNEL_MANAGE_MODERATORS

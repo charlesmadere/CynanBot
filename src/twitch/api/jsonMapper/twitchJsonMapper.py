@@ -197,6 +197,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'channel:bot': return TwitchApiScope.CHANNEL_BOT
             case 'channel:edit:commercial': return TwitchApiScope.CHANNEL_EDIT_COMMERCIAL
             case 'channel:manage:ads': return TwitchApiScope.CHANNEL_MANAGE_ADS
+            case 'channel:manage:broadcast': return TwitchApiScope.CHANNEL_MANAGE_BROADCAST
             case 'channel:manage:moderators': return TwitchApiScope.CHANNEL_MANAGE_MODERATORS
             case 'channel:manage:polls': return TwitchApiScope.CHANNEL_MANAGE_POLLS
             case 'channel:manage:predictions': return TwitchApiScope.CHANNEL_MANAGE_PREDICTIONS
