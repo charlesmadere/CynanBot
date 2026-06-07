@@ -525,22 +525,25 @@ class TimeoutEventHandler(TimeoutEventListener):
         self,
         event: NoBananaTargetAvailableTimeoutEvent,
     ):
-        suffix = ''
+        if event.updatedInventory is None:
+            self.__twitchChatMessenger.send(
+                text = f'Sorry, your {ChatterItemType.BANANA.humanName} target is not available!',
+                twitchChannelId = event.twitchChannelId,
+                replyMessageId = event.twitchChatMessageId,
+            )
+            return
 
-        if event.updatedInventory is not None:
-            itemCount = event.updatedInventory[ChatterItemType.BANANA]
-            itemCountString = locale.format_string("%d", itemCount, grouping = True)
-            pluralityString: str
+        itemCount = event.updatedInventory[ChatterItemType.BANANA]
+        itemCountString = locale.format_string("%d", itemCount, grouping = True)
+        pluralityString: str
 
-            if itemCount == 1:
-                pluralityString = ChatterItemType.BANANA.humanName
-            else:
-                pluralityString = ChatterItemType.BANANA.pluralHumanName
-
-            suffix = f'You now have {itemCountString} {pluralityString}'
+        if itemCount == 1:
+            pluralityString = ChatterItemType.BANANA.humanName
+        else:
+            pluralityString = ChatterItemType.BANANA.pluralHumanName
 
         self.__twitchChatMessenger.send(
-            text = f'Sorry, your {ChatterItemType.BANANA.humanName} target is not available! {suffix}',
+            text = f'You now have {itemCountString} {pluralityString}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
