@@ -1,5 +1,7 @@
 import traceback
-from typing import Any, Final
+from typing import Any, Collection, Final
+
+from frozenlist import FrozenList
 
 from .emojiData import EmojiData
 from .emojiRepositoryInterface import EmojiRepositoryInterface
@@ -25,6 +27,24 @@ class EmojiRepository(EmojiRepositoryInterface):
 
         self.__isLoaded: bool = False
         self.__emojiData: Final[dict[str, EmojiData | None]] = dict()
+
+    async def fetchEmojiCategory(self, category: str) -> Collection[EmojiData]:
+        if not utils.isValidStr(category):
+            raise TypeError(f'category argument is malformed: \"{category}\"')
+
+        await self.__readJson()
+        matchingEmoji: list[EmojiData] = list()
+
+        for emojiData in self.__emojiData.values():
+            if emojiData is None or not utils.isValidStr(emojiData.category):
+                continue
+            elif emojiData.category == category:
+                matchingEmoji.append(emojiData)
+
+        matchingEmoji.sort(key = lambda emojiData: emojiData.name.casefold())
+        frozenMatchingEmoji: FrozenList[EmojiData] = FrozenList(matchingEmoji)
+        frozenMatchingEmoji.freeze()
+        return frozenMatchingEmoji
 
     async def fetchEmojiData(self, emoji: str | None) -> EmojiData | None:
         if emoji is None:

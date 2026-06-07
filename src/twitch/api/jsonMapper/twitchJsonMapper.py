@@ -19,6 +19,8 @@ from ..models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSub
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
 from ..models.twitchChannelEditor import TwitchChannelEditor
 from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
+from ..models.twitchChannelInformation import TwitchChannelInformation
+from ..models.twitchChannelInformationResponse import TwitchChannelInformationResponse
 from ..models.twitchChannelPointsVoting import TwitchChannelPointsVoting
 from ..models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
 from ..models.twitchChatBadge import TwitchChatBadge
@@ -195,6 +197,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'channel:bot': return TwitchApiScope.CHANNEL_BOT
             case 'channel:edit:commercial': return TwitchApiScope.CHANNEL_EDIT_COMMERCIAL
             case 'channel:manage:ads': return TwitchApiScope.CHANNEL_MANAGE_ADS
+            case 'channel:manage:broadcast': return TwitchApiScope.CHANNEL_MANAGE_BROADCAST
             case 'channel:manage:moderators': return TwitchApiScope.CHANNEL_MANAGE_MODERATORS
             case 'channel:manage:polls': return TwitchApiScope.CHANNEL_MANAGE_POLLS
             case 'channel:manage:predictions': return TwitchApiScope.CHANNEL_MANAGE_PREDICTIONS
@@ -518,6 +521,104 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         return TwitchChannelEditorsResponse(
             editors = frozenChannelEditors,
+        )
+
+    async def parseChannelInformation(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchChannelInformation | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        isBrandedContent = utils.getBoolFromDict(jsonResponse, 'is_branded_content', fallback = False)
+
+        contentClassificationLabels: list[str] = list()
+        contentClassificationLabelsJson: list[str] | Any | None = jsonResponse.get('content_classification_labels')
+        if isinstance(contentClassificationLabelsJson, list) and len(contentClassificationLabelsJson) >= 1:
+            for index, label in enumerate(contentClassificationLabelsJson):
+                if utils.isValidStr(label):
+                    contentClassificationLabels.append(label)
+                else:
+                    self.__timber.log('TwitchJsonMapper', f'Encountered invalid/malformed string at index {index} for \"content_classification_labels\" data ({jsonResponse=})')
+
+        frozenContentClassificationLabels: FrozenList[str] = FrozenList(contentClassificationLabels)
+        frozenContentClassificationLabels.freeze()
+
+        tags: list[str] = list()
+        tagsJson: list[str] | Any | None = jsonResponse.get('tags')
+        if isinstance(tagsJson, list) and len(tagsJson) >= 1:
+            for index, tag in enumerate(tagsJson):
+                if utils.isValidStr(tag):
+                    tags.append(tag)
+                else:
+                    self.__timber.log('TwitchJsonMapper', f'Encountered invalid/malformed string at index {index} for \"tags\" data ({jsonResponse=})')
+
+        frozenTags: FrozenList[str] = FrozenList(tags)
+        frozenTags.freeze()
+
+        delaySeconds: int | None = None
+        if 'delay' in jsonResponse and utils.isValidInt(jsonResponse.get('delay')):
+            delaySeconds = utils.getIntFromDict(jsonResponse, 'delay', fallback = 0)
+
+        broadcasterId = utils.getStrFromDict(jsonResponse, 'broadcaster_id')
+
+        broadcasterLanguage: str | None = None
+        if 'broadcaster_language' in jsonResponse and utils.isValidStr(jsonResponse.get('broadcaster_language')):
+            broadcasterLanguage = utils.getStrFromDict(jsonResponse, 'broadcaster_language')
+
+        broadcasterLogin = utils.getStrFromDict(jsonResponse, 'broadcaster_login')
+        broadcasterName = utils.getStrFromDict(jsonResponse, 'broadcaster_name')
+
+        gameId: str | None = None
+        if 'game_id' in jsonResponse and utils.isValidStr(jsonResponse.get('game_id')):
+            gameId = utils.getStrFromDict(jsonResponse, 'game_id')
+
+        gameName: str | None = None
+        if 'game_name' in jsonResponse and utils.isValidStr(jsonResponse.get('game_name')):
+            gameName = utils.getStrFromDict(jsonResponse, 'game_name')
+
+        title: str | None = None
+        if 'title' in jsonResponse and utils.isValidStr(jsonResponse.get('title')):
+            title = utils.getStrFromDict(jsonResponse, 'title')
+
+        return TwitchChannelInformation(
+            isBrandedContent = isBrandedContent,
+            contentClassificationLabels = frozenContentClassificationLabels,
+            tags = frozenTags,
+            delaySeconds = delaySeconds,
+            broadcasterId = broadcasterId,
+            broadcasterLanguage = broadcasterLanguage,
+            broadcasterLogin = broadcasterLogin,
+            broadcasterName = broadcasterName,
+            gameId = gameId,
+            gameName = gameName,
+            title = title,
+        )
+
+    async def parseChannelInformationResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchChannelInformationResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        channelInformationList: list[TwitchChannelInformation] = list()
+        dataJson: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+
+        if isinstance(dataJson, list) and len(dataJson) >= 1:
+            for index, channelInformationJson in enumerate(dataJson):
+                channelInformation = await self.parseChannelInformation(channelInformationJson)
+
+                if channelInformation is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"data\" data ({jsonResponse=})')
+                else:
+                    channelInformationList.append(channelInformation)
+
+        frozenChannelInformation: FrozenList[TwitchChannelInformation] = FrozenList(channelInformationList)
+        frozenChannelInformation.freeze()
+
+        return TwitchChannelInformationResponse(
+            data = frozenChannelInformation,
         )
 
     async def parseChannelPointsVoting(

@@ -1,7 +1,10 @@
+import random
 from typing import Final
 
 import emoji
+from frozenlist import FrozenList
 
+from .emojiData import EmojiData
 from .emojiHelperInterface import EmojiHelperInterface
 from .emojiRepositoryInterface import EmojiRepositoryInterface
 from ..misc import utils as utils
@@ -30,6 +33,19 @@ class EmojiHelper(EmojiHelperInterface):
             return None
         else:
             return emojiData.name
+
+    async def getRandomFoodAndDrinkEmoji(self) -> EmojiData:
+        allFoodAndDrinkEmoji = await self.__emojiRepository.fetchEmojiCategory(
+            category = 'Food & Drink',
+        )
+
+        frozenFoodAndDrinkEmoji: FrozenList[EmojiData] = FrozenList(allFoodAndDrinkEmoji)
+        frozenFoodAndDrinkEmoji.freeze()
+
+        if len(frozenFoodAndDrinkEmoji) == 0:
+            raise RuntimeError(f'Failed to find any \"Food & Drink\" emoji: ({frozenFoodAndDrinkEmoji=})')
+
+        return random.choice(frozenFoodAndDrinkEmoji)
 
     async def replaceEmojisWithHumanNames(self, text: str) -> str:
         if not utils.isValidStr(text):
