@@ -74,7 +74,6 @@ from ...timeout.models.actions.voreTimeoutAction import VoreTimeoutAction
 from ...timeout.models.exactTimeoutDuration import ExactTimeoutDuration
 from ...timeout.models.randomLinearTimeoutDuration import RandomLinearTimeoutDuration
 from ...timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
-from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ...twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
@@ -102,7 +101,6 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         timber: TimberInterface,
         timeoutActionMachine: TimeoutActionMachineInterface,
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
-        trollmojiHelper: TrollmojiHelperInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
@@ -132,8 +130,6 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             raise TypeError(f'timeoutActionMachine argument is malformed: \"{timeoutActionMachine}\"')
         elif not isinstance(timeoutIdGenerator, TimeoutIdGeneratorInterface):
             raise TypeError(f'timeoutIdGenerator argument is malformed: \"{timeoutIdGenerator}\"')
-        elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
-            raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -162,7 +158,6 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
-        self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
@@ -571,7 +566,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
                 chatterInventory = result.chatterInventory,
                 originatingAction = action,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
-                hypeEmote = await self.__trollmojiHelper.getHypeEmoteOrBackup(),
+                hypeEmote = result.hypeEmote,
             ))
 
         else:
