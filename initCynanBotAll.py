@@ -2509,6 +2509,7 @@ gashaponRewardUseCase: Final[GashaponRewardUseCaseInterface] = GashaponRewardUse
     chatterInventorySettings = chatterInventorySettings,
     gashaponRewardHistoryRepository = gashaponRewardHistoryRepository,
     timeZoneRepository = timeZoneRepository,
+    trollmojiHelper = trollmojiHelper,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,
 )
@@ -2525,7 +2526,6 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
     timeoutIdGenerator = timeoutIdGenerator,
-    trollmojiHelper = trollmojiHelper,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,

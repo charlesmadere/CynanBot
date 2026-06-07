@@ -30,6 +30,7 @@ class GashaponRewardUseCaseInterface(ABC):
     @dataclass(frozen = True, slots = True)
     class RewardedResult(AbsResult):
         chatterInventory: ChatterInventoryData
+        hypeEmote: str
 
     @abstractmethod
     async def invoke(

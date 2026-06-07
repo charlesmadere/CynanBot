@@ -10,6 +10,7 @@ from ..repositories.gashaponRewardHistoryRepositoryInterface import \
 from ..settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
+from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ...twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ...twitch.subscribers.twitchSubscriptionsRepositoryInterface import TwitchSubscriptionsRepositoryInterface
 
@@ -22,6 +23,7 @@ class GashaponRewardUseCase(GashaponRewardUseCaseInterface):
         chatterInventorySettings: ChatterInventorySettingsInterface,
         gashaponRewardHistoryRepository: GashaponRewardHistoryRepositoryInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
+        trollmojiHelper: TrollmojiHelperInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface,
     ):
@@ -33,6 +35,8 @@ class GashaponRewardUseCase(GashaponRewardUseCaseInterface):
             raise TypeError(f'gashaponRewardHistoryRepository argument is malformed: \"{gashaponRewardHistoryRepository}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
+        elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
+            raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif not isinstance(twitchSubscriptionsRepository, TwitchSubscriptionsRepositoryInterface):
@@ -42,6 +46,7 @@ class GashaponRewardUseCase(GashaponRewardUseCaseInterface):
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface] = gashaponRewardHistoryRepository
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
         self.__twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface] = twitchFollowingStatusRepository
         self.__twitchSubscriptionsRepository: Final[TwitchSubscriptionsRepositoryInterface] = twitchSubscriptionsRepository
 
@@ -101,4 +106,5 @@ class GashaponRewardUseCase(GashaponRewardUseCaseInterface):
 
         return GashaponRewardUseCaseInterface.RewardedResult(
             chatterInventory = giveResult.chatterInventory,
+            hypeEmote = await self.__trollmojiHelper.getHypeEmoteOrBackup(),
         )
