@@ -491,22 +491,25 @@ class TimeoutEventHandler(TimeoutEventListener):
         self,
         event: NoAirStrikeTargetsAvailableTimeoutEvent,
     ):
-        suffix = ''
+        if event.updatedInventory is None:
+            self.__twitchChatMessenger.send(
+                text = f'Sorry, there are no {ChatterItemType.AIR_STRIKE.humanName} targets available!',
+                twitchChannelId = event.twitchChannelId,
+                replyMessageId = event.twitchChatMessageId,
+            )
+            return
 
-        if event.updatedInventory is not None:
-            itemCount = event.updatedInventory[ChatterItemType.AIR_STRIKE]
-            itemCountString = locale.format_string("%d", itemCount, grouping = True)
-            pluralityString: str
+        itemCount = event.updatedInventory[ChatterItemType.AIR_STRIKE]
+        itemCountString = locale.format_string("%d", itemCount, grouping = True)
+        pluralityString: str
 
-            if itemCount == 1:
-                pluralityString = ChatterItemType.AIR_STRIKE.humanName
-            else:
-                pluralityString = ChatterItemType.AIR_STRIKE.pluralHumanName
-
-            suffix = f'You now have {itemCountString} {pluralityString}'
+        if itemCount == 1:
+            pluralityString = ChatterItemType.AIR_STRIKE.humanName
+        else:
+            pluralityString = ChatterItemType.AIR_STRIKE.pluralHumanName
 
         self.__twitchChatMessenger.send(
-            text = f'Sorry, there are no {ChatterItemType.AIR_STRIKE.humanName} targets available! {suffix}',
+            text = f'You now have {itemCountString} {pluralityString}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
