@@ -927,6 +927,7 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         match responseStatusCode:
             case 204:
+                # means that channel information was successfully modified
                 return True
 
             case _:
