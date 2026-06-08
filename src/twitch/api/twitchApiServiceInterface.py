@@ -14,6 +14,7 @@ from .models.twitchEventSubResponse import TwitchEventSubResponse
 from .models.twitchFetchStreamsRequest import TwitchFetchStreamsRequest
 from .models.twitchFetchUserRequest import TwitchFetchUserRequest
 from .models.twitchFollowersResponse import TwitchFollowersResponse
+from .models.twitchGamesResponse import TwitchGamesResponse
 from .models.twitchModeratorsResponse import TwitchModeratorsResponse
 from .models.twitchModifyChannelInformationRequest import TwitchModifyChannelInformationRequest
 from .models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
@@ -121,6 +122,14 @@ class TwitchApiServiceInterface(ABC):
         twitchAccessToken: str,
         userId: str,
     ) -> TwitchFollowersResponse:
+        pass
+
+    @abstractmethod
+    async def fetchGames(
+        self,
+        gameName: str,
+        twitchAccessToken: str,
+    ) -> TwitchGamesResponse:
         pass
 
     @abstractmethod

@@ -20,7 +20,7 @@ class TwitchChannelInformationHelperInterface(ABC):
     @abstractmethod
     async def setGame(
         self,
-        game: str,
+        gameName: str,
         twitchChannelId: str,
     ) -> str:
         pass
