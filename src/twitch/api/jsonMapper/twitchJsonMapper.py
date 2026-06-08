@@ -57,6 +57,7 @@ from ..models.twitchGamesResponse import TwitchGamesResponse
 from ..models.twitchHypeTrainType import TwitchHypeTrainType
 from ..models.twitchModeratorUser import TwitchModeratorUser
 from ..models.twitchModeratorsResponse import TwitchModeratorsResponse
+from ..models.twitchModifyChannelInformationRequest import TwitchModifyChannelInformationRequest
 from ..models.twitchNoticeType import TwitchNoticeType
 from ..models.twitchOutcome import TwitchOutcome
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
@@ -2921,6 +2922,23 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             'type': eventSubType,
             'version': version,
         }
+
+    async def serializeModifyChannelInformationRequest(
+        self,
+        modifyChannelInformationRequest: TwitchModifyChannelInformationRequest,
+    ) -> dict[str, Any]:
+        if not isinstance(modifyChannelInformationRequest, TwitchModifyChannelInformationRequest):
+            raise TypeError(f'modifyChannelInformationRequest argument is malformed: \"{modifyChannelInformationRequest}\"')
+
+        dictionary: dict[str, Any] = dict()
+
+        if utils.isValidStr(modifyChannelInformationRequest.gameId):
+            dictionary['game_id'] = modifyChannelInformationRequest.gameId
+
+        if utils.isValidStr(modifyChannelInformationRequest.title):
+            dictionary['title'] = modifyChannelInformationRequest.title
+
+        return dictionary
 
     async def serializeSendChatAnnouncementRequest(
         self,

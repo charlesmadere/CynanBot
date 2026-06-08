@@ -15,6 +15,7 @@ from .models.twitchFetchStreamsRequest import TwitchFetchStreamsRequest
 from .models.twitchFetchUserRequest import TwitchFetchUserRequest
 from .models.twitchFollowersResponse import TwitchFollowersResponse
 from .models.twitchModeratorsResponse import TwitchModeratorsResponse
+from .models.twitchModifyChannelInformationRequest import TwitchModifyChannelInformationRequest
 from .models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
 from .models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
@@ -149,6 +150,14 @@ class TwitchApiServiceInterface(ABC):
         twitchAccessToken: str,
         fetchUserRequest: TwitchFetchUserRequest,
     ) -> TwitchUsersResponse:
+        pass
+
+    @abstractmethod
+    async def modifyChannelInformation(
+        self,
+        twitchAccessToken: str,
+        modifyChannelInformationRequest: TwitchModifyChannelInformationRequest,
+    ) -> bool:
         pass
 
     @abstractmethod
