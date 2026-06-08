@@ -29,6 +29,15 @@ class NetworkHandle(ABC):
         pass
 
     @abstractmethod
+    async def patch(
+        self,
+        url: str,
+        headers: dict[str, Any] | None = None,
+        json: dict[str, Any] | None = None,
+    ) -> NetworkResponse:
+        pass
+
+    @abstractmethod
     async def post(
         self,
         url: str,

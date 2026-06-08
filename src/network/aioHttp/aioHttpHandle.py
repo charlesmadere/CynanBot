@@ -81,6 +81,34 @@ class AioHttpHandle(NetworkHandle):
     def networkClientType(self) -> NetworkClientType:
         return NetworkClientType.AIOHTTP
 
+    async def patch(
+        self,
+        url: str,
+        headers: dict[str, Any] | None = None,
+        json: dict[str, Any] | None = None,
+    ) -> NetworkResponse:
+        response: aiohttp.ClientResponse | None
+
+        try:
+            response = await self.__clientSession.patch(
+                url = url,
+                headers = headers,
+                json = json,
+            )
+        except Exception as e:
+            self.__timber.log('AioHttpHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP PATCH ({url=}) ({headers=}) ({json=})', e)
+            raise GenericNetworkException(f'Encountered network error (via {self.networkClientType}) when trying to HTTP PATCH ({url=}) ({headers=}) ({json=}): {e}')
+
+        if not isinstance(response, aiohttp.ClientResponse):
+            self.__timber.log('AioHttpHandle', f'Received no response (via {self.networkClientType}) when trying to HTTP PATCH ({url=}) ({headers=}) ({json=})')
+            raise GenericNetworkException(f'Received no response (via {self.networkClientType}) when trying to HTTP PATCH ({url=}) ({headers=}) ({json=})')
+
+        return AioHttpResponse(
+            response = response,
+            url = url,
+            timber = self.__timber,
+        )
+
     async def post(
         self,
         url: str,
