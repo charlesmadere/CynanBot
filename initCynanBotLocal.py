@@ -398,6 +398,9 @@ from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from src.twitch.channelEditors.twitchChannelEditorsRepository import TwitchChannelEditorsRepository
 from src.twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
+from src.twitch.channelInformationHelper.twitchChannelInformationHelper import TwitchChannelInformationHelper
+from src.twitch.channelInformationHelper.twitchChannelInformationHelperInterface import \
+    TwitchChannelInformationHelperInterface
 from src.twitch.chatMessenger.twitchChatMessenger import TwitchChatMessenger
 from src.twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
@@ -795,8 +798,21 @@ emojiRepository: EmojiRepositoryInterface = EmojiRepository(
     timber = timber,
 )
 
-emojiHelper: EmojiHelperInterface = EmojiHelper(
+emojiHelper: Final[EmojiHelperInterface] = EmojiHelper(
     emojiRepository = emojiRepository,
+)
+
+twitchChannelEditorsRepository: Final[TwitchChannelEditorsRepositoryInterface] = TwitchChannelEditorsRepository(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchApiService = twitchApiService,
+    twitchTokensRepository = twitchTokensRepository,
+)
+
+twitchChannelInformationHelper: Final[TwitchChannelInformationHelperInterface] = TwitchChannelInformationHelper(
+    timber = timber,
+    twitchApiService = twitchApiService,
+    twitchTokensRepository = twitchTokensRepository,
 )
 
 isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = IsLiveOnTwitchRepository(
@@ -807,14 +823,7 @@ isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = IsLiveOnTwi
     twitchTokensRepository = twitchTokensRepository,
 )
 
-twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface = TwitchChannelEditorsRepository(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    twitchApiService = twitchApiService,
-    twitchTokensRepository = twitchTokensRepository
-)
-
-languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
+languagesRepository: Final[LanguagesRepositoryInterface] = LanguagesRepository()
 
 locationsRepository: LocationsRepositoryInterface = LocationsRepository(
     locationsJsonReader = JsonFileReader(
