@@ -2,6 +2,9 @@ import traceback
 from dataclasses import dataclass
 from typing import Final
 
+import emoji
+from emoji import Token
+
 from .absChannelPointsRedemption import AbsChannelPointRedemption
 from .pointsRedemptionResult import PointsRedemptionResult
 from ..emojiHelper.emojiData import EmojiData
@@ -44,9 +47,24 @@ class UpdateStreamTitleFoodEmojiPointRedemption(AbsChannelPointRedemption):
         self.__twitchChannelInformationHelper: Final[TwitchChannelInformationHelperInterface] = twitchChannelInformationHelper
 
     async def __determineNextTitleAndEmoji(self, currentTitle: str) -> TitleAndEmoji:
-        foodAndDrinkEmoji = await self.__emojiHelper.getRandomFoodAndDrinkEmoji()
-        # TODO
-        raise RuntimeError()
+        emojiList: list[Token] = list(emoji.analyze(currentTitle))
+        newEmoji = await self.__emojiHelper.getRandomFoodAndDrinkEmoji()
+        newTitle: str
+
+        if len(emojiList) >= 1:
+            existingEmoji = emojiList[0]
+
+            while newEmoji.emoji == existingEmoji.value.emoji:
+                newEmoji = await self.__emojiHelper.getRandomFoodAndDrinkEmoji()
+
+            newTitle = f'{currentTitle[0:existingEmoji.value.start]}{newEmoji.emoji}{currentTitle[existingEmoji.value.end:]}'
+        else:
+            newTitle = f'{currentTitle} {newEmoji.emoji}'
+
+        return UpdateStreamTitleFoodEmojiPointRedemption.TitleAndEmoji(
+            newEmoji = newEmoji,
+            newTitle = newTitle,
+        )
 
     async def handlePointsRedemption(
         self,
