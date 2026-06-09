@@ -795,10 +795,10 @@ funtoonHelper: FuntoonHelperInterface = FuntoonHelper(
     timber = timber,
 )
 
-emojiRepository: EmojiRepositoryInterface = EmojiRepository(
+emojiRepository: Final[EmojiRepositoryInterface] = EmojiRepository(
     emojiJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = 'emojiRepository.json'
+        fileName = 'emojiRepository.json',
     ),
     timber = timber,
 )

@@ -545,6 +545,18 @@ class TestChatterInventoryMapper:
         result = await self.mapper.parseItemType('bananas')
         assert result is ChatterItemType.BANANA
 
+        result = await self.mapper.parseItemType('banana peel')
+        assert result is ChatterItemType.BANANA
+
+        result = await self.mapper.parseItemType('banana-peel')
+        assert result is ChatterItemType.BANANA
+
+        result = await self.mapper.parseItemType('banana_peel')
+        assert result is ChatterItemType.BANANA
+
+        result = await self.mapper.parseItemType('bananapeel')
+        assert result is ChatterItemType.BANANA
+
     @pytest.mark.asyncio
     async def test_parseItemType_withCassetteStrings(self):
         result = await self.mapper.parseItemType('casete')
