@@ -74,7 +74,7 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
             self.__timber.log(self.commandName, f'Failed to update stream title ({newTitle=}) ({chatMessage=})', e, traceback.format_exc())
 
             self.__twitchChatMessenger.send(
-                text = f'⚠ Failed to update stream title to \"{newTitle}\"',
+                text = '⚠ Failed to update stream title',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
@@ -82,7 +82,7 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
             return ChatCommandResult.CONSUMED
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ Updated stream title to \"{updatedTitle}\"',
+            text = f'ⓘ Updated stream title — {updatedTitle}',
             twitchChannelId = chatMessage.twitchChannelId,
             replyMessageId = chatMessage.twitchChatMessageId,
         )
