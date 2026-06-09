@@ -29,22 +29,22 @@ class UpdateStreamTitleFoodEmojiPointRedemption(AbsChannelPointRedemption):
         self,
         emojiHelper: EmojiHelperInterface,
         timber: TimberInterface,
-        twitchChatMessenger: TwitchChatMessengerInterface,
         twitchChannelInformationHelper: TwitchChannelInformationHelperInterface,
+        twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(emojiHelper, EmojiHelperInterface):
             raise TypeError(f'emojiHelper argument is malformed: \"{emojiHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
-            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchChannelInformationHelper, TwitchChannelInformationHelperInterface):
             raise TypeError(f'twitchChannelInformationHelper argument is malformed: \"{twitchChannelInformationHelper}\"')
+        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
+            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
         self.__emojiHelper: Final[EmojiHelperInterface] = emojiHelper
         self.__timber: Final[TimberInterface] = timber
-        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchChannelInformationHelper: Final[TwitchChannelInformationHelperInterface] = twitchChannelInformationHelper
+        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
     async def __determineNextTitleAndEmoji(self, currentTitle: str) -> TitleAndEmoji:
         emojiList: list[Token] = list(emoji.analyze(currentTitle))
