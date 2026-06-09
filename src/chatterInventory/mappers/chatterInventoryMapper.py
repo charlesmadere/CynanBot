@@ -36,6 +36,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
         banana: FrozenList[Pattern] = FrozenList()
         banana.append(re.compile(r'^\s*bananas?\s*$', re.IGNORECASE))
+        banana.append(re.compile(r'^\s*bananas?(?:\s+|_|-)?peel?\s*$', re.IGNORECASE))
         banana.freeze()
 
         cassetteTape: FrozenList[Pattern] = FrozenList()
