@@ -16,6 +16,8 @@ from src.channelPointRedemptions.chatterPreferredNamePointRedemption import Chat
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
+from src.channelPointRedemptions.updateStreamTitleFoodEmojiPointRedemption import \
+    UpdateStreamTitleFoodEmojiPointRedemption
 from src.chatActions.absChatAction import AbsChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
@@ -44,6 +46,7 @@ from src.chatCommands.testCheerChatCommand import TestCheerChatCommand
 from src.chatCommands.testCrowdControlChatCommand import TestCrowdControlChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
+from src.chatCommands.updateStreamTitleChatCommand import UpdateStreamTitleChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
 from src.chatCommands.voicemailsChatCommand import VoicemailsChatCommand
 from src.chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
@@ -398,6 +401,9 @@ from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from src.twitch.channelEditors.twitchChannelEditorsRepository import TwitchChannelEditorsRepository
 from src.twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
+from src.twitch.channelInformationHelper.twitchChannelInformationHelper import TwitchChannelInformationHelper
+from src.twitch.channelInformationHelper.twitchChannelInformationHelperInterface import \
+    TwitchChannelInformationHelperInterface
 from src.twitch.chatMessenger.twitchChatMessenger import TwitchChatMessenger
 from src.twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
@@ -795,8 +801,21 @@ emojiRepository: EmojiRepositoryInterface = EmojiRepository(
     timber = timber,
 )
 
-emojiHelper: EmojiHelperInterface = EmojiHelper(
+emojiHelper: Final[EmojiHelperInterface] = EmojiHelper(
     emojiRepository = emojiRepository,
+)
+
+twitchChannelEditorsRepository: Final[TwitchChannelEditorsRepositoryInterface] = TwitchChannelEditorsRepository(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchApiService = twitchApiService,
+    twitchTokensRepository = twitchTokensRepository,
+)
+
+twitchChannelInformationHelper: Final[TwitchChannelInformationHelperInterface] = TwitchChannelInformationHelper(
+    timber = timber,
+    twitchApiService = twitchApiService,
+    twitchTokensRepository = twitchTokensRepository,
 )
 
 isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = IsLiveOnTwitchRepository(
@@ -807,14 +826,7 @@ isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = IsLiveOnTwi
     twitchTokensRepository = twitchTokensRepository,
 )
 
-twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface = TwitchChannelEditorsRepository(
-    timber = timber,
-    timeZoneRepository = timeZoneRepository,
-    twitchApiService = twitchApiService,
-    twitchTokensRepository = twitchTokensRepository
-)
-
-languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
+languagesRepository: Final[LanguagesRepositoryInterface] = LanguagesRepository()
 
 locationsRepository: LocationsRepositoryInterface = LocationsRepository(
     locationsJsonReader = JsonFileReader(
@@ -2084,6 +2096,12 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption | None]] = frozense
         streamAlertsManager = streamAlertsManager,
         timber = timber,
     ),
+    UpdateStreamTitleFoodEmojiPointRedemption(
+        emojiHelper = emojiHelper,
+        timber = timber,
+        twitchChannelInformationHelper = twitchChannelInformationHelper,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
 })
 
 chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
@@ -2272,6 +2290,13 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         timber = timber,
         ttsJsonMapper = ttsJsonMapper,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    UpdateStreamTitleChatCommand(
+        administratorProvider = administratorProvider,
+        timber = timber,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+        twitchChannelInformationHelper = twitchChannelInformationHelper,
         twitchChatMessenger = twitchChatMessenger,
     ),
     UseChatterItemChatCommand(

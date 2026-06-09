@@ -34,7 +34,7 @@ class RequestsHandle(NetworkHandle):
         url: str,
         headers: dict[str, Any] | None = None,
     ) -> NetworkResponse:
-        response: Response | None = None
+        response: Response | None
 
         try:
             response = requests.delete(
@@ -61,7 +61,7 @@ class RequestsHandle(NetworkHandle):
         url: str,
         headers: dict[str, Any] | None = None,
     ) -> NetworkResponse:
-        response: Response | None = None
+        response: Response | None
 
         try:
             response = requests.get(
@@ -87,13 +87,42 @@ class RequestsHandle(NetworkHandle):
     def networkClientType(self) -> NetworkClientType:
         return NetworkClientType.REQUESTS
 
+    async def patch(
+        self,
+        url: str,
+        headers: dict[str, Any] | None = None,
+        json: dict[str, Any] | None = None,
+    ) -> NetworkResponse:
+        response: Response | None
+
+        try:
+            response = requests.patch(
+                url = url,
+                headers = headers,
+                json = json,
+                timeout = self.__timeoutSeconds,
+            )
+        except Exception as e:
+            self.__timber.log('RequestsHandle', f'Encountered network error (via {self.networkClientType}) when trying to HTTP PATCH ({url=}) ({headers=}) ({json=})', e)
+            raise GenericNetworkException(f'Encountered network error (via {self.networkClientType}) when trying to HTTP PATCH ({url=}) ({headers=}) ({json=})')
+
+        if response is None:
+            self.__timber.log('RequestsHandle', f'Received no response (via {self.networkClientType}) when trying to HTTP PATCH ({url=}) ({headers=}) ({json=})')
+            raise GenericNetworkException(f'Received no response (via {self.networkClientType}) when trying to HTTP PATCH ({url=}) ({headers=}) ({json=})')
+
+        return RequestsResponse(
+            response = response,
+            url = url,
+            timber = self.__timber,
+        )
+
     async def post(
         self,
         url: str,
         headers: dict[str, Any] | None = None,
         json: dict[str, Any] | None = None,
     ) -> NetworkResponse:
-        response: Response | None = None
+        response: Response | None
 
         try:
             response = requests.post(

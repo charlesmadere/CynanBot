@@ -48,9 +48,12 @@ from ..models.twitchEventSubRequest import TwitchEventSubRequest
 from ..models.twitchEventSubResponse import TwitchEventSubResponse
 from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
+from ..models.twitchGame import TwitchGame
+from ..models.twitchGamesResponse import TwitchGamesResponse
 from ..models.twitchHypeTrainType import TwitchHypeTrainType
 from ..models.twitchModeratorUser import TwitchModeratorUser
 from ..models.twitchModeratorsResponse import TwitchModeratorsResponse
+from ..models.twitchModifyChannelInformationRequest import TwitchModifyChannelInformationRequest
 from ..models.twitchNoticeType import TwitchNoticeType
 from ..models.twitchOutcome import TwitchOutcome
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
@@ -418,6 +421,20 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchFollowersResponse | None:
+        pass
+
+    @abstractmethod
+    async def parseGame(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchGame | None:
+        pass
+
+    @abstractmethod
+    async def parseGamesResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchGamesResponse | None:
         pass
 
     @abstractmethod
@@ -872,6 +889,13 @@ class TwitchJsonMapperInterface(ABC):
     async def serializeEventSubRequest(
         self,
         eventSubRequest: TwitchEventSubRequest,
+    ) -> dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeModifyChannelInformationRequest(
+        self,
+        modifyChannelInformationRequest: TwitchModifyChannelInformationRequest,
     ) -> dict[str, Any]:
         pass
 

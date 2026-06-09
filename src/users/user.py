@@ -121,6 +121,7 @@ class User(UserInterface):
         soundAlertRewardId: str | None,
         speedrunProfile: str | None,
         triviaGameRewardId: str | None,
+        updateStreamTitleFoodEmojiRewardId: str | None,
         defaultTtsProvider: TtsProvider,
         crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None,
         cutenessBoosterPacks: frozendict[str, CutenessBoosterPack] | None,
@@ -327,6 +328,8 @@ class User(UserInterface):
             raise TypeError(f'speedrunProfile argument is malformed: \"{speedrunProfile}\"')
         elif triviaGameRewardId is not None and not isinstance(triviaGameRewardId, str):
             raise TypeError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
+        elif updateStreamTitleFoodEmojiRewardId is not None and not isinstance(updateStreamTitleFoodEmojiRewardId, str):
+            raise TypeError(f'updateStreamTitleFoodEmojiRewardId argument is malformed: \"{updateStreamTitleFoodEmojiRewardId}\"')
         elif not isinstance(defaultTtsProvider, TtsProvider):
             raise TypeError(f'defaultTtsProvider argument is malformed: \"{defaultTtsProvider}\"')
         elif crowdControlBoosterPacks is not None and not isinstance(crowdControlBoosterPacks, frozendict):
@@ -449,6 +452,7 @@ class User(UserInterface):
         self.__soundAlertRewardId: str | None = soundAlertRewardId
         self.__speedrunProfile: str | None = speedrunProfile
         self.__triviaGameRewardId: str | None = triviaGameRewardId
+        self.__updateStreamTitleFoodEmojiRewardId: Final[str | None] = updateStreamTitleFoodEmojiRewardId
         self.__defaultTtsProvider: TtsProvider = defaultTtsProvider
         self.__crowdControlBoosterPacks: Final[frozendict[str, CrowdControlBoosterPack] | None] = crowdControlBoosterPacks
         self.__cutenessBoosterPacks: Final[frozendict[str, CutenessBoosterPack] | None] = cutenessBoosterPacks
@@ -927,3 +931,7 @@ class User(UserInterface):
     @property
     def ttsBoosterPacks(self) -> FrozenList[TtsBoosterPack] | None:
         return self.__ttsBoosterPacks
+
+    @property
+    def updateStreamTitleFoodEmojiRewardId(self) -> str | None:
+        return self.__updateStreamTitleFoodEmojiRewardId

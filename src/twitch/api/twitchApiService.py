@@ -25,7 +25,9 @@ from .models.twitchFetchUserRequest import TwitchFetchUserRequest
 from .models.twitchFetchUserWithIdRequest import TwitchFetchUserWithIdRequest
 from .models.twitchFetchUserWithLoginRequest import TwitchFetchUserWithLoginRequest
 from .models.twitchFollowersResponse import TwitchFollowersResponse
+from .models.twitchGamesResponse import TwitchGamesResponse
 from .models.twitchModeratorsResponse import TwitchModeratorsResponse
+from .models.twitchModifyChannelInformationRequest import TwitchModifyChannelInformationRequest
 from .models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
 from .models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
@@ -664,6 +666,55 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         return followersResponse
 
+    async def fetchGames(
+        self,
+        gameName: str,
+        twitchAccessToken: str,
+    ) -> TwitchGamesResponse:
+        if not utils.isValidStr(gameName):
+            raise TypeError(f'gameName argument is malformed: \"{gameName}\"')
+        elif not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+
+        self.__timber.log('TwitchApiService', f'Fetching games... ({gameName=})')
+        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
+        clientSession = await self.__networkClientProvider.get()
+
+        queryString = urllib.parse.urlencode({
+            'name': gameName,
+        })
+
+        try:
+            response = await clientSession.get(
+                url = f'https://api.twitch.tv/helix/games?{queryString}',
+                headers = {
+                    'Authorization': f'Bearer {twitchAccessToken}',
+                    'Client-Id': twitchClientId,
+                },
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('TwitchApiService', f'Encountered network error when fetching games ({gameName=})', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching games ({gameName=}): {e}')
+
+        responseStatusCode = response.statusCode
+        jsonResponse = await response.json()
+        await response.close()
+
+        if responseStatusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching games ({gameName=}) ({response=}) ({responseStatusCode}) ({jsonResponse=})')
+            raise TwitchStatusCodeException(
+                statusCode = responseStatusCode,
+                message = f'TwitchApiService encountered non-200 HTTP status code when fetching games ({gameName=}) ({response=}) ({responseStatusCode}) ({jsonResponse=})',
+            )
+
+        gamesResponse = await self.__twitchJsonMapper.parseGamesResponse(jsonResponse)
+
+        if gamesResponse is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching games ({gameName=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({gamesResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching games ({gameName=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({gamesResponse=})')
+
+        return gamesResponse
+
     async def fetchModerator(
         self,
         broadcasterId: str,
@@ -892,6 +943,53 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching user ({fetchUserRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({usersResponse=})')
 
         return usersResponse
+
+    async def modifyChannelInformation(
+        self,
+        twitchAccessToken: str,
+        modifyChannelInformationRequest: TwitchModifyChannelInformationRequest,
+    ) -> bool:
+        if not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not isinstance(modifyChannelInformationRequest, TwitchModifyChannelInformationRequest):
+            raise TypeError(f'modifyChannelInformationRequest argument is malformed: \"{modifyChannelInformationRequest}\"')
+
+        self.__timber.log('TwitchApiService', f'Modifying channel information... ({modifyChannelInformationRequest=})')
+        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
+        clientSession = await self.__networkClientProvider.get()
+
+        queryString = urllib.parse.urlencode({
+            'broadcaster_id': modifyChannelInformationRequest.twitchChannelId,
+        })
+
+        try:
+            response = await clientSession.patch(
+                url = f'https://api.twitch.tv/helix/channels?{queryString}',
+                headers = {
+                    'Authorization': f'Bearer {twitchAccessToken}',
+                    'Client-Id': twitchClientId,
+                    'Content-Type': 'application/json',
+                },
+                json = await self.__twitchJsonMapper.serializeModifyChannelInformationRequest(modifyChannelInformationRequest),
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('TwitchApiService', f'Encountered network error when modifying channel information ({modifyChannelInformationRequest=})', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when modifying channel information ({modifyChannelInformationRequest=}): {e}')
+
+        responseStatusCode = response.statusCode
+        await response.close()
+
+        match responseStatusCode:
+            case 204:
+                # means that channel information was successfully modified
+                return True
+
+            case _:
+                self.__timber.log('TwitchApiService', f'Encountered network error when modifying channel information ({modifyChannelInformationRequest=}) ({response=}) ({responseStatusCode=})')
+                raise TwitchStatusCodeException(
+                    statusCode = responseStatusCode,
+                    message = f'TwitchApiService encountered network error when modifying channel information ({modifyChannelInformationRequest=}) ({response=}) ({responseStatusCode=})',
+                )
 
     async def refreshTokens(self, twitchRefreshToken: str) -> TwitchTokensDetails:
         if not utils.isValidStr(twitchRefreshToken):
