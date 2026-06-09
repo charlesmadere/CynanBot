@@ -100,7 +100,7 @@ class UpdateStreamTitleFoodEmojiPointRedemption(AbsChannelPointRedemption):
             return PointsRedemptionResult.CONSUMED
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ New stream title food emoji is {nextTitleAndEmoji.newEmoji.emoji} {nextTitleAndEmoji.newEmoji.emoji}!',
+            text = f'ⓘ New stream title food emoji is {nextTitleAndEmoji.newEmoji.name} {nextTitleAndEmoji.newEmoji.emoji}!',
             twitchChannelId = pointsRedemption.twitchChannelId,
         )
 
