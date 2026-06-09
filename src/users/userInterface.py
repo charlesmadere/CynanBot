@@ -577,3 +577,8 @@ class UserInterface(ABC):
     @abstractmethod
     def ttsBoosterPacks(self) -> FrozenList[TtsBoosterPack] | None:
         pass
+
+    @property
+    @abstractmethod
+    def updateStreamTitleFoodEmojiRewardId(self) -> str | None:
+        pass

@@ -18,6 +18,13 @@ class TwitchChannelInformationHelperInterface(ABC):
         pass
 
     @abstractmethod
+    async def requireTitle(
+        self,
+        twitchChannelId: str,
+    ) -> str:
+        pass
+
+    @abstractmethod
     async def setGame(
         self,
         gameName: str,

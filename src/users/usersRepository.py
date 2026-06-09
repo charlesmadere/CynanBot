@@ -210,6 +210,7 @@ class UsersRepository(UsersRepositoryInterface):
         randomSoundAlertRewardId = utils.getStrFromDict(userJson, 'randomSoundAlertRewardId', '')
         soundAlertRewardId = utils.getStrFromDict(userJson, 'soundAlertRewardId', '')
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
+        updateStreamTitleFoodEmojiRewardId = utils.getStrFromDict(userJson, 'updateStreamTitleFoodEmojiRewardId', '')
 
         defaultLanguageString = utils.getStrFromDict(
             d = userJson,
@@ -466,6 +467,7 @@ class UsersRepository(UsersRepositoryInterface):
             speedrunProfile = speedrunProfile,
             soundAlertRewardId = soundAlertRewardId,
             triviaGameRewardId = triviaGameRewardId,
+            updateStreamTitleFoodEmojiRewardId = updateStreamTitleFoodEmojiRewardId,
             defaultTtsProvider = defaultTtsProvider,
             crowdControlBoosterPacks = crowdControlBoosterPacks,
             cutenessBoosterPacks = cutenessBoosterPacks,

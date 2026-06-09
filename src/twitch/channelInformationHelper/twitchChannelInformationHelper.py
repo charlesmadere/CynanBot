@@ -101,6 +101,22 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
 
         return channelInformation.title
 
+    async def requireTitle(
+        self,
+        twitchChannelId: str,
+    ) -> str:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        title = await self.getTitle(
+            twitchChannelId = twitchChannelId,
+        )
+
+        if not utils.isValidStr(title):
+            raise ValueError(f'The given Twitch channel has no title ({title=}) ({twitchChannelId=})')
+
+        return title
+
     async def setGame(
         self,
         gameName: str,
