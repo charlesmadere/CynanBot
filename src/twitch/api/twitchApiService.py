@@ -958,9 +958,13 @@ class TwitchApiService(TwitchApiServiceInterface):
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
         clientSession = await self.__networkClientProvider.get()
 
+        queryString = urllib.parse.urlencode({
+            'broadcaster_id': modifyChannelInformationRequest.twitchChannelId,
+        })
+
         try:
             response = await clientSession.patch(
-                url = 'https://api.twitch.tv/helix/channels',
+                url = f'https://api.twitch.tv/helix/channels?{queryString}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
                     'Client-Id': twitchClientId,

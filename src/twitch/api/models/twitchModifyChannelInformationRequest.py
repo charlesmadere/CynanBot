@@ -5,3 +5,4 @@ from dataclasses import dataclass
 class TwitchModifyChannelInformationRequest:
     gameId: str | None
     title: str | None
+    twitchChannelId: str

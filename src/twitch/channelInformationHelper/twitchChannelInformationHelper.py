@@ -125,6 +125,7 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
             modifyChannelInformationRequest = TwitchModifyChannelInformationRequest(
                 gameId = game.gameId,
                 title = None,
+                twitchChannelId = twitchChannelId,
             )
         )
 
@@ -157,6 +158,7 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
             modifyChannelInformationRequest = TwitchModifyChannelInformationRequest(
                 gameId = None,
                 title = title,
+                twitchChannelId = twitchChannelId,
             )
         )
 
