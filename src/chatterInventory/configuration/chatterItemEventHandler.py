@@ -136,6 +136,11 @@ class ChatterItemEventHandler(ChatterItemEventListener):
                 event = event,
             )
 
+        elif isinstance(event, GashaponRewardedChatterItemEvent):
+            await self.__handleGashaponRewardedChatterItemEvent(
+                event = event,
+            )
+
         elif isinstance(event, GiveChatterItemEvent):
             await self.__handleGiveChatterItemEvent(
                 event = event,
