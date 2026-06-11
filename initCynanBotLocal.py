@@ -16,8 +16,6 @@ from src.channelPointRedemptions.chatterPreferredNamePointRedemption import Chat
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
 from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
-from src.channelPointRedemptions.updateStreamTitleFoodEmojiPointRedemption import \
-    UpdateStreamTitleFoodEmojiPointRedemption
 from src.chatActions.absChatAction import AbsChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
@@ -2095,12 +2093,6 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption | None]] = frozense
         soundPlayerRandomizerHelper = soundPlayerRandomizerHelper,
         streamAlertsManager = streamAlertsManager,
         timber = timber,
-    ),
-    UpdateStreamTitleFoodEmojiPointRedemption(
-        emojiHelper = emojiHelper,
-        timber = timber,
-        twitchChannelInformationHelper = twitchChannelInformationHelper,
-        twitchChatMessenger = twitchChatMessenger,
     ),
 })
 

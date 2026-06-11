@@ -36,6 +36,8 @@ from src.channelPointRedemptions.pkmnShinyPointRedemption import PkmnShinyPointR
 from src.channelPointRedemptions.redemptionCounterPointRedemption import RedemptionCounterPointRedemption
 from src.channelPointRedemptions.superTriviaGamePointRedemption import SuperTriviaGamePointRedemption
 from src.channelPointRedemptions.triviaGamePointRedemption import TriviaGamePointRedemption
+from src.channelPointRedemptions.updateStreamTitleFoodEmojiPointRedemption import \
+    UpdateStreamTitleFoodEmojiPointRedemption
 from src.chatActions.absChatAction import AbsChatAction
 from src.chatActions.anivCheckChatAction import AnivCheckChatAction
 from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWizardChatAction
@@ -1891,6 +1893,12 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption | None]] = frozense
         timber = timber,
         triviaGameBuilder = triviaGameBuilder,
         triviaGameMachine = triviaGameMachine,
+    ),
+    UpdateStreamTitleFoodEmojiPointRedemption(
+        emojiHelper = emojiHelper,
+        timber = timber,
+        twitchChannelInformationHelper = twitchChannelInformationHelper,
+        twitchChatMessenger = twitchChatMessenger,
     ),
 })
 
