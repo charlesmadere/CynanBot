@@ -827,6 +827,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'channel_points_sub_only': return TwitchChatMessageType.CHANNEL_POINTS_SUB_ONLY
             case 'power_ups_gigantified_emote': return TwitchChatMessageType.POWER_UPS_GIGANTIFIED_EMOTE
             case 'power_ups_message_effect': return TwitchChatMessageType.POWER_UPS_MESSAGE_EFFECT
+            case 'text': return TwitchChatMessageType.TEXT
             case 'user_intro': return TwitchChatMessageType.USER_INTRO
             case _: return None
 
@@ -1468,8 +1469,18 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'prime_paid_upgrade': return TwitchNoticeType.PRIME_PAID_UPGRADE
             case 'raid': return TwitchNoticeType.RAID
             case 'resub': return TwitchNoticeType.RE_SUB
+            case 'shared_chat_announcement': return TwitchNoticeType.SHARED_CHAT_ANNOUNCEMENT
+            case 'shared_chat_community_sub_gift': return TwitchNoticeType.SHARED_CHAT_COMMUNITY_SUB_GIFT
+            case 'shared_chat_gift_paid_upgrade': return TwitchNoticeType.SHARED_CHAT_GIFT_PAID_UPGRADE
+            case 'shared_chat_pay_it_forward': return TwitchNoticeType.SHARED_CHAT_PAY_IT_FORWARD
+            case 'shared_chat_prime_paid_upgrade': return TwitchNoticeType.SHARED_CHAT_PRIME_PAID_UPGRADE
+            case 'shared_chat_raid': return TwitchNoticeType.SHARED_CHAT_RAID
+            case 'shared_chat_resub': return TwitchNoticeType.SHARED_CHAT_RE_SUB
+            case 'shared_chat_sub': return TwitchNoticeType.SHARED_CHAT_SUB
+            case 'shared_chat_sub_gift': return TwitchNoticeType.SHARED_CHAT_SUB_GIFT
             case 'sub': return TwitchNoticeType.SUB
             case 'sub_gift': return TwitchNoticeType.SUB_GIFT
+            case 'unknown': return TwitchNoticeType.UNKNOWN
             case 'unraid': return TwitchNoticeType.UN_RAID
             case 'watch_streak': return TwitchNoticeType.WATCH_STREAK
             case _: return None
