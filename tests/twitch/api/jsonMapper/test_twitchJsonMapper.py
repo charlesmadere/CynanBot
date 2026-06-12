@@ -690,6 +690,11 @@ class TestTwitchJsonMapper:
         assert result is TwitchChatMessageType.POWER_UPS_MESSAGE_EFFECT
 
     @pytest.mark.asyncio
+    async def test_parseChatMessageType_withText(self):
+        result = await self.jsonMapper.parseChatMessageType('text')
+        assert result is TwitchChatMessageType.TEXT
+
+    @pytest.mark.asyncio
     async def test_parseChatMessageType_withUserIntro(self):
         result = await self.jsonMapper.parseChatMessageType('user_intro')
         assert result is TwitchChatMessageType.USER_INTRO
@@ -1187,6 +1192,51 @@ class TestTwitchJsonMapper:
         assert result is TwitchNoticeType.RE_SUB
 
     @pytest.mark.asyncio
+    async def test_parseNoticeType_withSharedChatAnnouncementString(self):
+        result = await self.jsonMapper.parseNoticeType('shared_chat_announcement')
+        assert result is TwitchNoticeType.SHARED_CHAT_ANNOUNCEMENT
+
+    @pytest.mark.asyncio
+    async def test_parseNoticeType_withSharedChatCommunitySubGiftString(self):
+        result = await self.jsonMapper.parseNoticeType('shared_chat_community_sub_gift')
+        assert result is TwitchNoticeType.SHARED_CHAT_COMMUNITY_SUB_GIFT
+
+    @pytest.mark.asyncio
+    async def test_parseNoticeType_withSharedChatGiftPaidUpgradeString(self):
+        result = await self.jsonMapper.parseNoticeType('shared_chat_gift_paid_upgrade')
+        assert result is TwitchNoticeType.SHARED_CHAT_GIFT_PAID_UPGRADE
+
+    @pytest.mark.asyncio
+    async def test_parseNoticeType_withSharedChatPayItForwardString(self):
+        result = await self.jsonMapper.parseNoticeType('shared_chat_pay_it_forward')
+        assert result is TwitchNoticeType.SHARED_CHAT_PAY_IT_FORWARD
+
+    @pytest.mark.asyncio
+    async def test_parseNoticeType_withSharedChatPrimePaidUpgradeString(self):
+        result = await self.jsonMapper.parseNoticeType('shared_chat_prime_paid_upgrade')
+        assert result is TwitchNoticeType.SHARED_CHAT_PRIME_PAID_UPGRADE
+
+    @pytest.mark.asyncio
+    async def test_parseNoticeType_withSharedChatRaidString(self):
+        result = await self.jsonMapper.parseNoticeType('shared_chat_raid')
+        assert result is TwitchNoticeType.SHARED_CHAT_RAID
+
+    @pytest.mark.asyncio
+    async def test_parseNoticeType_withSharedChatResubString(self):
+        result = await self.jsonMapper.parseNoticeType('shared_chat_resub')
+        assert result is TwitchNoticeType.SHARED_CHAT_RE_SUB
+
+    @pytest.mark.asyncio
+    async def test_parseNoticeType_withSharedChatSubString(self):
+        result = await self.jsonMapper.parseNoticeType('shared_chat_sub')
+        assert result is TwitchNoticeType.SHARED_CHAT_SUB
+
+    @pytest.mark.asyncio
+    async def test_parseNoticeType_withSharedChatSubGiftString(self):
+        result = await self.jsonMapper.parseNoticeType('shared_chat_sub_gift')
+        assert result is TwitchNoticeType.SHARED_CHAT_SUB_GIFT
+
+    @pytest.mark.asyncio
     async def test_parseNoticeType_withSubString(self):
         result = await self.jsonMapper.parseNoticeType('sub')
         assert result is TwitchNoticeType.SUB
@@ -1195,6 +1245,11 @@ class TestTwitchJsonMapper:
     async def test_parseNoticeType_withSubGiftString(self):
         result = await self.jsonMapper.parseNoticeType('sub_gift')
         assert result is TwitchNoticeType.SUB_GIFT
+
+    @pytest.mark.asyncio
+    async def test_parseNoticeType_withUnknownString(self):
+        result = await self.jsonMapper.parseNoticeType('unknown')
+        assert result is TwitchNoticeType.UNKNOWN
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withUnraidString(self):

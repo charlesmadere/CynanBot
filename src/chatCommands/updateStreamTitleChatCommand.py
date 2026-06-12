@@ -100,6 +100,4 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
             twitchChannelId = chatMessage.twitchChannelId,
         )
 
-        # TODO temporarily locking this to administrator only
-        # return isStreamer or isAdministrator or isEditor
-        return isAdministrator
+        return isStreamer or isAdministrator or isEditor
