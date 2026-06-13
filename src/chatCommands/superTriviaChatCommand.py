@@ -95,7 +95,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
                 )
 
                 self.__timber.log(self.commandName, f'Unable to convert the numberOfGamesStr argument into an int ({numberOfGames=}) ({numberOfGamesStr=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
-                return ChatCommandResult.HANDLED
+                return ChatCommandResult.CONSUMED
 
             maxNumberOfGames = await self.__triviaSettings.getMaxSuperTriviaGameQueueSize()
 
@@ -107,7 +107,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
                 )
 
                 self.__timber.log(self.commandName, f'The numberOfGames argument is out of bounds ({numberOfGames=}) ({numberOfGamesStr=}) ({splits=}) ({chatMessage=})')
-                return ChatCommandResult.HANDLED
+                return ChatCommandResult.CONSUMED
 
         triviaSource: TriviaSource | None = None
 
@@ -115,11 +115,11 @@ class SuperTriviaChatCommand(AbsChatCommand):
             triviaSource = TriviaSource.LORD_OF_THE_RINGS
 
         if chatMessage.twitchUser.arePranksEnabled and await self.__stopForPrank(
+            chatterUserId = chatMessage.chatterUserId,
             twitchChannelId = chatMessage.twitchChannelId,
-            userId = chatMessage.chatterUserId,
             triviaSource = triviaSource,
         ):
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = chatMessage.twitchChannel,
@@ -131,13 +131,13 @@ class SuperTriviaChatCommand(AbsChatCommand):
         if action is not None:
             self.__triviaGameMachine.submitAction(action)
 
-        self.__timber.log(self.commandName, f'Handled ({action=}) ({triviaSource=}) ({numberOfGames=}) ({splits=}) ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({action=}) ({triviaSource=}) ({numberOfGames=}) ({splits=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED
 
     async def __stopForPrank(
         self,
+        chatterUserId: str,
         twitchChannelId: str,
-        userId: str,
         triviaSource: TriviaSource | None,
     ) -> bool:
         # TODO prank code goes here

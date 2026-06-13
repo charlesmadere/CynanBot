@@ -11,6 +11,7 @@ from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import Twit
 from ..twitch.channelInformationHelper.twitchChannelInformationHelperInterface import \
     TwitchChannelInformationHelperInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
+from ..twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
@@ -23,6 +24,7 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
         twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface,
         twitchChannelInformationHelper: TwitchChannelInformationHelperInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
+        twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -36,14 +38,18 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
             raise TypeError(f'twitchChannelInformationHelper argument is malformed: \"{twitchChannelInformationHelper}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
+        elif not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
+            raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChannelEditorsRepository: Final[TwitchChannelEditorsRepositoryInterface] = twitchChannelEditorsRepository
         self.__twitchChannelInformationHelper: Final[TwitchChannelInformationHelperInterface] = twitchChannelInformationHelper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = twitchFriendsUserIdRepository
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!set(?:stream)?title\b', re.IGNORECASE),
             re.compile(r'^\s*!update(?:stream)?title\b', re.IGNORECASE),
         })
 
@@ -57,13 +63,21 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
         if not await self.__hasPermissions(chatMessage):
-            return ChatCommandResult.CONSUMED
+            return ChatCommandResult.IGNORED
 
         splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 2:
-            return ChatCommandResult.CONSUMED
+            return ChatCommandResult.IGNORED
 
         newTitle = ' '.join(splits[1:])
+        if not utils.isValidStr(newTitle):
+            return ChatCommandResult.IGNORED
+
+        if chatMessage.twitchUser.arePranksEnabled and await self.__stopForPrank(
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
+        ):
+            return ChatCommandResult.IGNORED
 
         try:
             updatedTitle = await self.__twitchChannelInformationHelper.setTitle(
@@ -101,3 +115,11 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
         )
 
         return isStreamer or isAdministrator or isEditor
+
+    async def __stopForPrank(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str,
+    ) -> bool:
+        # TODO prank code goes here
+        return False

@@ -3566,6 +3566,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
         twitchChannelInformationHelper = twitchChannelInformationHelper,
         twitchChatMessenger = twitchChatMessenger,
+        twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
     ),
     UseChatterItemChatCommand(
         chatterInventoryIdGenerator = chatterInventoryIdGenerator,
