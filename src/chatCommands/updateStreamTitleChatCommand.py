@@ -6,13 +6,25 @@ from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
+from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ..soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
+from ..soundPlayerManager.soundAlert import SoundAlert
 from ..timber.timberInterface import TimberInterface
+from ..timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
+from ..timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
+from ..timeout.models.absTimeoutDuration import AbsTimeoutDuration
+from ..timeout.models.actions.basicTimeoutAction import BasicTimeoutAction
+from ..timeout.models.exactTimeoutDuration import ExactTimeoutDuration
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from ..twitch.channelInformationHelper.twitchChannelInformationHelperInterface import \
     TwitchChannelInformationHelperInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
+from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
+from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ..users.userInterface import UserInterface
 
 
 class UpdateStreamTitleChatCommand(AbsChatCommand):
@@ -20,16 +32,31 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
+        soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
+        timeoutActionMachine: TimeoutActionMachineInterface,
+        timeoutIdGenerator: TimeoutIdGeneratorInterface,
         twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface,
         twitchChannelInformationHelper: TwitchChannelInformationHelperInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
+        twitchHandleProvider: TwitchHandleProviderInterface,
+        twitchTokensRepository: TwitchTokensRepositoryInterface,
+        userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
+            raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
+            raise TypeError(f'timeoutActionMachine argument is malformed: \"{timeoutActionMachine}\"')
+        elif not isinstance(timeoutIdGenerator, TimeoutIdGeneratorInterface):
+            raise TypeError(f'timeoutIdGenerator argument is malformed: \"{timeoutIdGenerator}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchChannelEditorsRepository, TwitchChannelEditorsRepositoryInterface):
@@ -40,18 +67,33 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
+        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
+            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
+            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
+        self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
         self.__timber: Final[TimberInterface] = timber
+        self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
+        self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
         self.__twitchChannelEditorsRepository: Final[TwitchChannelEditorsRepositoryInterface] = twitchChannelEditorsRepository
         self.__twitchChannelInformationHelper: Final[TwitchChannelInformationHelperInterface] = twitchChannelInformationHelper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = twitchFriendsUserIdRepository
+        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
             re.compile(r'^\s*!set(?:stream)?title\b', re.IGNORECASE),
             re.compile(r'^\s*!update(?:stream)?title\b', re.IGNORECASE),
         })
+
+        self.__wasPranked: bool = False
 
     @property
     def commandName(self) -> str:
@@ -75,7 +117,9 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
 
         if chatMessage.twitchUser.arePranksEnabled and await self.__stopForPrank(
             chatterUserId = chatMessage.chatterUserId,
+            chatterUserName = chatMessage.chatterUserName,
             twitchChannelId = chatMessage.twitchChannelId,
+            twitchUser = chatMessage.twitchUser,
         ):
             return ChatCommandResult.IGNORED
 
@@ -119,7 +163,62 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
     async def __stopForPrank(
         self,
         chatterUserId: str,
+        chatterUserName: str,
         twitchChannelId: str,
+        twitchUser: UserInterface,
     ) -> bool:
-        # TODO prank code goes here
-        return False
+        if self.__wasPranked:
+            return False
+
+        harleyHardtUserId = await self.__twitchFriendsUserIdRepository.getHarleyHardtUserId()
+        if not utils.isValidStr(harleyHardtUserId) or chatterUserId != harleyHardtUserId:
+            return False
+
+        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
+        moderatorUserId = await self.__userIdsRepository.fetchUserId(twitchHandle)
+
+        if not utils.isValidStr(moderatorUserId):
+            return False
+
+        moderatorTwitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+            twitchChannelId = moderatorUserId,
+        )
+
+        userTwitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+            twitchChannelId = twitchChannelId,
+        )
+
+        if not utils.isValidStr(moderatorTwitchAccessToken) or not utils.isValidStr(userTwitchAccessToken):
+            return False
+
+        self.__wasPranked = True
+
+        timeoutDuration: AbsTimeoutDuration = ExactTimeoutDuration(
+            seconds = 300,
+        )
+
+        self.__timeoutActionMachine.submitAction(BasicTimeoutAction(
+            timeoutDuration = timeoutDuration,
+            actionId = await self.__timeoutIdGenerator.generateActionId(),
+            chatMessage = None,
+            instigatorUserId = harleyHardtUserId,
+            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
+            moderatorUserId = moderatorUserId,
+            reason = None,
+            targetUserId = harleyHardtUserId,
+            twitchChannelId = twitchChannelId,
+            twitchChatMessageId = None,
+            userTwitchAccessToken = userTwitchAccessToken,
+            streamStatusRequirement = None,
+            user = twitchUser,
+        ))
+
+        self.__twitchChatMessenger.send(
+            text = f'@{chatterUserName} gloverGape gloverGape gloverGape gloverGape gloverGape gloverGape',
+            twitchChannelId = twitchChannelId,
+        )
+
+        soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+        self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.MEGA_GRENADE))
+
+        return True
