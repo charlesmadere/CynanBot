@@ -22,11 +22,13 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         eddieUserId: str | None = '22587336',
         funtoonUserId: str | None = '477393386',
         guwuBotUserId: str | None = '275323528',
+        harleyHardtUserId: str | None = '1140926612',
         hokkaidoubareUserId: str | None = '490529357',
         imytUserId: str | None = '20037000',
         jrpUserId: str | None = '47768842',
         kazekiiBotUserId: str | None = '925014762',
         kiawaBotUserId: str | None = '786820295',
+        lndegenUserId: str | None = '63602335',
         lucentUserId: str | None = '30992900',
         mandooBotUserId: str | None = '761337972',
         merttUserId: str | None = '76798688',
@@ -70,6 +72,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'funtoonUserId argument is malformed: \"{funtoonUserId}\"')
         elif guwuBotUserId is not None and not isinstance(guwuBotUserId, str):
             raise TypeError(f'guwuBotUserId argument is malformed: \"{guwuBotUserId}\"')
+        elif harleyHardtUserId is not None and not isinstance(harleyHardtUserId, str):
+            raise TypeError(f'harleyHardtUserId argument is malformed: \"{harleyHardtUserId}\"')
         elif hokkaidoubareUserId is not None and not isinstance(hokkaidoubareUserId, str):
             raise TypeError(f'hokkaidoubareUserId argument is malformed: \"{hokkaidoubareUserId}\"')
         elif imytUserId is not None and not isinstance(imytUserId, str):
@@ -80,6 +84,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'kazekiiBotUserId argument is malformed: \"{kazekiiBotUserId}\"')
         elif kiawaBotUserId is not None and not isinstance(kiawaBotUserId, str):
             raise TypeError(f'kiawaBotUserId argument is malformed: \"{kiawaBotUserId}\"')
+        elif lndegenUserId is not None and not isinstance(lndegenUserId, str):
+            raise TypeError(f'lndegenUserId argument is malformed: \"{lndegenUserId}\"')
         elif lucentUserId is not None and not isinstance(lucentUserId, str):
             raise TypeError(f'lucentUserId argument is malformed: \"{lucentUserId}\"')
         elif mandooBotUserId is not None and not isinstance(mandooBotUserId, str):
@@ -120,11 +126,13 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         self.__eddieUserId: Final[str | None] = eddieUserId
         self.__funtoonUserId: Final[str | None] = funtoonUserId
         self.__guwuBotUserId: Final[str | None] = guwuBotUserId
+        self.__harleyHardtUserId: Final[str | None] = harleyHardtUserId
         self.__hokkaidoubareUserId: Final[str | None] = hokkaidoubareUserId
         self.__imytUserId: Final[str | None] = imytUserId
         self.__jrpUserId: Final[str | None] = jrpUserId
         self.__kazekiiBotUserId: Final[str | None] = kazekiiBotUserId
         self.__kiawaBotUserId: Final[str | None] = kiawaBotUserId
+        self.__lndegenUserId: Final[str | None] = lndegenUserId
         self.__lucentUserId: Final[str | None] = lucentUserId
         self.__mandooBotUserId: Final[str | None] = mandooBotUserId
         self.__merttUserId: Final[str | None] = merttUserId
@@ -183,6 +191,9 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
     async def getGuwuBotUserId(self) -> str | None:
         return self.__guwuBotUserId
 
+    async def getHarleyHardtUserId(self) -> str | None:
+        return self.__harleyHardtUserId
+
     async def getHokkaidoubareUserId(self) -> str | None:
         return self.__hokkaidoubareUserId
 
@@ -197,6 +208,9 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
 
     async def getKiawaBotUserId(self) -> str | None:
         return self.__kiawaBotUserId
+
+    async def getLndegenUserId(self) -> str | None:
+        return self.__lndegenUserId
 
     async def getLucentUserId(self) -> str | None:
         return self.__lucentUserId
