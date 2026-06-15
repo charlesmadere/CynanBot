@@ -491,7 +491,11 @@ class UsersRepository(UsersRepositoryInterface):
         users: list[User] = list()
 
         for key, userJson in jsonContents.items():
-            user = self.__createUser(key, userJson)
+            user = self.__createUser(
+                handle = key,
+                userJson = userJson,
+            )
+
             users.append(user)
 
         if len(users) == 0:
@@ -516,7 +520,10 @@ class UsersRepository(UsersRepositoryInterface):
 
         for key, userJson in jsonContents.items():
             if handle.casefold() == key.casefold():
-                return self.__createUser(handle, userJson)
+                return self.__createUser(
+                    handle = handle,
+                    userJson = userJson,
+                )
 
         raise NoSuchUserException(f'Unable to find user with handle \"{handle}\" in users repository file: \"{self.__usersFile}\"')
 
@@ -525,14 +532,22 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'handle argument is malformed: \"{handle}\"')
 
         jsonContents = self.__readJson()
-        return self.__findAndCreateUser(handle, jsonContents)
+
+        return self.__findAndCreateUser(
+            handle = handle,
+            jsonContents = jsonContents,
+        )
 
     async def getUserAsync(self, handle: str) -> User:
         if not utils.isValidStr(handle):
             raise TypeError(f'handle argument is malformed: \"{handle}\"')
 
         jsonContents = await self.__readJsonAsync()
-        return self.__findAndCreateUser(handle, jsonContents)
+
+        return self.__findAndCreateUser(
+            handle = handle,
+            jsonContents = jsonContents,
+        )
 
     def getUsers(self) -> Collection[User]:
         jsonContents = self.__readJson()
