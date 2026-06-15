@@ -109,10 +109,12 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
 
         splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 2:
+            self.__timber.log(self.commandName, f'No title argument specified ({splits=}) ({chatMessage=})')
             return ChatCommandResult.IGNORED
 
         newTitle = ' '.join(splits[1:])
         if not utils.isValidStr(newTitle):
+            self.__timber.log(self.commandName, f'Title argument is empty ({newTitle=}) ({splits=}) ({chatMessage=})')
             return ChatCommandResult.IGNORED
 
         if chatMessage.twitchUser.arePranksEnabled and await self.__stopForPrank(
@@ -129,7 +131,7 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
                 twitchChannelId = chatMessage.twitchChannelId,
             )
         except Exception as e:
-            self.__timber.log(self.commandName, f'Failed to update stream title ({newTitle=}) ({chatMessage=})', e, traceback.format_exc())
+            self.__timber.log(self.commandName, f'Failed to update stream title ({newTitle=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
 
             self.__twitchChatMessenger.send(
                 text = '⚠ Failed to update stream title',
