@@ -119,7 +119,7 @@ class ChatterInventoryRepository(ChatterInventoryRepositoryInterface):
                             twitchchannelid text NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -131,7 +131,7 @@ class ChatterInventoryRepository(ChatterInventoryRepositoryInterface):
                             twitchchannelid TEXT NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:
