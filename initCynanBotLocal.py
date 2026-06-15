@@ -2294,8 +2294,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     UpdateStreamTitleChatCommand(
         administratorProvider = administratorProvider,
-        backgroundTaskHelper = backgroundTaskHelper,
-        soundPlayerManagerProvider = soundPlayerManagerProvider,
+        streamAlertsManager = streamAlertsManager,
         timber = timber,
         timeoutActionMachine = timeoutActionMachine,
         timeoutIdGenerator = timeoutIdGenerator,

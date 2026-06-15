@@ -102,6 +102,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         ),
         defaultEnabledItemTypes: frozenset[ChatterItemType] = frozenset({
             ChatterItemType.AIR_STRIKE,
+            ChatterItemType.ANIMAL_PET,
             ChatterItemType.BANANA,
             ChatterItemType.GASHAPON,
             ChatterItemType.GRENADE,
