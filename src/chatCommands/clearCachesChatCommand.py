@@ -80,8 +80,11 @@ class ClearCachesChatCommand(AbsChatCommand):
         if not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
-        for clearable in self.__clearables:
-            await clearable.clearCaches()
+        for index, clearable in enumerate(self.__clearables):
+            try:
+                await clearable.clearCaches()
+            except Exception as e:
+                self.__timber.log(self.commandName, f'Encountered unexpected exception when clearing cache at index {index} ({clearable=})', e, traceback.format_exc())
 
         self.__twitchChatMessenger.send(
             text = 'ⓘ All caches cleared',
@@ -89,7 +92,7 @@ class ClearCachesChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
