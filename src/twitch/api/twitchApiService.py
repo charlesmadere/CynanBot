@@ -6,6 +6,7 @@ from typing import Final
 from frozenlist import FrozenList
 
 from .jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
+from .models.twitchAuthorizationByUserResponse import TwitchAuthorizationByUserResponse
 from .models.twitchBanRequest import TwitchBanRequest
 from .models.twitchBanResponse import TwitchBanResponse
 from .models.twitchBanResponseEntry import TwitchBanResponseEntry
@@ -303,6 +304,55 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when creating EventSub subscription ({eventSubRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({eventSubResponse=})')
 
         return eventSubResponse
+
+    async def fetchAuthorizationByUser(
+        self,
+        twitchAccessToken: str,
+        twitchChannelId: str,
+    ) -> TwitchAuthorizationByUserResponse:
+        if not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        self.__timber.log('TwitchApiService', f'Fetching authorization by user... ({twitchChannelId=})')
+        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
+        clientSession = await self.__networkClientProvider.get()
+
+        queryString = urllib.parse.urlencode({
+            'user_id': twitchChannelId,
+        })
+
+        try:
+            response = await clientSession.get(
+                url = f'https://api.twitch.tv/helix/authorization/users?{queryString}',
+                headers = {
+                    'Authorization': f'Bearer {twitchAccessToken}',
+                    'Client-Id': twitchClientId,
+                },
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('TwitchApiService', f'Encountered network error when fetching authorization by user... ({twitchChannelId=})', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching authorization by user... ({twitchChannelId=}): {e}')
+
+        responseStatusCode = response.statusCode
+        jsonResponse = await response.json()
+        await response.close()
+
+        if responseStatusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching authorization by user... ({twitchChannelId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchStatusCodeException(
+                statusCode = responseStatusCode,
+                message = f'TwitchApiService encountered non-200 HTTP status code when fetching authorization by user... ({twitchChannelId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})',
+            )
+
+        authorizationByUserResponse = await self.__twitchJsonMapper.parseAuthorizationByUserResponse(jsonResponse)
+
+        if authorizationByUserResponse is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching authorization by user... ({twitchChannelId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({authorizationByUserResponse=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching authorization by user... ({twitchChannelId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({authorizationByUserResponse=})')
+
+        return authorizationByUserResponse
 
     async def fetchBannedUsers(
         self,
