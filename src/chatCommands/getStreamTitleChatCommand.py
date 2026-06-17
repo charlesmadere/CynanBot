@@ -7,6 +7,7 @@ from .chatCommandResult import ChatCommandResult
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
+from ..twitch.channelInformationHelper.exceptions import RequiredTwitchAuthorizationIsMissingException
 from ..twitch.channelInformationHelper.twitchChannelInformationHelperInterface import \
     TwitchChannelInformationHelperInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
@@ -62,6 +63,9 @@ class GetStreamTitleChatCommand(AbsChatCommand):
             currentTitle = await self.__twitchChannelInformationHelper.getTitle(
                 twitchChannelId = chatMessage.twitchChannelId,
             )
+        except RequiredTwitchAuthorizationIsMissingException as e:
+            self.__timber.log(self.commandName, f'Can\'t fetch stream title as required Twitch authorization is missing ({chatMessage=})', e, traceback.format_exc())
+            return ChatCommandResult.CONSUMED
         except Exception as e:
             self.__timber.log(self.commandName, f'Failed to fetch stream title ({chatMessage=})', e, traceback.format_exc())
 

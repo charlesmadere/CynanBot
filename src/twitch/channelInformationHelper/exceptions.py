@@ -20,3 +20,9 @@ class FailedToSetTwitchChannelTitleException(Exception):
 
     def __init__(self, message: str):
         super().__init__(message)
+
+
+class RequiredTwitchAuthorizationIsMissingException(Exception):
+
+    def __init__(self, message: str):
+        super().__init__(message)

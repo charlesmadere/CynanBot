@@ -7,6 +7,8 @@ from frozenlist import FrozenList
 from .twitchJsonMapperInterface import TwitchJsonMapperInterface
 from ..models.twitchAnnouncement import TwitchAnnouncement
 from ..models.twitchApiScope import TwitchApiScope
+from ..models.twitchAuthorizationByUser import TwitchAuthorizationByUser
+from ..models.twitchAuthorizationByUserResponse import TwitchAuthorizationByUserResponse
 from ..models.twitchBanRequest import TwitchBanRequest
 from ..models.twitchBanResponse import TwitchBanResponse
 from ..models.twitchBanResponseEntry import TwitchBanResponseEntry
@@ -237,6 +239,61 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'whispers:edit': return TwitchApiScope.WHISPERS_EDIT
             case 'whispers:read': return TwitchApiScope.WHISPERS_READ
             case _: return None
+
+    async def parseAuthorizationByUser(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchAuthorizationByUser | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        scopesArray: list[str] | Any | None = jsonResponse.get('scopes')
+        scopes: set[TwitchApiScope] = set()
+
+        if isinstance(scopesArray, list) and len(scopesArray) >= 1:
+            for index, scopeString in enumerate(scopesArray):
+                scope = await self.parseApiScope(scopeString)
+
+                if scope is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"data\" element ({jsonResponse=})')
+                else:
+                    scopes.add(scope)
+
+        userId = utils.getStrFromDict(jsonResponse, 'user_id')
+        userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
+        userName = utils.getStrFromDict(jsonResponse, 'user_name')
+
+        return TwitchAuthorizationByUser(
+            scopes = frozenset(scopes),
+            userId = userId,
+            userLogin = userLogin,
+            userName = userName,
+        )
+
+    async def parseAuthorizationByUserResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchAuthorizationByUserResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        data: FrozenList[TwitchAuthorizationByUser] = FrozenList()
+
+        if isinstance(dataArray, list) and len(dataArray) >= 1:
+            for index, dataItem in enumerate(dataArray):
+                authorizationByUser = await self.parseAuthorizationByUser(dataItem)
+
+                if authorizationByUser is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"data\" element ({jsonResponse=})')
+                else:
+                    data.append(authorizationByUser)
+
+        data.freeze()
+
+        return TwitchAuthorizationByUserResponse(
+            data = data,
+        )
 
     async def parseBanResponse(
         self,

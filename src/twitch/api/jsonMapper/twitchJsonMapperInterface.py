@@ -3,6 +3,8 @@ from typing import Any
 
 from ..models.twitchAnnouncement import TwitchAnnouncement
 from ..models.twitchApiScope import TwitchApiScope
+from ..models.twitchAuthorizationByUser import TwitchAuthorizationByUser
+from ..models.twitchAuthorizationByUserResponse import TwitchAuthorizationByUserResponse
 from ..models.twitchBanRequest import TwitchBanRequest
 from ..models.twitchBanResponse import TwitchBanResponse
 from ..models.twitchBanResponseEntry import TwitchBanResponseEntry
@@ -127,6 +129,20 @@ class TwitchJsonMapperInterface(ABC):
         self,
         apiScope: str | Any | None,
     ) -> TwitchApiScope | None:
+        pass
+
+    @abstractmethod
+    async def parseAuthorizationByUser(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchAuthorizationByUser | None:
+        pass
+
+    @abstractmethod
+    async def parseAuthorizationByUserResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchAuthorizationByUserResponse | None:
         pass
 
     @abstractmethod

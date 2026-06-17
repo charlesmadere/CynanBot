@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from .models.twitchAuthorizationByUserResponse import TwitchAuthorizationByUserResponse
 from .models.twitchBanRequest import TwitchBanRequest
 from .models.twitchBanResponse import TwitchBanResponse
 from .models.twitchBannedUsersReponse import TwitchBannedUsersResponse
@@ -63,6 +64,14 @@ class TwitchApiServiceInterface(ABC):
         twitchAccessToken: str,
         eventSubRequest: TwitchEventSubRequest,
     ) -> TwitchEventSubResponse:
+        pass
+
+    @abstractmethod
+    async def fetchAuthorizationByUser(
+        self,
+        twitchAccessToken: str,
+        twitchChannelId: str,
+    ) -> TwitchAuthorizationByUserResponse:
         pass
 
     @abstractmethod
