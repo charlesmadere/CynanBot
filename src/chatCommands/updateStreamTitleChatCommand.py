@@ -17,6 +17,7 @@ from ..timeout.models.exactTimeoutDuration import ExactTimeoutDuration
 from ..tts.models.ttsEvent import TtsEvent
 from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
+from ..twitch.channelInformationHelper.exceptions import RequiredTwitchAuthorizationIsMissingException
 from ..twitch.channelInformationHelper.twitchChannelInformationHelperInterface import \
     TwitchChannelInformationHelperInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
@@ -128,6 +129,9 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
                 title = newTitle,
                 twitchChannelId = chatMessage.twitchChannelId,
             )
+        except RequiredTwitchAuthorizationIsMissingException as e:
+            self.__timber.log(self.commandName, f'Can\'t update stream title as required Twitch authorization is missing ({chatMessage=})', e, traceback.format_exc())
+            return ChatCommandResult.CONSUMED
         except Exception as e:
             self.__timber.log(self.commandName, f'Failed to update stream title ({newTitle=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
 
