@@ -307,11 +307,11 @@ class TwitchApiService(TwitchApiServiceInterface):
 
     async def fetchAuthorizationByUser(
         self,
-        twitchAccessToken: str,
+        appAccessToken: str,
         twitchChannelId: str,
     ) -> TwitchAuthorizationByUserResponse:
-        if not utils.isValidStr(twitchAccessToken):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        if not utils.isValidStr(appAccessToken):
+            raise TypeError(f'appAccessToken argument is malformed: \"{appAccessToken}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -327,7 +327,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             response = await clientSession.get(
                 url = f'https://api.twitch.tv/helix/authorization/users?{queryString}',
                 headers = {
-                    'Authorization': f'Bearer {twitchAccessToken}',
+                    'Authorization': f'Bearer {appAccessToken}',
                     'Client-Id': twitchClientId,
                 },
             )

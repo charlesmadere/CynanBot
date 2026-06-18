@@ -37,11 +37,12 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
 
     async def __checkAccess(
         self,
-        twitchAccessToken: str,
         twitchChannelId: str,
     ):
+        appAccessToken = await self.__twitchTokensRepository.requireAppAccessToken()
+
         response = await self.__twitchApiService.fetchAuthorizationByUser(
-            twitchAccessToken = twitchAccessToken,
+            appAccessToken = appAccessToken,
             twitchChannelId = twitchChannelId,
         )
 
@@ -92,12 +93,11 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
+        await self.__checkAccess(
             twitchChannelId = twitchChannelId,
         )
 
-        await self.__checkAccess(
-            twitchAccessToken = twitchAccessToken,
+        twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
             twitchChannelId = twitchChannelId,
         )
 
@@ -115,12 +115,11 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
+        await self.__checkAccess(
             twitchChannelId = twitchChannelId,
         )
 
-        await self.__checkAccess(
-            twitchAccessToken = twitchAccessToken,
+        twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
             twitchChannelId = twitchChannelId,
         )
 
@@ -157,12 +156,11 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
+        await self.__checkAccess(
             twitchChannelId = twitchChannelId,
         )
 
-        await self.__checkAccess(
-            twitchAccessToken = twitchAccessToken,
+        twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
             twitchChannelId = twitchChannelId,
         )
 
@@ -200,12 +198,11 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
+        await self.__checkAccess(
             twitchChannelId = twitchChannelId,
         )
 
-        await self.__checkAccess(
-            twitchAccessToken = twitchAccessToken,
+        twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
             twitchChannelId = twitchChannelId,
         )
 
