@@ -9,7 +9,6 @@ from ..api.models.twitchTokensDetails import TwitchTokensDetails
 from ..api.models.twitchValidationResponse import TwitchValidationResponse
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..exceptions import TwitchAccessTokenMissingException, TwitchPasswordChangedException, TwitchStatusCodeException
-from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -27,7 +26,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
-        twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensStorage: TwitchTokensStorageInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         seedFileReader: JsonReaderInterface | None = None,
@@ -43,8 +41,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
-        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
-            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensStorage, TwitchTokensStorageInterface):
             raise TypeError(f'twitchTokensStorage argument is malformed: \"{twitchTokensStorage}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -62,7 +58,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
-        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensStorage: Final[TwitchTokensStorageInterface] = twitchTokensStorage
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__seedFileReader: JsonReaderInterface | None = seedFileReader
@@ -253,13 +248,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         return tokensDetails.accessToken
 
-    async def getAppAccessToken(self) -> str | None:
-        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-
-        return await self.getAccessToken(
-            twitchChannel = twitchHandle,
-        )
-
     async def getTokensDetails(
         self,
         twitchChannel: str,
@@ -367,14 +355,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             raise TwitchAccessTokenMissingException(f'Twitch access token is missing ({twitchChannelId=}) ({accessToken=})')
 
         return accessToken
-
-    async def requireAppAccessToken(self) -> str:
-        appAccessToken = await self.getAppAccessToken()
-
-        if not utils.isValidStr(appAccessToken):
-            raise TwitchAccessTokenMissingException(f'Twitch app access token is missing ({appAccessToken=})')
-
-        return appAccessToken
 
     async def __setExpirationTime(
         self,

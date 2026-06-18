@@ -895,7 +895,6 @@ twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = TwitchTokensRep
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
-    twitchHandleProvider = authRepository,
     twitchTokensStorage = twitchTokensStorage,
     userIdsRepository = userIdsRepository,
     seedFileReader = JsonFileReader(
