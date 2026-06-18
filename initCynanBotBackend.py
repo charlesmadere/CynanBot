@@ -67,7 +67,6 @@ from src.chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriv
 from src.chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from src.chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
 from src.chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
-from src.chatCommands.getStreamTitleChatCommand import GetStreamTitleChatCommand
 from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from src.chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
@@ -88,7 +87,6 @@ from src.chatCommands.translateChatCommand import TranslateChatCommand
 from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from src.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from src.chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
-from src.chatCommands.updateStreamTitleChatCommand import UpdateStreamTitleChatCommand
 from src.chatCommands.weatherChatCommand import WeatherChatCommand
 from src.chatCommands.wordChatCommand import WordChatCommand
 from src.chatLogger.chatLogger import ChatLogger
@@ -2097,13 +2095,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
-    GetStreamTitleChatCommand(
-        administratorProvider = administratorProvider,
-        timber = timber,
-        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-        twitchChannelInformationHelper = twitchChannelInformationHelper,
-        twitchChatMessenger = twitchChatMessenger,
-    ),
     GetTriviaAnswersChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
         generalSettingsRepository = generalSettingsRepository,
@@ -2252,20 +2243,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         triviaHistoryRepository = triviaHistoryRepository,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
-    ),
-    UpdateStreamTitleChatCommand(
-        administratorProvider = administratorProvider,
-        streamAlertsManager = streamAlertsManager,
-        timber = timber,
-        timeoutActionMachine = timeoutActionMachine,
-        timeoutIdGenerator = timeoutIdGenerator,
-        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-        twitchChannelInformationHelper = twitchChannelInformationHelper,
-        twitchChatMessenger = twitchChatMessenger,
-        twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
-        twitchHandleProvider = authRepository,
-        twitchTokensRepository = twitchTokensRepository,
-        userIdsRepository = userIdsRepository,
     ),
     WeatherChatCommand(
         locationsRepository = locationsRepository,

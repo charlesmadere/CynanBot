@@ -11,6 +11,7 @@ from ..twitch.channelInformationHelper.exceptions import RequiredTwitchAuthoriza
 from ..twitch.channelInformationHelper.twitchChannelInformationHelperInterface import \
     TwitchChannelInformationHelperInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
+from ..twitch.exceptions import TwitchStatusCodeException
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
@@ -65,6 +66,9 @@ class GetStreamTitleChatCommand(AbsChatCommand):
             )
         except RequiredTwitchAuthorizationIsMissingException as e:
             self.__timber.log(self.commandName, f'Can\'t fetch stream title as required Twitch authorization is missing ({chatMessage=})', e, traceback.format_exc())
+            return ChatCommandResult.CONSUMED
+        except TwitchStatusCodeException as e:
+            self.__timber.log(self.commandName, f'Can\'t fetch stream title as we encountered a Twitch status code error ({chatMessage=})', e, traceback.format_exc())
             return ChatCommandResult.CONSUMED
         except Exception as e:
             self.__timber.log(self.commandName, f'Failed to fetch stream title ({chatMessage=})', e, traceback.format_exc())

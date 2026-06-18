@@ -3,10 +3,8 @@ from typing import Final
 from .exceptions import (FailedToFindTwitchChannelInformationException,
                          FailedToFindTwitchGameException,
                          FailedToSetTwitchChannelGameException,
-                         FailedToSetTwitchChannelTitleException,
-                         RequiredTwitchAuthorizationIsMissingException)
+                         FailedToSetTwitchChannelTitleException)
 from .twitchChannelInformationHelperInterface import TwitchChannelInformationHelperInterface
-from ..api.models.twitchApiScope import TwitchApiScope
 from ..api.models.twitchChannelInformation import TwitchChannelInformation
 from ..api.models.twitchGame import TwitchGame
 from ..api.models.twitchModifyChannelInformationRequest import TwitchModifyChannelInformationRequest
@@ -34,24 +32,6 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
         self.__timber: Final[TimberInterface] = timber
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-
-    async def __checkAccess(
-        self,
-        twitchAccessToken: str,
-        twitchChannelId: str,
-    ):
-        response = await self.__twitchApiService.fetchAuthorizationByUser(
-            twitchAccessToken = twitchAccessToken,
-            twitchChannelId = twitchChannelId,
-        )
-
-        for authorizationByUser in response.data:
-            if authorizationByUser.userId != twitchChannelId:
-                continue
-            elif TwitchApiScope.CHANNEL_MANAGE_BROADCAST in authorizationByUser.scopes:
-                return
-
-        raise RequiredTwitchAuthorizationIsMissingException(f'Required Twitch channel access is missing ({twitchChannelId=}) ({response=})')
 
     async def __fetchChannelInformation(
         self,
@@ -96,11 +76,6 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
             twitchChannelId = twitchChannelId,
         )
 
-        await self.__checkAccess(
-            twitchAccessToken = twitchAccessToken,
-            twitchChannelId = twitchChannelId,
-        )
-
         channelInformation = await self.__fetchChannelInformation(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
@@ -116,11 +91,6 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
-            twitchChannelId = twitchChannelId,
-        )
-
-        await self.__checkAccess(
-            twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
         )
 
@@ -161,11 +131,6 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
             twitchChannelId = twitchChannelId,
         )
 
-        await self.__checkAccess(
-            twitchAccessToken = twitchAccessToken,
-            twitchChannelId = twitchChannelId,
-        )
-
         game = await self.__fetchGame(
             gameName = gameName,
             twitchAccessToken = twitchAccessToken,
@@ -201,11 +166,6 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         twitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
-            twitchChannelId = twitchChannelId,
-        )
-
-        await self.__checkAccess(
-            twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
         )
 

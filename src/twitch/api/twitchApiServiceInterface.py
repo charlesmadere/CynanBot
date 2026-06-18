@@ -69,7 +69,7 @@ class TwitchApiServiceInterface(ABC):
     @abstractmethod
     async def fetchAuthorizationByUser(
         self,
-        twitchAccessToken: str,
+        appAccessToken: str,
         twitchChannelId: str,
     ) -> TwitchAuthorizationByUserResponse:
         pass

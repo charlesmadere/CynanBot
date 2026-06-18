@@ -31,6 +31,7 @@ from src.chatCommands.getChatterPreferredNameChatCommand import GetChatterPrefer
 from src.chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredTtsChatCommand
 from src.chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
+from src.chatCommands.getStreamTitleChatCommand import GetStreamTitleChatCommand
 from src.chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
 from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
@@ -44,6 +45,7 @@ from src.chatCommands.testCheerChatCommand import TestCheerChatCommand
 from src.chatCommands.testCrowdControlChatCommand import TestCrowdControlChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
+from src.chatCommands.updateStreamTitleChatCommand import UpdateStreamTitleChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
 from src.chatCommands.voicemailsChatCommand import VoicemailsChatCommand
 from src.chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
@@ -2185,6 +2187,13 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         chatterInventoryMachine = chatterInventoryMachine,
         timber = timber,
     ),
+    GetStreamTitleChatCommand(
+        administratorProvider = administratorProvider,
+        timber = timber,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+        twitchChannelInformationHelper = twitchChannelInformationHelper,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
     GiveChatterItemChatCommand(
         chatterInventoryIdGenerator = chatterInventoryIdGenerator,
         chatterInventoryMachine = chatterInventoryMachine,
@@ -2282,6 +2291,20 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         ttsJsonMapper = ttsJsonMapper,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    UpdateStreamTitleChatCommand(
+        administratorProvider = administratorProvider,
+        streamAlertsManager = streamAlertsManager,
+        timber = timber,
+        timeoutActionMachine = timeoutActionMachine,
+        timeoutIdGenerator = timeoutIdGenerator,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+        twitchChannelInformationHelper = twitchChannelInformationHelper,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
+        twitchHandleProvider = authRepository,
+        twitchTokensRepository = twitchTokensRepository,
+        userIdsRepository = userIdsRepository,
     ),
     UseChatterItemChatCommand(
         chatterInventoryIdGenerator = chatterInventoryIdGenerator,
