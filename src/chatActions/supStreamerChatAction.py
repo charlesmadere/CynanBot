@@ -74,6 +74,17 @@ class SupStreamerChatAction(AbsChatAction):
     def actionName(self) -> str:
         return 'SupStreamerChatAction'
 
+    async def __determineAuthorName(self, chatMessage: TwitchChatMessage) -> str:
+        preferredNameData = await self.__chatterPreferredNameHelper.get(
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
+        )
+
+        if preferredNameData is None:
+            return chatMessage.chatterUserName
+        else:
+            return preferredNameData.preferredName
+
     async def handleChatAction(
         self,
         mostRecentChat: MostRecentChat | None,
@@ -107,17 +118,6 @@ class SupStreamerChatAction(AbsChatAction):
                 return ChatActionResult.CONSUMED
 
         return ChatActionResult.IGNORED
-
-    async def __determineAuthorName(self, chatMessage: TwitchChatMessage) -> str:
-        preferredNameData = await self.__chatterPreferredNameHelper.get(
-            chatterUserId = chatMessage.chatterUserId,
-            twitchChannelId = chatMessage.twitchChannelId,
-        )
-
-        if preferredNameData is None:
-            return chatMessage.chatterUserName
-        else:
-            return preferredNameData.preferredName
 
     async def __isFollowing(self, chatMessage: TwitchChatMessage) -> bool:
         twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
