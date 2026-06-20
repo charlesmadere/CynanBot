@@ -85,6 +85,24 @@ class SupStreamerChatAction(AbsChatAction):
         else:
             return preferredNameData.preferredName
 
+    async def __determineTtsProvider(
+        self,
+        providerOverridableStatus: TtsProviderOverridableStatus,
+        chatMessage: TwitchChatMessage,
+    ) -> TtsProvider:
+        if providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
+            return chatMessage.twitchUser.defaultTtsProvider
+
+        chatterPreferredTts = await self.__chatterPreferredTtsHelper.get(
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
+        )
+
+        if chatterPreferredTts is None:
+            return chatMessage.twitchUser.defaultTtsProvider
+        else:
+            return chatterPreferredTts.provider
+
     async def handleChatAction(
         self,
         mostRecentChat: MostRecentChat | None,
@@ -197,21 +215,3 @@ class SupStreamerChatAction(AbsChatAction):
         ))
 
         return True
-
-    async def __determineTtsProvider(
-        self,
-        providerOverridableStatus: TtsProviderOverridableStatus,
-        chatMessage: TwitchChatMessage,
-    ) -> TtsProvider:
-        if providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
-            return chatMessage.twitchUser.defaultTtsProvider
-
-        chatterPreferredTts = await self.__chatterPreferredTtsHelper.get(
-            chatterUserId = chatMessage.chatterUserId,
-            twitchChannelId = chatMessage.twitchChannelId,
-        )
-
-        if chatterPreferredTts is None:
-            return chatMessage.twitchUser.defaultTtsProvider
-        else:
-            return chatterPreferredTts.provider
