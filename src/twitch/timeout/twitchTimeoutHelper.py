@@ -222,6 +222,8 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             twitchChannelId = twitchChannelId,
         )
 
+        self.__timber.log('TwitchTimeoutHelper', f'Timing out... ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
+
         if not await self.__timeout(
             durationSeconds = durationSeconds,
             cynanBotUserId = cynanBotUserId,
