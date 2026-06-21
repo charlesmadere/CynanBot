@@ -39,13 +39,13 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         defaultGashaponItemDetails: GashaponItemDetails = GashaponItemDetails(
             pullRates = frozendict({
                 ChatterItemType.AIR_STRIKE: GashaponItemPullRate(
-                    pullRate = 0.25,
+                    pullRate = 0.10,
                     iterations = 1,
                     maximumPullAmount = 1,
                     minimumPullAmount = 0,
                 ),
                 ChatterItemType.ANIMAL_PET: GashaponItemPullRate(
-                    pullRate = 0.40,
+                    pullRate = 0.32,
                     iterations = 1,
                     maximumPullAmount = 1,
                     minimumPullAmount = 1,

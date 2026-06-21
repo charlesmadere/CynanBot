@@ -74,6 +74,35 @@ class SupStreamerChatAction(AbsChatAction):
     def actionName(self) -> str:
         return 'SupStreamerChatAction'
 
+    async def __determineAuthorName(self, chatMessage: TwitchChatMessage) -> str:
+        preferredNameData = await self.__chatterPreferredNameHelper.get(
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
+        )
+
+        if preferredNameData is None:
+            return chatMessage.chatterUserName
+        else:
+            return preferredNameData.preferredName
+
+    async def __determineTtsProvider(
+        self,
+        providerOverridableStatus: TtsProviderOverridableStatus,
+        chatMessage: TwitchChatMessage,
+    ) -> TtsProvider:
+        if providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
+            return chatMessage.twitchUser.defaultTtsProvider
+
+        chatterPreferredTts = await self.__chatterPreferredTtsHelper.get(
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
+        )
+
+        if chatterPreferredTts is None:
+            return chatMessage.twitchUser.defaultTtsProvider
+        else:
+            return chatterPreferredTts.provider
+
     async def handleChatAction(
         self,
         mostRecentChat: MostRecentChat | None,
@@ -107,17 +136,6 @@ class SupStreamerChatAction(AbsChatAction):
                 return ChatActionResult.CONSUMED
 
         return ChatActionResult.IGNORED
-
-    async def __determineAuthorName(self, chatMessage: TwitchChatMessage) -> str:
-        preferredNameData = await self.__chatterPreferredNameHelper.get(
-            chatterUserId = chatMessage.chatterUserId,
-            twitchChannelId = chatMessage.twitchChannelId,
-        )
-
-        if preferredNameData is None:
-            return chatMessage.chatterUserName
-        else:
-            return preferredNameData.preferredName
 
     async def __isFollowing(self, chatMessage: TwitchChatMessage) -> bool:
         twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
@@ -197,21 +215,3 @@ class SupStreamerChatAction(AbsChatAction):
         ))
 
         return True
-
-    async def __determineTtsProvider(
-        self,
-        providerOverridableStatus: TtsProviderOverridableStatus,
-        chatMessage: TwitchChatMessage,
-    ) -> TtsProvider:
-        if providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
-            return chatMessage.twitchUser.defaultTtsProvider
-
-        chatterPreferredTts = await self.__chatterPreferredTtsHelper.get(
-            chatterUserId = chatMessage.chatterUserId,
-            twitchChannelId = chatMessage.twitchChannelId,
-        )
-
-        if chatterPreferredTts is None:
-            return chatMessage.twitchUser.defaultTtsProvider
-        else:
-            return chatterPreferredTts.provider
