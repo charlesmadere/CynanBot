@@ -3,7 +3,7 @@ from typing import Final
 
 import aiohttp
 
-from .aioHttpCookieJarProvider import AioHttpCookieJarProvider
+from .aioHttpCookieJarProviderInterface import AioHttpCookieJarProviderInterface
 from .aioHttpHandle import AioHttpHandle
 from ..networkClientProvider import NetworkClientProvider
 from ..networkClientType import NetworkClientType
@@ -17,13 +17,13 @@ class AioHttpClientProvider(NetworkClientProvider):
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
-        cookieJarProvider: AioHttpCookieJarProvider,
+        cookieJarProvider: AioHttpCookieJarProviderInterface,
         timber: TimberInterface,
         timeoutSeconds: int = 30,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
-        elif not isinstance(cookieJarProvider, AioHttpCookieJarProvider):
+        elif not isinstance(cookieJarProvider, AioHttpCookieJarProviderInterface):
             raise TypeError(f'cookieJarProvider argument is malformed: \"{cookieJarProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -33,7 +33,7 @@ class AioHttpClientProvider(NetworkClientProvider):
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 
         self.__eventLoop: Final[AbstractEventLoop] = eventLoop
-        self.__cookieJarProvider: Final[AioHttpCookieJarProvider] = cookieJarProvider
+        self.__cookieJarProvider: Final[AioHttpCookieJarProviderInterface] = cookieJarProvider
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutSeconds: Final[int] = timeoutSeconds
 

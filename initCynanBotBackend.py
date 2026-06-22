@@ -180,6 +180,7 @@ from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsReposito
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
 from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
+from src.network.aioHttp.aioHttpCookieJarProviderInterface import AioHttpCookieJarProviderInterface
 from src.network.networkClientProvider import NetworkClientProvider
 from src.network.networkJsonMapper import NetworkJsonMapper
 from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
@@ -578,7 +579,7 @@ match generalSettingsSnapshot.requireDatabaseType():
     case _:
         raise RuntimeError(f'Unknown/misconfigured DatabaseType: \"{generalSettingsSnapshot.requireDatabaseType()}\"')
 
-aioHttpCookieJarProvider = AioHttpCookieJarProvider(
+aioHttpCookieJarProvider: Final[AioHttpCookieJarProviderInterface] = AioHttpCookieJarProvider(
     eventLoop = eventLoop,
 )
 
@@ -638,10 +639,10 @@ twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = TwitchTokensRep
     ),
 )
 
-administratorProvider: AdministratorProviderInterface = AdministratorProvider(
+administratorProvider: Final[AdministratorProviderInterface] = AdministratorProvider(
     generalSettingsRepository = generalSettingsRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
 bannedWordsRepository: Final[BannedWordsRepositoryInterface] = BannedWordsRepository(
@@ -652,9 +653,9 @@ bannedWordsRepository: Final[BannedWordsRepositoryInterface] = BannedWordsReposi
     timber = timber,
 )
 
-contentScanner: ContentScannerInterface = ContentScanner(
+contentScanner: Final[ContentScannerInterface] = ContentScanner(
     bannedWordsRepository = bannedWordsRepository,
-    timber = timber
+    timber = timber,
 )
 
 twitchTokensUtils: Final[TwitchTokensUtilsInterface] = TwitchTokensUtils(
