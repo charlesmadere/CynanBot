@@ -60,6 +60,7 @@ from ..models.twitchHypeTrainType import TwitchHypeTrainType
 from ..models.twitchModeratorUser import TwitchModeratorUser
 from ..models.twitchModeratorsResponse import TwitchModeratorsResponse
 from ..models.twitchModifyChannelInformationRequest import TwitchModifyChannelInformationRequest
+from ..models.twitchModiversary import TwitchModiversary
 from ..models.twitchNoticeType import TwitchNoticeType
 from ..models.twitchOutcome import TwitchOutcome
 from ..models.twitchOutcomeColor import TwitchOutcomeColor
@@ -1505,6 +1506,19 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             userId = userId,
             userLogin = userLogin,
             userName = userName,
+        )
+
+    async def parseModiversary(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchModiversary | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        months = utils.getIntFromDict(jsonResponse, 'months')
+
+        return TwitchModiversary(
+            months = months,
         )
 
     async def parseNoticeType(
