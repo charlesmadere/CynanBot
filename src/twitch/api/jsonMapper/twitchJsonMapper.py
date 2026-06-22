@@ -725,12 +725,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        text: str | None = None
-        if 'text' in jsonResponse and utils.isValidStr(jsonResponse.get('text')):
-            text = utils.getStrFromDict(jsonResponse, 'text', clean = True)
-
-        if not utils.isValidStr(text):
-            return None
+        text = utils.getStrFromDict(jsonResponse, 'text', clean = True)
 
         fragmentsArray: list[dict[str, Any]] | Any | None = jsonResponse.get('fragments')
         fragments: FrozenList[TwitchChatMessageFragment] = FrozenList()
@@ -743,6 +738,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                     self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} for \"fragments\" data ({jsonResponse=})')
                 else:
                     fragments.append(fragment)
+
+        fragments.freeze()
 
         return TwitchChatMessage(
             fragments = fragments,
