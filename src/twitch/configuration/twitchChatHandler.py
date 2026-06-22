@@ -28,6 +28,9 @@ from ..localModels.twitchChatMessageFragmentType import TwitchChatMessageFragmen
 from ..localModels.twitchCheerMetadata import TwitchCheerMetadata
 from ..localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from ..localModels.twitchWatchStreak import TwitchWatchStreak
+from ..officialAccounts.officialTwitchAccountUserIdProviderInterface import \
+    OfficialTwitchAccountUserIdProviderInterface
+from ..tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ...aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from ...chatActions.absChatAction import AbsChatAction
 from ...chatActions.chatActionResult import ChatActionResult
@@ -41,6 +44,7 @@ from ...mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChats
 from ...timber.timberInterface import TimberInterface
 from ...trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ...trivia.triviaGameMachineInterface import TriviaGameMachineInterface
+from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
 
 
@@ -53,9 +57,12 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         cheerActionHelper: CheerActionHelperInterface | None,
         mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface,
+        officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
         triviaGameMachine: TriviaGameMachineInterface | None,
+        twitchTokensUtils: TwitchTokensUtilsInterface,
+        userIdsRepository: UserIdsRepositoryInterface,
         chatActions: Collection[AbsChatAction | Any | None] | None,
         chatCommands: Collection[AbsChatCommand | Any | None] | None,
     ):
@@ -69,12 +76,18 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             raise TypeError(f'mostRecentAnivMessageTimeoutHelper argument is malformed: \"{mostRecentAnivMessageTimeoutHelper}\"')
         elif not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
             raise TypeError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
+        elif not isinstance(officialTwitchAccountUserIdProvider, OfficialTwitchAccountUserIdProviderInterface):
+            raise TypeError(f'officialTwitchAccountUserIdProvider argument is malformed: \"{officialTwitchAccountUserIdProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
             raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
+            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif chatActions is not None and not isinstance(chatActions, Collection):
             raise TypeError(f'chatActions argument is malformed: \"{chatActions}\"')
         elif chatCommands is not None and not isinstance(chatCommands, Collection):
@@ -85,9 +98,12 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         self.__cheerActionHelper: Final[CheerActionHelperInterface | None] = cheerActionHelper
         self.__mostRecentAnivMessageTimeoutHelper: Final[MostRecentAnivMessageTimeoutHelperInterface | None] = mostRecentAnivMessageTimeoutHelper
         self.__mostRecentChatsRepository: Final[MostRecentChatsRepositoryInterface] = mostRecentChatsRepository
+        self.__officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderInterface] = officialTwitchAccountUserIdProvider
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface | None] = triviaGameBuilder
         self.__triviaGameMachine: Final[TriviaGameMachineInterface | None] = triviaGameMachine
+        self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
+        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
         self.__chatCommandPrefixRegEx: Final[Pattern] = re.compile(r'^\s*!\w+\b', re.IGNORECASE)
 
@@ -241,6 +257,20 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         chatterUserLogin = event.chatterUserLogin
         chatterUserName = event.chatterUserName
         chatMessage = event.chatMessage
+
+        if (event.isAnonymous is True or event.isChatterAnonymous is True) and (not utils.isValidStr(chatterUserId) and not utils.isValidStr(chatterUserLogin) and not utils.isValidStr(chatterUserName)):
+            chatterUserId = await self.__officialTwitchAccountUserIdProvider.getTwitchAnonymousGifterUserId()
+
+            twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+                twitchChannelId = twitchChannelId,
+            )
+
+            chatterUserName = await self.__userIdsRepository.fetchUserName(
+                userId = chatterUserId,
+                twitchAccessToken = twitchAccessToken,
+            )
+
+            chatterUserLogin = chatterUserName
 
         if not utils.isValidStr(eventId) or not utils.isValidStr(chatterUserId) or not utils.isValidStr(chatterUserLogin) or not utils.isValidStr(chatterUserName) or chatMessage is None:
             self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=})')

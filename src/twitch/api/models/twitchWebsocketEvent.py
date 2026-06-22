@@ -15,6 +15,7 @@ from .twitchCommunitySubGift import TwitchCommunitySubGift
 from .twitchContribution import TwitchContribution
 from .twitchCustomPowerUpData import TwitchCustomPowerUpData
 from .twitchHypeTrainType import TwitchHypeTrainType
+from .twitchModiversary import TwitchModiversary
 from .twitchNoticeType import TwitchNoticeType
 from .twitchOutcome import TwitchOutcome
 from .twitchPayItForward import TwitchPayItForward
@@ -107,6 +108,7 @@ class TwitchWebsocketEvent:
     communitySubGift: TwitchCommunitySubGift | None = None
     customPowerUpData: TwitchCustomPowerUpData | None = None
     hypeTrainType: TwitchHypeTrainType | None = None
+    modiversary: TwitchModiversary | None = None
     noticeType: TwitchNoticeType | None = None
     payItForward: TwitchPayItForward | None = None
     pollStatus: TwitchPollStatus | None = None

@@ -1137,6 +1137,16 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseModiversary_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseModiversary(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseModiversary_withNone(self):
+        result = await self.jsonMapper.parseModiversary(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseNoticeType_withAnnouncementString(self):
         result = await self.jsonMapper.parseNoticeType('announcement')
         assert result is TwitchNoticeType.ANNOUNCEMENT

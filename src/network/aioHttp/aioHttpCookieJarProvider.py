@@ -4,8 +4,10 @@ from typing import Final
 from aiohttp import DummyCookieJar
 from aiohttp.abc import AbstractCookieJar
 
+from .aioHttpCookieJarProviderInterface import AioHttpCookieJarProviderInterface
 
-class AioHttpCookieJarProvider:
+
+class AioHttpCookieJarProvider(AioHttpCookieJarProviderInterface):
 
     def __init__(self, eventLoop: AbstractEventLoop):
         if not isinstance(eventLoop, AbstractEventLoop):
