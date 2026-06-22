@@ -2342,9 +2342,12 @@ twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
     cheerActionHelper = cheerActionHelper,
     mostRecentAnivMessageTimeoutHelper = None,
     mostRecentChatsRepository = mostRecentChatsRepository,
+    officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     timber = timber,
     triviaGameBuilder = None,
     triviaGameMachine = None,
+    twitchTokensUtils = twitchTokensUtils,
+    userIdsRepository = userIdsRepository,
     chatActions = chatActions,
     chatCommands = chatCommands,
 )
