@@ -1,3 +1,4 @@
+import asyncio
 import traceback
 from typing import Final
 
@@ -216,6 +217,14 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         ):
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the given user is a mod that failed to be unmodded ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.CANT_UNMOD
+
+        if isMod:
+            # This may need to be removed in the future, but let's go ahead and add a small
+            # delay here before proceeding further. It appears that sometimes, moderators are
+            # having their mod status removed, but then aren't being timed out. So maybe what's
+            # happening is that the Twitch backend is taking time to finish removing the target
+            # user's moderator status... maybe.
+            await asyncio.sleep(0.5)
 
         await self.__activeChattersRepository.remove(
             chatterUserId = userIdToTimeout,
