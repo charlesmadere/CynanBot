@@ -214,7 +214,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             twitchChannelId = twitchChannelId,
             userIdToTimeout = userIdToTimeout,
         ):
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the given user is a mod that failed to be unmodded ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the given user is a mod that failed to be unmodded ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.CANT_UNMOD
 
         await self.__activeChattersRepository.remove(
@@ -234,7 +234,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             userNameToTimeout = userNameToTimeout,
             user = user,
         ):
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the Twitch API call failed ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the Twitch API call failed ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.API_CALL_FAILED
 
         if isMod:
@@ -244,7 +244,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
                 userId = userIdToTimeout,
             )
 
-        self.__timber.log('TwitchTimeoutHelper', f'Successfully timed out user ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
+        self.__timber.log('TwitchTimeoutHelper', f'Successfully timed out user ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
         return TwitchTimeoutResult.SUCCESS
 
     async def __timeout(
