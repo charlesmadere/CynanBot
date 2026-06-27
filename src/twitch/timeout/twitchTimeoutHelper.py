@@ -1,3 +1,4 @@
+import asyncio
 import traceback
 from typing import Final
 
@@ -214,8 +215,16 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             twitchChannelId = twitchChannelId,
             userIdToTimeout = userIdToTimeout,
         ):
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the given user is a mod that failed to be unmodded ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the given user is a mod that failed to be unmodded ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.CANT_UNMOD
+
+        if isMod:
+            # This may need to be removed in the future, but let's go ahead and add a small
+            # delay here before proceeding further. It appears that sometimes, moderators are
+            # having their mod status removed, but then aren't being timed out. So maybe what's
+            # happening is that the Twitch backend is taking time to finish removing the target
+            # user's moderator status... maybe.
+            await asyncio.sleep(0.5)
 
         await self.__activeChattersRepository.remove(
             chatterUserId = userIdToTimeout,
@@ -234,7 +243,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             userNameToTimeout = userNameToTimeout,
             user = user,
         ):
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the Twitch API call failed ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the Twitch API call failed ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.API_CALL_FAILED
 
         if isMod:
@@ -244,7 +253,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
                 userId = userIdToTimeout,
             )
 
-        self.__timber.log('TwitchTimeoutHelper', f'Successfully timed out user ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
+        self.__timber.log('TwitchTimeoutHelper', f'Successfully timed out user ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
         return TwitchTimeoutResult.SUCCESS
 
     async def __timeout(
