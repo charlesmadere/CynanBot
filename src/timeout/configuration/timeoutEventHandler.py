@@ -3,7 +3,6 @@ import locale
 import random
 from typing import Final
 
-from frozendict import frozendict
 from frozenlist import FrozenList
 
 from ..listener.timeoutEventListener import TimeoutEventListener
@@ -216,21 +215,6 @@ class TimeoutEventHandler(TimeoutEventListener):
 
         else:
             self.__timber.log('TimeoutEventHandler', f'Received unhandled timeout event ({event=})')
-
-    async def __getInventoryRemainingString(
-        self,
-        itemType: ChatterItemType,
-        inventory: frozendict[ChatterItemType, int],
-    ) -> str:
-        remainingCount = locale.format_string("%d", inventory[itemType], grouping = True)
-
-        itemPlurality: str
-        if inventory[itemType] == 1:
-            itemPlurality = itemType.humanName
-        else:
-            itemPlurality = itemType.pluralHumanName
-
-        return f'({remainingCount} {itemPlurality.lower()} remaining)'
 
     async def __handleAirStrikeTimeoutEvent(
         self,
@@ -450,15 +434,8 @@ class TimeoutEventHandler(TimeoutEventListener):
                 alert = self.__chooseRandomGrenadeSoundAlert(),
             ))
 
-        remainingInventoryString = ''
-        if event.updatedInventory is not None:
-            remainingInventoryString = await self.__getInventoryRemainingString(
-                itemType = ChatterItemType.GRENADE,
-                inventory = event.updatedInventory.inventory,
-            )
-
         self.__twitchChatMessenger.send(
-            text = f'{event.explodedEmote} @{event.timeoutTarget.userName} {event.bombEmote} {remainingInventoryString}',
+            text = f'{event.explodedEmote} @{event.timeoutTarget.userName} {event.bombEmote}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -616,17 +593,12 @@ class TimeoutEventHandler(TimeoutEventListener):
     ):
         if event.user.areSoundAlertsEnabled:
             soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
-            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.SELF_DESTRUCT))
-
-        remainingInventoryString = ''
-        if event.updatedInventory is not None:
-            remainingInventoryString = await self.__getInventoryRemainingString(
-                itemType = ChatterItemType.TM_36,
-                inventory = event.updatedInventory.inventory,
-            )
+            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(
+                alert = SoundAlert.SELF_DESTRUCT,
+            ))
 
         self.__twitchChatMessenger.send(
-            text = f'{event.explodedEmote} @{event.targetUserName} used {ChatterItemType.TM_36.humanName}, its self destruct! {event.bombEmote} {remainingInventoryString}',
+            text = f'{event.explodedEmote} @{event.targetUserName} used {ChatterItemType.TM_36.humanName}, its self destruct! {event.bombEmote}',
             twitchChannelId = event.twitchChannelId,
         )
 
@@ -661,17 +633,12 @@ class TimeoutEventHandler(TimeoutEventListener):
     ):
         if event.user.areSoundAlertsEnabled:
             soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
-            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.VORE))
-
-        remainingInventoryString = ''
-        if event.updatedInventory is not None:
-            remainingInventoryString = await self.__getInventoryRemainingString(
-                itemType = ChatterItemType.VORE,
-                inventory = event.updatedInventory.inventory,
-            )
+            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(
+                alert = SoundAlert.VORE,
+            ))
 
         self.__twitchChatMessenger.send(
-            text = f'{event.ripBozoEmote} @{event.instigatorUserName} used {ChatterItemType.VORE.humanName} on @{event.timeoutTarget.userName}! {remainingInventoryString}',
+            text = f'{event.ripBozoEmote} @{event.instigatorUserName} used {ChatterItemType.VORE.humanName} on @{event.timeoutTarget.userName}!',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
