@@ -171,6 +171,8 @@ class CynanBot(
     async def onWebsocketConnectionsFinished(self, userIds: Collection[str]):
         self.__timber.log('CynanBot', f'Finished establishing Twitch websocket connections ({userIds=})')
 
+        await self.waitForReady()
+
         for startable in self.__startables:
             startable.start()
 

@@ -346,7 +346,7 @@ class ChatterItemEventHandler(ChatterItemEventListener):
             )
 
         self.__twitchChatMessenger.send(
-            text = f'⚠ Sorry, you can\'t receive your gashapon yet! Your next will be available in {availableWhen}',
+            text = f'⚠ Sorry, you can\'t receive your {ChatterItemType.GASHAPON.humanName} yet! Your next will be available in {availableWhen}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
