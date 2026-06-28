@@ -181,22 +181,22 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         )
 
         if not utils.isValidStr(userNameToTimeout):
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were unable to find a username for the given user ID ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were unable to find a username for the given user ID ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.INVALID_USER_NAME
         elif userIdToTimeout == twitchChannelId:
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout the streamer themselves ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout the streamer themselves ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.IS_STREAMER
         elif await self.__timeoutImmuneUserIdsRepository.isImmune(
             userId = userIdToTimeout,
         ):
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout an immune user ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout an immune user ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.IMMUNE_USER
         elif await self.__isAlreadyCurrentlyBannedOrTimedOut(
             twitchChannelAccessToken = twitchChannelAccessToken,
             twitchChannelId = twitchChannelId,
             userIdToTimeout = userIdToTimeout,
         ):
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as this user is already either banned or timed out ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as this user is already either banned or timed out ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.ALREADY_BANNED_OR_TIMED_OUT
 
         cynanBotUserId = await self.__userIdsRepository.requireUserId(
