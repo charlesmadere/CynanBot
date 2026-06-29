@@ -1,6 +1,7 @@
 import traceback
 from typing import Final
 
+from .absTwitchBitsHandler import AbsTwitchBitsHandler
 from .absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from .absTwitchChatHandler import AbsTwitchChatHandler
 from .absTwitchFollowHandler import AbsTwitchFollowHandler
@@ -24,6 +25,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
     def __init__(
         self,
+        bitsHandler: AbsTwitchBitsHandler | None,
         channelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None,
         chatHandler: AbsTwitchChatHandler | None,
         followHandler: AbsTwitchFollowHandler | None,
@@ -36,7 +38,9 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
     ):
-        if channelPointRedemptionHandler is not None and not isinstance(channelPointRedemptionHandler, AbsTwitchChannelPointRedemptionHandler):
+        if bitsHandler is not None and not isinstance(bitsHandler, AbsTwitchBitsHandler):
+            raise TypeError(f'bitsHandler argument is malformed: \"{bitsHandler}\"')
+        elif channelPointRedemptionHandler is not None and not isinstance(channelPointRedemptionHandler, AbsTwitchChannelPointRedemptionHandler):
             raise TypeError(f'channelPointRedemptionHandler argument is malformed: \"{channelPointRedemptionHandler}\"')
         elif chatHandler is not None and not isinstance(chatHandler, AbsTwitchChatHandler):
             raise TypeError(f'chatHandler argument is malformed: \"{chatHandler}\"')
@@ -59,6 +63,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
+        self.__bitsHandler: Final[AbsTwitchBitsHandler | None] = bitsHandler
         self.__channelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler | None] = channelPointRedemptionHandler
         self.__chatHandler: Final[AbsTwitchChatHandler | None] = chatHandler
         self.__followHandler: Final[AbsTwitchFollowHandler | None] = followHandler
@@ -71,28 +76,34 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
+    async def __isBitsType(
+        self,
+        subscriptionType: TwitchWebsocketSubscriptionType | None,
+    ) -> bool:
+        return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_BITS_USE
+
     async def __isChannelPointsRedemptionType(
         self,
-        subscriptionType: TwitchWebsocketSubscriptionType | None
+        subscriptionType: TwitchWebsocketSubscriptionType | None,
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
 
     async def __isChatType(
         self,
-        subscriptionType: TwitchWebsocketSubscriptionType | None
+        subscriptionType: TwitchWebsocketSubscriptionType | None,
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE \
             or subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CHAT_NOTIFICATION
 
     async def __isFollowType(
         self,
-        subscriptionType: TwitchWebsocketSubscriptionType | None
+        subscriptionType: TwitchWebsocketSubscriptionType | None,
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW
 
     async def __isHypeTrainType(
         self,
-        subscriptionType: TwitchWebsocketSubscriptionType | None
+        subscriptionType: TwitchWebsocketSubscriptionType | None,
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_BEGIN \
             or subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_END \
@@ -100,7 +111,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
     async def __isPollType(
         self,
-        subscriptionType: TwitchWebsocketSubscriptionType | None
+        subscriptionType: TwitchWebsocketSubscriptionType | None,
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN \
             or subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_END \
@@ -108,7 +119,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
     async def __isPredictionType(
         self,
-        subscriptionType: TwitchWebsocketSubscriptionType | None
+        subscriptionType: TwitchWebsocketSubscriptionType | None,
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN \
             or subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END \
@@ -117,13 +128,13 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
     async def __isRaidType(
         self,
-        subscriptionType: TwitchWebsocketSubscriptionType | None
+        subscriptionType: TwitchWebsocketSubscriptionType | None,
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.RAID
 
     async def __isSubscriptionType(
         self,
-        subscriptionType: TwitchWebsocketSubscriptionType | None
+        subscriptionType: TwitchWebsocketSubscriptionType | None,
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIBE \
             or subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT \
@@ -172,7 +183,15 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
         subscriptionType = dataBundle.metadata.subscriptionType
 
-        if await self.__isChannelPointsRedemptionType(subscriptionType):
+        if await self.__isBitsType(subscriptionType):
+            if self.__bitsHandler is not None:
+                await self.__bitsHandler.onNewBitsDataBundle(
+                    twitchChannelId = twitchChannelId,
+                    user = twitchUser,
+                    dataBundle = dataBundle,
+                )
+
+        elif await self.__isChannelPointsRedemptionType(subscriptionType):
             if self.__channelPointRedemptionHandler is not None:
                 await self.__channelPointRedemptionHandler.onNewChannelPointRedemptionDataBundle(
                     twitchChannelId = twitchChannelId,

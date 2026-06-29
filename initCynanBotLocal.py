@@ -385,6 +385,7 @@ from src.ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \
     TtsMonsterTokensRepositoryInterface
 from src.ttsMonster.ttsMonsterMessageCleaner import TtsMonsterMessageCleaner
 from src.ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
+from src.twitch.absTwitchBitsHandler import AbsTwitchBitsHandler
 from src.twitch.absTwitchChannelPointRedemptionHandler import AbsTwitchChannelPointRedemptionHandler
 from src.twitch.absTwitchChatHandler import AbsTwitchChatHandler
 from src.twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
@@ -406,6 +407,7 @@ from src.twitch.channelInformationHelper.twitchChannelInformationHelperInterface
     TwitchChannelInformationHelperInterface
 from src.twitch.chatMessenger.twitchChatMessenger import TwitchChatMessenger
 from src.twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
+from src.twitch.configuration.twitchBitsHandler import TwitchBitsHandler
 from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
 from src.twitch.configuration.twitchChannelPointRedemptionHandler import TwitchChannelPointRedemptionHandler
 from src.twitch.configuration.twitchChatHandler import TwitchChatHandler
@@ -2329,6 +2331,11 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
 })
 
+twitchBitsHandler: Final[AbsTwitchBitsHandler] = TwitchBitsHandler(
+    cheerActionHelper = cheerActionHelper,
+    timber = timber,
+)
+
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber,
@@ -2398,6 +2405,7 @@ twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscript
 )
 
 twitchWebsocketDataBundleListener: Final[TwitchWebsocketDataBundleListener] = TwitchWebsocketDataBundleHandler(
+    bitsHandler = twitchBitsHandler,
     channelPointRedemptionHandler = twitchChannelPointRedemptionHandler,
     chatHandler = twitchChatHandler,
     followHandler = twitchFollowHandler,
