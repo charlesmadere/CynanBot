@@ -2533,6 +2533,7 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     chatterInventoryRepository = chatterInventoryRepository,
     chatterInventorySettings = chatterInventorySettings,
     chatterItemEventListener = chatterItemEventListener,
+    emojiHelper = emojiHelper,
     gashaponItemUseCase = gashaponItemUseCase,
     gashaponRewardUseCase = gashaponRewardUseCase,
     timber = timber,

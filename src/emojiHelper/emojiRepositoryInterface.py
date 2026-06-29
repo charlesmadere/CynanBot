@@ -7,9 +7,16 @@ from .emojiData import EmojiData
 class EmojiRepositoryInterface(ABC):
 
     @abstractmethod
-    async def fetchEmojiCategory(self, category: str) -> Collection[EmojiData]:
+    async def fetchEmojiCategory(
+        self,
+        category: str,
+        subCategory: str | None = None,
+    ) -> Collection[EmojiData]:
         pass
 
     @abstractmethod
-    async def fetchEmojiData(self, emoji: str | None) -> EmojiData | None:
+    async def fetchEmojiData(
+        self,
+        emoji: str | None,
+    ) -> EmojiData | None:
         pass

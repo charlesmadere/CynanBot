@@ -34,18 +34,34 @@ class EmojiHelper(EmojiHelperInterface):
         else:
             return emojiData.name
 
-    async def getRandomFoodAndDrinkEmoji(self) -> EmojiData:
-        allFoodAndDrinkEmoji = await self.__emojiRepository.fetchEmojiCategory(
-            category = 'Food & Drink',
+    async def getRandomAnimalEmoji(self) -> EmojiData:
+        return await self.__getRandomCategoryEmoji(
+            category = 'Animals & Nature',
+            subCategory = 'animal',
         )
 
-        frozenFoodAndDrinkEmoji: FrozenList[EmojiData] = FrozenList(allFoodAndDrinkEmoji)
-        frozenFoodAndDrinkEmoji.freeze()
+    async def __getRandomCategoryEmoji(
+        self,
+        category: str,
+        subCategory: str | None = None,
+    ) -> EmojiData:
+        allCategoryEmoji = await self.__emojiRepository.fetchEmojiCategory(
+            category = category,
+            subCategory = subCategory,
+        )
 
-        if len(frozenFoodAndDrinkEmoji) == 0:
-            raise RuntimeError(f'Failed to find any \"Food & Drink\" emoji: ({frozenFoodAndDrinkEmoji=})')
+        frozenCategoryEmoji: FrozenList[EmojiData] = FrozenList(allCategoryEmoji)
+        frozenCategoryEmoji.freeze()
 
-        return random.choice(frozenFoodAndDrinkEmoji)
+        if len(frozenCategoryEmoji) == 0:
+            raise RuntimeError(f'Failed to find any category emoji ({category=}) ({frozenCategoryEmoji=})')
+
+        return random.choice(frozenCategoryEmoji)
+
+    async def getRandomFoodAndDrinkEmoji(self) -> EmojiData:
+        return await self.__getRandomCategoryEmoji(
+            category = 'Food & Drink',
+        )
 
     async def replaceEmojisWithHumanNames(self, text: str) -> str:
         if not utils.isValidStr(text):
