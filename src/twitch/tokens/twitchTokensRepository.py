@@ -226,6 +226,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         )
 
         if not utils.isValidStr(twitchChannelId):
+            self.__timber.log('TwitchTokensRepository', f'Failed to fetch user ID ({twitchChannel=})')
             return None
 
         return await self.getAccessTokenById(
