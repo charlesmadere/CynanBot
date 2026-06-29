@@ -31,21 +31,6 @@ class FakeUserIdsRepository(UserIdsRepositoryInterface):
 
         return None
 
-    async def fetchUserIdAsInt(
-        self,
-        userName: str,
-        twitchAccessToken: str | None = None
-    ) -> int | None:
-        cachedUserId = await self.fetchUserId(
-            userName = userName,
-            twitchAccessToken = twitchAccessToken
-        )
-
-        if cachedUserId is None:
-            return None
-        else:
-            return int(cachedUserId)
-
     async def fetchUserName(
         self,
         userId: str,
@@ -67,18 +52,6 @@ class FakeUserIdsRepository(UserIdsRepositoryInterface):
             raise RuntimeError()
         else:
             return cachedUserId
-
-    async def requireUserIdAsInt(
-        self,
-        userName: str,
-        twitchAccessToken: str | None = None
-    ) -> int:
-        cachedUserId = await self.requireUserId(
-            userName = userName,
-            twitchAccessToken = twitchAccessToken
-        )
-
-        return int(cachedUserId)
 
     async def requireUserName(
         self,
