@@ -38,20 +38,32 @@ class RecurringActionsHelper(RecurringActionsHelperInterface):
             raise TypeError(f'recurringAction argument is malformed: \"{recurringAction}\"')
 
         if recurringAction is None:
-            self.__timber.log('RecurringActionsHelper', f'Not disabling the given RecurringAction as it is None: \"{recurringAction}\"')
+            self.__timber.log('RecurringActionsHelper', f'Not disabling the given RecurringAction as it is None ({recurringAction=})')
             return False
         elif not recurringAction.isEnabled:
-            self.__timber.log('RecurringActionsHelper', f'Not disabling the given RecurringAction as it is already disabled: \"{recurringAction}\"')
+            self.__timber.log('RecurringActionsHelper', f'Not disabling the given RecurringAction as it is already disabled ({recurringAction=})')
             return False
 
         if isinstance(recurringAction, CutenessRecurringAction):
-            await self.__disableCutenessRecurringAction(recurringAction)
+            await self.__disableCutenessRecurringAction(
+                recurringAction = recurringAction,
+            )
+
         elif isinstance(recurringAction, SuperTriviaRecurringAction):
-            await self.__disableSuperTriviaRecurringAction(recurringAction)
+            await self.__disableSuperTriviaRecurringAction(
+                recurringAction = recurringAction,
+            )
+
         elif isinstance(recurringAction, WeatherRecurringAction):
-            await self.__disableWeatherRecurringAction(recurringAction)
+            await self.__disableWeatherRecurringAction(
+                recurringAction = recurringAction,
+            )
+
         elif isinstance(recurringAction, WordOfTheDayRecurringAction):
-            await self.__disableWordOfTheDayRecurringAction(recurringAction)
+            await self.__disableWordOfTheDayRecurringAction(
+                recurringAction = recurringAction,
+            )
+
         else:
             raise ValueError(f'unknown RecurringAction instance ({recurringAction=})')
 
