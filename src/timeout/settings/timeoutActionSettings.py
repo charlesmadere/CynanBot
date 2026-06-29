@@ -36,7 +36,7 @@ class TimeoutActionSettings(TimeoutActionSettingsInterface):
 
     async def getTm36SplashDamageProbability(self) -> float:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'tm36SplashDamageProbability', fallback = 0.20)
+        return utils.getFloatFromDict(jsonContents, 'tm36SplashDamageProbability', fallback = 0.30)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:

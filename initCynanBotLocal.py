@@ -1719,8 +1719,6 @@ determineTm36SplashTargetUseCase = DetermineTm36SplashTargetUseCase(
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
 )
 
 timeoutIdGenerator: TimeoutIdGeneratorInterface = TimeoutIdGenerator()
