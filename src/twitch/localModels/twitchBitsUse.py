@@ -13,6 +13,7 @@ class TwitchBitsUse(TwitchUserInterface):
     bitsUserLogin: str
     bitsUserName: str
     eventId: str
+    message: str | None
     twitchChannelId: str
     bitsUseType: TwitchBitsUseType
     customPowerUpData: TwitchCustomPowerUpData | None

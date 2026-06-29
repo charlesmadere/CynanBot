@@ -69,12 +69,17 @@ class TwitchBitsHandler(AbsTwitchBitsHandler):
 
         customPowerUpData = await self.__mapApiCustomPowerUpData(event.customPowerUpData)
 
+        if event.chatMessage is not None:
+            # just including this for testing/debug purposes for the time being
+            self.__timber.log('TwitchBitsHandler', f'This event has a chat message ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({bits=}) ({bitsUserId=}) ({bitsUserLogin=}) ({bitsUserName=}) ({eventId=}) ({bitsUseType=})')
+
         bitsUse = TwitchBitsUse(
             bits = bits,
             bitsUserId = bitsUserId,
             bitsUserLogin = bitsUserLogin,
             bitsUserName = bitsUserName,
             eventId = eventId,
+            message = event.message,
             twitchChannelId = twitchChannelId,
             bitsUseType = bitsUseType,
             customPowerUpData = customPowerUpData,
@@ -90,8 +95,7 @@ class TwitchBitsHandler(AbsTwitchBitsHandler):
             return
         elif not bitsUse.twitchUser.areCheerActionsEnabled:
             return
-
-        if bitsUse.bits < 1:
+        elif bitsUse.bits < 1:
             return
 
         self.__cheerActionHelper.submitCheer(CheerActionHelperInterface.CheerInfo(
@@ -99,7 +103,7 @@ class TwitchBitsHandler(AbsTwitchBitsHandler):
             cheerUserId = bitsUse.bitsUserId,
             cheerUserLogin = bitsUse.bitsUserLogin,
             cheerUserName = bitsUse.bitsUserName,
-            message = None,
+            message = bitsUse.message,
             twitchChannelId = bitsUse.twitchChannelId,
             twitchChatMessageId = None,
             twitchUser = bitsUse.twitchUser,
