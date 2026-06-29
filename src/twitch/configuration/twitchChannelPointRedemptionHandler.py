@@ -133,13 +133,14 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         redemptionUserId = event.userId
         redemptionUserInput = event.userInput
         redemptionUserLogin = event.userLogin
+        redemptionUserName = event.userName
         reward = event.reward
 
-        if not utils.isValidStr(eventId) or reward is None or not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin):
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({eventId=}) ({redemptionUserId=}) ({redemptionUserInput=}) ({redemptionUserLogin=}) ({reward=})')
+        if not utils.isValidStr(eventId) or not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin) or not utils.isValidStr(redemptionUserName) or reward is None:
+            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({eventId=}) ({redemptionUserId=}) ({redemptionUserInput=}) ({redemptionUserLogin=}) ({redemptionUserName=}) ({reward=})')
             return
 
-        self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a channel point redemption event: ({user=}) ({twitchChannelId=}) ({eventId=}) ({redemptionUserId=}) ({redemptionUserInput=}) ({redemptionUserLogin=}) ({reward=})')
+        self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a channel point redemption event: ({user=}) ({twitchChannelId=}) ({eventId=}) ({redemptionUserId=}) ({redemptionUserInput=}) ({redemptionUserLogin=}) ({redemptionUserName=}) ({reward=})')
 
         channelPointsRedemption = TwitchChannelPointsRedemption(
             rewardCost = reward.cost,
@@ -147,7 +148,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             redemptionMessage = redemptionUserInput,
             redemptionUserId = redemptionUserId,
             redemptionUserLogin = redemptionUserLogin,
-            redemptionUserName = redemptionUserLogin,
+            redemptionUserName = redemptionUserName,
             rewardId = reward.rewardId,
             twitchChannelId = twitchChannelId,
             twitchUser = user,
@@ -178,11 +179,13 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
             channelPointsRedemptions.freeze()
 
-            for channelPointsRedemption in channelPointsRedemptions:
+            for index, channelPointsRedemption in enumerate(channelPointsRedemptions):
                 try:
-                    await self.__handleChannelPointsRedemption(channelPointsRedemption)
+                    await self.__handleChannelPointsRedemption(
+                        channelPointsRedemption = channelPointsRedemption,
+                    )
                 except Exception as e:
-                    self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered unknown Exception when looping through channelPointsMessages (queue size: {self.__channelPointsRedemptionsQueue.qsize()}) ({channelPointsRedemption=})', e, traceback.format_exc())
+                    self.__timber.log('TwitchChannelPointRedemptionHandler', f'Encountered unknown Exception when looping through channelPointsMessages (queue size: {self.__channelPointsRedemptionsQueue.qsize()}) ({channelPointsRedemption=}) ({index=})', e, traceback.format_exc())
 
             await asyncio.sleep(self.__queueSleepTimeSeconds)
 

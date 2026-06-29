@@ -60,7 +60,7 @@ class TwitchBitsHandler(AbsTwitchBitsHandler):
         bitsUserId = event.userId
         bitsUserLogin = event.userLogin
         bitsUserName = event.userName
-        eventId = event.eventId
+        eventId = dataBundle.metadata.messageId
         bitsUseType = await self.__mapApiBitsUseType(event.bitsUseType)
 
         if bits is None or not utils.isValidStr(bitsUserId) or not utils.isValidStr(bitsUserLogin) or not utils.isValidStr(bitsUserName) or not utils.isValidStr(eventId) or bitsUseType is None:
