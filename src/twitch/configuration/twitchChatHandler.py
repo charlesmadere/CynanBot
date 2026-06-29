@@ -252,10 +252,10 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             self.__timber.log('TwitchChatHandler', f'Received a data bundle that has no event: ({user=}) ({twitchChannelId=}) ({dataBundle=})')
             return
 
-        eventId = dataBundle.metadata.messageId
         chatterUserId = event.chatterUserId
         chatterUserLogin = event.chatterUserLogin
         chatterUserName = event.chatterUserName
+        eventId = dataBundle.metadata.messageId
         chatMessage = event.chatMessage
 
         if (event.isAnonymous is True or event.isChatterAnonymous is True) and (not utils.isValidStr(chatterUserId) and not utils.isValidStr(chatterUserLogin) and not utils.isValidStr(chatterUserName)):
@@ -272,14 +272,18 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
             chatterUserLogin = chatterUserName
 
-        if not utils.isValidStr(eventId) or not utils.isValidStr(chatterUserId) or not utils.isValidStr(chatterUserLogin) or not utils.isValidStr(chatterUserName) or chatMessage is None:
-            self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=})')
+        if not utils.isValidStr(chatterUserId) or not utils.isValidStr(chatterUserLogin) or not utils.isValidStr(chatterUserName) or not utils.isValidStr(eventId) or chatMessage is None:
+            self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({eventId=}) ({chatMessage=})')
             return
 
         messageFragments = await self.__mapApiMessageFragments(chatMessage.fragments)
         textWithoutCheers = await self.__purgeChatMessageOfCheers(messageFragments)
         cheerMetadata = await self.__mapApiCheerMetadata(event.cheer)
         watchStreak = await self.__mapApiWatchStreak(event.watchStreak)
+
+        if event.customPowerUpData is not None:
+            # just including this for testing/debug purposes for the time being
+            self.__timber.log('TwitchChatHandler', f'This event has custom power up data ({user=}) ({twitchChannelId=}) ({dataBundle=})')
 
         chatMessage = TwitchChatMessage(
             messageFragments = messageFragments,
