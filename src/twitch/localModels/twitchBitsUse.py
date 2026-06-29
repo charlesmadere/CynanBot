@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from .twitchBitsUseType import TwitchBitsUseType
 from .twitchCustomPowerUpData import TwitchCustomPowerUpData
 from .twitchUserInterface import TwitchUserInterface
 from ...users.userInterface import UserInterface
@@ -13,6 +14,7 @@ class TwitchBitsUse(TwitchUserInterface):
     bitsUserName: str
     eventId: str
     twitchChannelId: str
+    bitsUseType: TwitchBitsUseType
     customPowerUpData: TwitchCustomPowerUpData | None
     twitchUser: UserInterface
 
