@@ -1104,10 +1104,20 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
+        bits: int | None = None
+        if 'bits' in jsonResponse and utils.isValidInt(jsonResponse.get('bits')):
+            bits = utils.getIntFromDict(jsonResponse, 'bits')
+
+        prompt: str | None = None
+        if 'prompt' in jsonResponse and utils.isValidStr(jsonResponse.get('prompt')):
+            prompt = utils.getStrFromDict(jsonResponse, 'prompt', clean = True)
+
         rewardId = utils.getStrFromDict(jsonResponse, 'reward_id')
         title = utils.getStrFromDict(jsonResponse, 'title')
 
         return TwitchCustomPowerUpData(
+            bits = bits,
+            prompt = prompt,
             rewardId = rewardId,
             title = title,
         )

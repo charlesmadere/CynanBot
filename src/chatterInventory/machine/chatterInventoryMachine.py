@@ -60,6 +60,7 @@ from ..settings.chatterInventorySettingsInterface import ChatterInventorySetting
 from ..useCases.cassetteTapeItemUseCaseInterface import CassetteTapeItemUseCaseInterface
 from ..useCases.gashaponItemUseCaseInterface import GashaponItemUseCaseInterface
 from ..useCases.gashaponRewardUseCaseInterface import GashaponRewardUseCaseInterface
+from ...emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
@@ -96,6 +97,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         chatterInventoryRepository: ChatterInventoryRepositoryInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
         chatterItemEventListener: ChatterItemEventListener,
+        emojiHelper: EmojiHelperInterface,
         gashaponItemUseCase: GashaponItemUseCaseInterface,
         gashaponRewardUseCase: GashaponRewardUseCaseInterface,
         timber: TimberInterface,
@@ -120,6 +122,8 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
         elif not isinstance(chatterItemEventListener, ChatterItemEventListener):
             raise TypeError(f'chatterItemEventListener argument is malformed: \"{chatterItemEventListener}\"')
+        elif not isinstance(emojiHelper, EmojiHelperInterface):
+            raise TypeError(f'emojiHelper argument is malformed: \"{emojiHelper}\"')
         elif not isinstance(gashaponItemUseCase, GashaponItemUseCaseInterface):
             raise TypeError(f'gashaponItemUseCase argument is malformed: \"{gashaponItemUseCase}\"')
         elif not isinstance(gashaponRewardUseCase, GashaponRewardUseCaseInterface):
@@ -153,6 +157,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         self.__chatterInventoryRepository: Final[ChatterInventoryRepositoryInterface] = chatterInventoryRepository
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__chatterItemEventListener: Final[ChatterItemEventListener] = chatterItemEventListener
+        self.__emojiHelper: Final[EmojiHelperInterface] = emojiHelper
         self.__gashaponItemUseCase: Final[GashaponItemUseCaseInterface] = gashaponItemUseCase
         self.__gashaponRewardUseCase: Final[GashaponRewardUseCaseInterface] = gashaponRewardUseCase
         self.__timber: Final[TimberInterface] = timber
@@ -251,6 +256,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         await self.__submitEvent(AnimalPetChatterItemEvent(
             itemDetails = itemDetails,
             updatedInventory = updatedInventory,
+            animalEmoji = await self.__emojiHelper.getRandomAnimalEmoji(),
             eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
             originatingAction = action,
         ))

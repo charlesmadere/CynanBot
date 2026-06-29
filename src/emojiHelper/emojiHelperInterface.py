@@ -10,6 +10,10 @@ class EmojiHelperInterface(ABC):
         pass
 
     @abstractmethod
+    async def getRandomAnimalEmoji(self) -> EmojiData:
+        pass
+
+    @abstractmethod
     async def getRandomFoodAndDrinkEmoji(self) -> EmojiData:
         pass
 

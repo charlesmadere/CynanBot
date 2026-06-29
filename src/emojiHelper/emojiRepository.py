@@ -28,9 +28,15 @@ class EmojiRepository(EmojiRepositoryInterface):
         self.__isLoaded: bool = False
         self.__emojiData: Final[dict[str, EmojiData | None]] = dict()
 
-    async def fetchEmojiCategory(self, category: str) -> Collection[EmojiData]:
+    async def fetchEmojiCategory(
+        self,
+        category: str,
+        subCategory: str | None = None,
+    ) -> Collection[EmojiData]:
         if not utils.isValidStr(category):
             raise TypeError(f'category argument is malformed: \"{category}\"')
+        elif subCategory is not None and not isinstance(subCategory, str):
+            raise TypeError(f'subCategory argument is malformed: \"{subCategory}\"')
 
         await self.__readJson()
         matchingEmoji: list[EmojiData] = list()
@@ -39,7 +45,11 @@ class EmojiRepository(EmojiRepositoryInterface):
             if emojiData is None or not utils.isValidStr(emojiData.category):
                 continue
             elif emojiData.category == category:
-                matchingEmoji.append(emojiData)
+                if utils.isValidStr(subCategory):
+                    if subCategory in emojiData.subCategory:
+                        matchingEmoji.append(emojiData)
+                else:
+                    matchingEmoji.append(emojiData)
 
         matchingEmoji.sort(key = lambda emojiData: emojiData.name.casefold())
         frozenMatchingEmoji: FrozenList[EmojiData] = FrozenList(matchingEmoji)

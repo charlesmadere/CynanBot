@@ -112,30 +112,6 @@ class UserIdsRepository(UserIdsRepositoryInterface):
 
         return twitchUser.userId
 
-    async def fetchUserIdAsInt(
-        self,
-        userName: str,
-        twitchAccessToken: str | None = None,
-    ) -> int | None:
-        if not utils.isValidStr(userName):
-            raise TypeError(f'userName argument is malformed: \"{userName}\"')
-        elif twitchAccessToken is not None and not utils.isValidStr(twitchAccessToken):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-
-        userId = await self.fetchUserId(
-            userName = userName,
-            twitchAccessToken = twitchAccessToken,
-        )
-
-        if not utils.isValidStr(userId):
-            return None
-
-        try:
-            return int(userId)
-        except Exception as e:
-            self.__timber.log('UserIdsRepository', f'Encountered exception when attempting to convert userId into int ({userName=}) ({userId=})')
-            raise e
-
     async def fetchUserName(
         self,
         userId: str,
@@ -260,26 +236,6 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         )
 
         if not utils.isValidStr(userId):
-            raise NoSuchUserException(f'Unable to fetch Twitch user ID for username \"{userName}\" ({userId=})')
-
-        return userId
-
-    async def requireUserIdAsInt(
-        self,
-        userName: str,
-        twitchAccessToken: str | None = None,
-    ) -> int:
-        if not utils.isValidStr(userName):
-            raise TypeError(f'userName argument is malformed: \"{userName}\"')
-        elif twitchAccessToken is not None and not utils.isValidStr(twitchAccessToken):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-
-        userId = await self.fetchUserIdAsInt(
-            userName = userName,
-            twitchAccessToken = twitchAccessToken,
-        )
-
-        if not utils.isValidInt(userId):
             raise NoSuchUserException(f'Unable to fetch Twitch user ID for username \"{userName}\" ({userId=})')
 
         return userId

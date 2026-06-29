@@ -75,7 +75,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
                     minimumPullAmount = 1,
                 ),
                 ChatterItemType.TM_36: GashaponItemPullRate(
-                    pullRate = 0.10,
+                    pullRate = 0.02,
                     iterations = 1,
                     maximumPullAmount = 1,
                     minimumPullAmount = 0,
@@ -106,6 +106,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             ChatterItemType.BANANA,
             ChatterItemType.GASHAPON,
             ChatterItemType.GRENADE,
+            ChatterItemType.TM_36,
         }),
     ):
         if not isinstance(chatterInventoryMapper, ChatterInventoryMapperInterface):

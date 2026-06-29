@@ -30,7 +30,7 @@ emojiHelper: Final[EmojiHelperInterface] = EmojiHelper(
 async def main():
     pass
 
-    randomEmoji = await emojiHelper.getRandomFoodAndDrinkEmoji()
+    randomEmoji = await emojiHelper.getRandomAnimalEmoji()
     print(f'{randomEmoji=}')
 
     pass

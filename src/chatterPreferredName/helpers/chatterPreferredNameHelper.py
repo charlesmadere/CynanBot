@@ -133,6 +133,6 @@ class ChatterPreferredNameHelper(ChatterPreferredNameHelperInterface):
             return
 
         if preferredName.casefold() == twitchUser.displayName.casefold():
-            raise ChatterPreferredNameIsInvalidException(f'The given preferred name is invalid because it matches the streamer\'s displayName ({chatterUserId=}) ({preferredName=}) ({twitchChannelId=}) ({twitchUser=})')
+            raise ChatterPreferredNameIsInvalidException(f'The given preferred name is invalid because it matches the streamer\'s displayName ({chatterUserId=}) ({preferredName=}) ({twitchChannelId=}) ({response=}) ({twitchUser=})')
         elif preferredName.casefold() == twitchUser.userLogin.casefold():
-            raise ChatterPreferredNameIsInvalidException(f'The given preferred name is invalid because it matches the streamer\'s userLogin ({chatterUserId=}) ({preferredName=}) ({twitchChannelId=}) ({twitchUser=})')
+            raise ChatterPreferredNameIsInvalidException(f'The given preferred name is invalid because it matches the streamer\'s userLogin ({chatterUserId=}) ({preferredName=}) ({twitchChannelId=}) ({response=}) ({twitchUser=})')

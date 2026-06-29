@@ -14,14 +14,6 @@ class UserIdsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
-    async def fetchUserIdAsInt(
-        self,
-        userName: str,
-        twitchAccessToken: str | None = None,
-    ) -> int | None:
-        pass
-
-    @abstractmethod
     async def fetchUserName(
         self,
         userId: str,
@@ -35,14 +27,6 @@ class UserIdsRepositoryInterface(Clearable, ABC):
         userName: str,
         twitchAccessToken: str | None = None,
     ) -> str:
-        pass
-
-    @abstractmethod
-    async def requireUserIdAsInt(
-        self,
-        userName: str,
-        twitchAccessToken: str | None = None,
-    ) -> int:
         pass
 
     @abstractmethod

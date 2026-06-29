@@ -1719,8 +1719,6 @@ determineTm36SplashTargetUseCase = DetermineTm36SplashTargetUseCase(
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
-    twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
 )
 
 timeoutIdGenerator: TimeoutIdGeneratorInterface = TimeoutIdGenerator()
@@ -1812,6 +1810,7 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     chatterInventoryRepository = chatterInventoryRepository,
     chatterInventorySettings = chatterInventorySettings,
     chatterItemEventListener = chatterItemEventListener,
+    emojiHelper = emojiHelper,
     gashaponItemUseCase = gashaponItemUseCase,
     gashaponRewardUseCase = gashaponRewardUseCase,
     timber = timber,
