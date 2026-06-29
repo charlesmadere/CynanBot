@@ -17,6 +17,7 @@ class TwitchWebsocketSettingsRepository(TwitchWebsocketSettingsRepositoryInterfa
         twitchJsonMapper: TwitchJsonMapperInterface,
         twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface,
         defaultSubscriptionTypes: frozenset[TwitchWebsocketSubscriptionType] = frozenset({
+            TwitchWebsocketSubscriptionType.CHANNEL_BITS_USE,
             TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE,
             TwitchWebsocketSubscriptionType.CHANNEL_CHAT_NOTIFICATION,
             TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW,
