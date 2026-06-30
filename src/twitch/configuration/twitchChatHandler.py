@@ -162,6 +162,9 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         return frozenset(validChatCommands)
 
     async def __logChat(self, chatMessage: TwitchChatMessage):
+        if not utils.isValidStr(chatMessage.text):
+            return
+
         bits: int | None = None
 
         if chatMessage.cheerMetadata is not None and chatMessage.cheerMetadata.bits > 0:
