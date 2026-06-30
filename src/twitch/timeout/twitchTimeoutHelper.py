@@ -227,7 +227,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             # having their mod status removed, but then aren't being timed out. So maybe what's
             # happening is that the Twitch backend is taking time to finish removing the target
             # user's moderator status... maybe.
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(1)
 
         await self.__activeChattersRepository.remove(
             chatterUserId = userIdToTimeout,
