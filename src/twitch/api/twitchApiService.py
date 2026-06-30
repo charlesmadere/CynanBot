@@ -816,6 +816,9 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Unable to parse JSON response when fetching moderator ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({moderatorsResponse=})')
             raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when fetching moderator ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=}) ({moderatorsResponse=})')
 
+        # TODO remove this in the future, this is currently just used for debugging
+        self.__timber.log('TwitchApiService', f'moderator response ({broadcasterId=}) ({userId=}) ({responseStatusCode=}) ({jsonResponse=}) ({moderatorsResponse=})')
+
         return moderatorsResponse
 
     async def fetchStreams(
