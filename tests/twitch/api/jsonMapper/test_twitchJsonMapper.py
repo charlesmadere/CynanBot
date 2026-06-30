@@ -33,6 +33,8 @@ from src.twitch.api.models.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.models.twitchEmoteType import TwitchEmoteType
 from src.twitch.api.models.twitchEventSubRequest import TwitchEventSubRequest
 from src.twitch.api.models.twitchHypeTrainType import TwitchHypeTrainType
+from src.twitch.api.models.twitchModeratorUser import TwitchModeratorUser
+from src.twitch.api.models.twitchModiversary import TwitchModiversary
 from src.twitch.api.models.twitchNoticeType import TwitchNoticeType
 from src.twitch.api.models.twitchOutcomeColor import TwitchOutcomeColor
 from src.twitch.api.models.twitchPaginationResponse import TwitchPaginationResponse
@@ -1135,6 +1137,48 @@ class TestTwitchJsonMapper:
     async def test_parseHypeTrainType_withWhitespaceString(self):
         result = await self.jsonMapper.parseHypeTrainType(' ')
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseModeratorUser(self):
+        moderatorUser = TwitchModeratorUser(
+            userId = 'abc123',
+            userLogin = 'smcharles',
+            userName = 'smCharles',
+        )
+
+        result = await self.jsonMapper.parseModeratorUser({
+            'user_id': moderatorUser.userId,
+            'user_login': moderatorUser.userLogin,
+            'user_name': moderatorUser.userName,
+        })
+
+        assert isinstance(result, TwitchModeratorUser)
+        assert result.userId == moderatorUser.userId
+        assert result.userLogin == moderatorUser.userLogin
+        assert result.userName == moderatorUser.userName
+
+    @pytest.mark.asyncio
+    async def test_parseModeratorUser_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseModeratorUser(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseModeratorUser_withNone(self):
+        result = await self.jsonMapper.parseModeratorUser(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseModiversary(self):
+        modiversary = TwitchModiversary(
+            months = 6,
+        )
+
+        result = await self.jsonMapper.parseModiversary({
+            'months': modiversary.months,
+        })
+
+        assert isinstance(result, TwitchModiversary)
+        assert result.months == modiversary.months
 
     @pytest.mark.asyncio
     async def test_parseModiversary_withEmptyDictionary(self):

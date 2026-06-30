@@ -1211,7 +1211,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             emoteSetId = emoteSetId,
             name = name,
             emoteType = emoteType,
-            tier = tier
+            tier = tier,
         )
 
     async def parseEmoteImageFormat(
