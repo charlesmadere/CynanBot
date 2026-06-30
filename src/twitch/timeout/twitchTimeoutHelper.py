@@ -119,6 +119,9 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             self.__timber.log('TwitchTimeoutHelper', f'Failed to fetch Twitch moderator info for the given user ID ({twitchChannelId=}) ({userIdToTimeout=})', e, traceback.format_exc())
             return False
 
+        # TODO remove this in the future, this is currently just used for debugging
+        self.__timber.log('TwitchTimeoutHelper', f'moderator response ({twitchChannelId=}) ({userIdToTimeout=}) ({moderatorsResponse=})')
+
         for moderatorUser in moderatorsResponse.data:
             if moderatorUser.userId == userIdToTimeout:
                 return True
