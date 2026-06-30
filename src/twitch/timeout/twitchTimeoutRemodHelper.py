@@ -122,7 +122,9 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
             else:
                 self.__timber.log('TwitchTimeoutRemodHelper', f'Failed to re-mod user ({remodAction=}) ({userName=})')
 
-            await self.__deleteFromRepository(remodAction)
+            await self.__deleteFromRepository(
+                remodAction = remodAction,
+            )
 
         self.__timber.log('TwitchTimeoutRemodHelper', f'Finished re-applying mod status to {len(remodActions)} user(s)')
 
