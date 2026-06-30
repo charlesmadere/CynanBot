@@ -255,7 +255,6 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         chatterUserId = event.chatterUserId
         chatterUserLogin = event.chatterUserLogin
         chatterUserName = event.chatterUserName
-        eventId = dataBundle.metadata.messageId
         chatMessage = event.chatMessage
 
         if (event.isAnonymous is True or event.isChatterAnonymous is True) and (not utils.isValidStr(chatterUserId) and not utils.isValidStr(chatterUserLogin) and not utils.isValidStr(chatterUserName)):
@@ -272,8 +271,8 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
             chatterUserLogin = chatterUserName
 
-        if not utils.isValidStr(chatterUserId) or not utils.isValidStr(chatterUserLogin) or not utils.isValidStr(chatterUserName) or not utils.isValidStr(eventId) or chatMessage is None:
-            self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({eventId=}) ({chatMessage=})')
+        if not utils.isValidStr(chatterUserId) or not utils.isValidStr(chatterUserLogin) or not utils.isValidStr(chatterUserName) or chatMessage is None:
+            self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=})')
             return
 
         messageFragments = await self.__mapApiMessageFragments(chatMessage.fragments)
@@ -290,7 +289,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             chatterUserId = chatterUserId,
             chatterUserLogin = chatterUserLogin,
             chatterUserName = chatterUserName,
-            eventId = eventId,
+            eventId = dataBundle.metadata.messageId,
             sourceMessageId = event.sourceMessageId,
             text = chatMessage.text,
             textWithoutCheers = textWithoutCheers,

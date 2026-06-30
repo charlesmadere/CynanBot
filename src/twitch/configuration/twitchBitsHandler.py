@@ -60,25 +60,24 @@ class TwitchBitsHandler(AbsTwitchBitsHandler):
         bitsUserId = event.userId
         bitsUserLogin = event.userLogin
         bitsUserName = event.userName
-        eventId = dataBundle.metadata.messageId
         bitsUseType = await self.__mapApiBitsUseType(event.bitsUseType)
 
-        if bits is None or not utils.isValidStr(bitsUserId) or not utils.isValidStr(bitsUserLogin) or not utils.isValidStr(bitsUserName) or not utils.isValidStr(eventId) or bitsUseType is None:
-            self.__timber.log('TwitchBitsHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({bits=}) ({bitsUserId=}) ({bitsUserLogin=}) ({bitsUserName=}) ({eventId=}) ({bitsUseType=})')
+        if bits is None or not utils.isValidStr(bitsUserId) or not utils.isValidStr(bitsUserLogin) or not utils.isValidStr(bitsUserName) or bitsUseType is None:
+            self.__timber.log('TwitchBitsHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({bits=}) ({bitsUserId=}) ({bitsUserLogin=}) ({bitsUserName=}) ({bitsUseType=})')
             return
 
         customPowerUpData = await self.__mapApiCustomPowerUpData(event.customPowerUpData)
 
         if event.chatMessage is not None:
             # just including this for testing/debug purposes for the time being
-            self.__timber.log('TwitchBitsHandler', f'This event has a chat message ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({bits=}) ({bitsUserId=}) ({bitsUserLogin=}) ({bitsUserName=}) ({eventId=}) ({bitsUseType=})')
+            self.__timber.log('TwitchBitsHandler', f'This event has a chat message ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({bits=}) ({bitsUserId=}) ({bitsUserLogin=}) ({bitsUserName=}) ({bitsUseType=})')
 
         bitsUse = TwitchBitsUse(
             bits = bits,
             bitsUserId = bitsUserId,
             bitsUserLogin = bitsUserLogin,
             bitsUserName = bitsUserName,
-            eventId = eventId,
+            eventId = dataBundle.metadata.messageId,
             message = event.message,
             twitchChannelId = twitchChannelId,
             bitsUseType = bitsUseType,
