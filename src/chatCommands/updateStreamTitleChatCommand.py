@@ -25,6 +25,7 @@ from ..twitch.exceptions import TwitchStatusCodeException
 from ..twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
+from ..twitch.moderator.twitchModeratorHelperInterface import TwitchModeratorHelperInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
@@ -44,6 +45,7 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
+        twitchModeratorHelper: TwitchModeratorHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
     ):
@@ -69,6 +71,8 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
             raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+        elif not isinstance(twitchModeratorHelper, TwitchModeratorHelperInterface):
+            raise TypeError(f'twitchModeratorHelper argument is malformed: \"{twitchModeratorHelper}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -84,6 +88,7 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = twitchFriendsUserIdRepository
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__twitchModeratorHelper: Final[TwitchModeratorHelperInterface] = twitchModeratorHelper
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
@@ -166,7 +171,14 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
             twitchChannelId = chatMessage.twitchChannelId,
         )
 
-        return isStreamer or isAdministrator or isEditor
+        isModerator = await self.__twitchModeratorHelper.isModerator(
+            request = TwitchModeratorHelperInterface.Request(
+                chatterUserId = chatMessage.chatterUserId,
+                twitchChannelId = chatMessage.twitchChannelId
+            ),
+        )
+
+        return isStreamer or isAdministrator or isEditor or isModerator
 
     async def __stopForPrank(
         self,

@@ -684,6 +684,8 @@ from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFrie
 from src.twitch.isLive.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from src.twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from src.twitch.misc.globalTwitchConstants import GlobalTwitchConstants
+from src.twitch.moderator.twitchModeratorHelper import TwitchModeratorHelper
+from src.twitch.moderator.twitchModeratorHelperInterface import TwitchModeratorHelperInterface
 from src.twitch.officialAccounts.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
 from src.twitch.officialAccounts.officialTwitchAccountUserIdProviderInterface import \
     OfficialTwitchAccountUserIdProviderInterface
@@ -1153,6 +1155,12 @@ twitchTimeoutRemodHelper: Final[TwitchTimeoutRemodHelperInterface] = TwitchTimeo
     userIdsRepository = userIdsRepository,
 )
 
+twitchModeratorHelper: Final[TwitchModeratorHelperInterface] = TwitchModeratorHelper(
+    timber = timber,
+    twitchApiService = twitchApiService,
+    twitchTokensRepository = twitchTokensRepository,
+)
+
 globalTwitchConstants = GlobalTwitchConstants()
 
 twitchChatMessenger: Final[TwitchChatMessengerInterface] = TwitchChatMessenger(
@@ -1171,7 +1179,7 @@ officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderIn
 
 twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = TwitchFriendsUserIdRepository()
 
-timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = TimeoutImmuneUserIdsRepository(
+timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = TimeoutImmuneUserIdsRepository(
     officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
     timber = timber,
     twitchFriendsUserIdProvider = twitchFriendsUserIdRepository,
@@ -2288,14 +2296,14 @@ triviaGameMachine: Final[TriviaGameMachineInterface] = TriviaGameMachine(
 ## Timeout initialization section ##
 ####################################
 
-asplodieStatsPresenter: AsplodieStatsPresenter = AsplodieStatsPresenter()
+asplodieStatsPresenter: Final[AsplodieStatsPresenter] = AsplodieStatsPresenter()
 
-asplodieStatsRepository: AsplodieStatsRepositoryInterface = AsplodieStatsRepository(
+asplodieStatsRepository: Final[AsplodieStatsRepositoryInterface] = AsplodieStatsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
 )
 
-guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = GuaranteedTimeoutUsersRepository(
+guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = GuaranteedTimeoutUsersRepository(
     timber = timber,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
 )
@@ -2307,6 +2315,7 @@ twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = TwitchTimeoutHelper(
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
+    twitchModeratorHelper = twitchModeratorHelper,
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     userIdsRepository = userIdsRepository,
 )
@@ -3581,6 +3590,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
         twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
         twitchHandleProvider = authRepository,
+        twitchModeratorHelper = twitchModeratorHelper,
         twitchTokensRepository = twitchTokensRepository,
         userIdsRepository = userIdsRepository,
     ),
