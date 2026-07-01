@@ -16,6 +16,7 @@ class TwitchModeratorHelperInterface(Clearable, ABC):
         def getTwitchChannelId(self) -> str:
             pass
 
+
     @dataclass(frozen = True, slots = True)
     class Request(AbsRequest):
         chatterUserId: str
@@ -26,6 +27,7 @@ class TwitchModeratorHelperInterface(Clearable, ABC):
 
         def getTwitchChannelId(self) -> str:
             return self.twitchChannelId
+
 
     @dataclass(frozen = True, slots = True)
     class RequestWithAccessToken(AbsRequest):
