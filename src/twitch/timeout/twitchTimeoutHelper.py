@@ -12,6 +12,7 @@ from ..api.models.twitchBannedUser import TwitchBannedUser
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..misc.globalTwitchConstants import GlobalTwitchConstants
+from ..moderator.twitchModeratorHelperInterface import TwitchModeratorHelperInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
@@ -28,6 +29,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
+        twitchModeratorHelper: TwitchModeratorHelperInterface,
         twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface,
         userIdsRepository: UserIdsRepositoryInterface,
     ):
@@ -43,6 +45,8 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+        elif not isinstance(twitchModeratorHelper, TwitchModeratorHelperInterface):
+            raise TypeError(f'twitchModeratorHelper argument is malformed: \"{twitchModeratorHelper}\"')
         elif not isinstance(twitchTimeoutRemodHelper, TwitchTimeoutRemodHelperInterface):
             raise TypeError(f'twitchTimeoutRemodHelper argument is malformed: \"{twitchTimeoutRemodHelper}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -54,6 +58,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__twitchModeratorHelper: Final[TwitchModeratorHelperInterface] = twitchModeratorHelper
         self.__twitchTimeoutRemodHelper: Final[TwitchTimeoutRemodHelperInterface] = twitchTimeoutRemodHelper
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
@@ -95,38 +100,6 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         else:
             self.__timber.log('TwitchTimeoutHelper', f'The given user ID will not be timed out as this user is already timed out: ({bannedUsersResponse=}) ({twitchChannelId=}) ({userIdToTimeout=})')
             return True
-
-    async def __isMod(
-        self,
-        twitchChannelAccessToken: str,
-        twitchChannelId: str,
-        userIdToTimeout: str,
-    ) -> bool:
-        if not utils.isValidStr(twitchChannelAccessToken):
-            raise TypeError(f'twitchChannelAccessToken argument is malformed: \"{twitchChannelAccessToken}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not utils.isValidStr(userIdToTimeout):
-            raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
-
-        try:
-            moderatorsResponse = await self.__twitchApiService.fetchModerator(
-                broadcasterId = twitchChannelId,
-                twitchAccessToken = twitchChannelAccessToken,
-                userId = userIdToTimeout,
-            )
-        except Exception as e:
-            self.__timber.log('TwitchTimeoutHelper', f'Failed to fetch Twitch moderator info for the given user ID ({twitchChannelId=}) ({userIdToTimeout=})', e, traceback.format_exc())
-            return False
-
-        # TODO remove this in the future, this is currently just used for debugging
-        self.__timber.log('TwitchTimeoutHelper', f'moderator response ({twitchChannelId=}) ({userIdToTimeout=}) ({moderatorsResponse=})')
-
-        for moderatorUser in moderatorsResponse.data:
-            if moderatorUser.userId == userIdToTimeout:
-                return True
-
-        return False
 
     async def __removeMod(
         self,
@@ -207,10 +180,12 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             twitchAccessToken = twitchAccessToken,
         )
 
-        isMod = await self.__isMod(
-            twitchChannelAccessToken = twitchChannelAccessToken,
-            twitchChannelId = twitchChannelId,
-            userIdToTimeout = userIdToTimeout,
+        isMod = await self.__twitchModeratorHelper.isModerator(
+            request = TwitchModeratorHelperInterface.RequestWithAccessToken(
+                chatterUserId = userIdToTimeout,
+                twitchAccessToken = twitchChannelAccessToken,
+                twitchChannelId = twitchChannelId,
+            ),
         )
 
         if isMod and not await self.__removeMod(

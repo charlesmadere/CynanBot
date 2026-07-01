@@ -435,6 +435,8 @@ from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFrie
 from src.twitch.isLive.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from src.twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from src.twitch.misc.globalTwitchConstants import GlobalTwitchConstants
+from src.twitch.moderator.twitchModeratorHelper import TwitchModeratorHelper
+from src.twitch.moderator.twitchModeratorHelperInterface import TwitchModeratorHelperInterface
 from src.twitch.officialAccounts.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
 from src.twitch.officialAccounts.officialTwitchAccountUserIdProviderInterface import \
     OfficialTwitchAccountUserIdProviderInterface
@@ -880,6 +882,12 @@ twitchTimeoutRemodHelper: Final[TwitchTimeoutRemodHelperInterface] = TwitchTimeo
     twitchTimeoutRemodRepository = twitchTimeoutRemodRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
+)
+
+twitchModeratorHelper: Final[TwitchModeratorHelperInterface] = TwitchModeratorHelper(
+    timber = timber,
+    twitchApiService = twitchApiService,
+    twitchTokensRepository = twitchTokensRepository,
 )
 
 globalTwitchConstants = GlobalTwitchConstants()
@@ -1500,30 +1508,31 @@ triviaGameMachine: Final[TriviaGameMachineInterface] = TriviaGameMachine(
 ## Timeout initialization section ##
 ####################################
 
-asplodieStatsPresenter: AsplodieStatsPresenter = AsplodieStatsPresenter()
+asplodieStatsPresenter: Final[AsplodieStatsPresenter] = AsplodieStatsPresenter()
 
-asplodieStatsRepository: AsplodieStatsRepositoryInterface = AsplodieStatsRepository(
+asplodieStatsRepository: Final[AsplodieStatsRepositoryInterface] = AsplodieStatsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
 )
 
-guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = GuaranteedTimeoutUsersRepository(
+guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = GuaranteedTimeoutUsersRepository(
     timber = timber,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
 )
 
-twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
+twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = TwitchTimeoutHelper(
     activeChattersRepository = activeChattersRepository,
     globalTwitchConstants = globalTwitchConstants,
     timber = timber,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
+    twitchModeratorHelper = twitchModeratorHelper,
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     userIdsRepository = userIdsRepository,
 )
 
-timeoutActionSettings: TimeoutActionSettingsInterface = TimeoutActionSettings(
+timeoutActionSettings: Final[TimeoutActionSettingsInterface] = TimeoutActionSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/timeoutActionSettings.json',

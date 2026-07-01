@@ -45,12 +45,12 @@ class TwitchModeratorHelper(TwitchModeratorHelperInterface):
                 twitchChannelId = request.getTwitchChannelId(),
             )
 
-            if not utils.isValidStr(twitchAccessToken):
-                self.__timber.log('TwitchModeratorHelper', f'No Twitch access token is available to check chatter moderator status ({request=})')
-                return False
-
         else:
             raise ValueError(f'request argument is unknown TwitchModeratorHelperInterface.AbsRequest type: \"{request}\"')
+
+        if not utils.isValidStr(twitchAccessToken):
+            self.__timber.log('TwitchModeratorHelper', f'No Twitch access token is available to check chatter moderator status ({request=}) ({twitchAccessToken=})')
+            return False
 
         try:
             response = await self.__twitchApiService.fetchModerator(
