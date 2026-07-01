@@ -31,36 +31,39 @@ class TwitchModeratorHelper(TwitchModeratorHelperInterface):
         # intentionally empty for now
         pass
 
-    async def isModerator(
-        self,
-        chatterUserId: str,
-        twitchChannelId: str,
-    ) -> bool:
-        if not utils.isValidStr(chatterUserId):
-            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+    async def isModerator(self, request: TwitchModeratorHelperInterface.AbsRequest) -> bool:
+        if not isinstance(request, TwitchModeratorHelperInterface.AbsRequest):
+            raise TypeError(f'request argument is malformed: \"{request}\"')
 
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-            twitchChannelId = twitchChannelId,
-        )
+        twitchAccessToken: str | None
 
-        if not utils.isValidStr(twitchAccessToken):
-            self.__timber.log('TwitchModeratorHelper', f'No Twitch access token is available to check chatter moderator status ({chatterUserId=}) ({twitchChannelId=})')
-            return False
+        if isinstance(request, TwitchModeratorHelperInterface.RequestWithAccessToken):
+            twitchAccessToken = request.twitchAccessToken
+
+        elif isinstance(request, TwitchModeratorHelperInterface.Request):
+            twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+                twitchChannelId = request.getTwitchChannelId(),
+            )
+
+            if not utils.isValidStr(twitchAccessToken):
+                self.__timber.log('TwitchModeratorHelper', f'No Twitch access token is available to check chatter moderator status ({request=})')
+                return False
+
+        else:
+            raise ValueError(f'request argument is unknown TwitchModeratorHelperInterface.AbsRequest type: \"{request}\"')
 
         try:
             response = await self.__twitchApiService.fetchModerator(
-                broadcasterId = twitchChannelId,
+                broadcasterId = request.getTwitchChannelId(),
                 twitchAccessToken = twitchAccessToken,
-                userId = chatterUserId,
+                userId = request.getChatterUserId(),
             )
         except Exception as e:
-            self.__timber.log('TwitchModeratorHelper', f'Failed to check moderator status ({chatterUserId=}) ({twitchChannelId=})', e, traceback.format_exc())
+            self.__timber.log('TwitchModeratorHelper', f'Failed to check moderator status ({request=})', e, traceback.format_exc())
             return False
 
         for moderatorUser in response.data:
-            if moderatorUser.userId == chatterUserId:
+            if moderatorUser.userId == request.getChatterUserId():
                 return True
 
         return False
