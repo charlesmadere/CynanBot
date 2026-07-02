@@ -2,6 +2,8 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen = True, slots = True)
-class TwitchCustomPowerUpData:
-    rewardId: str
+class TwitchCustomPowerUp:
+    bits: int
+    powerUpId: str
+    prompt: str | None
     title: str

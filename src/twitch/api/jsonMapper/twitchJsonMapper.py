@@ -43,6 +43,7 @@ from ..models.twitchConduitResponseEntry import TwitchConduitResponseEntry
 from ..models.twitchConduitShard import TwitchConduitShard
 from ..models.twitchContribution import TwitchContribution
 from ..models.twitchContributionType import TwitchContributionType
+from ..models.twitchCustomPowerUp import TwitchCustomPowerUp
 from ..models.twitchCustomPowerUpData import TwitchCustomPowerUpData
 from ..models.twitchEmoteDetails import TwitchEmoteDetails
 from ..models.twitchEmoteImageFormat import TwitchEmoteImageFormat
@@ -1097,6 +1098,29 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'subscription': return TwitchContributionType.SUBSCRIPTION
             case _: return None
 
+    async def parseCustomPowerUp(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchCustomPowerUp | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        bits = utils.getIntFromDict(jsonResponse, 'bits')
+        powerUpId = utils.getStrFromDict(jsonResponse, 'id')
+
+        prompt: str | None = None
+        if 'prompt' in jsonResponse and utils.isValidStr(jsonResponse.get('prompt')):
+            prompt = utils.getStrFromDict(jsonResponse, 'prompt', clean = True)
+
+        title = utils.getStrFromDict(jsonResponse, 'title', clean = True)
+
+        return TwitchCustomPowerUp(
+            bits = bits,
+            powerUpId = powerUpId,
+            prompt = prompt,
+            title = title,
+        )
+
     async def parseCustomPowerUpData(
         self,
         jsonResponse: dict[str, Any] | Any | None,
@@ -1104,20 +1128,10 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
 
-        bits: int | None = None
-        if 'bits' in jsonResponse and utils.isValidInt(jsonResponse.get('bits')):
-            bits = utils.getIntFromDict(jsonResponse, 'bits')
-
-        prompt: str | None = None
-        if 'prompt' in jsonResponse and utils.isValidStr(jsonResponse.get('prompt')):
-            prompt = utils.getStrFromDict(jsonResponse, 'prompt', clean = True)
-
         rewardId = utils.getStrFromDict(jsonResponse, 'reward_id')
         title = utils.getStrFromDict(jsonResponse, 'title')
 
         return TwitchCustomPowerUpData(
-            bits = bits,
-            prompt = prompt,
             rewardId = rewardId,
             title = title,
         )
@@ -2311,6 +2325,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return TwitchWebsocketSubscriptionType.CHANNEL_CHAT_NOTIFICATION
             case 'channel.cheer':
                 return TwitchWebsocketSubscriptionType.CHANNEL_CHEER
+            case 'channel.custom_power_up_redemption.add':
+                return TwitchWebsocketSubscriptionType.CHANNEL_CUSTOM_POWER_UP_REDEMPTION
             case 'channel.follow':
                 return TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW
             case 'channel.hype_train.begin':
@@ -2861,7 +2877,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def requireSubscriptionType(
         self,
-        subscriptionType: str | Any | None
+        subscriptionType: str | Any | None,
     ) -> TwitchWebsocketSubscriptionType:
         result = await self.parseSubscriptionType(subscriptionType)
 
@@ -3093,6 +3109,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return 'channel.chat.notification'
             case TwitchWebsocketSubscriptionType.CHANNEL_CHEER:
                 return 'channel.cheer'
+            case TwitchWebsocketSubscriptionType.CHANNEL_CUSTOM_POWER_UP_REDEMPTION:
+                return 'channel.custom_power_up_redemption.add'
             case TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW:
                 return 'channel.follow'
             case TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:

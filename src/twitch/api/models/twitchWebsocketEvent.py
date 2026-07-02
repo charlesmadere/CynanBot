@@ -13,6 +13,7 @@ from .twitchChatMessageType import TwitchChatMessageType
 from .twitchCheerMetadata import TwitchCheerMetadata
 from .twitchCommunitySubGift import TwitchCommunitySubGift
 from .twitchContribution import TwitchContribution
+from .twitchCustomPowerUp import TwitchCustomPowerUp
 from .twitchCustomPowerUpData import TwitchCustomPowerUpData
 from .twitchHypeTrainType import TwitchHypeTrainType
 from .twitchModiversary import TwitchModiversary
@@ -106,6 +107,7 @@ class TwitchWebsocketEvent:
     chatMessageType: TwitchChatMessageType | None = None
     cheer: TwitchCheerMetadata | None = None
     communitySubGift: TwitchCommunitySubGift | None = None
+    customPowerUp: TwitchCustomPowerUp | None = None
     customPowerUpData: TwitchCustomPowerUpData | None = None
     hypeTrainType: TwitchHypeTrainType | None = None
     modiversary: TwitchModiversary | None = None

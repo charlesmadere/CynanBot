@@ -47,6 +47,22 @@ class TestTwitchWebsocketConditionBuilder:
         assert result.userId == websocketUser.userId
 
     @pytest.mark.asyncio
+    async def test_build_withChannelCustomPowerUpRedemption(self):
+        websocketUser = TwitchWebsocketUser(
+            userId = 'abc123',
+            userName = 'smcharles',
+        )
+
+        result = await self.conditionBuilder.build(
+            subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_CUSTOM_POWER_UP_REDEMPTION,
+            user = websocketUser,
+        )
+
+        assert isinstance(result, TwitchWebsocketCondition)
+        assert result.broadcasterUserId == websocketUser.userId
+        assert result.userId is None
+
+    @pytest.mark.asyncio
     async def test_build_withChannelPointsRedemption(self):
         websocketUser = TwitchWebsocketUser(
             userId = 'def456',

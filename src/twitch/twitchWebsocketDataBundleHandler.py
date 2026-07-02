@@ -7,6 +7,7 @@ from .absTwitchChatHandler import AbsTwitchChatHandler
 from .absTwitchFollowHandler import AbsTwitchFollowHandler
 from .absTwitchHypeTrainHandler import AbsTwitchHypeTrainHandler
 from .absTwitchPollHandler import AbsTwitchPollHandler
+from .absTwitchPowerUpRedemptionHandler import AbsTwitchPowerUpRedemptionHandler
 from .absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from .absTwitchRaidHandler import AbsTwitchRaidHandler
 from .absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
@@ -31,6 +32,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         followHandler: AbsTwitchFollowHandler | None,
         hypeTrainHandler: AbsTwitchHypeTrainHandler | None,
         pollHandler: AbsTwitchPollHandler | None,
+        powerUpRedemptionHandler: AbsTwitchPowerUpRedemptionHandler | None,
         predictionHandler: AbsTwitchPredictionHandler | None,
         raidHandler: AbsTwitchRaidHandler | None,
         subscriptionHandler: AbsTwitchSubscriptionHandler | None,
@@ -50,6 +52,8 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
             raise TypeError(f'hypeTrainHandler argument is malformed: \"{hypeTrainHandler}\"')
         elif pollHandler is not None and not isinstance(pollHandler, AbsTwitchPollHandler):
             raise TypeError(f'pollHandler argument is malformed: \"{pollHandler}\"')
+        elif powerUpRedemptionHandler is not None and not isinstance(powerUpRedemptionHandler, AbsTwitchPowerUpRedemptionHandler):
+            raise TypeError(f'powerUpRedemptionHandler argument is malformed: \"{powerUpRedemptionHandler}\"')
         elif predictionHandler is not None and not isinstance(predictionHandler, AbsTwitchPredictionHandler):
             raise TypeError(f'predictionHandler argument is malformed: \"{predictionHandler}\"')
         elif raidHandler is not None and not isinstance(raidHandler, AbsTwitchRaidHandler):
@@ -69,6 +73,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         self.__followHandler: Final[AbsTwitchFollowHandler | None] = followHandler
         self.__hypeTrainHandler: Final[AbsTwitchHypeTrainHandler | None] = hypeTrainHandler
         self.__pollHandler: Final[AbsTwitchPollHandler | None] = pollHandler
+        self.__powerUpRedemptionHandler: Final[AbsTwitchPowerUpRedemptionHandler | None] = powerUpRedemptionHandler
         self.__predictionHandler: Final[AbsTwitchPredictionHandler | None] = predictionHandler
         self.__raidHandler: Final[AbsTwitchRaidHandler | None] = raidHandler
         self.__subscriptionHandler: Final[AbsTwitchSubscriptionHandler | None] = subscriptionHandler
@@ -116,6 +121,12 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN \
             or subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_END \
             or subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS
+
+    async def __isPowerUpRedemptionType(
+        self,
+        subscriptionType: TwitchWebsocketSubscriptionType | None,
+    ) -> bool:
+        return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CUSTOM_POWER_UP_REDEMPTION
 
     async def __isPredictionType(
         self,
@@ -226,6 +237,14 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         elif await self.__isPollType(subscriptionType):
             if self.__pollHandler is not None:
                 await self.__pollHandler.onNewPollDataBundle(
+                    twitchChannelId = twitchChannelId,
+                    user = twitchUser,
+                    dataBundle = dataBundle,
+                )
+
+        elif await self.__isPowerUpRedemptionType(subscriptionType):
+            if self.__powerUpRedemptionHandler is not None:
+                await self.__powerUpRedemptionHandler.onNewPowerUpRedemptionDataBundle(
                     twitchChannelId = twitchChannelId,
                     user = twitchUser,
                     dataBundle = dataBundle,
