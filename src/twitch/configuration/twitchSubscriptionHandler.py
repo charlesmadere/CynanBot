@@ -78,13 +78,19 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         user = subscriptionData.user
 
         if user.isSubGiftThankingEnabled:
-            await self.__processCynanBotAsGiftRecipient(subscriptionData)
+            await self.__processCynanBotAsGiftRecipient(
+                subscriptionData = subscriptionData,
+            )
 
         if user.isSuperTriviaGameEnabled:
-            await self.__processSuperTriviaEvent(subscriptionData)
+            await self.__processSuperTriviaEvent(
+                subscriptionData = subscriptionData,
+            )
 
         if user.isTtsEnabled:
-            await self.__processTtsEvent(subscriptionData)
+            await self.__processTtsEvent(
+                subscriptionData = subscriptionData,
+            )
 
     async def onNewSubscriptionDataBundle(
         self,
@@ -110,6 +116,20 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         eventUserName = event.userName
         tier = event.tier
         subscriptionType = dataBundle.metadata.subscriptionType
+
+        if (event.isAnonymous is True or event.isChatterAnonymous is True) and (not utils.isValidStr(eventUserId) and not utils.isValidStr(eventUserLogin) and not utils.isValidStr(eventUserName)):
+            eventUserId = await self.__officialTwitchAccountUserIdProvider.getTwitchAnonymousGifterUserId()
+
+            twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+                twitchChannelId = twitchChannelId,
+            )
+
+            eventUserName = await self.__userIdsRepository.fetchUserName(
+                userId = eventUserId,
+                twitchAccessToken = twitchAccessToken,
+            )
+
+            eventUserLogin = eventUserName
 
         if not utils.isValidStr(eventUserId) or not utils.isValidStr(eventUserLogin) or not utils.isValidStr(eventUserName) or tier is None or subscriptionType is None:
             self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({eventUserId=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
@@ -230,25 +250,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             else:
                 isAnonymous = False
 
-        actualUserId = subscriptionData.eventUserId
-        actualUserName = subscriptionData.eventUserName
-
-        if not utils.isValidStr(actualUserId) or not utils.isValidStr(actualUserName):
-            if isAnonymous:
-                twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-                    twitchChannelId = subscriptionData.twitchChannelId,
-                )
-
-                actualUserId = await self.__officialTwitchAccountUserIdProvider.getTwitchAnonymousGifterUserId()
-
-                actualUserName = await self.__userIdsRepository.requireUserName(
-                    userId = actualUserId,
-                    twitchAccessToken = twitchAccessToken,
-                )
-            else:
-                self.__timber.log('TwitchSubscriptionHandler', f'Attempted to process subscription event into a TTS message, but data is weird? ({isAnonymous=}) ({subscriptionData=})')
-                return
-
         total = subscriptionData.total
 
         if total is None and subscriptionData.communitySubGift is not None:
@@ -276,8 +277,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 message = subscriptionData.chatMessage,
                 twitchChannel = user.handle,
                 twitchChannelId = subscriptionData.twitchChannelId,
-                userId = actualUserId,
-                userName = actualUserName,
+                userId = subscriptionData.eventUserId,
+                userName = subscriptionData.eventUserName,
                 donation = TtsSubscriptionDonation(
                     isAnonymous = isAnonymous,
                     cumulativeMonths = cumulativeMonths,
