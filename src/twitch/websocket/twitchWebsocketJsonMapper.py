@@ -16,6 +16,7 @@ from ..api.models.twitchChatMessageType import TwitchChatMessageType
 from ..api.models.twitchCheerMetadata import TwitchCheerMetadata
 from ..api.models.twitchCommunitySubGift import TwitchCommunitySubGift
 from ..api.models.twitchContribution import TwitchContribution
+from ..api.models.twitchCustomPowerUp import TwitchCustomPowerUp
 from ..api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData
 from ..api.models.twitchHypeTrainType import TwitchHypeTrainType
 from ..api.models.twitchModiversary import TwitchModiversary
@@ -436,9 +437,20 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'community_sub_gift' in eventJson:
             communitySubGift = await self.__twitchJsonMapper.parseCommunitySubGift(eventJson.get('community_sub_gift'))
 
+        customPowerUp: TwitchCustomPowerUp | None = None
         customPowerUpData: TwitchCustomPowerUpData | None = None
         if 'custom_power_up' in eventJson:
-            customPowerUpData = await self.__twitchJsonMapper.parseCustomPowerUpData(eventJson.get('custom_power_up'))
+            try:
+                customPowerUp = await self.__twitchJsonMapper.parseCustomPowerUp(eventJson.get('custom_power_up'))
+            except (KeyError, ValueError):
+                # these exception types can be safely ignored
+                pass
+
+            try:
+                customPowerUpData = await self.__twitchJsonMapper.parseCustomPowerUpData(eventJson.get('custom_power_up'))
+            except (KeyError, ValueError):
+                # these exception types can be safely ignored
+                pass
 
         hypeTrainType: TwitchHypeTrainType | None = None
         if 'type' in eventJson and utils.isValidStr(eventJson.get('type')):
@@ -586,6 +598,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             chatMessageType = chatMessageType,
             cheer = cheer,
             communitySubGift = communitySubGift,
+            customPowerUp = customPowerUp,
             customPowerUpData = customPowerUpData,
             hypeTrainType = hypeTrainType,
             modiversary = modiversary,

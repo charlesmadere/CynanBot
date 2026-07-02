@@ -112,10 +112,12 @@ class TwitchBitsHandler(AbsTwitchBitsHandler):
         self,
         event: TwitchWebsocketEvent,
     ) -> int | None:
-        if event.cheer is not None and event.cheer.bits is not None and event.cheer.bits >= 1:
+        if event.cheer is not None and event.cheer.bits >= 1:
             return event.cheer.bits
         elif event.bits is not None and event.bits >= 1:
             return event.bits
+        elif event.customPowerUp is not None and event.customPowerUp.bits >= 1:
+            return event.customPowerUp.bits
         else:
             return None
 
@@ -140,8 +142,6 @@ class TwitchBitsHandler(AbsTwitchBitsHandler):
             return None
 
         return TwitchCustomPowerUpData(
-            bits = apiCustomPowerUpData.bits,
-            prompt = apiCustomPowerUpData.prompt,
             rewardId = apiCustomPowerUpData.rewardId,
             title = apiCustomPowerUpData.title,
         )

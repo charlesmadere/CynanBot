@@ -28,6 +28,8 @@ from src.twitch.api.models.twitchConduitResponse import TwitchConduitResponse
 from src.twitch.api.models.twitchConduitResponseEntry import TwitchConduitResponseEntry
 from src.twitch.api.models.twitchConduitShard import TwitchConduitShard
 from src.twitch.api.models.twitchContributionType import TwitchContributionType
+from src.twitch.api.models.twitchCustomPowerUp import TwitchCustomPowerUp
+from src.twitch.api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from src.twitch.api.models.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.models.twitchEmoteType import TwitchEmoteType
@@ -1006,6 +1008,60 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseContributionType_withWhitespaceString(self):
         result = await self.jsonMapper.parseContributionType(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseCustomPowerUp(self):
+        customPowerUp = TwitchCustomPowerUp(
+            bits = 100,
+            powerUpId = 'def456',
+            prompt = None,
+            title = 'Hello, World!',
+        )
+
+        result = await self.jsonMapper.parseCustomPowerUp({
+            'bits': customPowerUp.bits,
+            'id': customPowerUp.powerUpId,
+            'prompt': customPowerUp.prompt,
+            'title': customPowerUp.title,
+        })
+
+        assert isinstance(result, TwitchCustomPowerUp)
+        assert result == customPowerUp
+
+    @pytest.mark.asyncio
+    async def test_parseCustomPowerUp_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseCustomPowerUp(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseCustomPowerUp_withNone(self):
+        result = await self.jsonMapper.parseCustomPowerUp(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseCustomPowerUpData(self):
+        customPowerUpData = TwitchCustomPowerUpData(
+            rewardId = 'abc123',
+            title = 'Hello, World!',
+        )
+
+        result = await self.jsonMapper.parseCustomPowerUpData({
+            'reward_id': customPowerUpData.rewardId,
+            'title': customPowerUpData.title,
+        })
+
+        assert isinstance(result, TwitchCustomPowerUpData)
+        assert result == customPowerUpData
+
+    @pytest.mark.asyncio
+    async def test_parseCustomPowerUpData_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseCustomPowerUpData(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseCustomPowerUpData_withNone(self):
+        result = await self.jsonMapper.parseCustomPowerUpData(None)
         assert result is None
 
     @pytest.mark.asyncio

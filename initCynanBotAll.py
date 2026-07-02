@@ -648,6 +648,7 @@ from src.twitch.absTwitchChatHandler import AbsTwitchChatHandler
 from src.twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
 from src.twitch.absTwitchHypeTrainHandler import AbsTwitchHypeTrainHandler
 from src.twitch.absTwitchPollHandler import AbsTwitchPollHandler
+from src.twitch.absTwitchPowerUpRedemptionHandler import AbsTwitchPowerUpRedemptionHandler
 from src.twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from src.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from src.twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
@@ -671,6 +672,7 @@ from src.twitch.configuration.twitchChatHandler import TwitchChatHandler
 from src.twitch.configuration.twitchFollowHandler import TwitchFollowHandler
 from src.twitch.configuration.twitchHypeTrainHandler import TwitchHypeTrainHandler
 from src.twitch.configuration.twitchPollHandler import TwitchPollHandler
+from src.twitch.configuration.twitchPowerUpRedemptionHandler import TwitchPowerUpRedemptionHandler
 from src.twitch.configuration.twitchPredictionHandler import TwitchPredictionHandler
 from src.twitch.configuration.twitchRaidHandler import TwitchRaidHandler
 from src.twitch.configuration.twitchSubscriptionHandler import TwitchSubscriptionHandler
@@ -956,32 +958,32 @@ twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface]
     twitchApiService = twitchApiService,
 )
 
-anivJsonMapper: AnivJsonMapperInterface = AnivJsonMapper()
+anivJsonMapper: Final[AnivJsonMapperInterface] = AnivJsonMapper()
 
-soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper()
+soundAlertJsonMapper: Final[SoundAlertJsonMapperInterface] = SoundAlertJsonMapper()
 
-crowdControlJsonParser: CrowdControlJsonParserInterface = CrowdControlJsonParser()
+crowdControlJsonParser: Final[CrowdControlJsonParserInterface] = CrowdControlJsonParser()
 
-cutenessBoosterPackJsonParser: CutenessBoosterPackJsonParserInterface = CutenessBoosterPackJsonParser()
+cutenessBoosterPackJsonParser: Final[CutenessBoosterPackJsonParserInterface] = CutenessBoosterPackJsonParser()
 
-languageEntryJsonMapper: LanguageEntryJsonMapperInterface = LanguageEntryJsonMapper()
+languageEntryJsonMapper: Final[LanguageEntryJsonMapperInterface] = LanguageEntryJsonMapper()
 
-pkmnBoosterPackJsonParser: PkmnBoosterPackJsonParserInterface = PkmnBoosterPackJsonParser(
-    timber = timber
+pkmnBoosterPackJsonParser: Final[PkmnBoosterPackJsonParserInterface] = PkmnBoosterPackJsonParser(
+    timber = timber,
 )
 
-redemptionCounterBoosterPackParser: RedemptionCounterBoosterPackParserInterface = RedemptionCounterBoosterPackParser()
+redemptionCounterBoosterPackParser: Final[RedemptionCounterBoosterPackParserInterface] = RedemptionCounterBoosterPackParser()
 
-soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface = SoundAlertRedemptionJsonParser(
-    soundAlertJsonMapper = soundAlertJsonMapper
+soundAlertRedemptionJsonParser: Final[SoundAlertRedemptionJsonParserInterface] = SoundAlertRedemptionJsonParser(
+    soundAlertJsonMapper = soundAlertJsonMapper,
 )
 
-supStreamerBoosterPackJsonParser: SupStreamerBoosterPackJsonParserInterface = SupStreamerBoosterPackJsonParser()
+supStreamerBoosterPackJsonParser: Final[SupStreamerBoosterPackJsonParserInterface] = SupStreamerBoosterPackJsonParser()
 
-timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface = TimeoutBoosterPackJsonParser()
+timeoutBoosterPackJsonParser: Final[TimeoutBoosterPackJsonParserInterface] = TimeoutBoosterPackJsonParser()
 
-ttsJsonMapper: TtsJsonMapperInterface = TtsJsonMapper(
-    timber = timber
+ttsJsonMapper: Final[TtsJsonMapperInterface] = TtsJsonMapper(
+    timber = timber,
 )
 
 ttsBoosterPackParser: Final[TtsBoosterPackParserInterface] = TtsBoosterPackParser(
@@ -3676,6 +3678,11 @@ twitchPollHandler: Final[AbsTwitchPollHandler] = TwitchPollHandler(
     twitchChatMessenger = twitchChatMessenger,
 )
 
+twitchPowerUpRedemptionHandler: Final[AbsTwitchPowerUpRedemptionHandler] = TwitchPowerUpRedemptionHandler(
+    cheerActionHelper = cheerActionHelper,
+    timber = timber,
+)
+
 twitchPredictionHandler: Final[AbsTwitchPredictionHandler] = TwitchPredictionHandler(
     activeChattersRepository = activeChattersRepository,
     streamAlertsManager = streamAlertsManager,
@@ -3712,6 +3719,7 @@ twitchWebsocketDataBundleListener: Final[TwitchWebsocketDataBundleListener] = Tw
     followHandler = twitchFollowHandler,
     hypeTrainHandler = twitchHypeTrainHandler,
     pollHandler = twitchPollHandler,
+    powerUpRedemptionHandler = twitchPowerUpRedemptionHandler,
     predictionHandler = twitchPredictionHandler,
     raidHandler = twitchRaidHandler,
     subscriptionHandler = twitchSubscriptionHandler,
