@@ -78,13 +78,19 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         user = subscriptionData.user
 
         if user.isSubGiftThankingEnabled:
-            await self.__processCynanBotAsGiftRecipient(subscriptionData)
+            await self.__processCynanBotAsGiftRecipient(
+                subscriptionData = subscriptionData,
+            )
 
         if user.isSuperTriviaGameEnabled:
-            await self.__processSuperTriviaEvent(subscriptionData)
+            await self.__processSuperTriviaEvent(
+                subscriptionData = subscriptionData,
+            )
 
         if user.isTtsEnabled:
-            await self.__processTtsEvent(subscriptionData)
+            await self.__processTtsEvent(
+                subscriptionData = subscriptionData,
+            )
 
     async def onNewSubscriptionDataBundle(
         self,
