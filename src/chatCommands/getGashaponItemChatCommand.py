@@ -36,6 +36,7 @@ class GetGashaponItemChatCommand(AbsChatCommand):
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
             re.compile(r'^\s*!(?:get\s*)?chest\b', re.IGNORECASE),
+            re.compile(r'^\s*!(?:get\s*)?crate\b', re.IGNORECASE),
             re.compile(r'^\s*!(?:get\s*)?gat?cha(?:pon)?\b', re.IGNORECASE),
             re.compile(r'^\s*!(?:get\s*)?gat?chi(?:pon)?\b', re.IGNORECASE),
             re.compile(r'^\s*!(?:get\s*)?gasha(?:pon)?\b', re.IGNORECASE),
