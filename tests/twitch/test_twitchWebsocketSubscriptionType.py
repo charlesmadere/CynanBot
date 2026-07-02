@@ -27,6 +27,10 @@ class TestTwitchWebsocketSubscriptionType:
         version = TwitchWebsocketSubscriptionType.CHANNEL_CHEER.version
         assert version == '1'
 
+    def test_version_withChannelCustomPowerUpRedemption(self):
+        version = TwitchWebsocketSubscriptionType.CHANNEL_CUSTOM_POWER_UP_REDEMPTION.version
+        assert version == '1'
+
     def test_version_withChannelFollow(self):
         version = TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW.version
         assert version == '2'

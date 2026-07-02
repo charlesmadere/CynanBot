@@ -2311,6 +2311,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return TwitchWebsocketSubscriptionType.CHANNEL_CHAT_NOTIFICATION
             case 'channel.cheer':
                 return TwitchWebsocketSubscriptionType.CHANNEL_CHEER
+            case 'channel.custom_power_up_redemption.add':
+                return TwitchWebsocketSubscriptionType.CHANNEL_CUSTOM_POWER_UP_REDEMPTION
             case 'channel.follow':
                 return TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW
             case 'channel.hype_train.begin':
@@ -2861,7 +2863,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def requireSubscriptionType(
         self,
-        subscriptionType: str | Any | None
+        subscriptionType: str | Any | None,
     ) -> TwitchWebsocketSubscriptionType:
         result = await self.parseSubscriptionType(subscriptionType)
 
@@ -3093,6 +3095,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                 return 'channel.chat.notification'
             case TwitchWebsocketSubscriptionType.CHANNEL_CHEER:
                 return 'channel.cheer'
+            case TwitchWebsocketSubscriptionType.CHANNEL_CUSTOM_POWER_UP_REDEMPTION:
+                return 'channel.custom_power_up_redemption.add'
             case TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW:
                 return 'channel.follow'
             case TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:

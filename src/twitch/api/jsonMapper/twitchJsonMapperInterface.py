@@ -849,7 +849,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def requireSubscriptionType(
         self,
-        subscriptionType: str | Any | None
+        subscriptionType: str | Any | None,
     ) -> TwitchWebsocketSubscriptionType:
         pass
 

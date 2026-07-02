@@ -7,6 +7,7 @@ class TwitchWebsocketSubscriptionType(Enum):
     CHANNEL_CHAT_MESSAGE = auto()
     CHANNEL_CHAT_NOTIFICATION = auto()
     CHANNEL_CHEER = auto()
+    CHANNEL_CUSTOM_POWER_UP_REDEMPTION = auto()
     CHANNEL_FOLLOW = auto()
     CHANNEL_HYPE_TRAIN_BEGIN = auto()
     CHANNEL_HYPE_TRAIN_END = auto()
@@ -35,6 +36,7 @@ class TwitchWebsocketSubscriptionType(Enum):
             case TwitchWebsocketSubscriptionType.CHANNEL_CHAT_MESSAGE: return '1'
             case TwitchWebsocketSubscriptionType.CHANNEL_CHAT_NOTIFICATION: return '1'
             case TwitchWebsocketSubscriptionType.CHANNEL_CHEER: return '1'
+            case TwitchWebsocketSubscriptionType.CHANNEL_CUSTOM_POWER_UP_REDEMPTION: return '1'
             case TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW: return '2'
             case TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_BEGIN: return '2'
             case TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_END: return '2'

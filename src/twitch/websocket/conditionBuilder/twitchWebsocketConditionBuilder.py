@@ -28,6 +28,11 @@ class TwitchWebsocketConditionBuilder(TwitchWebsocketConditionBuilderInterface):
                 userId = user.userId,
             )
 
+        elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_CUSTOM_POWER_UP_REDEMPTION:
+            return TwitchWebsocketCondition(
+                broadcasterUserId = user.userId,
+            )
+
         elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_FOLLOW:
             return TwitchWebsocketCondition(
                 broadcasterUserId = user.userId,
