@@ -352,20 +352,19 @@ class TriviaUtils(TriviaUtilsInterface):
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
             emotePrompt = f'☠️☠️{emote}☠️☠️'
 
-        pointsStr = locale.format_string("%d", points, grouping = True)
         prefix = f'{emotePrompt} CONGRATULATIONS @{userName}, that\'s correct!'
+
+        if not utils.isValidStr(celebratoryEmote):
+            celebratoryEmote = self.__celebratoryEmote
 
         infix = ''
         if twitchUser.isCutenessEnabled:
-            infix = f'You earned {pointsStr} cuteness, so your new cuteness is {newCuteness.newCutenessStr}.'
+            infix = f'Your new cuteness is {newCuteness.newCutenessStr}.'
 
         correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
             triviaQuestion = question,
             delimiter = delimiter,
         )
-
-        if not utils.isValidStr(celebratoryEmote):
-            celebratoryEmote = self.__celebratoryEmote
 
         return f'{prefix} {celebratoryEmote} {infix} {celebratoryEmote} {correctAnswers}'.strip()
 
