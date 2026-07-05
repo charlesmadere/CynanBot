@@ -103,7 +103,7 @@ class GashaponItemUseCase(GashaponItemUseCaseInterface):
             for _ in range(pullRate.iterations):
                 randomNumber = random.random()
 
-                if randomNumber >= pullRate.pullRate:
+                if randomNumber <= pullRate.pullRate:
                     awardedAmount += 1
 
             awardedAmount = int(min(awardedAmount, pullRate.maximumPullAmount))
