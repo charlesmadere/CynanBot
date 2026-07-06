@@ -68,13 +68,6 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         twitchChannelId: str,
         userIdToTimeout: str,
     ) -> bool:
-        if not utils.isValidStr(twitchChannelAccessToken):
-            raise TypeError(f'twitchChannelAccessToken argument is malformed: \"{twitchChannelAccessToken}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not utils.isValidStr(userIdToTimeout):
-            raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
-
         try:
             bannedUsersResponse = await self.__twitchApiService.fetchBannedUsers(
                 broadcasterId = twitchChannelId,
@@ -107,13 +100,6 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         twitchChannelId: str,
         userIdToTimeout: str,
     ) -> bool:
-        if not utils.isValidStr(twitchChannelAccessToken):
-            raise TypeError(f'twitchChannelAccessToken argument is malformed: \"{twitchChannelAccessToken}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not utils.isValidStr(userIdToTimeout):
-            raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
-
         try:
             return await self.__twitchApiService.removeModerator(
                 broadcasterId = twitchChannelId,
@@ -196,22 +182,10 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the given user is a mod that failed to be unmodded ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.CANT_UNMOD
 
-        if isMod:
-            # This may need to be removed in the future, but let's go ahead and add a small
-            # delay here before proceeding further. It appears that sometimes, moderators are
-            # having their mod status removed, but then aren't being timed out. So maybe what's
-            # happening is that the Twitch backend is taking time to finish removing the target
-            # user's moderator status... maybe.
-            await asyncio.sleep(1)
-
-        await self.__activeChattersRepository.remove(
-            chatterUserId = userIdToTimeout,
-            twitchChannelId = twitchChannelId,
-        )
-
         self.__timber.log('TwitchTimeoutHelper', f'Timing out... ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
 
         if not await self.__timeout(
+            isMod = isMod,
             durationSeconds = durationSeconds,
             cynanBotUserId = cynanBotUserId,
             reason = reason,
@@ -223,6 +197,11 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         ):
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the Twitch API call failed ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.API_CALL_FAILED
+
+        await self.__activeChattersRepository.remove(
+            chatterUserId = userIdToTimeout,
+            twitchChannelId = twitchChannelId,
+        )
 
         if isMod:
             await self.__twitchTimeoutRemodHelper.submitRemodData(
@@ -236,6 +215,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
 
     async def __timeout(
         self,
+        isMod: bool,
         durationSeconds: int,
         cynanBotUserId: str,
         reason: str | None,
@@ -245,25 +225,6 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         userNameToTimeout: str,
         user: UserInterface,
     ) -> bool:
-        if not utils.isValidInt(durationSeconds):
-            raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
-        elif durationSeconds < 1 or durationSeconds > self.__globalTwitchConstants.maxTimeoutSeconds:
-            raise ValueError(f'durationSeconds argument is out of bounds: \"{durationSeconds}\"')
-        elif not utils.isValidStr(cynanBotUserId):
-            raise TypeError(f'cynanBotUserId argument is malformed: \"{cynanBotUserId}\"')
-        elif reason is not None and not isinstance(reason, str):
-            raise TypeError(f'reason argument is malformed: \"{reason}\"')
-        elif not utils.isValidStr(twitchAccessToken):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not utils.isValidStr(userIdToTimeout):
-            raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
-        elif not utils.isValidStr(userNameToTimeout):
-            raise TypeError(f'userNameToTimeout argument is malformed: \"{userNameToTimeout}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-
         banRequest = TwitchBanRequest(
             duration = durationSeconds,
             broadcasterUserId = twitchChannelId,
@@ -272,6 +233,43 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             userIdToBan = userIdToTimeout,
         )
 
+        if isMod:
+            successfullyTimedOut = False
+            attempts = 0
+
+            for _ in range(3):
+                successfullyTimedOut = await self.__timeoutAttempt(
+                    twitchAccessToken = twitchAccessToken,
+                    userNameToTimeout = userNameToTimeout,
+                    banRequest = banRequest,
+                    user = user,
+                )
+
+                if successfullyTimedOut:
+                    break
+
+                attempts += 1
+                await asyncio.sleep(0.5)
+
+            if successfullyTimedOut and attempts >= 1:
+                self.__timber.log('TwitchTimeoutHelper', f'Timed out user after {attempts} attempt(s) ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
+
+            return successfullyTimedOut
+        else:
+            return await self.__timeoutAttempt(
+                twitchAccessToken = twitchAccessToken,
+                userNameToTimeout = userNameToTimeout,
+                banRequest = banRequest,
+                user = user,
+            )
+
+    async def __timeoutAttempt(
+        self,
+        twitchAccessToken: str,
+        userNameToTimeout: str,
+        banRequest: TwitchBanRequest,
+        user: UserInterface,
+    ) -> bool:
         try:
             banResponse = await self.__twitchApiService.banUser(
                 twitchAccessToken = twitchAccessToken,
@@ -282,7 +280,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             return False
 
         for banResponseEntry in banResponse.data:
-            if banResponseEntry.userId == userIdToTimeout:
+            if banResponseEntry.userId == banRequest.userIdToBan:
                 return True
 
         self.__timber.log('TwitchTimeoutHelper', f'Failed to timeout user ({userNameToTimeout=}) ({user=}) ({banRequest=}) ({banResponse=})')
