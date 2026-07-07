@@ -238,6 +238,8 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             attempts = 0
 
             for _ in range(3):
+                attempts += 1
+
                 successfullyTimedOut = await self.__timeoutAttempt(
                     twitchAccessToken = twitchAccessToken,
                     userNameToTimeout = userNameToTimeout,
@@ -248,10 +250,9 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
                 if successfullyTimedOut:
                     break
 
-                attempts += 1
                 await asyncio.sleep(0.5)
 
-            if successfullyTimedOut and attempts >= 1:
+            if successfullyTimedOut and attempts > 1:
                 self.__timber.log('TwitchTimeoutHelper', f'Timed out user after {attempts} attempt(s) ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
 
             return successfullyTimedOut
