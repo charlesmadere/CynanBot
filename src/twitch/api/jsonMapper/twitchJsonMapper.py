@@ -1557,6 +1557,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'charity_donation': return TwitchNoticeType.CHARITY_DONATION
             case 'community_sub_gift': return TwitchNoticeType.COMMUNITY_SUB_GIFT
             case 'gift_paid_upgrade':  return TwitchNoticeType.GIFT_PAID_UPGRADE
+            case 'modiversary': return TwitchNoticeType.MODIVERSARY
             case 'pay_it_forward': return TwitchNoticeType.PAY_IT_FORWARD
             case 'prime_paid_upgrade': return TwitchNoticeType.PRIME_PAID_UPGRADE
             case 'raid': return TwitchNoticeType.RAID
@@ -1564,6 +1565,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'shared_chat_announcement': return TwitchNoticeType.SHARED_CHAT_ANNOUNCEMENT
             case 'shared_chat_community_sub_gift': return TwitchNoticeType.SHARED_CHAT_COMMUNITY_SUB_GIFT
             case 'shared_chat_gift_paid_upgrade': return TwitchNoticeType.SHARED_CHAT_GIFT_PAID_UPGRADE
+            case 'shared_chat_modiversary': return TwitchNoticeType.SHARED_CHAT_MODIVERSARY
             case 'shared_chat_pay_it_forward': return TwitchNoticeType.SHARED_CHAT_PAY_IT_FORWARD
             case 'shared_chat_prime_paid_upgrade': return TwitchNoticeType.SHARED_CHAT_PRIME_PAID_UPGRADE
             case 'shared_chat_raid': return TwitchNoticeType.SHARED_CHAT_RAID

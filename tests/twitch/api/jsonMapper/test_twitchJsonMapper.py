@@ -1277,6 +1277,11 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseNoticeType_withModiversaryString(self):
+        result = await self.jsonMapper.parseNoticeType('modiversary')
+        assert result is TwitchNoticeType.MODIVERSARY
+
+    @pytest.mark.asyncio
     async def test_parseNoticeType_withNone(self):
         result = await self.jsonMapper.parseNoticeType(None)
         assert result is None
@@ -1315,6 +1320,11 @@ class TestTwitchJsonMapper:
     async def test_parseNoticeType_withSharedChatGiftPaidUpgradeString(self):
         result = await self.jsonMapper.parseNoticeType('shared_chat_gift_paid_upgrade')
         assert result is TwitchNoticeType.SHARED_CHAT_GIFT_PAID_UPGRADE
+
+    @pytest.mark.asyncio
+    async def test_parseNoticeType_withSharedChatModiversaryString(self):
+        result = await self.jsonMapper.parseNoticeType('shared_chat_modiversary')
+        assert result is TwitchNoticeType.SHARED_CHAT_MODIVERSARY
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withSharedChatPayItForwardString(self):
