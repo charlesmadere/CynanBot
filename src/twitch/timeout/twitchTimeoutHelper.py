@@ -32,6 +32,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         twitchModeratorHelper: TwitchModeratorHelperInterface,
         twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface,
         userIdsRepository: UserIdsRepositoryInterface,
+        maxModRetries: int = 3,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -51,6 +52,10 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             raise TypeError(f'twitchTimeoutRemodHelper argument is malformed: \"{twitchTimeoutRemodHelper}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not utils.isValidInt(maxModRetries):
+            raise TypeError(f'maxModRetries argument is malformed: \"{maxModRetries}\"')
+        elif maxModRetries < 1 or maxModRetries > 10:
+            raise ValueError(f'maxModRetries argument is out of bounds: {maxModRetries}')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__globalTwitchConstants: Final[GlobalTwitchConstants] = globalTwitchConstants
@@ -61,6 +66,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         self.__twitchModeratorHelper: Final[TwitchModeratorHelperInterface] = twitchModeratorHelper
         self.__twitchTimeoutRemodHelper: Final[TwitchTimeoutRemodHelperInterface] = twitchTimeoutRemodHelper
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__maxModRetries: Final[int] = maxModRetries
 
     async def __isAlreadyCurrentlyBannedOrTimedOut(
         self,
@@ -233,36 +239,33 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             userIdToBan = userIdToTimeout,
         )
 
+        maxRetries: int
+
         if isMod:
-            successfullyTimedOut = False
-            attempts = 0
+            maxRetries = self.__maxModRetries
+        else:
+            maxRetries = 1
 
-            for _ in range(3):
-                attempts += 1
+        successfullyTimedOut = False
+        attempts = 0
 
-                successfullyTimedOut = await self.__timeoutAttempt(
-                    twitchAccessToken = twitchAccessToken,
-                    userNameToTimeout = userNameToTimeout,
-                    banRequest = banRequest,
-                    user = user,
-                )
-
-                if successfullyTimedOut:
-                    break
-
+        while not successfullyTimedOut and attempts < maxRetries:
+            if attempts > 0:
                 await asyncio.sleep(0.5)
 
-            if successfullyTimedOut and attempts > 1:
-                self.__timber.log('TwitchTimeoutHelper', f'Timed out user after {attempts} attempt(s) ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
+            attempts += 1
 
-            return successfullyTimedOut
-        else:
-            return await self.__timeoutAttempt(
+            successfullyTimedOut = await self.__timeoutAttempt(
                 twitchAccessToken = twitchAccessToken,
                 userNameToTimeout = userNameToTimeout,
                 banRequest = banRequest,
                 user = user,
             )
+
+        if successfullyTimedOut and attempts > 1:
+            self.__timber.log('TwitchTimeoutHelper', f'Timed out user after {attempts} attempt(s) ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
+
+        return successfullyTimedOut
 
     async def __timeoutAttempt(
         self,
