@@ -6,16 +6,10 @@ from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
-from ..soundPlayerManager.soundAlert import SoundAlert
-from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..timber.timberInterface import TimberInterface
 from ..timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
 from ..timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
-from ..timeout.models.actions.basicTimeoutAction import BasicTimeoutAction
-from ..timeout.models.exactTimeoutDuration import ExactTimeoutDuration
-from ..tts.models.ttsEvent import TtsEvent
-from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from ..twitch.channelInformationHelper.exceptions import RequiredTwitchAuthorizationIsMissingException
 from ..twitch.channelInformationHelper.twitchChannelInformationHelperInterface import \
@@ -28,7 +22,6 @@ from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.moderator.twitchModeratorHelperInterface import TwitchModeratorHelperInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from ..users.userInterface import UserInterface
 
 
 class UpdateStreamTitleChatCommand(AbsChatCommand):
@@ -121,15 +114,6 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
             self.__timber.log(self.commandName, f'Title argument is empty ({newTitle=}) ({splits=}) ({chatMessage=})')
             return ChatCommandResult.IGNORED
 
-        if chatMessage.twitchUser.arePranksEnabled and await self.__stopForPrank(
-            chatterUserId = chatMessage.chatterUserId,
-            chatterUserName = chatMessage.chatterUserName,
-            twitchChannelId = chatMessage.twitchChannelId,
-            twitchChatMessageId = chatMessage.twitchChatMessageId,
-            twitchUser = chatMessage.twitchUser,
-        ):
-            return ChatCommandResult.IGNORED
-
         try:
             updatedTitle = await self.__twitchChannelInformationHelper.setTitle(
                 title = newTitle,
@@ -179,80 +163,3 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
         )
 
         return isStreamer or isAdministrator or isEditor or isModerator
-
-    async def __stopForPrank(
-        self,
-        chatterUserId: str,
-        chatterUserName: str,
-        twitchChannelId: str,
-        twitchChatMessageId: str | None,
-        twitchUser: UserInterface,
-    ) -> bool:
-        if self.__wasPranked:
-            return False
-
-        harleyHardtUserId = await self.__twitchFriendsUserIdRepository.getHarleyHardtUserId()
-        if not utils.isValidStr(harleyHardtUserId) or chatterUserId != harleyHardtUserId:
-            return False
-
-        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        moderatorUserId = await self.__userIdsRepository.fetchUserId(twitchHandle)
-
-        if not utils.isValidStr(moderatorUserId):
-            return False
-
-        moderatorTwitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-            twitchChannelId = moderatorUserId,
-        )
-
-        userTwitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
-            twitchChannelId = twitchChannelId,
-        )
-
-        if not utils.isValidStr(moderatorTwitchAccessToken) or not utils.isValidStr(userTwitchAccessToken):
-            return False
-
-        self.__wasPranked = True
-
-        self.__streamAlertsManager.submitAlert(StreamAlert(
-            soundAlert = SoundAlert.MEGA_GRENADE,
-            twitchChannel = twitchUser.handle,
-            twitchChannelId = twitchChannelId,
-            ttsEvent = TtsEvent(
-                message = f'Harley, get fucked',
-                twitchChannel = twitchUser.handle,
-                twitchChannelId = twitchChannelId,
-                userId = harleyHardtUserId,
-                userName = chatterUserName,
-                donation = None,
-                provider = twitchUser.defaultTtsProvider,
-                providerOverridableStatus = TtsProviderOverridableStatus.CHATTER_OVERRIDABLE,
-                raidInfo = None,
-            ),
-        ))
-
-        self.__timeoutActionMachine.submitAction(BasicTimeoutAction(
-            timeoutDuration = ExactTimeoutDuration(
-                seconds = 300,
-            ),
-            actionId = await self.__timeoutIdGenerator.generateActionId(),
-            chatMessage = None,
-            instigatorUserId = harleyHardtUserId,
-            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
-            moderatorUserId = moderatorUserId,
-            reason = None,
-            targetUserId = harleyHardtUserId,
-            twitchChannelId = twitchChannelId,
-            twitchChatMessageId = None,
-            userTwitchAccessToken = userTwitchAccessToken,
-            streamStatusRequirement = None,
-            user = twitchUser,
-        ))
-
-        self.__twitchChatMessenger.send(
-            text = f'@{chatterUserName} gloverGape gloverGape gloverGape gloverGape gloverGape gloverGape',
-            twitchChannelId = twitchChannelId,
-            replyMessageId = twitchChatMessageId,
-        )
-
-        return True
