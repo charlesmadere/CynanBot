@@ -37,7 +37,7 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 10)
+        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 11)
 
     async def getVoiceAudioEncoding(self) -> GoogleVoiceAudioEncoding:
         jsonContents = await self.__readJson()
