@@ -1,3 +1,4 @@
+import asyncio
 from typing import Final
 
 from .exceptions import (FailedToFindTwitchChannelInformationException,
@@ -21,6 +22,7 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
+        setThenFetchDelaySeconds: float = 0.25,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -28,10 +30,15 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not utils.isValidNum(setThenFetchDelaySeconds):
+            raise TypeError(f'setThenFetchDelaySeconds argument is malformed: \"{setThenFetchDelaySeconds}\"')
+        elif setThenFetchDelaySeconds < 0.125 or setThenFetchDelaySeconds > 3:
+            raise ValueError(f'setThenFetchDelaySeconds argument is out of bounds: {setThenFetchDelaySeconds}')
 
         self.__timber: Final[TimberInterface] = timber
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__setThenFetchDelaySeconds: Final[float] = setThenFetchDelaySeconds
 
     async def __fetchChannelInformation(
         self,
@@ -145,6 +152,8 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
             )
         )
 
+        await asyncio.sleep(self.__setThenFetchDelaySeconds)
+
         channelInformation = await self.__fetchChannelInformation(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
@@ -177,6 +186,8 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
                 twitchChannelId = twitchChannelId,
             )
         )
+
+        await asyncio.sleep(self.__setThenFetchDelaySeconds)
 
         channelInformation = await self.__fetchChannelInformation(
             twitchAccessToken = twitchAccessToken,

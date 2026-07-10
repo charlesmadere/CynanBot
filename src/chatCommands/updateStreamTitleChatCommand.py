@@ -6,22 +6,15 @@ from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
-from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ..timber.timberInterface import TimberInterface
-from ..timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
-from ..timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from ..twitch.channelInformationHelper.exceptions import RequiredTwitchAuthorizationIsMissingException
 from ..twitch.channelInformationHelper.twitchChannelInformationHelperInterface import \
     TwitchChannelInformationHelperInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.exceptions import TwitchStatusCodeException
-from ..twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
-from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.moderator.twitchModeratorHelperInterface import TwitchModeratorHelperInterface
-from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class UpdateStreamTitleChatCommand(AbsChatCommand):
@@ -29,29 +22,16 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
-        streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
-        timeoutActionMachine: TimeoutActionMachineInterface,
-        timeoutIdGenerator: TimeoutIdGeneratorInterface,
         twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface,
         twitchChannelInformationHelper: TwitchChannelInformationHelperInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
-        twitchHandleProvider: TwitchHandleProviderInterface,
         twitchModeratorHelper: TwitchModeratorHelperInterface,
-        twitchTokensRepository: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
-            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
-            raise TypeError(f'timeoutActionMachine argument is malformed: \"{timeoutActionMachine}\"')
-        elif not isinstance(timeoutIdGenerator, TimeoutIdGeneratorInterface):
-            raise TypeError(f'timeoutIdGenerator argument is malformed: \"{timeoutIdGenerator}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchChannelEditorsRepository, TwitchChannelEditorsRepositoryInterface):
@@ -60,30 +40,15 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
             raise TypeError(f'twitchChannelInformationHelper argument is malformed: \"{twitchChannelInformationHelper}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
-            raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
-        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
-            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchModeratorHelper, TwitchModeratorHelperInterface):
             raise TypeError(f'twitchModeratorHelper argument is malformed: \"{twitchModeratorHelper}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
-        self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
-        self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
-        self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
         self.__twitchChannelEditorsRepository: Final[TwitchChannelEditorsRepositoryInterface] = twitchChannelEditorsRepository
         self.__twitchChannelInformationHelper: Final[TwitchChannelInformationHelperInterface] = twitchChannelInformationHelper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = twitchFriendsUserIdRepository
-        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchModeratorHelper: Final[TwitchModeratorHelperInterface] = twitchModeratorHelper
-        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
             re.compile(r'^\s*!set(?:stream)?title\b', re.IGNORECASE),
