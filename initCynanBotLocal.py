@@ -2307,18 +2307,11 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     UpdateStreamTitleChatCommand(
         administratorProvider = administratorProvider,
-        streamAlertsManager = streamAlertsManager,
         timber = timber,
-        timeoutActionMachine = timeoutActionMachine,
-        timeoutIdGenerator = timeoutIdGenerator,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
         twitchChannelInformationHelper = twitchChannelInformationHelper,
         twitchChatMessenger = twitchChatMessenger,
-        twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
-        twitchHandleProvider = authRepository,
         twitchModeratorHelper = twitchModeratorHelper,
-        twitchTokensRepository = twitchTokensRepository,
-        userIdsRepository = userIdsRepository,
     ),
     UseChatterItemChatCommand(
         chatterInventoryIdGenerator = chatterInventoryIdGenerator,
