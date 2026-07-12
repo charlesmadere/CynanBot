@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 from .absTriviaQuestionRepository import AbsTriviaQuestionRepository
 from .willFry.willFryTriviaApiServiceInterface import WillFryTriviaApiServiceInterface
@@ -35,9 +36,9 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
         elif not isinstance(willFryTriviaApiService, WillFryTriviaApiServiceInterface):
             raise TypeError(f'willFryTriviaApiService argument is malformed: \"{willFryTriviaApiService}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
-        self.__willFryTriviaApiService: WillFryTriviaApiServiceInterface = willFryTriviaApiService
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaQuestionCompiler: Final[TriviaQuestionCompilerInterface] = triviaQuestionCompiler
+        self.__willFryTriviaApiService: Final[WillFryTriviaApiServiceInterface] = willFryTriviaApiService
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):

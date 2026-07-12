@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .exceptions import UnknownOpenTriviaQaQuestionTypeException
 from .openTriviaQaQuestionType import OpenTriviaQaQuestionType
@@ -13,7 +13,7 @@ class OpenTriviaQaQuestionTypeParser(OpenTriviaQaQuestionTypeParserInterface):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__timber: TimberInterface = timber
+        self.__timber: Final[TimberInterface] = timber
 
     async def parse(
         self,
