@@ -61,6 +61,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         self.__thingsThatArePhraseRegEx: Final[Pattern] = re.compile(r'^(things\s+that\s+are)\s+(\w+(\s+)?(\w+)?)$', re.IGNORECASE)
         self.__usDollarRegEx: Final[Pattern] = re.compile(r'^\$?((?!,$)[\d,.]+)(\s+\(?USD?\)?)?$', re.IGNORECASE)
         self.__whiteSpaceRegEx: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
+        self.__wordAndWordRegEx: Final[Pattern] = re.compile(r'^(\w{3,})\s+&\s+(\w{3,})$', re.IGNORECASE)
         self.__wordDashWordRegEx: Final[Pattern] = re.compile(r'[\-_]', re.IGNORECASE)
         self.__wordSlashWordRegEx: Final[Pattern] = re.compile(r'^([a-z]+)/([a-z]+)(/([a-z]+))?$', re.IGNORECASE)
         self.__wordTheWordRegEx: Final[Pattern] = re.compile(r'^(\w+)\s+(a|an|the)\s+(\w+)$', re.IGNORECASE)
@@ -277,6 +278,10 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         if specialCases is not None and len(specialCases) >= 1:
             return specialCases
 
+        specialCases = await self.__expandSpecialCasesWordAndWord(answer)
+        if specialCases is not None and len(specialCases) >= 1:
+            return specialCases
+
         specialCases = await self.__expandSpecialCasesWordSlashWord(answer)
         if specialCases is not None and len(specialCases) >= 1:
             return specialCases
@@ -372,6 +377,23 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         return [
             f'{match.group(1)} usd',
             cleanedUsDollarAmount,
+        ]
+
+    # Expands 'Hello & World' into ['Hello & World', 'World & Hello']
+    async def __expandSpecialCasesWordAndWord(self, answer: str) -> list[str] | None:
+        match = self.__wordAndWordRegEx.fullmatch(answer)
+        if match is None:
+            return None
+
+        firstWord = match.group(1)
+        secondWord = match.group(2)
+
+        if not utils.isValidStr(firstWord) or not utils.isValidStr(secondWord):
+            return None
+
+        return [
+            f'{firstWord} & {secondWord}',
+            f'{secondWord} & {firstWord}',
         ]
 
     async def __expandSpecialCasesWordDashWord(self, answer: str) -> list[str] | None:
