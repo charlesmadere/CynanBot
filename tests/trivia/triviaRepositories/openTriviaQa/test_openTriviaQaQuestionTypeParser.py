@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.timber.timberInterface import TimberInterface
@@ -11,10 +13,10 @@ from src.trivia.triviaRepositories.openTriviaQa.openTriviaQaQuestionTypeParserIn
 
 class TestOpenTriviaQaQuestionTypeParser:
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    parser: OpenTriviaQaQuestionTypeParserInterface = OpenTriviaQaQuestionTypeParser(
-        timber = timber
+    parser: Final[OpenTriviaQaQuestionTypeParserInterface] = OpenTriviaQaQuestionTypeParser(
+        timber = timber,
     )
 
     @pytest.mark.asyncio
@@ -78,3 +80,8 @@ class TestOpenTriviaQaQuestionTypeParser:
             result = await self.parser.require(' ')
 
         assert result is None
+
+    def test_sanity(self):
+        assert self.parser is not None
+        assert isinstance(self.parser, OpenTriviaQaQuestionTypeParser)
+        assert isinstance(self.parser, OpenTriviaQaQuestionTypeParserInterface)

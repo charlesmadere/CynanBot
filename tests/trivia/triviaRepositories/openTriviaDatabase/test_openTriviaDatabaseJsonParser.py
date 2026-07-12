@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.timber.timberInterface import TimberInterface
@@ -15,16 +17,16 @@ from src.trivia.triviaRepositories.openTriviaDatabase.openTriviaDatabaseResponse
 
 class TestOpenTriviaDatabaseJsonParser:
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    triviaDifficultyParser: TriviaDifficultyParserInterface = TriviaDifficultyParser()
+    triviaDifficultyParser: Final[TriviaDifficultyParserInterface] = TriviaDifficultyParser()
 
-    triviaQuestionTypeParser: TriviaQuestionTypeParserInterface = TriviaQuestionTypeParser()
+    triviaQuestionTypeParser: Final[TriviaQuestionTypeParserInterface] = TriviaQuestionTypeParser()
 
-    parser: OpenTriviaDatabaseJsonParserInterface = OpenTriviaDatabaseJsonParser(
+    parser: Final[OpenTriviaDatabaseJsonParserInterface] = OpenTriviaDatabaseJsonParser(
         timber = timber,
         triviaDifficultyParser = triviaDifficultyParser,
-        triviaQuestionTypeParser = triviaQuestionTypeParser
+        triviaQuestionTypeParser = triviaQuestionTypeParser,
     )
 
     @pytest.mark.asyncio
@@ -129,3 +131,8 @@ class TestOpenTriviaDatabaseJsonParser:
             result = await self.parser.requireResponseCode(6)
 
         assert result is None
+
+    def test_sanity(self):
+        assert self.parser is not None
+        assert isinstance(self.parser, OpenTriviaDatabaseJsonParser)
+        assert isinstance(self.parser, OpenTriviaDatabaseJsonParserInterface)

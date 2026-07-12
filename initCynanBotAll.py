@@ -1036,21 +1036,21 @@ activeChattersRepository: Final[ActiveChattersRepositoryInterface] = ActiveChatt
 ## Cuteness initialization section ##
 #####################################
 
-cutenessPresenter: CutenessPresenterInterface = CutenessPresenter()
+cutenessPresenter: Final[CutenessPresenterInterface] = CutenessPresenter()
 
-cutenessRepository: CutenessRepositoryInterface = CutenessRepository(
+cutenessRepository: Final[CutenessRepositoryInterface] = CutenessRepository(
     backingDatabase = backingDatabase,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
 
-cutenessUtils: CutenessUtilsInterface = CutenessUtils()
+cutenessUtils: Final[CutenessUtilsInterface] = CutenessUtils()
 
 
 ####################################
 ## Funtoon initialization section ##
 ####################################
 
-funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensRepository(
+funtoonTokensRepository: Final[FuntoonTokensRepositoryInterface] = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     userIdsRepository = userIdsRepository,
@@ -1060,15 +1060,15 @@ funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensReposit
     ),
 )
 
-funtoonJsonMapper: FuntoonJsonMapperInterface = FuntoonJsonMapper()
+funtoonJsonMapper: Final[FuntoonJsonMapperInterface] = FuntoonJsonMapper()
 
-funtoonApiService: FuntoonApiServiceInterface = FuntoonApiService(
+funtoonApiService: Final[FuntoonApiServiceInterface] = FuntoonApiService(
     funtoonJsonMapper = funtoonJsonMapper,
     networkClientProvider = networkClientProvider,
     timber = timber,
 )
 
-funtoonHelper: FuntoonHelperInterface = FuntoonHelper(
+funtoonHelper: Final[FuntoonHelperInterface] = FuntoonHelper(
     funtoonApiService = funtoonApiService,
     funtoonJsonMapper = funtoonJsonMapper,
     funtoonTokensRepository = funtoonTokensRepository,
@@ -1110,13 +1110,13 @@ isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = IsLiveOnTwi
 
 languagesRepository: Final[LanguagesRepositoryInterface] = LanguagesRepository()
 
-locationsRepository: LocationsRepositoryInterface = LocationsRepository(
+locationsRepository: Final[LocationsRepositoryInterface] = LocationsRepository(
     locationsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = 'locationsRepository.json'
+        fileName = 'locationsRepository.json',
     ),
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 mostRecentChatsRepository: Final[MostRecentChatsRepositoryInterface] = MostRecentChatsRepository(
@@ -1125,11 +1125,11 @@ mostRecentChatsRepository: Final[MostRecentChatsRepositoryInterface] = MostRecen
     timeZoneRepository = timeZoneRepository,
 )
 
-pokepediaJsonMapper: PokepediaJsonMapperInterface = PokepediaJsonMapper(
-    timber = timber
+pokepediaJsonMapper: Final[PokepediaJsonMapperInterface] = PokepediaJsonMapper(
+    timber = timber,
 )
 
-pokepediaRepository: PokepediaRepositoryInterface = PokepediaRepository(
+pokepediaRepository: Final[PokepediaRepositoryInterface] = PokepediaRepository(
     networkClientProvider = networkClientProvider,
     pokepediaJsonMapper = pokepediaJsonMapper,
     timber = timber,
@@ -1163,7 +1163,7 @@ twitchModeratorHelper: Final[TwitchModeratorHelperInterface] = TwitchModeratorHe
     twitchTokensRepository = twitchTokensRepository,
 )
 
-globalTwitchConstants = GlobalTwitchConstants()
+globalTwitchConstants: Final[GlobalTwitchConstants] = GlobalTwitchConstants()
 
 twitchChatMessenger: Final[TwitchChatMessengerInterface] = TwitchChatMessenger(
     backgroundTaskHelper = backgroundTaskHelper,
@@ -1193,14 +1193,14 @@ timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] =
     ),
 )
 
-transparentXmlMapper: TransparentXmlMapperInterface = TransparentXmlMapper(
-    timeZoneRepository = timeZoneRepository
+transparentXmlMapper: Final[TransparentXmlMapperInterface] = TransparentXmlMapper(
+    timeZoneRepository = timeZoneRepository,
 )
 
-transparentApiService: TransparentApiServiceInterface = TransparentApiService(
+transparentApiService: Final[TransparentApiServiceInterface] = TransparentApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
-    transparentXmlMapper = transparentXmlMapper
+    transparentXmlMapper = transparentXmlMapper,
 )
 
 wordOfTheDayRepository: Final[WordOfTheDayRepositoryInterface] = WordOfTheDayRepository(
@@ -1210,18 +1210,18 @@ wordOfTheDayRepository: Final[WordOfTheDayRepositoryInterface] = WordOfTheDayRep
     transparentApiService = transparentApiService,
 )
 
-wordOfTheDayPresenter: WordOfTheDayPresenterInterface = WordOfTheDayPresenter()
+wordOfTheDayPresenter: Final[WordOfTheDayPresenterInterface] = WordOfTheDayPresenter()
 
-twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface = TwitchWebsocketAllowedUsersRepository(
+twitchWebsocketAllowedUsersRepository: Final[TwitchWebsocketAllowedUsersRepositoryInterface] = TwitchWebsocketAllowedUsersRepository(
     timber = timber,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
 )
 
-twitchWebsocketConditionBuilder: TwitchWebsocketConditionBuilderInterface = TwitchWebsocketConditionBuilder()
+twitchWebsocketConditionBuilder: Final[TwitchWebsocketConditionBuilderInterface] = TwitchWebsocketConditionBuilder()
 
-twitchWebsocketEndpointHelper: TwitchWebsocketEndpointHelperInterface = TwitchWebsocketEndpointHelper(
+twitchWebsocketEndpointHelper: Final[TwitchWebsocketEndpointHelperInterface] = TwitchWebsocketEndpointHelper(
     timber = timber,
 )
 
@@ -1240,10 +1240,10 @@ twitchWebsocketConnectionActionHelper: Final[TwitchWebsocketConnectionActionHelp
     twitchWebsocketSessionIdHelper = twitchWebsocketSessionIdHelper,
 )
 
-twitchWebsocketSettingsRepository: TwitchWebsocketSettingsRepositoryInterface = TwitchWebsocketSettingsRepository(
+twitchWebsocketSettingsRepository: Final[TwitchWebsocketSettingsRepositoryInterface] = TwitchWebsocketSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/twitchWebsocketSettingsRepository.json'
+        fileName = '../config/twitchWebsocketSettingsRepository.json',
     ),
     twitchJsonMapper = twitchJsonMapper,
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
@@ -1263,20 +1263,20 @@ twitchWebsocketSubscriptionHelper: Final[TwitchWebsocketSubscriptionHelperInterf
 ## Sound Player initialization section ##
 #########################################
 
-soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
+soundPlayerSettingsRepository: Final[SoundPlayerSettingsRepositoryInterface] = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/soundPlayerSettingsRepository.json',
     ),
 )
 
-soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = SoundPlayerRandomizerHelper(
+soundPlayerRandomizerHelper: Final[SoundPlayerRandomizerHelperInterface] = SoundPlayerRandomizerHelper(
     eventLoop = eventLoop,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber,
 )
 
-soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = SoundPlayerManagerProvider(
+soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = SoundPlayerManagerProvider(
     backgroundTaskHelper = backgroundTaskHelper,
     generalSettingsRepository = generalSettingsRepository,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
@@ -1700,54 +1700,54 @@ microsoftSamTtsManagerProvider: Final[MicrosoftSamTtsManagerProviderInterface] =
 ## Stream Elements TTS initialization section ##
 ################################################
 
-streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiService(
+streamElementsApiService: Final[StreamElementsApiServiceInterface] = StreamElementsApiService(
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
 streamElementsMessageCleaner: Final[StreamElementsMessageCleanerInterface] = StreamElementsMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository,
 )
 
-streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser(
-    streamElementsJsonParser = streamElementsJsonParser
+streamElementsMessageVoiceParser: Final[StreamElementsMessageVoiceParserInterface] = StreamElementsMessageVoiceParser(
+    streamElementsJsonParser = streamElementsJsonParser,
 )
 
-streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = StreamElementsSettingsRepository(
+streamElementsSettingsRepository: Final[StreamElementsSettingsRepositoryInterface] = StreamElementsSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/streamElementsSettingsRepository.json'
+        fileName = '../config/streamElementsSettingsRepository.json',
     ),
-    streamElementsJsonParser = streamElementsJsonParser
+    streamElementsJsonParser = streamElementsJsonParser,
 )
 
-streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = StreamElementsUserKeyRepository(
+streamElementsUserKeyRepository: Final[StreamElementsUserKeyRepositoryInterface] = StreamElementsUserKeyRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     userIdsRepository = userIdsRepository,
     seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/streamElementsUserKeyRepositorySeedFile.json'
-    )
+        fileName = '../config/streamElementsUserKeyRepositorySeedFile.json',
+    ),
 )
 
-streamElementsApiHelper: StreamElementsApiHelperInterface = StreamElementsApiHelper(
+streamElementsApiHelper: Final[StreamElementsApiHelperInterface] = StreamElementsApiHelper(
     streamElementsApiService = streamElementsApiService,
     streamElementsUserKeyRepository = streamElementsUserKeyRepository,
-    timber = timber
+    timber = timber,
 )
 
-streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
+streamElementsHelper: Final[StreamElementsHelperInterface] = StreamElementsHelper(
     eventLoop = eventLoop,
     glacialTtsFileRetriever = glacialTtsFileRetriever,
     streamElementsApiHelper = streamElementsApiHelper,
     streamElementsJsonParser = streamElementsJsonParser,
     streamElementsMessageVoiceParser = streamElementsMessageVoiceParser,
     streamElementsSettingsRepository = streamElementsSettingsRepository,
-    timber = timber
+    timber = timber,
 )
 
-streamElementsTtsManagerProvider: StreamElementsTtsManagerProviderInterface = StreamElementsTtsManagerProvider(
+streamElementsTtsManagerProvider: Final[StreamElementsTtsManagerProviderInterface] = StreamElementsTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     streamElementsHelper = streamElementsHelper,
@@ -1755,7 +1755,7 @@ streamElementsTtsManagerProvider: StreamElementsTtsManagerProviderInterface = St
     streamElementsSettingsRepository = streamElementsSettingsRepository,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
 )
 
 
@@ -1763,45 +1763,45 @@ streamElementsTtsManagerProvider: StreamElementsTtsManagerProviderInterface = St
 ## TTS Monster initialization section ##
 ########################################
 
-ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
+ttsMonsterSettingsRepository: Final[TtsMonsterSettingsRepositoryInterface] = TtsMonsterSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/ttsMonsterSettingsRepository.json'
+        fileName = '../config/ttsMonsterSettingsRepository.json',
     ),
-    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
+    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper,
 )
 
-ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface = TtsMonsterTokensRepository(
+ttsMonsterTokensRepository: Final[TtsMonsterTokensRepositoryInterface] = TtsMonsterTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     userIdsRepository = userIdsRepository,
     seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/ttsMonsterTokensRepositorySeedFile.json'
-    )
+        fileName = '../config/ttsMonsterTokensRepositorySeedFile.json',
+    ),
 )
 
-ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface = TtsMonsterPrivateApiService(
+ttsMonsterPrivateApiService: Final[TtsMonsterPrivateApiServiceInterface] = TtsMonsterPrivateApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
-    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
+    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper,
 )
 
-ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = TtsMonsterPrivateApiHelper(
+ttsMonsterPrivateApiHelper: Final[TtsMonsterPrivateApiHelperInterface] = TtsMonsterPrivateApiHelper(
     timber = timber,
     ttsMonsterPrivateApiService = ttsMonsterPrivateApiService,
     ttsMonsterTokensRepository = ttsMonsterTokensRepository
 )
 
-ttsMonsterMessageChunkParser: TtsMonsterMessageChunkParserInterface = TtsMonsterMessageChunkParser()
+ttsMonsterMessageChunkParser: Final[TtsMonsterMessageChunkParserInterface] = TtsMonsterMessageChunkParser()
 
-ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
+ttsMonsterHelper: Final[TtsMonsterHelperInterface] = TtsMonsterHelper(
     eventLoop = eventLoop,
     glacialTtsFileRetriever = glacialTtsFileRetriever,
     timber = timber,
     ttsMonsterMessageChunkParser = ttsMonsterMessageChunkParser,
     ttsMonsterPrivateApiHelper = ttsMonsterPrivateApiHelper,
-    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository
+    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
 )
 
 ttsMonsterMessageCleaner: Final[TtsMonsterMessageCleanerInterface] = TtsMonsterMessageCleaner(

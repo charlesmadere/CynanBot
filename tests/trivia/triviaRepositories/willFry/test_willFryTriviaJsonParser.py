@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.timber.timberInterface import TimberInterface
@@ -11,13 +13,13 @@ from src.trivia.triviaRepositories.willFry.willFryTriviaQuestionType import Will
 
 class TestWillFryTriviaJsonParser:
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    triviaDifficultyParser: TriviaDifficultyParserInterface = TriviaDifficultyParser()
+    triviaDifficultyParser: Final[TriviaDifficultyParserInterface] = TriviaDifficultyParser()
 
-    jsonParser: WillFryTriviaJsonParserInterface = WillFryTriviaJsonParser(
+    jsonParser: Final[WillFryTriviaJsonParserInterface] = WillFryTriviaJsonParser(
         timber = timber,
-        triviaDifficultyParser = triviaDifficultyParser
+        triviaDifficultyParser = triviaDifficultyParser,
     )
 
     @pytest.mark.asyncio
@@ -39,3 +41,8 @@ class TestWillFryTriviaJsonParser:
     async def test_parseQuestionType_withWhitespaceString(self):
         result = await self.jsonParser.parseQuestionType(' ')
         assert result is None
+
+    def test_sanity(self):
+        assert self.jsonParser is not None
+        assert isinstance(self.jsonParser, WillFryTriviaJsonParser)
+        assert isinstance(self.jsonParser, WillFryTriviaJsonParserInterface)

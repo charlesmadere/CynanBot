@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.timber.timberInterface import TimberInterface
@@ -9,10 +11,10 @@ from src.trivia.triviaExceptions import BadTriviaAnswerException
 
 class TestTriviaAnswerCompiler:
 
-    timber: TimberInterface = TimberStub()
+    timber: Final[TimberInterface] = TimberStub()
 
-    compiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
-        timber = timber
+    compiler: Final[TriviaAnswerCompilerInterface] = TriviaAnswerCompiler(
+        timber = timber,
     )
 
     @pytest.mark.asyncio
@@ -123,12 +125,12 @@ class TestTriviaAnswerCompiler:
     async def test_compileMultipleChoiceAnswer_withBracedDigit(self):
         result: int | None = None
 
-        with pytest.raises(Exception):
+        with pytest.raises(BadTriviaAnswerException):
             result = await self.compiler.compileMultipleChoiceAnswer('[1]')
 
         assert result is None
 
-        with pytest.raises(Exception):
+        with pytest.raises(BadTriviaAnswerException):
             result = await self.compiler.compileMultipleChoiceAnswer('[0]')
 
         assert result is None
@@ -137,12 +139,12 @@ class TestTriviaAnswerCompiler:
     async def test_compileMultipleChoiceAnswer_withBracedWord(self):
         result: int | None = None
 
-        with pytest.raises(Exception):
+        with pytest.raises(BadTriviaAnswerException):
             result = await self.compiler.compileMultipleChoiceAnswer('[hello]')
 
         assert result is None
 
-        with pytest.raises(Exception):
+        with pytest.raises(BadTriviaAnswerException):
             result = await self.compiler.compileMultipleChoiceAnswer('[world]')
 
         assert result is None
@@ -192,12 +194,12 @@ class TestTriviaAnswerCompiler:
     async def test_compileMultipleChoiceAnswer_withEmptyBraces(self):
         result: int | None = None
 
-        with pytest.raises(Exception):
+        with pytest.raises(BadTriviaAnswerException):
             result = await self.compiler.compileMultipleChoiceAnswer('[]')
 
         assert result is None
 
-        with pytest.raises(Exception):
+        with pytest.raises(BadTriviaAnswerException):
             result = await self.compiler.compileMultipleChoiceAnswer('[]')
 
         assert result is None

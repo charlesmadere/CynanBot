@@ -437,6 +437,7 @@ from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFrie
 from src.twitch.isLive.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from src.twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from src.twitch.misc.globalTwitchConstants import GlobalTwitchConstants
+from src.twitch.misc.globalTwitchConstantsInterface import GlobalTwitchConstantsInterface
 from src.twitch.moderator.twitchModeratorHelper import TwitchModeratorHelper
 from src.twitch.moderator.twitchModeratorHelperInterface import TwitchModeratorHelperInterface
 from src.twitch.officialAccounts.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
@@ -892,7 +893,7 @@ twitchModeratorHelper: Final[TwitchModeratorHelperInterface] = TwitchModeratorHe
     twitchTokensRepository = twitchTokensRepository,
 )
 
-globalTwitchConstants = GlobalTwitchConstants()
+globalTwitchConstants: Final[GlobalTwitchConstantsInterface] = GlobalTwitchConstants()
 
 twitchChatMessenger: Final[TwitchChatMessengerInterface] = TwitchChatMessenger(
     backgroundTaskHelper = backgroundTaskHelper,
@@ -922,11 +923,11 @@ timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] =
     ),
 )
 
-transparentXmlMapper: TransparentXmlMapperInterface = TransparentXmlMapper(
-    timeZoneRepository = timeZoneRepository
+transparentXmlMapper: Final[TransparentXmlMapperInterface] = TransparentXmlMapper(
+    timeZoneRepository = timeZoneRepository,
 )
 
-transparentApiService: TransparentApiServiceInterface = TransparentApiService(
+transparentApiService: Final[TransparentApiServiceInterface] = TransparentApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
     transparentXmlMapper = transparentXmlMapper
@@ -939,24 +940,24 @@ wordOfTheDayRepository: Final[WordOfTheDayRepositoryInterface] = WordOfTheDayRep
     transparentApiService = transparentApiService,
 )
 
-wordOfTheDayPresenter: WordOfTheDayPresenterInterface = WordOfTheDayPresenter()
+wordOfTheDayPresenter: Final[WordOfTheDayPresenterInterface] = WordOfTheDayPresenter()
 
-deepLJsonMapper: DeepLJsonMapperInterface = DeepLJsonMapper(
+deepLJsonMapper: Final[DeepLJsonMapperInterface] = DeepLJsonMapper(
     languagesRepository = languagesRepository,
-    timber = timber
+    timber = timber,
 )
 
-deepLApiService: DeepLApiServiceInterface = DeepLApiService(
+deepLApiService: Final[DeepLApiServiceInterface] = DeepLApiService(
     deepLAuthKeyProvider = authRepository,
     deepLJsonMapper = deepLJsonMapper,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
 deepLTranslationApi = DeepLTranslationApi(
     deepLApiService = deepLApiService,
     deepLAuthKeyProvider = authRepository,
-    timber = timber
+    timber = timber,
 )
 
 
@@ -964,23 +965,23 @@ deepLTranslationApi = DeepLTranslationApi(
 ## Google initialization section ##
 ###################################
 
-googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
+googleApiAccessTokenStorage: Final[GoogleApiAccessTokenStorageInterface] = GoogleApiAccessTokenStorage(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
 )
 
-googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
+googleJsonMapper: Final[GoogleJsonMapperInterface] = GoogleJsonMapper(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
 )
 
-googleJwtBuilder: GoogleJwtBuilderInterface = GoogleJwtBuilder(
+googleJwtBuilder: Final[GoogleJwtBuilderInterface] = GoogleJwtBuilder(
     googleCloudCredentialsProvider = authRepository,
     googleJsonMapper = googleJsonMapper,
     timeZoneRepository = timeZoneRepository,
 )
 
-googleApiService: GoogleApiServiceInterface = GoogleApiService(
+googleApiService: Final[GoogleApiServiceInterface] = GoogleApiService(
     googleApiAccessTokenStorage = googleApiAccessTokenStorage,
     googleCloudProjectCredentialsProvider = authRepository,
     googleJsonMapper = googleJsonMapper,
@@ -996,27 +997,27 @@ googleTranslationApi = GoogleTranslationApi(
     timber = timber,
 )
 
-translationHelper: TranslationHelperInterface = TranslationHelper(
+translationHelper: Final[TranslationHelperInterface] = TranslationHelper(
     deepLTranslationApi = deepLTranslationApi,
     googleTranslationApi = googleTranslationApi,
     languagesRepository = languagesRepository,
     timber = timber,
 )
 
-twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface = TwitchWebsocketAllowedUsersRepository(
+twitchWebsocketAllowedUsersRepository: Final[TwitchWebsocketAllowedUsersRepositoryInterface] = TwitchWebsocketAllowedUsersRepository(
     timber = timber,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
 )
 
-twitchWebsocketConditionBuilder: TwitchWebsocketConditionBuilderInterface = TwitchWebsocketConditionBuilder()
+twitchWebsocketConditionBuilder: Final[TwitchWebsocketConditionBuilderInterface] = TwitchWebsocketConditionBuilder()
 
-twitchWebsocketEndpointHelper: TwitchWebsocketEndpointHelperInterface = TwitchWebsocketEndpointHelper(
+twitchWebsocketEndpointHelper: Final[TwitchWebsocketEndpointHelperInterface] = TwitchWebsocketEndpointHelper(
     timber = timber,
 )
 
-twitchWebsocketInstabilityHelper: TwitchWebsocketInstabilityHelperInterface = TwitchWebsocketInstabilityHelper(
+twitchWebsocketInstabilityHelper: Final[TwitchWebsocketInstabilityHelperInterface] = TwitchWebsocketInstabilityHelper(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
 )
@@ -1034,7 +1035,7 @@ twitchWebsocketConnectionActionHelper: Final[TwitchWebsocketConnectionActionHelp
 twitchWebsocketSettingsRepository: Final[TwitchWebsocketSettingsRepositoryInterface] = TwitchWebsocketSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/twitchWebsocketSettingsRepository.json'
+        fileName = '../config/twitchWebsocketSettingsRepository.json',
     ),
     twitchJsonMapper = twitchJsonMapper,
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
@@ -1054,9 +1055,9 @@ twitchWebsocketSubscriptionHelper: Final[TwitchWebsocketSubscriptionHelperInterf
 ## Sound Player initialization section ##
 #########################################
 
-soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = StubSoundPlayerRandomizerHelper()
+soundPlayerRandomizerHelper: Final[SoundPlayerRandomizerHelperInterface] = StubSoundPlayerRandomizerHelper()
 
-soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = StubSoundPlayerManagerProvider()
+soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = StubSoundPlayerManagerProvider()
 
 
 ###################################################
@@ -1077,19 +1078,19 @@ streamAlertsManager: Final[StreamAlertsManagerInterface] = StubStreamAlertsManag
 ## Weather initialization section ##
 ####################################
 
-openWeatherJsonMapper: OpenWeatherJsonMapperInterface = OpenWeatherJsonMapper(
+openWeatherJsonMapper: Final[OpenWeatherJsonMapperInterface] = OpenWeatherJsonMapper(
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-openWeatherApiService: OpenWeatherApiServiceInterface = OpenWeatherApiService(
+openWeatherApiService: Final[OpenWeatherApiServiceInterface] = OpenWeatherApiService(
     networkClientProvider = networkClientProvider,
     openWeatherApiKeyProvider = authRepository,
     openWeatherJsonMapper = openWeatherJsonMapper,
-    timber = timber
+    timber = timber,
 )
 
-weatherReportPresenter: WeatherReportPresenterInterface = WeatherReportPresenter()
+weatherReportPresenter: Final[WeatherReportPresenterInterface] = WeatherReportPresenter()
 
 weatherRepository: Final[WeatherRepositoryInterface] = WeatherRepository(
     openWeatherApiService = openWeatherApiService,
@@ -1117,51 +1118,56 @@ trollmojiHelper: Final[TrollmojiHelperInterface] = TrollmojiHelper(
 ## Trivia initialization section ##
 ###################################
 
-shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = ShinyTriviaOccurencesRepository(
+shinyTriviaOccurencesRepository: Final[ShinyTriviaOccurencesRepositoryInterface] = ShinyTriviaOccurencesRepository(
     backingDatabase = backingDatabase,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = ToxicTriviaOccurencesRepository(
+toxicTriviaOccurencesRepository: Final[ToxicTriviaOccurencesRepositoryInterface] = ToxicTriviaOccurencesRepository(
     backingDatabase = backingDatabase,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 
-triviaSettings: TriviaSettingsInterface = TriviaSettings(
+triviaSettings: Final[TriviaSettingsInterface] = TriviaSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = 'triviaSettingsRepository.json'
+        fileName = 'triviaSettingsRepository.json',
     ),
-    triviaSourceParser = triviaSourceParser
+    triviaSourceParser = triviaSourceParser,
 )
 
-triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
-    timber = timber
-)
-
-triviaQuestionCompiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(
-    timber = timber
-)
-triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
-triviaSourceInstabilityHelper: TriviaSourceInstabilityHelper = TriviaSourceInstabilityHelper(
+triviaAnswerCompiler: Final[TriviaAnswerCompilerInterface] = TriviaAnswerCompiler(
     timber = timber,
-    timeZoneRepository = timeZoneRepository
 )
-additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = AdditionalTriviaAnswersRepository(
+
+triviaQuestionCompiler: Final[TriviaQuestionCompilerInterface] = TriviaQuestionCompiler(
+    timber = timber,
+)
+
+triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
+
+triviaSourceInstabilityHelper: Final[TriviaSourceInstabilityHelper] = TriviaSourceInstabilityHelper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+additionalTriviaAnswersRepository: Final[AdditionalTriviaAnswersRepositoryInterface] = AdditionalTriviaAnswersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     triviaSettings = triviaSettings,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
+    userIdsRepository = userIdsRepository,
 )
+
 bannedTriviaIdsRepository: Final[BannedTriviaIdsRepositoryInterface] = BannedTriviaIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     triviaSourceParser = triviaSourceParser,
 )
+
 shinyTriviaHelper = ShinyTriviaHelper(
     cutenessRepository = cutenessRepository,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
@@ -1169,19 +1175,22 @@ shinyTriviaHelper = ShinyTriviaHelper(
     timeZoneRepository = timeZoneRepository,
     triviaSettings = triviaSettings,
 )
+
 toxicTriviaHelper = ToxicTriviaHelper(
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     timber = timber,
     triviaSettings = triviaSettings,
 )
-triviaContentScanner: TriviaContentScannerInterface = TriviaContentScanner(
+
+triviaContentScanner: Final[TriviaContentScannerInterface] = TriviaContentScanner(
     bannedWordsRepository = bannedWordsRepository,
     contentScanner = contentScanner,
     timber = timber,
     triviaSettings = triviaSettings,
 )
-triviaEmoteRepository: TriviaEmoteRepositoryInterface = TriviaEmoteRepository(
-    backingDatabase = backingDatabase
+
+triviaEmoteRepository: Final[TriviaEmoteRepositoryInterface] = TriviaEmoteRepository(
+    backingDatabase = backingDatabase,
 )
 
 triviaEmoteGenerator: Final[TriviaEmoteGeneratorInterface] = TriviaEmoteGenerator(
@@ -1195,27 +1204,27 @@ triviaGameBuilder: Final[TriviaGameBuilderInterface] = TriviaGameBuilder(
     usersRepository = usersRepository,
 )
 
-bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface = BannedTriviaGameControllersRepository(
+bannedTriviaGameControllersRepository: Final[BannedTriviaGameControllersRepositoryInterface] = BannedTriviaGameControllersRepository(
     administratorProvider = administratorProvider,
     backingDatabase = backingDatabase,
     timber = timber,
 )
 
-triviaGameControllersRepository: TriviaGameControllersRepositoryInterface = TriviaGameControllersRepository(
+triviaGameControllersRepository: Final[TriviaGameControllersRepositoryInterface] = TriviaGameControllersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
 )
 
-triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface = TriviaGameGlobalControllersRepository(
+triviaGameGlobalControllersRepository: Final[TriviaGameGlobalControllersRepositoryInterface] = TriviaGameGlobalControllersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
 )
 
-triviaDifficultyParser: TriviaDifficultyParserInterface = TriviaDifficultyParser()
+triviaDifficultyParser: Final[TriviaDifficultyParserInterface] = TriviaDifficultyParser()
 
-triviaQuestionTypeParser: TriviaQuestionTypeParserInterface = TriviaQuestionTypeParser()
+triviaQuestionTypeParser: Final[TriviaQuestionTypeParserInterface] = TriviaQuestionTypeParser()
 
-triviaHistoryRepository: TriviaHistoryRepositoryInterface = TriviaHistoryRepository(
+triviaHistoryRepository: Final[TriviaHistoryRepositoryInterface] = TriviaHistoryRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
@@ -1224,11 +1233,11 @@ triviaHistoryRepository: TriviaHistoryRepositoryInterface = TriviaHistoryReposit
     triviaSourceParser = triviaSourceParser,
 )
 
-triviaScoreRepository: TriviaScoreRepositoryInterface = TriviaScoreRepository(
-    backingDatabase = backingDatabase
+triviaScoreRepository: Final[TriviaScoreRepositoryInterface] = TriviaScoreRepository(
+    backingDatabase = backingDatabase,
 )
 
-triviaQuestionPresenter: TriviaQuestionPresenterInterface = TriviaQuestionPresenter()
+triviaQuestionPresenter: Final[TriviaQuestionPresenterInterface] = TriviaQuestionPresenter()
 
 triviaUtils: Final[TriviaUtilsInterface] = TriviaUtils(
     administratorProvider = administratorProvider,
@@ -1241,16 +1250,16 @@ triviaUtils: Final[TriviaUtilsInterface] = TriviaUtils(
     userIdsRepository = userIdsRepository,
 )
 
-bongoJsonParser: BongoJsonParserInterface = BongoJsonParser(
+bongoJsonParser: Final[BongoJsonParserInterface] = BongoJsonParser(
     timber = timber,
     triviaDifficultyParser = triviaDifficultyParser,
-    triviaQuestionTypeParser = triviaQuestionTypeParser
+    triviaQuestionTypeParser = triviaQuestionTypeParser,
 )
 
-bongoApiService: BongoApiServiceInterface = BongoApiService(
+bongoApiService: Final[BongoApiServiceInterface] = BongoApiService(
     bongoJsonParser = bongoJsonParser,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
 bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
@@ -1272,24 +1281,24 @@ if authSnapshot.hasQuizApiKey():
         triviaSettings = triviaSettings,
     )
 
-openTriviaDatabaseJsonParser: OpenTriviaDatabaseJsonParserInterface = OpenTriviaDatabaseJsonParser(
+openTriviaDatabaseJsonParser: Final[OpenTriviaDatabaseJsonParserInterface] = OpenTriviaDatabaseJsonParser(
     timber = timber,
     triviaDifficultyParser = triviaDifficultyParser,
     triviaQuestionTypeParser = triviaQuestionTypeParser,
 )
 
-openTriviaDatabaseApiService: OpenTriviaDatabaseApiServiceInterface = OpenTriviaDatabaseApiService(
+openTriviaDatabaseApiService: Final[OpenTriviaDatabaseApiServiceInterface] = OpenTriviaDatabaseApiService(
     networkClientProvider = networkClientProvider,
     openTriviaDatabaseJsonParser = openTriviaDatabaseJsonParser,
     timber = timber,
 )
 
-openTriviaDatabaseSessionTokenRepository: OpenTriviaDatabaseSessionTokenRepositoryInterface = OpenTriviaDatabaseSessionTokenRepository(
+openTriviaDatabaseSessionTokenRepository: Final[OpenTriviaDatabaseSessionTokenRepositoryInterface] = OpenTriviaDatabaseSessionTokenRepository(
     backingDatabase = backingDatabase,
     timber = timber,
 )
 
-openTriviaDatabaseQuestionFetcher: OpenTriviaDatabaseQuestionFetcherInterface = OpenTriviaDatabaseQuestionFetcher(
+openTriviaDatabaseQuestionFetcher: Final[OpenTriviaDatabaseQuestionFetcherInterface] = OpenTriviaDatabaseQuestionFetcher(
     openTriviaDatabaseApiService = openTriviaDatabaseApiService,
     openTriviaDatabaseSessionTokenRepository = openTriviaDatabaseSessionTokenRepository,
     timber = timber,
@@ -1303,11 +1312,11 @@ openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRep
     triviaSettings = triviaSettings,
 )
 
-openTriviaQaQuestionTypeParser: OpenTriviaQaQuestionTypeParserInterface = OpenTriviaQaQuestionTypeParser(
+openTriviaQaQuestionTypeParser: Final[OpenTriviaQaQuestionTypeParserInterface] = OpenTriviaQaQuestionTypeParser(
     timber = timber,
 )
 
-openTriviaQaQuestionStorage: OpenTriviaQaQuestionStorageInterface = OpenTriviaQaQuestionStorage(
+openTriviaQaQuestionStorage: Final[OpenTriviaQaQuestionStorageInterface] = OpenTriviaQaQuestionStorage(
     questionTypeParser = openTriviaQaQuestionTypeParser,
     timber = timber,
 )
@@ -1318,7 +1327,7 @@ openTriviaQaTriviaQuestionRepository = OpenTriviaQaTriviaQuestionRepository(
     triviaSettings = triviaSettings,
 )
 
-triviaDatabaseQuestionStorage: TriviaDatabaseQuestionStorageInterface = TriviaDatabaseQuestionStorage(
+triviaDatabaseQuestionStorage: Final[TriviaDatabaseQuestionStorageInterface] = TriviaDatabaseQuestionStorage(
     timber = timber,
     triviaDifficultyParser = triviaDifficultyParser,
     triviaQuestionTypeParser = triviaQuestionTypeParser,
@@ -1330,12 +1339,12 @@ triviaDatabaseTriviaQuestionRepository = TriviaDatabaseTriviaQuestionRepository(
     triviaSettings = triviaSettings,
 )
 
-willFryTriviaJsonParser: WillFryTriviaJsonParserInterface = WillFryTriviaJsonParser(
+willFryTriviaJsonParser: Final[WillFryTriviaJsonParserInterface] = WillFryTriviaJsonParser(
     timber = timber,
     triviaDifficultyParser = triviaDifficultyParser,
 )
 
-willFryTriviaApiService: WillFryTriviaApiServiceInterface = WillFryTriviaApiService(
+willFryTriviaApiService: Final[WillFryTriviaApiServiceInterface] = WillFryTriviaApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
     willFryTriviaJsonParser = willFryTriviaJsonParser,

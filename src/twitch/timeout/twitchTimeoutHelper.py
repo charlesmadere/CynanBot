@@ -11,7 +11,7 @@ from ..api.models.twitchBanRequest import TwitchBanRequest
 from ..api.models.twitchBannedUser import TwitchBannedUser
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ..misc.globalTwitchConstants import GlobalTwitchConstants
+from ..misc.globalTwitchConstantsInterface import GlobalTwitchConstantsInterface
 from ..moderator.twitchModeratorHelperInterface import TwitchModeratorHelperInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -24,7 +24,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
     def __init__(
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
-        globalTwitchConstants: GlobalTwitchConstants,
+        globalTwitchConstants: GlobalTwitchConstantsInterface,
         timber: TimberInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
@@ -36,7 +36,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
-        elif not isinstance(globalTwitchConstants, GlobalTwitchConstants):
+        elif not isinstance(globalTwitchConstants, GlobalTwitchConstantsInterface):
             raise TypeError(f'globalTwitchConstants argument is malformed: \"{globalTwitchConstants}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -58,7 +58,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             raise ValueError(f'maxModRetries argument is out of bounds: {maxModRetries}')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
-        self.__globalTwitchConstants: Final[GlobalTwitchConstants] = globalTwitchConstants
+        self.__globalTwitchConstants: Final[GlobalTwitchConstantsInterface] = globalTwitchConstants
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
@@ -128,7 +128,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
     ) -> TwitchTimeoutResult:
         if not utils.isValidInt(durationSeconds):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
-        elif durationSeconds < 1 or durationSeconds > self.__globalTwitchConstants.maxTimeoutSeconds:
+        elif durationSeconds < 1 or durationSeconds > utils.getIntMaxSafeSize():
             raise ValueError(f'durationSeconds argument is out of bounds: \"{durationSeconds}\"')
         elif reason is not None and not isinstance(reason, str):
             raise TypeError(f'reason argument is malformed: \"{reason}\"')
@@ -188,6 +188,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the given user is a mod that failed to be unmodded ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.CANT_UNMOD
 
+        durationSeconds = int(min(durationSeconds, self.__globalTwitchConstants.getMaxTimeoutSeconds()))
         self.__timber.log('TwitchTimeoutHelper', f'Timing out... ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
 
         if not await self.__timeout(

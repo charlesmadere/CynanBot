@@ -428,6 +428,7 @@ from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFrie
 from src.twitch.isLive.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from src.twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
 from src.twitch.misc.globalTwitchConstants import GlobalTwitchConstants
+from src.twitch.misc.globalTwitchConstantsInterface import GlobalTwitchConstantsInterface
 from src.twitch.moderator.twitchModeratorHelper import TwitchModeratorHelper
 from src.twitch.moderator.twitchModeratorHelperInterface import TwitchModeratorHelperInterface
 from src.twitch.officialAccounts.officialTwitchAccountUserIdProvider import OfficialTwitchAccountUserIdProvider
@@ -877,7 +878,7 @@ twitchModeratorHelper: Final[TwitchModeratorHelperInterface] = TwitchModeratorHe
     twitchTokensRepository = twitchTokensRepository,
 )
 
-globalTwitchConstants = GlobalTwitchConstants()
+globalTwitchConstants: Final[GlobalTwitchConstantsInterface] = GlobalTwitchConstants()
 
 officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderInterface] = OfficialTwitchAccountUserIdProvider()
 
@@ -907,20 +908,20 @@ timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] =
     ),
 )
 
-twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface = TwitchWebsocketAllowedUsersRepository(
+twitchWebsocketAllowedUsersRepository: Final[TwitchWebsocketAllowedUsersRepositoryInterface] = TwitchWebsocketAllowedUsersRepository(
     timber = timber,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
 )
 
-twitchWebsocketConditionBuilder: TwitchWebsocketConditionBuilderInterface = TwitchWebsocketConditionBuilder()
+twitchWebsocketConditionBuilder: Final[TwitchWebsocketConditionBuilderInterface] = TwitchWebsocketConditionBuilder()
 
-twitchWebsocketEndpointHelper: TwitchWebsocketEndpointHelperInterface = TwitchWebsocketEndpointHelper(
+twitchWebsocketEndpointHelper: Final[TwitchWebsocketEndpointHelperInterface] = TwitchWebsocketEndpointHelper(
     timber = timber,
 )
 
-twitchWebsocketInstabilityHelper: TwitchWebsocketInstabilityHelperInterface = TwitchWebsocketInstabilityHelper(
+twitchWebsocketInstabilityHelper: Final[TwitchWebsocketInstabilityHelperInterface] = TwitchWebsocketInstabilityHelper(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
 )
@@ -938,7 +939,7 @@ twitchWebsocketConnectionActionHelper: Final[TwitchWebsocketConnectionActionHelp
 twitchWebsocketSettingsRepository: Final[TwitchWebsocketSettingsRepositoryInterface] = TwitchWebsocketSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/twitchWebsocketSettingsRepository.json'
+        fileName = '../config/twitchWebsocketSettingsRepository.json',
     ),
     twitchJsonMapper = twitchJsonMapper,
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
@@ -958,20 +959,20 @@ twitchWebsocketSubscriptionHelper: Final[TwitchWebsocketSubscriptionHelperInterf
 ## Sound Player initialization section ##
 #########################################
 
-soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
+soundPlayerSettingsRepository: Final[SoundPlayerSettingsRepositoryInterface] = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/soundPlayerSettingsRepository.json'
-    )
+        fileName = '../config/soundPlayerSettingsRepository.json',
+    ),
 )
 
-soundPlayerRandomizerHelper: SoundPlayerRandomizerHelperInterface = SoundPlayerRandomizerHelper(
+soundPlayerRandomizerHelper: Final[SoundPlayerRandomizerHelperInterface] = SoundPlayerRandomizerHelper(
     eventLoop = eventLoop,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
 
-soundPlayerManagerProvider: SoundPlayerManagerProviderInterface = SoundPlayerManagerProvider(
+soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = SoundPlayerManagerProvider(
     backgroundTaskHelper = backgroundTaskHelper,
     generalSettingsRepository = generalSettingsRepository,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,

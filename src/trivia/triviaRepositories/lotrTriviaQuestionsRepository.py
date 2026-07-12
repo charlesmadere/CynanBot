@@ -68,7 +68,7 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if await self._triviaSettings.useNewAnswerCheckingMethod():
             allWords = await self.__triviaQuestionCompiler.findAllWordsInQuestion(
                 category = category,
-                question = question
+                question = question,
             )
 
         originalCorrectAnswers: list[str] = list()
@@ -81,7 +81,7 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
             currentAnswers = correctAnswers,
             triviaId = lotrTriviaQuestion.triviaId,
             triviaQuestionType = TriviaQuestionType.QUESTION_ANSWER,
-            triviaSource = self.triviaSource
+            triviaSource = self.triviaSource,
         ):
             self.__timber.log('LotrTriviaQuestionRepository', f'Added additional answers to question ({lotrTriviaQuestion.triviaId=})')
 
@@ -94,12 +94,12 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
             currentAnswers = compiledCorrectAnswers,
             triviaId = lotrTriviaQuestion.triviaId,
             triviaQuestionType = TriviaQuestionType.QUESTION_ANSWER,
-            triviaSource = self.triviaSource
+            triviaSource = self.triviaSource,
         )
 
         compiledCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(
             answers = correctAnswers,
-            allWords = allWords
+            allWords = allWords,
         )
 
         expandedCompiledCorrectAnswers: set[str] = set()
@@ -117,7 +117,7 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaId = lotrTriviaQuestion.triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
             originalTriviaSource = None,
-            triviaSource = self.triviaSource
+            triviaSource = self.triviaSource,
         )
 
     async def hasQuestionSetAvailable(self) -> bool:
