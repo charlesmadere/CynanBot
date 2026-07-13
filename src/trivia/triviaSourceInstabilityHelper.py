@@ -1,5 +1,6 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
+from typing import Final
 
 from .questions.triviaSource import TriviaSource
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -12,7 +13,7 @@ class TriviaSourceInstabilityHelper:
         self,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        fallOffTimeDelta: timedelta = timedelta(hours = 1)
+        fallOffTimeDelta: timedelta = timedelta(hours = 1),
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -21,12 +22,12 @@ class TriviaSourceInstabilityHelper:
         elif not isinstance(fallOffTimeDelta, timedelta):
             raise TypeError(f'fallOffTimeDelta argument is malformed: \"{fallOffTimeDelta}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__fallOffTimeDelta: timedelta = fallOffTimeDelta
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__fallOffTimeDelta: Final[timedelta] = fallOffTimeDelta
 
-        self.__times: dict[TriviaSource, datetime | None] = dict()
-        self.__values: dict[TriviaSource, int] = defaultdict(lambda: 0)
+        self.__times: Final[dict[TriviaSource, datetime | None]] = dict()
+        self.__values: Final[dict[TriviaSource, int]] = defaultdict(lambda: 0)
 
     def __getitem__(self, key: TriviaSource) -> int:
         if not isinstance(key, TriviaSource):

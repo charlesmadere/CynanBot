@@ -1864,19 +1864,19 @@ streamAlertsManager: Final[StreamAlertsManagerInterface] = StreamAlertsManager(
 ## Weather initialization section ##
 ####################################
 
-openWeatherJsonMapper: OpenWeatherJsonMapperInterface = OpenWeatherJsonMapper(
+openWeatherJsonMapper: Final[OpenWeatherJsonMapperInterface] = OpenWeatherJsonMapper(
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-openWeatherApiService: OpenWeatherApiServiceInterface = OpenWeatherApiService(
+openWeatherApiService: Final[OpenWeatherApiServiceInterface] = OpenWeatherApiService(
     networkClientProvider = networkClientProvider,
     openWeatherApiKeyProvider = authRepository,
     openWeatherJsonMapper = openWeatherJsonMapper,
-    timber = timber
+    timber = timber,
 )
 
-weatherReportPresenter: WeatherReportPresenterInterface = WeatherReportPresenter()
+weatherReportPresenter: Final[WeatherReportPresenterInterface] = WeatherReportPresenter()
 
 weatherRepository: Final[WeatherRepositoryInterface] = WeatherRepository(
     openWeatherApiService = openWeatherApiService,
@@ -1904,19 +1904,19 @@ trollmojiHelper: Final[TrollmojiHelperInterface] = TrollmojiHelper(
 ## Trivia initialization section ##
 ###################################
 
-shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = ShinyTriviaOccurencesRepository(
+shinyTriviaOccurencesRepository: Final[ShinyTriviaOccurencesRepositoryInterface] = ShinyTriviaOccurencesRepository(
     backingDatabase = backingDatabase,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
-toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = ToxicTriviaOccurencesRepository(
+toxicTriviaOccurencesRepository: Final[ToxicTriviaOccurencesRepositoryInterface] = ToxicTriviaOccurencesRepository(
     backingDatabase = backingDatabase,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 
-triviaSettings: TriviaSettingsInterface = TriviaSettings(
+triviaSettings: Final[TriviaSettingsInterface] = TriviaSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = 'triviaSettingsRepository.json',
@@ -1924,19 +1924,22 @@ triviaSettings: TriviaSettingsInterface = TriviaSettings(
     triviaSourceParser = triviaSourceParser,
 )
 
-triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
-    timber = timber
+triviaAnswerCompiler: Final[TriviaAnswerCompilerInterface] = TriviaAnswerCompiler(
+    timber = timber,
 )
 
-triviaQuestionCompiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(
-    timber = timber
-)
-triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
-triviaSourceInstabilityHelper: TriviaSourceInstabilityHelper = TriviaSourceInstabilityHelper(
+triviaQuestionCompiler: Final[TriviaQuestionCompilerInterface] = TriviaQuestionCompiler(
     timber = timber,
-    timeZoneRepository = timeZoneRepository
 )
-additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = AdditionalTriviaAnswersRepository(
+
+triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
+
+triviaSourceInstabilityHelper: Final[TriviaSourceInstabilityHelper] = TriviaSourceInstabilityHelper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+additionalTriviaAnswersRepository: Final[AdditionalTriviaAnswersRepositoryInterface] = AdditionalTriviaAnswersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     triviaSettings = triviaSettings,
@@ -1944,32 +1947,36 @@ additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = 
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
 )
+
 bannedTriviaIdsRepository: Final[BannedTriviaIdsRepositoryInterface] = BannedTriviaIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     triviaSourceParser = triviaSourceParser,
 )
-shinyTriviaHelper = ShinyTriviaHelper(
+
+shinyTriviaHelper: Final[ShinyTriviaHelper] = ShinyTriviaHelper(
     cutenessRepository = cutenessRepository,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     triviaSettings = triviaSettings,
 )
-toxicTriviaHelper = ToxicTriviaHelper(
+
+toxicTriviaHelper: Final[ToxicTriviaHelper] = ToxicTriviaHelper(
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     timber = timber,
     triviaSettings = triviaSettings,
 )
-triviaContentScanner: TriviaContentScannerInterface = TriviaContentScanner(
+
+triviaContentScanner: Final[TriviaContentScannerInterface] = TriviaContentScanner(
     bannedWordsRepository = bannedWordsRepository,
     contentScanner = contentScanner,
     timber = timber,
     triviaSettings = triviaSettings,
 )
 
-triviaEmoteRepository: TriviaEmoteRepositoryInterface = TriviaEmoteRepository(
-    backingDatabase = backingDatabase
+triviaEmoteRepository: Final[TriviaEmoteRepositoryInterface] = TriviaEmoteRepository(
+    backingDatabase = backingDatabase,
 )
 
 triviaEmoteGenerator: TriviaEmoteGeneratorInterface = TriviaEmoteGenerator(

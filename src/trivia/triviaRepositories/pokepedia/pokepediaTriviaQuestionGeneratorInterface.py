@@ -9,6 +9,6 @@ class PokepediaTriviaQuestionGeneratorInterface(ABC):
     @abstractmethod
     async def fetchTriviaQuestion(
         self,
-        maxGeneration: PokepediaGeneration
+        maxGeneration: PokepediaGeneration,
     ) -> PokepediaTriviaQuestion:
         pass

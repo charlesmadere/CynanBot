@@ -1,4 +1,5 @@
 import random
+from typing import Final
 
 from frozenlist import FrozenList
 
@@ -25,15 +26,15 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
     def __init__(
         self,
         pokepediaRepository: PokepediaRepositoryInterface,
-        triviaSettings: TriviaSettingsInterface
+        triviaSettings: TriviaSettingsInterface,
     ):
         if not isinstance(pokepediaRepository, PokepediaRepositoryInterface):
             raise TypeError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif not isinstance(triviaSettings, TriviaSettingsInterface):
             raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
 
-        self.__pokepediaRepository: PokepediaRepositoryInterface = pokepediaRepository
-        self.__triviaSettings: TriviaSettingsInterface = triviaSettings
+        self.__pokepediaRepository: Final[PokepediaRepositoryInterface] = pokepediaRepository
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
 
     async def __createMoveIsAvailableAsMachineQuestion(
         self,
@@ -43,7 +44,7 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
     ) -> PokepediaTriviaQuestion:
         randomGeneration = await self.__selectRandomGeneration(
             initialGeneration = move.getInitialGeneration(),
-            maxGeneration = maxGeneration
+            maxGeneration = maxGeneration,
         )
 
         machinesStrs: list[str] = list()
@@ -65,7 +66,7 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
     ) -> PokepediaTriviaQuestion:
         randomGeneration = await self.__selectRandomGeneration(
             initialGeneration = move.getInitialGeneration(),
-            maxGeneration = maxGeneration
+            maxGeneration = maxGeneration,
         )
 
         machine = random.choice(generationMachines[randomGeneration])
@@ -74,7 +75,7 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
 
         falseMachineNumbers = await self.__selectRandomFalseMachineNumbers(
             actualMachineNumber = correctMachineNumber,
-            actualMachineType = machine.machineType
+            actualMachineType = machine.machineType,
         )
 
         falseMachineNumbersStrs: list[str] = list()
@@ -95,7 +96,7 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
 
     async def __createMoveIsWhichDamageClassQuestion(
         self,
-        move: PokepediaMove
+        move: PokepediaMove,
     ) -> PokepediaTriviaQuestion:
         damageClassStrs: list[str] = list()
 
@@ -110,19 +111,19 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
             incorrectAnswers = frozenDamageClassStrs,
             pokepediaTriviaType = PokepediaTriviaQuestionType.MOVE,
             correctAnswer = move.getDamageClass().toStr(),
-            question = f'In Pokémon, the move {move.getName()} has which damage class?'
+            question = f'In Pokémon, the move {move.getName()} has which damage class?',
         )
 
     async def __createMoveQuestion(self, maxGeneration: PokepediaGeneration) -> PokepediaTriviaQuestion:
         move = await self.__pokepediaRepository.fetchRandomMove(
-            maxGeneration = maxGeneration
+            maxGeneration = maxGeneration,
         )
 
         generationMachines = move.getGenerationMachines()
 
         if generationMachines is None:
             return await self.__createMoveIsWhichDamageClassQuestion(
-                move = move
+                move = move,
             )
 
         moveQuestionType = random.choice(list(PokepediaMoveTriviaQuestionType))
@@ -132,41 +133,41 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
                 return await self.__createMoveIsAvailableAsMachineQuestion(
                     maxGeneration = maxGeneration,
                     move = move,
-                    generationMachines = generationMachines
+                    generationMachines = generationMachines,
                 )
 
             case PokepediaMoveTriviaQuestionType.IS_AVAILABLE_AS_WHICH_MACHINE:
                 return await self.__createMoveIsAvailableAsWhichMachineQuestion(
                     maxGeneration = maxGeneration,
                     move = move,
-                    generationMachines = generationMachines
+                    generationMachines = generationMachines,
                 )
 
             case PokepediaMoveTriviaQuestionType.IS_WHICH_DAMAGE_CLASS:
                 return await self.__createMoveIsWhichDamageClassQuestion(
-                    move = move
+                    move = move,
                 )
 
         raise UnsupportedPokepediaMoveTriviaQuestionType(f'Encountered unsupported PokepediaMoveTriviaQuestionType: ({moveQuestionType=})')
 
     async def __createPokemonQuestion(self, maxGeneration: PokepediaGeneration) -> PokepediaTriviaQuestion:
         pokemon = await self.__pokepediaRepository.fetchRandomPokemon(
-            maxGeneration = maxGeneration
+            maxGeneration = maxGeneration,
         )
 
         randomGeneration = await self.__selectRandomGeneration(
             maxGeneration = maxGeneration,
-            initialGeneration = pokemon.getInitialGeneration()
+            initialGeneration = pokemon.getInitialGeneration(),
         )
 
         correctTypes = pokemon.getCorrespondingGenerationElementTypes(
-            generation = randomGeneration
+            generation = randomGeneration,
         )
 
         correctType = random.choice(correctTypes)
 
         falseTypes = await self.__selectRandomFalseElementTypes(
-            actualTypes = correctTypes
+            actualTypes = correctTypes,
         )
 
         falseTypesStrs: list[str] = list()
@@ -187,7 +188,7 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
 
     async def fetchTriviaQuestion(
         self,
-        maxGeneration: PokepediaGeneration
+        maxGeneration: PokepediaGeneration,
     ) -> PokepediaTriviaQuestion:
         if not isinstance(maxGeneration, PokepediaGeneration):
             raise TypeError(f'maxGeneration argument is malformed: \"{maxGeneration}\"')
@@ -197,19 +198,19 @@ class PokepediaTriviaQuestionGenerator(PokepediaTriviaQuestionGeneratorInterface
         match pokepediaTriviaQuestionType:
             case PokepediaTriviaQuestionType.MOVE:
                 return await self.__createMoveQuestion(
-                    maxGeneration = maxGeneration
+                    maxGeneration = maxGeneration,
                 )
 
             case PokepediaTriviaQuestionType.POKEMON:
                 return await self.__createPokemonQuestion(
-                    maxGeneration = maxGeneration
+                    maxGeneration = maxGeneration,
                 )
 
         raise UnsupportedPokepediaTriviaQuestionType(f'Encountered unsupported PokepediaTriviaQuestionType: ({pokepediaTriviaQuestionType=})')
 
     async def __selectRandomFalseElementTypes(
         self,
-        actualTypes: list[PokepediaElementType]
+        actualTypes: list[PokepediaElementType],
     ) -> frozenset[PokepediaElementType]:
         if not isinstance(actualTypes, list) or len(actualTypes) == 0:
             raise TypeError(f'actualTypes argument is malformed: \"{actualTypes}\"')
