@@ -1,4 +1,5 @@
 import traceback
+from typing import Final
 
 import aiofiles
 import aiofiles.os
@@ -26,8 +27,8 @@ class MillionaireTriviaQuestionStorage(MillionaireTriviaQuestionStorageInterface
         elif not utils.isValidStr(databaseFile):
             raise TypeError(f'databaseFile argument is malformed: \"{databaseFile}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__databaseFile: str = databaseFile
+        self.__timber: Final[TimberInterface] = timber
+        self.__databaseFile: Final[str] = databaseFile
 
         self.__hasQuestionSetAvailable: bool | None = None
 
@@ -37,7 +38,7 @@ class MillionaireTriviaQuestionStorage(MillionaireTriviaQuestionStorageInterface
         incorrectAnswer1: str | None,
         incorrectAnswer2: str | None,
         incorrectAnswer3: str | None,
-        questionId: str
+        questionId: str,
     ) -> FrozenList[str]:
         if not utils.isValidStr(questionId):
             raise TypeError(f'questionId argument is malformed: \"{questionId}\"')
@@ -52,6 +53,9 @@ class MillionaireTriviaQuestionStorage(MillionaireTriviaQuestionStorageInterface
 
         if utils.isValidStr(incorrectAnswer2):
             incorrectAnswers.append(incorrectAnswer2)
+
+        if utils.isValidStr(incorrectAnswer3):
+            incorrectAnswers.append(incorrectAnswer3)
 
         if len(incorrectAnswers) == 0:
             raise NoTriviaIncorrectAnswersException(f'Unable to build up list of any incorrect answers ({incorrectAnswer0=}) ({incorrectAnswer1=}) ({incorrectAnswer2=}) ({incorrectAnswers=}) ({questionId=})')
@@ -98,14 +102,14 @@ class MillionaireTriviaQuestionStorage(MillionaireTriviaQuestionStorageInterface
             incorrectAnswer1 = incorrectAnswer1,
             incorrectAnswer2 = incorrectAnswer2,
             incorrectAnswer3 = incorrectAnswer3,
-            questionId = questionId
+            questionId = questionId,
         )
 
         return MillionaireTriviaQuestion(
             incorrectAnswers = incorrectAnswers,
             correctAnswer = correctAnswer,
             question = question,
-            questionId = questionId
+            questionId = questionId,
         )
 
     async def hasQuestionSetAvailable(self) -> bool:

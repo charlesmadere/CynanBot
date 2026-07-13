@@ -1,3 +1,5 @@
+from typing import Final
+
 from .triviaContentCode import TriviaContentCode
 from .triviaContentScannerInterface import TriviaContentScannerInterface
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
@@ -29,10 +31,10 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         elif not isinstance(triviaSettings, TriviaSettingsInterface):
             raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
 
-        self.__bannedWordsRepository: BannedWordsRepositoryInterface = bannedWordsRepository
-        self.__contentScanner: ContentScannerInterface = contentScanner
-        self.__timber: TimberInterface = timber
-        self.__triviaSettings: TriviaSettingsInterface = triviaSettings
+        self.__bannedWordsRepository: Final[BannedWordsRepositoryInterface] = bannedWordsRepository
+        self.__contentScanner: Final[ContentScannerInterface] = contentScanner
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
 
     async def __getAllPhrasesFromQuestion(self, question: AbsTriviaQuestion) -> set[str]:
         if not isinstance(question, AbsTriviaQuestion):

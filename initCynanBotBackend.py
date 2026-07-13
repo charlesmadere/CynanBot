@@ -1168,7 +1168,7 @@ bannedTriviaIdsRepository: Final[BannedTriviaIdsRepositoryInterface] = BannedTri
     triviaSourceParser = triviaSourceParser,
 )
 
-shinyTriviaHelper = ShinyTriviaHelper(
+shinyTriviaHelper: Final[ShinyTriviaHelper] = ShinyTriviaHelper(
     cutenessRepository = cutenessRepository,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     timber = timber,
@@ -1176,7 +1176,7 @@ shinyTriviaHelper = ShinyTriviaHelper(
     triviaSettings = triviaSettings,
 )
 
-toxicTriviaHelper = ToxicTriviaHelper(
+toxicTriviaHelper: Final[ToxicTriviaHelper] = ToxicTriviaHelper(
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     timber = timber,
     triviaSettings = triviaSettings,
@@ -1357,7 +1357,7 @@ willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
     willFryTriviaApiService = willFryTriviaApiService,
 )
 
-glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = GlacialTriviaQuestionRepository(
+glacialTriviaQuestionRepository: Final[GlacialTriviaQuestionRepositoryInterface] = GlacialTriviaQuestionRepository(
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
     timber = timber,
     triviaAnswerCompiler = triviaAnswerCompiler,
@@ -1368,8 +1368,8 @@ glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = Glac
     userIdsRepository = userIdsRepository,
 )
 
-lotrDatabaseQuestionStorage: LotrDatabaseQuestionStorageInterface = LotrDatabaseQuestionStorage(
-    timber = timber
+lotrDatabaseQuestionStorage: Final[LotrDatabaseQuestionStorageInterface] = LotrDatabaseQuestionStorage(
+    timber = timber,
 )
 
 lotrTriviaQuestionRepository = LotrTriviaQuestionRepository(
@@ -1381,7 +1381,7 @@ lotrTriviaQuestionRepository = LotrTriviaQuestionRepository(
     triviaSettings = triviaSettings,
 )
 
-millionaireTriviaQuestionStorage: MillionaireTriviaQuestionStorageInterface = MillionaireTriviaQuestionStorage(
+millionaireTriviaQuestionStorage: Final[MillionaireTriviaQuestionStorageInterface] = MillionaireTriviaQuestionStorage(
     timber = timber,
 )
 
@@ -1391,26 +1391,26 @@ millionaireTriviaQuestionRepository = MillionaireTriviaQuestionRepository(
     triviaSettings = triviaSettings,
 )
 
-pokepediaTriviaQuestionGenerator: PokepediaTriviaQuestionGeneratorInterface = PokepediaTriviaQuestionGenerator(
+pokepediaTriviaQuestionGenerator: Final[PokepediaTriviaQuestionGeneratorInterface] = PokepediaTriviaQuestionGenerator(
     pokepediaRepository = pokepediaRepository,
     triviaSettings = triviaSettings,
 )
 
-triviaBanHelper: TriviaBanHelperInterface = TriviaBanHelper(
+triviaBanHelper: Final[TriviaBanHelperInterface] = TriviaBanHelper(
     bannedTriviaIdsRepository = bannedTriviaIdsRepository,
     funtoonHelper = funtoonHelper,
     glacialTriviaQuestionRepository = glacialTriviaQuestionRepository,
     triviaSettings = triviaSettings,
 )
 
-triviaVerifier: TriviaVerifierInterface = TriviaVerifier(
+triviaVerifier: Final[TriviaVerifierInterface] = TriviaVerifier(
     timber = timber,
     triviaBanHelper = triviaBanHelper,
     triviaContentScanner = triviaContentScanner,
     triviaHistoryRepository = triviaHistoryRepository,
 )
 
-triviaScraper: TriviaScraperInterface = TriviaScraper(
+triviaScraper: Final[TriviaScraperInterface] = TriviaScraper(
     glacialTriviaQuestionRepository = glacialTriviaQuestionRepository,
     timber = timber,
     triviaSettings = triviaSettings,

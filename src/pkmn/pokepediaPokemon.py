@@ -1,4 +1,5 @@
 import locale
+from typing import Final
 
 from .pokepediaDamageMultiplier import PokepediaDamageMultiplier
 from .pokepediaElementType import PokepediaElementType
@@ -16,7 +17,7 @@ class PokepediaPokemon:
         height: int,
         pokedexId: int,
         weight: int,
-        name: str
+        name: str,
     ):
         if not isinstance(generationElementTypes, dict):
             raise TypeError(f'generationElementTypes argument is malformed: \"{generationElementTypes}\"')
@@ -31,18 +32,18 @@ class PokepediaPokemon:
         elif not utils.isValidStr(name):
             raise TypeError(f'name argument is malformed: \"{name}\"')
 
-        self.__generationElementTypes: dict[PokepediaGeneration, list[PokepediaElementType]] = generationElementTypes
-        self.__initialGeneration: PokepediaGeneration = initialGeneration
-        self.__height: int = height
-        self.__pokedexId: int = pokedexId
-        self.__weight: int = weight
-        self.__name: str = name
+        self.__generationElementTypes: Final[dict[PokepediaGeneration, list[PokepediaElementType]]] = generationElementTypes
+        self.__initialGeneration: Final[PokepediaGeneration] = initialGeneration
+        self.__height: Final[int] = height
+        self.__pokedexId: Final[int] = pokedexId
+        self.__weight: Final[int] = weight
+        self.__name: Final[str] = name
 
     def __buildGenerationElementTypesWeaknessesAndResistancesStr(
         self,
         weaknessesAndResistances: dict[PokepediaDamageMultiplier, list[PokepediaElementType]],
         damageMultiplier: PokepediaDamageMultiplier,
-        delimiter: str
+        delimiter: str,
     ) -> str | None:
         if not isinstance(weaknessesAndResistances, dict):
             raise TypeError(f'weaknessesAndResistances argument is malformed: \"{weaknessesAndResistances}\"')
@@ -63,7 +64,7 @@ class PokepediaPokemon:
 
     def getCorrespondingGenerationElementTypes(
         self,
-        generation: PokepediaGeneration
+        generation: PokepediaGeneration,
     ) -> list[PokepediaElementType]:
         if not isinstance(generation, PokepediaGeneration):
             raise TypeError(f'generation argument is malformed: \"{generation}\"')
@@ -134,7 +135,7 @@ class PokepediaPokemon:
                     damageMultiplierMessage = self.__buildGenerationElementTypesWeaknessesAndResistancesStr(
                         weaknessesAndResistances = weaknessesAndResistances,
                         damageMultiplier = damageMultiplier,
-                        delimiter = delimiter
+                        delimiter = delimiter,
                     )
 
                     if utils.isValidStr(damageMultiplierMessage):
