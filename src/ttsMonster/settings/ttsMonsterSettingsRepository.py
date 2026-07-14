@@ -114,7 +114,7 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
         defaultVoiceVolume = await self.getMediaPlayerVolume()
 
         for voice in TtsMonsterVoice:
-            if voice not in voiceToVolume:
+            if voice not in voiceToVolume or voiceToVolume.get(voice) is None:
                 voiceToVolume[voice] = defaultVoiceVolume
 
         return frozendict(voiceToVolume)
