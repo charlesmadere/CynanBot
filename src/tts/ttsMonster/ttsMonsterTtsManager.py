@@ -61,15 +61,6 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
 
         self.__isLoadingOrPlaying: bool = False
 
-    async def __containsLoudVoices(self, fileReference: TtsMonsterFileReference) -> bool:
-        loudVoices = await self.__ttsMonsterSettingsRepository.getLoudVoices()
-
-        for loudVoice in loudVoices:
-            if loudVoice in fileReference.allVoices:
-                return True
-
-        return False
-
     async def __determineVoice(self, event: TtsEvent) -> TtsMonsterVoice | None:
         if event.provider is TtsProvider.SHOTGUN_TTS:
             return random.choice(list(TtsMonsterVoice))
@@ -92,16 +83,20 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             return None
 
     async def __determineVolume(self, fileReference: TtsMonsterFileReference) -> int | None:
-        useVoiceDependentMediaPlayerVolume = await self.__ttsMonsterSettingsRepository.useVoiceDependentMediaPlayerVolume()
-        volume: int | None = None
+        minimumVolume: int | None = None
+        voiceVolumes = await self.__ttsMonsterSettingsRepository.getVoiceVolumes()
 
-        if useVoiceDependentMediaPlayerVolume and await self.__containsLoudVoices(fileReference):
-            volume = await self.__ttsMonsterSettingsRepository.getLoudVoiceMediaPlayerVolume()
+        for voice in fileReference.allVoices:
+            voiceVolume = voiceVolumes.get(voice, None)
 
-        if volume is None:
-            volume = await self.__ttsMonsterSettingsRepository.getMediaPlayerVolume()
+            if voiceVolume is None:
+                continue
+            elif minimumVolume is None:
+                minimumVolume = voiceVolume
+            else:
+                minimumVolume = int(min(minimumVolume, voiceVolume))
 
-        return volume
+        return minimumVolume
 
     async def __executeTts(self, fileReference: TtsMonsterFileReference):
         volume = await self.__determineVolume(fileReference)

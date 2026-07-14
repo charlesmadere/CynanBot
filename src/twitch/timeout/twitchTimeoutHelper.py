@@ -33,6 +33,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         maxModRetries: int = 3,
+        retrySleepDelaySeconds: float = 0.5,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -56,6 +57,10 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             raise TypeError(f'maxModRetries argument is malformed: \"{maxModRetries}\"')
         elif maxModRetries < 1 or maxModRetries > 10:
             raise ValueError(f'maxModRetries argument is out of bounds: {maxModRetries}')
+        elif not utils.isValidNum(retrySleepDelaySeconds):
+            raise TypeError(f'retrySleepDelaySeconds argument is malformed: \"{retrySleepDelaySeconds}\"')
+        elif retrySleepDelaySeconds < 0.125 or retrySleepDelaySeconds > 3:
+            raise ValueError(f'retrySleepDelaySeconds argument is out of bounds: {retrySleepDelaySeconds}')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__globalTwitchConstants: Final[GlobalTwitchConstantsInterface] = globalTwitchConstants
@@ -67,6 +72,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         self.__twitchTimeoutRemodHelper: Final[TwitchTimeoutRemodHelperInterface] = twitchTimeoutRemodHelper
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__maxModRetries: Final[int] = maxModRetries
+        self.__retrySleepDelaySeconds: Final[float] = retrySleepDelaySeconds
 
     async def __isAlreadyCurrentlyBannedOrTimedOut(
         self,
@@ -252,7 +258,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
 
         while not successfullyTimedOut and attempts < maxRetries:
             if attempts > 0:
-                await asyncio.sleep(0.5)
+                await asyncio.sleep(self.__retrySleepDelaySeconds)
 
             attempts += 1
 
@@ -263,8 +269,8 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
                 user = user,
             )
 
-        if successfullyTimedOut and attempts > 1:
-            self.__timber.log('TwitchTimeoutHelper', f'Timed out user after {attempts} attempt(s) ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
+        if attempts > 1:
+            self.__timber.log('TwitchTimeoutHelper', f'Tried timing out user for {attempts} attempt(s) ({successfullyTimedOut=}) ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
 
         return successfullyTimedOut
 
