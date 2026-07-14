@@ -22,21 +22,5 @@ class TtsMonsterSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
-    async def getLoudVoiceMediaPlayerVolume(self) -> int | None:
-        pass
-
-    @abstractmethod
-    async def getLoudVoices(self) -> frozenset[TtsMonsterVoice]:
-        pass
-
-    @abstractmethod
-    async def getMediaPlayerVolume(self) -> int | None:
-        pass
-
-    @abstractmethod
     async def getVoiceVolumes(self) -> frozendict[TtsMonsterVoice, int | None]:
-        pass
-
-    @abstractmethod
-    async def useVoiceDependentMediaPlayerVolume(self) -> bool:
         pass
