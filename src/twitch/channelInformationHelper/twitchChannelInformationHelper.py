@@ -22,7 +22,7 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        setThenFetchDelaySeconds: float = 0.25,
+        setThenFetchDelaySeconds: float = 0.5,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
