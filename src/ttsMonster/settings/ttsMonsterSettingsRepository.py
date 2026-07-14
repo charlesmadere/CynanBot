@@ -1,5 +1,7 @@
 from typing import Any, Final
 
+from frozendict import frozendict
+
 from .ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
 from ..mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
 from ..models.ttsMonsterDonationPrefixConfig import TtsMonsterDonationPrefixConfig
@@ -14,10 +16,10 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
         self,
         settingsJsonReader: JsonReaderInterface,
         ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface,
+        defaultVoiceVolumes: frozendict[TtsMonsterVoice, int | None] = frozendict(),
         defaultLoudVoices: frozenset[TtsMonsterVoice] = frozenset({
             TtsMonsterVoice.GLADOS,
             TtsMonsterVoice.JAZZ,
-            TtsMonsterVoice.SHADOW,
             TtsMonsterVoice.SPONGEBOB,
         }),
         defaultDonationPrefixConfig: TtsMonsterDonationPrefixConfig = TtsMonsterDonationPrefixConfig.IF_MESSAGE_IS_BLANK,
@@ -27,6 +29,8 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
         elif not isinstance(ttsMonsterPrivateApiJsonMapper, TtsMonsterPrivateApiJsonMapperInterface):
             raise TypeError(f'ttsMonsterPrivateApiJsonMapper argument is malformed: \"{ttsMonsterPrivateApiJsonMapper}\"')
+        elif not isinstance(defaultVoiceVolumes, frozendict):
+            raise TypeError(f'defaultVoiceVolumes argument is malformed: \"{defaultVoiceVolumes}\"')
         elif not isinstance(defaultLoudVoices, frozenset):
             raise TypeError(f'defaultLoudVoices argument is malformed: \"{defaultLoudVoices}\"')
         elif not isinstance(defaultDonationPrefixConfig, TtsMonsterDonationPrefixConfig):
@@ -36,6 +40,7 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
 
         self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
         self.__ttsMonsterPrivateApiJsonMapper: Final[TtsMonsterPrivateApiJsonMapperInterface] = ttsMonsterPrivateApiJsonMapper
+        self.__defaultVoiceVolumes: Final[frozendict[TtsMonsterVoice, int | None]] = defaultVoiceVolumes
         self.__defaultLoudVoices: Final[frozenset[TtsMonsterVoice]] = defaultLoudVoices
         self.__defaultDonationPrefixConfig: Final[TtsMonsterDonationPrefixConfig] = defaultDonationPrefixConfig
         self.__defaultVoice: Final[TtsMonsterVoice] = defaultVoice
@@ -91,7 +96,28 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 11)
+        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 12)
+
+    async def getVoiceVolumes(self) -> frozendict[TtsMonsterVoice, int | None]:
+        jsonContents = await self.__readJson()
+        rawVoiceToVolume: dict[str, int | None] | None = jsonContents.get('voice_volumes', None)
+        voiceToVolume: dict[TtsMonsterVoice, int | None] = dict()
+
+        for voice, volume in self.__defaultVoiceVolumes.items():
+            voiceToVolume[voice] = volume
+
+        if rawVoiceToVolume is not None and len(rawVoiceToVolume) >= 1:
+            for voiceString, volume in rawVoiceToVolume.items():
+                voice = await self.__ttsMonsterPrivateApiJsonMapper.requireVoice(voiceString)
+                voiceToVolume[voice] = volume
+
+        defaultVoiceVolume = await self.getMediaPlayerVolume()
+
+        for voice in TtsMonsterVoice:
+            if voice not in voiceToVolume:
+                voiceToVolume[voice] = defaultVoiceVolume
+
+        return frozendict(voiceToVolume)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
