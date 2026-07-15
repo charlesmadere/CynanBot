@@ -13,7 +13,7 @@ class TriviaScoreResult:
         triviaWins: int,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ):
         if not utils.isValidInt(streak):
             raise TypeError(f'streak argument is malformed: \"{streak}\"')

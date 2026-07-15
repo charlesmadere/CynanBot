@@ -11,7 +11,7 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
     async def getCorrectAnswers(
         self,
         triviaQuestion: AbsTriviaQuestion,
-        delimiter: str = '; '
+        delimiter: str = '; ',
     ) -> str:
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
@@ -19,18 +19,29 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if isinstance(triviaQuestion, MultipleChoiceTriviaQuestion):
-            return await self.__getCorrectAnswersMultipleChoice(triviaQuestion, delimiter)
+            return await self.__getCorrectAnswersMultipleChoice(
+                triviaQuestion = triviaQuestion,
+                delimiter = delimiter,
+            )
+
         elif isinstance(triviaQuestion, QuestionAnswerTriviaQuestion):
-            return await self.__getCorrectAnswersQuestionAnswer(triviaQuestion, delimiter)
+            return await self.__getCorrectAnswersQuestionAnswer(
+                triviaQuestion = triviaQuestion,
+                delimiter = delimiter
+            )
+
         elif isinstance(triviaQuestion, TrueFalseTriviaQuestion):
-            return await self.__getCorrectAnswersTrueFalse(triviaQuestion)
+            return await self.__getCorrectAnswersTrueFalse(
+                triviaQuestion = triviaQuestion
+            )
+
         else:
             raise RuntimeError(f'Unknown AbsTriviaQuestion type: {triviaQuestion}')
 
     async def __getCorrectAnswersMultipleChoice(
         self,
         triviaQuestion: MultipleChoiceTriviaQuestion,
-        delimiter: str
+        delimiter: str,
     ) -> str:
         correctAnswers: list[str] = list()
 
@@ -47,7 +58,7 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
     async def __getCorrectAnswersQuestionAnswer(
         self,
         triviaQuestion: QuestionAnswerTriviaQuestion,
-        delimiter: str
+        delimiter: str,
     ) -> str:
         correctAnswers = triviaQuestion.correctAnswers
 
@@ -59,7 +70,7 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
 
     async def __getCorrectAnswersTrueFalse(
         self,
-        triviaQuestion: TrueFalseTriviaQuestion
+        triviaQuestion: TrueFalseTriviaQuestion,
     ) -> str:
         correctAnswer = str(triviaQuestion.correctAnswer).lower()
         return f'The correct answer is: {correctAnswer}'
@@ -67,7 +78,7 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
     async def getPrompt(
         self,
         triviaQuestion: AbsTriviaQuestion,
-        delimiter: str = ' '
+        delimiter: str = ' ',
     ) -> str:
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
@@ -75,18 +86,28 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if isinstance(triviaQuestion, MultipleChoiceTriviaQuestion):
-            return await self.__getPromptMultipleChoice(triviaQuestion, delimiter)
+            return await self.__getPromptMultipleChoice(
+                triviaQuestion = triviaQuestion,
+                delimiter = delimiter,
+            )
+
         elif isinstance(triviaQuestion, QuestionAnswerTriviaQuestion):
-            return await self.__getPromptQuestionAnswer(triviaQuestion)
+            return await self.__getPromptQuestionAnswer(
+                triviaQuestion = triviaQuestion
+            )
+
         elif isinstance(triviaQuestion, TrueFalseTriviaQuestion):
-            return await self.__getPromptTrueFalse(triviaQuestion)
+            return await self.__getPromptTrueFalse(
+                triviaQuestion = triviaQuestion
+            )
+
         else:
             raise RuntimeError(f'Unknown AbsTriviaQuestion type: {triviaQuestion}')
 
     async def __getPromptMultipleChoice(
         self,
         triviaQuestion: MultipleChoiceTriviaQuestion,
-        delimiter: str
+        delimiter: str,
     ) -> str:
         responses: list[str] = list()
         ordinalCharacter = 'A'
@@ -100,7 +121,7 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
 
     async def __getPromptQuestionAnswer(
         self,
-        triviaQuestion: QuestionAnswerTriviaQuestion
+        triviaQuestion: QuestionAnswerTriviaQuestion,
     ) -> str:
         categoryPrompt = ''
 
@@ -111,29 +132,38 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
 
     async def __getPromptTrueFalse(
         self,
-        triviaQuestion: TrueFalseTriviaQuestion
+        triviaQuestion: TrueFalseTriviaQuestion,
     ) -> str:
         return f'— True or false! {triviaQuestion.question}'.strip()
 
     async def getResponses(
         self,
-        triviaQuestion: AbsTriviaQuestion
+        triviaQuestion: AbsTriviaQuestion,
     ) -> list[str]:
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
 
         if isinstance(triviaQuestion, MultipleChoiceTriviaQuestion):
-            return await self.__getResponsesMultipleChoice(triviaQuestion)
+            return await self.__getResponsesMultipleChoice(
+                triviaQuestion = triviaQuestion,
+            )
+
         elif isinstance(triviaQuestion, QuestionAnswerTriviaQuestion):
-            return await self.__getResponsesQuestionAnswer(triviaQuestion)
+            return await self.__getResponsesQuestionAnswer(
+                triviaQuestion = triviaQuestion,
+            )
+
         elif isinstance(triviaQuestion, TrueFalseTriviaQuestion):
-            return await self.__getResponsesTrueFalse(triviaQuestion)
+            return await self.__getResponsesTrueFalse(
+                triviaQuestion = triviaQuestion
+            )
+
         else:
             raise RuntimeError(f'Unknown AbsTriviaQuestion type: {triviaQuestion}')
 
     async def __getResponsesMultipleChoice(
         self,
-        triviaQuestion: MultipleChoiceTriviaQuestion
+        triviaQuestion: MultipleChoiceTriviaQuestion,
     ) -> list[str]:
         responses: list[str] = list()
         ordinalCharacter = 'A'
@@ -146,12 +176,12 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
 
     async def __getResponsesQuestionAnswer(
         self,
-        triviaQuestion: QuestionAnswerTriviaQuestion
+        triviaQuestion: QuestionAnswerTriviaQuestion,
     ) -> list[str]:
         return list()
 
     async def __getResponsesTrueFalse(
         self,
-        triviaQuestion: TrueFalseTriviaQuestion
+        triviaQuestion: TrueFalseTriviaQuestion,
     ) -> list[str]:
         return [ str(True).lower(), str(False).lower() ]
