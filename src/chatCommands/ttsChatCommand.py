@@ -1,5 +1,6 @@
 import random
 import re
+import traceback
 from typing import Collection, Final, Pattern
 
 from .absChatCommand import AbsChatCommand
@@ -139,7 +140,7 @@ class TtsChatCommand(AbsChatCommand):
             try:
                 ttsProvider = await self.__ttsJsonMapper.asyncRequireProvider(ttsProviderMatch.group(1))
                 message = ' '.join(splits[2:])
-            except ValueError:
+            except ValueError as e:
                 ttsProviderStrings = await self.__getTtsProviderStrings()
                 ttsProviderString = ', '.join(ttsProviderStrings)
 
@@ -149,6 +150,7 @@ class TtsChatCommand(AbsChatCommand):
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
+                self.__timber.log(self.commandName, f'Failed to determine TTS provider ({ttsProvider=}) ({message=}) ({chatMessage=})', e, traceback.format_exc())
                 return ChatCommandResult.CONSUMED
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
@@ -174,7 +176,7 @@ class TtsChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({chatMessage=}) ({ttsProvider=})')
+        self.__timber.log(self.commandName, f'Consumed ({ttsProvider=}) ({message=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
