@@ -9,7 +9,7 @@ class TriviaQuestionPresenterInterface(ABC):
     async def getCorrectAnswers(
         self,
         triviaQuestion: AbsTriviaQuestion,
-        delimiter: str = '; '
+        delimiter: str = '; ',
     ) -> str:
         pass
 
@@ -17,13 +17,13 @@ class TriviaQuestionPresenterInterface(ABC):
     async def getPrompt(
         self,
         triviaQuestion: AbsTriviaQuestion,
-        delimiter: str = ' '
+        delimiter: str = ' ',
     ) -> str:
         pass
 
     @abstractmethod
     async def getResponses(
         self,
-        triviaQuestion: AbsTriviaQuestion
+        triviaQuestion: AbsTriviaQuestion,
     ) -> list[str]:
         pass

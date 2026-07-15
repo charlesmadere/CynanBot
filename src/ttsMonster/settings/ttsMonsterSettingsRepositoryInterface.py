@@ -14,6 +14,10 @@ class TtsMonsterSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getDefaultVoiceVolume(self) -> int | None:
+        pass
+
+    @abstractmethod
     async def getDonationPrefixConfig(self) -> TtsMonsterDonationPrefixConfig:
         pass
 

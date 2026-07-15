@@ -86,13 +86,13 @@ class TriviaScoreChatCommand(AbsChatCommand):
             targetUserId = await self.__userIdsRepository.fetchUserId(userName = targetUserName)
 
             if not utils.isValidStr(targetUserId):
-                self.__timber.log(self.commandName, f'Unable to find target user ID ({targetUserName=}) ({splits=}) ({chatMessage=})')
-
                 self.__twitchChatMessenger.send(
                     text = f'⚠ Unable to find trivia score info for \"{targetUserName}\"',
                     twitchChannelId = chatMessage.twitchChannelId,
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
+
+                self.__timber.log(self.commandName, f'Unable to find target user ID ({targetUserName=}) ({splits=}) ({chatMessage=})')
                 return ChatCommandResult.HANDLED
 
         shinyResult = await self.__shinyTriviaOccurencesRepository.fetchDetails(
@@ -126,5 +126,5 @@ class TriviaScoreChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({shinyResult=}) ({toxicResult=}) ({triviaResult=})')
+        self.__timber.log(self.commandName, f'Handled ({shinyResult=}) ({toxicResult=}) ({triviaResult=}) ({chatMessage=})')
         return ChatCommandResult.HANDLED

@@ -23,7 +23,7 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
             TtsMonsterVoice.SPONGEBOB: 7,
             TtsMonsterVoice.SHADOW: 8,
         }),
-        defaultMediaPlayerVolume: int | None = 11,
+        defaultVoiceVolume: int | None = 11,
         defaultDonationPrefixConfig: TtsMonsterDonationPrefixConfig = TtsMonsterDonationPrefixConfig.IF_MESSAGE_IS_BLANK,
         defaultVoice: TtsMonsterVoice = TtsMonsterVoice.BRIAN,
     ):
@@ -33,10 +33,10 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
             raise TypeError(f'ttsMonsterPrivateApiJsonMapper argument is malformed: \"{ttsMonsterPrivateApiJsonMapper}\"')
         elif not isinstance(defaultVoiceVolumes, frozendict):
             raise TypeError(f'defaultVoiceVolumes argument is malformed: \"{defaultVoiceVolumes}\"')
-        elif defaultMediaPlayerVolume is not None and not utils.isValidInt(defaultMediaPlayerVolume):
-            raise TypeError(f'defaultMediaPlayerVolume argument is malformed: \"{defaultMediaPlayerVolume}\"')
-        elif defaultMediaPlayerVolume is not None and (defaultMediaPlayerVolume < 1 or defaultMediaPlayerVolume > 100):
-            raise ValueError(f'defaultMediaPlayerVolume argument is out of range: {defaultMediaPlayerVolume}')
+        elif defaultVoiceVolume is not None and not utils.isValidInt(defaultVoiceVolume):
+            raise TypeError(f'defaultVoiceVolume argument is malformed: \"{defaultVoiceVolume}\"')
+        elif defaultVoiceVolume is not None and (defaultVoiceVolume < 1 or defaultVoiceVolume > 100):
+            raise ValueError(f'defaultVoiceVolume argument is out of range: {defaultVoiceVolume}')
         elif not isinstance(defaultDonationPrefixConfig, TtsMonsterDonationPrefixConfig):
             raise TypeError(f'defaultDonationPrefixConfig argument is malformed: \"{defaultDonationPrefixConfig}\"')
         elif not isinstance(defaultVoice, TtsMonsterVoice):
@@ -45,7 +45,7 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
         self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
         self.__ttsMonsterPrivateApiJsonMapper: Final[TtsMonsterPrivateApiJsonMapperInterface] = ttsMonsterPrivateApiJsonMapper
         self.__defaultVoiceVolumes: Final[frozendict[TtsMonsterVoice, int | None]] = defaultVoiceVolumes
-        self.__defaultMediaPlayerVolume: Final[int | None] = defaultMediaPlayerVolume
+        self.__defaultVoiceVolume: Final[int | None] = defaultVoiceVolume
         self.__defaultDonationPrefixConfig: Final[TtsMonsterDonationPrefixConfig] = defaultDonationPrefixConfig
         self.__defaultVoice: Final[TtsMonsterVoice] = defaultVoice
 
@@ -64,6 +64,15 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
         )
 
         return await self.__ttsMonsterPrivateApiJsonMapper.requireVoice(defaultVoiceString)
+
+    async def getDefaultVoiceVolume(self) -> int | None:
+        jsonContents = await self.__readJson()
+
+        return utils.getIntFromDict(
+            d = jsonContents,
+            key = 'default_voice_volume',
+            fallback = self.__defaultVoiceVolume,
+        )
 
     async def getDonationPrefixConfig(self) -> TtsMonsterDonationPrefixConfig:
         jsonContents = await self.__readJson()
@@ -85,33 +94,23 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
             fallback = 'wav',
         )
 
-    async def getMediaPlayerVolume(self) -> int | None:
-        jsonContents = await self.__readJson()
-
-        return utils.getIntFromDict(
-            d = jsonContents,
-            key = 'media_player_volume',
-            fallback = self.__defaultMediaPlayerVolume,
-        )
-
     async def getVoiceVolumes(self) -> frozendict[TtsMonsterVoice, int | None]:
-        jsonContents = await self.__readJson()
-        rawVoiceToVolume: dict[str, int | None] | None = jsonContents.get('voice_volumes', None)
         voiceToVolume: dict[TtsMonsterVoice, int | None] = dict()
+        defaultVoiceVolume = await self.getDefaultVoiceVolume()
+
+        for voice in TtsMonsterVoice:
+            voiceToVolume[voice] = defaultVoiceVolume
 
         for voice, volume in self.__defaultVoiceVolumes.items():
             voiceToVolume[voice] = volume
+
+        jsonContents = await self.__readJson()
+        rawVoiceToVolume: dict[str, int | None] | None = jsonContents.get('voice_volumes', None)
 
         if rawVoiceToVolume is not None and len(rawVoiceToVolume) >= 1:
             for voiceString, volume in rawVoiceToVolume.items():
                 voice = await self.__ttsMonsterPrivateApiJsonMapper.requireVoice(voiceString)
                 voiceToVolume[voice] = volume
-
-        defaultVoiceVolume = await self.getMediaPlayerVolume()
-
-        for voice in TtsMonsterVoice:
-            if voice not in voiceToVolume or voiceToVolume.get(voice) is None:
-                voiceToVolume[voice] = defaultVoiceVolume
 
         return frozendict(voiceToVolume)
 

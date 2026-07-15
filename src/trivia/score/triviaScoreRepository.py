@@ -1,3 +1,5 @@
+from typing import Final
+
 from .triviaScoreRepositoryInterface import TriviaScoreRepositoryInterface
 from .triviaScoreResult import TriviaScoreResult
 from ...misc import utils as utils
@@ -12,7 +14,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
 
         self.__isDatabaseReady: bool = False
 
@@ -20,7 +22,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> TriviaScoreResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -36,7 +38,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
                 WHERE twitchchannelid = $1 AND userid = $2
                 LIMIT 1
             ''',
-            twitchChannelId, userId
+            twitchChannelId, userId,
         )
 
         if record is not None and len(record) >= 1:
@@ -47,7 +49,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
                 triviaWins = record[3],
                 twitchChannel = record[4],
                 twitchChannelId = twitchChannelId,
-                userId = record[5]
+                userId = record[5],
             )
 
             await connection.close()
@@ -58,7 +60,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
                 INSERT INTO triviascores (streak, supertriviawins, trivialosses, triviawins, twitchchannelid, userid)
                 VALUES ($1, $2, $3, $4, $5, $6)
             ''',
-            0, 0, 0, 0, twitchChannelId, userId
+            0, 0, 0, 0, twitchChannelId, userId,
         )
 
         await connection.close()
@@ -70,7 +72,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
             triviaWins = 0,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
@@ -81,7 +83,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> TriviaScoreResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -93,7 +95,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
         result = await self.fetchTriviaScore(
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
         newSuperTriviaWins = result.getSuperTriviaWins() + 1
@@ -105,7 +107,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
             triviaWins = result.getTriviaWins(),
             twitchChannel = result.getTwitchChannel(),
             twitchChannelId = result.getTwitchChannelId(),
-            userId = result.getUserId()
+            userId = result.getUserId(),
         )
 
         await self.__updateTriviaScore(
@@ -115,7 +117,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
             newTriviaWins = newResult.getTriviaWins(),
             twitchChannel = newResult.getTwitchChannel(),
             twitchChannelId = newResult.getTwitchChannelId(),
-            userId = newResult.getUserId()
+            userId = newResult.getUserId(),
         )
 
         return newResult
@@ -124,7 +126,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> TriviaScoreResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -136,7 +138,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
         result = await self.fetchTriviaScore(
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
         newStreak: int
@@ -154,7 +156,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
             triviaWins = result.getTriviaWins(),
             twitchChannel = result.getTwitchChannel(),
             twitchChannelId = result.getTwitchChannelId(),
-            userId = result.getUserId()
+            userId = result.getUserId(),
         )
 
         await self.__updateTriviaScore(
@@ -164,7 +166,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
             newTriviaWins = newResult.getTriviaWins(),
             twitchChannel = newResult.getTwitchChannel(),
             twitchChannelId = newResult.getTwitchChannelId(),
-            userId = newResult.getUserId()
+            userId = newResult.getUserId(),
         )
 
         return newResult
@@ -173,7 +175,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> TriviaScoreResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -185,7 +187,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
         result = await self.fetchTriviaScore(
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
         newStreak: int
@@ -203,7 +205,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
             triviaWins = newTriviaWins,
             twitchChannel = result.getTwitchChannel(),
             twitchChannelId = result.getTwitchChannelId(),
-            userId = result.getUserId()
+            userId = result.getUserId(),
         )
 
         await self.__updateTriviaScore(
@@ -213,7 +215,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
             newTriviaWins = newResult.getTriviaWins(),
             twitchChannel = newResult.getTwitchChannel(),
             twitchChannelId = newResult.getTwitchChannelId(),
-            userId = newResult.getUserId()
+            userId = newResult.getUserId(),
         )
 
         return newResult
@@ -238,7 +240,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
                             userid text NOT NULL,
                             PRIMARY KEY (twitchchannelid, userid)
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -253,7 +255,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
                             userid TEXT NOT NULL,
                             PRIMARY KEY (twitchchannelid, userid)
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:
@@ -269,7 +271,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
         newTriviaWins: int,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ):
         if not utils.isValidInt(newStreak):
             raise TypeError(f'newStreak argument is malformed: \"{newStreak}\"')
@@ -301,7 +303,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
                 VALUES ($1, $2, $3, $4, $5, $6)
                 ON CONFLICT (twitchchannelid, userid) DO UPDATE SET streak = EXCLUDED.streak, supertriviawins = EXCLUDED.supertriviawins, triviaLosses = EXCLUDED.trivialosses, triviawins = EXCLUDED.triviawins
             ''',
-            newStreak, newSuperTriviaWins, newTriviaLosses, newTriviaWins, twitchChannelId, userId
+            newStreak, newSuperTriviaWins, newTriviaLosses, newTriviaWins, twitchChannelId, userId,
         )
 
         await connection.close()
