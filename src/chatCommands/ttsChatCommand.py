@@ -150,7 +150,7 @@ class TtsChatCommand(AbsChatCommand):
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
-                self.__timber.log(self.commandName, f'Failed to determine TTS provider ({ttsProvider=}) ({message=}) ({chatMessage=})', e, traceback.format_exc())
+                self.__timber.log(self.commandName, f'Failed to determine TTS provider ({splits=}) ({ttsProvider=}) ({ttsProviderMatch=}) ({message=}) ({chatMessage=})', e, traceback.format_exc())
                 return ChatCommandResult.CONSUMED
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
