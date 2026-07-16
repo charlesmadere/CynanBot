@@ -231,8 +231,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
                 chatMessage = chatMessage,
             )
 
-        await self.__processAnivChatActions(
-            mostRecentChat = mostRecentChat,
+        await self.__processAnivCopyMessageTimeout(
             chatMessage = chatMessage,
         )
 
@@ -283,7 +282,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         cheerMetadata = await self.__mapApiCheerMetadata(event.cheer)
         watchStreak = await self.__mapApiWatchStreak(event.watchStreak)
 
-        if event.customPowerUpData is not None:
+        if event.customPowerUp is not None or event.customPowerUpData is not None:
             # just including this for testing/debug purposes for the time being
             self.__timber.log('TwitchChatHandler', f'This event has custom power up data ({user=}) ({twitchChannelId=}) ({dataBundle=})')
 
@@ -307,19 +306,24 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             chatMessage = chatMessage,
         )
 
-    async def __processAnivChatActions(
+    async def __processAnivCopyMessageTimeout(
         self,
-        mostRecentChat: MostRecentChat | None,
         chatMessage: TwitchChatMessage,
     ):
-        if self.__mostRecentAnivMessageTimeoutHelper is not None:
-            await self.__mostRecentAnivMessageTimeoutHelper.checkMessageAndMaybeTimeout(
-                chatterMessage = chatMessage.text,
-                chatterUserId = chatMessage.chatterUserId,
-                chatterUserName = chatMessage.chatterUserName,
-                twitchChannelId = chatMessage.twitchChannelId,
-                user = chatMessage.twitchUser,
-            )
+        if self.__mostRecentAnivMessageTimeoutHelper is None:
+            return
+
+        cheer = chatMessage.cheerMetadata
+        if cheer is not None and cheer.bits > 0:
+            return
+
+        await self.__mostRecentAnivMessageTimeoutHelper.checkMessageAndMaybeTimeout(
+            chatterMessage = chatMessage.text,
+            chatterUserId = chatMessage.chatterUserId,
+            chatterUserName = chatMessage.chatterUserName,
+            twitchChannelId = chatMessage.twitchChannelId,
+            user = chatMessage.twitchUser,
+        )
 
     async def __processChatActions(
         self,
@@ -369,7 +373,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             return
 
         cheer = chatMessage.cheerMetadata
-        if cheer is None or cheer.bits < 1:
+        if cheer is None or cheer.bits <= 0:
             return
 
         self.__cheerActionHelper.submitCheer(CheerActionHelperInterface.CheerInfo(
@@ -392,7 +396,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             return
 
         cheer = chatMessage.cheerMetadata
-        if cheer is None or cheer.bits < 1:
+        if cheer is None or cheer.bits <= 0:
             return
 
         superTriviaCheerTriggerAmount = user.superTriviaCheerTriggerAmount
