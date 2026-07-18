@@ -2,11 +2,14 @@ from typing import Final
 
 import pytest
 
+from src.twitch.api.models.twitchChatMessageFragmentGif import TwitchChatMessageFragmentGif as ApiChatMessageFragmentGif
 from src.twitch.api.models.twitchChatMessageFragmentType import \
     TwitchChatMessageFragmentType as ApiChatMessageFragmentType
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
 from src.twitch.localModels.mapper.twitchLocalModelsMapper import TwitchLocalModelsMapper
 from src.twitch.localModels.mapper.twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
+from src.twitch.localModels.twitchChatMessageFragmentGif import \
+    TwitchChatMessageFragmentGif as LocalChatMessageFragmentGif
 from src.twitch.localModels.twitchChatMessageFragmentType import \
     TwitchChatMessageFragmentType as LocalChatMessageFragmentType
 from src.twitch.localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
@@ -15,6 +18,23 @@ from src.twitch.localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat
 class TestTwitchLocalModelsMapper:
 
     mapper: Final[TwitchLocalModelsMapperInterface] = TwitchLocalModelsMapper()
+
+    @pytest.mark.asyncio
+    async def test_mapChatMessageFragmentGif(self):
+        apiFragmentGif = ApiChatMessageFragmentGif(
+            gifId = 'abc123',
+            url = 'https://www.google.com/',
+        )
+
+        result = await self.mapper.mapChatMessageFragmentGif(apiFragmentGif)
+        assert isinstance(result, LocalChatMessageFragmentGif)
+        assert result.gifId == apiFragmentGif.gifId
+        assert result.url == apiFragmentGif.url
+
+    @pytest.mark.asyncio
+    async def test_mapChatMessageFragmentGif_withNone(self):
+        result = await self.mapper.mapChatMessageFragmentGif(None)
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_mapChatMessageFragmentType_withAll(self):
