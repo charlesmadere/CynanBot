@@ -20,6 +20,16 @@ class TestTwitchLocalModelsMapper:
     mapper: Final[TwitchLocalModelsMapperInterface] = TwitchLocalModelsMapper()
 
     @pytest.mark.asyncio
+    async def test_mapChatMessageFragmentCheermote_withNone(self):
+        result = await self.mapper.mapChatMessageFragmentCheermote(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_mapChatMessageFragmentEmote_withNone(self):
+        result = await self.mapper.mapChatMessageFragmentEmote(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_mapChatMessageFragmentGif(self):
         apiFragmentGif = ApiChatMessageFragmentGif(
             gifId = 'abc123',
@@ -95,6 +105,16 @@ class TestTwitchLocalModelsMapper:
     async def test_mapEmoteImageFormat_withStatic(self):
         result = await self.mapper.mapEmoteImageFormat(ApiEmoteImageFormat.STATIC)
         assert result == LocalEmoteImageFormat.STATIC
+
+    @pytest.mark.asyncio
+    async def test_requireEmoteImageFormat_withAll(self):
+        results: set[LocalEmoteImageFormat] = set()
+
+        for emoteImageFormat in ApiEmoteImageFormat:
+            result = await self.mapper.requireEmoteImageFormat(emoteImageFormat)
+            results.add(result)
+
+        assert len(results) == len(LocalEmoteImageFormat)
 
     @pytest.mark.asyncio
     async def test_requireEmoteImageFormat_withAnimated(self):
