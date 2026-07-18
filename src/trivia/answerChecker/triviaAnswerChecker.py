@@ -1289,7 +1289,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'meters per second'
         if word == 'nmi':
             yield 'nautical miles'
-        if word == 'oz':
+        if word in { 'oz', 'ozs' }:
             yield 'ounce'
             yield 'ounces'
         if word == 'pb':
@@ -1399,6 +1399,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'achieve'
         if word in { 'amatuer', 'amature' }:
             yield 'amateur'
+        if word in { 'angle', 'angles' }:
+            yield 'angel'
         if word == 'anice':
             yield 'anise'
         if word == 'aquire':
