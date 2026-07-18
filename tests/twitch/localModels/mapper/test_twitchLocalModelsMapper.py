@@ -4,10 +4,12 @@ import pytest
 
 from src.twitch.api.models.twitchChatMessageFragmentType import \
     TwitchChatMessageFragmentType as ApiChatMessageFragmentType
+from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
 from src.twitch.localModels.mapper.twitchLocalModelsMapper import TwitchLocalModelsMapper
 from src.twitch.localModels.mapper.twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
 from src.twitch.localModels.twitchChatMessageFragmentType import \
     TwitchChatMessageFragmentType as LocalChatMessageFragmentType
+from src.twitch.localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
 
 
 class TestTwitchLocalModelsMapper:
@@ -25,9 +27,54 @@ class TestTwitchLocalModelsMapper:
         assert len(results) == len(LocalChatMessageFragmentType)
 
     @pytest.mark.asyncio
+    async def test_mapChatMessageFragmentType_withCheermote(self):
+        result = await self.mapper.mapChatMessageFragmentType(ApiChatMessageFragmentType.CHEERMOTE)
+        assert result == LocalChatMessageFragmentType.CHEERMOTE
+
+    @pytest.mark.asyncio
+    async def test_mapChatMessageFragmentType_withEmote(self):
+        result = await self.mapper.mapChatMessageFragmentType(ApiChatMessageFragmentType.EMOTE)
+        assert result == LocalChatMessageFragmentType.EMOTE
+
+    @pytest.mark.asyncio
+    async def test_mapChatMessageFragmentType_withGif(self):
+        result = await self.mapper.mapChatMessageFragmentType(ApiChatMessageFragmentType.GIF)
+        assert result == LocalChatMessageFragmentType.GIF
+
+    @pytest.mark.asyncio
+    async def test_mapChatMessageFragmentType_withMention(self):
+        result = await self.mapper.mapChatMessageFragmentType(ApiChatMessageFragmentType.MENTION)
+        assert result == LocalChatMessageFragmentType.MENTION
+
+    @pytest.mark.asyncio
     async def test_mapChatMessageFragmentType_withNone(self):
         result = await self.mapper.mapChatMessageFragmentType(None)
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_mapChatMessageFragmentType_withText(self):
+        result = await self.mapper.mapChatMessageFragmentType(ApiChatMessageFragmentType.TEXT)
+        assert result == LocalChatMessageFragmentType.TEXT
+
+    @pytest.mark.asyncio
+    async def test_mapEmoteImageFormat_withAll(self):
+        results: set[LocalEmoteImageFormat | None] = set()
+
+        for emoteImageFormat in ApiEmoteImageFormat:
+            result = await self.mapper.mapEmoteImageFormat(emoteImageFormat)
+            results.add(result)
+
+        assert len(results) == len(LocalEmoteImageFormat)
+
+    @pytest.mark.asyncio
+    async def test_mapEmoteImageFormat_withAnimated(self):
+        result = await self.mapper.mapEmoteImageFormat(ApiEmoteImageFormat.ANIMATED)
+        assert result == LocalEmoteImageFormat.ANIMATED
+
+    @pytest.mark.asyncio
+    async def test_mapEmoteImageFormat_withStatic(self):
+        result = await self.mapper.mapEmoteImageFormat(ApiEmoteImageFormat.STATIC)
+        assert result == LocalEmoteImageFormat.STATIC
 
     def test_sanity(self):
         assert self.mapper is not None
