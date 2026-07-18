@@ -12,6 +12,8 @@ from ..api.models.twitchChatMessageFragmentCheermote import \
     TwitchChatMessageFragmentCheermote as ApiTwitchChatMessageFragmentCheermote
 from ..api.models.twitchChatMessageFragmentEmote import \
     TwitchChatMessageFragmentEmote as ApiTwitchChatMessageFragmentEmote
+from ..api.models.twitchChatMessageFragmentGif import \
+    TwitchChatMessageFragmentGif as ApiTwitchChatMessageFragmentGif
 from ..api.models.twitchChatMessageFragmentMention import \
     TwitchChatMessageFragmentMention as ApiTwitchChatMessageFragmentMention
 from ..api.models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType as ApiTwitchChatMessageFragmentType
@@ -23,6 +25,7 @@ from ..localModels.twitchChatMessage import TwitchChatMessage
 from ..localModels.twitchChatMessageFragment import TwitchChatMessageFragment
 from ..localModels.twitchChatMessageFragmentCheermote import TwitchChatMessageFragmentCheermote
 from ..localModels.twitchChatMessageFragmentEmote import TwitchChatMessageFragmentEmote
+from ..localModels.twitchChatMessageFragmentGif import TwitchChatMessageFragmentGif
 from ..localModels.twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention
 from ..localModels.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 from ..localModels.twitchCheerMetadata import TwitchCheerMetadata
@@ -448,6 +451,15 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             bits = apiCheer.bits,
         )
 
+    async def __mapApiEmoteImageFormat(
+        self,
+        apiImageFormat: ApiTwitchEmoteImageFormat,
+    ) -> TwitchEmoteImageFormat:
+        match apiImageFormat:
+            case ApiTwitchEmoteImageFormat.ANIMATED: return TwitchEmoteImageFormat.ANIMATED
+            case ApiTwitchEmoteImageFormat.STATIC: return TwitchEmoteImageFormat.STATIC
+            case _: raise ValueError(f'Encountered unknown ApiTwitchEmoteImageFormat: \"{apiImageFormat}\"')
+
     async def __mapApiMessageFragments(
         self,
         apiMessageFragments: Collection[ApiTwitchChatMessageFragment],
@@ -467,6 +479,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
     ) -> TwitchChatMessageFragment:
         cheermote = await self.__mapApiMessageFragmentCheermote(apiMessageFragment.cheermote)
         emote = await self.__mapApiMessageFragmentEmote(apiMessageFragment.emote)
+        gif = await self.__mapApiMessageFragmentGif(apiMessageFragment.gif)
         mention = await self.__mapApiMessageFragmentMention(apiMessageFragment.mention)
         fragmentType = await self.__mapApiMessageFragmentType(apiMessageFragment.fragmentType)
 
@@ -474,6 +487,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             text = apiMessageFragment.text,
             cheermote = cheermote,
             emote = emote,
+            gif = gif,
             mention = mention,
             fragmentType = fragmentType,
         )
@@ -511,14 +525,17 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             ownerId = apiEmote.ownerId,
         )
 
-    async def __mapApiEmoteImageFormat(
+    async def __mapApiMessageFragmentGif(
         self,
-        apiImageFormat: ApiTwitchEmoteImageFormat,
-    ) -> TwitchEmoteImageFormat:
-        match apiImageFormat:
-            case ApiTwitchEmoteImageFormat.ANIMATED: return TwitchEmoteImageFormat.ANIMATED
-            case ApiTwitchEmoteImageFormat.STATIC: return TwitchEmoteImageFormat.STATIC
-            case _: raise ValueError(f'Encountered unknown ApiTwitchEmoteImageFormat: \"{apiImageFormat}\"')
+        apiGif: ApiTwitchChatMessageFragmentGif | None,
+    ) -> TwitchChatMessageFragmentGif | None:
+        if apiGif is None:
+            return None
+
+        return TwitchChatMessageFragmentGif(
+            gifId = apiGif.gifId,
+            url = apiGif.url,
+        )
 
     async def __mapApiMessageFragmentMention(
         self,
@@ -540,6 +557,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         match apiFragmentType:
             case ApiTwitchChatMessageFragmentType.CHEERMOTE: return TwitchChatMessageFragmentType.CHEERMOTE
             case ApiTwitchChatMessageFragmentType.EMOTE: return TwitchChatMessageFragmentType.EMOTE
+            case ApiTwitchChatMessageFragmentType.GIF: return TwitchChatMessageFragmentType.GIF
             case ApiTwitchChatMessageFragmentType.MENTION: return TwitchChatMessageFragmentType.MENTION
             case ApiTwitchChatMessageFragmentType.TEXT: return TwitchChatMessageFragmentType.TEXT
             case _: raise ValueError(f'Encountered unknown ApiTwitchChatMessageFragmentType: \"{apiFragmentType}\"')

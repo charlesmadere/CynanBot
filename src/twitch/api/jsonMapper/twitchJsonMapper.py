@@ -30,6 +30,7 @@ from ..models.twitchChatMessage import TwitchChatMessage
 from ..models.twitchChatMessageFragment import TwitchChatMessageFragment
 from ..models.twitchChatMessageFragmentCheermote import TwitchChatMessageFragmentCheermote
 from ..models.twitchChatMessageFragmentEmote import TwitchChatMessageFragmentEmote
+from ..models.twitchChatMessageFragmentGif import TwitchChatMessageFragmentGif
 from ..models.twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention
 from ..models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 from ..models.twitchChatMessageType import TwitchChatMessageType
@@ -774,6 +775,10 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         if 'emote' in jsonResponse:
             emote = await self.parseChatMessageFragmentEmote(jsonResponse.get('emote'))
 
+        gif: TwitchChatMessageFragmentGif | None = None
+        if 'gif' in jsonResponse:
+            gif = await self.parseChatMessageFragmentGif(jsonResponse.get('gif'))
+
         mention: TwitchChatMessageFragmentMention | None = None
         if 'mention' in jsonResponse:
             mention = await self.parseChatMessageFragmentMention(jsonResponse.get('mention'))
@@ -785,6 +790,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             text = text,
             cheermote = cheermote,
             emote = emote,
+            gif = gif,
             mention = mention,
             fragmentType = fragmentType,
         )
@@ -836,6 +842,21 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             ownerId = ownerId,
         )
 
+    async def parseChatMessageFragmentGif(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchChatMessageFragmentGif | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        gifId = utils.getStrFromDict(jsonResponse, 'gif_id')
+        url = utils.getStrFromDict(jsonResponse, 'url')
+
+        return TwitchChatMessageFragmentGif(
+            gifId = gifId,
+            url = url,
+        )
+
     async def parseChatMessageFragmentMention(
         self,
         jsonResponse: dict[str, Any] | Any | None,
@@ -865,6 +886,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         match fragmentType:
             case 'cheermote': return TwitchChatMessageFragmentType.CHEERMOTE
             case 'emote': return TwitchChatMessageFragmentType.EMOTE
+            case 'gif': return TwitchChatMessageFragmentType.GIF
             case 'mention': return TwitchChatMessageFragmentType.MENTION
             case 'text': return TwitchChatMessageFragmentType.TEXT
             case _: return None

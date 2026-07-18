@@ -19,6 +19,7 @@ from src.twitch.api.models.twitchChannelEditor import TwitchChannelEditor
 from src.twitch.api.models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from src.twitch.api.models.twitchChannelPointsVoting import TwitchChannelPointsVoting
 from src.twitch.api.models.twitchChatAnnouncementColor import TwitchChatAnnouncementColor
+from src.twitch.api.models.twitchChatMessageFragmentGif import TwitchChatMessageFragmentGif
 from src.twitch.api.models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 from src.twitch.api.models.twitchChatMessageType import TwitchChatMessageType
 from src.twitch.api.models.twitchChatter import TwitchChatter
@@ -619,6 +620,32 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentGif(self):
+        fragmentGif = TwitchChatMessageFragmentGif(
+            gifId = 'abc123',
+            url = 'https://google.com/',
+        )
+
+        result = await self.jsonMapper.parseChatMessageFragmentGif({
+            'gif_id': fragmentGif.gifId,
+            'url': fragmentGif.url,
+        })
+
+        assert isinstance(result, TwitchChatMessageFragmentGif)
+        assert result.gifId == fragmentGif.gifId
+        assert result.url == fragmentGif.url
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentGif_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseChatMessageFragmentGif(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentGif_withNone(self):
+        result = await self.jsonMapper.parseChatMessageFragmentGif(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseChatMessageFragmentMention_withEmptyDictionary(self):
         result = await self.jsonMapper.parseChatMessageFragmentMention(dict())
         assert result is None
@@ -642,6 +669,11 @@ class TestTwitchJsonMapper:
     async def test_parseChatMessageFragmentType_withEmptyString(self):
         result = await self.jsonMapper.parseChatMessageFragmentType('')
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseChatMessageFragmentType_withGifString(self):
+        result = await self.jsonMapper.parseChatMessageFragmentType('gif')
+        assert result is TwitchChatMessageFragmentType.GIF
 
     @pytest.mark.asyncio
     async def test_parseChatMessageFragmentType_withMentionString(self):
