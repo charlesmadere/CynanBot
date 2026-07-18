@@ -26,6 +26,7 @@ from ..models.twitchChatMessage import TwitchChatMessage
 from ..models.twitchChatMessageFragment import TwitchChatMessageFragment
 from ..models.twitchChatMessageFragmentCheermote import TwitchChatMessageFragmentCheermote
 from ..models.twitchChatMessageFragmentEmote import TwitchChatMessageFragmentEmote
+from ..models.twitchChatMessageFragmentGif import TwitchChatMessageFragmentGif
 from ..models.twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention
 from ..models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 from ..models.twitchChatMessageType import TwitchChatMessageType
@@ -278,6 +279,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchChatMessageFragmentEmote | None:
+        pass
+
+    @abstractmethod
+    async def parseChatMessageFragmentGif(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchChatMessageFragmentGif | None:
         pass
 
     @abstractmethod
