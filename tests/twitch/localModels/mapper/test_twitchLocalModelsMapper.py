@@ -96,6 +96,25 @@ class TestTwitchLocalModelsMapper:
         result = await self.mapper.mapEmoteImageFormat(ApiEmoteImageFormat.STATIC)
         assert result == LocalEmoteImageFormat.STATIC
 
+    @pytest.mark.asyncio
+    async def test_requireEmoteImageFormat_withAnimated(self):
+        result = await self.mapper.requireEmoteImageFormat(ApiEmoteImageFormat.ANIMATED)
+        assert result == LocalEmoteImageFormat.ANIMATED
+
+    @pytest.mark.asyncio
+    async def test_requireEmoteImageFormat_withNone(self):
+        result: LocalEmoteImageFormat | None = None
+
+        with pytest.raises(ValueError):
+            await self.mapper.requireEmoteImageFormat(None)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireEmoteImageFormat_withStatic(self):
+        result = await self.mapper.requireEmoteImageFormat(ApiEmoteImageFormat.STATIC)
+        assert result == LocalEmoteImageFormat.STATIC
+
     def test_sanity(self):
         assert self.mapper is not None
         assert isinstance(self.mapper, TwitchLocalModelsMapper)
