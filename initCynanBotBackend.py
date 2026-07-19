@@ -2289,6 +2289,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
 twitchBitsHandler: Final[AbsTwitchBitsHandler] = TwitchBitsHandler(
     cheerActionHelper = cheerActionHelper,
     timber = timber,
+    twitchLocalModelsMapper = twitchLocalModelsMapper,
 )
 
 twitchChannelPointRedemptionHandler: Final[AbsTwitchChannelPointRedemptionHandler] = TwitchChannelPointRedemptionHandler(
@@ -2334,6 +2335,7 @@ twitchPollHandler: Final[AbsTwitchPollHandler] = TwitchPollHandler(
 twitchPowerUpRedemptionHandler: Final[AbsTwitchPowerUpRedemptionHandler] = TwitchPowerUpRedemptionHandler(
     cheerActionHelper = cheerActionHelper,
     timber = timber,
+    twitchLocalModelsMapper = twitchLocalModelsMapper,
 )
 
 twitchPredictionHandler: Final[AbsTwitchPredictionHandler] = TwitchPredictionHandler(

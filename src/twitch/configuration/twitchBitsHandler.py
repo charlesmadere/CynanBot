@@ -1,13 +1,10 @@
 from typing import Final
 
 from ..absTwitchBitsHandler import AbsTwitchBitsHandler
-from ..api.models.twitchBitsUseType import TwitchBitsUseType as ApiTwitchBitsUseType
-from ..api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as ApiTwitchCustomPowerUpData
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketEvent import TwitchWebsocketEvent
+from ..localModels.mapper.twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
 from ..localModels.twitchBitsUse import TwitchBitsUse
-from ..localModels.twitchBitsUseType import TwitchBitsUseType
-from ..localModels.twitchCustomPowerUpData import TwitchCustomPowerUpData
 from ...cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -20,14 +17,18 @@ class TwitchBitsHandler(AbsTwitchBitsHandler):
         self,
         cheerActionHelper: CheerActionHelperInterface | None,
         timber: TimberInterface,
+        twitchLocalModelsMapper: TwitchLocalModelsMapperInterface,
     ):
         if cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
             raise TypeError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchLocalModelsMapper, TwitchLocalModelsMapperInterface):
+            raise TypeError(f'twitchLocalModelsMapper argument is malformed: \"{twitchLocalModelsMapper}\"')
 
         self.__cheerActionHelper: Final[CheerActionHelperInterface | None] = cheerActionHelper
         self.__timber: Final[TimberInterface] = timber
+        self.__twitchLocalModelsMapper: Final[TwitchLocalModelsMapperInterface] = twitchLocalModelsMapper
 
     async def onNewBits(self, bitsUse: TwitchBitsUse):
         if not isinstance(bitsUse, TwitchBitsUse):
@@ -60,17 +61,12 @@ class TwitchBitsHandler(AbsTwitchBitsHandler):
         bitsUserId = event.userId
         bitsUserLogin = event.userLogin
         bitsUserName = event.userName
-        bitsUseType = await self.__mapApiBitsUseType(event.bitsUseType)
+        bitsUseType = await self.__twitchLocalModelsMapper.mapBitsUseType(event.bitsUseType)
+        customPowerUpData = await self.__twitchLocalModelsMapper.mapCustomPowerUpData(event.customPowerUpData)
 
         if bits is None or not utils.isValidStr(bitsUserId) or not utils.isValidStr(bitsUserLogin) or not utils.isValidStr(bitsUserName) or bitsUseType is None:
-            self.__timber.log('TwitchBitsHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({bits=}) ({bitsUserId=}) ({bitsUserLogin=}) ({bitsUserName=}) ({bitsUseType=})')
+            self.__timber.log('TwitchBitsHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({bits=}) ({bitsUserId=}) ({bitsUserLogin=}) ({bitsUserName=}) ({bitsUseType=}) ({customPowerUpData=})')
             return
-
-        customPowerUpData = await self.__mapApiCustomPowerUpData(event.customPowerUpData)
-
-        if event.chatMessage is not None:
-            # just including this for testing/debug purposes for the time being
-            self.__timber.log('TwitchBitsHandler', f'This event has a chat message ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({bits=}) ({bitsUserId=}) ({bitsUserLogin=}) ({bitsUserName=}) ({bitsUseType=})')
 
         bitsUse = TwitchBitsUse(
             bits = bits,
@@ -120,28 +116,3 @@ class TwitchBitsHandler(AbsTwitchBitsHandler):
             return event.customPowerUp.bits
         else:
             return None
-
-    async def __mapApiBitsUseType(
-        self,
-        apiBitsUseType: ApiTwitchBitsUseType | None,
-    ) -> TwitchBitsUseType | None:
-        if apiBitsUseType is None:
-            return None
-
-        match apiBitsUseType:
-            case ApiTwitchBitsUseType.CHEER: return TwitchBitsUseType.CHEER
-            case ApiTwitchBitsUseType.CUSTOM_POWER_UP: return TwitchBitsUseType.CUSTOM_POWER_UP
-            case ApiTwitchBitsUseType.POWER_UP: return TwitchBitsUseType.POWER_UP
-            case _: raise ValueError(f'Encountered unknown ApiTwitchBitsUseType: \"{apiBitsUseType}\"')
-
-    async def __mapApiCustomPowerUpData(
-        self,
-        apiCustomPowerUpData: ApiTwitchCustomPowerUpData | None,
-    ) -> TwitchCustomPowerUpData | None:
-        if apiCustomPowerUpData is None:
-            return None
-
-        return TwitchCustomPowerUpData(
-            rewardId = apiCustomPowerUpData.rewardId,
-            title = apiCustomPowerUpData.title,
-        )

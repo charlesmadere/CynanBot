@@ -3,6 +3,7 @@ from typing import Collection
 from frozenlist import FrozenList
 
 from .twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
+from ..twitchBitsUseType import TwitchBitsUseType as LocalBitsUseType
 from ..twitchChatMessageFragment import TwitchChatMessageFragment as LocalChatMessageFragment
 from ..twitchChatMessageFragmentCheermote import TwitchChatMessageFragmentCheermote as LocalChatMessageFragmentCheermote
 from ..twitchChatMessageFragmentEmote import TwitchChatMessageFragmentEmote as LocalChatMessageFragmentEmote
@@ -10,8 +11,11 @@ from ..twitchChatMessageFragmentGif import TwitchChatMessageFragmentGif as Local
 from ..twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention as LocalChatMessageFragmentMention
 from ..twitchChatMessageFragmentType import TwitchChatMessageFragmentType as LocalChatMessageFragmentType
 from ..twitchCheerMetadata import TwitchCheerMetadata as LocalCheerMetadata
+from ..twitchCustomPowerUp import TwitchCustomPowerUp as LocalCustomPowerUp
+from ..twitchCustomPowerUpData import TwitchCustomPowerUpData as LocalCustomPowerUpData
 from ..twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
 from ..twitchWatchStreak import TwitchWatchStreak as LocalWatchStreak
+from ...api.models.twitchBitsUseType import TwitchBitsUseType as ApiBitsUseType
 from ...api.models.twitchChatMessageFragment import TwitchChatMessageFragment as ApiChatMessageFragment
 from ...api.models.twitchChatMessageFragmentCheermote import \
     TwitchChatMessageFragmentCheermote as ApiChatMessageFragmentCheermote
@@ -21,11 +25,25 @@ from ...api.models.twitchChatMessageFragmentMention import \
     TwitchChatMessageFragmentMention as ApiChatMessageFragmentMention
 from ...api.models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType as ApiChatMessageFragmentType
 from ...api.models.twitchCheerMetadata import TwitchCheerMetadata as ApiCheerMetadata
+from ...api.models.twitchCustomPowerUp import TwitchCustomPowerUp as ApiCustomPowerUp
+from ...api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as ApiCustomPowerUpData
 from ...api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
 from ...api.models.twitchWatchStreak import TwitchWatchStreak as ApiWatchStreak
 
 
 class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
+
+    async def mapBitsUseType(
+        self,
+        bitsUseType: ApiBitsUseType | None,
+    ) -> LocalBitsUseType | None:
+        if bitsUseType is None:
+            return None
+
+        match bitsUseType:
+            case ApiBitsUseType.CHEER: return LocalBitsUseType.CHEER
+            case ApiBitsUseType.CUSTOM_POWER_UP: return LocalBitsUseType.CUSTOM_POWER_UP
+            case ApiBitsUseType.POWER_UP: return LocalBitsUseType.POWER_UP
 
     async def mapChatMessageFragment(
         self,
@@ -144,6 +162,32 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
 
         return LocalCheerMetadata(
             bits = cheerMetadata.bits,
+        )
+
+    async def mapCustomPowerUp(
+        self,
+        customPowerUp: ApiCustomPowerUp | None,
+    ) -> LocalCustomPowerUp | None:
+        if customPowerUp is None:
+            return None
+
+        return LocalCustomPowerUp(
+            bits = customPowerUp.bits,
+            powerUpId = customPowerUp.powerUpId,
+            prompt = customPowerUp.prompt,
+            title = customPowerUp.title,
+        )
+
+    async def mapCustomPowerUpData(
+        self,
+        customPowerUpData: ApiCustomPowerUpData | None,
+    ) -> LocalCustomPowerUpData | None:
+        if customPowerUpData is None:
+            return None
+
+        return LocalCustomPowerUpData(
+            rewardId = customPowerUpData.rewardId,
+            title = customPowerUpData.title,
         )
 
     async def mapEmoteImageFormat(

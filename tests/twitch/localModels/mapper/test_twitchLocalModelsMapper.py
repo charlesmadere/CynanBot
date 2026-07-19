@@ -3,6 +3,7 @@ from typing import Final
 import pytest
 from frozenlist import FrozenList
 
+from src.twitch.api.models.twitchBitsUseType import TwitchBitsUseType as ApiBitsUseType
 from src.twitch.api.models.twitchChatMessageFragment import \
     TwitchChatMessageFragment as ApiChatMessageFragment
 from src.twitch.api.models.twitchChatMessageFragmentCheermote import \
@@ -15,10 +16,13 @@ from src.twitch.api.models.twitchChatMessageFragmentMention import \
 from src.twitch.api.models.twitchChatMessageFragmentType import \
     TwitchChatMessageFragmentType as ApiChatMessageFragmentType
 from src.twitch.api.models.twitchCheerMetadata import TwitchCheerMetadata as ApiCheerMetadata
+from src.twitch.api.models.twitchCustomPowerUp import TwitchCustomPowerUp as ApiCustomPowerUp
+from src.twitch.api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as ApiCustomPowerUpData
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
 from src.twitch.api.models.twitchWatchStreak import TwitchWatchStreak as ApiWatchStreak
 from src.twitch.localModels.mapper.twitchLocalModelsMapper import TwitchLocalModelsMapper
 from src.twitch.localModels.mapper.twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
+from src.twitch.localModels.twitchBitsUseType import TwitchBitsUseType as LocalBitsUseType
 from src.twitch.localModels.twitchChatMessageFragment import \
     TwitchChatMessageFragment as LocalChatMessageFragment
 from src.twitch.localModels.twitchChatMessageFragmentCheermote import \
@@ -32,6 +36,8 @@ from src.twitch.localModels.twitchChatMessageFragmentMention import \
 from src.twitch.localModels.twitchChatMessageFragmentType import \
     TwitchChatMessageFragmentType as LocalChatMessageFragmentType
 from src.twitch.localModels.twitchCheerMetadata import TwitchCheerMetadata as LocalCheerMetadata
+from src.twitch.localModels.twitchCustomPowerUp import TwitchCustomPowerUp as LocalCustomPowerUp
+from src.twitch.localModels.twitchCustomPowerUpData import TwitchCustomPowerUpData as LocalCustomPowerUpData
 from src.twitch.localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
 from src.twitch.localModels.twitchWatchStreak import TwitchWatchStreak as LocalWatchStreak
 
@@ -39,6 +45,37 @@ from src.twitch.localModels.twitchWatchStreak import TwitchWatchStreak as LocalW
 class TestTwitchLocalModelsMapper:
 
     mapper: Final[TwitchLocalModelsMapperInterface] = TwitchLocalModelsMapper()
+
+    @pytest.mark.asyncio
+    async def  test_mapBitsUseType_withAll(self):
+        results: set[LocalBitsUseType | None] = set()
+
+        for bitsUseType in ApiBitsUseType:
+            result = await self.mapper.mapBitsUseType(bitsUseType)
+            results.add(result)
+
+        assert len(results) == len(LocalBitsUseType)
+        assert None not in results
+
+    @pytest.mark.asyncio
+    async def  test_mapBitsUseType_withCheer(self):
+        result = await self.mapper.mapBitsUseType(ApiBitsUseType.CHEER)
+        assert result is LocalBitsUseType.CHEER
+
+    @pytest.mark.asyncio
+    async def  test_mapBitsUseType_withCustomPowerUp(self):
+        result = await self.mapper.mapBitsUseType(ApiBitsUseType.CUSTOM_POWER_UP)
+        assert result is LocalBitsUseType.CUSTOM_POWER_UP
+
+    @pytest.mark.asyncio
+    async def  test_mapBitsUseType_withPowerUp(self):
+        result = await self.mapper.mapBitsUseType(ApiBitsUseType.POWER_UP)
+        assert result is LocalBitsUseType.POWER_UP
+
+    @pytest.mark.asyncio
+    async def test_mapBitsUseType_withNone(self):
+        result = await self.mapper.mapBitsUseType(None)
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_mapChatMessageFragment(self):
@@ -234,6 +271,44 @@ class TestTwitchLocalModelsMapper:
     @pytest.mark.asyncio
     async def test_mapCheerMetadata_withNone(self):
         result = await self.mapper.mapCheerMetadata(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_mapCustomPowerUp(self):
+        apiCustomPowerUp = ApiCustomPowerUp(
+            bits = 100,
+            powerUpId = 'powerUpId',
+            prompt = 'prompt',
+            title = 'title',
+        )
+
+        result = await self.mapper.mapCustomPowerUp(apiCustomPowerUp)
+        assert isinstance(result, LocalCustomPowerUp)
+        assert result.bits == apiCustomPowerUp.bits
+        assert result.powerUpId == apiCustomPowerUp.powerUpId
+        assert result.prompt == apiCustomPowerUp.prompt
+        assert result.title == apiCustomPowerUp.title
+
+    @pytest.mark.asyncio
+    async def test_mapCustomPowerUp_withNone(self):
+        result = await self.mapper.mapCustomPowerUp(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_mapCustomPowerUpData(self):
+        apiCustomPowerUpData = ApiCustomPowerUpData(
+            rewardId = 'rewardId',
+            title = 'title',
+        )
+
+        result = await self.mapper.mapCustomPowerUpData(apiCustomPowerUpData)
+        assert isinstance(result, LocalCustomPowerUpData)
+        assert result.rewardId == apiCustomPowerUpData.rewardId
+        assert result.title == apiCustomPowerUpData.title
+
+    @pytest.mark.asyncio
+    async def test_mapCustomPowerUpData_withNone(self):
+        result = await self.mapper.mapCustomPowerUpData(None)
         assert result is None
 
     @pytest.mark.asyncio
