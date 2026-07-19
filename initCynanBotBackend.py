@@ -436,6 +436,8 @@ from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserId
 from src.twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from src.twitch.isLive.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from src.twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
+from src.twitch.localModels.mapper.twitchLocalModelsMapper import TwitchLocalModelsMapper
+from src.twitch.localModels.mapper.twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
 from src.twitch.misc.globalTwitchConstants import GlobalTwitchConstants
 from src.twitch.misc.globalTwitchConstantsInterface import GlobalTwitchConstantsInterface
 from src.twitch.moderator.twitchModeratorHelper import TwitchModeratorHelper
@@ -693,6 +695,8 @@ twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface]
     timber = timber,
     twitchApiService = twitchApiService,
 )
+
+twitchLocalModelsMapper: Final[TwitchLocalModelsMapperInterface] = TwitchLocalModelsMapper()
 
 anivJsonMapper: Final[AnivJsonMapperInterface] = AnivJsonMapper()
 
@@ -2303,6 +2307,7 @@ twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
     triviaGameMachine = triviaGameMachine,
+    twitchLocalModelsMapper = twitchLocalModelsMapper,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
     chatActions = chatActions,
