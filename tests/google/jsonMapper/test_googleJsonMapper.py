@@ -142,7 +142,7 @@ class TestGoogleJsonMapper:
     async def test_requireVoiceAudioEncoding_withEmptyString(self):
         result: GoogleVoiceAudioEncoding | None = None
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             result = await self.mapper.requireVoiceAudioEncoding('')
 
         assert result is None
@@ -166,7 +166,7 @@ class TestGoogleJsonMapper:
     async def test_requireVoiceAudioEncoding_withNone(self):
         result: GoogleVoiceAudioEncoding | None = None
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             result = await self.mapper.requireVoiceAudioEncoding(None)
 
         assert result is None
@@ -180,7 +180,7 @@ class TestGoogleJsonMapper:
     async def test_requireVoiceAudioEncoding_withWhitespaceString(self):
         result: GoogleVoiceAudioEncoding | None = None
 
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             result = await self.mapper.requireVoiceAudioEncoding(' ')
 
         assert result is None
