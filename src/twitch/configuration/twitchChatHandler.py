@@ -7,30 +7,11 @@ from frozenlist import FrozenList
 
 from ..absTwitchChatHandler import AbsTwitchChatHandler
 from ..activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
-from ..api.models.twitchChatMessageFragment import TwitchChatMessageFragment as ApiTwitchChatMessageFragment
-from ..api.models.twitchChatMessageFragmentCheermote import \
-    TwitchChatMessageFragmentCheermote as ApiTwitchChatMessageFragmentCheermote
-from ..api.models.twitchChatMessageFragmentEmote import \
-    TwitchChatMessageFragmentEmote as ApiTwitchChatMessageFragmentEmote
-from ..api.models.twitchChatMessageFragmentGif import \
-    TwitchChatMessageFragmentGif as ApiTwitchChatMessageFragmentGif
-from ..api.models.twitchChatMessageFragmentMention import \
-    TwitchChatMessageFragmentMention as ApiTwitchChatMessageFragmentMention
-from ..api.models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType as ApiTwitchChatMessageFragmentType
-from ..api.models.twitchCheerMetadata import TwitchCheerMetadata as ApiTwitchCheerMetadata
-from ..api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiTwitchEmoteImageFormat
-from ..api.models.twitchWatchStreak import TwitchWatchStreak as ApiTwitchWatchStreak
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
+from ..localModels.mapper.twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
 from ..localModels.twitchChatMessage import TwitchChatMessage
 from ..localModels.twitchChatMessageFragment import TwitchChatMessageFragment
-from ..localModels.twitchChatMessageFragmentCheermote import TwitchChatMessageFragmentCheermote
-from ..localModels.twitchChatMessageFragmentEmote import TwitchChatMessageFragmentEmote
-from ..localModels.twitchChatMessageFragmentGif import TwitchChatMessageFragmentGif
-from ..localModels.twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention
 from ..localModels.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
-from ..localModels.twitchCheerMetadata import TwitchCheerMetadata
-from ..localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat
-from ..localModels.twitchWatchStreak import TwitchWatchStreak
 from ..officialAccounts.officialTwitchAccountUserIdProviderInterface import \
     OfficialTwitchAccountUserIdProviderInterface
 from ..tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
@@ -64,6 +45,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
         triviaGameMachine: TriviaGameMachineInterface | None,
+        twitchLocalModelsMapper: TwitchLocalModelsMapperInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         chatActions: Collection[AbsChatAction | Any | None] | None,
@@ -87,6 +69,8 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        elif not isinstance(twitchLocalModelsMapper, TwitchLocalModelsMapperInterface):
+            raise TypeError(f'twitchLocalModelsMapper argument is malformed: \"{twitchLocalModelsMapper}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -105,6 +89,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface | None] = triviaGameBuilder
         self.__triviaGameMachine: Final[TriviaGameMachineInterface | None] = triviaGameMachine
+        self.__twitchLocalModelsMapper: Final[TwitchLocalModelsMapperInterface] = twitchLocalModelsMapper
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
@@ -280,10 +265,10 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=})')
             return
 
-        messageFragments = await self.__mapApiMessageFragments(chatMessage.fragments)
+        messageFragments = await self.__twitchLocalModelsMapper.mapChatMessageFragments(chatMessage.fragments)
         textWithoutCheers = await self.__purgeChatMessageOfCheers(messageFragments)
-        cheerMetadata = await self.__mapApiCheerMetadata(event.cheer)
-        watchStreak = await self.__mapApiWatchStreak(event.watchStreak)
+        cheerMetadata = await self.__twitchLocalModelsMapper.mapCheerMetadata(event.cheer)
+        watchStreak = await self.__twitchLocalModelsMapper.mapWatchStreak(event.watchStreak)
 
         if event.customPowerUp is not None or event.customPowerUpData is not None:
             # just including this for testing/debug purposes for the time being
@@ -439,137 +424,3 @@ class TwitchChatHandler(AbsTwitchChatHandler):
 
         purgedMessage = ' '.join(chunks)
         return utils.cleanStr(purgedMessage)
-
-    async def __mapApiCheerMetadata(
-        self,
-        apiCheer: ApiTwitchCheerMetadata | None,
-    ) -> TwitchCheerMetadata | None:
-        if apiCheer is None or apiCheer.bits < 1:
-            return None
-
-        return TwitchCheerMetadata(
-            bits = apiCheer.bits,
-        )
-
-    async def __mapApiEmoteImageFormat(
-        self,
-        apiImageFormat: ApiTwitchEmoteImageFormat,
-    ) -> TwitchEmoteImageFormat:
-        match apiImageFormat:
-            case ApiTwitchEmoteImageFormat.ANIMATED: return TwitchEmoteImageFormat.ANIMATED
-            case ApiTwitchEmoteImageFormat.STATIC: return TwitchEmoteImageFormat.STATIC
-            case _: raise ValueError(f'Encountered unknown ApiTwitchEmoteImageFormat: \"{apiImageFormat}\"')
-
-    async def __mapApiMessageFragments(
-        self,
-        apiMessageFragments: Collection[ApiTwitchChatMessageFragment],
-    ) -> FrozenList[TwitchChatMessageFragment]:
-        messageFragments: FrozenList[TwitchChatMessageFragment] = FrozenList()
-
-        for apiMessageFragment in apiMessageFragments:
-            messageFragment = await self.__mapApiMessageFragment(apiMessageFragment)
-            messageFragments.append(messageFragment)
-
-        messageFragments.freeze()
-        return messageFragments
-
-    async def __mapApiMessageFragment(
-        self,
-        apiMessageFragment: ApiTwitchChatMessageFragment,
-    ) -> TwitchChatMessageFragment:
-        cheermote = await self.__mapApiMessageFragmentCheermote(apiMessageFragment.cheermote)
-        emote = await self.__mapApiMessageFragmentEmote(apiMessageFragment.emote)
-        gif = await self.__mapApiMessageFragmentGif(apiMessageFragment.gif)
-        mention = await self.__mapApiMessageFragmentMention(apiMessageFragment.mention)
-        fragmentType = await self.__mapApiMessageFragmentType(apiMessageFragment.fragmentType)
-
-        return TwitchChatMessageFragment(
-            text = apiMessageFragment.text,
-            cheermote = cheermote,
-            emote = emote,
-            gif = gif,
-            mention = mention,
-            fragmentType = fragmentType,
-        )
-
-    async def __mapApiMessageFragmentCheermote(
-        self,
-        apiCheermote: ApiTwitchChatMessageFragmentCheermote | None,
-    ) -> TwitchChatMessageFragmentCheermote | None:
-        if apiCheermote is None:
-            return None
-
-        return TwitchChatMessageFragmentCheermote(
-            bits = apiCheermote.bits,
-            tier = apiCheermote.tier,
-            prefix = apiCheermote.prefix,
-        )
-
-    async def __mapApiMessageFragmentEmote(
-        self,
-        apiEmote: ApiTwitchChatMessageFragmentEmote | None,
-    ) -> TwitchChatMessageFragmentEmote | None:
-        if apiEmote is None:
-            return None
-
-        imageFormats: set[TwitchEmoteImageFormat] = set()
-
-        for apiImageFormat in apiEmote.imageFormats:
-            imageFormat = await self.__mapApiEmoteImageFormat(apiImageFormat)
-            imageFormats.add(imageFormat)
-
-        return TwitchChatMessageFragmentEmote(
-            imageFormats = frozenset(imageFormats),
-            emoteId = apiEmote.emoteId,
-            emoteSetId = apiEmote.emoteSetId,
-            ownerId = apiEmote.ownerId,
-        )
-
-    async def __mapApiMessageFragmentGif(
-        self,
-        apiGif: ApiTwitchChatMessageFragmentGif | None,
-    ) -> TwitchChatMessageFragmentGif | None:
-        if apiGif is None:
-            return None
-
-        return TwitchChatMessageFragmentGif(
-            gifId = apiGif.gifId,
-            url = apiGif.url,
-        )
-
-    async def __mapApiMessageFragmentMention(
-        self,
-        apiMention: ApiTwitchChatMessageFragmentMention | None,
-    ) -> TwitchChatMessageFragmentMention | None:
-        if apiMention is None:
-            return None
-
-        return TwitchChatMessageFragmentMention(
-            userId = apiMention.userId,
-            userLogin = apiMention.userLogin,
-            userName = apiMention.userName,
-        )
-
-    async def __mapApiMessageFragmentType(
-        self,
-        apiFragmentType: ApiTwitchChatMessageFragmentType,
-    ) -> TwitchChatMessageFragmentType:
-        match apiFragmentType:
-            case ApiTwitchChatMessageFragmentType.CHEERMOTE: return TwitchChatMessageFragmentType.CHEERMOTE
-            case ApiTwitchChatMessageFragmentType.EMOTE: return TwitchChatMessageFragmentType.EMOTE
-            case ApiTwitchChatMessageFragmentType.GIF: return TwitchChatMessageFragmentType.GIF
-            case ApiTwitchChatMessageFragmentType.MENTION: return TwitchChatMessageFragmentType.MENTION
-            case ApiTwitchChatMessageFragmentType.TEXT: return TwitchChatMessageFragmentType.TEXT
-            case _: raise ValueError(f'Encountered unknown ApiTwitchChatMessageFragmentType: \"{apiFragmentType}\"')
-
-    async def __mapApiWatchStreak(
-        self,
-        apiWatchStreak: ApiTwitchWatchStreak | None,
-    ) -> TwitchWatchStreak | None:
-        if apiWatchStreak is None or apiWatchStreak.streakCount < 1:
-            return None
-
-        return TwitchWatchStreak(
-            channelPointsAwarded = apiWatchStreak.channelPointsAwarded,
-            streakCount = apiWatchStreak.streakCount,
-        )
