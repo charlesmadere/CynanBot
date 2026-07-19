@@ -1,9 +1,8 @@
 from typing import Final
 
 from ..absTwitchPowerUpRedemptionHandler import AbsTwitchPowerUpRedemptionHandler
-from ..api.models.twitchCustomPowerUp import TwitchCustomPowerUp as ApiTwitchCustomPowerUp
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
-from ..localModels.twitchCustomPowerUp import TwitchCustomPowerUp
+from ..localModels.mapper.twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
 from ..localModels.twitchPowerUpRedemption import TwitchPowerUpRedemption
 from ...cheerActions.cheerActionHelperInterface import CheerActionHelperInterface
 from ...misc import utils as utils
@@ -17,14 +16,18 @@ class TwitchPowerUpRedemptionHandler(AbsTwitchPowerUpRedemptionHandler):
         self,
         cheerActionHelper: CheerActionHelperInterface | None,
         timber: TimberInterface,
+        twitchLocalModelsMapper: TwitchLocalModelsMapperInterface,
     ):
         if cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
             raise TypeError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchLocalModelsMapper, TwitchLocalModelsMapperInterface):
+            raise TypeError(f'twitchLocalModelsMapper argument is malformed: \"{twitchLocalModelsMapper}\"')
 
         self.__cheerActionHelper: Final[CheerActionHelperInterface | None] = cheerActionHelper
         self.__timber: Final[TimberInterface] = timber
+        self.__twitchLocalModelsMapper: Final[TwitchLocalModelsMapperInterface] = twitchLocalModelsMapper
 
     async def onNewPowerUpRedemption(self, powerUpRedemption: TwitchPowerUpRedemption):
         if not isinstance(powerUpRedemption, TwitchPowerUpRedemption):
@@ -56,7 +59,7 @@ class TwitchPowerUpRedemptionHandler(AbsTwitchPowerUpRedemptionHandler):
         redemptionUserId = event.userId
         redemptionUserLogin = event.userLogin
         redemptionUserName = event.userName
-        customPowerUp = await self.__mapApiCustomPowerUp(event.customPowerUp)
+        customPowerUp = await self.__twitchLocalModelsMapper.mapCustomPowerUp(event.customPowerUp)
 
         if not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin) or not utils.isValidStr(redemptionUserName) or customPowerUp is None:
             self.__timber.log('TwitchPowerUpRedemptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({redemptionUserId=}) ({redemptionUserLogin=}) ({redemptionUserName=}) ({customPowerUp=})')
@@ -99,17 +102,3 @@ class TwitchPowerUpRedemptionHandler(AbsTwitchPowerUpRedemptionHandler):
             twitchChatMessageId = None,
             twitchUser = powerUpRedemption.twitchUser,
         ))
-
-    async def __mapApiCustomPowerUp(
-        self,
-        apiCustomPowerUp: ApiTwitchCustomPowerUp | None,
-    ) -> TwitchCustomPowerUp | None:
-        if apiCustomPowerUp is None:
-            return None
-
-        return TwitchCustomPowerUp(
-            bits = apiCustomPowerUp.bits,
-            prompt = apiCustomPowerUp.prompt,
-            powerUpId = apiCustomPowerUp.powerUpId,
-            title = apiCustomPowerUp.title,
-        )

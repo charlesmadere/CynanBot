@@ -3,6 +3,7 @@ from typing import Collection
 
 from frozenlist import FrozenList
 
+from ..twitchBitsUseType import TwitchBitsUseType as LocalBitsUseType
 from ..twitchChatMessageFragment import TwitchChatMessageFragment as LocalChatMessageFragment
 from ..twitchChatMessageFragmentCheermote import TwitchChatMessageFragmentCheermote as LocalChatMessageFragmentCheermote
 from ..twitchChatMessageFragmentEmote import TwitchChatMessageFragmentEmote as LocalChatMessageFragmentEmote
@@ -10,8 +11,11 @@ from ..twitchChatMessageFragmentGif import TwitchChatMessageFragmentGif as Local
 from ..twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention as LocalChatMessageFragmentMention
 from ..twitchChatMessageFragmentType import TwitchChatMessageFragmentType as LocalChatMessageFragmentType
 from ..twitchCheerMetadata import TwitchCheerMetadata as LocalCheerMetadata
+from ..twitchCustomPowerUp import TwitchCustomPowerUp as LocalCustomPowerUp
+from ..twitchCustomPowerUpData import TwitchCustomPowerUpData as LocalCustomPowerUpData
 from ..twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
 from ..twitchWatchStreak import TwitchWatchStreak as LocalWatchStreak
+from ...api.models.twitchBitsUseType import TwitchBitsUseType as ApiBitsUseType
 from ...api.models.twitchChatMessageFragment import TwitchChatMessageFragment as ApiChatMessageFragment
 from ...api.models.twitchChatMessageFragmentCheermote import \
     TwitchChatMessageFragmentCheermote as ApiChatMessageFragmentCheermote
@@ -21,11 +25,20 @@ from ...api.models.twitchChatMessageFragmentMention import \
     TwitchChatMessageFragmentMention as ApiChatMessageFragmentMention
 from ...api.models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType as ApiChatMessageFragmentType
 from ...api.models.twitchCheerMetadata import TwitchCheerMetadata as ApiCheerMetadata
+from ...api.models.twitchCustomPowerUp import TwitchCustomPowerUp as ApiCustomPowerUp
+from ...api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as ApiCustomPowerUpData
 from ...api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
 from ...api.models.twitchWatchStreak import TwitchWatchStreak as ApiWatchStreak
 
 
 class TwitchLocalModelsMapperInterface(ABC):
+
+    @abstractmethod
+    async def mapBitsUseType(
+        self,
+        bitsUseType: ApiBitsUseType | None,
+    ) -> LocalBitsUseType | None:
+        pass
 
     @abstractmethod
     async def mapChatMessageFragment(
@@ -81,6 +94,20 @@ class TwitchLocalModelsMapperInterface(ABC):
         self,
         cheerMetadata: ApiCheerMetadata | None,
     ) -> LocalCheerMetadata | None:
+        pass
+
+    @abstractmethod
+    async def mapCustomPowerUp(
+        self,
+        customPowerUp: ApiCustomPowerUp | None,
+    ) -> LocalCustomPowerUp | None:
+        pass
+
+    @abstractmethod
+    async def mapCustomPowerUpData(
+        self,
+        customPowerUpData: ApiCustomPowerUpData | None,
+    ) -> LocalCustomPowerUpData | None:
         pass
 
     @abstractmethod
