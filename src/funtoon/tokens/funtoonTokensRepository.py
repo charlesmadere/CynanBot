@@ -125,7 +125,7 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
                             token text DEFAULT NULL,
                             twitchchannelid text NOT NULL PRIMARY KEY
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -135,7 +135,7 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
                             token TEXT DEFAULT NULL,
                             twitchchannelid TEXT NOT NULL PRIMARY KEY
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:
