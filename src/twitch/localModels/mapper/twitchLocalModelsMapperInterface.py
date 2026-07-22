@@ -14,6 +14,8 @@ from ..twitchCheerMetadata import TwitchCheerMetadata as LocalCheerMetadata
 from ..twitchCustomPowerUp import TwitchCustomPowerUp as LocalCustomPowerUp
 from ..twitchCustomPowerUpData import TwitchCustomPowerUpData as LocalCustomPowerUpData
 from ..twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
+from ..twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
+from ..twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
 from ..twitchWatchStreak import TwitchWatchStreak as LocalWatchStreak
 from ...api.models.twitchBitsUseType import TwitchBitsUseType as ApiBitsUseType
 from ...api.models.twitchChatMessageFragment import TwitchChatMessageFragment as ApiChatMessageFragment
@@ -28,6 +30,9 @@ from ...api.models.twitchCheerMetadata import TwitchCheerMetadata as ApiCheerMet
 from ...api.models.twitchCustomPowerUp import TwitchCustomPowerUp as ApiCustomPowerUp
 from ...api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as ApiCustomPowerUpData
 from ...api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
+from ...api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
+from ...api.models.twitchResubscriptionMessageEmote import \
+    TwitchResubscriptionMessageEmote as ApiResubscriptionMessageEmote
 from ...api.models.twitchWatchStreak import TwitchWatchStreak as ApiWatchStreak
 
 
@@ -118,6 +123,20 @@ class TwitchLocalModelsMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def mapResubscriptionMessage(
+        self,
+        resubscriptionMessage: ApiResubscriptionMessage | None,
+    ) -> LocalResubscriptionMessage | None:
+        pass
+
+    @abstractmethod
+    async def mapResubscriptionMessageEmote(
+        self,
+        resubscriptionMessageEmote: ApiResubscriptionMessageEmote | None,
+    ) -> LocalResubscriptionMessageEmote | None:
+        pass
+
+    @abstractmethod
     async def mapWatchStreak(
         self,
         watchStreak: ApiWatchStreak | None,
@@ -143,4 +162,11 @@ class TwitchLocalModelsMapperInterface(ABC):
         self,
         emoteImageFormat: ApiEmoteImageFormat | None,
     ) -> LocalEmoteImageFormat:
+        pass
+
+    @abstractmethod
+    async def requireResubscriptionMessageEmote(
+        self,
+        resubscriptionMessageEmote: ApiResubscriptionMessageEmote | None,
+    ) -> LocalResubscriptionMessageEmote:
         pass

@@ -78,7 +78,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         user = subscriptionData.user
 
         if user.isSubGiftThankingEnabled:
-            await self.__processCynanBotAsGiftRecipient(
+            await self.__processBotAsGiftRecipient(
                 subscriptionData = subscriptionData,
             )
 
@@ -157,7 +157,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             subscriptionData = subscriptionData,
         )
 
-    async def __processCynanBotAsGiftRecipient(self, subscriptionData: AbsTwitchSubscriptionHandler.SubscriptionData):
+    async def __processBotAsGiftRecipient(
+        self,
+        subscriptionData: AbsTwitchSubscriptionHandler.SubscriptionData,
+    ):
         user = subscriptionData.user
 
         if not user.isSubGiftThankingEnabled:

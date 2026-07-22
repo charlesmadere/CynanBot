@@ -761,7 +761,7 @@ class TestTwitchJsonMapper:
     async def test_parseChatter_withEmptyDictionary(self):
         result: TwitchChatter | None = None
 
-        with pytest.raises(Exception):
+        with pytest.raises(TypeError):
             result = await self.jsonMapper.parseChatter(dict())
 
         assert result is None
@@ -770,7 +770,7 @@ class TestTwitchJsonMapper:
     async def test_parseChatter_withNone(self):
         result: TwitchChatter | None = None
 
-        with pytest.raises(Exception):
+        with pytest.raises(TypeError):
             result = await self.jsonMapper.parseChatter(None)
 
         assert result is None

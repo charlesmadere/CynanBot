@@ -271,12 +271,10 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
             return None
         elif preferredTts.provider not in await self.__chatterPreferredTtsSettingsRepository.getEnabledTtsProviders():
             return None
-        elif preferredTts.provider in await self.__chatterPreferredTtsSettingsRepository.getHighTierTtsProviders():
-            if not await self.__isHighTierEligibleChatter(
-                chatterUserId = chatterUserId,
-                twitchChannelId = twitchChannelId,
-            ):
-                return None
+
+        # Intentionally NOT checking whether this user has access to high tier TTS providers,
+        # as it was determined that we'll just do this check when applying a high tier TTS.
+        # There's a chance that this may change in the future, but it's fine for now.
 
         return preferredTts
 

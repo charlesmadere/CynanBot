@@ -14,6 +14,8 @@ from ..twitchCheerMetadata import TwitchCheerMetadata as LocalCheerMetadata
 from ..twitchCustomPowerUp import TwitchCustomPowerUp as LocalCustomPowerUp
 from ..twitchCustomPowerUpData import TwitchCustomPowerUpData as LocalCustomPowerUpData
 from ..twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
+from ..twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
+from ..twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
 from ..twitchWatchStreak import TwitchWatchStreak as LocalWatchStreak
 from ...api.models.twitchBitsUseType import TwitchBitsUseType as ApiBitsUseType
 from ...api.models.twitchChatMessageFragment import TwitchChatMessageFragment as ApiChatMessageFragment
@@ -28,6 +30,9 @@ from ...api.models.twitchCheerMetadata import TwitchCheerMetadata as ApiCheerMet
 from ...api.models.twitchCustomPowerUp import TwitchCustomPowerUp as ApiCustomPowerUp
 from ...api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as ApiCustomPowerUpData
 from ...api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
+from ...api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
+from ...api.models.twitchResubscriptionMessageEmote import \
+    TwitchResubscriptionMessageEmote as ApiResubscriptionMessageEmote
 from ...api.models.twitchWatchStreak import TwitchWatchStreak as ApiWatchStreak
 
 
@@ -201,6 +206,39 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
             case ApiEmoteImageFormat.ANIMATED: return LocalEmoteImageFormat.ANIMATED
             case ApiEmoteImageFormat.STATIC: return LocalEmoteImageFormat.STATIC
 
+    async def mapResubscriptionMessage(
+        self,
+        resubscriptionMessage: ApiResubscriptionMessage | None,
+    ) -> LocalResubscriptionMessage | None:
+        if resubscriptionMessage is None:
+            return None
+
+        emotes: FrozenList[LocalResubscriptionMessageEmote] = FrozenList()
+
+        for resubscriptionMessageEmote in resubscriptionMessage.emotes:
+            emote = await self.requireResubscriptionMessageEmote(resubscriptionMessageEmote)
+            emotes.append(emote)
+
+        emotes.freeze()
+
+        return LocalResubscriptionMessage(
+            emotes = emotes,
+            text = resubscriptionMessage.text,
+        )
+
+    async def mapResubscriptionMessageEmote(
+        self,
+        resubscriptionMessageEmote: ApiResubscriptionMessageEmote | None,
+    ) -> LocalResubscriptionMessageEmote | None:
+        if resubscriptionMessageEmote is None:
+            return None
+
+        return LocalResubscriptionMessageEmote(
+            begin = resubscriptionMessageEmote.begin,
+            end = resubscriptionMessageEmote.end,
+            emoteId = resubscriptionMessageEmote.emoteId,
+        )
+
     async def mapWatchStreak(
         self,
         watchStreak: ApiWatchStreak | None,
@@ -249,5 +287,18 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
 
         if result is None:
             raise ValueError(f'Unable to map \"{emoteImageFormat}\" into LocalEmoteImageFormat value!')
+
+        return result
+
+    async def requireResubscriptionMessageEmote(
+        self,
+        resubscriptionMessageEmote: ApiResubscriptionMessageEmote | None,
+    ) -> LocalResubscriptionMessageEmote:
+        result = await self.mapResubscriptionMessageEmote(
+            resubscriptionMessageEmote = resubscriptionMessageEmote,
+        )
+
+        if result is None:
+            raise ValueError(f'Unable to map \"{resubscriptionMessageEmote}\" into LocalResubscriptionMessageEmote')
 
         return result

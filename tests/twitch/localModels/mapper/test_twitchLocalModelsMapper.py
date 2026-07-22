@@ -19,6 +19,9 @@ from src.twitch.api.models.twitchCheerMetadata import TwitchCheerMetadata as Api
 from src.twitch.api.models.twitchCustomPowerUp import TwitchCustomPowerUp as ApiCustomPowerUp
 from src.twitch.api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as ApiCustomPowerUpData
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
+from src.twitch.api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
+from src.twitch.api.models.twitchResubscriptionMessageEmote import \
+    TwitchResubscriptionMessageEmote as ApiResubscriptionMessageEmote
 from src.twitch.api.models.twitchWatchStreak import TwitchWatchStreak as ApiWatchStreak
 from src.twitch.localModels.mapper.twitchLocalModelsMapper import TwitchLocalModelsMapper
 from src.twitch.localModels.mapper.twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
@@ -39,6 +42,9 @@ from src.twitch.localModels.twitchCheerMetadata import TwitchCheerMetadata as Lo
 from src.twitch.localModels.twitchCustomPowerUp import TwitchCustomPowerUp as LocalCustomPowerUp
 from src.twitch.localModels.twitchCustomPowerUpData import TwitchCustomPowerUpData as LocalCustomPowerUpData
 from src.twitch.localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
+from src.twitch.localModels.twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
+from src.twitch.localModels.twitchResubscriptionMessageEmote import \
+    TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
 from src.twitch.localModels.twitchWatchStreak import TwitchWatchStreak as LocalWatchStreak
 
 
@@ -333,6 +339,53 @@ class TestTwitchLocalModelsMapper:
         assert result is LocalEmoteImageFormat.STATIC
 
     @pytest.mark.asyncio
+    async def test_mapResubscriptionMessage(self):
+        emotes: FrozenList[ApiResubscriptionMessageEmote] = FrozenList([
+            ApiResubscriptionMessageEmote(
+                begin = 0,
+                end = 1,
+                emoteId = 'emoteId',
+            ),
+        ])
+        emotes.freeze()
+
+        resubscriptionMessage = ApiResubscriptionMessage(
+            emotes = emotes,
+            text = 'Hello, World!',
+        )
+
+        result = await self.mapper.mapResubscriptionMessage(resubscriptionMessage)
+        assert isinstance(result, LocalResubscriptionMessage)
+        assert len(result.emotes) == 1
+        assert result.emotes.frozen
+        assert result.emotes[0] == await self.mapper.requireResubscriptionMessageEmote(emotes[0])
+        assert result.text == resubscriptionMessage.text
+
+    @pytest.mark.asyncio
+    async def test_mapResubscriptionMessage_withNone(self):
+        result = await self.mapper.mapResubscriptionMessage(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_mapResubscriptionMessageEmote(self):
+        messageEmote = ApiResubscriptionMessageEmote(
+            begin = 0,
+            end = 1,
+            emoteId = 'abc123',
+        )
+
+        result = await self.mapper.mapResubscriptionMessageEmote(messageEmote)
+        assert isinstance(result, LocalResubscriptionMessageEmote)
+        assert result.begin == messageEmote.begin
+        assert result.end == messageEmote.end
+        assert result.emoteId == messageEmote.emoteId
+
+    @pytest.mark.asyncio
+    async def test_mapResubscriptionMessageEmote_withNone(self):
+        result = await self.mapper.mapResubscriptionMessageEmote(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_mapWatchStreak(self):
         apiWatchStreak = ApiWatchStreak(
             channelPointsAwarded = 250,
@@ -456,6 +509,29 @@ class TestTwitchLocalModelsMapper:
     async def test_requireEmoteImageFormat_withStatic(self):
         result = await self.mapper.requireEmoteImageFormat(ApiEmoteImageFormat.STATIC)
         assert result is LocalEmoteImageFormat.STATIC
+
+    @pytest.mark.asyncio
+    async def test_requireResubscriptionMessageEmote(self):
+        messageEmote = ApiResubscriptionMessageEmote(
+            begin = 0,
+            end = 1,
+            emoteId = 'abc123',
+        )
+
+        result = await self.mapper.requireResubscriptionMessageEmote(messageEmote)
+        assert isinstance(result, LocalResubscriptionMessageEmote)
+        assert result.begin == messageEmote.begin
+        assert result.end == messageEmote.end
+        assert result.emoteId == messageEmote.emoteId
+
+    @pytest.mark.asyncio
+    async def test_requireResubscriptionMessageEmote_withNone(self):
+        result: LocalResubscriptionMessageEmote | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.mapper.requireResubscriptionMessageEmote(None)
+
+        assert result is None
 
     def test_sanity(self):
         assert self.mapper is not None
