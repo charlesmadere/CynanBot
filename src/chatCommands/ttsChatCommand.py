@@ -56,7 +56,7 @@ class TtsChatCommand(AbsChatCommand):
             re.compile(r'^\s*!tts\b', re.IGNORECASE),
         })
 
-        self.__ttsProviderRegEx: Final[Pattern] = re.compile(r'^--(\w+)$', re.IGNORECASE)
+        self.__ttsProviderRegEx: Final[Pattern] = re.compile(r'^--?(\w+)$', re.IGNORECASE)
 
     @property
     def commandName(self) -> str:

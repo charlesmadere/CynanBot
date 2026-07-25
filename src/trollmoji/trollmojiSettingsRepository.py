@@ -95,7 +95,7 @@ class TrollmojiSettingsRepository(TrollmojiSettingsRepositoryInterface):
         if not utils.isValidStr(emoteText):
             return None
 
-        twitchChannelId = await self.__twitchFriendsUserIdRepository.getCharlesUserId()
+        twitchChannelId = await self.__twitchFriendsUserIdRepository.getCharlyUserId()
         if not utils.isValidStr(twitchChannelId):
             return None
 

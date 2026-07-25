@@ -643,7 +643,7 @@ async def main():
 
     await triviaScraper.store(triviaQuestion)
     question = await glacialTriviaQuestionRepository.fetchTriviaQuestion(TriviaFetchOptions(
-        twitchChannel = 'smCharles',
+        twitchChannel = 'smCharly',
         twitchChannelId = '74350217',
         questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
     ))
