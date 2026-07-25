@@ -303,6 +303,15 @@ class TestTtsJsonMapper:
         result = self.jsonMapper.parseProvider('dec_talk')
         assert result is TtsProvider.DEC_TALK
 
+        result = self.jsonMapper.parseProvider('dec-talk')
+        assert result is TtsProvider.DEC_TALK
+
+        result = self.jsonMapper.parseProvider('dec talk')
+        assert result is TtsProvider.DEC_TALK
+
+        result = self.jsonMapper.parseProvider('dectalk')
+        assert result is TtsProvider.DEC_TALK
+
     def test_parseProvider_withEmptyString(self):
         result = self.jsonMapper.parseProvider('')
         assert result is None
@@ -388,6 +397,12 @@ class TestTtsJsonMapper:
         result = self.jsonMapper.parseProvider('tts monster')
         assert result is TtsProvider.TTS_MONSTER
 
+        result = self.jsonMapper.parseProvider('ttsmonster')
+        assert result is TtsProvider.TTS_MONSTER
+
+        result = self.jsonMapper.parseProvider('monster')
+        assert result is TtsProvider.TTS_MONSTER
+
     def test_parseProvider_withUnrestrictedDecTalkStrings(self):
         result = self.jsonMapper.parseProvider('unrestricted_dec_talk')
         assert result is TtsProvider.UNRESTRICTED_DEC_TALK
@@ -463,8 +478,20 @@ class TestTtsJsonMapper:
         result = self.jsonMapper.requireProvider('stream_element')
         assert result is TtsProvider.STREAM_ELEMENTS
 
-    def test_requireProvider_withTtsMonsterString(self):
+    def test_requireProvider_withTtsMonster(self):
         result = self.jsonMapper.requireProvider('tts_monster')
+        assert result is TtsProvider.TTS_MONSTER
+
+        result = self.jsonMapper.requireProvider('tts-monster')
+        assert result is TtsProvider.TTS_MONSTER
+
+        result = self.jsonMapper.requireProvider('tts monster')
+        assert result is TtsProvider.TTS_MONSTER
+
+        result = self.jsonMapper.requireProvider('ttsmonster')
+        assert result is TtsProvider.TTS_MONSTER
+
+        result = self.jsonMapper.requireProvider('monster')
         assert result is TtsProvider.TTS_MONSTER
 
     def test_requireProvider_withUnrestrictedDecTalkString(self):

@@ -90,6 +90,7 @@ class TtsJsonMapper(TtsJsonMapperInterface):
         streamElements.freeze()
 
         ttsMonster: FrozenList[Pattern] = FrozenList()
+        ttsMonster.append(re.compile(r'^\s*monster\s*$', re.IGNORECASE))
         ttsMonster.append(re.compile(r'^\s*tts(?:\s+|_|-)?monster\s*$', re.IGNORECASE))
         ttsMonster.freeze()
 
@@ -110,20 +111,6 @@ class TtsJsonMapper(TtsJsonMapperInterface):
             TtsProvider.TTS_MONSTER: ttsMonster,
             TtsProvider.UNRESTRICTED_DEC_TALK: unrestrictedDecTalk,
         })
-
-    def parseProvider(
-        self,
-        ttsProvider: str | Any | None,
-    ) -> TtsProvider | None:
-        if not utils.isValidStr(ttsProvider):
-            return None
-
-        for ttsProviderEnum, providerRegExes in self.__ttsProviderRegExes.items():
-            for providerRegEx in providerRegExes:
-                if providerRegEx.fullmatch(ttsProvider) is not None:
-                    return ttsProviderEnum
-
-        return None
 
     async def asyncParseShotgunProviderUseParameters(
         self,
@@ -159,6 +146,20 @@ class TtsJsonMapper(TtsJsonMapperInterface):
 
         else:
             return None
+
+    def parseProvider(
+        self,
+        ttsProvider: str | Any | None,
+    ) -> TtsProvider | None:
+        if not utils.isValidStr(ttsProvider):
+            return None
+
+        for ttsProviderEnum, providerRegExes in self.__ttsProviderRegExes.items():
+            for providerRegEx in providerRegExes:
+                if providerRegEx.fullmatch(ttsProvider) is not None:
+                    return ttsProviderEnum
+
+        return None
 
     def requireProvider(
         self,
