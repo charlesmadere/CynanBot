@@ -137,13 +137,13 @@ twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFr
 async def main():
     pass
 
-    twitchChannelId = await twitchFriendsUserIdRepository.getCharlesUserId()
+    twitchChannelId = await twitchFriendsUserIdRepository.getCharlyUserId()
 
     if not isinstance(twitchChannelId, str):
         raise RuntimeError(f'twitchChannelId value is not set: \"{twitchChannelId}\"')
 
     message = 'shadow: telegram'
-    twitchChannel = 'smCharles'
+    twitchChannel = 'smCharly'
 
     fileReference = await ttsMonsterHelper.generateTts(
         donationPrefix = None,

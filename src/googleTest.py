@@ -184,7 +184,7 @@ soundPlayerManager: Final[SoundPlayerManagerInterface] = AudioPlayerSoundPlayerM
 async def main():
     pass
 
-    twitchChannelId = await twitchFriendsUserIdRepository.getCharlesUserId()
+    twitchChannelId = await twitchFriendsUserIdRepository.getCharlyUserId()
 
     if not isinstance(twitchChannelId, str):
         raise RuntimeError(f'twitchChannelId value is not set: \"{twitchChannelId}\"')

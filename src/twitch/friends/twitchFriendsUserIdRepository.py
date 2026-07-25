@@ -15,7 +15,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         ayAerithUserId: str | None = '277720347',
         bastionBlueUserId: str | None = '134639294',
         boatWaifuUserId: str | None = '563334759',
-        charlesUserId: str | None = '74350217',
+        charlyUserId: str | None = '74350217',
+        concisionUserId: str | None = '56778682',
         cynanBotUserId: str | None = '546457893',
         cynanBotTtsUserId: str | None = '977636741',
         dylanStewUserId: str | None = '66822320',
@@ -26,18 +27,23 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         hokkaidoubareUserId: str | None = '490529357',
         imytUserId: str | None = '20037000',
         jrpUserId: str | None = '47768842',
+        kazekiiUserId: str | None = '62963382',
         kazekiiBotUserId: str | None = '925014762',
+        kiaraUserId: str | None = '37055465',
         kiawaBotUserId: str | None = '786820295',
         lndegenUserId: str | None = '63602335',
-        lucentUserId: str | None = '30992900',
+        lucyUserId: str | None = '30992900',
         mandooBotUserId: str | None = '761337972',
         merttUserId: str | None = '76798688',
         miaGuwuUserId: str | None = '176071941',
+        nintendesiUserId: str | None = '150066920',
         oathyBotUserId: str | None = '147389114',
         oatsngoatsUserId: str | None = '39886669',
         patLanicusUserId: str | None = '46826466',
         stashiocatUserId: str | None = '20889981',
         theCatComputerUserId: str | None = '1326985885',
+        tsteineUserId: str | None = '18944536',
+        twinmoUserId: str | None = '431483293',
         volwrathUserId: str | None = '40463997',
         zanianUserId: str | None = '57704009',
         zoiiBotUserId: str | None = '188093207',
@@ -58,8 +64,10 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'bastionBlueUserId argument is malformed: \"{bastionBlueUserId}\"')
         elif boatWaifuUserId is not None and not isinstance(boatWaifuUserId, str):
             raise TypeError(f'boatWaifuUserId argument is malformed: \"{boatWaifuUserId}\"')
-        elif charlesUserId is not None and not isinstance(charlesUserId, str):
-            raise TypeError(f'charlesUserId argument is malformed: \"{charlesUserId}\"')
+        elif charlyUserId is not None and not isinstance(charlyUserId, str):
+            raise TypeError(f'charlyUserId argument is malformed: \"{charlyUserId}\"')
+        elif concisionUserId is not None and not isinstance(concisionUserId, str):
+            raise TypeError(f'concisionUserId argument is malformed: \"{concisionUserId}\"')
         elif cynanBotUserId is not None and not isinstance(cynanBotUserId, str):
             raise TypeError(f'cynanBotUserId argument is malformed: \"{cynanBotUserId}\"')
         elif cynanBotTtsUserId is not None and not isinstance(cynanBotTtsUserId, str):
@@ -80,20 +88,26 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'imytUserId argument is malformed: \"{imytUserId}\"')
         elif jrpUserId is not None and not isinstance(jrpUserId, str):
             raise TypeError(f'jrpUserId argument is malformed: \"{jrpUserId}\"')
+        elif kazekiiUserId is not None and not isinstance(kazekiiUserId, str):
+            raise TypeError(f'kazekiiUserId argument is malformed: \"{kazekiiUserId}\"')
         elif kazekiiBotUserId is not None and not isinstance(kazekiiBotUserId, str):
             raise TypeError(f'kazekiiBotUserId argument is malformed: \"{kazekiiBotUserId}\"')
+        elif kiaraUserId is not None and not isinstance(kiaraUserId, str):
+            raise TypeError(f'kiaraUserId argument is malformed: \"{kiaraUserId}\"')
         elif kiawaBotUserId is not None and not isinstance(kiawaBotUserId, str):
             raise TypeError(f'kiawaBotUserId argument is malformed: \"{kiawaBotUserId}\"')
         elif lndegenUserId is not None and not isinstance(lndegenUserId, str):
             raise TypeError(f'lndegenUserId argument is malformed: \"{lndegenUserId}\"')
-        elif lucentUserId is not None and not isinstance(lucentUserId, str):
-            raise TypeError(f'lucentUserId argument is malformed: \"{lucentUserId}\"')
+        elif lucyUserId is not None and not isinstance(lucyUserId, str):
+            raise TypeError(f'lucyUserId argument is malformed: \"{lucyUserId}\"')
         elif mandooBotUserId is not None and not isinstance(mandooBotUserId, str):
             raise TypeError(f'mandooBotUserId argument is malformed: \"{mandooBotUserId}\"')
         elif merttUserId is not None and not isinstance(merttUserId, str):
             raise TypeError(f'merttUserId argument is malformed: \"{merttUserId}\"')
         elif miaGuwuUserId is not None and not isinstance(miaGuwuUserId, str):
             raise TypeError(f'miaGuwuUserId argument is malformed: \"{miaGuwuUserId}\"')
+        elif nintendesiUserId is not None and not isinstance(nintendesiUserId, str):
+            raise TypeError(f'nintendesiUserId argument is malformed: \"{nintendesiUserId}\"')
         elif oathyBotUserId is not None and not isinstance(oathyBotUserId, str):
             raise TypeError(f'oathyBotUserId argument is malformed: \"{oathyBotUserId}\"')
         elif oatsngoatsUserId is not None and not isinstance(oatsngoatsUserId, str):
@@ -104,6 +118,10 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'stashiocatUserId argument is malformed: \"{stashiocatUserId}\"')
         elif theCatComputerUserId is not None and not isinstance(theCatComputerUserId, str):
             raise TypeError(f'theCatComputerUserId argument is malformed: \"{theCatComputerUserId}\"')
+        elif tsteineUserId is not None and not isinstance(tsteineUserId, str):
+            raise TypeError(f'tsteineUserId argument is malformed: \"{tsteineUserId}\"')
+        elif twinmoUserId is not None and not isinstance(twinmoUserId, str):
+            raise TypeError(f'twinmoUserId argument is malformed: \"{twinmoUserId}\"')
         elif volwrathUserId is not None and not isinstance(volwrathUserId, str):
             raise TypeError(f'volwrathUserId argument is malformed: \"{volwrathUserId}\"')
         elif zanianUserId is not None and not isinstance(zanianUserId, str):
@@ -119,7 +137,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         self.__ayAerithUserId: Final[str | None] = ayAerithUserId
         self.__bastionBlueUserId: Final[str | None] = bastionBlueUserId
         self.__boatWaifuUserId: Final[str | None] = boatWaifuUserId
-        self.__charlesUserId: Final[str | None] = charlesUserId
+        self.__charlyUserId: Final[str | None] = charlyUserId
+        self.__concisionUserId: Final[str | None] = concisionUserId
         self.__cynanBotUserId: Final[str | None] = cynanBotUserId
         self.__cynanBotTtsUserId: Final[str | None] = cynanBotTtsUserId
         self.__dylanStewUserId: Final[str | None] = dylanStewUserId
@@ -130,18 +149,23 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         self.__hokkaidoubareUserId: Final[str | None] = hokkaidoubareUserId
         self.__imytUserId: Final[str | None] = imytUserId
         self.__jrpUserId: Final[str | None] = jrpUserId
+        self.__kazekiiUserId: Final[str | None] = kazekiiUserId
         self.__kazekiiBotUserId: Final[str | None] = kazekiiBotUserId
+        self.__kiaraUserId: Final[str | None] = kiaraUserId
         self.__kiawaBotUserId: Final[str | None] = kiawaBotUserId
         self.__lndegenUserId: Final[str | None] = lndegenUserId
-        self.__lucentUserId: Final[str | None] = lucentUserId
+        self.__lucyUserId: Final[str | None] = lucyUserId
         self.__mandooBotUserId: Final[str | None] = mandooBotUserId
         self.__merttUserId: Final[str | None] = merttUserId
         self.__miaGuwuUserId: Final[str | None] = miaGuwuUserId
+        self.__nintendesiUserId: Final[str | None] = nintendesiUserId
         self.__oathyBotUserId: Final[str | None] = oathyBotUserId
         self.__oatsngoatsUserId: Final[str | None] = oatsngoatsUserId
         self.__patLanicusUserId: Final[str | None] = patLanicusUserId
         self.__stashiocatUserId: Final[str | None] = stashiocatUserId
         self.__theCatComputerUserId: Final[str | None] = theCatComputerUserId
+        self.__tsteineUserId: Final[str | None] = tsteineUserId
+        self.__twinmoUserId: Final[str | None] = twinmoUserId
         self.__volwrathUserId: Final[str | None] = volwrathUserId
         self.__zanianUserId: Final[str | None] = zanianUserId
         self.__zoiiBotUserId: Final[str | None] = zoiiBotUserId
@@ -170,8 +194,11 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
     async def getBoatWaifuUserId(self) -> str | None:
         return self.__boatWaifuUserId
 
-    async def getCharlesUserId(self) -> str | None:
-        return self.__charlesUserId
+    async def getCharlyUserId(self) -> str | None:
+        return self.__charlyUserId
+
+    async def getConcisionUserId(self) -> str | None:
+        return self.__concisionUserId
 
     async def getCynanBotUserId(self) -> str | None:
         return self.__cynanBotUserId
@@ -203,8 +230,14 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
     async def getJrpUserId(self) -> str | None:
         return self.__jrpUserId
 
+    async def getKazekiiUserId(self) -> str | None:
+        return self.__kazekiiUserId
+
     async def getKazekiiBotUserId(self) -> str | None:
         return self.__kazekiiBotUserId
+
+    async def getKiaraUserId(self) -> str | None:
+        return self.__kiaraUserId
 
     async def getKiawaBotUserId(self) -> str | None:
         return self.__kiawaBotUserId
@@ -212,8 +245,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
     async def getLndegenUserId(self) -> str | None:
         return self.__lndegenUserId
 
-    async def getLucentUserId(self) -> str | None:
-        return self.__lucentUserId
+    async def getLucyUserId(self) -> str | None:
+        return self.__lucyUserId
 
     async def getMandooBotUserId(self) -> str | None:
         return self.__mandooBotUserId
@@ -223,6 +256,9 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
 
     async def getMiaGuwuUserId(self) -> str | None:
         return self.__miaGuwuUserId
+
+    async def getNintendesiUserId(self) -> str | None:
+        return self.__nintendesiUserId
 
     async def getOathyBotUserId(self) -> str | None:
         return self.__oathyBotUserId
@@ -238,6 +274,12 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
 
     async def getTheCatComputerUserId(self) -> str | None:
         return self.__theCatComputerUserId
+
+    async def getTsteineUserId(self) -> str | None:
+        return self.__tsteineUserId
+
+    async def getTwinmoUserId(self) -> str | None:
+        return self.__twinmoUserId
 
     async def getVolwrathUserId(self) -> str | None:
         return self.__volwrathUserId

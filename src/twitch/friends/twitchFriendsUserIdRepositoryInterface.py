@@ -36,7 +36,11 @@ class TwitchFriendsUserIdRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def getCharlesUserId(self) -> str | None:
+    async def getCharlyUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getConcisionUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -80,7 +84,15 @@ class TwitchFriendsUserIdRepositoryInterface(ABC):
         pass
 
     @abstractmethod
+    async def getKazekiiUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getKazekiiBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getKiaraUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -92,7 +104,7 @@ class TwitchFriendsUserIdRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def getLucentUserId(self) -> str | None:
+    async def getLucyUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -105,6 +117,10 @@ class TwitchFriendsUserIdRepositoryInterface(ABC):
 
     @abstractmethod
     async def getMiaGuwuUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getNintendesiUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -125,6 +141,14 @@ class TwitchFriendsUserIdRepositoryInterface(ABC):
 
     @abstractmethod
     async def getTheCatComputerUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getTsteineUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getTwinmoUserId(self) -> str | None:
         pass
 
     @abstractmethod
