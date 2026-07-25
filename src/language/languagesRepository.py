@@ -100,7 +100,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
         elif hasIso6391Code is not None and not utils.isValidBool(hasIso6391Code):
             raise TypeError(f'hasIso6391Code argument is malformed: \"{hasIso6391Code}\"')
         elif hasWotdApiCode is not None and not utils.isValidBool(hasWotdApiCode):
-            raise TypeError(f'hasWotdApiCode argumet is malformed: \"{hasWotdApiCode}\"')
+            raise TypeError(f'hasWotdApiCode argument is malformed: \"{hasWotdApiCode}\"')
 
         validEntries = await self.__getLanguageEntries(
             hasIso6391Code = hasIso6391Code,
