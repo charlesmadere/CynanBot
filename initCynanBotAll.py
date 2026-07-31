@@ -462,6 +462,7 @@ from src.timeout.useCases.determineAirStrikeTargetsUseCase import DetermineAirSt
 from src.timeout.useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
 from src.timeout.useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
 from src.timeout.useCases.determineTimeoutTargetUseCase import DetermineTimeoutTargetUseCase
+from src.timeout.useCases.determineTimeoutTargetUseCaseInterface import DetermineTimeoutTargetUseCaseInterface
 from src.timeout.useCases.determineTm36SplashTargetUseCase import DetermineTm36SplashTargetUseCase
 from src.transparent.transparentApiService import TransparentApiService
 from src.transparent.transparentApiServiceInterface import TransparentApiServiceInterface
@@ -2454,7 +2455,7 @@ determineGrenadeTargetUseCase = DetermineGrenadeTargetUseCase(
     userIdsRepository = userIdsRepository,
 )
 
-determineTimeoutTargetUseCase = DetermineTimeoutTargetUseCase(
+determineTimeoutTargetUseCase: Final[DetermineTimeoutTargetUseCaseInterface] = DetermineTimeoutTargetUseCase(
     timber = timber,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     twitchTokensUtils = twitchTokensUtils,
@@ -2468,7 +2469,7 @@ determineTm36SplashTargetUseCase = DetermineTm36SplashTargetUseCase(
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
 )
 
-timeoutIdGenerator: TimeoutIdGeneratorInterface = TimeoutIdGenerator()
+timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = TimeoutIdGenerator()
 
 anivCopyMessageTimeoutScoreRepository: Final[AnivCopyMessageTimeoutScoreRepositoryInterface] = AnivCopyMessageTimeoutScoreRepository(
     backingDatabase = backingDatabase,
