@@ -108,6 +108,10 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         newUserIds: set[str] = set()
         newUserIds.add(await self.__getTwitchUserId())
 
+        aoyamabukiUserId = await self.__twitchFriendsUserIdProvider.getAoyamabukiUserId()
+        if utils.isValidStr(aoyamabukiUserId):
+            newUserIds.add(aoyamabukiUserId)
+
         boatWaifuUserId = await self.__twitchFriendsUserIdProvider.getBoatWaifuUserId()
         if utils.isValidStr(boatWaifuUserId):
             newUserIds.add(boatWaifuUserId)
@@ -143,6 +147,14 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         oathyBotUserId = await self.__twitchFriendsUserIdProvider.getOathyBotUserId()
         if utils.isValidStr(oathyBotUserId):
             newUserIds.add(oathyBotUserId)
+
+        teaTalkUserId = await self.__twitchFriendsUserIdProvider.getTeaTalkUserId()
+        if utils.isValidStr(teaTalkUserId):
+            newUserIds.add(teaTalkUserId)
+
+        theBinchBotUserId = await self.__twitchFriendsUserIdProvider.getTheBinchBotUserId()
+        if utils.isValidStr(theBinchBotUserId):
+            newUserIds.add(theBinchBotUserId)
 
         theCatComputerUserId = await self.__twitchFriendsUserIdProvider.getTheCatComputerUserId()
         if utils.isValidStr(theCatComputerUserId):
