@@ -8,6 +8,10 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
         pass
 
     @abstractmethod
+    async def getBeeblyBoopBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getDisappointBotUserId(self) -> str | None:
         pass
 
