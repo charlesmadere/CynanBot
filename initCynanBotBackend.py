@@ -2324,7 +2324,9 @@ twitchFollowHandler: Final[AbsTwitchFollowHandler] = TwitchFollowHandler(
 twitchHypeTrainHandler: Final[AbsTwitchHypeTrainHandler] = TwitchHypeTrainHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
+    trollmojiHelper = trollmojiHelper,
     twitchChatMessenger = twitchChatMessenger,
+    twitchLocalModelsMapper = twitchLocalModelsMapper,
 )
 
 twitchPollHandler: Final[AbsTwitchPollHandler] = TwitchPollHandler(

@@ -14,6 +14,7 @@ from ..twitchCheerMetadata import TwitchCheerMetadata as LocalCheerMetadata
 from ..twitchCustomPowerUp import TwitchCustomPowerUp as LocalCustomPowerUp
 from ..twitchCustomPowerUpData import TwitchCustomPowerUpData as LocalCustomPowerUpData
 from ..twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
+from ..twitchHypeTrainState import TwitchHypeTrainState as LocalHypeTrainState
 from ..twitchHypeTrainType import TwitchHypeTrainType as LocalHypeTrainType
 from ..twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
 from ..twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
@@ -36,6 +37,8 @@ from ...api.models.twitchResubscriptionMessage import TwitchResubscriptionMessag
 from ...api.models.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as ApiResubscriptionMessageEmote
 from ...api.models.twitchWatchStreak import TwitchWatchStreak as ApiWatchStreak
+from ...api.models.twitchWebsocketSubscriptionType import \
+    TwitchWebsocketSubscriptionType as ApiWebsocketSubscriptionType
 
 
 class TwitchLocalModelsMapperInterface(ABC):
@@ -122,6 +125,13 @@ class TwitchLocalModelsMapperInterface(ABC):
         self,
         emoteImageFormat: ApiEmoteImageFormat | None,
     ) -> LocalEmoteImageFormat | None:
+        pass
+
+    @abstractmethod
+    async def mapHypeTrainState(
+        self,
+        websocketSubscriptionType: ApiWebsocketSubscriptionType | None,
+    ) -> LocalHypeTrainState | None:
         pass
 
     @abstractmethod
