@@ -19,6 +19,7 @@ from src.twitch.api.models.twitchCheerMetadata import TwitchCheerMetadata as Api
 from src.twitch.api.models.twitchCustomPowerUp import TwitchCustomPowerUp as ApiCustomPowerUp
 from src.twitch.api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as ApiCustomPowerUpData
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
+from src.twitch.api.models.twitchHypeTrainType import TwitchHypeTrainType as ApiHypeTrainType
 from src.twitch.api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
 from src.twitch.api.models.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as ApiResubscriptionMessageEmote
@@ -42,6 +43,7 @@ from src.twitch.localModels.twitchCheerMetadata import TwitchCheerMetadata as Lo
 from src.twitch.localModels.twitchCustomPowerUp import TwitchCustomPowerUp as LocalCustomPowerUp
 from src.twitch.localModels.twitchCustomPowerUpData import TwitchCustomPowerUpData as LocalCustomPowerUpData
 from src.twitch.localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
+from src.twitch.localModels.twitchHypeTrainType import TwitchHypeTrainType as LocalHypeTrainType
 from src.twitch.localModels.twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
 from src.twitch.localModels.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
@@ -334,9 +336,45 @@ class TestTwitchLocalModelsMapper:
         assert result is LocalEmoteImageFormat.ANIMATED
 
     @pytest.mark.asyncio
+    async def test_mapEmoteImageFormat_withNone(self):
+        result = await self.mapper.mapEmoteImageFormat(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_mapEmoteImageFormat_withStatic(self):
         result = await self.mapper.mapEmoteImageFormat(ApiEmoteImageFormat.STATIC)
         assert result is LocalEmoteImageFormat.STATIC
+
+    @pytest.mark.asyncio
+    async def test_mapHypeTrainType_withAll(self):
+        results: set[LocalHypeTrainType | None] = set()
+
+        for hypeTrainType in ApiHypeTrainType:
+            result = await self.mapper.mapHypeTrainType(hypeTrainType)
+            results.add(result)
+
+        assert len(results) == len(LocalHypeTrainType)
+        assert None not in results
+
+    @pytest.mark.asyncio
+    async def test_mapHypeTrainType_withGoldenKappa(self):
+        result = await self.mapper.mapHypeTrainType(ApiHypeTrainType.GOLDEN_KAPPA)
+        assert result is LocalHypeTrainType.GOLDEN_KAPPA
+
+    @pytest.mark.asyncio
+    async def test_mapHypeTrainType_withNone(self):
+        result = await self.mapper.mapHypeTrainType(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_mapHypeTrainType_withRegular(self):
+        result = await self.mapper.mapHypeTrainType(ApiHypeTrainType.REGULAR)
+        assert result is LocalHypeTrainType.REGULAR
+
+    @pytest.mark.asyncio
+    async def test_mapHypeTrainType_withTreasure(self):
+        result = await self.mapper.mapHypeTrainType(ApiHypeTrainType.TREASURE)
+        assert result is LocalHypeTrainType.TREASURE
 
     @pytest.mark.asyncio
     async def test_mapResubscriptionMessage(self):
