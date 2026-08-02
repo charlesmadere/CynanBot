@@ -51,6 +51,13 @@ class TwitchWebsocketConditionBuilder(TwitchWebsocketConditionBuilderInterface):
                 broadcasterUserId = user.userId,
             )
 
+        elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_BEGIN or \
+                subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_END or \
+                subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_PROGRESS:
+            return TwitchWebsocketCondition(
+                broadcasterUserId = user.userId,
+            )
+
         elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN or \
                 subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END or \
                 subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK or \

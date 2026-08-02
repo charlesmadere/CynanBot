@@ -78,6 +78,54 @@ class TestTwitchWebsocketConditionBuilder:
         assert result.broadcasterUserId == websocketUser.userId
         assert result.userId is None
 
+    @pytest.mark.asyncio
+    async def test_build_withHypeTrainBegin(self):
+        websocketUser = TwitchWebsocketUser(
+            userId = 'abc123',
+            userName = 'smCharles',
+        )
+
+        result = await self.conditionBuilder.build(
+            subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_BEGIN,
+            user = websocketUser,
+        )
+
+        assert isinstance(result, TwitchWebsocketCondition)
+        assert result.broadcasterUserId == websocketUser.userId
+        assert result.userId is None
+
+    @pytest.mark.asyncio
+    async def test_build_withHypeTrainEnd(self):
+        websocketUser = TwitchWebsocketUser(
+            userId = 'abc123',
+            userName = 'smCharles',
+        )
+
+        result = await self.conditionBuilder.build(
+            subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_END,
+            user = websocketUser,
+        )
+
+        assert isinstance(result, TwitchWebsocketCondition)
+        assert result.broadcasterUserId == websocketUser.userId
+        assert result.userId is None
+
+    @pytest.mark.asyncio
+    async def test_build_withHypeTrainProgress(self):
+        websocketUser = TwitchWebsocketUser(
+            userId = 'abc123',
+            userName = 'smCharles',
+        )
+
+        result = await self.conditionBuilder.build(
+            subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_PROGRESS,
+            user = websocketUser,
+        )
+
+        assert isinstance(result, TwitchWebsocketCondition)
+        assert result.broadcasterUserId == websocketUser.userId
+        assert result.userId is None
+
     def test_sanity(self):
         assert self.conditionBuilder is not None
         assert isinstance(self.conditionBuilder, TwitchWebsocketConditionBuilder)

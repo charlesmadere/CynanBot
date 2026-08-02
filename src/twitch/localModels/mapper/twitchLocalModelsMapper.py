@@ -14,6 +14,8 @@ from ..twitchCheerMetadata import TwitchCheerMetadata as LocalCheerMetadata
 from ..twitchCustomPowerUp import TwitchCustomPowerUp as LocalCustomPowerUp
 from ..twitchCustomPowerUpData import TwitchCustomPowerUpData as LocalCustomPowerUpData
 from ..twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
+from ..twitchHypeTrainState import TwitchHypeTrainState as LocalHypeTrainState
+from ..twitchHypeTrainType import TwitchHypeTrainType as LocalHypeTrainType
 from ..twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
 from ..twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
 from ..twitchWatchStreak import TwitchWatchStreak as LocalWatchStreak
@@ -30,10 +32,13 @@ from ...api.models.twitchCheerMetadata import TwitchCheerMetadata as ApiCheerMet
 from ...api.models.twitchCustomPowerUp import TwitchCustomPowerUp as ApiCustomPowerUp
 from ...api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as ApiCustomPowerUpData
 from ...api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
+from ...api.models.twitchHypeTrainType import TwitchHypeTrainType as ApiHypeTrainType
 from ...api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
 from ...api.models.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as ApiResubscriptionMessageEmote
 from ...api.models.twitchWatchStreak import TwitchWatchStreak as ApiWatchStreak
+from ...api.models.twitchWebsocketSubscriptionType import \
+    TwitchWebsocketSubscriptionType as ApiWebsocketSubscriptionType
 
 
 class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
@@ -205,6 +210,31 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
         match emoteImageFormat:
             case ApiEmoteImageFormat.ANIMATED: return LocalEmoteImageFormat.ANIMATED
             case ApiEmoteImageFormat.STATIC: return LocalEmoteImageFormat.STATIC
+
+    async def mapHypeTrainState(
+        self,
+        websocketSubscriptionType: ApiWebsocketSubscriptionType | None,
+    ) -> LocalHypeTrainState | None:
+        if websocketSubscriptionType is None:
+            return None
+
+        match websocketSubscriptionType:
+            case ApiWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_BEGIN: return LocalHypeTrainState.BEGIN
+            case ApiWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_END: return LocalHypeTrainState.END
+            case ApiWebsocketSubscriptionType.CHANNEL_HYPE_TRAIN_PROGRESS: return LocalHypeTrainState.PROGRESS
+            case _: return None
+
+    async def mapHypeTrainType(
+        self,
+        hypeTrainType: ApiHypeTrainType | None,
+    ) -> LocalHypeTrainType | None:
+        if hypeTrainType is None:
+            return None
+
+        match hypeTrainType:
+            case ApiHypeTrainType.GOLDEN_KAPPA: return LocalHypeTrainType.GOLDEN_KAPPA
+            case ApiHypeTrainType.REGULAR: return LocalHypeTrainType.REGULAR
+            case ApiHypeTrainType.TREASURE: return LocalHypeTrainType.TREASURE
 
     async def mapResubscriptionMessage(
         self,
