@@ -16,6 +16,8 @@ from ..twitchCustomPowerUpData import TwitchCustomPowerUpData as LocalCustomPowe
 from ..twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
 from ..twitchHypeTrainState import TwitchHypeTrainState as LocalHypeTrainState
 from ..twitchHypeTrainType import TwitchHypeTrainType as LocalHypeTrainType
+from ..twitchPollChoice import TwitchPollChoice as LocalPollChoice
+from ..twitchPollStatus import TwitchPollStatus as LocalPollStatus
 from ..twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
 from ..twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
 from ..twitchWatchStreak import TwitchWatchStreak as LocalWatchStreak
@@ -33,6 +35,8 @@ from ...api.models.twitchCustomPowerUp import TwitchCustomPowerUp as ApiCustomPo
 from ...api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as ApiCustomPowerUpData
 from ...api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
 from ...api.models.twitchHypeTrainType import TwitchHypeTrainType as ApiHypeTrainType
+from ...api.models.twitchPollChoice import TwitchPollChoice as ApiPollChoice
+from ...api.models.twitchPollStatus import TwitchPollStatus as ApiPollStatus
 from ...api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
 from ...api.models.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as ApiResubscriptionMessageEmote
@@ -236,6 +240,49 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
             case ApiHypeTrainType.REGULAR: return LocalHypeTrainType.REGULAR
             case ApiHypeTrainType.TREASURE: return LocalHypeTrainType.TREASURE
 
+    async def mapPollChoice(
+        self,
+        pollChoice: ApiPollChoice | None,
+    ) -> LocalPollChoice | None:
+        if pollChoice is None:
+            return None
+
+        return LocalPollChoice(
+            channelPointsVotes = pollChoice.channelPointsVotes,
+            votes = pollChoice.votes,
+            choiceId = pollChoice.choiceId,
+            title = pollChoice.title,
+        )
+
+    async def mapPollChoices(
+        self,
+        pollChoices: Collection[ApiPollChoice] | None,
+    ) -> FrozenList[LocalPollChoice]:
+        choices: FrozenList[LocalPollChoice] = FrozenList()
+
+        if pollChoices is not None:
+            for pollChoice in pollChoices:
+                choice = await self.requirePollChoice(pollChoice)
+                choices.append(choice)
+
+        choices.freeze()
+        return choices
+
+    async def mapPollStatus(
+        self,
+        pollStatus: ApiPollStatus | None,
+    ) -> LocalPollStatus | None:
+        if pollStatus is None:
+            return None
+
+        match pollStatus:
+            case ApiPollStatus.ACTIVE: return LocalPollStatus.ACTIVE
+            case ApiPollStatus.ARCHIVED: return LocalPollStatus.ARCHIVED
+            case ApiPollStatus.COMPLETED: return LocalPollStatus.COMPLETED
+            case ApiPollStatus.INVALID: return LocalPollStatus.INVALID
+            case ApiPollStatus.MODERATED: return LocalPollStatus.MODERATED
+            case ApiPollStatus.TERMINATED: return LocalPollStatus.TERMINATED
+
     async def mapResubscriptionMessage(
         self,
         resubscriptionMessage: ApiResubscriptionMessage | None,
@@ -317,6 +364,19 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
 
         if result is None:
             raise ValueError(f'Unable to map \"{emoteImageFormat}\" into LocalEmoteImageFormat value!')
+
+        return result
+
+    async def requirePollChoice(
+        self,
+        pollChoice: ApiPollChoice | None,
+    ) -> LocalPollChoice:
+        result = await self.mapPollChoice(
+            pollChoice = pollChoice,
+        )
+
+        if result is None:
+            raise ValueError(f'Unable to map \"{pollChoice}\" into LocalPollChoice value!')
 
         return result
 

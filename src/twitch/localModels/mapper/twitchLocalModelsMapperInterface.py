@@ -16,6 +16,8 @@ from ..twitchCustomPowerUpData import TwitchCustomPowerUpData as LocalCustomPowe
 from ..twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
 from ..twitchHypeTrainState import TwitchHypeTrainState as LocalHypeTrainState
 from ..twitchHypeTrainType import TwitchHypeTrainType as LocalHypeTrainType
+from ..twitchPollChoice import TwitchPollChoice as LocalPollChoice
+from ..twitchPollStatus import TwitchPollStatus as LocalPollStatus
 from ..twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
 from ..twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
 from ..twitchWatchStreak import TwitchWatchStreak as LocalWatchStreak
@@ -33,6 +35,8 @@ from ...api.models.twitchCustomPowerUp import TwitchCustomPowerUp as ApiCustomPo
 from ...api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as ApiCustomPowerUpData
 from ...api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
 from ...api.models.twitchHypeTrainType import TwitchHypeTrainType as ApiHypeTrainType
+from ...api.models.twitchPollChoice import TwitchPollChoice as ApiPollChoice
+from ...api.models.twitchPollStatus import TwitchPollStatus as ApiPollStatus
 from ...api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
 from ...api.models.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as ApiResubscriptionMessageEmote
@@ -142,6 +146,27 @@ class TwitchLocalModelsMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def mapPollChoice(
+        self,
+        pollChoice: ApiPollChoice | None,
+    ) -> LocalPollChoice | None:
+        pass
+
+    @abstractmethod
+    async def mapPollChoices(
+        self,
+        pollChoices: Collection[ApiPollChoice] | None,
+    ) -> FrozenList[LocalPollChoice]:
+        pass
+
+    @abstractmethod
+    async def mapPollStatus(
+        self,
+        pollStatus: ApiPollStatus | None,
+    ) -> LocalPollStatus | None:
+        pass
+
+    @abstractmethod
     async def mapResubscriptionMessage(
         self,
         resubscriptionMessage: ApiResubscriptionMessage | None,
@@ -181,6 +206,13 @@ class TwitchLocalModelsMapperInterface(ABC):
         self,
         emoteImageFormat: ApiEmoteImageFormat | None,
     ) -> LocalEmoteImageFormat:
+        pass
+
+    @abstractmethod
+    async def requirePollChoice(
+        self,
+        pollChoice: ApiPollChoice | None,
+    ) -> LocalPollChoice:
         pass
 
     @abstractmethod

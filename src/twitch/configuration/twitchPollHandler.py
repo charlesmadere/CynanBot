@@ -1,11 +1,12 @@
 from typing import Final
 
 from ..absTwitchPollHandler import AbsTwitchPollHandler
-from ..api.models.twitchPollChoice import TwitchPollChoice
-from ..api.models.twitchPollStatus import TwitchPollStatus
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
+from ..localModels.mapper.twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
+from ..localModels.twitchPollChoice import TwitchPollChoice
+from ..localModels.twitchPollStatus import TwitchPollStatus
 from ...misc import utils as utils
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
@@ -22,6 +23,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
+        twitchLocalModelsMapper: TwitchLocalModelsMapperInterface,
     ):
         if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
@@ -29,10 +31,13 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
+        elif not isinstance(twitchLocalModelsMapper, TwitchLocalModelsMapperInterface):
+            raise TypeError(f'twitchLocalModelsMapper argument is malformed: \"{twitchLocalModelsMapper}\"')
 
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__twitchLocalModelsMapper: Final[TwitchLocalModelsMapperInterface] = twitchLocalModelsMapper
 
     async def __notifyChatOfPollResults(self, pollData: AbsTwitchPollHandler.PollData):
         user = pollData.user
@@ -121,13 +126,19 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             raise TypeError(f'pollData argument is malformed: \"{pollData}\"')
 
         if pollData.user.isTtsEnabled:
-            await self.__processTtsEvent(pollData)
+            await self.__processTtsEvent(
+                pollData = pollData,
+            )
 
         if pollData.user.isNotifyOfPollStartEnabled:
-            await self.__notifyChatOfPollStart(pollData)
+            await self.__notifyChatOfPollStart(
+                pollData = pollData,
+            )
 
         if pollData.user.isNotifyOfPollResultsEnabled:
-            await self.__notifyChatOfPollResults(pollData)
+            await self.__notifyChatOfPollResults(
+                pollData = pollData,
+            )
 
     async def onNewPollDataBundle(
         self,
@@ -148,19 +159,20 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing event data ({user=}) ({dataBundle=})')
             return
 
-        choices = event.choices
+        choices = await self.__twitchLocalModelsMapper.mapPollChoices(event.choices)
         title = event.title
+        pollStatus = await self.__twitchLocalModelsMapper.mapPollStatus(event.pollStatus)
         subscriptionType = dataBundle.metadata.subscriptionType
 
-        if choices is None or len(choices) == 0 or not utils.isValidStr(title) or subscriptionType is None:
-            self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({choices=}) ({title=}) ({subscriptionType=})')
+        if len(choices) == 0 or not utils.isValidStr(title) or pollStatus is None or subscriptionType is None:
+            self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({choices=}) ({title=}) ({pollStatus=}) ({subscriptionType=})')
             return
 
         pollData = AbsTwitchPollHandler.PollData(
             choices = choices,
             title = title,
             twitchChannelId = twitchChannelId,
-            pollStatus = event.pollStatus,
+            pollStatus = pollStatus,
             subscriptionType = subscriptionType,
             user = user,
         )
