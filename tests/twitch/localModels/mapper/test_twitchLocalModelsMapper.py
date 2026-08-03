@@ -20,6 +20,8 @@ from src.twitch.api.models.twitchCustomPowerUp import TwitchCustomPowerUp as Api
 from src.twitch.api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as ApiCustomPowerUpData
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
 from src.twitch.api.models.twitchHypeTrainType import TwitchHypeTrainType as ApiHypeTrainType
+from src.twitch.api.models.twitchPollChoice import TwitchPollChoice as ApiPollChoice
+from src.twitch.api.models.twitchPollStatus import TwitchPollStatus as ApiPollStatus
 from src.twitch.api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
 from src.twitch.api.models.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as ApiResubscriptionMessageEmote
@@ -47,6 +49,8 @@ from src.twitch.localModels.twitchCustomPowerUpData import TwitchCustomPowerUpDa
 from src.twitch.localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
 from src.twitch.localModels.twitchHypeTrainState import TwitchHypeTrainState as LocalHypeTrainState
 from src.twitch.localModels.twitchHypeTrainType import TwitchHypeTrainType as LocalHypeTrainType
+from src.twitch.localModels.twitchPollChoice import TwitchPollChoice as LocalPollChoice
+from src.twitch.localModels.twitchPollStatus import TwitchPollStatus as LocalPollStatus
 from src.twitch.localModels.twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
 from src.twitch.localModels.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
@@ -413,6 +417,107 @@ class TestTwitchLocalModelsMapper:
         assert result is LocalHypeTrainType.TREASURE
 
     @pytest.mark.asyncio
+    async def test_mapPollChoice(self):
+        apiPollChoice = ApiPollChoice(
+            channelPointsVotes = 100,
+            votes = 5,
+            choiceId = 'abc123',
+            title = 'Hello, World!',
+        )
+
+        result = await self.mapper.mapPollChoice(apiPollChoice)
+        assert isinstance(result, LocalPollChoice)
+        assert result.channelPointsVotes == apiPollChoice.channelPointsVotes
+        assert result.votes == apiPollChoice.votes
+        assert result.choiceId == apiPollChoice.choiceId
+        assert result.title == apiPollChoice.title
+
+    @pytest.mark.asyncio
+    async def test_mapPollChoice_withNone(self):
+        result = await self.mapper.mapPollChoice(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_mapPollChoices(self):
+        apiPollChoice = ApiPollChoice(
+            channelPointsVotes = 10,
+            votes = 3,
+            choiceId = 'def456',
+            title = 'Hello, World!',
+        )
+
+        results = await self.mapper.mapPollChoices([ apiPollChoice ])
+        assert isinstance(results, FrozenList)
+        assert len(results) == 1
+        assert results.frozen
+
+        assert isinstance(results[0], LocalPollChoice)
+        assert results[0].channelPointsVotes == apiPollChoice.channelPointsVotes
+        assert results[0].votes == apiPollChoice.votes
+        assert results[0].choiceId == apiPollChoice.choiceId
+        assert results[0].title == apiPollChoice.title
+
+    @pytest.mark.asyncio
+    async def test_mapPollChoices_withEmptyList(self):
+        result = await self.mapper.mapPollChoices(list())
+        assert isinstance(result, FrozenList)
+        assert len(result) == 0
+        assert result.frozen
+
+    @pytest.mark.asyncio
+    async def test_mapPollChoices_withNone(self):
+        result = await self.mapper.mapPollChoices(None)
+        assert isinstance(result, FrozenList)
+        assert len(result) == 0
+        assert result.frozen
+
+    @pytest.mark.asyncio
+    async def test_mapPollStatus_withAll(self):
+        results: set[LocalPollStatus | None] = set()
+
+        for pollStatus in ApiPollStatus:
+            result = await self.mapper.mapPollStatus(pollStatus)
+            results.add(result)
+
+        assert len(results) == len(LocalPollStatus)
+        assert None not in results
+
+    @pytest.mark.asyncio
+    async def test_mapPollStatus_withActive(self):
+        result = await self.mapper.mapPollStatus(ApiPollStatus.ACTIVE)
+        assert result is LocalPollStatus.ACTIVE
+
+    @pytest.mark.asyncio
+    async def test_mapPollStatus_withArchived(self):
+        result = await self.mapper.mapPollStatus(ApiPollStatus.ARCHIVED)
+        assert result is LocalPollStatus.ARCHIVED
+
+    @pytest.mark.asyncio
+    async def test_mapPollStatus_withCompleted(self):
+        result = await self.mapper.mapPollStatus(ApiPollStatus.COMPLETED)
+        assert result is LocalPollStatus.COMPLETED
+
+    @pytest.mark.asyncio
+    async def test_mapPollStatus_withInvalid(self):
+        result = await self.mapper.mapPollStatus(ApiPollStatus.INVALID)
+        assert result is LocalPollStatus.INVALID
+
+    @pytest.mark.asyncio
+    async def test_mapPollStatus_withModerated(self):
+        result = await self.mapper.mapPollStatus(ApiPollStatus.MODERATED)
+        assert result is LocalPollStatus.MODERATED
+
+    @pytest.mark.asyncio
+    async def test_mapPollStatus_withTerminated(self):
+        result = await self.mapper.mapPollStatus(ApiPollStatus.TERMINATED)
+        assert result is LocalPollStatus.TERMINATED
+
+    @pytest.mark.asyncio
+    async def test_mapPollStatus_withNone(self):
+        result = await self.mapper.mapPollStatus(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_mapResubscriptionMessage(self):
         emotes: FrozenList[ApiResubscriptionMessageEmote] = FrozenList([
             ApiResubscriptionMessageEmote(
@@ -583,6 +688,31 @@ class TestTwitchLocalModelsMapper:
     async def test_requireEmoteImageFormat_withStatic(self):
         result = await self.mapper.requireEmoteImageFormat(ApiEmoteImageFormat.STATIC)
         assert result is LocalEmoteImageFormat.STATIC
+
+    @pytest.mark.asyncio
+    async def test_requirePollChoice(self):
+        apiPollChoice = ApiPollChoice(
+            channelPointsVotes = 100,
+            votes = 5,
+            choiceId = 'abc123',
+            title = 'Hello, World!',
+        )
+
+        result = await self.mapper.requirePollChoice(apiPollChoice)
+        assert isinstance(result, LocalPollChoice)
+        assert result.channelPointsVotes == apiPollChoice.channelPointsVotes
+        assert result.votes == apiPollChoice.votes
+        assert result.choiceId == apiPollChoice.choiceId
+        assert result.title == apiPollChoice.title
+
+    @pytest.mark.asyncio
+    async def test_requirePollChoice_withNone(self):
+        result: LocalPollChoice | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.mapper.requirePollChoice(None)
+
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_requireResubscriptionMessageEmote(self):

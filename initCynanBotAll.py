@@ -3685,6 +3685,7 @@ twitchPollHandler: Final[AbsTwitchPollHandler] = TwitchPollHandler(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
+    twitchLocalModelsMapper = twitchLocalModelsMapper,
 )
 
 twitchPowerUpRedemptionHandler: Final[AbsTwitchPowerUpRedemptionHandler] = TwitchPowerUpRedemptionHandler(
