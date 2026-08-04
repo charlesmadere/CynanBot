@@ -210,6 +210,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'channel:manage:polls': return TwitchApiScope.CHANNEL_MANAGE_POLLS
             case 'channel:manage:predictions': return TwitchApiScope.CHANNEL_MANAGE_PREDICTIONS
             case 'channel:manage:redemptions': return TwitchApiScope.CHANNEL_MANAGE_REDEMPTIONS
+            case 'channel:manage:vips': return TwitchApiScope.CHANNEL_MANAGE_VIPS
             case 'channel:moderate': return TwitchApiScope.CHANNEL_MODERATE
             case 'channel:read:ads': return TwitchApiScope.CHANNEL_READ_ADS
             case 'channel:read:editors': return TwitchApiScope.CHANNEL_READ_EDITORS
@@ -227,7 +228,9 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'moderator:manage:announcements': return TwitchApiScope.MODERATOR_MANAGE_ANNOUNCEMENTS
             case 'moderator:manage:banned_users': return TwitchApiScope.MODERATOR_MANAGE_BANNED_USERS
             case 'moderator:manage:chat_messages': return TwitchApiScope.MODERATOR_MANAGE_CHAT_MESSAGES
+            case 'moderator:read:banned_users': return TwitchApiScope.MODERATOR_READ_BANNED_USERS
             case 'moderator:read:chatters': return TwitchApiScope.MODERATOR_READ_CHATTERS
+            case 'moderator:read:chat_messages': return TwitchApiScope.MODERATOR_READ_CHAT_MESSAGES
             case 'moderator:read:chat_settings': return TwitchApiScope.MODERATOR_READ_CHAT_SETTINGS
             case 'moderator:read:followers': return TwitchApiScope.MODERATOR_READ_FOLLOWERS
             case 'moderator:read:moderators': return TwitchApiScope.MODERATOR_READ_MODERATORS
