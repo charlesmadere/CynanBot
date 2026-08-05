@@ -593,7 +593,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
 
         timeoutResult = await self.__twitchTimeoutHelper.timeout(
             durationSeconds = timeoutDuration.seconds,
-            reason = f'Timeout for copying {anivUserName}',
+            reason = f'timeout for copying {anivUserName}',
             twitchAccessToken = action.moderatorTwitchAccessToken,
             twitchChannelAccessToken = action.userTwitchAccessToken,
             twitchChannelId = action.twitchChannelId,
