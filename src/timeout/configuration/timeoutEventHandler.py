@@ -24,6 +24,7 @@ from ..models.events.noAirStrikeInventoryAvailableTimeoutEvent import NoAirStrik
 from ..models.events.noAirStrikeTargetsAvailableTimeoutEvent import NoAirStrikeTargetsAvailableTimeoutEvent
 from ..models.events.noBananaInventoryAvailableTimeoutEvent import NoBananaInventoryAvailableTimeoutEvent
 from ..models.events.noBananaTargetAvailableTimeoutEvent import NoBananaTargetAvailableTimeoutEvent
+from ..models.events.noBananaTargetGivenTimeoutEvent import NoBananaTargetGivenTimeoutEvent
 from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
 from ..models.events.noTm36InventoryAvailableTimeoutEvent import NoTm36InventoryAvailableTimeoutEvent
@@ -160,6 +161,11 @@ class TimeoutEventHandler(TimeoutEventListener):
 
         elif isinstance(event, NoBananaTargetAvailableTimeoutEvent):
             await self.__handleNoBananaTargetAvailableTimeoutEvent(
+                event = event,
+            )
+
+        elif isinstance(event, NoBananaTargetGivenTimeoutEvent):
+            await self.__handleNoBananaTargetGivenTimeoutEvent(
                 event = event,
             )
 
@@ -524,6 +530,16 @@ class TimeoutEventHandler(TimeoutEventListener):
 
         self.__twitchChatMessenger.send(
             text = f'You now have {itemCountString} {pluralityString}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleNoBananaTargetGivenTimeoutEvent(
+        self,
+        event: NoBananaTargetGivenTimeoutEvent,
+    ):
+        self.__twitchChatMessenger.send(
+            text = f'You must specify a {ChatterItemType.BANANA.humanName} target!',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )

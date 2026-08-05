@@ -9,7 +9,7 @@ from frozenlist import FrozenList
 
 from .timeoutActionMachineInterface import TimeoutActionMachineInterface
 from ..exceptions import BananaTimeoutDiceRollFailedException, ImmuneTimeoutTargetException, \
-    UnknownTimeoutActionTypeException, UnknownTimeoutTargetException
+    NoGivenTimeoutTargetException, UnknownTimeoutActionTypeException, UnknownTimeoutTargetException
 from ..guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from ..idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
 from ..listener.timeoutEventListener import TimeoutEventListener
@@ -40,6 +40,7 @@ from ..models.events.noAirStrikeInventoryAvailableTimeoutEvent import NoAirStrik
 from ..models.events.noAirStrikeTargetsAvailableTimeoutEvent import NoAirStrikeTargetsAvailableTimeoutEvent
 from ..models.events.noBananaInventoryAvailableTimeoutEvent import NoBananaInventoryAvailableTimeoutEvent
 from ..models.events.noBananaTargetAvailableTimeoutEvent import NoBananaTargetAvailableTimeoutEvent
+from ..models.events.noBananaTargetGivenTimeoutEvent import NoBananaTargetGivenTimeoutEvent
 from ..models.events.noGrenadeInventoryAvailableTimeoutEvent import NoGrenadeInventoryAvailableTimeoutEvent
 from ..models.events.noGrenadeTargetAvailableTimeoutEvent import NoGrenadeTargetAvailableTimeoutEvent
 from ..models.events.noTm36InventoryAvailableTimeoutEvent import NoTm36InventoryAvailableTimeoutEvent
@@ -345,6 +346,24 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 updatedInventory = updatedInventory,
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
+            ))
+            return
+        except NoGivenTimeoutTargetException as e :
+            self.__timber.log('TimeoutActionMachine', f'Failed to determine banana timeout target ({action=})', e, traceback.format_exc())
+
+            if action.bits >= 1:
+                updatedInventory = await self.__chatterInventoryHelper.give(
+                    itemType = ChatterItemType.BANANA,
+                    giveAmount = 1,
+                    chatterUserId = action.instigatorUserId,
+                    twitchChannelId = action.twitchChannelId,
+                )
+
+            await self.__submitEvent(NoBananaTargetGivenTimeoutEvent(
+                originatingAction = action,
+                updatedInventory = updatedInventory,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+                instigatorUserName = instigatorUserName,
             ))
             return
         except UnknownTimeoutTargetException as e:
@@ -899,6 +918,9 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
                 originatingAction = action,
             ))
+            return
+        except NoGivenTimeoutTargetException as e:
+            # TODO
             return
         except UnknownTimeoutTargetException as e:
             self.__timber.log('TimeoutActionMachine', f'Failed to determine vore target ({action=})', e, traceback.format_exc())

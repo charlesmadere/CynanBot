@@ -45,6 +45,12 @@ class ImmuneTimeoutTargetException(Exception):
         return self.__timeoutTarget
 
 
+class NoGivenTimeoutTargetException(Exception):
+
+    def __init__(self, message: str):
+        super().__init__(message)
+
+
 class UnknownTimeoutActionTypeException(Exception):
 
     def __init__(self, message: str):
