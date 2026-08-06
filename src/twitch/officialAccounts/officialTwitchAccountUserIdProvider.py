@@ -8,7 +8,8 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
 
     def __init__(
         self,
-        beeblyBoopBotUserId: str | None = '',
+        beeblyBoopBotUserId: str | None = '812848264',
+        blerpUserId: str | None = '253326823',
         disappointBotUserId: str | None = '169809959',
         frostyToolsDotComUserId: str | None = '955237329',
         moobotUserId: str | None = '1564983',
@@ -28,6 +29,8 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
     ):
         if beeblyBoopBotUserId is not None and not isinstance(beeblyBoopBotUserId, str):
             raise TypeError(f'beeblyBoopBotUserId argument is malformed: \"{beeblyBoopBotUserId}\"')
+        elif blerpUserId is not None and not isinstance(blerpUserId, str):
+            raise TypeError(f'blerpUserId argument is malformed: \"{blerpUserId}\"')
         elif disappointBotUserId is not None and not isinstance(disappointBotUserId, str):
             raise TypeError(f'disappointBotUserId argument is malformed: \"{disappointBotUserId}\"')
         elif frostyToolsDotComUserId is not None and not isinstance(frostyToolsDotComUserId, str):
@@ -62,6 +65,7 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
             raise TypeError(f'zeldoBotUserId argument is malformed: \"{zeldoBotUserId}\"')
 
         self.__beeblyBoopBotUserId: Final[str | None] = beeblyBoopBotUserId
+        self.__blerpUserId: Final[str | None] = blerpUserId
         self.__disappointBotUserId: Final[str | None] = disappointBotUserId
         self.__frostyToolsDotComUserId: Final[str | None] = frostyToolsDotComUserId
         self.__moobotUserId: Final[str | None] = moobotUserId
@@ -85,6 +89,10 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         beeblyBoopBotUserId = await self.getBeeblyBoopBotUserId()
         if utils.isValidStr(beeblyBoopBotUserId):
             allUserIds.add(beeblyBoopBotUserId)
+
+        blerpUserId = await self.getBlerpUserId()
+        if utils.isValidStr(blerpUserId):
+            allUserIds.add(blerpUserId)
 
         disappointBotUserId = await self.getDisappointBotUserId()
         if utils.isValidStr(disappointBotUserId):
@@ -152,6 +160,9 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
 
     async def getBeeblyBoopBotUserId(self) -> str | None:
         return self.__beeblyBoopBotUserId
+
+    async def getBlerpUserId(self) -> str | None:
+        return self.__blerpUserId
 
     async def getDisappointBotUserId(self) -> str | None:
         return self.__disappointBotUserId

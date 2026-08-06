@@ -3,7 +3,7 @@ import traceback
 from typing import Final, Pattern
 
 from .determineTimeoutTargetUseCaseInterface import DetermineTimeoutTargetUseCaseInterface
-from ..exceptions import UnknownTimeoutTargetException, ImmuneTimeoutTargetException
+from ..exceptions import ImmuneTimeoutTargetException, NoGivenTimeoutTargetException, UnknownTimeoutTargetException
 from ..models.actions.absTimeoutAction import AbsTimeoutAction
 from ..models.timeoutTarget import TimeoutTarget
 from ...misc import utils as utils
@@ -45,26 +45,23 @@ class DetermineTimeoutTargetUseCase(DetermineTimeoutTargetUseCaseInterface):
     ) -> str:
         messageContainingTarget: str | None = timeoutAction.getChatMessage()
         if not utils.isValidStr(messageContainingTarget):
-            raise UnknownTimeoutTargetException(f'Given empty/blank/malformed timeout target message ({timeoutAction=}) ({messageContainingTarget=})')
+            raise NoGivenTimeoutTargetException(f'Given empty/blank/malformed timeout target message ({timeoutAction=}) ({messageContainingTarget=})')
 
         targetMatch = self.__timeoutTargetRegEx.match(messageContainingTarget)
         if targetMatch is None:
-            raise UnknownTimeoutTargetException(f'Given empty/blank/malformed timeout target message ({timeoutAction=}) ({messageContainingTarget=}) ({targetMatch=})')
+            raise NoGivenTimeoutTargetException(f'Given empty/blank/malformed timeout target message ({timeoutAction=}) ({messageContainingTarget=}) ({targetMatch=})')
 
         targetUserName: str | None = targetMatch.group(1)
         if not utils.isValidStr(targetUserName) or not utils.strContainsAlphanumericCharacters(targetUserName):
-            raise UnknownTimeoutTargetException(f'Given empty/blank/malformed timeout target message ({timeoutAction=}) ({messageContainingTarget=}) ({targetMatch=}) ({targetUserName=})')
+            raise NoGivenTimeoutTargetException(f'Given empty/blank/malformed timeout target message ({timeoutAction=}) ({messageContainingTarget=}) ({targetMatch=}) ({targetUserName=})')
 
         return targetUserName
 
     async def __fetchUserId(
         self,
         twitchChannelId: str,
-        userName: str | None,
+        userName: str,
     ) -> str:
-        if not utils.isValidStr(userName):
-            raise UnknownTimeoutTargetException(f'Given invalid/unknown timeout target ({twitchChannelId=}) ({userName=})')
-
         twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
             twitchChannelId = twitchChannelId,
         )
