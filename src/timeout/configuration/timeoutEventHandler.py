@@ -502,7 +502,7 @@ class TimeoutEventHandler(TimeoutEventListener):
         event: NoBananaInventoryAvailableTimeoutEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'Sorry, you have no {ChatterItemType.BANANA.pluralHumanName}!',
+            text = f'Sorry, you have no {ChatterItemType.BANANA.pluralHumanName} available',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -539,7 +539,7 @@ class TimeoutEventHandler(TimeoutEventListener):
         event: NoBananaTargetGivenTimeoutEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'You must specify a {ChatterItemType.BANANA.humanName} target!',
+            text = f'Sorry, you must specify a {ChatterItemType.BANANA.humanName} target (use of the @ symbol is fine)',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -549,7 +549,7 @@ class TimeoutEventHandler(TimeoutEventListener):
         event: NoGrenadeInventoryAvailableTimeoutEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'Sorry, you have no {ChatterItemType.GRENADE.pluralHumanName}!',
+            text = f'Sorry, you have no {ChatterItemType.GRENADE.pluralHumanName} available',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -569,7 +569,7 @@ class TimeoutEventHandler(TimeoutEventListener):
         event: NoTm36InventoryAvailableTimeoutEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'Sorry @{event.thumbsDownEmote}, you don\'t have any {ChatterItemType.TM_36.pluralHumanName} available',
+            text = f'Sorry, you don\'t have any {ChatterItemType.TM_36.pluralHumanName} available',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -579,7 +579,7 @@ class TimeoutEventHandler(TimeoutEventListener):
         event: NoVoreInventoryAvailableTimeoutEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'Sorry @{event.thumbsDownEmote}, you don\'t have any {ChatterItemType.VORE.pluralHumanName} available',
+            text = f'Sorry, you don\'t have any {ChatterItemType.VORE.pluralHumanName} available',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
