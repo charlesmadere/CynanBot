@@ -98,5 +98,5 @@ class JishoChatCommand(AbsChatCommand):
             self.__timber.log(self.commandName, f'Error searching Jisho ({query=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
             return ChatCommandResult.CONSUMED
 
-        self.__timber.log(self.commandName, f'Handled ({query=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({query=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
