@@ -57,9 +57,9 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
 
         isShinyTriviaEnabled = user.isShinyTriviaEnabled and user.isCutenessEnabled
 
-        points = user.triviaGamePoints
-        if not utils.isValidInt(points):
-            points = await self.__triviaGameBuilderSettings.getTriviaGamePoints()
+        pointsForWinning = user.triviaGamePoints
+        if not utils.isValidInt(pointsForWinning):
+            pointsForWinning = await self.__triviaGameBuilderSettings.getTriviaGamePoints()
 
         secondsToLive = user.waitForTriviaAnswerDelay
         if not utils.isValidInt(secondsToLive):
@@ -79,7 +79,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
 
         return StartNewTriviaGameAction(
             isShinyTriviaEnabled = isShinyTriviaEnabled,
-            pointsForWinning = points,
+            pointsForWinning = pointsForWinning,
             secondsToLive = secondsToLive,
             shinyMultiplier = shinyMultiplier,
             actionId = actionId,
