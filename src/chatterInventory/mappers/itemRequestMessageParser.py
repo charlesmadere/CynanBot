@@ -24,11 +24,11 @@ class ItemRequestMessageParser:
 
         self.__chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = chatterInventoryMapper
 
-        # meant to match: !use grenade, !use airstrike, etc
-        self.__useCommandRegEx: Final[Pattern] = re.compile(r'^\s*(?:!\s*use\s+)?((?:[\w_-])+)\s*(.*)$', re.IGNORECASE)
-
         # meant to match various item type style commands: !airstrike, !grenade, etc
-        self.__itemTypeCommandRegEx: Final[Pattern] = re.compile(r'^\s*!\s*([\w_-]+)\s*(.*)$', re.IGNORECASE)
+        self.__itemTypeCommandRegEx: Final[Pattern] = re.compile(r'^\s*!\s*([\w_-]+)\b', re.IGNORECASE)
+
+        # meant to match: !use grenade, !use airstrike, etc
+        self.__useCommandRegEx: Final[Pattern] = re.compile(r'^\s*(?:!\s*use\s+)?([\w_-]+)\b', re.IGNORECASE)
 
     async def parse(
         self,
@@ -38,13 +38,15 @@ class ItemRequestMessageParser:
             return None
 
         chatMessage = utils.cleanStr(chatMessage)
+        if not utils.isValidStr(chatMessage):
+            return None
 
-        match = self.__useCommandRegEx.fullmatch(chatMessage)
+        match = self.__itemTypeCommandRegEx.match(chatMessage)
         result = await self.__parseMatch(match = match, chatMessage = chatMessage)
         if result is not None:
             return result
 
-        match = self.__itemTypeCommandRegEx.fullmatch(chatMessage)
+        match = self.__useCommandRegEx.match(chatMessage)
         result = await self.__parseMatch(match = match, chatMessage = chatMessage)
         if result is not None:
             return result
@@ -64,8 +66,8 @@ class ItemRequestMessageParser:
             return None
 
         argument: str | None = None
-        if utils.isValidStr(utils.cleanStr(match.group(2))):
-            argument = utils.cleanStr(match.group(2))
+        if utils.isValidStr(utils.cleanStr(chatMessage[match.end(1):])):
+            argument = utils.cleanStr(chatMessage[match.end(1):])
 
         return ItemRequestMessageParser.Result(
             itemType = itemType,

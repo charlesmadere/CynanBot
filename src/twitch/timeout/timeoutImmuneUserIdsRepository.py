@@ -148,6 +148,10 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         if utils.isValidStr(oathyBotUserId):
             newUserIds.add(oathyBotUserId)
 
+        steineBotUserId = await self.__twitchFriendsUserIdProvider.getSteineBotUserId()
+        if utils.isValidStr(steineBotUserId):
+            newUserIds.add(steineBotUserId)
+
         teaTalkUserId = await self.__twitchFriendsUserIdProvider.getTeaTalkUserId()
         if utils.isValidStr(teaTalkUserId):
             newUserIds.add(teaTalkUserId)

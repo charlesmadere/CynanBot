@@ -91,5 +91,5 @@ class UseChatterItemChatCommand(AbsChatCommand):
                 # this case is intentionally empty
                 pass
 
-        self.__timber.log(self.commandName, f'Handled ({result=}) ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({result=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED

@@ -72,7 +72,7 @@ class GeneralSettingsRepository(
             networkJsonMapper = self.__networkJsonMapper,
             soundPlayerJsonMapper = self.__soundPlayerJsonMapper,
             defaultSoundPlayerType = self.__defaultSoundPlayerType,
-            storageJsonMapper = self.__storageJsonMapper
+            storageJsonMapper = self.__storageJsonMapper,
         )
 
         self.__cache = snapshot
@@ -91,7 +91,7 @@ class GeneralSettingsRepository(
             networkJsonMapper = self.__networkJsonMapper,
             soundPlayerJsonMapper = self.__soundPlayerJsonMapper,
             defaultSoundPlayerType = self.__defaultSoundPlayerType,
-            storageJsonMapper = self.__storageJsonMapper
+            storageJsonMapper = self.__storageJsonMapper,
         )
 
         self.__cache = snapshot

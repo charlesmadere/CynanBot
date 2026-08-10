@@ -42,6 +42,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         oatsngoatsUserId: str | None = '39886669',
         patLanicusUserId: str | None = '46826466',
         stashiocatUserId: str | None = '20889981',
+        steineBotUserId: str | None = '1460771942',
         teaTalkUserId: str | None = '479387514',
         theBinchBotUserId: str | None = '1053271950',
         theCatComputerUserId: str | None = '1326985885',
@@ -121,6 +122,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'patLanicusUserId argument is malformed: \"{patLanicusUserId}\"')
         elif stashiocatUserId is not None and not isinstance(stashiocatUserId, str):
             raise TypeError(f'stashiocatUserId argument is malformed: \"{stashiocatUserId}\"')
+        elif steineBotUserId is not None and not isinstance(steineBotUserId, str):
+            raise TypeError(f'steineBotUserId argument is malformed: \"{steineBotUserId}\"')
         elif teaTalkUserId is not None and not isinstance(teaTalkUserId, str):
             raise TypeError(f'teaTalkUserId argument is malformed: \"{teaTalkUserId}\"')
         elif theBinchBotUserId is not None and not isinstance(theBinchBotUserId, str):
@@ -173,6 +176,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         self.__oatsngoatsUserId: Final[str | None] = oatsngoatsUserId
         self.__patLanicusUserId: Final[str | None] = patLanicusUserId
         self.__stashiocatUserId: Final[str | None] = stashiocatUserId
+        self.__steineBotUserId: Final[str | None] = steineBotUserId
         self.__teaTalkUserId: Final[str | None ] = teaTalkUserId
         self.__theBinchBotUserId: Final[str | None] = theBinchBotUserId
         self.__theCatComputerUserId: Final[str | None] = theCatComputerUserId
@@ -286,6 +290,9 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
 
     async def getStashiocatUserId(self) -> str | None:
         return self.__stashiocatUserId
+
+    async def getSteineBotUserId(self) -> str | None:
+        return self.__steineBotUserId
 
     async def getTeaTalkUserId(self) -> str | None:
         return self.__teaTalkUserId
