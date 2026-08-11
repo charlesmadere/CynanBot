@@ -30,6 +30,9 @@ class ItemRequestMessageParser:
         # meant to match: !use grenade, !use airstrike, etc
         self.__useCommandRegEx: Final[Pattern] = re.compile(r'^\s*(?:!\s*use\s+)?([\w_-]+)\b', re.IGNORECASE)
 
+        # meant to match: !use air strike, !use banana peel, etc
+        self.__useCommandTwoWordsRegEx: Final[Pattern] = re.compile(r'^\s*(?:!\s*use\s+)?([\w_-]+\s+[\w_-]+)\b', re.IGNORECASE)
+
     async def parse(
         self,
         chatMessage: str | Any | None,
@@ -42,6 +45,11 @@ class ItemRequestMessageParser:
             return None
 
         match = self.__itemTypeCommandRegEx.match(chatMessage)
+        result = await self.__parseMatch(match = match, chatMessage = chatMessage)
+        if result is not None:
+            return result
+
+        match = self.__useCommandTwoWordsRegEx.match(chatMessage)
         result = await self.__parseMatch(match = match, chatMessage = chatMessage)
         if result is not None:
             return result
