@@ -148,6 +148,12 @@ class TestItemRequestMessageParser:
         assert result.argument is None
         assert result.originalChatMessage == '!use airstrike'
 
+        result = await self.parser.parse('!use air strike')
+        assert result is not None
+        assert result.itemType is ChatterItemType.AIR_STRIKE
+        assert result.argument is None
+        assert result.originalChatMessage == '!use air strike'
+
     @pytest.mark.asyncio
     async def test_parse_withUseCommandAndBananaItemType(self):
         result = await self.parser.parse('!use banana')
@@ -156,6 +162,18 @@ class TestItemRequestMessageParser:
         assert result.argument is None
         assert result.originalChatMessage == '!use banana'
 
+        result = await self.parser.parse('!use bananapeel')
+        assert result is not None
+        assert result.itemType is ChatterItemType.BANANA
+        assert result.argument is None
+        assert result.originalChatMessage == '!use bananapeel'
+
+        result = await self.parser.parse('!use banana peel')
+        assert result is not None
+        assert result.itemType is ChatterItemType.BANANA
+        assert result.argument is None
+        assert result.originalChatMessage == '!use banana peel'
+
     @pytest.mark.asyncio
     async def test_parse_withUseCommandAndBananaItemTypeAndArgument(self):
         result = await self.parser.parse('!use banana @eddie')
@@ -163,6 +181,30 @@ class TestItemRequestMessageParser:
         assert result.itemType is ChatterItemType.BANANA
         assert result.argument == '@eddie'
         assert result.originalChatMessage == '!use banana @eddie'
+
+        result = await self.parser.parse('!use banana-peel @eddie')
+        assert result is not None
+        assert result.itemType is ChatterItemType.BANANA
+        assert result.argument == '@eddie'
+        assert result.originalChatMessage == '!use banana-peel @eddie'
+
+        result = await self.parser.parse('!use banana_peel @eddie')
+        assert result is not None
+        assert result.itemType is ChatterItemType.BANANA
+        assert result.argument == '@eddie'
+        assert result.originalChatMessage == '!use banana_peel @eddie'
+
+        result = await self.parser.parse('!use bananapeel @eddie')
+        assert result is not None
+        assert result.itemType is ChatterItemType.BANANA
+        assert result.argument == '@eddie'
+        assert result.originalChatMessage == '!use bananapeel @eddie'
+
+        result = await self.parser.parse('!use banana peel @eddie')
+        assert result is not None
+        assert result.itemType is ChatterItemType.BANANA
+        assert result.argument == '@eddie'
+        assert result.originalChatMessage == '!use banana peel @eddie'
 
     @pytest.mark.asyncio
     async def test_parse_withUseCommandAndCassetteTapeItemType(self):
@@ -191,6 +233,12 @@ class TestItemRequestMessageParser:
         assert result.itemType is ChatterItemType.GRENADE
         assert result.argument is None
         assert result.originalChatMessage == '!use grenade'
+
+        result = await self.parser.parse('!use nade')
+        assert result is not None
+        assert result.itemType is ChatterItemType.GRENADE
+        assert result.argument is None
+        assert result.originalChatMessage == '!use nade'
 
     @pytest.mark.asyncio
     async def test_parse_withUseCommandButNoItemType(self):

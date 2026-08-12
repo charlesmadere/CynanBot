@@ -400,7 +400,7 @@ class ChatterItemEventHandler(ChatterItemEventListener):
             suffixString = f'You now have {gashaponAmountString} {ChatterItemType.GASHAPON.pluralHumanName}.'
 
         self.__twitchChatMessenger.send(
-            text = f'{event.hypeEmote} Congrats, gashapon get! {suffixString}',
+            text = f'{event.hypeEmote} Congrats, {ChatterItemType.GASHAPON.humanName} get! {suffixString}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
