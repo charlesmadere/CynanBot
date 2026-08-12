@@ -476,7 +476,7 @@ class TimeoutEventHandler(TimeoutEventListener):
     ):
         if event.updatedInventory is None:
             self.__twitchChatMessenger.send(
-                text = f'Sorry, there are no {ChatterItemType.AIR_STRIKE.humanName} targets available!',
+                text = f'Sorry, there are no {ChatterItemType.AIR_STRIKE.humanName} targets available',
                 twitchChannelId = event.twitchChannelId,
                 replyMessageId = event.twitchChatMessageId,
             )
@@ -538,8 +538,25 @@ class TimeoutEventHandler(TimeoutEventListener):
         self,
         event: NoBananaTargetGivenTimeoutEvent,
     ):
+        if event.updatedInventory is None:
+            self.__twitchChatMessenger.send(
+                text = f'Sorry, you must specify a {ChatterItemType.BANANA.humanName} target (use of the @ symbol is fine)',
+                twitchChannelId = event.twitchChannelId,
+                replyMessageId = event.twitchChatMessageId,
+            )
+            return
+
+        itemCount = event.updatedInventory[ChatterItemType.BANANA]
+        itemCountString = locale.format_string("%d", itemCount, grouping = True)
+        pluralityString: str
+
+        if itemCount == 1:
+            pluralityString = ChatterItemType.BANANA.humanName
+        else:
+            pluralityString = ChatterItemType.BANANA.pluralHumanName
+
         self.__twitchChatMessenger.send(
-            text = f'Sorry, you must specify a {ChatterItemType.BANANA.humanName} target (use of the @ symbol is fine)',
+            text = f'You now have {itemCountString} {pluralityString}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -589,7 +606,7 @@ class TimeoutEventHandler(TimeoutEventListener):
         event: NoVoreTargetAvailableTimeoutEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'Sorry, your {ChatterItemType.VORE.humanName} target is not available!',
+            text = f'Sorry, your {ChatterItemType.VORE.humanName} target is not available',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -638,7 +655,7 @@ class TimeoutEventHandler(TimeoutEventListener):
         event: VoreTargetIsImmuneTimeoutEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'Sorry, your {ChatterItemType.VORE.humanName} target is immune!',
+            text = f'⚠ Sorry, your {ChatterItemType.VORE.humanName} target is immune',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )

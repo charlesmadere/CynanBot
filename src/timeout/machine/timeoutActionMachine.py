@@ -348,7 +348,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
             ))
             return
-        except NoGivenTimeoutTargetException as e :
+        except NoGivenTimeoutTargetException as e:
             self.__timber.log('TimeoutActionMachine', f'Failed to determine banana timeout target ({action=})', e, traceback.format_exc())
 
             if action.bits >= 1:
