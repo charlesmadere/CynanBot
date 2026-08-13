@@ -80,7 +80,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         self.__maxModRetries: Final[int] = maxModRetries
         self.__retrySleepDelaySeconds: Final[float] = retrySleepDelaySeconds
 
-    async def __isAlreadyCurrentlyBannedOrTimedOut(
+    async def __isCurrentlyBannedOrTimedOut(
         self,
         twitchChannelAccessToken: str,
         twitchChannelId: str,
@@ -171,13 +171,19 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         ):
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout an immune user ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.IMMUNE_USER
-        elif await self.__isAlreadyCurrentlyBannedOrTimedOut(
+
+        bannedStatus = await self.__isCurrentlyBannedOrTimedOut(
             twitchChannelAccessToken = twitchChannelAccessToken,
             twitchChannelId = twitchChannelId,
             userIdToTimeout = userIdToTimeout,
-        ) is not TwitchTimeoutHelper.BannedStatus.NOT_BANNED_OR_TIMED_OUT:
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as this user is already either banned or timed out ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
-            return TwitchTimeoutResult.ALREADY_BANNED_OR_TIMED_OUT
+        )
+
+        if bannedStatus is TwitchTimeoutHelper.BannedStatus.BANNED:
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as this user is currently banned ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
+            return TwitchTimeoutResult.BANNED
+        elif bannedStatus is TwitchTimeoutHelper.BannedStatus.TIMED_OUT:
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as this user is already timed out ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
+            return TwitchTimeoutResult.ALREADY_TIMED_OUT
 
         cynanBotUserId = await self.__userIdsRepository.requireUserId(
             userName = await self.__twitchHandleProvider.getTwitchHandle(),
