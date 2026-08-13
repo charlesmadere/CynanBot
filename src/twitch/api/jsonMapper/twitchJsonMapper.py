@@ -228,12 +228,14 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'moderator:manage:announcements': return TwitchApiScope.MODERATOR_MANAGE_ANNOUNCEMENTS
             case 'moderator:manage:banned_users': return TwitchApiScope.MODERATOR_MANAGE_BANNED_USERS
             case 'moderator:manage:chat_messages': return TwitchApiScope.MODERATOR_MANAGE_CHAT_MESSAGES
+            case 'moderator:manage:chat_settings': return TwitchApiScope.MODERATOR_MANAGE_CHAT_SETTINGS
             case 'moderator:read:banned_users': return TwitchApiScope.MODERATOR_READ_BANNED_USERS
             case 'moderator:read:chatters': return TwitchApiScope.MODERATOR_READ_CHATTERS
             case 'moderator:read:chat_messages': return TwitchApiScope.MODERATOR_READ_CHAT_MESSAGES
             case 'moderator:read:chat_settings': return TwitchApiScope.MODERATOR_READ_CHAT_SETTINGS
             case 'moderator:read:followers': return TwitchApiScope.MODERATOR_READ_FOLLOWERS
             case 'moderator:read:moderators': return TwitchApiScope.MODERATOR_READ_MODERATORS
+            case 'moderator:read:vips': return TwitchApiScope.MODERATOR_READ_VIPS
             case 'user:bot': return TwitchApiScope.USER_BOT
             case 'user:read:broadcast': return TwitchApiScope.USER_READ_BROADCAST
             case 'user:read:chat': return TwitchApiScope.USER_READ_CHAT

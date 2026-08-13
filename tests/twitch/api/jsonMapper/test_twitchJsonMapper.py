@@ -227,6 +227,11 @@ class TestTwitchJsonMapper:
         assert result is TwitchApiScope.MODERATOR_MANAGE_CHAT_MESSAGES
 
     @pytest.mark.asyncio
+    async def test_parseApiScope_withModeratorManageChatSettingsString(self):
+        result = await self.jsonMapper.parseApiScope('moderator:manage:chat_settings')
+        assert result is TwitchApiScope.MODERATOR_MANAGE_CHAT_SETTINGS
+
+    @pytest.mark.asyncio
     async def test_parseApiScope_withModeratorReadBannedUsersString(self):
         result = await self.jsonMapper.parseApiScope('moderator:read:banned_users')
         assert result is TwitchApiScope.MODERATOR_READ_BANNED_USERS
@@ -255,6 +260,11 @@ class TestTwitchJsonMapper:
     async def test_parseApiScope_withModeratorReadModeratorsString(self):
         result = await self.jsonMapper.parseApiScope('moderator:read:moderators')
         assert result is TwitchApiScope.MODERATOR_READ_MODERATORS
+
+    @pytest.mark.asyncio
+    async def test_parseApiScope_withModeratorReadVipsString(self):
+        result = await self.jsonMapper.parseApiScope('moderator:read:vips')
+        assert result is TwitchApiScope.MODERATOR_READ_VIPS
 
     @pytest.mark.asyncio
     async def test_parseApiScope_withNone(self):
