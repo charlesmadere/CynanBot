@@ -399,13 +399,11 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 ))
                 return
 
-        isGuaranteedTimeout = await self.__guaranteedTimeoutUsersRepository.isGuaranteed(
-            userId = timeoutTarget.userId,
-        ) or timeoutTarget.userId == action.instigatorUserId
-
+        isGuaranteedTimeout = await self.__guaranteedTimeoutUsersRepository.isGuaranteed(timeoutTarget.userId)
+        isTryingToTimeoutThemselves = timeoutTarget.userId == action.instigatorUserId
         pixelsDiceIsConnected = self.__pixelsDiceMachine is not None and self.__pixelsDiceMachine.isConnected
 
-        if action.useDiceRoll and not isGuaranteedTimeout and pixelsDiceIsConnected:
+        if action.useDiceRoll and not isGuaranteedTimeout and not isTryingToTimeoutThemselves and pixelsDiceIsConnected:
             async def onDiceRolled(result: DiceRollResult):
                 await self.__handleBananaTimeoutActionEnding(
                     action = action,
