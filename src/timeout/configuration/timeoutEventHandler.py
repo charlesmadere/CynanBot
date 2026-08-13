@@ -46,6 +46,7 @@ from ...timber.timberInterface import TimberInterface
 from ...tts.models.ttsEvent import TtsEvent
 from ...tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
+from ...twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
 class TimeoutEventHandler(TimeoutEventListener):
@@ -365,7 +366,19 @@ class TimeoutEventHandler(TimeoutEventListener):
         self,
         event: BananaTimeoutFailedTimeoutEvent,
     ):
-        # this method is intentionally empty
+        if event.timeoutResult is TwitchTimeoutResult.BANNED:
+            # ignore this...
+            return
+
+        elif event.timeoutResult is TwitchTimeoutResult.ALREADY_TIMED_OUT:
+            self.__twitchChatMessenger.send(
+                text = f'Sorry @{event.instigatorUserName}, you can\'t throw a {ChatterItemType.BANANA.humanName} at someone who is already timed out!',
+                twitchChannelId = event.twitchChannelId,
+                replyMessageId = event.twitchChatMessageId,
+            )
+            return
+
+        # the rest of these cases are currently intentionally empty
         pass
 
     async def __handleBasicTimeoutEvent(
