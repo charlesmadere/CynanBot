@@ -29,6 +29,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         airStrike.freeze()
 
         animalPet: FrozenList[Pattern] = FrozenList()
+        animalPet.append(re.compile(r'^\s*animals?\s*$', re.IGNORECASE))
         animalPet.append(re.compile(r'^\s*animal(?:\s+|_|-)?pets?\s*$', re.IGNORECASE))
         animalPet.append(re.compile(r'^\s*pet(?:\s+|_|-)?animals?\s*$', re.IGNORECASE))
         animalPet.append(re.compile(r'^\s*pets?\s*$', re.IGNORECASE))

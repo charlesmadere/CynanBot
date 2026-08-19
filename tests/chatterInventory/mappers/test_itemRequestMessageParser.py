@@ -241,6 +241,26 @@ class TestItemRequestMessageParser:
         assert result.originalChatMessage == '!use nade'
 
     @pytest.mark.asyncio
+    async def test_parse_withUseCommandAndAnimalPetItemType(self):
+        result = await self.parser.parse('!use animal_pet')
+        assert result is not None
+        assert result.itemType is ChatterItemType.ANIMAL_PET
+        assert result.argument is None
+        assert result.originalChatMessage == '!use animal_pet'
+
+        result = await self.parser.parse('!use animal')
+        assert result is not None
+        assert result.itemType is ChatterItemType.ANIMAL_PET
+        assert result.argument is None
+        assert result.originalChatMessage == '!use animal'
+
+        result = await self.parser.parse('!use pet')
+        assert result is not None
+        assert result.itemType is ChatterItemType.ANIMAL_PET
+        assert result.argument is None
+        assert result.originalChatMessage == '!use pet'
+
+    @pytest.mark.asyncio
     async def test_parse_withUseCommandButNoItemType(self):
         result = await self.parser.parse('!use')
         assert result is None
