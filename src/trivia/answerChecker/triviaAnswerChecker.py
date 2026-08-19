@@ -40,6 +40,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
 
         self.__extraWhitespacePattern: Final[Pattern] = re.compile(r'\s{2,}', re.IGNORECASE)
+        self.__pastTenseWordEndingPattern: Final[Pattern] = re.compile(r'\w{3,}ed$', re.IGNORECASE)
 
         self.__irregularNouns: Final[frozendict[str, frozenset[str]]] = frozendict({
             'addendum': frozenset({ 'addenda', 'addendums' }),
@@ -291,7 +292,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield word[:-2] + 'a'
         elif word.endswith('ism'):
             yield word[:-3]
-        elif word.endswith('ed'):
+        elif self.__pastTenseWordEndingPattern.fullmatch(word):
             yield word[:-2]
         elif word.endswith('d') or word.endswith('n'):
             yield word + 'e'

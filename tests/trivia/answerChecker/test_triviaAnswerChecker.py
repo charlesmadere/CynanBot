@@ -1995,3 +1995,60 @@ class TestTriviaAnswerChecker:
 
         result = await self.triviaAnswerChecker.checkAnswer('world', question)
         assert result is TriviaAnswerCheckResult.INCORRECT
+
+    @pytest.mark.asyncio
+    async def test_checkAnswer_withQuestionAnswerQuestion_withPastTenseChecking(self):
+        categoryText = 'International Languages'
+        questionText = 'If you are drowning, you might say this.'
+
+        allWords = await self.triviaQuestionCompiler.findAllWordsInQuestion(
+            category = categoryText,
+            question = questionText,
+        )
+
+        originalCorrectAnswers: list[str] = [ 'help' ]
+        correctAnswers = await self.triviaQuestionCompiler.compileResponses(originalCorrectAnswers)
+
+        compiledCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList(
+            answers = originalCorrectAnswers,
+            allWords = allWords,
+        )
+
+        expandedCompiledCorrectAnswers: set[str] = set()
+        for compiledCorrectAnswer in compiledCorrectAnswers:
+            expandedCompiledCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(compiledCorrectAnswer))
+
+        question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            allWords = allWords,
+            compiledCorrectAnswers = list(expandedCompiledCorrectAnswers),
+            correctAnswers = correctAnswers,
+            originalCorrectAnswers = originalCorrectAnswers,
+            category = categoryText,
+            categoryId = None,
+            question = questionText,
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.FUNTOON,
+        )
+
+        result = await self.triviaAnswerChecker.checkAnswer(None, question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
+
+        result = await self.triviaAnswerChecker.checkAnswer('', question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
+
+        result = await self.triviaAnswerChecker.checkAnswer(' ', question)
+        assert result is TriviaAnswerCheckResult.INVALID_INPUT
+
+        result = await self.triviaAnswerChecker.checkAnswer('help', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('helped', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('hello', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('helio', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
