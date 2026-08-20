@@ -785,7 +785,7 @@ cutenessUtils: Final[CutenessUtilsInterface] = CutenessUtils()
 ## Funtoon initialization section ##
 ####################################
 
-funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensRepository(
+funtoonTokensRepository: Final[FuntoonTokensRepositoryInterface] = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     userIdsRepository = userIdsRepository,
@@ -795,15 +795,15 @@ funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensReposit
     ),
 )
 
-funtoonJsonMapper: FuntoonJsonMapperInterface = FuntoonJsonMapper()
+funtoonJsonMapper: Final[FuntoonJsonMapperInterface] = FuntoonJsonMapper()
 
-funtoonApiService: FuntoonApiServiceInterface = FuntoonApiService(
+funtoonApiService: Final[FuntoonApiServiceInterface] = FuntoonApiService(
     funtoonJsonMapper = funtoonJsonMapper,
     networkClientProvider = networkClientProvider,
     timber = timber,
 )
 
-funtoonHelper: FuntoonHelperInterface = FuntoonHelper(
+funtoonHelper: Final[FuntoonHelperInterface] = FuntoonHelper(
     funtoonApiService = funtoonApiService,
     funtoonJsonMapper = funtoonJsonMapper,
     funtoonTokensRepository = funtoonTokensRepository,
@@ -845,13 +845,13 @@ isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = IsLiveOnTwi
 
 languagesRepository: Final[LanguagesRepositoryInterface] = LanguagesRepository()
 
-locationsRepository: LocationsRepositoryInterface = LocationsRepository(
+locationsRepository: Final[LocationsRepositoryInterface] = LocationsRepository(
     locationsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = 'locationsRepository.json'
+        fileName = 'locationsRepository.json',
     ),
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 mostRecentChatsRepository: Final[MostRecentChatsRepositoryInterface] = MostRecentChatsRepository(
@@ -860,11 +860,11 @@ mostRecentChatsRepository: Final[MostRecentChatsRepositoryInterface] = MostRecen
     timeZoneRepository = timeZoneRepository,
 )
 
-pokepediaJsonMapper: PokepediaJsonMapperInterface = PokepediaJsonMapper(
-    timber = timber
+pokepediaJsonMapper: Final[PokepediaJsonMapperInterface] = PokepediaJsonMapper(
+    timber = timber,
 )
 
-pokepediaRepository: PokepediaRepositoryInterface = PokepediaRepository(
+pokepediaRepository: Final[PokepediaRepositoryInterface] = PokepediaRepository(
     networkClientProvider = networkClientProvider,
     pokepediaJsonMapper = pokepediaJsonMapper,
     timber = timber,
