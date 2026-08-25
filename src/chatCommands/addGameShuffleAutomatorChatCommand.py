@@ -88,7 +88,7 @@ class AddGameShuffleAutomatorChatCommand(AbsChatCommand):
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-            self.__timber.log('AddGameShuffleAutomatorChatCommand', f'The reoccur seconds argument is out of bounds ({reoccurSeconds=}) ({reoccurSecondsString=}) ({splits=}) ({chatMessage=})')
+            self.__timber.log(self.commandName, f'The reoccur seconds argument is out of bounds ({reoccurSeconds=}) ({reoccurSecondsString=}) ({splits=}) ({chatMessage=})')
             return ChatCommandResult.CONSUMED
 
         result = await self.__crowdControlAutomator.addGameShuffleAutomator(CrowdControlAutomatorData(
@@ -116,7 +116,7 @@ class AddGameShuffleAutomatorChatCommand(AbsChatCommand):
             case _:
                 raise RuntimeError(f'Unknown CrowdControlAutomatorAddResult: \"{result}\"')
 
-        self.__timber.log(self.commandName, f'Handled ({result=}) ({reoccurSeconds=}) ({splits=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({result=}) ({reoccurSeconds=}) ({splits=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:

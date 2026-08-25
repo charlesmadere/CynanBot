@@ -66,7 +66,7 @@ class EccoChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({eccoTimeRemaining=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({eccoTimeRemaining=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __toString(self, eccoTimeRemaining: AbsEccoTimeRemaining) -> str:

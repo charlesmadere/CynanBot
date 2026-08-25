@@ -70,7 +70,7 @@ class AddRecurringCutenessActionChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({wizard=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({wizard=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:

@@ -76,5 +76,5 @@ class PkMonChatCommand(AbsChatCommand):
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log(self.commandName, f'Handled ({name=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({name=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
