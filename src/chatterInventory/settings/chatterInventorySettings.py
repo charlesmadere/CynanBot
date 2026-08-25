@@ -92,18 +92,19 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             maxDurationSeconds = 48,
             minDurationSeconds = 32,
         ),
-        defaultDaysBetweenGashaponRewards: int = 28,
+        defaultDaysBetweenGashaponRewards: int = 21,
         defaultTm36ItemDetails: Tm36ItemDetails = Tm36ItemDetails(
-            maxDurationSeconds = 960, # 15 minutes
+            maxDurationSeconds = 720, # 12 minutes
             minDurationSeconds = 180, # 3 minutes
         ),
         defaultVoreItemDetails: VoreItemDetails = VoreItemDetails(
-            timeoutDurationSeconds = 3600, # 1 hour
+            timeoutDurationSeconds = 1800, # 30 minutes
         ),
         defaultEnabledItemTypes: frozenset[ChatterItemType] = frozenset({
             ChatterItemType.AIR_STRIKE,
             ChatterItemType.ANIMAL_PET,
             ChatterItemType.BANANA,
+            ChatterItemType.CASSETTE_TAPE,
             ChatterItemType.GASHAPON,
             ChatterItemType.GRENADE,
             ChatterItemType.TM_36,
@@ -150,7 +151,11 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
     async def areDiceRollsEnabled(self) -> bool:
         jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'diceRollsEnabled', fallback = True)
+        return utils.getBoolFromDict(
+            d = jsonContents,
+            key = 'diceRollsEnabled',
+            fallback = True,
+        )
 
     async def clearCaches(self):
         self.__cache = None

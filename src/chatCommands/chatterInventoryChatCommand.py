@@ -65,6 +65,10 @@ class ChatterInventoryChatCommand(AbsChatCommand):
                 continue
 
             amount = inventory[itemType]
+
+            if amount == 0:
+                continue
+
             amountString = locale.format_string("%d", amount, grouping = True)
 
             if amount == 1:
@@ -72,13 +76,20 @@ class ChatterInventoryChatCommand(AbsChatCommand):
             else:
                 inventoryStrings.append(f'{amountString} {itemType.pluralHumanName}')
 
-        inventoryString = ', '.join(inventoryStrings)
+        if len(inventoryStrings) == 0:
+            self.__twitchChatMessenger.send(
+                text = f'ⓘ Your inventory is empty',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
+            )
+        else:
+            inventoryString = ', '.join(inventoryStrings)
 
-        self.__twitchChatMessenger.send(
-            text = f'ⓘ Your inventory — {inventoryString}',
-            twitchChannelId = chatMessage.twitchChannelId,
-            replyMessageId = chatMessage.twitchChatMessageId,
-        )
+            self.__twitchChatMessenger.send(
+                text = f'ⓘ Your inventory — {inventoryString}',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
+            )
 
-        self.__timber.log('ChatterInventoryChatCommand', f'Handled ({inventory=})')
+        self.__timber.log(self.commandName, f'Consumed ({inventory=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED

@@ -126,7 +126,7 @@ class DisableCheerActionChatCommand(AbsChatCommand):
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log(self.commandName, f'Handled ({result=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({result=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:

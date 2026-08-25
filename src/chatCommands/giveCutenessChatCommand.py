@@ -134,5 +134,5 @@ class GiveCutenessChatCommand(AbsChatCommand):
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log(self.commandName, f'Handled ({chatMessage=}) ({incrementAmount=}) ({targetUserId=}) ({targetUserName=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({chatMessage=}) ({incrementAmount=}) ({targetUserId=}) ({targetUserName=})')
+        return ChatCommandResult.CONSUMED

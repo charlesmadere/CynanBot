@@ -2508,8 +2508,8 @@ timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachin
 )
 
 cassetteTapeItemUseCase: Final[CassetteTapeItemUseCaseInterface] = CassetteTapeItemUseCase(
+    chatterInventorySettings = chatterInventorySettings,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
     voicemailHelper = voicemailHelper,
     voicemailSettingsRepository = voicemailSettingsRepository,
