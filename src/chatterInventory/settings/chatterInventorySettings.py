@@ -92,7 +92,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             maxDurationSeconds = 48,
             minDurationSeconds = 32,
         ),
-        defaultDaysBetweenGashaponRewards: int = 28,
+        defaultDaysBetweenGashaponRewards: int = 21,
         defaultTm36ItemDetails: Tm36ItemDetails = Tm36ItemDetails(
             maxDurationSeconds = 960, # 15 minutes
             minDurationSeconds = 180, # 3 minutes
