@@ -94,11 +94,11 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         ),
         defaultDaysBetweenGashaponRewards: int = 21,
         defaultTm36ItemDetails: Tm36ItemDetails = Tm36ItemDetails(
-            maxDurationSeconds = 960, # 15 minutes
+            maxDurationSeconds = 720, # 12 minutes
             minDurationSeconds = 180, # 3 minutes
         ),
         defaultVoreItemDetails: VoreItemDetails = VoreItemDetails(
-            timeoutDurationSeconds = 3600, # 1 hour
+            timeoutDurationSeconds = 1800, # 30 minutes
         ),
         defaultEnabledItemTypes: frozenset[ChatterItemType] = frozenset({
             ChatterItemType.AIR_STRIKE,
