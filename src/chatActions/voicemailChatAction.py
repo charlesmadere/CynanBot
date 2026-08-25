@@ -57,7 +57,7 @@ class VoicemailChatAction(AbsChatAction):
         now = self.__timeZoneRepository.getNow()
 
         hoursBetweenNotifications = timedelta(
-            hours = await self.__voicemailSettingsRepository.getHoursBetweenAutomaticVoicemailChatNotifications()
+            hours = await self.__voicemailSettingsRepository.getHoursBetweenAutomaticVoicemailChatNotifications(),
         )
 
         if mostRecentChat is not None and (mostRecentChat.mostRecentChat + hoursBetweenNotifications) > now:
