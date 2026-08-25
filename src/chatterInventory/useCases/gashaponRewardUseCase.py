@@ -63,14 +63,16 @@ class GashaponRewardUseCase(GashaponRewardUseCaseInterface):
         if ChatterItemType.GASHAPON not in await self.__chatterInventorySettings.getEnabledItemTypes():
             return GashaponRewardUseCaseInterface.ItemNotEnabledResult()
 
-        elif not await self.__twitchFollowingStatusRepository.isFollowing(
+        chatterIsStreamer = action.chatterUserId == action.twitchChannelId
+
+        if not chatterIsStreamer and not await self.__twitchFollowingStatusRepository.isFollowing(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = action.twitchChannelId,
             userId = action.chatterUserId,
         ):
             return GashaponRewardUseCaseInterface.NotFollowingResult()
 
-        elif not await self.__twitchSubscriptionsRepository.isSubscribed(
+        elif not chatterIsStreamer and not await self.__twitchSubscriptionsRepository.isSubscribed(
             chatterUserId = action.chatterUserId,
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = action.twitchChannelId,
