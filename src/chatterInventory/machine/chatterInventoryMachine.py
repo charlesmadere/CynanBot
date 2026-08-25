@@ -10,7 +10,7 @@ from frozenlist import FrozenList
 from .chatterInventoryMachineInterface import ChatterInventoryMachineInterface
 from ..exceptions import CassetteTapeFeatureIsDisabledException, CassetteTapeMessageHasNoTargetException, \
     CassetteTapeTargetIsNotFollowingException, UnknownChatterItemTypeException, \
-    UserTwitchAccessTokenIsMissing, VoicemailMessageIsEmptyException, VoicemailTargetIsOriginatingUserException, \
+    VoicemailMessageIsEmptyException, VoicemailTargetIsOriginatingUserException, \
     VoicemailTargetIsStreamerException
 from ..idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
 from ..listeners.chatterItemEventListener import ChatterItemEventListener
@@ -305,6 +305,10 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         chatterInventory: ChatterInventoryData | None,
         action: UseChatterItemAction,
     ):
+        tokensAndDetails = await self.__fetchTokensAndDetails(
+            twitchChannelId = action.twitchChannelId,
+        )
+
         chatterUserName = await self.__userIdsRepository.requireUserName(
             userId = action.chatterUserId,
             twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
@@ -314,6 +318,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
 
         try:
             result = await self.__cassetteTapeItemUseCase.invoke(
+                twitchAccessToken = tokensAndDetails.userTwitchAccessToken,
                 action = action,
             )
         except CassetteTapeFeatureIsDisabledException:
@@ -337,9 +342,6 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
                 targetUserName = e.targetUserName,
                 originatingAction = action,
             ))
-            return
-        except UserTwitchAccessTokenIsMissing as e:
-            self.__timber.log('ChatterInventoryMachine', f'No Twitch access token is available for this user ({action=})', e, traceback.format_exc())
             return
         except VoicemailMessageIsEmptyException:
             await self.__submitEvent(VoicemailMessageIsEmptyChatterItemEvent(

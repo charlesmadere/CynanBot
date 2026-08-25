@@ -14,5 +14,9 @@ class CassetteTapeItemUseCaseInterface(ABC):
         targetUserName: str
 
     @abstractmethod
-    async def invoke(self, action: UseChatterItemAction) -> Result:
+    async def invoke(
+        self,
+        twitchAccessToken: str,
+        action: UseChatterItemAction,
+    ) -> Result:
         pass

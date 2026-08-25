@@ -3,14 +3,14 @@ from dataclasses import dataclass
 from typing import Final, Pattern
 
 from ..exceptions import CassetteTapeMessageHasNoTargetException, CassetteTapeFeatureIsDisabledException, \
-    CassetteTapeTargetIsNotFollowingException, UserTwitchAccessTokenIsMissing, VoicemailMessageIsEmptyException, \
-    VoicemailTargetInboxIsFullException, VoicemailTargetIsOriginatingUserException, VoicemailTargetIsStreamerException
+    CassetteTapeTargetIsNotFollowingException, VoicemailMessageIsEmptyException, VoicemailTargetInboxIsFullException, \
+    VoicemailTargetIsOriginatingUserException, VoicemailTargetIsStreamerException
+from ..models.chatterItemType import ChatterItemType
 from ..models.useChatterItemAction import UseChatterItemAction
+from ..settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ..useCases.cassetteTapeItemUseCaseInterface import CassetteTapeItemUseCaseInterface
 from ...misc import utils as utils
-from ...twitch.exceptions import TwitchAccessTokenMissingException
 from ...twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
-from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...users.exceptions import NoSuchUserException
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
@@ -28,16 +28,16 @@ class CassetteTapeItemUseCase(CassetteTapeItemUseCaseInterface):
 
     def __init__(
         self,
+        chatterInventorySettings: ChatterInventorySettingsInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
-        twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         voicemailHelper: VoicemailHelperInterface,
         voicemailSettingsRepository: VoicemailSettingsRepositoryInterface,
     ):
-        if not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
+        if not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
+            raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
+        elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(voicemailHelper, VoicemailHelperInterface):
@@ -45,36 +45,35 @@ class CassetteTapeItemUseCase(CassetteTapeItemUseCaseInterface):
         elif not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
             raise TypeError(f'voicemailSettingsRepository argument is malformed: \"{voicemailSettingsRepository}\"')
 
+        self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface] = twitchFollowingStatusRepository
-        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__voicemailHelper: Final[VoicemailHelperInterface] = voicemailHelper
         self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
 
         self.__targetUserNameRegEx: Final[Pattern] = re.compile(r'^\s*@?(\w+)\s*', re.IGNORECASE)
 
-    async def invoke(self, action: UseChatterItemAction) -> CassetteTapeItemUseCaseInterface.Result:
-        if not isinstance(action, UseChatterItemAction):
+    async def invoke(
+        self,
+        twitchAccessToken: str,
+        action: UseChatterItemAction,
+    ) -> CassetteTapeItemUseCaseInterface.Result:
+        if not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not isinstance(action, UseChatterItemAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
-        if not await self.__voicemailSettingsRepository.isEnabled():
+        if not await self.__isCassetteTapeFeatureEnabled():
             raise CassetteTapeFeatureIsDisabledException()
 
-        try:
-            userTwitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
-                twitchChannelId = action.twitchChannelId,
-            )
-        except TwitchAccessTokenMissingException:
-            raise UserTwitchAccessTokenIsMissing(f'No Twitch access token is available for the given Twitch channel ({action=})')
-
         parsedVoicemailRequest = await self.__parseVoicemailRequest(
-            userTwitchAccessToken = userTwitchAccessToken,
+            twitchAccessToken = twitchAccessToken,
             action = action,
         )
 
         if await self.__voicemailSettingsRepository.targetUserMustBeFollowing():
             isFollowing = await self.__twitchFollowingStatusRepository.isFollowing(
-                twitchAccessToken = userTwitchAccessToken,
+                twitchAccessToken = twitchAccessToken,
                 twitchChannelId = action.twitchChannelId,
                 userId = parsedVoicemailRequest.targetUserId,
             )
@@ -122,9 +121,17 @@ class CassetteTapeItemUseCase(CassetteTapeItemUseCaseInterface):
             case AddVoicemailResult.TARGET_USER_IS_TWITCH_CHANNEL_USER:
                 raise VoicemailTargetIsStreamerException()
 
+    async def __isCassetteTapeFeatureEnabled(self) -> bool:
+        if ChatterItemType.CASSETTE_TAPE not in await self.__chatterInventorySettings.getEnabledItemTypes():
+            return False
+        elif not await self.__voicemailSettingsRepository.isEnabled():
+            return False
+        else:
+            return True
+
     async def __parseVoicemailRequest(
         self,
-        userTwitchAccessToken: str,
+        twitchAccessToken: str,
         action: UseChatterItemAction,
     ) -> ParsedVoicemailRequest:
         cleanedMessage = utils.cleanStr(action.chatMessage)
@@ -155,7 +162,7 @@ class CassetteTapeItemUseCase(CassetteTapeItemUseCaseInterface):
         try:
             targetUserId = await self.__userIdsRepository.requireUserId(
                 userName = targetUserName,
-                twitchAccessToken = userTwitchAccessToken,
+                twitchAccessToken = twitchAccessToken,
             )
         except NoSuchUserException:
             raise CassetteTapeMessageHasNoTargetException(
