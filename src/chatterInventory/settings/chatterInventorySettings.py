@@ -104,6 +104,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             ChatterItemType.AIR_STRIKE,
             ChatterItemType.ANIMAL_PET,
             ChatterItemType.BANANA,
+            ChatterItemType.CASSETTE_TAPE,
             ChatterItemType.GASHAPON,
             ChatterItemType.GRENADE,
             ChatterItemType.TM_36,
