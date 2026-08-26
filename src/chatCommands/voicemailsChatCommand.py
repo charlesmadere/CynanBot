@@ -110,7 +110,7 @@ class VoicemailsChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({voicemailLookupData=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __lookupVoicemails(
