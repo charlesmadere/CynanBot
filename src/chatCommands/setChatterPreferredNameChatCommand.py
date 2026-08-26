@@ -94,7 +94,7 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Less than 3 arguments given ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         lookupUser = await self.__lookupUser(
             twitchChannelId = chatMessage.twitchChannelId,
@@ -109,7 +109,7 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Encountered invalid username argument ({lookupUser=}) ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
         elif not utils.isValidStr(lookupUser.userId):
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to find info for user \"{lookupUser.userName}\". A username and preferred name is necessary for this command. Example: !setpreferredname @{twitchHandle} John Smith',
@@ -118,7 +118,7 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Encountered unknown username argument ({lookupUser=}) ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         oldPreferredNameData = await self.__chatterPreferredNameHelper.get(
             chatterUserId = lookupUser.userId,
@@ -133,7 +133,7 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
             )
         except ChatterPreferredNameFeatureIsDisabledException as e:
             self.__timber.log(self.commandName, f'This feature is currently disabled ({lookupUser=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
         except ChatterPreferredNameIsInvalidException as e:
             self.__twitchChatMessenger.send(
                 text = f'⚠ The given preferred name for @{lookupUser.userName} is invalid',
@@ -142,7 +142,7 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'The given preferred name is invalid ({lookupUser=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         oldPreferredNameSuffix = ''
         if oldPreferredNameData is not None:
@@ -154,8 +154,8 @@ class SetChatterPreferredNameChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({newPreferredNameData=}) ({oldPreferredNameData=}) ({lookupUser=}) ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({newPreferredNameData=}) ({oldPreferredNameData=}) ({lookupUser=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
         isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId

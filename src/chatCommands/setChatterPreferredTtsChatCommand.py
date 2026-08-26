@@ -115,7 +115,7 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Less than 2 arguments given ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         lookupUser = await self.__lookupUser(
             twitchChannelId = chatMessage.twitchChannelId,
@@ -130,7 +130,7 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Encountered invalid username argument ({lookupUser=}) ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
         elif not utils.isValidStr(lookupUser.userId):
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to find info for user \"{lookupUser.userName}\". A username and preferred TTS voice is necessary for this command. Example: !setpreferredtts @{twitchHandle} {exampleTtsProvider}',
@@ -139,7 +139,7 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Encountered unknown username argument ({lookupUser=}) ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         userMessage = utils.cleanStr(' '.join(splits[2:]))
         preferredTts: ChatterPreferredTts
@@ -164,7 +164,7 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Failed to set preferred TTS ({lookupUser=}) ({userMessage=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
         except TtsProviderIsNotEnabledException as e:
             self.__twitchChatMessenger.send(
                 text = f'⚠ The TTS provider requested for @{lookupUser.userName} is not available! Please try a different TTS provider.',
@@ -173,7 +173,7 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'The given TTS Provider is not enabled ({lookupUser=}) ({userMessage=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         printOut = await self.__chatterPreferredTtsPresenter.printOut(
             preferredTts = preferredTts,
@@ -185,8 +185,8 @@ class SetChatterPreferredTtsChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({preferredTts=}) ({lookupUser=}) ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({preferredTts=}) ({lookupUser=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
         isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
