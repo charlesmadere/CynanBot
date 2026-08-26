@@ -1,6 +1,7 @@
 import random
 import re
 import traceback
+from dataclasses import dataclass
 from typing import Collection, Final, Pattern
 
 from .absChatCommand import AbsChatCommand
@@ -21,6 +22,11 @@ from ..users.userInterface import UserInterface
 
 
 class TtsChatCommand(AbsChatCommand):
+
+    @dataclass(frozen = True, slots = True)
+    class ParsedTtsMessage:
+        messageText: str
+        ttsProvider: TtsProvider
 
     def __init__(
         self,
@@ -56,7 +62,7 @@ class TtsChatCommand(AbsChatCommand):
             re.compile(r'^\s*!tts\b', re.IGNORECASE),
         })
 
-        self.__ttsProviderRegEx: Final[Pattern] = re.compile(r'^--?(\w+)$', re.IGNORECASE)
+        self.__ttsProviderRegEx: Final[Pattern] = re.compile(r'^--?(\w[\w\-_]*)$', re.IGNORECASE)
 
     @property
     def commandName(self) -> str:
@@ -128,55 +134,54 @@ class TtsChatCommand(AbsChatCommand):
             await self.__displayTtsCheerAmounts(chatMessage)
             return ChatCommandResult.CONSUMED
 
-        message = ' '.join(splits[1:])
-        if not utils.isValidStr(message):
+        messageText = ' '.join(splits[1:])
+        if not utils.isValidStr(messageText):
             await self.__displayTtsCheerAmounts(chatMessage)
             return ChatCommandResult.CONSUMED
 
-        ttsProvider = chatMessage.twitchUser.defaultTtsProvider
-        ttsProviderMatch = self.__ttsProviderRegEx.fullmatch(message.split()[0])
+        try:
+            parsedTtsMessage = await self.__parseTtsMessage(
+                messageText = messageText,
+                chatMessage = chatMessage,
+            )
+        except ValueError as e:
+            self.__timber.log(self.commandName, f'Failed to determine TTS provider ({messageText=}) ({chatMessage=})', e, traceback.format_exc())
 
-        if ttsProviderMatch is not None and utils.isValidStr(ttsProviderMatch.group(1)) and len(splits) >= 3:
-            try:
-                ttsProvider = await self.__ttsJsonMapper.asyncRequireProvider(ttsProviderMatch.group(1))
-                message = ' '.join(splits[2:])
-            except ValueError as e:
-                ttsProviderStrings = await self.__getTtsProviderStrings()
-                ttsProviderString = ', '.join(ttsProviderStrings)
+            ttsProviderStrings = await self.__getTtsProviderStrings()
+            ttsProviderString = ', '.join(ttsProviderStrings)
 
-                self.__twitchChatMessenger.send(
-                    text = f'⚠ TTS provider argument is malformed! Available TTS provider(s): {ttsProviderString}. Example: !tts --{random.choice(ttsProviderStrings)} Hello, World!',
-                    twitchChannelId = chatMessage.twitchChannelId,
-                    replyMessageId = chatMessage.twitchChatMessageId,
-                )
+            self.__twitchChatMessenger.send(
+                text = f'⚠ TTS provider argument is malformed! Available TTS provider(s): {ttsProviderString}. Example: !tts --{random.choice(ttsProviderStrings)} Hello, World!',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
+            )
 
-                self.__timber.log(self.commandName, f'Failed to determine TTS provider ({splits=}) ({ttsProvider=}) ({ttsProviderMatch=}) ({message=}) ({chatMessage=})', e, traceback.format_exc())
-                return ChatCommandResult.CONSUMED
+            return ChatCommandResult.CONSUMED
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
             twitchChannel = chatMessage.twitchChannel,
             twitchChannelId = chatMessage.twitchChannelId,
             ttsEvent = TtsEvent(
-                message = message,
+                message = parsedTtsMessage.messageText,
                 twitchChannel = chatMessage.twitchChannel,
                 twitchChannelId = chatMessage.twitchChannelId,
                 userId = chatMessage.chatterUserId,
                 userName = chatMessage.chatterUserName,
                 donation = None,
-                provider = ttsProvider,
+                provider = parsedTtsMessage.ttsProvider,
                 providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
                 raidInfo = None,
             ),
         ))
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ Submitted TTS message using {ttsProvider.humanName}…',
+            text = f'ⓘ Submitted TTS message using {parsedTtsMessage.ttsProvider.humanName}…',
             twitchChannelId = chatMessage.twitchChannelId,
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Consumed ({ttsProvider=}) ({message=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({parsedTtsMessage=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
@@ -190,3 +195,27 @@ class TtsChatCommand(AbsChatCommand):
         )
 
         return isStreamer or isAdministrator or isEditor
+
+    async def __parseTtsMessage(
+        self,
+        messageText: str,
+        chatMessage: TwitchChatMessage,
+    ) -> ParsedTtsMessage:
+        ttsProviderMatch = self.__ttsProviderRegEx.fullmatch(messageText.split()[0])
+
+        if ttsProviderMatch is None:
+            return TtsChatCommand.ParsedTtsMessage(
+                messageText = messageText,
+                ttsProvider = chatMessage.twitchUser.defaultTtsProvider,
+            )
+
+        ttsProvider = await self.__ttsJsonMapper.asyncRequireProvider(
+            ttsProvider = ttsProviderMatch.group(1),
+        )
+
+        messageText = messageText[ttsProviderMatch.end():].strip()
+
+        return TtsChatCommand.ParsedTtsMessage(
+            messageText = messageText,
+            ttsProvider = ttsProvider,
+        )

@@ -54,8 +54,8 @@ class SkipTtsChatCommand(AbsChatCommand):
         compositeTtsManager = self.__compositeTtsManagerProvider.getSharedInstance()
         await compositeTtsManager.stopTtsEvent()
 
-        self.__timber.log(self.commandName, f'Handled ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({chatMessage=})')
+        return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
         isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
