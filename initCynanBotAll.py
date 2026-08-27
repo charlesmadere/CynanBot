@@ -3414,7 +3414,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
     ),
     PlayVoicemailChatCommand(
-        compositeTtsManagerProvider = compositeTtsManagerProvider,
         streamAlertsManager = streamAlertsManager,
         timber = timber,
         timeZoneRepository = timeZoneRepository,

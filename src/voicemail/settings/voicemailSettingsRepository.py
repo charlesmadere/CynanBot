@@ -62,7 +62,3 @@ class VoicemailSettingsRepository(VoicemailSettingsRepositoryInterface):
     async def targetUserMustNotBeActiveInChat(self) -> bool:
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'targetUserMustNotBeActiveInChat', False)
-
-    async def useMessageQueueing(self) -> bool:
-        jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'useMessageQueueing', True)
