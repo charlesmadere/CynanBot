@@ -10,7 +10,6 @@ from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManag
 from ..timber.timberInterface import TimberInterface
 from ..tts.models.ttsEvent import TtsEvent
 from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
-from ..tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
@@ -22,7 +21,6 @@ class PlayVoicemailChatCommand(AbsChatCommand):
 
     def __init__(
         self,
-        compositeTtsManagerProvider: CompositeTtsManagerProviderInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
@@ -30,9 +28,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         voicemailHelper: VoicemailHelperInterface,
         voicemailSettingsRepository: VoicemailSettingsRepositoryInterface,
     ):
-        if not isinstance(compositeTtsManagerProvider, CompositeTtsManagerProviderInterface):
-            raise TypeError(f'compositeTtsManagerProvider argument is malformed: \"{compositeTtsManagerProvider}\"')
-        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -45,7 +41,6 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         elif not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
             raise TypeError(f'voicemailSettingsRepository argument is malformed: \"{voicemailSettingsRepository}\"')
 
-        self.__compositeTtsManagerProvider: Final[CompositeTtsManagerProviderInterface] = compositeTtsManagerProvider
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
@@ -77,7 +72,13 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         )
 
         if voicemail is None:
-            return ChatCommandResult.IGNORED
+            self.__twitchChatMessenger.send(
+                text = f'ⓘ Your voicemail inbox is empty',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
+            )
+
+            return ChatCommandResult.CONSUMED
 
         providerOverridableStatus: TtsProviderOverridableStatus
 
@@ -86,31 +87,22 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         else:
             providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
 
-        ttsEvent = TtsEvent(
-            message = f'Playing back voicemail from {voicemail.originatingUserName}... {voicemail.message}',
+        self.__streamAlertsManager.submitAlert(StreamAlert(
+            soundAlert = None,
             twitchChannel = chatMessage.twitchChannel,
             twitchChannelId = chatMessage.twitchChannelId,
-            userId = voicemail.originatingUserId,
-            userName = voicemail.originatingUserName,
-            donation = None,
-            provider = chatMessage.twitchUser.defaultTtsProvider,
-            providerOverridableStatus = providerOverridableStatus,
-            raidInfo = None,
-        )
-
-        if await self.__voicemailSettingsRepository.useMessageQueueing():
-            self.__streamAlertsManager.submitAlert(StreamAlert(
-                soundAlert = None,
+            ttsEvent = TtsEvent(
+                message = f'Playing back voicemail from {voicemail.originatingUserName}... {voicemail.message}',
                 twitchChannel = chatMessage.twitchChannel,
                 twitchChannelId = chatMessage.twitchChannelId,
-                ttsEvent = ttsEvent,
-            ))
-        else:
-            compositeTtsManager = self.__compositeTtsManagerProvider.constructNewInstance(
-                useSharedSoundPlayerManager = False,
-            )
-
-            await compositeTtsManager.playTtsEvent(ttsEvent)
+                userId = voicemail.originatingUserId,
+                userName = voicemail.originatingUserName,
+                donation = None,
+                provider = chatMessage.twitchUser.defaultTtsProvider,
+                providerOverridableStatus = providerOverridableStatus,
+                raidInfo = None,
+            ),
+        ))
 
         self.__twitchChatMessenger.send(
             text = await self.__toString(voicemail),
@@ -118,7 +110,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({voicemail=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({voicemail=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __toString(self, voicemail: PreparedVoicemailData) -> str:

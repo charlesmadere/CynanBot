@@ -248,19 +248,8 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         self,
         event: UseCassetteTapeChatterItemEvent,
     ):
-        inventoryString = ''
-
-        if event.updatedInventory is not None:
-            amount = event.updatedInventory[ChatterItemType.CASSETTE_TAPE]
-            amountString = locale.format_string("%d", amount, grouping = True)
-
-            if amount == 1:
-                inventoryString = f'({amountString} {ChatterItemType.CASSETTE_TAPE.humanName})'
-            else:
-                inventoryString = f'({amountString} {ChatterItemType.CASSETTE_TAPE.pluralHumanName})'
-
         self.__twitchChatMessenger.send(
-            text = f'☎️ Your voicemail message for @{event.targetUserName} has been sent! {inventoryString}',
+            text = f'☎️ Your voicemail message for @{event.targetUserName} has been sent!',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
