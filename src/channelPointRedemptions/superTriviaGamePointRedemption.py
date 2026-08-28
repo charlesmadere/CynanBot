@@ -52,8 +52,8 @@ class SuperTriviaGamePointRedemption(AbsChannelPointRedemption):
         )
 
         action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
-            twitchChannel = pointsRedemption.twitchChannel,
             twitchChannelId = pointsRedemption.twitchChannelId,
+            twitchUser = pointsRedemption.twitchUser,
             requiredTriviaSource = requiredTriviaSource,
         )
 

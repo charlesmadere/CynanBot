@@ -1992,7 +1992,6 @@ triviaEmoteGenerator: TriviaEmoteGeneratorInterface = TriviaEmoteGenerator(
 triviaGameBuilder: TriviaGameBuilderInterface = TriviaGameBuilder(
     triviaGameBuilderSettings = generalSettingsRepository,
     triviaIdGenerator = triviaIdGenerator,
-    usersRepository = usersRepository,
 )
 
 bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface = BannedTriviaGameControllersRepository(

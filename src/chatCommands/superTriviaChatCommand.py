@@ -122,8 +122,8 @@ class SuperTriviaChatCommand(AbsChatCommand):
             return ChatCommandResult.CONSUMED
 
         action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
-            twitchChannel = chatMessage.twitchChannel,
             twitchChannelId = chatMessage.twitchChannelId,
+            twitchUser = chatMessage.twitchUser,
             numberOfGames = numberOfGames,
             requiredTriviaSource = triviaSource,
         )

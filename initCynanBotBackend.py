@@ -1206,7 +1206,6 @@ triviaEmoteGenerator: Final[TriviaEmoteGeneratorInterface] = TriviaEmoteGenerato
 triviaGameBuilder: Final[TriviaGameBuilderInterface] = TriviaGameBuilder(
     triviaGameBuilderSettings = generalSettingsRepository,
     triviaIdGenerator = triviaIdGenerator,
-    usersRepository = usersRepository,
 )
 
 bannedTriviaGameControllersRepository: Final[BannedTriviaGameControllersRepositoryInterface] = BannedTriviaGameControllersRepository(
