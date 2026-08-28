@@ -226,8 +226,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             numberOfGames = min(numberOfGames, superTriviaSubscribeTriggerMaximum)
 
         action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
-            twitchChannel = user.handle,
             twitchChannelId = subscriptionData.twitchChannelId,
+            twitchUser = user,
             numberOfGames = numberOfGames,
         )
 

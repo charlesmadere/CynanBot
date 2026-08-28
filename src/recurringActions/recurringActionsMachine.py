@@ -282,8 +282,8 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         action: SuperTriviaRecurringAction,
     ) -> bool:
         newTriviaGame = await self.__triviaGameBuilder.createNewSuperTriviaGame(
-            twitchChannel = user.handle,
             twitchChannelId = action.twitchChannelId,
+            twitchUser = user,
         )
 
         if newTriviaGame is None:

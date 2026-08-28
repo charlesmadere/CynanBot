@@ -9,7 +9,7 @@ from ..questions.triviaSource import TriviaSource
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from ...misc import utils as utils
-from ...users.usersRepositoryInterface import UsersRepositoryInterface
+from ...users.userInterface import UserInterface
 
 
 class TriviaGameBuilder(TriviaGameBuilderInterface):
@@ -18,61 +18,57 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         self,
         triviaGameBuilderSettings: TriviaGameBuilderSettingsInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
-        usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(triviaGameBuilderSettings, TriviaGameBuilderSettingsInterface):
             raise TypeError(f'triviaGameBuilderSettings argument is malformed: \"{triviaGameBuilderSettings}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
             raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__triviaGameBuilderSettings: Final[TriviaGameBuilderSettingsInterface] = triviaGameBuilderSettings
         self.__triviaIdGenerator: Final[TriviaIdGeneratorInterface] = triviaIdGenerator
-        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def createNewTriviaGame(
         self,
-        twitchChannel: str,
+        chatterUserId: str,
+        chatterUserLogin: str,
+        chatterUserName: str,
         twitchChannelId: str,
-        userId: str,
-        userName: str,
+        twitchUser: UserInterface,
     ) -> StartNewTriviaGameAction | None:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        if not utils.isValidStr(chatterUserId):
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(chatterUserLogin):
+            raise TypeError(f'chatterUserLogin argument is malformed: \"{chatterUserLogin}\"')
+        elif not utils.isValidStr(chatterUserName):
+            raise TypeError(f'chatterUserName argument is malformed: \"{chatterUserName}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
-            raise TypeError(f'userName argument is malformed: \"{userName}\"')
+        elif not isinstance(twitchUser, UserInterface):
+            raise TypeError(f'twitchUser argument is malformed: \"{twitchUser}\"')
 
         if not await self.__triviaGameBuilderSettings.isTriviaGameEnabled():
             return None
-
-        user = await self.__usersRepository.getUserAsync(twitchChannel)
-
-        if not user.isTriviaGameEnabled:
+        elif not twitchUser.isTriviaGameEnabled:
             return None
 
-        isShinyTriviaEnabled = user.isShinyTriviaEnabled and user.isCutenessEnabled
+        isShinyTriviaEnabled = twitchUser.isShinyTriviaEnabled and twitchUser.isCutenessEnabled
 
-        pointsForWinning = user.triviaGamePoints
+        pointsForWinning = twitchUser.triviaGamePoints
         if not utils.isValidInt(pointsForWinning):
             pointsForWinning = await self.__triviaGameBuilderSettings.getTriviaGamePoints()
 
-        secondsToLive = user.waitForTriviaAnswerDelay
+        secondsToLive = twitchUser.waitForTriviaAnswerDelay
         if not utils.isValidInt(secondsToLive):
             secondsToLive = await self.__triviaGameBuilderSettings.getWaitForTriviaAnswerDelay()
 
-        shinyMultiplier = user.triviaGameShinyMultiplier
+        shinyMultiplier = twitchUser.triviaGameShinyMultiplier
         if not utils.isValidInt(shinyMultiplier):
             shinyMultiplier = await self.__triviaGameBuilderSettings.getTriviaGameShinyMultiplier()
 
         actionId = await self.__triviaIdGenerator.generateActionId()
 
         triviaFetchOptions = TriviaFetchOptions(
-            twitchChannel = user.handle,
+            twitchChannel = twitchUser.handle,
             twitchChannelId = twitchChannelId,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED,
         )
@@ -83,24 +79,24 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
             secondsToLive = secondsToLive,
             shinyMultiplier = shinyMultiplier,
             actionId = actionId,
-            twitchChannel = user.handle,
+            twitchChannel = twitchUser.handle,
             twitchChannelId = twitchChannelId,
-            userId = userId,
-            userName = userName,
+            userId = chatterUserId,
+            userName = chatterUserName,
             triviaFetchOptions = triviaFetchOptions,
         )
 
     async def createNewSuperTriviaGame(
         self,
-        twitchChannel: str,
         twitchChannelId: str,
+        twitchUser: UserInterface,
         numberOfGames: int = 1,
         requiredTriviaSource: TriviaSource | None = None,
     ) -> StartNewSuperTriviaGameAction | None:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(twitchChannelId):
+        if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not isinstance(twitchUser, UserInterface):
+            raise TypeError(f'twitchUser argument is malformed: \"{twitchUser}\"')
         elif not utils.isValidInt(numberOfGames):
             raise TypeError(f'numberOfGames argument is malformed: \"{numberOfGames}\"')
         elif numberOfGames < 1 or numberOfGames > utils.getIntMaxSafeSize():
@@ -108,47 +104,44 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
 
         if not await self.__triviaGameBuilderSettings.isSuperTriviaGameEnabled():
             return None
-
-        user = await self.__usersRepository.getUserAsync(twitchChannel)
-
-        if not user.isSuperTriviaGameEnabled:
+        elif not twitchUser.isSuperTriviaGameEnabled:
             return None
 
-        isShinyTriviaEnabled = user.isShinyTriviaEnabled and user.isCutenessEnabled
-        isToxicTriviaEnabled = user.isToxicTriviaEnabled and user.isCutenessEnabled
+        isShinyTriviaEnabled = twitchUser.isShinyTriviaEnabled and twitchUser.isCutenessEnabled
+        isToxicTriviaEnabled = twitchUser.isToxicTriviaEnabled and twitchUser.isCutenessEnabled
 
-        perUserAttempts = user.superTriviaPerUserAttempts
+        perUserAttempts = twitchUser.superTriviaPerUserAttempts
         if not utils.isValidInt(perUserAttempts):
             perUserAttempts = await self.__triviaGameBuilderSettings.getSuperTriviaGamePerUserAttempts()
 
-        pointsForWinning = user.superTriviaGamePoints
+        pointsForWinning = twitchUser.superTriviaGamePoints
         if not utils.isValidInt(pointsForWinning):
             pointsForWinning = await self.__triviaGameBuilderSettings.getSuperTriviaGamePoints()
 
-        regularTriviaPointsForWinning = user.triviaGamePoints
+        regularTriviaPointsForWinning = twitchUser.triviaGamePoints
         if not utils.isValidInt(regularTriviaPointsForWinning):
             regularTriviaPointsForWinning = await self.__triviaGameBuilderSettings.getTriviaGamePoints()
 
-        secondsToLive = user.waitForSuperTriviaAnswerDelay
+        secondsToLive = twitchUser.waitForSuperTriviaAnswerDelay
         if not utils.isValidInt(secondsToLive):
             secondsToLive = await self.__triviaGameBuilderSettings.getWaitForSuperTriviaAnswerDelay()
 
-        shinyMultiplier = user.superTriviaGameShinyMultiplier
+        shinyMultiplier = twitchUser.superTriviaGameShinyMultiplier
         if not utils.isValidInt(shinyMultiplier):
             shinyMultiplier = await self.__triviaGameBuilderSettings.getSuperTriviaGameShinyMultiplier()
 
-        toxicMultiplier = user.superTriviaGameToxicMultiplier
+        toxicMultiplier = twitchUser.superTriviaGameToxicMultiplier
         if not utils.isValidInt(toxicMultiplier):
             toxicMultiplier = await self.__triviaGameBuilderSettings.getSuperTriviaGameToxicMultiplier()
 
-        toxicTriviaPunishmentMultiplier = user.superTriviaGameToxicPunishmentMultiplier
+        toxicTriviaPunishmentMultiplier = twitchUser.superTriviaGameToxicPunishmentMultiplier
         if not utils.isValidInt(toxicTriviaPunishmentMultiplier):
             toxicTriviaPunishmentMultiplier = await self.__triviaGameBuilderSettings.getSuperTriviaGameToxicPunishmentMultiplier()
 
         actionId = await self.__triviaIdGenerator.generateActionId()
 
         triviaFetchOptions = TriviaFetchOptions(
-            twitchChannel = user.handle,
+            twitchChannel = twitchUser.handle,
             twitchChannelId = twitchChannelId,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED,
             requiredTriviaSource = requiredTriviaSource,
@@ -167,7 +160,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
             toxicMultiplier = toxicMultiplier,
             toxicTriviaPunishmentMultiplier = toxicTriviaPunishmentMultiplier,
             actionId = actionId,
-            twitchChannel = user.handle,
+            twitchChannel = twitchUser.handle,
             twitchChannelId = twitchChannelId,
             triviaFetchOptions = triviaFetchOptions,
         )

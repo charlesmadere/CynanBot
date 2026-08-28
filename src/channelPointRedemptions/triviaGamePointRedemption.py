@@ -34,10 +34,11 @@ class TriviaGamePointRedemption(AbsChannelPointRedemption):
         pointsRedemption: TwitchChannelPointsRedemption,
     ) -> PointsRedemptionResult:
         action = await self.__triviaGameBuilder.createNewTriviaGame(
-            twitchChannel = pointsRedemption.twitchChannel,
+            chatterUserId = pointsRedemption.redemptionUserId,
+            chatterUserLogin = pointsRedemption.redemptionUserLogin,
+            chatterUserName = pointsRedemption.redemptionUserName,
             twitchChannelId = pointsRedemption.twitchChannelId,
-            userId = pointsRedemption.redemptionUserId,
-            userName = pointsRedemption.redemptionUserName,
+            twitchUser = pointsRedemption.twitchUser,
         )
 
         if action is None:

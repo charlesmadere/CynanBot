@@ -401,8 +401,8 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             numberOfGames = int(min(numberOfGames, superTriviaCheerTriggerMaximum))
 
         action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
-            twitchChannel = chatMessage.twitchChannel,
             twitchChannelId = chatMessage.twitchChannelId,
+            twitchUser = chatMessage.twitchUser,
             numberOfGames = numberOfGames,
         )
 
