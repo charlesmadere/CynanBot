@@ -571,7 +571,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         first = chattersRequest.first
 
         if first is None or first < 1 or first > 1000:
-            first = 100
+            first = 250
 
         self.__timber.log('TwitchApiService', f'Fetching chatters... ({chattersRequest=}) ({first=})')
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
