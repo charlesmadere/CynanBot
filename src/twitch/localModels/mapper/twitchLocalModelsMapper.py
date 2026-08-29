@@ -19,6 +19,7 @@ from ..twitchHypeTrainState import TwitchHypeTrainState as LocalHypeTrainState
 from ..twitchHypeTrainType import TwitchHypeTrainType as LocalHypeTrainType
 from ..twitchPollChoice import TwitchPollChoice as LocalPollChoice
 from ..twitchPollStatus import TwitchPollStatus as LocalPollStatus
+from ..twitchResub import TwitchResub as LocalResub
 from ..twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
 from ..twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
 from ..twitchSubGift import TwitchSubGift as LocalSubGift
@@ -41,6 +42,7 @@ from ...api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEm
 from ...api.models.twitchHypeTrainType import TwitchHypeTrainType as ApiHypeTrainType
 from ...api.models.twitchPollChoice import TwitchPollChoice as ApiPollChoice
 from ...api.models.twitchPollStatus import TwitchPollStatus as ApiPollStatus
+from ...api.models.twitchResub import TwitchResub as ApiResub
 from ...api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
 from ...api.models.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as ApiResubscriptionMessageEmote
@@ -304,6 +306,28 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
             case ApiPollStatus.INVALID: return LocalPollStatus.INVALID
             case ApiPollStatus.MODERATED: return LocalPollStatus.MODERATED
             case ApiPollStatus.TERMINATED: return LocalPollStatus.TERMINATED
+
+    async def mapResub(
+        self,
+        resub: ApiResub | None,
+    ) -> LocalResub | None:
+        if resub is None:
+            return None
+
+        subTier = await self.requireSubscriberTier(resub.subTier)
+
+        return LocalResub(
+            gifterIsAnonymous = resub.gifterIsAnonymous,
+            isGift = resub.isGift,
+            isPrime = resub.isPrime,
+            cumulativeMonths = resub.cumulativeMonths,
+            durationMonths = resub.durationMonths,
+            streakMonths = resub.streakMonths,
+            gifterUserId = resub.gifterUserId,
+            gifterUserLogin = resub.gifterUserLogin,
+            gifterUserName = resub.gifterUserName,
+            subTier = subTier,
+        )
 
     async def mapResubscriptionMessage(
         self,
