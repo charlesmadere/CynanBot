@@ -14,12 +14,7 @@ from .misc.startable import Startable
 from .sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from .timber.timberInterface import TimberInterface
 from .twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from .twitch.configuration.absChannelJoinEvent import AbsChannelJoinEvent
-from .twitch.configuration.channelJoinListener import ChannelJoinListener
-from .twitch.configuration.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
-from .twitch.configuration.joinChannelsEvent import JoinChannelsEvent
 from .twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from .twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
 from .twitch.websocket.listener.twitchWebsocketConnectionsFinishedListener import \
     TwitchWebsocketConnectionsFinishedListener
 from .twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
@@ -27,7 +22,6 @@ from .twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClie
 
 class CynanBot(
     commands.Bot,
-    ChannelJoinListener,
     TwitchWebsocketConnectionsFinishedListener,
 ):
 
@@ -39,7 +33,6 @@ class CynanBot(
         chatLogger: ChatLoggerInterface,
         sentMessageLogger: SentMessageLoggerInterface,
         timber: TimberInterface,
-        twitchChannelJoinHelper: TwitchChannelJoinHelperInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchWebsocketClient: TwitchWebsocketClientInterface,
@@ -68,8 +61,6 @@ class CynanBot(
             raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchChannelJoinHelper, TwitchChannelJoinHelperInterface):
-            raise TypeError(f'twitchChannelJoinHelper argument is malformed: \"{twitchChannelJoinHelper}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -83,7 +74,6 @@ class CynanBot(
         self.__chatLogger: Final[ChatLoggerInterface] = chatLogger
         self.__sentMessageLogger: Final[SentMessageLoggerInterface] = sentMessageLogger
         self.__timber: Final[TimberInterface] = timber
-        self.__twitchChannelJoinHelper: Final[TwitchChannelJoinHelperInterface] = twitchChannelJoinHelper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchWebsocketClient: Final[TwitchWebsocketClientInterface] = twitchWebsocketClient
@@ -128,31 +118,10 @@ class CynanBot(
             raise error
 
     async def event_ready(self):
-        await self.waitForReady()
+        await self.wait_for_ready()
 
         twitchHandle = await self.__authRepository.getTwitchHandle()
-        self.__timber.log('CynanBot', f'{twitchHandle} is ready!')
-
-        self.__twitchChannelJoinHelper.setChannelJoinListener(self)
-        self.__twitchChannelJoinHelper.joinChannels()
-
-    async def event_reconnect(self):
-        self.__timber.log('CynanBot', f'Received IRC RECONNECT event')
-
-    async def onNewChannelJoinEvent(self, event: AbsChannelJoinEvent):
-        self.__timber.log('CynanBot', f'Received new channel join event ({event=})')
-
-        await self.waitForReady()
-
-        if isinstance(event, FinishedJoiningChannelsEvent):
-            await self.__handleFinishedJoiningChannelsEvent(event)
-        elif isinstance(event, JoinChannelsEvent):
-            await self.__handleJoinChannelsEvent(event)
-
-    async def __handleFinishedJoiningChannelsEvent(self, event: FinishedJoiningChannelsEvent):
-        self.__timber.log('CynanBot', f'Finished joining channels ({event.allChannels=})')
-
-        await self.waitForReady()
+        self.__timber.log('CynanBot', f'Bot \"{twitchHandle}\" is ready!')
 
         self.__timber.start()
         self.__twitchTokensRepository.start()
@@ -164,19 +133,13 @@ class CynanBot(
             self.__twitchWebsocketClient.setConnectionsFinishedListener(self)
             self.__twitchWebsocketClient.start()
 
-    async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
-        self.__timber.log('CynanBot', f'Joining channels: {event}')
-        await self.join_channels(event.channels)
+    async def event_reconnect(self):
+        self.__timber.log('CynanBot', f'Received IRC RECONNECT event')
 
     async def onWebsocketConnectionsFinished(self, userIds: Collection[str]):
         self.__timber.log('CynanBot', f'Finished establishing Twitch websocket connections ({userIds=})')
-
-        await self.waitForReady()
 
         for startable in self.__startables:
             startable.start()
 
         self.__timber.log('CynanBot', f'Finished starting all {len(self.__startables)} startable(s)')
-
-    async def waitForReady(self):
-        await self.wait_for_ready()

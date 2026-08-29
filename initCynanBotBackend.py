@@ -418,7 +418,6 @@ from src.twitch.channelInformationHelper.twitchChannelInformationHelperInterface
 from src.twitch.chatMessenger.twitchChatMessenger import TwitchChatMessenger
 from src.twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from src.twitch.configuration.twitchBitsHandler import TwitchBitsHandler
-from src.twitch.configuration.twitchChannelJoinHelper import TwitchChannelJoinHelper
 from src.twitch.configuration.twitchChannelPointRedemptionHandler import TwitchChannelPointRedemptionHandler
 from src.twitch.configuration.twitchChatHandler import TwitchChatHandler
 from src.twitch.configuration.twitchFollowHandler import TwitchFollowHandler
@@ -462,7 +461,6 @@ from src.twitch.tokens.twitchTokensStorage import TwitchTokensStorage
 from src.twitch.tokens.twitchTokensStorageInterface import TwitchTokensStorageInterface
 from src.twitch.tokens.twitchTokensUtils import TwitchTokensUtils
 from src.twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from src.twitch.twitchChannelJoinHelperInterface import TwitchChannelJoinHelperInterface
 from src.twitch.twitchPredictionWebsocketUtils import TwitchPredictionWebsocketUtils
 from src.twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from src.twitch.twitchWebsocketDataBundleHandler import TwitchWebsocketDataBundleHandler
@@ -738,13 +736,6 @@ usersRepository: Final[UsersRepositoryInterface] = UsersRepository(
     timeZoneRepository = timeZoneRepository,
     ttsBoosterPackParser = ttsBoosterPackParser,
     ttsJsonMapper = ttsJsonMapper,
-)
-
-twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHelper(
-    backgroundTaskHelper = backgroundTaskHelper,
-    verified = True,
-    timber = timber,
-    usersRepository = usersRepository,
 )
 
 twitchPredictionWebsocketUtils: Final[TwitchPredictionWebsocketUtilsInterface] = TwitchPredictionWebsocketUtils(
@@ -2432,7 +2423,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     chatLogger = chatLogger,
     sentMessageLogger = sentMessageLogger,
     timber = timber,
-    twitchChannelJoinHelper = twitchChannelJoinHelper,
     twitchChatMessenger = twitchChatMessenger,
     twitchTokensRepository = twitchTokensRepository,
     twitchWebsocketClient = twitchWebsocketClient,
