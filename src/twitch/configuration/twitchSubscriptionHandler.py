@@ -223,7 +223,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         if numberOfGames < 1:
             return
         elif superTriviaSubscribeTriggerMaximum is not None:
-            numberOfGames = min(numberOfGames, superTriviaSubscribeTriggerMaximum)
+            numberOfGames = int(min(numberOfGames, superTriviaSubscribeTriggerMaximum))
 
         action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannelId = subscriptionData.twitchChannelId,

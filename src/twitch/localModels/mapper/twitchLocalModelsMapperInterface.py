@@ -11,6 +11,7 @@ from ..twitchChatMessageFragmentGif import TwitchChatMessageFragmentGif as Local
 from ..twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention as LocalChatMessageFragmentMention
 from ..twitchChatMessageFragmentType import TwitchChatMessageFragmentType as LocalChatMessageFragmentType
 from ..twitchCheerMetadata import TwitchCheerMetadata as LocalCheerMetadata
+from ..twitchCommunitySubGift import TwitchCommunitySubGift as LocalCommunitySubGift
 from ..twitchCustomPowerUp import TwitchCustomPowerUp as LocalCustomPowerUp
 from ..twitchCustomPowerUpData import TwitchCustomPowerUpData as LocalCustomPowerUpData
 from ..twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
@@ -20,6 +21,7 @@ from ..twitchPollChoice import TwitchPollChoice as LocalPollChoice
 from ..twitchPollStatus import TwitchPollStatus as LocalPollStatus
 from ..twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
 from ..twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
+from ..twitchSubscriberTier import TwitchSubscriberTier as LocalSubscriberTier
 from ..twitchWatchStreak import TwitchWatchStreak as LocalWatchStreak
 from ...api.models.twitchBitsUseType import TwitchBitsUseType as ApiBitsUseType
 from ...api.models.twitchChatMessageFragment import TwitchChatMessageFragment as ApiChatMessageFragment
@@ -31,6 +33,7 @@ from ...api.models.twitchChatMessageFragmentMention import \
     TwitchChatMessageFragmentMention as ApiChatMessageFragmentMention
 from ...api.models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType as ApiChatMessageFragmentType
 from ...api.models.twitchCheerMetadata import TwitchCheerMetadata as ApiCheerMetadata
+from ...api.models.twitchCommunitySubGift import TwitchCommunitySubGift as ApiCommunitySubGift
 from ...api.models.twitchCustomPowerUp import TwitchCustomPowerUp as ApiCustomPowerUp
 from ...api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as ApiCustomPowerUpData
 from ...api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
@@ -40,6 +43,7 @@ from ...api.models.twitchPollStatus import TwitchPollStatus as ApiPollStatus
 from ...api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
 from ...api.models.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as ApiResubscriptionMessageEmote
+from ...api.models.twitchSubscriberTier import TwitchSubscriberTier as ApiSubscriberTier
 from ...api.models.twitchWatchStreak import TwitchWatchStreak as ApiWatchStreak
 from ...api.models.twitchWebsocketSubscriptionType import \
     TwitchWebsocketSubscriptionType as ApiWebsocketSubscriptionType
@@ -108,6 +112,13 @@ class TwitchLocalModelsMapperInterface(ABC):
         self,
         cheerMetadata: ApiCheerMetadata | None,
     ) -> LocalCheerMetadata | None:
+        pass
+
+    @abstractmethod
+    async def mapCommunitySubGift(
+        self,
+        communitySubGift: ApiCommunitySubGift | None,
+    ) -> LocalCommunitySubGift | None:
         pass
 
     @abstractmethod
@@ -181,6 +192,13 @@ class TwitchLocalModelsMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def mapSubscriberTier(
+        self,
+        subscriberTier: ApiSubscriberTier | None,
+    ) -> LocalSubscriberTier | None:
+        pass
+
+    @abstractmethod
     async def mapWatchStreak(
         self,
         watchStreak: ApiWatchStreak | None,
@@ -220,4 +238,11 @@ class TwitchLocalModelsMapperInterface(ABC):
         self,
         resubscriptionMessageEmote: ApiResubscriptionMessageEmote | None,
     ) -> LocalResubscriptionMessageEmote:
+        pass
+
+    @abstractmethod
+    async def requireSubscriberTier(
+        self,
+        subscriberTier: ApiSubscriberTier | None,
+    ) -> LocalSubscriberTier:
         pass
