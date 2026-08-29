@@ -23,9 +23,11 @@ from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat 
 from src.twitch.api.models.twitchHypeTrainType import TwitchHypeTrainType as ApiHypeTrainType
 from src.twitch.api.models.twitchPollChoice import TwitchPollChoice as ApiPollChoice
 from src.twitch.api.models.twitchPollStatus import TwitchPollStatus as ApiPollStatus
+from src.twitch.api.models.twitchResub import TwitchResub as ApiResub
 from src.twitch.api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
 from src.twitch.api.models.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as ApiResubscriptionMessageEmote
+from src.twitch.api.models.twitchSubGift import TwitchSubGift as ApiSubGift
 from src.twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier as ApiSubscriberTier
 from src.twitch.api.models.twitchWatchStreak import TwitchWatchStreak as ApiWatchStreak
 from src.twitch.api.models.twitchWebsocketSubscriptionType import \
@@ -54,9 +56,11 @@ from src.twitch.localModels.twitchHypeTrainState import TwitchHypeTrainState as 
 from src.twitch.localModels.twitchHypeTrainType import TwitchHypeTrainType as LocalHypeTrainType
 from src.twitch.localModels.twitchPollChoice import TwitchPollChoice as LocalPollChoice
 from src.twitch.localModels.twitchPollStatus import TwitchPollStatus as LocalPollStatus
+from src.twitch.localModels.twitchResub import TwitchResub as LocalResub
 from src.twitch.localModels.twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
 from src.twitch.localModels.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
+from src.twitch.localModels.twitchSubGift import TwitchSubGift as LocalSubGift
 from src.twitch.localModels.twitchSubscriberTier import TwitchSubscriberTier as LocalSubscriberTier
 from src.twitch.localModels.twitchWatchStreak import TwitchWatchStreak as LocalWatchStreak
 
@@ -545,6 +549,41 @@ class TestTwitchLocalModelsMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_mapResub(self):
+        resub = ApiResub(
+            gifterIsAnonymous = None,
+            isGift = False,
+            isPrime = False,
+            cumulativeMonths = 12,
+            durationMonths = 6,
+            streakMonths = 3,
+            gifterUserId = 'abc123',
+            gifterUserLogin = 'stashiocat',
+            gifterUserName = 'stashiocat',
+            subTier = ApiSubscriberTier.TIER_TWO,
+        )
+
+        result = await self.mapper.mapResub(resub)
+        assert isinstance(result, LocalResub)
+        assert result.gifterIsAnonymous == resub.gifterIsAnonymous
+        assert result.isGift == resub.isGift
+        assert result.isPrime == resub.isPrime
+        assert result.cumulativeMonths == resub.cumulativeMonths
+        assert result.durationMonths == resub.durationMonths
+        assert result.streakMonths == resub.streakMonths
+        assert result.gifterUserId == resub.gifterUserId
+        assert result.gifterUserLogin == resub.gifterUserLogin
+        assert result.gifterUserName == resub.gifterUserName
+
+        subTier = await self.mapper.mapSubscriberTier(resub.subTier)
+        assert result.subTier is subTier
+
+    @pytest.mark.asyncio
+    async def test_mapResub_withNone(self):
+        result = await self.mapper.mapResub(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_mapResubscriptionMessage(self):
         emotes: FrozenList[ApiResubscriptionMessageEmote] = FrozenList([
             ApiResubscriptionMessageEmote(
@@ -589,6 +628,35 @@ class TestTwitchLocalModelsMapper:
     @pytest.mark.asyncio
     async def test_mapResubscriptionMessageEmote_withNone(self):
         result = await self.mapper.mapResubscriptionMessageEmote(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_mapSubGift(self):
+        apiSubGift = ApiSubGift(
+            cumulativeTotal = 25,
+            durationMonths = 12,
+            communityGiftId = 'def456',
+            recipientUserId = 'abc123',
+            recipientUserLogin = 'stashiocat',
+            recipientUserName = 'stashiocat',
+            subTier = ApiSubscriberTier.TIER_THREE,
+        )
+
+        result = await self.mapper.mapSubGift(apiSubGift)
+        assert isinstance(result, LocalSubGift)
+        assert result.cumulativeTotal == apiSubGift.cumulativeTotal
+        assert result.durationMonths == apiSubGift.durationMonths
+        assert result.communityGiftId == apiSubGift.communityGiftId
+        assert result.recipientUserId == apiSubGift.recipientUserId
+        assert result.recipientUserLogin == apiSubGift.recipientUserLogin
+        assert result.recipientUserName == apiSubGift.recipientUserName
+
+        subTier = await self.mapper.mapSubscriberTier(apiSubGift.subTier)
+        assert result.subTier is subTier
+
+    @pytest.mark.asyncio
+    async def test_mapSubGift_withNone(self):
+        result = await self.mapper.mapSubGift(None)
         assert result is None
 
     @pytest.mark.asyncio

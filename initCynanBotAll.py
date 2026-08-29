@@ -3708,6 +3708,7 @@ twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscript
     twitchChatMessenger = twitchChatMessenger,
     twitchEmotesHelper = twitchEmotesHelper,
     twitchHandleProvider = authRepository,
+    twitchLocalModelsMapper = twitchLocalModelsMapper,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
 )
