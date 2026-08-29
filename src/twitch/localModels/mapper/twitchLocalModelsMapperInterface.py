@@ -21,6 +21,7 @@ from ..twitchPollChoice import TwitchPollChoice as LocalPollChoice
 from ..twitchPollStatus import TwitchPollStatus as LocalPollStatus
 from ..twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
 from ..twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
+from ..twitchSubGift import TwitchSubGift as LocalSubGift
 from ..twitchSubscriberTier import TwitchSubscriberTier as LocalSubscriberTier
 from ..twitchWatchStreak import TwitchWatchStreak as LocalWatchStreak
 from ...api.models.twitchBitsUseType import TwitchBitsUseType as ApiBitsUseType
@@ -43,6 +44,7 @@ from ...api.models.twitchPollStatus import TwitchPollStatus as ApiPollStatus
 from ...api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
 from ...api.models.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as ApiResubscriptionMessageEmote
+from ...api.models.twitchSubGift import TwitchSubGift as ApiSubGift
 from ...api.models.twitchSubscriberTier import TwitchSubscriberTier as ApiSubscriberTier
 from ...api.models.twitchWatchStreak import TwitchWatchStreak as ApiWatchStreak
 from ...api.models.twitchWebsocketSubscriptionType import \
@@ -189,6 +191,13 @@ class TwitchLocalModelsMapperInterface(ABC):
         self,
         resubscriptionMessageEmote: ApiResubscriptionMessageEmote | None,
     ) -> LocalResubscriptionMessageEmote | None:
+        pass
+
+    @abstractmethod
+    async def mapSubGift(
+        self,
+        subGift: ApiSubGift | None,
+    ) -> LocalSubGift | None:
         pass
 
     @abstractmethod
