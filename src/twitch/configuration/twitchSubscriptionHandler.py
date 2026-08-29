@@ -8,6 +8,7 @@ from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscrip
 from ..chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
 from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ..localModels.mapper.twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
 from ..officialAccounts.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from ..tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ...misc import utils as utils
@@ -36,6 +37,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchEmotesHelper: TwitchEmotesHelperInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
+        twitchLocalModelsMapper: TwitchLocalModelsMapperInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
     ):
@@ -55,6 +57,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise TypeError(f'twitchEmotesHelper argument is malformed: \"{twitchEmotesHelper}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+        elif not isinstance(twitchLocalModelsMapper, TwitchLocalModelsMapperInterface):
+            raise TypeError(f'twitchLocalModelsMapper argument is malformed: \"{twitchLocalModelsMapper}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -68,6 +72,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchEmotesHelper: Final[TwitchEmotesHelperInterface] = twitchEmotesHelper
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__twitchLocalModelsMapper: Final[TwitchLocalModelsMapperInterface] = twitchLocalModelsMapper
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
@@ -135,6 +140,11 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({eventUserId=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
             return
 
+        communitySubGift = await self.__twitchLocalModelsMapper.mapCommunitySubGift(event.communitySubGift)
+        resub = await self.__twitchLocalModelsMapper.mapResub(event.resub)
+        resubscriptionMessage = await self.__twitchLocalModelsMapper.mapResubscriptionMessage(event.resubscriptionMessage)
+        subGift = await self.__twitchLocalModelsMapper.mapSubGift(event.subGift)
+
         subscriptionData = AbsTwitchSubscriptionHandler.SubscriptionData(
             isAnonymous = event.isAnonymous,
             isGift = event.isGift,
@@ -144,10 +154,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             eventUserLogin = eventUserLogin,
             eventUserName = eventUserName,
             twitchChannelId = twitchChannelId,
-            communitySubGift = event.communitySubGift,
-            resub = event.resub,
-            resubscriptionMessage = event.resubscriptionMessage,
-            subGift = event.subGift,
+            communitySubGift = communitySubGift,
+            resub = resub,
+            resubscriptionMessage = resubscriptionMessage,
+            subGift = subGift,
             tier = tier,
             subscriptionType = subscriptionType,
             user = user,
@@ -161,9 +171,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self,
         subscriptionData: AbsTwitchSubscriptionHandler.SubscriptionData,
     ):
-        user = subscriptionData.user
-
-        if not user.isSubGiftThankingEnabled:
+        if not subscriptionData.user.isSubGiftThankingEnabled:
             return
 
         recipientUserId: str
@@ -174,7 +182,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             recipientUserId = subscriptionData.subGift.recipientUserId
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        twitchId = await self.__userIdsRepository.fetchUserId(twitchHandle)
+
+        twitchId = await self.__userIdsRepository.fetchUserId(
+            userName = twitchHandle,
+        )
 
         if not utils.isValidStr(twitchId) or twitchId != recipientUserId:
             return
@@ -193,10 +204,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self.__twitchChatMessenger.send(
             text = f'{emoji1} thanks for the sub!!! {emoji2}',
             twitchChannelId = subscriptionData.twitchChannelId,
-            delaySeconds = 3,
+            delaySeconds = 8,
         )
 
-        self.__timber.log('TwitchSubscriptionHandler', f'Received and thanked in {user.handle} for a gifted sub! ({subscriptionData=})')
+        self.__timber.log('TwitchSubscriptionHandler', f'Received and thanked in {subscriptionData.user.handle} for a gifted sub! ({recipientUserId=}) ({subscriptionData=})')
 
     async def __processSuperTriviaEvent(self, subscriptionData: AbsTwitchSubscriptionHandler.SubscriptionData):
         user = subscriptionData.user
@@ -218,7 +229,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         if subscriptionData.communitySubGift is not None:
             numberOfSubs = subscriptionData.communitySubGift.total
 
-        numberOfGames = int(math.floor(numberOfSubs / superTriviaSubscribeTriggerAmount))
+        numberOfGames = int(math.floor(float(numberOfSubs) / superTriviaSubscribeTriggerAmount))
 
         if numberOfGames < 1:
             return

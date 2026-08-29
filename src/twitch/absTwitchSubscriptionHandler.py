@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from .api.models.twitchCommunitySubGift import TwitchCommunitySubGift
-from .api.models.twitchResub import TwitchResub
-from .api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage
-from .api.models.twitchSubGift import TwitchSubGift
-from .api.models.twitchSubscriberTier import TwitchSubscriberTier
 from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from .api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from .localModels.twitchCommunitySubGift import TwitchCommunitySubGift
+from .localModels.twitchResub import TwitchResub
+from .localModels.twitchResubscriptionMessage import TwitchResubscriptionMessage
+from .localModels.twitchSubGift import TwitchSubGift
+from .localModels.twitchSubscriberTier import TwitchSubscriberTier
 from ..users.userInterface import UserInterface
 
 
