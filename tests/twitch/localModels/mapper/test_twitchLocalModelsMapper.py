@@ -16,6 +16,7 @@ from src.twitch.api.models.twitchChatMessageFragmentMention import \
 from src.twitch.api.models.twitchChatMessageFragmentType import \
     TwitchChatMessageFragmentType as ApiChatMessageFragmentType
 from src.twitch.api.models.twitchCheerMetadata import TwitchCheerMetadata as ApiCheerMetadata
+from src.twitch.api.models.twitchCommunitySubGift import TwitchCommunitySubGift as ApiCommunitySubGift
 from src.twitch.api.models.twitchCustomPowerUp import TwitchCustomPowerUp as ApiCustomPowerUp
 from src.twitch.api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as ApiCustomPowerUpData
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
@@ -25,6 +26,7 @@ from src.twitch.api.models.twitchPollStatus import TwitchPollStatus as ApiPollSt
 from src.twitch.api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
 from src.twitch.api.models.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as ApiResubscriptionMessageEmote
+from src.twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier as ApiSubscriberTier
 from src.twitch.api.models.twitchWatchStreak import TwitchWatchStreak as ApiWatchStreak
 from src.twitch.api.models.twitchWebsocketSubscriptionType import \
     TwitchWebsocketSubscriptionType as ApiWebsocketSubscriptionType
@@ -44,6 +46,7 @@ from src.twitch.localModels.twitchChatMessageFragmentMention import \
 from src.twitch.localModels.twitchChatMessageFragmentType import \
     TwitchChatMessageFragmentType as LocalChatMessageFragmentType
 from src.twitch.localModels.twitchCheerMetadata import TwitchCheerMetadata as LocalCheerMetadata
+from src.twitch.localModels.twitchCommunitySubGift import TwitchCommunitySubGift as LocalCommunitySubGift
 from src.twitch.localModels.twitchCustomPowerUp import TwitchCustomPowerUp as LocalCustomPowerUp
 from src.twitch.localModels.twitchCustomPowerUpData import TwitchCustomPowerUpData as LocalCustomPowerUpData
 from src.twitch.localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
@@ -54,6 +57,7 @@ from src.twitch.localModels.twitchPollStatus import TwitchPollStatus as LocalPol
 from src.twitch.localModels.twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
 from src.twitch.localModels.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
+from src.twitch.localModels.twitchSubscriberTier import TwitchSubscriberTier as LocalSubscriberTier
 from src.twitch.localModels.twitchWatchStreak import TwitchWatchStreak as LocalWatchStreak
 
 
@@ -286,6 +290,29 @@ class TestTwitchLocalModelsMapper:
     @pytest.mark.asyncio
     async def test_mapCheerMetadata_withNone(self):
         result = await self.mapper.mapCheerMetadata(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_mapCommunitySubGift(self):
+        apiCommunitySubGift = ApiCommunitySubGift(
+            cumulativeTotal = 25,
+            total = 5,
+            communitySubGiftId = 'abc123',
+            subTier = ApiSubscriberTier.TIER_ONE,
+        )
+
+        result = await self.mapper.mapCommunitySubGift(apiCommunitySubGift)
+        assert isinstance(result, LocalCommunitySubGift)
+        assert result.cumulativeTotal == apiCommunitySubGift.cumulativeTotal
+        assert result.total == apiCommunitySubGift.total
+        assert result.communitySubGiftId == apiCommunitySubGift.communitySubGiftId
+
+        subTier = await self.mapper.mapSubscriberTier(apiCommunitySubGift.subTier)
+        assert result.subTier is subTier
+
+    @pytest.mark.asyncio
+    async def test_mapCommunitySubGift_withNone(self):
+        result = await self.mapper.mapCommunitySubGift(None)
         assert result is None
 
     @pytest.mark.asyncio
@@ -565,6 +592,31 @@ class TestTwitchLocalModelsMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_mapSubscriberTier_withNone(self):
+        result = await self.mapper.mapSubscriberTier(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_mapSubscriberTier_withPrime(self):
+        result = await self.mapper.mapSubscriberTier(ApiSubscriberTier.PRIME)
+        assert result is LocalSubscriberTier.PRIME
+
+    @pytest.mark.asyncio
+    async def test_mapSubscriberTier_withTierOne(self):
+        result = await self.mapper.mapSubscriberTier(ApiSubscriberTier.TIER_ONE)
+        assert result is LocalSubscriberTier.TIER_ONE
+
+    @pytest.mark.asyncio
+    async def test_mapSubscriberTier_withTierTwo(self):
+        result = await self.mapper.mapSubscriberTier(ApiSubscriberTier.TIER_TWO)
+        assert result is LocalSubscriberTier.TIER_TWO
+
+    @pytest.mark.asyncio
+    async def test_mapSubscriberTier_withTierThree(self):
+        result = await self.mapper.mapSubscriberTier(ApiSubscriberTier.TIER_THREE)
+        assert result is LocalSubscriberTier.TIER_THREE
+
+    @pytest.mark.asyncio
     async def test_mapWatchStreak(self):
         apiWatchStreak = ApiWatchStreak(
             channelPointsAwarded = 250,
@@ -736,6 +788,36 @@ class TestTwitchLocalModelsMapper:
             result = await self.mapper.requireResubscriptionMessageEmote(None)
 
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireSubscriberTier_withNone(self):
+        result: LocalSubscriberTier | None = None
+
+        with pytest.raises(ValueError):
+            result = await self.mapper.requireSubscriberTier(None)
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireSubscriberTier_withPrime(self):
+        result = await self.mapper.requireSubscriberTier(ApiSubscriberTier.PRIME)
+        assert result is LocalSubscriberTier.PRIME
+
+    @pytest.mark.asyncio
+    async def test_requireSubscriberTier_withTierOne(self):
+        result = await self.mapper.requireSubscriberTier(ApiSubscriberTier.TIER_ONE)
+        assert result is LocalSubscriberTier.TIER_ONE
+
+    @pytest.mark.asyncio
+    async def test_requireSubscriberTier_withTierTwo(self):
+        result = await self.mapper.requireSubscriberTier(ApiSubscriberTier.TIER_TWO)
+        assert result is LocalSubscriberTier.TIER_TWO
+
+    @pytest.mark.asyncio
+    async def test_requireSubscriberTier_withTierThree(self):
+        result = await self.mapper.requireSubscriberTier(ApiSubscriberTier.TIER_THREE)
+        assert result is LocalSubscriberTier.TIER_THREE
+
 
     def test_sanity(self):
         assert self.mapper is not None

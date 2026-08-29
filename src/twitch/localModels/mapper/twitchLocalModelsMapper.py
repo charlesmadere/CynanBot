@@ -11,6 +11,7 @@ from ..twitchChatMessageFragmentGif import TwitchChatMessageFragmentGif as Local
 from ..twitchChatMessageFragmentMention import TwitchChatMessageFragmentMention as LocalChatMessageFragmentMention
 from ..twitchChatMessageFragmentType import TwitchChatMessageFragmentType as LocalChatMessageFragmentType
 from ..twitchCheerMetadata import TwitchCheerMetadata as LocalCheerMetadata
+from ..twitchCommunitySubGift import TwitchCommunitySubGift as LocalCommunitySubGift
 from ..twitchCustomPowerUp import TwitchCustomPowerUp as LocalCustomPowerUp
 from ..twitchCustomPowerUpData import TwitchCustomPowerUpData as LocalCustomPowerUpData
 from ..twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFormat
@@ -20,6 +21,7 @@ from ..twitchPollChoice import TwitchPollChoice as LocalPollChoice
 from ..twitchPollStatus import TwitchPollStatus as LocalPollStatus
 from ..twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
 from ..twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
+from ..twitchSubscriberTier import TwitchSubscriberTier as LocalSubscriberTier
 from ..twitchWatchStreak import TwitchWatchStreak as LocalWatchStreak
 from ...api.models.twitchBitsUseType import TwitchBitsUseType as ApiBitsUseType
 from ...api.models.twitchChatMessageFragment import TwitchChatMessageFragment as ApiChatMessageFragment
@@ -31,6 +33,7 @@ from ...api.models.twitchChatMessageFragmentMention import \
     TwitchChatMessageFragmentMention as ApiChatMessageFragmentMention
 from ...api.models.twitchChatMessageFragmentType import TwitchChatMessageFragmentType as ApiChatMessageFragmentType
 from ...api.models.twitchCheerMetadata import TwitchCheerMetadata as ApiCheerMetadata
+from ...api.models.twitchCommunitySubGift import TwitchCommunitySubGift as ApiCommunitySubGift
 from ...api.models.twitchCustomPowerUp import TwitchCustomPowerUp as ApiCustomPowerUp
 from ...api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as ApiCustomPowerUpData
 from ...api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
@@ -40,6 +43,7 @@ from ...api.models.twitchPollStatus import TwitchPollStatus as ApiPollStatus
 from ...api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
 from ...api.models.twitchResubscriptionMessageEmote import \
     TwitchResubscriptionMessageEmote as ApiResubscriptionMessageEmote
+from ...api.models.twitchSubscriberTier import TwitchSubscriberTier as ApiSubscriberTier
 from ...api.models.twitchWatchStreak import TwitchWatchStreak as ApiWatchStreak
 from ...api.models.twitchWebsocketSubscriptionType import \
     TwitchWebsocketSubscriptionType as ApiWebsocketSubscriptionType
@@ -176,6 +180,22 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
 
         return LocalCheerMetadata(
             bits = cheerMetadata.bits,
+        )
+
+    async def mapCommunitySubGift(
+        self,
+        communitySubGift: ApiCommunitySubGift | None,
+    ) -> LocalCommunitySubGift | None:
+        if communitySubGift is None:
+            return None
+
+        subTier = await self.requireSubscriberTier(communitySubGift.subTier)
+
+        return LocalCommunitySubGift(
+            cumulativeTotal = communitySubGift.cumulativeTotal,
+            total = communitySubGift.total,
+            communitySubGiftId = communitySubGift.communitySubGiftId,
+            subTier = subTier,
         )
 
     async def mapCustomPowerUp(
@@ -316,6 +336,19 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
             emoteId = resubscriptionMessageEmote.emoteId,
         )
 
+    async def mapSubscriberTier(
+        self,
+        subscriberTier: ApiSubscriberTier | None,
+    ) -> LocalSubscriberTier | None:
+        if subscriberTier is None:
+            return None
+
+        match subscriberTier:
+            case ApiSubscriberTier.PRIME: return LocalSubscriberTier.PRIME
+            case ApiSubscriberTier.TIER_ONE: return LocalSubscriberTier.TIER_ONE
+            case ApiSubscriberTier.TIER_TWO: return LocalSubscriberTier.TIER_TWO
+            case ApiSubscriberTier.TIER_THREE: return LocalSubscriberTier.TIER_THREE
+
     async def mapWatchStreak(
         self,
         watchStreak: ApiWatchStreak | None,
@@ -337,7 +370,7 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
         )
 
         if result is None:
-            raise ValueError(f'Unable to map \"{chatMessageFragment}\" into LocalChatMessageFragment value!')
+            raise ValueError(f'Unable to map \"{chatMessageFragment}\" into LocalChatMessageFragment')
 
         return result
 
@@ -350,7 +383,7 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
         )
 
         if result is None:
-            raise ValueError(f'Unable to map \"{chatMessageFragmentType}\" into LocalChatMessageFragmentType value!')
+            raise ValueError(f'Unable to map \"{chatMessageFragmentType}\" into LocalChatMessageFragmentType')
 
         return result
 
@@ -363,7 +396,7 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
         )
 
         if result is None:
-            raise ValueError(f'Unable to map \"{emoteImageFormat}\" into LocalEmoteImageFormat value!')
+            raise ValueError(f'Unable to map \"{emoteImageFormat}\" into LocalEmoteImageFormat')
 
         return result
 
@@ -376,7 +409,7 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
         )
 
         if result is None:
-            raise ValueError(f'Unable to map \"{pollChoice}\" into LocalPollChoice value!')
+            raise ValueError(f'Unable to map \"{pollChoice}\" into LocalPollChoice')
 
         return result
 
@@ -390,5 +423,18 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
 
         if result is None:
             raise ValueError(f'Unable to map \"{resubscriptionMessageEmote}\" into LocalResubscriptionMessageEmote')
+
+        return result
+
+    async def requireSubscriberTier(
+        self,
+        subscriberTier: ApiSubscriberTier | None,
+    ) -> LocalSubscriberTier:
+        result = await self.mapSubscriberTier(
+            subscriberTier = subscriberTier,
+        )
+
+        if result is None:
+            raise ValueError(f'Unable to map \"{subscriberTier}\" into LocalSubscriberTier')
 
         return result
