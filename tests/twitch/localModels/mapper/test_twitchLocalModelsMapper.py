@@ -23,6 +23,7 @@ from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat 
 from src.twitch.api.models.twitchHypeTrainType import TwitchHypeTrainType as ApiHypeTrainType
 from src.twitch.api.models.twitchPollChoice import TwitchPollChoice as ApiPollChoice
 from src.twitch.api.models.twitchPollStatus import TwitchPollStatus as ApiPollStatus
+from src.twitch.api.models.twitchPredictionStatus import TwitchPredictionStatus as ApiPredictionStatus
 from src.twitch.api.models.twitchResub import TwitchResub as ApiResub
 from src.twitch.api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
 from src.twitch.api.models.twitchResubscriptionMessageEmote import \
@@ -56,6 +57,7 @@ from src.twitch.localModels.twitchHypeTrainState import TwitchHypeTrainState as 
 from src.twitch.localModels.twitchHypeTrainType import TwitchHypeTrainType as LocalHypeTrainType
 from src.twitch.localModels.twitchPollChoice import TwitchPollChoice as LocalPollChoice
 from src.twitch.localModels.twitchPollStatus import TwitchPollStatus as LocalPollStatus
+from src.twitch.localModels.twitchPredictionStatus import TwitchPredictionStatus as LocalPredictionStatus
 from src.twitch.localModels.twitchResub import TwitchResub as LocalResub
 from src.twitch.localModels.twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
 from src.twitch.localModels.twitchResubscriptionMessageEmote import \
@@ -549,6 +551,42 @@ class TestTwitchLocalModelsMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_mapPredictionStatus_withActive(self):
+        result = await self.mapper.mapPredictionStatus(ApiPredictionStatus.ACTIVE)
+        assert result is LocalPredictionStatus.ACTIVE
+
+    @pytest.mark.asyncio
+    async def test_mapPredictionStatus_withAll(self):
+        results: set[LocalPredictionStatus | None] = set()
+
+        for status in ApiPredictionStatus:
+            result = await self.mapper.mapPredictionStatus(status)
+            results.add(result)
+
+        assert len(results) == len(LocalPredictionStatus)
+        assert None not in results
+
+    @pytest.mark.asyncio
+    async def test_mapPredictionStatus_withCanceled(self):
+        result = await self.mapper.mapPredictionStatus(ApiPredictionStatus.CANCELED)
+        assert result is LocalPredictionStatus.CANCELED
+
+    @pytest.mark.asyncio
+    async def test_mapPredictionStatus_withLocked(self):
+        result = await self.mapper.mapPredictionStatus(ApiPredictionStatus.LOCKED)
+        assert result is LocalPredictionStatus.LOCKED
+
+    @pytest.mark.asyncio
+    async def test_mapPredictionStatus_withNone(self):
+        result = await self.mapper.mapPredictionStatus(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_mapPredictionStatus_withResolved(self):
+        result = await self.mapper.mapPredictionStatus(ApiPredictionStatus.RESOLVED)
+        assert result is LocalPredictionStatus.RESOLVED
+
+    @pytest.mark.asyncio
     async def test_mapResub(self):
         resub = ApiResub(
             gifterIsAnonymous = None,
@@ -658,6 +696,17 @@ class TestTwitchLocalModelsMapper:
     async def test_mapSubGift_withNone(self):
         result = await self.mapper.mapSubGift(None)
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_mapSubscriberTier_withAll(self):
+        results: set[LocalSubscriberTier | None] = set()
+
+        for subscriberTier in ApiSubscriberTier:
+            result = await self.mapper.mapSubscriberTier(subscriberTier)
+            results.add(result)
+
+        assert len(results) == len(LocalSubscriberTier)
+        assert None not in results
 
     @pytest.mark.asyncio
     async def test_mapSubscriberTier_withNone(self):

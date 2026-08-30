@@ -19,6 +19,7 @@ from ..twitchHypeTrainState import TwitchHypeTrainState as LocalHypeTrainState
 from ..twitchHypeTrainType import TwitchHypeTrainType as LocalHypeTrainType
 from ..twitchPollChoice import TwitchPollChoice as LocalPollChoice
 from ..twitchPollStatus import TwitchPollStatus as LocalPollStatus
+from ..twitchPredictionStatus import TwitchPredictionStatus as LocalPredictionStatus
 from ..twitchResub import TwitchResub as LocalResub
 from ..twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
 from ..twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote as LocalResubscriptionMessageEmote
@@ -42,6 +43,7 @@ from ...api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEm
 from ...api.models.twitchHypeTrainType import TwitchHypeTrainType as ApiHypeTrainType
 from ...api.models.twitchPollChoice import TwitchPollChoice as ApiPollChoice
 from ...api.models.twitchPollStatus import TwitchPollStatus as ApiPollStatus
+from ...api.models.twitchPredictionStatus import TwitchPredictionStatus as ApiPredictionStatus
 from ...api.models.twitchResub import TwitchResub as ApiResub
 from ...api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
 from ...api.models.twitchResubscriptionMessageEmote import \
@@ -179,6 +181,13 @@ class TwitchLocalModelsMapperInterface(ABC):
         self,
         pollStatus: ApiPollStatus | None,
     ) -> LocalPollStatus | None:
+        pass
+
+    @abstractmethod
+    async def mapPredictionStatus(
+        self,
+        predictionStatus: ApiPredictionStatus | None,
+    ) -> LocalPredictionStatus | None:
         pass
 
     @abstractmethod

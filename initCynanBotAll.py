@@ -3688,6 +3688,7 @@ twitchPredictionHandler: Final[AbsTwitchPredictionHandler] = TwitchPredictionHan
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
+    twitchLocalModelsMapper = twitchLocalModelsMapper,
     twitchPredictionWebsocketUtils = twitchPredictionWebsocketUtils,
     websocketConnectionServer = websocketConnectionServer,
 )

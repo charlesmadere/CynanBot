@@ -116,11 +116,15 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that has no event ({user=}) ({twitchChannelId=}) ({dataBundle=})')
             return
 
+        communitySubGift = await self.__twitchLocalModelsMapper.mapCommunitySubGift(event.communitySubGift)
         eventUserId = event.userId
         eventUserLogin = event.userLogin
         eventUserName = event.userName
-        tier = event.tier
+        resub = await self.__twitchLocalModelsMapper.mapResub(event.resub)
+        resubscriptionMessage = await self.__twitchLocalModelsMapper.mapResubscriptionMessage(event.resubscriptionMessage)
+        subGift = await self.__twitchLocalModelsMapper.mapSubGift(event.subGift)
         subscriptionType = dataBundle.metadata.subscriptionType
+        tier = await self.__twitchLocalModelsMapper.mapSubscriberTier(event.tier)
 
         if (event.isAnonymous is True or event.isChatterAnonymous is True) and (not utils.isValidStr(eventUserId) and not utils.isValidStr(eventUserLogin) and not utils.isValidStr(eventUserName)):
             eventUserId = await self.__officialTwitchAccountUserIdProvider.getTwitchAnonymousGifterUserId()
@@ -139,11 +143,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         if not utils.isValidStr(eventUserId) or not utils.isValidStr(eventUserLogin) or not utils.isValidStr(eventUserName) or tier is None or subscriptionType is None:
             self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({eventUserId=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
             return
-
-        communitySubGift = await self.__twitchLocalModelsMapper.mapCommunitySubGift(event.communitySubGift)
-        resub = await self.__twitchLocalModelsMapper.mapResub(event.resub)
-        resubscriptionMessage = await self.__twitchLocalModelsMapper.mapResubscriptionMessage(event.resubscriptionMessage)
-        subGift = await self.__twitchLocalModelsMapper.mapSubGift(event.subGift)
 
         subscriptionData = AbsTwitchSubscriptionHandler.SubscriptionData(
             isAnonymous = event.isAnonymous,
