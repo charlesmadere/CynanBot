@@ -4,9 +4,9 @@ from dataclasses import dataclass
 from frozenlist import FrozenList
 
 from .api.models.twitchOutcome import TwitchOutcome
-from .api.models.twitchPredictionStatus import TwitchPredictionStatus
 from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from .api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from .localModels.twitchPredictionStatus import TwitchPredictionStatus
 from ..users.userInterface import UserInterface
 
 

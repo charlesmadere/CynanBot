@@ -3,10 +3,11 @@ from typing import Final
 
 from ..absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from ..activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
-from ..api.models.twitchPredictionStatus import TwitchPredictionStatus
 from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
 from ..chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
+from ..localModels.mapper.twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
+from ..localModels.twitchPredictionStatus import TwitchPredictionStatus
 from ..twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundAlert import SoundAlert
@@ -28,6 +29,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
+        twitchLocalModelsMapper: TwitchLocalModelsMapperInterface,
         twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
         websocketConnectionServer: WebsocketConnectionServerInterface,
         maxTopPredictors: int = 5,
@@ -40,6 +42,8 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
+        elif not isinstance(twitchLocalModelsMapper, TwitchLocalModelsMapperInterface):
+            raise TypeError(f'twitchLocalModelsMapper argument is malformed: \"{twitchLocalModelsMapper}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
             raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
         elif not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
@@ -53,6 +57,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
+        self.__twitchLocalModelsMapper: Final[TwitchLocalModelsMapperInterface] = twitchLocalModelsMapper
         self.__twitchPredictionWebsocketUtils: Final[TwitchPredictionWebsocketUtilsInterface | None] = twitchPredictionWebsocketUtils
         self.__websocketConnectionServer: Final[WebsocketConnectionServerInterface] = websocketConnectionServer
         self.__maxTopPredictors: Final[int] = maxTopPredictors
@@ -174,6 +179,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         outcomes = event.outcomes
         eventId = event.eventId
         title = event.title
+        predictionStatus = await self.__twitchLocalModelsMapper.mapPredictionStatus(event.predictionStatus)
         subscriptionType = dataBundle.metadata.subscriptionType
 
         if outcomes is None or len(outcomes) == 0 or not utils.isValidStr(eventId) or not utils.isValidStr(title) or subscriptionType is None:
@@ -186,9 +192,9 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             title = title,
             twitchChannelId = twitchChannelId,
             winningOutcomeId = event.winningOutcomeId,
-            user = user,
-            predictionStatus = event.predictionStatus,
+            predictionStatus = predictionStatus,
             subscriptionType = subscriptionType,
+            user = user,
         )
 
         await self.onNewPrediction(
