@@ -129,9 +129,8 @@ class CynanBot(
         self.__chatLogger.start()
         self.__twitchChatMessenger.start()
 
-        if self.__twitchWebsocketClient is not None:
-            self.__twitchWebsocketClient.setConnectionsFinishedListener(self)
-            self.__twitchWebsocketClient.start()
+        self.__twitchWebsocketClient.setConnectionsFinishedListener(self)
+        self.__twitchWebsocketClient.start()
 
     async def event_reconnect(self):
         self.__timber.log('CynanBot', f'Received IRC RECONNECT event')
