@@ -6,11 +6,11 @@ from .exceptions import NoTwitchUserDataFoundException
 from .twitchUserData import TwitchUserData
 from .twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from .twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
-from .twitchUserStub import TwitchUserStub
 from ..api.models.twitchFetchUserWithIdRequest import TwitchFetchUserWithIdRequest
 from ..api.models.twitchFetchUserWithLoginRequest import TwitchFetchUserWithLoginRequest
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..localModels.twitchUserInterface import TwitchUserInterface
+from ..localModels.twitchUserStub import TwitchUserStub
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -293,11 +293,11 @@ class TwitchUserIdsHelper(TwitchUserIdsHelperInterface):
 
     async def setAll(
         self,
-        userStubs: Collection[TwitchUserInterface],
+        users: Collection[TwitchUserInterface],
     ):
-        if not isinstance(userStubs, Collection):
-            raise TypeError(f'userStubs argument is malformed: \"{userStubs}\"')
+        if not isinstance(users, Collection):
+            raise TypeError(f'users argument is malformed: \"{users}\"')
 
         await self.__twitchUserIdsRepository.setAll(
-            userStubs = userStubs,
+            users = users,
         )

@@ -16,8 +16,8 @@ from ..twitch.api.models.twitchFetchUserWithLoginRequest import TwitchFetchUserW
 from ..twitch.api.models.twitchUser import TwitchUser
 from ..twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..twitch.exceptions import TwitchJsonException, TwitchStatusCodeException
+from ..twitch.localModels.twitchUserStub import TwitchUserStub
 from ..twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
-from ..twitch.userIds.twitchUserStub import TwitchUserStub
 
 
 class UserIdsRepository(UserIdsRepositoryInterface):
@@ -325,15 +325,15 @@ class UserIdsRepository(UserIdsRepositoryInterface):
 
         await connection.close()
 
-        userStubs: set[TwitchUserStub] = set()
+        users: set[TwitchUserStub] = set()
 
         for userId, userName in userIdToUserName.items():
-            userStubs.add(TwitchUserStub(
+            users.add(TwitchUserStub(
                 userId = userId,
                 userLogin = userName,
                 userName = userName,
             ))
 
         await self.__twitchUserIdsHelper.setAll(
-            userStubs = userStubs,
+            users = users,
         )

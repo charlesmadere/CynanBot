@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from ..localModels.twitchUserInterface import TwitchUserInterface
+from .twitchUserInterface import TwitchUserInterface
 
 
 @dataclass(frozen = True, slots = True)

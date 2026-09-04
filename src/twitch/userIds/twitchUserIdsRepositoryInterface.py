@@ -62,6 +62,6 @@ class TwitchUserIdsRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def setAll(
         self,
-        userStubs: Collection[TwitchUserInterface],
+        users: Collection[TwitchUserInterface],
     ):
         pass
