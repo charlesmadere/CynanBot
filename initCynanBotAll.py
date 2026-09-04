@@ -472,6 +472,7 @@ from src.trivia.additionalAnswers.additionalTriviaAnswersRepository import Addit
 from src.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from src.trivia.answerChecker.triviaAnswerChecker import TriviaAnswerChecker
+from src.trivia.answerChecker.triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
 from src.trivia.banned.bannedTriviaGameControllersRepository import BannedTriviaGameControllersRepository
 from src.trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
@@ -500,6 +501,7 @@ from src.trivia.gameController.triviaGameGlobalControllersRepository import Triv
 from src.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
 from src.trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
+from src.trivia.games.queuedTriviaGameStoreInterface import QueuedTriviaGameStoreInterface
 from src.trivia.games.triviaGameStore import TriviaGameStore
 from src.trivia.games.triviaGameStoreInterface import TriviaGameStoreInterface
 from src.trivia.history.triviaHistoryRepository import TriviaHistoryRepository
@@ -525,6 +527,7 @@ from src.trivia.specialStatus.toxicTriviaHelper import ToxicTriviaHelper
 from src.trivia.specialStatus.toxicTriviaOccurencesRepository import ToxicTriviaOccurencesRepository
 from src.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
 from src.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
+from src.trivia.superTriviaCooldownHelperInterface import SuperTriviaCooldownHelperInterface
 from src.trivia.triviaEventListener import TriviaEventListener
 from src.trivia.triviaGameMachine import TriviaGameMachine
 from src.trivia.triviaGameMachineInterface import TriviaGameMachineInterface
@@ -712,6 +715,10 @@ from src.twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterf
 from src.twitch.twitchPredictionWebsocketUtils import TwitchPredictionWebsocketUtils
 from src.twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from src.twitch.twitchWebsocketDataBundleHandler import TwitchWebsocketDataBundleHandler
+from src.twitch.userIds.twitchUserIdsHelper import TwitchUserIdsHelper
+from src.twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
+from src.twitch.userIds.twitchUserIdsRepository import TwitchUserIdsRepository
+from src.twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilder import TwitchWebsocketConditionBuilder
 from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilderInterface import \
     TwitchWebsocketConditionBuilderInterface
@@ -886,10 +893,24 @@ twitchApiService: Final[TwitchApiServiceInterface] = TwitchApiService(
     twitchJsonMapper = twitchJsonMapper,
 )
 
+twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = TwitchUserIdsRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = TwitchUserIdsHelper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchApiService = twitchApiService,
+    twitchUserIdsRepository = twitchUserIdsRepository,
+)
+
 userIdsRepository: Final[UserIdsRepositoryInterface] = UserIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 twitchTokensStorage: Final[TwitchTokensStorageInterface] = TwitchTokensStorage(
@@ -1313,15 +1334,15 @@ chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = Chatter
 ## TTS mapper and parser initialization section ##
 ##################################################
 
-decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
+decTalkVoiceMapper: Final[DecTalkVoiceMapperInterface] = DecTalkVoiceMapper()
 
-halfLifeVoiceParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
+halfLifeVoiceParser: Final[HalfLifeVoiceParserInterface] = HalfLifeVoiceParser()
 
-microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
+microsoftSamJsonParser: Final[MicrosoftSamJsonParserInterface] = MicrosoftSamJsonParser()
 
-streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
+streamElementsJsonParser: Final[StreamElementsJsonParserInterface] = StreamElementsJsonParser()
 
-ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
+ttsMonsterPrivateApiJsonMapper: Final[TtsMonsterPrivateApiJsonMapperInterface] = TtsMonsterPrivateApiJsonMapper(
     timber = timber,
 )
 
@@ -1330,7 +1351,7 @@ ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMon
 ## Chatter Preferred TTS initialization section ##
 ##################################################
 
-chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface = ChatterPreferredTtsSettingsRepository(
+chatterPreferredTtsSettingsRepository: Final[ChatterPreferredTtsSettingsRepositoryInterface] = ChatterPreferredTtsSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/chatterPreferredTtsSettingsRepository.json',
@@ -1338,30 +1359,30 @@ chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInte
     ttsJsonMapper = ttsJsonMapper,
 )
 
-chatterPreferredTtsJsonMapper: ChatterPreferredTtsJsonMapperInterface = ChatterPreferredTtsJsonMapper(
+chatterPreferredTtsJsonMapper: Final[ChatterPreferredTtsJsonMapperInterface] = ChatterPreferredTtsJsonMapper(
     decTalkVoiceMapper = decTalkVoiceMapper,
     halfLifeVoiceParser = halfLifeVoiceParser,
     languagesRepository = languagesRepository,
     microsoftSamJsonParser = microsoftSamJsonParser,
     streamElementsJsonParser = streamElementsJsonParser,
-    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
+    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper,
 )
 
-chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface = ChatterPreferredTtsRepository(
+chatterPreferredTtsRepository: Final[ChatterPreferredTtsRepositoryInterface] = ChatterPreferredTtsRepository(
     backingDatabase = backingDatabase,
     chatterPreferredTtsJsonMapper = chatterPreferredTtsJsonMapper,
     timber = timber,
-    ttsJsonMapper = ttsJsonMapper
+    ttsJsonMapper = ttsJsonMapper,
 )
 
-chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface = ChatterPreferredTtsUserMessageHelper(
+chatterPreferredTtsUserMessageHelper: Final[ChatterPreferredTtsUserMessageHelperInterface] = ChatterPreferredTtsUserMessageHelper(
     decTalkVoiceMapper = decTalkVoiceMapper,
     halfLifeVoiceParser = halfLifeVoiceParser,
     languagesRepository = languagesRepository,
     microsoftSamJsonParser = microsoftSamJsonParser,
     streamElementsJsonParser = streamElementsJsonParser,
     timber = timber,
-    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
+    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper,
 )
 
 googleJsonMapper: Final[GoogleJsonMapperInterface] = GoogleJsonMapper(
@@ -1440,21 +1461,21 @@ glacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = GlacialTtsFil
 ## Commodore SAM TTS initialization section ##
 ##############################################
 
-commodoreSamSettingsRepository: CommodoreSamSettingsRepositoryInterface = CommodoreSamSettingsRepository(
+commodoreSamSettingsRepository: Final[CommodoreSamSettingsRepositoryInterface] = CommodoreSamSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/commodoreSamSettingsRepository.json',
     ),
 )
 
-commodoreSamApiService: CommodoreSamApiServiceInterface = CommodoreSamApiService(
+commodoreSamApiService: Final[CommodoreSamApiServiceInterface] = CommodoreSamApiService(
     eventLoop = eventLoop,
     commodoreSamSettingsRepository = commodoreSamSettingsRepository,
     timber = timber,
     ttsDirectoryProvider = ttsDirectoryProvider,
 )
 
-commodoreSamHelper: CommodoreSamHelperInterface = CommodoreSamHelper(
+commodoreSamHelper: Final[CommodoreSamHelperInterface] = CommodoreSamHelper(
     commodoreSamApiService = commodoreSamApiService,
     commodoreSamSettingsRepository = commodoreSamSettingsRepository,
     timber = timber,
@@ -1465,7 +1486,7 @@ commodoreSamMessageCleaner: Final[CommodoreSamMessageCleanerInterface] = Commodo
     ttsSettingsRepository = ttsSettingsRepository,
 )
 
-commodoreSamTtsManagerProvider: CommodoreSamTtsManagerProviderInterface = CommodoreSamTtsManagerProvider(
+commodoreSamTtsManagerProvider: Final[CommodoreSamTtsManagerProviderInterface] = CommodoreSamTtsManagerProvider(
     commodoreSamHelper = commodoreSamHelper,
     commodoreSamMessageCleaner = commodoreSamMessageCleaner,
     commodoreSamSettingsRepository = commodoreSamSettingsRepository,
@@ -1480,26 +1501,26 @@ commodoreSamTtsManagerProvider: CommodoreSamTtsManagerProviderInterface = Commod
 ## DECTalk initialization section ##
 ####################################
 
-decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = DecTalkSettingsRepository(
+decTalkSettingsRepository: Final[DecTalkSettingsRepositoryInterface] = DecTalkSettingsRepository(
     decTalkVoiceMapper = decTalkVoiceMapper,
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/decTalkSettingsRepository.json'
-    )
+        fileName = '../config/decTalkSettingsRepository.json',
+    ),
 )
 
-decTalkApiService: DecTalkApiServiceInterface = DecTalkApiService(
+decTalkApiService: Final[DecTalkApiServiceInterface] = DecTalkApiService(
     eventLoop = eventLoop,
     decTalkSettingsRepository = decTalkSettingsRepository,
     timber = timber,
-    ttsDirectoryProvider = ttsDirectoryProvider
+    ttsDirectoryProvider = ttsDirectoryProvider,
 )
 
-decTalkHelper: DecTalkHelperInterface = DecTalkHelper(
+decTalkHelper: Final[DecTalkHelperInterface] = DecTalkHelper(
     decTalkApiService = decTalkApiService,
     decTalkSettingsRepository = decTalkSettingsRepository,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 decTalkMessageCleaner: Final[DecTalkMessageCleanerInterface] = DecTalkMessageCleaner(
@@ -1601,7 +1622,7 @@ googleTtsManagerProvider: Final[GoogleTtsManagerProviderInterface] = GoogleTtsMa
 ## Half-Life TTS initialization section ##
 ##########################################
 
-halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettingsRepository(
+halfLifeSettingsRepository: Final[HalfLifeSettingsRepositoryInterface] = HalfLifeSettingsRepository(
     halfLifeJsonParser = halfLifeVoiceParser,
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
@@ -1609,17 +1630,17 @@ halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettin
     ),
 )
 
-halfLifeTtsService: HalfLifeTtsServiceInterface = HalfLifeTtsService(
+halfLifeTtsService: Final[HalfLifeTtsServiceInterface] = HalfLifeTtsService(
     eventLoop = eventLoop,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
     timber = timber,
 )
 
-halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = HalfLifeMessageVoiceParser(
-    halfLifeVoiceParser = halfLifeVoiceParser
+halfLifeMessageVoiceParser: Final[HalfLifeMessageVoiceParserInterface] = HalfLifeMessageVoiceParser(
+    halfLifeVoiceParser = halfLifeVoiceParser,
 )
 
-halfLifeTtsHelper: HalfLifeTtsHelperInterface = HalfLifeTtsHelper(
+halfLifeTtsHelper: Final[HalfLifeTtsHelperInterface] = HalfLifeTtsHelper(
     halfLifeMessageVoiceParser = halfLifeMessageVoiceParser,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
     halfLifeTtsService = halfLifeTtsService,
@@ -1629,14 +1650,14 @@ halfLifeMessageCleaner: Final[HalfLifeMessageCleanerInterface] = HalfLifeMessage
     ttsSettingsRepository = ttsSettingsRepository,
 )
 
-halfLifeTtsManagerProvider: HalfLifeTtsManagerProviderInterface = HalfLifeTtsManagerProvider(
+halfLifeTtsManagerProvider: Final[HalfLifeTtsManagerProviderInterface] = HalfLifeTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     halfLifeMessageCleaner = halfLifeMessageCleaner,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
     halfLifeTtsHelper = halfLifeTtsHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
 )
 
 
@@ -1950,6 +1971,12 @@ bannedTriviaIdsRepository: Final[BannedTriviaIdsRepositoryInterface] = BannedTri
     triviaSourceParser = triviaSourceParser,
 )
 
+queuedTriviaGameStore: Final[QueuedTriviaGameStoreInterface] = QueuedTriviaGameStore(
+    timber = timber,
+    triviaIdGenerator = triviaIdGenerator,
+    triviaSettings = triviaSettings,
+)
+
 shinyTriviaHelper: Final[ShinyTriviaHelper] = ShinyTriviaHelper(
     cutenessRepository = cutenessRepository,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
@@ -1958,9 +1985,20 @@ shinyTriviaHelper: Final[ShinyTriviaHelper] = ShinyTriviaHelper(
     triviaSettings = triviaSettings,
 )
 
+superTriviaCooldownHelper: Final[SuperTriviaCooldownHelperInterface] = SuperTriviaCooldownHelper(
+    timeZoneRepository = timeZoneRepository,
+    triviaSettings = triviaSettings,
+)
+
 toxicTriviaHelper: Final[ToxicTriviaHelper] = ToxicTriviaHelper(
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     timber = timber,
+    triviaSettings = triviaSettings,
+)
+
+triviaAnswerChecker: Final[TriviaAnswerCheckerInterface] = TriviaAnswerChecker(
+    timber = timber,
+    triviaAnswerCompiler = triviaAnswerCompiler,
     triviaSettings = triviaSettings,
 )
 
@@ -2203,7 +2241,7 @@ triviaQuestionOccurrencesRepository: Final[TriviaQuestionOccurrencesRepositoryIn
     triviaSourceParser = triviaSourceParser,
 )
 
-triviaRepository: TriviaRepositoryInterface = TriviaRepository(
+triviaRepository: Final[TriviaRepositoryInterface] = TriviaRepository(
     backgroundTaskHelper = backgroundTaskHelper,
     bongoTriviaQuestionRepository = bongoTriviaQuestionRepository,
     funtoonTriviaQuestionRepository = FuntoonTriviaQuestionRepository(
@@ -2253,7 +2291,7 @@ triviaTwitchEmoteHelper: Final[TriviaTwitchEmoteHelperInterface] = TriviaTwitchE
     trollmojiHelper = trollmojiHelper,
 )
 
-triviaGameStore: TriviaGameStoreInterface = TriviaGameStore()
+triviaGameStore: Final[TriviaGameStoreInterface] = TriviaGameStore()
 
 triviaEventHandler: Final[TriviaEventListener] = TriviaEventHandler(
     timber = timber,
@@ -2265,24 +2303,13 @@ triviaEventHandler: Final[TriviaEventListener] = TriviaEventHandler(
 triviaGameMachine: Final[TriviaGameMachineInterface] = TriviaGameMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     cutenessRepository = cutenessRepository,
-    queuedTriviaGameStore = QueuedTriviaGameStore(
-        timber = timber,
-        triviaIdGenerator = triviaIdGenerator,
-        triviaSettings = triviaSettings,
-    ),
+    queuedTriviaGameStore = queuedTriviaGameStore,
     shinyTriviaHelper = shinyTriviaHelper,
-    superTriviaCooldownHelper = SuperTriviaCooldownHelper(
-        timeZoneRepository = timeZoneRepository,
-        triviaSettings = triviaSettings,
-    ),
+    superTriviaCooldownHelper = superTriviaCooldownHelper,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     toxicTriviaHelper = toxicTriviaHelper,
-    triviaAnswerChecker = TriviaAnswerChecker(
-        timber = timber,
-        triviaAnswerCompiler = triviaAnswerCompiler,
-        triviaSettings = triviaSettings,
-    ),
+    triviaAnswerChecker = triviaAnswerChecker,
     triviaEmoteGenerator = triviaEmoteGenerator,
     triviaEventListener = triviaEventHandler,
     triviaGameStore = triviaGameStore,
@@ -2937,19 +2964,19 @@ websocketConnectionServer: Final[WebsocketConnectionServerInterface] = Websocket
 ## Redemption Counter initialization section ##
 ###############################################
 
-redemptionCounterRepository: RedemptionCounterRepositoryInterface = RedemptionCounterRepository(
+redemptionCounterRepository: Final[RedemptionCounterRepositoryInterface] = RedemptionCounterRepository(
     backingDatabase = backingDatabase,
     timber = timber,
 )
 
-redemptionCounterSettings: RedemptionCounterSettingsInterface = RedemptionCounterSettings(
+redemptionCounterSettings: Final[RedemptionCounterSettingsInterface] = RedemptionCounterSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/redemptionCounterSettings.json',
     ),
 )
 
-redemptionCounterHelper: RedemptionCounterHelperInterface = RedemptionCounterHelper(
+redemptionCounterHelper: Final[RedemptionCounterHelperInterface] = RedemptionCounterHelper(
     redemptionCounterRepository = redemptionCounterRepository,
     redemptionCounterSettings = redemptionCounterSettings,
     timber = timber,

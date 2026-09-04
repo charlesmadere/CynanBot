@@ -84,7 +84,7 @@ class ClearCachesChatCommand(AbsChatCommand):
             try:
                 await clearable.clearCaches()
             except Exception as e:
-                self.__timber.log(self.commandName, f'Encountered unexpected exception when clearing cache at index {index} ({clearable=})', e, traceback.format_exc())
+                self.__timber.log(self.commandName, f'Encountered unexpected exception when clearing cache ({index=}) ({clearable=})', e, traceback.format_exc())
 
         self.__twitchChatMessenger.send(
             text = 'ⓘ All caches cleared',

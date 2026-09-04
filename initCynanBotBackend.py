@@ -262,6 +262,7 @@ from src.trivia.additionalAnswers.additionalTriviaAnswersRepository import Addit
 from src.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from src.trivia.answerChecker.triviaAnswerChecker import TriviaAnswerChecker
+from src.trivia.answerChecker.triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
 from src.trivia.banned.bannedTriviaGameControllersRepository import BannedTriviaGameControllersRepository
 from src.trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
@@ -290,6 +291,7 @@ from src.trivia.gameController.triviaGameGlobalControllersRepository import Triv
 from src.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
 from src.trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
+from src.trivia.games.queuedTriviaGameStoreInterface import QueuedTriviaGameStoreInterface
 from src.trivia.games.triviaGameStore import TriviaGameStore
 from src.trivia.games.triviaGameStoreInterface import TriviaGameStoreInterface
 from src.trivia.history.triviaHistoryRepository import TriviaHistoryRepository
@@ -315,6 +317,7 @@ from src.trivia.specialStatus.toxicTriviaHelper import ToxicTriviaHelper
 from src.trivia.specialStatus.toxicTriviaOccurencesRepository import ToxicTriviaOccurencesRepository
 from src.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
 from src.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
+from src.trivia.superTriviaCooldownHelperInterface import SuperTriviaCooldownHelperInterface
 from src.trivia.triviaEventListener import TriviaEventListener
 from src.trivia.triviaGameMachine import TriviaGameMachine
 from src.trivia.triviaGameMachineInterface import TriviaGameMachineInterface
@@ -464,6 +467,10 @@ from src.twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterf
 from src.twitch.twitchPredictionWebsocketUtils import TwitchPredictionWebsocketUtils
 from src.twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from src.twitch.twitchWebsocketDataBundleHandler import TwitchWebsocketDataBundleHandler
+from src.twitch.userIds.twitchUserIdsHelper import TwitchUserIdsHelper
+from src.twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
+from src.twitch.userIds.twitchUserIdsRepository import TwitchUserIdsRepository
+from src.twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilder import TwitchWebsocketConditionBuilder
 from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilderInterface import \
     TwitchWebsocketConditionBuilderInterface
@@ -622,10 +629,24 @@ twitchApiService: Final[TwitchApiServiceInterface] = TwitchApiService(
     twitchJsonMapper = twitchJsonMapper,
 )
 
+twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = TwitchUserIdsRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = TwitchUserIdsHelper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchApiService = twitchApiService,
+    twitchUserIdsRepository = twitchUserIdsRepository,
+)
+
 userIdsRepository: Final[UserIdsRepositoryInterface] = UserIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 twitchTokensStorage: Final[TwitchTokensStorageInterface] = TwitchTokensStorage(
@@ -1164,6 +1185,12 @@ bannedTriviaIdsRepository: Final[BannedTriviaIdsRepositoryInterface] = BannedTri
     triviaSourceParser = triviaSourceParser,
 )
 
+queuedTriviaGameStore: Final[QueuedTriviaGameStoreInterface] = QueuedTriviaGameStore(
+    timber = timber,
+    triviaIdGenerator = triviaIdGenerator,
+    triviaSettings = triviaSettings,
+)
+
 shinyTriviaHelper: Final[ShinyTriviaHelper] = ShinyTriviaHelper(
     cutenessRepository = cutenessRepository,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
@@ -1172,9 +1199,20 @@ shinyTriviaHelper: Final[ShinyTriviaHelper] = ShinyTriviaHelper(
     triviaSettings = triviaSettings,
 )
 
+superTriviaCooldownHelper: Final[SuperTriviaCooldownHelperInterface] = SuperTriviaCooldownHelper(
+    timeZoneRepository = timeZoneRepository,
+    triviaSettings = triviaSettings,
+)
+
 toxicTriviaHelper: Final[ToxicTriviaHelper] = ToxicTriviaHelper(
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     timber = timber,
+    triviaSettings = triviaSettings,
+)
+
+triviaAnswerChecker: Final[TriviaAnswerCheckerInterface] = TriviaAnswerChecker(
+    timber = timber,
+    triviaAnswerCompiler = triviaAnswerCompiler,
     triviaSettings = triviaSettings,
 )
 
@@ -1479,24 +1517,13 @@ triviaEventHandler: Final[TriviaEventListener] = TriviaEventHandler(
 triviaGameMachine: Final[TriviaGameMachineInterface] = TriviaGameMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     cutenessRepository = cutenessRepository,
-    queuedTriviaGameStore = QueuedTriviaGameStore(
-        timber = timber,
-        triviaIdGenerator = triviaIdGenerator,
-        triviaSettings = triviaSettings,
-    ),
+    queuedTriviaGameStore = queuedTriviaGameStore,
     shinyTriviaHelper = shinyTriviaHelper,
-    superTriviaCooldownHelper = SuperTriviaCooldownHelper(
-        timeZoneRepository = timeZoneRepository,
-        triviaSettings = triviaSettings,
-    ),
+    superTriviaCooldownHelper = superTriviaCooldownHelper,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     toxicTriviaHelper = toxicTriviaHelper,
-    triviaAnswerChecker = TriviaAnswerChecker(
-        timber = timber,
-        triviaAnswerCompiler = triviaAnswerCompiler,
-        triviaSettings = triviaSettings,
-    ),
+    triviaAnswerChecker = triviaAnswerChecker,
     triviaEmoteGenerator = triviaEmoteGenerator,
     triviaEventListener = triviaEventHandler,
     triviaGameStore = triviaGameStore,
@@ -1779,19 +1806,19 @@ cheerActionHelper: Final[CheerActionHelperInterface] = StubCheerActionHelper()
 ## Jisho initialization section ##
 ##################################
 
-jishoJsonMapper: JishoJsonMapperInterface = JishoJsonMapper(
+jishoJsonMapper: Final[JishoJsonMapperInterface] = JishoJsonMapper(
     timber = timber,
 )
 
-jishoApiService: JishoApiServiceInterface = JishoApiService(
+jishoApiService: Final[JishoApiServiceInterface] = JishoApiService(
     jishoJsonMapper = jishoJsonMapper,
     networkClientProvider = networkClientProvider,
     timber = timber,
 )
 
-jishoPresenter: JishoPresenterInterface = JishoPresenter()
+jishoPresenter: Final[JishoPresenterInterface] = JishoPresenter()
 
-jishoHelper: JishoHelperInterface = JishoHelper(
+jishoHelper: Final[JishoHelperInterface] = JishoHelper(
     jishoApiService = jishoApiService,
     jishoPresenter = jishoPresenter,
     timber = timber,
@@ -1827,26 +1854,26 @@ eccoHelper: Final[EccoHelperInterface] = EccoHelper(
 ## Websocket Connection Server initialization section ##
 ########################################################
 
-websocketConnectionServer: WebsocketConnectionServerInterface = StubWebsocketConnectionServer()
+websocketConnectionServer: Final[WebsocketConnectionServerInterface] = StubWebsocketConnectionServer()
 
 
 ###############################################
 ## Redemption Counter initialization section ##
 ###############################################
 
-redemptionCounterRepository: RedemptionCounterRepositoryInterface = RedemptionCounterRepository(
+redemptionCounterRepository: Final[RedemptionCounterRepositoryInterface] = RedemptionCounterRepository(
     backingDatabase = backingDatabase,
     timber = timber,
 )
 
-redemptionCounterSettings: RedemptionCounterSettingsInterface = RedemptionCounterSettings(
+redemptionCounterSettings: Final[RedemptionCounterSettingsInterface] = RedemptionCounterSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/redemptionCounterSettings.json',
     ),
 )
 
-redemptionCounterHelper: RedemptionCounterHelperInterface = RedemptionCounterHelper(
+redemptionCounterHelper: Final[RedemptionCounterHelperInterface] = RedemptionCounterHelper(
     redemptionCounterRepository = redemptionCounterRepository,
     redemptionCounterSettings = redemptionCounterSettings,
     timber = timber,

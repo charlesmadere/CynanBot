@@ -1,9 +1,9 @@
 import re
 import traceback
+import unicodedata
 from typing import Collection, Final, Pattern
 
 import roman
-import unicodedata
 from frozenlist import FrozenList
 from num2words import num2words
 from roman import RomanError
