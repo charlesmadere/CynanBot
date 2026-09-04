@@ -10,6 +10,7 @@ from .twitchUserStub import TwitchUserStub
 from ..api.models.twitchFetchUserWithIdRequest import TwitchFetchUserWithIdRequest
 from ..api.models.twitchFetchUserWithLoginRequest import TwitchFetchUserWithLoginRequest
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
+from ..localModels.twitchUserInterface import TwitchUserInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -292,7 +293,7 @@ class TwitchUserIdsHelper(TwitchUserIdsHelperInterface):
 
     async def setAll(
         self,
-        userStubs: Collection[TwitchUserStub],
+        userStubs: Collection[TwitchUserInterface],
     ):
         if not isinstance(userStubs, Collection):
             raise TypeError(f'userStubs argument is malformed: \"{userStubs}\"')

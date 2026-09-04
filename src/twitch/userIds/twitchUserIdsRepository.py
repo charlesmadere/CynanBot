@@ -7,6 +7,7 @@ from .exceptions import NoTwitchUserDataFoundException
 from .twitchUserData import TwitchUserData
 from .twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 from .twitchUserStub import TwitchUserStub
+from ..localModels.twitchUserInterface import TwitchUserInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
@@ -290,7 +291,7 @@ class TwitchUserIdsRepository(TwitchUserIdsRepositoryInterface):
 
     async def setAll(
         self,
-        userStubs: Collection[TwitchUserStub],
+        userStubs: Collection[TwitchUserInterface],
     ):
         if not isinstance(userStubs, Collection):
             raise TypeError(f'userStubs argument is malformed: \"{userStubs}\"')
@@ -305,14 +306,14 @@ class TwitchUserIdsRepository(TwitchUserIdsRepositoryInterface):
                     VALUES ($1, $2, $3, $4)
                     ON CONFLICT (userid) DO UPDATE SET storedatetime = EXCLUDED.storedatetime, userlogin = EXCLUDED.userlogin, username = EXCLUDED.username
                 ''',
-                storeDateTime.isoformat(), user.userId, user.userLogin, user.userName,
+                storeDateTime.isoformat(), user.getUserId(), user.getUserLogin(), user.getUserName(),
             )
 
-            self.__cache[user.userId] = TwitchUserData(
+            self.__cache[user.getUserId()] = TwitchUserData(
                 storeDateTime = storeDateTime,
-                userId = user.userId,
-                userLogin = user.userLogin,
-                userName = user.userName,
+                userId = user.getUserId(),
+                userLogin = user.getUserLogin(),
+                userName = user.getUserName(),
             )
 
         await connection.close()
