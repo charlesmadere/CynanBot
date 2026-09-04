@@ -16,6 +16,8 @@ from ..twitch.api.models.twitchFetchUserWithLoginRequest import TwitchFetchUserW
 from ..twitch.api.models.twitchUser import TwitchUser
 from ..twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..twitch.exceptions import TwitchJsonException, TwitchStatusCodeException
+from ..twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
+from ..twitch.userIds.twitchUserStub import TwitchUserStub
 
 
 class UserIdsRepository(UserIdsRepositoryInterface):
@@ -25,6 +27,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         cacheSize: int = 512,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
@@ -33,6 +36,8 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not utils.isValidInt(cacheSize):
             raise TypeError(f'cacheSize argument is malformed: \"{cacheSize}\"')
         elif cacheSize < 1 or cacheSize > utils.getIntMaxSafeSize():
@@ -41,6 +46,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         self.__backingDatabase: Final[BackingDatabase] = backingDatabase
         self.__timber: Final[TimberInterface] = timber
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
 
         self.__isDatabaseReady: bool = False
         self.__cache: Final[LRU[str, str | None]] = LRU(cacheSize)
@@ -76,6 +82,12 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         await connection.close()
 
         if utils.isValidStr(userId):
+            await self.__twitchUserIdsHelper.set(
+                userId = userId,
+                userLogin = userName,
+                userName = userName,
+            )
+
             return userId
         elif not utils.isValidStr(twitchAccessToken):
             self.__timber.log('UserIdsRepository', f'Can\'t lookup Twitch user ID for \"{userName}\" as no Twitch access token was specified')
@@ -146,6 +158,12 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         await connection.close()
 
         if utils.isValidStr(userName):
+            await self.__twitchUserIdsHelper.set(
+                userId = userId,
+                userLogin = userName,
+                userName = userName,
+            )
+
             self.__cache[userId] = userName
             return userName
         elif not utils.isValidStr(twitchAccessToken):
@@ -279,6 +297,12 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         await connection.close()
         self.__cache[userId] = userName
 
+        await self.__twitchUserIdsHelper.set(
+            userId = userId,
+            userLogin = userName,
+            userName = userName,
+        )
+
     async def setUsers(self, userIdToUserName: dict[str, str]):
         if not isinstance(userIdToUserName, dict):
             raise TypeError(f'userIdToUserName argument is malformed: \"{userIdToUserName}\"')
@@ -300,3 +324,16 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             self.__cache[userId] = userName
 
         await connection.close()
+
+        userStubs: set[TwitchUserStub] = set()
+
+        for userId, userName in userIdToUserName.items():
+            userStubs.add(TwitchUserStub(
+                userId = userId,
+                userLogin = userName,
+                userName = userName,
+            ))
+
+        await self.__twitchUserIdsHelper.setAll(
+            userStubs = userStubs,
+        )

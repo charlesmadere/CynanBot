@@ -454,6 +454,10 @@ from src.twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterf
 from src.twitch.twitchPredictionWebsocketUtils import TwitchPredictionWebsocketUtils
 from src.twitch.twitchPredictionWebsocketUtilsInterface import TwitchPredictionWebsocketUtilsInterface
 from src.twitch.twitchWebsocketDataBundleHandler import TwitchWebsocketDataBundleHandler
+from src.twitch.userIds.twitchUserIdsHelper import TwitchUserIdsHelper
+from src.twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
+from src.twitch.userIds.twitchUserIdsRepository import TwitchUserIdsRepository
+from src.twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilder import TwitchWebsocketConditionBuilder
 from src.twitch.websocket.conditionBuilder.twitchWebsocketConditionBuilderInterface import \
     TwitchWebsocketConditionBuilderInterface
@@ -624,10 +628,24 @@ twitchApiService: Final[TwitchApiServiceInterface] = TwitchApiService(
     twitchJsonMapper = twitchJsonMapper,
 )
 
+twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = TwitchUserIdsRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = TwitchUserIdsHelper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchApiService = twitchApiService,
+    twitchUserIdsRepository = twitchUserIdsRepository,
+)
+
 userIdsRepository: Final[UserIdsRepositoryInterface] = UserIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 twitchTokensStorage: Final[TwitchTokensStorageInterface] = TwitchTokensStorage(
@@ -1008,16 +1026,16 @@ chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = Chatter
 ## TTS mapper and parser initialization section ##
 ##################################################
 
-decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
+decTalkVoiceMapper: Final[DecTalkVoiceMapperInterface] = DecTalkVoiceMapper()
 
-halfLifeVoiceParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
+halfLifeVoiceParser: Final[HalfLifeVoiceParserInterface] = HalfLifeVoiceParser()
 
-microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
+microsoftSamJsonParser: Final[MicrosoftSamJsonParserInterface] = MicrosoftSamJsonParser()
 
-streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
+streamElementsJsonParser: Final[StreamElementsJsonParserInterface] = StreamElementsJsonParser()
 
-ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
-    timber = timber
+ttsMonsterPrivateApiJsonMapper: Final[TtsMonsterPrivateApiJsonMapperInterface] = TtsMonsterPrivateApiJsonMapper(
+    timber = timber,
 )
 
 
@@ -1025,38 +1043,38 @@ ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMon
 ## Chatter Preferred TTS initialization section ##
 ##################################################
 
-chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface = ChatterPreferredTtsSettingsRepository(
+chatterPreferredTtsSettingsRepository: Final[ChatterPreferredTtsSettingsRepositoryInterface] = ChatterPreferredTtsSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/chatterPreferredTtsSettingsRepository.json'
+        fileName = '../config/chatterPreferredTtsSettingsRepository.json',
     ),
-    ttsJsonMapper = ttsJsonMapper
+    ttsJsonMapper = ttsJsonMapper,
 )
 
-chatterPreferredTtsJsonMapper: ChatterPreferredTtsJsonMapperInterface = ChatterPreferredTtsJsonMapper(
+chatterPreferredTtsJsonMapper: Final[ChatterPreferredTtsJsonMapperInterface] = ChatterPreferredTtsJsonMapper(
     decTalkVoiceMapper = decTalkVoiceMapper,
     halfLifeVoiceParser = halfLifeVoiceParser,
     languagesRepository = languagesRepository,
     microsoftSamJsonParser = microsoftSamJsonParser,
     streamElementsJsonParser = streamElementsJsonParser,
-    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
+    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper,
 )
 
-chatterPreferredTtsRepository: ChatterPreferredTtsRepositoryInterface = ChatterPreferredTtsRepository(
+chatterPreferredTtsRepository: Final[ChatterPreferredTtsRepositoryInterface] = ChatterPreferredTtsRepository(
     backingDatabase = backingDatabase,
     chatterPreferredTtsJsonMapper = chatterPreferredTtsJsonMapper,
     timber = timber,
-    ttsJsonMapper = ttsJsonMapper
+    ttsJsonMapper = ttsJsonMapper,
 )
 
-chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface = ChatterPreferredTtsUserMessageHelper(
+chatterPreferredTtsUserMessageHelper: Final[ChatterPreferredTtsUserMessageHelperInterface] = ChatterPreferredTtsUserMessageHelper(
     decTalkVoiceMapper = decTalkVoiceMapper,
     halfLifeVoiceParser = halfLifeVoiceParser,
     languagesRepository = languagesRepository,
     microsoftSamJsonParser = microsoftSamJsonParser,
     streamElementsJsonParser = streamElementsJsonParser,
     timber = timber,
-    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
+    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper,
 )
 
 googleJsonMapper: Final[GoogleJsonMapperInterface] = GoogleJsonMapper(
@@ -1135,39 +1153,39 @@ glacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = GlacialTtsFil
 ## Commodore SAM TTS initialization section ##
 ##############################################
 
-commodoreSamSettingsRepository: CommodoreSamSettingsRepositoryInterface = CommodoreSamSettingsRepository(
+commodoreSamSettingsRepository: Final[CommodoreSamSettingsRepositoryInterface] = CommodoreSamSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/commodoreSamSettingsRepository.json'
-    )
+        fileName = '../config/commodoreSamSettingsRepository.json',
+    ),
 )
 
-commodoreSamApiService: CommodoreSamApiServiceInterface = CommodoreSamApiService(
+commodoreSamApiService: Final[CommodoreSamApiServiceInterface] = CommodoreSamApiService(
     eventLoop = eventLoop,
     commodoreSamSettingsRepository = commodoreSamSettingsRepository,
     timber = timber,
-    ttsDirectoryProvider = ttsDirectoryProvider
+    ttsDirectoryProvider = ttsDirectoryProvider,
 )
 
-commodoreSamHelper: CommodoreSamHelperInterface = CommodoreSamHelper(
+commodoreSamHelper: Final[CommodoreSamHelperInterface] = CommodoreSamHelper(
     commodoreSamApiService = commodoreSamApiService,
     commodoreSamSettingsRepository = commodoreSamSettingsRepository,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 commodoreSamMessageCleaner: Final[CommodoreSamMessageCleanerInterface] = CommodoreSamMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository,
 )
 
-commodoreSamTtsManagerProvider: CommodoreSamTtsManagerProviderInterface = CommodoreSamTtsManagerProvider(
+commodoreSamTtsManagerProvider: Final[CommodoreSamTtsManagerProviderInterface] = CommodoreSamTtsManagerProvider(
     commodoreSamHelper = commodoreSamHelper,
     commodoreSamMessageCleaner = commodoreSamMessageCleaner,
     commodoreSamSettingsRepository = commodoreSamSettingsRepository,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
 )
 
 
@@ -1296,7 +1314,7 @@ googleTtsManagerProvider: Final[GoogleTtsManagerProviderInterface] = GoogleTtsMa
 ## Half-Life TTS initialization section ##
 ##########################################
 
-halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettingsRepository(
+halfLifeSettingsRepository: Final[HalfLifeSettingsRepositoryInterface] = HalfLifeSettingsRepository(
     halfLifeJsonParser = halfLifeVoiceParser,
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
@@ -1304,17 +1322,17 @@ halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface = HalfLifeSettin
     ),
 )
 
-halfLifeTtsService: HalfLifeTtsServiceInterface = HalfLifeTtsService(
+halfLifeTtsService: Final[HalfLifeTtsServiceInterface] = HalfLifeTtsService(
     eventLoop = eventLoop,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
     timber = timber,
 )
 
-halfLifeMessageVoiceParser: HalfLifeMessageVoiceParserInterface = HalfLifeMessageVoiceParser(
-    halfLifeVoiceParser = halfLifeVoiceParser
+halfLifeMessageVoiceParser: Final[HalfLifeMessageVoiceParserInterface] = HalfLifeMessageVoiceParser(
+    halfLifeVoiceParser = halfLifeVoiceParser,
 )
 
-halfLifeTtsHelper: HalfLifeTtsHelperInterface = HalfLifeTtsHelper(
+halfLifeTtsHelper: Final[HalfLifeTtsHelperInterface] = HalfLifeTtsHelper(
     halfLifeMessageVoiceParser = halfLifeMessageVoiceParser,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
     halfLifeTtsService = halfLifeTtsService,
@@ -1324,14 +1342,14 @@ halfLifeMessageCleaner: Final[HalfLifeMessageCleanerInterface] = HalfLifeMessage
     ttsSettingsRepository = ttsSettingsRepository,
 )
 
-halfLifeTtsManagerProvider: HalfLifeTtsManagerProviderInterface = HalfLifeTtsManagerProvider(
+halfLifeTtsManagerProvider: Final[HalfLifeTtsManagerProviderInterface] = HalfLifeTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     halfLifeMessageCleaner = halfLifeMessageCleaner,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
     halfLifeTtsHelper = halfLifeTtsHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
 )
 
 
@@ -1401,15 +1419,15 @@ streamElementsMessageCleaner: Final[StreamElementsMessageCleanerInterface] = Str
 )
 
 streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser(
-    streamElementsJsonParser = streamElementsJsonParser
+    streamElementsJsonParser = streamElementsJsonParser,
 )
 
 streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = StreamElementsSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/streamElementsSettingsRepository.json'
+        fileName = '../config/streamElementsSettingsRepository.json',
     ),
-    streamElementsJsonParser = streamElementsJsonParser
+    streamElementsJsonParser = streamElementsJsonParser,
 )
 
 streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = StreamElementsUserKeyRepository(
@@ -1418,14 +1436,14 @@ streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = Stre
     userIdsRepository = userIdsRepository,
     seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/streamElementsUserKeyRepositorySeedFile.json'
-    )
+        fileName = '../config/streamElementsUserKeyRepositorySeedFile.json',
+    ),
 )
 
 streamElementsApiHelper: StreamElementsApiHelperInterface = StreamElementsApiHelper(
     streamElementsApiService = streamElementsApiService,
     streamElementsUserKeyRepository = streamElementsUserKeyRepository,
-    timber = timber
+    timber = timber,
 )
 
 streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
@@ -1435,7 +1453,7 @@ streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
     streamElementsJsonParser = streamElementsJsonParser,
     streamElementsMessageVoiceParser = streamElementsMessageVoiceParser,
     streamElementsSettingsRepository = streamElementsSettingsRepository,
-    timber = timber
+    timber = timber,
 )
 
 streamElementsTtsManagerProvider: StreamElementsTtsManagerProviderInterface = StreamElementsTtsManagerProvider(
@@ -1446,7 +1464,7 @@ streamElementsTtsManagerProvider: StreamElementsTtsManagerProviderInterface = St
     streamElementsSettingsRepository = streamElementsSettingsRepository,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
 )
 
 
@@ -1454,7 +1472,7 @@ streamElementsTtsManagerProvider: StreamElementsTtsManagerProviderInterface = St
 ## TTS Monster initialization section ##
 ########################################
 
-ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
+ttsMonsterSettingsRepository: Final[TtsMonsterSettingsRepositoryInterface] = TtsMonsterSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/ttsMonsterSettingsRepository.json',
@@ -1462,7 +1480,7 @@ ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonster
     ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper,
 )
 
-ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface = TtsMonsterTokensRepository(
+ttsMonsterTokensRepository: Final[TtsMonsterTokensRepositoryInterface] = TtsMonsterTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     userIdsRepository = userIdsRepository,
@@ -1472,21 +1490,21 @@ ttsMonsterTokensRepository: TtsMonsterTokensRepositoryInterface = TtsMonsterToke
     ),
 )
 
-ttsMonsterPrivateApiService: TtsMonsterPrivateApiServiceInterface = TtsMonsterPrivateApiService(
+ttsMonsterPrivateApiService: Final[TtsMonsterPrivateApiServiceInterface] = TtsMonsterPrivateApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
     ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper,
 )
 
-ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = TtsMonsterPrivateApiHelper(
+ttsMonsterPrivateApiHelper: Final[TtsMonsterPrivateApiHelperInterface] = TtsMonsterPrivateApiHelper(
     timber = timber,
     ttsMonsterPrivateApiService = ttsMonsterPrivateApiService,
     ttsMonsterTokensRepository = ttsMonsterTokensRepository,
 )
 
-ttsMonsterMessageChunkParser: TtsMonsterMessageChunkParserInterface = TtsMonsterMessageChunkParser()
+ttsMonsterMessageChunkParser: Final[TtsMonsterMessageChunkParserInterface] = TtsMonsterMessageChunkParser()
 
-ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
+ttsMonsterHelper: Final[TtsMonsterHelperInterface] = TtsMonsterHelper(
     eventLoop = eventLoop,
     glacialTtsFileRetriever = glacialTtsFileRetriever,
     timber = timber,
