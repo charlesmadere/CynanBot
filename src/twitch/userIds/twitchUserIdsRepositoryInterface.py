@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Collection
 
 from .twitchUserData import TwitchUserData
-from .twitchUserStub import TwitchUserStub
+from ..localModels.twitchUserInterface import TwitchUserInterface
 from ...misc.clearable import Clearable
 
 
@@ -62,6 +62,6 @@ class TwitchUserIdsRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def setAll(
         self,
-        userStubs: Collection[TwitchUserStub],
+        userStubs: Collection[TwitchUserInterface],
     ):
         pass
