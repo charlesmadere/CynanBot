@@ -194,7 +194,7 @@ class TwitchUserIdsRepository(TwitchUserIdsRepositoryInterface):
                             storedatetime text NOT NULL,
                             userid text NOT NULL PRIMARY KEY,
                             userlogin public.citext NOT NULL,
-                            username public.citext NOT NULL,
+                            username public.citext NOT NULL
                         )
                     ''',
                 )
@@ -206,7 +206,7 @@ class TwitchUserIdsRepository(TwitchUserIdsRepositoryInterface):
                             storedatetime TEXT NOT NULL,
                             userid TEXT NOT NULL PRIMARY KEY,
                             userlogin TEXT NOT NULL COLLATE NOCASE,
-                            username TEXT NOT NULL COLLATE NOCASE,
+                            username TEXT NOT NULL COLLATE NOCASE
                         ) STRICT
                     ''',
                 )
