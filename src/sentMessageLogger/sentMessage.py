@@ -2,8 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Collection
 
-from .messageMethod import MessageMethod
-
 
 @dataclass(frozen = True, slots = True)
 class SentMessage:
@@ -11,7 +9,6 @@ class SentMessage:
     exceptions: Collection[Exception] | None
     dateTime: datetime
     numberOfSendAttempts: int
-    messageMethod: MessageMethod
     msg: str
     twitchChannel: str
     twitchChannelId: str

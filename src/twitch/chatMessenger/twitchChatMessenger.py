@@ -18,7 +18,6 @@ from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInter
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
-from ...sentMessageLogger.messageMethod import MessageMethod
 from ...sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from ...timber.timberInterface import TimberInterface
 from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
@@ -267,7 +266,6 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
             successfullySent = successfullySent,
             exceptions = None,
             numberOfSendAttempts = sendAttempt,
-            messageMethod = MessageMethod.TWITCH_API,
             msg = text,
             twitchChannel = twitchChannel,
             twitchChannelId = chatMessage.twitchChannelId,

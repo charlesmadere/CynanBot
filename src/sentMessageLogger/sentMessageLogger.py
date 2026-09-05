@@ -10,7 +10,6 @@ import aiofiles.os
 import aiofiles.ospath
 from frozenlist import FrozenList
 
-from .messageMethod import MessageMethod
 from .sentMessage import SentMessage
 from .sentMessageLoggerInterface import SentMessageLoggerInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
@@ -55,7 +54,7 @@ class SentMessageLogger(SentMessageLoggerInterface):
         if not isinstance(message, SentMessage):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
-        prefix = f'{message.getDateAndTimeStr()} — {message.messageMethod.toStr()} — '
+        prefix = f'{message.getDateAndTimeStr()} — '
 
         error = ''
         if not message.successfullySent:
@@ -71,7 +70,6 @@ class SentMessageLogger(SentMessageLoggerInterface):
         successfullySent: bool,
         exceptions: Collection[Exception] | None,
         numberOfSendAttempts: int,
-        messageMethod: MessageMethod,
         msg: str,
         twitchChannel: str,
         twitchChannelId: str,
@@ -84,8 +82,6 @@ class SentMessageLogger(SentMessageLoggerInterface):
             raise TypeError(f'numberOfSendAttempts argument is malformed: \"{numberOfSendAttempts}\"')
         elif numberOfSendAttempts < 1 or numberOfSendAttempts > utils.getIntMaxSafeSize():
             raise ValueError(f'numberOfSendAttempts argument is out of bounds: {numberOfSendAttempts}')
-        elif not isinstance(messageMethod, MessageMethod):
-            raise TypeError(f'messageMethod argument is malformed: \"{messageMethod}\"')
         elif not utils.isValidStr(msg):
             raise TypeError(f'msg argument is malformed: \"{msg}\"')
         elif not utils.isValidStr(twitchChannel):
@@ -106,7 +102,6 @@ class SentMessageLogger(SentMessageLoggerInterface):
             exceptions = frozenExceptions,
             dateTime = dateTime,
             numberOfSendAttempts = numberOfSendAttempts,
-            messageMethod = messageMethod,
             msg = msg,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
