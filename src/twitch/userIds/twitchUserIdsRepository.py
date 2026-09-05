@@ -6,8 +6,8 @@ from lru import LRU
 from .exceptions import NoTwitchUserDataFoundException
 from .twitchUserData import TwitchUserData
 from .twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
-from .twitchUserStub import TwitchUserStub
 from ..localModels.twitchUserInterface import TwitchUserInterface
+from ..localModels.twitchUserStub import TwitchUserStub
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
@@ -277,7 +277,7 @@ class TwitchUserIdsRepository(TwitchUserIdsRepositoryInterface):
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        userStubs: Collection[TwitchUserStub] = frozenset({
+        users: Collection[TwitchUserInterface] = frozenset({
             TwitchUserStub(
                 userId = userId,
                 userLogin = userLogin,
@@ -286,20 +286,20 @@ class TwitchUserIdsRepository(TwitchUserIdsRepositoryInterface):
         })
 
         await self.setAll(
-            userStubs = userStubs,
+            users = users,
         )
 
     async def setAll(
         self,
-        userStubs: Collection[TwitchUserInterface],
+        users: Collection[TwitchUserInterface],
     ):
-        if not isinstance(userStubs, Collection):
-            raise TypeError(f'userStubs argument is malformed: \"{userStubs}\"')
+        if not isinstance(users, Collection):
+            raise TypeError(f'users argument is malformed: \"{users}\"')
 
         storeDateTime = self.__timeZoneRepository.getNow()
         connection = await self.__getDatabaseConnection()
 
-        for user in userStubs:
+        for user in users:
             await connection.execute(
                 '''
                     INSERT INTO twitchuserids (storedatetime, userid, userlogin, username)
