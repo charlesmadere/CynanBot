@@ -8,11 +8,11 @@ from .twitchTimeoutRemodHelperInterface import TwitchTimeoutRemodHelperInterface
 from .twitchTimeoutRemodRepositoryInterface import TwitchTimeoutRemodRepositoryInterface
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
@@ -25,7 +25,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
         twitchApiService: TwitchApiServiceInterface,
         twitchTimeoutRemodRepository: TwitchTimeoutRemodRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         queueSleepTimeSeconds: float = 3,
         additionalBufferTime: timedelta = timedelta(seconds = 3),
     ):
@@ -41,8 +41,8 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
             raise TypeError(f'twitchTimeoutRemodRepository argument is malformed: \"{twitchTimeoutRemodRepository}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not utils.isValidInt(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 16:
@@ -56,7 +56,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
         self.__twitchTimeoutRemodRepository: Final[TwitchTimeoutRemodRepositoryInterface] = twitchTimeoutRemodRepository
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__queueSleepTimeSeconds: Final[float] = queueSleepTimeSeconds
         self.__additionalBufferTime: Final[timedelta] = additionalBufferTime
 
@@ -102,7 +102,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
 
                 twitchAccessTokens[remodAction.broadcasterUserId] = twitchAccessToken
 
-            userName = await self.__userIdsRepository.fetchUserName(
+            userData = await self.__twitchUserIdsHelper.getById(
                 userId = remodAction.userId,
                 twitchAccessToken = twitchAccessToken,
             )
@@ -114,13 +114,13 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
                     userId = remodAction.userId,
                 )
             except Exception as e:
-                self.__timber.log('TwitchTimeoutRemodHelper', f'Encountered an exception when trying to re-mod user ({remodAction=}) ({userName=})', e, traceback.format_exc())
+                self.__timber.log('TwitchTimeoutRemodHelper', f'Encountered an exception when trying to re-mod user ({remodAction=}) ({userData=})', e, traceback.format_exc())
                 successfulRemod = False
 
             if successfulRemod:
-                self.__timber.log('TwitchTimeoutRemodHelper', f'Successfully re-modded user ({remodAction=}) ({userName=})')
+                self.__timber.log('TwitchTimeoutRemodHelper', f'Successfully re-modded user ({remodAction=}) ({userData=})')
             else:
-                self.__timber.log('TwitchTimeoutRemodHelper', f'Failed to re-mod user ({remodAction=}) ({userName=})')
+                self.__timber.log('TwitchTimeoutRemodHelper', f'Failed to re-mod user ({remodAction=}) ({userData=})')
 
             await self.__deleteFromRepository(
                 remodAction = remodAction,

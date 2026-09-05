@@ -13,11 +13,11 @@ from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..exceptions import TwitchJsonException, TwitchStatusCodeException
 from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...timber.timberInterface import TimberInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class ActiveChattersRepository(ActiveChattersRepositoryInterface):
@@ -56,7 +56,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         twitchApiService: TwitchApiServiceInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         maxActiveChattersSize: int = 256,
         maxActiveChattersTimeToLive: timedelta = timedelta(hours = 1),
     ):
@@ -70,8 +70,8 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not utils.isValidInt(maxActiveChattersSize):
             raise TypeError(f'cacheSize argument is malformed: \"{maxActiveChattersSize}\"')
         elif maxActiveChattersSize < 16 or maxActiveChattersSize > 512:
@@ -84,7 +84,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__maxActiveChattersSize: Final[int] = maxActiveChattersSize
         self.__maxActiveChattersTimeToLive: Final[timedelta] = maxActiveChattersTimeToLive
 
@@ -170,18 +170,14 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
     ) -> list[ActiveChatter]:
         entry.setChattersHaveBeenFetched()
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        twitchId = await self.__userIdsRepository.fetchUserId(twitchHandle)
+        twitchId = await self.__twitchUserIdsHelper.getIdByLoginOrName(twitchHandle)
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
 
-        if not utils.isValidStr(twitchId):
-            # this should be impossible here but let's just be overly careful
+        if not utils.isValidStr(twitchId) or not utils.isValidStr(twitchAccessToken):
+            # these should be impossible here but let's just be overly careful
             return entry.chatters
 
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(twitchId)
-
-        if not utils.isValidStr(twitchAccessToken):
-            return entry.chatters
-
-        first = max(math.ceil(self.__maxActiveChattersSize * 0.75), 8)
+        first = int(max(math.ceil(self.__maxActiveChattersSize * 0.75), 16))
         self.__timber.log('ActiveChattersRepository', f'Fetching currently connected chatters... ({twitchChannelId=}) ({first=})')
 
         try:

@@ -1,20 +1,21 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+
+from ..localModels.twitchUserInterface import TwitchUserInterface
 
 
 @dataclass(frozen = True, slots = True)
-class ActiveChatter:
+class ActiveChatter(TwitchUserInterface):
     mostRecentChat: datetime
     chatterUserId: str
     chatterUserLogin: str
     chatterUserName: str
 
-    def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, ActiveChatter):
-            return False
+    def getUserId(self) -> str:
+        return self.chatterUserId
 
-        return self.chatterUserId == other.chatterUserId
+    def getUserLogin(self) -> str:
+        return self.chatterUserLogin
 
-    def __hash__(self) -> int:
-        return hash(self.chatterUserId)
+    def getUserName(self) -> str:
+        return self.chatterUserName

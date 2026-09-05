@@ -14,9 +14,10 @@ from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..misc.globalTwitchConstantsInterface import GlobalTwitchConstantsInterface
 from ..moderator.twitchModeratorHelperInterface import TwitchModeratorHelperInterface
+from ..userIds.twitchUserData import TwitchUserData
+from ..userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
 
 
@@ -37,7 +38,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchModeratorHelper: TwitchModeratorHelperInterface,
         twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         maxModRetries: int = 3,
         retrySleepDelaySeconds: float = 0.5,
     ):
@@ -57,8 +58,8 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             raise TypeError(f'twitchModeratorHelper argument is malformed: \"{twitchModeratorHelper}\"')
         elif not isinstance(twitchTimeoutRemodHelper, TwitchTimeoutRemodHelperInterface):
             raise TypeError(f'twitchTimeoutRemodHelper argument is malformed: \"{twitchTimeoutRemodHelper}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not utils.isValidInt(maxModRetries):
             raise TypeError(f'maxModRetries argument is malformed: \"{maxModRetries}\"')
         elif maxModRetries < 1 or maxModRetries > 10:
@@ -76,7 +77,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchModeratorHelper: Final[TwitchModeratorHelperInterface] = twitchModeratorHelper
         self.__twitchTimeoutRemodHelper: Final[TwitchTimeoutRemodHelperInterface] = twitchTimeoutRemodHelper
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__maxModRetries: Final[int] = maxModRetries
         self.__retrySleepDelaySeconds: Final[float] = retrySleepDelaySeconds
 
@@ -155,21 +156,21 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        userNameToTimeout = await self.__userIdsRepository.fetchUserName(
+        userDataToTimeout = await self.__twitchUserIdsHelper.getById(
             userId = userIdToTimeout,
             twitchAccessToken = twitchAccessToken,
         )
 
-        if not utils.isValidStr(userNameToTimeout):
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were unable to find a username for the given user ID ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
+        if userDataToTimeout is None:
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were unable to find a username for the given user ID ({twitchChannelId=}) ({userIdToTimeout=}) ({userDataToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.INVALID_USER_NAME
         elif userIdToTimeout == twitchChannelId:
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout the streamer themselves ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout the streamer themselves ({twitchChannelId=}) ({userIdToTimeout=}) ({userDataToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.IS_STREAMER
         elif await self.__timeoutImmuneUserIdsRepository.isImmune(
             userId = userIdToTimeout,
         ):
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout an immune user ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout an immune user ({twitchChannelId=}) ({userIdToTimeout=}) ({userDataToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.IMMUNE_USER
 
         bannedStatus = await self.__isCurrentlyBannedOrTimedOut(
@@ -179,14 +180,14 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         )
 
         if bannedStatus is TwitchTimeoutHelper.BannedStatus.BANNED:
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as this user is currently banned ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as this user is currently banned ({twitchChannelId=}) ({userIdToTimeout=}) ({userDataToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.BANNED
         elif bannedStatus is TwitchTimeoutHelper.BannedStatus.TIMED_OUT:
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as this user is already timed out ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as this user is already timed out ({twitchChannelId=}) ({userIdToTimeout=}) ({userDataToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.ALREADY_TIMED_OUT
 
-        cynanBotUserId = await self.__userIdsRepository.requireUserId(
-            userName = await self.__twitchHandleProvider.getTwitchHandle(),
+        cynanBotUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(
+            userLoginOrName = await self.__twitchHandleProvider.getTwitchHandle(),
             twitchAccessToken = twitchAccessToken,
         )
 
@@ -203,11 +204,11 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             twitchChannelId = twitchChannelId,
             userIdToTimeout = userIdToTimeout,
         ):
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the given user is a mod that failed to be unmodded ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the given user is a mod that failed to be unmodded ({twitchChannelId=}) ({userIdToTimeout=}) ({userDataToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.CANT_UNMOD
 
         durationSeconds = int(min(durationSeconds, self.__globalTwitchConstants.getMaxTimeoutSeconds()))
-        self.__timber.log('TwitchTimeoutHelper', f'Timing out... ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
+        self.__timber.log('TwitchTimeoutHelper', f'Timing out... ({twitchChannelId=}) ({userIdToTimeout=}) ({userDataToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
 
         if not await self.__timeout(
             isMod = isMod,
@@ -216,11 +217,10 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             reason = reason,
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
-            userIdToTimeout = userIdToTimeout,
-            userNameToTimeout = userNameToTimeout,
+            userDataToTimeout = userDataToTimeout,
             user = user,
         ):
-            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the Twitch API call failed ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as the Twitch API call failed ({twitchChannelId=}) ({userIdToTimeout=}) ({userDataToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.API_CALL_FAILED
 
         await self.__activeChattersRepository.remove(
@@ -235,7 +235,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
                 userId = userIdToTimeout,
             )
 
-        self.__timber.log('TwitchTimeoutHelper', f'Successfully timed out user ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
+        self.__timber.log('TwitchTimeoutHelper', f'Successfully timed out user ({twitchChannelId=}) ({userIdToTimeout=}) ({userDataToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
         return TwitchTimeoutResult.SUCCESS
 
     async def __timeout(
@@ -246,8 +246,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         reason: str | None,
         twitchAccessToken: str,
         twitchChannelId: str,
-        userIdToTimeout: str,
-        userNameToTimeout: str,
+        userDataToTimeout: TwitchUserData,
         user: UserInterface,
     ) -> bool:
         banRequest = TwitchBanRequest(
@@ -255,7 +254,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             broadcasterUserId = twitchChannelId,
             moderatorUserId = cynanBotUserId,
             reason = reason,
-            userIdToBan = userIdToTimeout,
+            userIdToBan = userDataToTimeout.userId,
         )
 
         maxRetries: int
@@ -276,21 +275,21 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
 
             successfullyTimedOut = await self.__timeoutAttempt(
                 twitchAccessToken = twitchAccessToken,
-                userNameToTimeout = userNameToTimeout,
                 banRequest = banRequest,
+                userDataToTimeout = userDataToTimeout,
                 user = user,
             )
 
         if attempts > 1:
-            self.__timber.log('TwitchTimeoutHelper', f'Tried timing out user for {attempts} attempt(s) ({successfullyTimedOut=}) ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
+            self.__timber.log('TwitchTimeoutHelper', f'Tried timing out user for {attempts} attempt(s) ({successfullyTimedOut=}) ({twitchChannelId=}) ({userDataToTimeout=}) ({isMod=}) ({durationSeconds=}) ({reason=}) ({user=})')
 
         return successfullyTimedOut
 
     async def __timeoutAttempt(
         self,
         twitchAccessToken: str,
-        userNameToTimeout: str,
         banRequest: TwitchBanRequest,
+        userDataToTimeout: TwitchUserData,
         user: UserInterface,
     ) -> bool:
         try:
@@ -299,12 +298,12 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
                 banRequest = banRequest,
             )
         except Exception as e:
-            self.__timber.log('TwitchTimeoutHelper', f'Failed to timeout user ({userNameToTimeout=}) ({user=}) ({banRequest=})', e, traceback.format_exc())
+            self.__timber.log('TwitchTimeoutHelper', f'Failed to timeout user ({user=}) ({userDataToTimeout=}) ({banRequest=})', e, traceback.format_exc())
             return False
 
         for banResponseEntry in banResponse.data:
             if banResponseEntry.userId == banRequest.userIdToBan:
                 return True
 
-        self.__timber.log('TwitchTimeoutHelper', f'Failed to timeout user ({userNameToTimeout=}) ({user=}) ({banRequest=}) ({banResponse=})')
+        self.__timber.log('TwitchTimeoutHelper', f'Failed to timeout user ({user=}) ({userDataToTimeout=}) ({banRequest=}) ({banResponse=})')
         return False
