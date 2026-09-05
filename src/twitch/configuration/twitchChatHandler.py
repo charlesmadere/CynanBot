@@ -15,6 +15,8 @@ from ..localModels.twitchChatMessageFragmentType import TwitchChatMessageFragmen
 from ..officialAccounts.officialTwitchAccountUserIdProviderInterface import \
     OfficialTwitchAccountUserIdProviderInterface
 from ..tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
+from ..userIds.exceptions import NoTwitchUserDataFoundException
+from ..userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from ...aniv.helpers.mostRecentAnivMessageTimeoutHelperInterface import MostRecentAnivMessageTimeoutHelperInterface
 from ...chatActions.absChatAction import AbsChatAction
 from ...chatActions.chatActionResult import ChatActionResult
@@ -28,7 +30,6 @@ from ...mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChats
 from ...timber.timberInterface import TimberInterface
 from ...trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ...trivia.triviaGameMachineInterface import TriviaGameMachineInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
 
 
@@ -47,7 +48,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         triviaGameMachine: TriviaGameMachineInterface | None,
         twitchLocalModelsMapper: TwitchLocalModelsMapperInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         chatActions: Collection[AbsChatAction | Any | None] | None,
         chatCommands: Collection[AbsChatCommand | Any | None] | None,
     ):
@@ -73,8 +74,8 @@ class TwitchChatHandler(AbsTwitchChatHandler):
             raise TypeError(f'twitchLocalModelsMapper argument is malformed: \"{twitchLocalModelsMapper}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif chatActions is not None and not isinstance(chatActions, Collection):
             raise TypeError(f'chatActions argument is malformed: \"{chatActions}\"')
         elif chatCommands is not None and not isinstance(chatCommands, Collection):
@@ -91,7 +92,7 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         self.__triviaGameMachine: Final[TriviaGameMachineInterface | None] = triviaGameMachine
         self.__twitchLocalModelsMapper: Final[TwitchLocalModelsMapperInterface] = twitchLocalModelsMapper
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
 
         self.__chatCommandPrefixRegEx: Final[Pattern] = re.compile(r'^\s*!\w+\b', re.IGNORECASE)
 
@@ -254,12 +255,17 @@ class TwitchChatHandler(AbsTwitchChatHandler):
                 twitchChannelId = twitchChannelId,
             )
 
-            chatterUserName = await self.__userIdsRepository.fetchUserName(
-                userId = chatterUserId,
-                twitchAccessToken = twitchAccessToken,
-            )
+            try:
+                chatterUserData = await self.__twitchUserIdsHelper.requireById(
+                    userId = chatterUserId,
+                    twitchAccessToken = twitchAccessToken,
+                )
 
-            chatterUserLogin = chatterUserName
+                chatterUserLogin = chatterUserData.userLogin
+                chatterUserName = chatterUserData.userName
+            except NoTwitchUserDataFoundException as e:
+                self.__timber.log('TwitchChatHandler', f'Failed to fetch anonymous gifter chatter data ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({chatterUserId=})', e, traceback.format_exc())
+                return
 
         if not utils.isValidStr(chatterUserId) or not utils.isValidStr(chatterUserLogin) or not utils.isValidStr(chatterUserName) or chatMessage is None:
             self.__timber.log('TwitchChatHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({chatterUserId=}) ({chatterUserLogin=}) ({chatterUserName=}) ({chatMessage=})')

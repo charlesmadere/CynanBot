@@ -9,13 +9,14 @@ from ..api.models.twitchTokensDetails import TwitchTokensDetails
 from ..api.models.twitchValidationResponse import TwitchValidationResponse
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..exceptions import TwitchAccessTokenMissingException, TwitchPasswordChangedException, TwitchStatusCodeException
+from ..userIds.exceptions import NoTwitchUserDataFoundException
+from ..userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...network.exceptions import GenericNetworkException
 from ...storage.jsonReaderInterface import JsonReaderInterface
 from ...timber.timberInterface import TimberInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class TwitchTokensRepository(TwitchTokensRepositoryInterface):
@@ -27,7 +28,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchTokensStorage: TwitchTokensStorageInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsRepository: TwitchUserIdsRepositoryInterface,
         seedFileReader: JsonReaderInterface | None = None,
         sleepTime: timedelta = timedelta(minutes = 45),
         tokensExpirationBuffer: timedelta = timedelta(minutes = 10),
@@ -43,8 +44,8 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchTokensStorage, TwitchTokensStorageInterface):
             raise TypeError(f'twitchTokensStorage argument is malformed: \"{twitchTokensStorage}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsRepository, TwitchUserIdsRepositoryInterface):
+            raise TypeError(f'twitchUserIdsRepository argument is malformed: \"{twitchUserIdsRepository}\"')
         elif seedFileReader is not None and not isinstance(seedFileReader, JsonReaderInterface):
             raise TypeError(f'seedFileReader argument is malformed: \"{seedFileReader}\"')
         elif not isinstance(sleepTime, timedelta):
@@ -59,7 +60,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
         self.__twitchTokensStorage: Final[TwitchTokensStorageInterface] = twitchTokensStorage
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = twitchUserIdsRepository
         self.__seedFileReader: JsonReaderInterface | None = seedFileReader
         self.__sleepTime: Final[timedelta] = sleepTime
         self.__tokensExpirationBuffer: Final[timedelta] = tokensExpirationBuffer
@@ -85,10 +86,12 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self.__timber.log('TwitchTokensRepository', f'Adding user ({twitchChannel=}) ({twitchChannelId=})...')
 
         try:
-            tokensDetails = await self.__twitchApiService.fetchTokens(code = code)
+            tokensDetails = await self.__twitchApiService.fetchTokens(
+                code = code,
+            )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to add user ({twitchChannel=}) ({twitchChannelId=}) ({code=})', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to add user ({twitchChannel=}) ({twitchChannelId=}) ({code=})')
+            self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to add user ({twitchChannel=}) ({twitchChannelId=})', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to add user ({twitchChannel=}) ({twitchChannelId=})')
 
         await self.__setTokensDetails(
             twitchChannelId = twitchChannelId,
@@ -199,8 +202,8 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
                 )
 
             if tokensDetails is not None:
-                twitchChannelId = await self.__userIdsRepository.requireUserId(
-                    userName = twitchChannel,
+                twitchChannelId = await self.__twitchUserIdsRepository.requireIdByLoginOrName(
+                    userLoginOrName = twitchChannel,
                 )
 
                 await self.__setTokensDetails(
@@ -221,12 +224,12 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
-        twitchChannelId = await self.__userIdsRepository.fetchUserId(
-            userName = twitchChannel,
-        )
-
-        if not utils.isValidStr(twitchChannelId):
-            self.__timber.log('TwitchTokensRepository', f'Failed to fetch user ID ({twitchChannel=})')
+        try:
+            twitchChannelId = await self.__twitchUserIdsRepository.requireIdByLoginOrName(
+                userLoginOrName = twitchChannel,
+            )
+        except NoTwitchUserDataFoundException as e:
+            self.__timber.log('TwitchTokensRepository', f'Failed to fetch Twitch channel ID ({twitchChannel=})', e, traceback.format_exc())
             return None
 
         return await self.getAccessTokenById(
@@ -256,11 +259,12 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
-        twitchChannelId = await self.__userIdsRepository.fetchUserId(
-            userName = twitchChannel,
-        )
-
-        if not utils.isValidStr(twitchChannelId):
+        try:
+            twitchChannelId = await self.__twitchUserIdsRepository.requireIdByLoginOrName(
+                userLoginOrName = twitchChannel,
+            )
+        except NoTwitchUserDataFoundException as e:
+            self.__timber.log('TwitchTokensRepository', f'Failed to fetch Twitch channel ID ({twitchChannel=})', e, traceback.format_exc())
             return None
 
         return await self.getTokensDetailsById(
@@ -304,8 +308,8 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
-        twitchChannelId = await self.__userIdsRepository.requireUserId(
-            userName = twitchChannel,
+        twitchChannelId = await self.__twitchUserIdsRepository.requireIdByLoginOrName(
+            userLoginOrName = twitchChannel,
         )
 
         await self.removeUserById(
