@@ -14,11 +14,12 @@ from .absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 from .api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from .api.models.twitchWebsocketEvent import TwitchWebsocketEvent
 from .api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscriptionType
+from .localModels.twitchUserStub import TwitchUserStub
+from .userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from .websocket.listener.twitchWebsocketDataBundleListener import TwitchWebsocketDataBundleListener
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..users.exceptions import NoSuchUserException
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -37,7 +38,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         raidHandler: AbsTwitchRaidHandler | None,
         subscriptionHandler: AbsTwitchSubscriptionHandler | None,
         timber: TimberInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         usersRepository: UsersRepositoryInterface,
     ):
         if bitsHandler is not None and not isinstance(bitsHandler, AbsTwitchBitsHandler):
@@ -62,8 +63,8 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
             raise TypeError(f'subscriptionHandler argument is malformed: \"{subscriptionHandler}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -78,7 +79,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         self.__raidHandler: Final[AbsTwitchRaidHandler | None] = raidHandler
         self.__subscriptionHandler: Final[AbsTwitchSubscriptionHandler | None] = subscriptionHandler
         self.__timber: Final[TimberInterface] = timber
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
     async def __isBitsType(
@@ -180,7 +181,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
             self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find broadcaster user information in data bundle ({twitchChannelId=}) ({twitchChannelLogin=}) ({dataBundle=})')
             return
 
-        await self.__persistUserInfo(
+        await self.__persistUsers(
             event = event,
         )
 
@@ -277,15 +278,32 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         else:
             self.__timber.log('TwitchWebsocketDataBundleHandler', f'Received unhandled data bundle ({twitchChannelId=}) ({twitchUser=}) ({subscriptionType=}) ({dataBundle=})')
 
-    async def __persistUserInfo(self, event: TwitchWebsocketEvent):
-        userIdsToUserNames: dict[str, str] = dict()
-        await self.__addToUserIdsToUserNames(userIdsToUserNames, event.broadcasterUserId, event.broadcasterUserLogin)
-        await self.__addToUserIdsToUserNames(userIdsToUserNames, event.fromBroadcasterUserId, event.fromBroadcasterUserLogin)
-        await self.__addToUserIdsToUserNames(userIdsToUserNames, event.toBroadcasterUserId, event.toBroadcasterUserLogin)
-        await self.__addToUserIdsToUserNames(userIdsToUserNames, event.userId, event.userLogin)
+    async def __persistUsers(self, event: TwitchWebsocketEvent):
+        users: set[TwitchUserStub] = set()
+
+        def addToUsers(userId: str | None, userLogin: str | None, userName: str | None):
+            if not utils.isValidStr(userId):
+                return
+            elif not utils.isValidStr(userLogin):
+                return
+            elif not utils.isValidStr(userName):
+                return
+            else:
+                users.add(TwitchUserStub(
+                    userId = userId,
+                    userLogin = userLogin,
+                    userName = userName,
+                ))
+
+        addToUsers(event.broadcasterUserId, event.broadcasterUserLogin, event.broadcasterUserName)
+        addToUsers(event.chatterUserId, event.chatterUserLogin, event.chatterUserName)
+        addToUsers(event.fromBroadcasterUserId, event.fromBroadcasterUserLogin, event.fromBroadcasterUserName)
+        addToUsers(event.sourceBroadcasterUserId, event.sourceBroadcasterUserLogin, event.sourceBroadcasterUserName)
+        addToUsers(event.toBroadcasterUserId, event.toBroadcasterUserLogin, event.toBroadcasterUserName)
+        addToUsers(event.userId, event.userLogin, event.userName)
 
         if event.subGift is not None:
-            await self.__addToUserIdsToUserNames(userIdsToUserNames, event.subGift.recipientUserId, event.subGift.recipientUserLogin)
+            addToUsers(event.subGift.recipientUserId, event.subGift.recipientUserLogin, event.subGift.recipientUserName)
 
         if event.outcomes is not None and len(event.outcomes) >= 1:
             for outcome in event.outcomes:
@@ -293,27 +311,18 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
                 if topPredictors is not None and len(topPredictors) >= 1:
                     for topPredictor in topPredictors:
-                        await self.__addToUserIdsToUserNames(userIdsToUserNames, topPredictor.userId, topPredictor.userLogin)
+                        addToUsers(topPredictor.userId, topPredictor.userLogin, topPredictor.userName)
 
         if event.chatMessage is not None:
             for fragment in event.chatMessage.fragments:
                 if fragment.mention is not None:
-                    await self.__addToUserIdsToUserNames(userIdsToUserNames, fragment.mention.userId, fragment.mention.userLogin)
+                    addToUsers(fragment.mention.userId, fragment.mention.userLogin, fragment.mention.userName)
 
         if event.reply is not None:
-            await self.__addToUserIdsToUserNames(userIdsToUserNames, event.reply.parentUserId, event.reply.parentUserLogin)
-            await self.__addToUserIdsToUserNames(userIdsToUserNames, event.reply.threadUserId, event.reply.threadUserLogin)
+            addToUsers(event.reply.parentUserId, event.reply.parentUserLogin, event.reply.parentUserName)
+            addToUsers(event.reply.threadUserId, event.reply.threadUserLogin, event.reply.threadUserName)
 
-        if len(userIdsToUserNames) >= 1:
-            await self.__userIdsRepository.setUsers(userIdsToUserNames)
-
-    async def __addToUserIdsToUserNames(
-        self,
-        userIdsToUserNames: dict[str, str],
-        userId: str | None,
-        userLogin: str | None,
-    ):
-        if not utils.isValidStr(userId) or not utils.isValidStr(userLogin):
-            return
-
-        userIdsToUserNames[userId] = userLogin
+        if len(users) >= 1:
+            await self.__twitchUserIdsHelper.setAll(
+                users = users,
+            )
