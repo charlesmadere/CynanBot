@@ -302,8 +302,9 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         addToUsers(event.toBroadcasterUserId, event.toBroadcasterUserLogin, event.toBroadcasterUserName)
         addToUsers(event.userId, event.userLogin, event.userName)
 
-        if event.subGift is not None:
-            addToUsers(event.subGift.recipientUserId, event.subGift.recipientUserLogin, event.subGift.recipientUserName)
+        if event.topContributions is not None and len(event.topContributions) >= 1:
+            for topContribution in event.topContributions:
+                addToUsers(topContribution.userId, topContribution.userLogin, topContribution.userName)
 
         if event.outcomes is not None and len(event.outcomes) >= 1:
             for outcome in event.outcomes:
@@ -318,9 +319,21 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 if fragment.mention is not None:
                     addToUsers(fragment.mention.userId, fragment.mention.userLogin, fragment.mention.userName)
 
+        if event.payItForward is not None:
+            addToUsers(event.payItForward.gifterUserId, event.payItForward.gifterUserLogin, event.payItForward.gifterUserName)
+
+        if event.raid is not None:
+            addToUsers(event.raid.userId, event.raid.userLogin, event.raid.userName)
+
         if event.reply is not None:
             addToUsers(event.reply.parentUserId, event.reply.parentUserLogin, event.reply.parentUserName)
             addToUsers(event.reply.threadUserId, event.reply.threadUserLogin, event.reply.threadUserName)
+
+        if event.resub is not None:
+            addToUsers(event.resub.gifterUserId, event.resub.gifterUserLogin, event.resub.gifterUserName)
+
+        if event.subGift is not None:
+            addToUsers(event.subGift.recipientUserId, event.subGift.recipientUserLogin, event.subGift.recipientUserName)
 
         if len(users) >= 1:
             await self.__twitchUserIdsHelper.setAll(
