@@ -9,7 +9,7 @@ from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
 from ...storage.jsonReaderInterface import JsonReaderInterface
 from ...timber.timberInterface import TimberInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ...twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 
 
 class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
@@ -18,21 +18,21 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsRepository: TwitchUserIdsRepositoryInterface,
         seedFileReader: JsonReaderInterface | None = None,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsRepository, TwitchUserIdsRepositoryInterface):
+            raise TypeError(f'twitchUserIdsRepository argument is malformed: \"{twitchUserIdsRepository}\"')
         elif seedFileReader is not None and not isinstance(seedFileReader, JsonReaderInterface):
             raise TypeError(f'seedFileReader argument is malformed: \"{seedFileReader}\"')
 
         self.__backingDatabase: Final[BackingDatabase] = backingDatabase
         self.__timber: Final[TimberInterface] = timber
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = twitchUserIdsRepository
         self.__seedFileReader: JsonReaderInterface | None = seedFileReader
 
         self.__isDatabaseReady: bool = False
@@ -65,7 +65,9 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
 
         for twitchChannel, tokensJson in jsonContents.items():
             try:
-                twitchChannelId = await self.__userIdsRepository.requireUserId(twitchChannel)
+                twitchChannelId = await self.__twitchUserIdsRepository.requireIdByLoginOrName(
+                    userLoginOrName = twitchChannel,
+                )
             except Exception as e:
                 self.__timber.log('TtsMonsterTokensRepository', f'Failed to fetch Twitch channel ID ({twitchChannel=}) ({seedFileReader=})', e, traceback.format_exc())
                 continue
