@@ -9,7 +9,7 @@ from ..settings.redemptionCounterSettingsInterface import RedemptionCounterSetti
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ...twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
 
 class RedemptionCounterHelper(RedemptionCounterHelperInterface):
@@ -20,7 +20,7 @@ class RedemptionCounterHelper(RedemptionCounterHelperInterface):
         redemptionCounterSettings: RedemptionCounterSettingsInterface,
         timber: TimberInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
         if not isinstance(redemptionCounterRepository, RedemptionCounterRepositoryInterface):
             raise TypeError(f'redemptionCounterRepository argument is malformed: \"{redemptionCounterRepository}\"')
@@ -30,14 +30,14 @@ class RedemptionCounterHelper(RedemptionCounterHelperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
         self.__redemptionCounterRepository: Final[RedemptionCounterRepositoryInterface] = redemptionCounterRepository
         self.__redemptionCounterSettings: Final[RedemptionCounterSettingsInterface] = redemptionCounterSettings
         self.__timber: Final[TimberInterface] = timber
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
 
     async def get(
         self,
@@ -101,15 +101,15 @@ class RedemptionCounterHelper(RedemptionCounterHelperInterface):
         self,
         redemptionCount: RedemptionCount,
     ) -> PreparedRedemptionCount:
-        chatterUserName = await self.__userIdsRepository.fetchUserName(
+        chatterUserData = await self.__twitchUserIdsHelper.getById(
             userId = redemptionCount.chatterUserId,
             twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-                twitchChannelId = redemptionCount.twitchChannelId
+                twitchChannelId = redemptionCount.twitchChannelId,
             )
         )
 
-        if not utils.isValidStr(chatterUserName):
-            self.__timber.log('RedemptionCounterHelper', f'Unable to find chatter user name when preparing redemption count ({redemptionCount=}) ({chatterUserName=})')
+        if chatterUserData is None:
+            self.__timber.log('RedemptionCounterHelper', f'Unable to find chatter user data when preparing redemption count ({redemptionCount=}) ({chatterUserData=})')
 
             raise RedemptionCounterNoSuchUserException(
                 chatterUserId = redemptionCount.chatterUserId,
@@ -119,5 +119,5 @@ class RedemptionCounterHelper(RedemptionCounterHelperInterface):
 
         return PreparedRedemptionCount(
             redemptionCount = redemptionCount,
-            chatterUserName = chatterUserName,
+            chatterUserName = chatterUserData.userName,
         )
