@@ -13,7 +13,7 @@ from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ...twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
 
 class VoicemailHelper(VoicemailHelperInterface):
@@ -23,7 +23,7 @@ class VoicemailHelper(VoicemailHelperInterface):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         voicemailsRepository: VoicemailsRepositoryInterface,
         voicemailSettingsRepository: VoicemailSettingsRepositoryInterface,
     ):
@@ -33,8 +33,8 @@ class VoicemailHelper(VoicemailHelperInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not isinstance(voicemailsRepository, VoicemailsRepositoryInterface):
             raise TypeError(f'voicemailsRepository argument is malformed: \"{voicemailsRepository}\"')
         elif not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
@@ -43,7 +43,7 @@ class VoicemailHelper(VoicemailHelperInterface):
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__voicemailsRepository: Final[VoicemailsRepositoryInterface] = voicemailsRepository
         self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
 
@@ -251,18 +251,18 @@ class VoicemailHelper(VoicemailHelperInterface):
             twitchChannelId = twitchChannelId,
         )
 
-        originatingUserName = await self.__userIdsRepository.fetchUserName(
+        originatingUserData = await self.__twitchUserIdsHelper.getById(
             userId = voicemail.originatingUserId,
             twitchAccessToken = twitchAccessToken,
         )
 
-        targetUserName = await self.__userIdsRepository.fetchUserName(
+        targetUserData = await self.__twitchUserIdsHelper.getById(
             userId = voicemail.targetUserId,
             twitchAccessToken = twitchAccessToken,
         )
 
-        if not utils.isValidStr(originatingUserName) or not utils.isValidStr(targetUserName):
-            self.__timber.log('VoicemailHelper', f'Failed to fetch originating user name and/or target user name for a voicemail, this voicemail will be discarded ({twitchChannelId=}) ({voicemail=}) ({maximumVoicemailAgeDays=}) ({originatingUserName=}) ({targetUserName=})')
+        if originatingUserData is None or targetUserData is None:
+            self.__timber.log('VoicemailHelper', f'Failed to fetch originating user name and/or target user name for a voicemail, this voicemail will be discarded ({twitchChannelId=}) ({voicemail=}) ({maximumVoicemailAgeDays=}) ({originatingUserData=}) ({targetUserData=})')
 
             await self.__voicemailsRepository.removeVoicemail(
                 twitchChannelId = twitchChannelId,
@@ -272,7 +272,7 @@ class VoicemailHelper(VoicemailHelperInterface):
             return None
 
         return PreparedVoicemailData(
-            originatingUserName = originatingUserName,
-            targetUserName = targetUserName,
+            originatingUserName = originatingUserData.userName,
+            targetUserName = targetUserData.userName,
             voicemail = voicemail,
         )
