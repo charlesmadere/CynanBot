@@ -15,8 +15,9 @@ from ...twitch.activeChatters.activeChatter import ActiveChatter
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
+from ...twitch.userIds.twitchUserData import TwitchUserData
+from ...twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from ...users.exceptions import NoSuchUserException
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class DetermineAirStrikeTargetsUseCase:
@@ -28,7 +29,7 @@ class DetermineAirStrikeTargetsUseCase:
         timeoutActionSettings: TimeoutActionSettingsInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         targetReducerScale: float = 0.46,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
@@ -41,8 +42,8 @@ class DetermineAirStrikeTargetsUseCase:
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not utils.isValidNum(targetReducerScale):
             raise TypeError(f'targetReducerScale argument is malformed: \"{targetReducerScale}\"')
         elif targetReducerScale < 0.1 or targetReducerScale > 1.0:
@@ -53,20 +54,20 @@ class DetermineAirStrikeTargetsUseCase:
         self.__timeoutActionSettings: Final[TimeoutActionSettingsInterface] = timeoutActionSettings
         self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__targetReducerScale: Final[float] = targetReducerScale
 
-    async def __fetchUserName(
+    async def __fetchUserData(
         self,
         twitchChannelId: str,
         userId: str,
-    ) -> str:
+    ) -> TwitchUserData:
         twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
             twitchChannelId = twitchChannelId,
         )
 
         try:
-            return await self.__userIdsRepository.requireUserName(
+            return await self.__twitchUserIdsHelper.requireById(
                 userId = userId,
                 twitchAccessToken = twitchAccessToken,
             )
@@ -87,14 +88,15 @@ class DetermineAirStrikeTargetsUseCase:
         randomReverseNumber = random.random()
 
         if randomReverseNumber <= additionalReverseProbability:
-            targetUserName = await self.__fetchUserName(
+            targetUserData = await self.__fetchUserData(
                 twitchChannelId = timeoutAction.twitchChannelId,
                 userId = timeoutAction.instigatorUserId,
             )
 
             timeoutTargets.add(TimeoutTarget(
                 userId = timeoutAction.instigatorUserId,
-                userName = targetUserName,
+                userLogin = targetUserData.userLogin,
+                userName = targetUserData.userName,
             ))
 
         activeChatters = await self.__activeChattersRepository.get(
@@ -137,6 +139,7 @@ class DetermineAirStrikeTargetsUseCase:
 
             timeoutTargets.add(TimeoutTarget(
                 userId = randomChatter.chatterUserId,
+                userLogin = randomChatter.chatterUserLogin,
                 userName = randomChatter.chatterUserName,
             ))
 

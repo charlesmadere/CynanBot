@@ -5,6 +5,7 @@ from typing import Any
 @dataclass(frozen = True, slots = True)
 class TimeoutTarget:
     userId: str
+    userLogin: str
     userName: str
 
     def __eq__(self, other: Any) -> bool:
