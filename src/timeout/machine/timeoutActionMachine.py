@@ -78,7 +78,8 @@ from ...twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRep
 from ...twitch.timeout.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from ...twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ...twitch.userIds.twitchUserData import TwitchUserData
+from ...twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
 
 class TimeoutActionMachine(TimeoutActionMachineInterface):
@@ -104,7 +105,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         trollmojiHelper: TrollmojiHelperInterface,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         sleepTimeSeconds: float = 0.5,
         queueTimeoutSeconds: int = 3,
     ):
@@ -146,8 +147,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'twitchTimeoutHelper argument is malformed: \"{twitchTimeoutHelper}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 0.5 or sleepTimeSeconds > 8:
@@ -176,7 +177,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
         self.__twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = twitchTimeoutHelper
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
@@ -997,19 +998,31 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             originatingAction = action,
         ))
 
+    async def __requireUserData(
+        self,
+        action: AbsTimeoutAction,
+        chatterUserId: str,
+    ) -> TwitchUserData:
+        twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+            twitchChannelId = action.getTwitchChannelId(),
+        )
+
+        return await self.__twitchUserIdsHelper.requireById(
+            userId = chatterUserId,
+            twitchAccessToken = twitchAccessToken,
+        )
+
     async def __requireUserName(
         self,
         action: AbsTimeoutAction,
         chatterUserId: str,
     ) -> str:
-        twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-            twitchChannelId = action.getTwitchChannelId(),
+        twitchUserData = await self.__requireUserData(
+            action = action,
+            chatterUserId = chatterUserId,
         )
 
-        return await self.__userIdsRepository.requireUserName(
-            userId = chatterUserId,
-            twitchAccessToken = twitchAccessToken,
-        )
+        return twitchUserData.userName
 
     def start(self):
         if self.__isStarted:

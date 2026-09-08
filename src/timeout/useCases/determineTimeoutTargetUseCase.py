@@ -10,8 +10,9 @@ from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
+from ...twitch.userIds.twitchUserData import TwitchUserData
+from ...twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from ...users.exceptions import NoSuchUserException
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class DetermineTimeoutTargetUseCase(DetermineTimeoutTargetUseCaseInterface):
@@ -21,7 +22,7 @@ class DetermineTimeoutTargetUseCase(DetermineTimeoutTargetUseCaseInterface):
         timber: TimberInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -29,13 +30,13 @@ class DetermineTimeoutTargetUseCase(DetermineTimeoutTargetUseCaseInterface):
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
 
         self.__timeoutTargetRegEx: Final[Pattern] = re.compile(r'^\s*@?(\w+)\s*', re.IGNORECASE)
 
@@ -57,6 +58,24 @@ class DetermineTimeoutTargetUseCase(DetermineTimeoutTargetUseCaseInterface):
 
         return targetUserName
 
+    async def __fetchUserData(
+        self,
+        twitchChannelId: str,
+        userId: str,
+    ) -> TwitchUserData:
+        twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+            twitchChannelId = twitchChannelId,
+        )
+
+        try:
+            return await self.__twitchUserIdsHelper.requireById(
+                userId = userId,
+                twitchAccessToken = twitchAccessToken,
+            )
+        except NoSuchUserException as e:
+            self.__timber.log('DetermineTimeoutTargetUseCase', f'Failed to fetch user data to use as a timeout target ({twitchChannelId=}) ({userId=})', e, traceback.format_exc())
+            raise UnknownTimeoutTargetException(f'Failed to fetch user data to use as a timeout target ({twitchChannelId=}) ({userId=})')
+
     async def __fetchUserId(
         self,
         twitchChannelId: str,
@@ -67,8 +86,8 @@ class DetermineTimeoutTargetUseCase(DetermineTimeoutTargetUseCaseInterface):
         )
 
         try:
-            return await self.__userIdsRepository.requireUserId(
-                userName = userName,
+            return await self.__twitchUserIdsHelper.requireIdByLoginOrName(
+                userLoginOrName = userName,
                 twitchAccessToken = twitchAccessToken,
             )
         except NoSuchUserException as e:
@@ -94,9 +113,15 @@ class DetermineTimeoutTargetUseCase(DetermineTimeoutTargetUseCaseInterface):
         if targetUserId == timeoutAction.getTwitchChannelId():
             targetUserId = timeoutAction.getInstigatorUserId()
 
-        timeoutTarget = TimeoutTarget(
+        targetUserData = await self.__fetchUserData(
+            twitchChannelId = timeoutAction.getTwitchChannelId(),
             userId = targetUserId,
-            userName = targetUserName,
+        )
+
+        timeoutTarget = TimeoutTarget(
+            userId = targetUserData.userId,
+            userLogin = targetUserData.userLogin,
+            userName = targetUserData.userName,
         )
 
         if await self.__timeoutImmuneUserIdsRepository.isImmune(targetUserId):
