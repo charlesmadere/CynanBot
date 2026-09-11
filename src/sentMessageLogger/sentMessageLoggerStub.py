@@ -1,6 +1,5 @@
 from typing import Collection
 
-from .messageMethod import MessageMethod
 from .sentMessageLoggerInterface import SentMessageLoggerInterface
 
 
@@ -11,7 +10,6 @@ class SentMessageLoggerStub(SentMessageLoggerInterface):
         successfullySent: bool,
         exceptions: Collection[Exception] | None,
         numberOfSendAttempts: int,
-        messageMethod: MessageMethod,
         msg: str,
         twitchChannel: str,
         twitchChannelId: str,
