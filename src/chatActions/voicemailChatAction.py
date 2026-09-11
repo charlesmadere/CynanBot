@@ -69,6 +69,7 @@ class VoicemailChatAction(AbsChatAction):
         )
 
         if len(voicemails) == 0:
+            self.__timber.log(self.actionName, f'Found no voicemails to notify the chatting user about ({voicemails=}) ({chatMessage=})')
             return ChatActionResult.IGNORED
 
         voicemailsLenStr = locale.format_string("%d", len(voicemails), grouping = True)
@@ -86,4 +87,4 @@ class VoicemailChatAction(AbsChatAction):
         )
 
         self.__timber.log(self.actionName, f'Notified user of voicemail(s) ({voicemails=}) ({chatMessage=})')
-        return ChatActionResult.HANDLED
+        return ChatActionResult.CONSUMED
