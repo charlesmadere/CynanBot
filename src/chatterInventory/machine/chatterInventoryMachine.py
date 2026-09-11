@@ -78,7 +78,7 @@ from ...timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatus
 from ...twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ...twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
 
 class ChatterInventoryMachine(ChatterInventoryMachineInterface):
@@ -106,7 +106,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         sleepTimeSeconds: float = 0.5,
         queueTimeoutSeconds: int = 3,
     ):
@@ -140,8 +140,8 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 0.25 or sleepTimeSeconds > 3:
@@ -166,7 +166,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
@@ -182,8 +182,8 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             twitchChannelId = twitchChannelId,
         )
 
-        moderatorUserId = await self.__userIdsRepository.requireUserId(
-            userName = await self.__twitchHandleProvider.getTwitchHandle(),
+        moderatorUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(
+            userLoginOrName = await self.__twitchHandleProvider.getTwitchHandle(),
             twitchAccessToken = userTwitchAccessToken,
         )
 
@@ -309,7 +309,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             twitchChannelId = action.twitchChannelId,
         )
 
-        chatterUserName = await self.__userIdsRepository.requireUserName(
+        chatterUserData = await self.__twitchUserIdsHelper.requireById(
             userId = action.chatterUserId,
             twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
                 twitchChannelId = action.twitchChannelId,
@@ -329,38 +329,37 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             return
         except CassetteTapeMessageHasNoTargetException:
             await self.__submitEvent(CassetteTapeMessageHasNoTargetChatterItemEvent(
-                chatterUserName = chatterUserName,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                chatterUserData = chatterUserData,
                 originatingAction = action,
             ))
             return
         except CassetteTapeTargetIsNotFollowingException as e:
             await self.__submitEvent(CassetteTapeTargetIsNotFollowingChatterItemEvent(
-                chatterUserName = chatterUserName,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
-                targetUserId = e.targetUserId,
-                targetUserName = e.targetUserName,
+                chatterUserData = chatterUserData,
+                targetUserData = targetUserData,
                 originatingAction = action,
             ))
             return
         except VoicemailMessageIsEmptyException:
             await self.__submitEvent(VoicemailMessageIsEmptyChatterItemEvent(
-                chatterUserName = chatterUserName,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                chatterUserData = chatterUserData,
                 originatingAction = action,
             ))
             return
         except VoicemailTargetIsOriginatingUserException:
             await self.__submitEvent(VoicemailTargetIsOriginatingUserChatterItemEvent(
-                chatterUserName = chatterUserName,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                chatterUserData = chatterUserData,
                 originatingAction = action,
             ))
             return
         except VoicemailTargetIsStreamerException:
             await self.__submitEvent(VoicemailTargetIsStreamerChatterItemEvent(
-                chatterUserName = chatterUserName,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                chatterUserData = chatterUserData,
                 originatingAction = action,
             ))
             return
