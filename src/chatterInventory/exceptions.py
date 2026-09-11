@@ -1,6 +1,7 @@
 from typing import Final
 
 from .models.useChatterItemAction import UseChatterItemAction
+from ..twitch.localModels.twitchUserInterface import TwitchUserInterface
 
 
 class CassetteTapeFeatureIsDisabledException(Exception):
@@ -34,23 +35,17 @@ class CassetteTapeTargetIsNotFollowingException(Exception):
 
     def __init__(
         self,
-        targetUserId: str,
-        targetUserName: str,
+        targetUserData: TwitchUserInterface,
         originatingAction: UseChatterItemAction,
     ):
-        super().__init__(targetUserId, targetUserName, originatingAction)
+        super().__init__(targetUserData, originatingAction)
 
-        self.__targetUserId: Final[str] = targetUserId
-        self.__targetUserName: Final[str] = targetUserName
+        self.__targetUserData: Final[TwitchUserInterface] = targetUserData
         self.__originatingAction: Final[UseChatterItemAction] = originatingAction
 
     @property
-    def targetUserId(self) -> str:
-        return self.__targetUserId
-
-    @property
-    def targetUserName(self) -> str:
-        return self.__targetUserName
+    def targetUserData(self) -> TwitchUserInterface:
+        return self.__targetUserData
 
     @property
     def originatingAction(self) -> UseChatterItemAction:
@@ -100,21 +95,15 @@ class VoicemailTargetInboxIsFullException(Exception):
 
     def __init__(
         self,
-        targetUserId: str,
-        targetUserName: str,
+        targetUserData: TwitchUserInterface,
     ):
-        super().__init__(targetUserId, targetUserName)
+        super().__init__(targetUserData)
 
-        self.__targetUserId: Final[str] = targetUserId
-        self.__targetUserName: Final[str] = targetUserName
-
-    @property
-    def targetUserId(self) -> str:
-        return self.__targetUserId
+        self.__targetUserData: Final[TwitchUserInterface] = targetUserData
 
     @property
-    def targetUserName(self) -> str:
-        return self.__targetUserName
+    def targetUserData(self) -> TwitchUserInterface:
+        return self.__targetUserData
 
 
 class VoicemailTargetIsOriginatingUserException(Exception):

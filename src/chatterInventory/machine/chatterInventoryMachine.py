@@ -338,7 +338,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             await self.__submitEvent(CassetteTapeTargetIsNotFollowingChatterItemEvent(
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
                 chatterUserData = chatterUserData,
-                targetUserData = targetUserData,
+                targetUserData = e.targetUserData,
                 originatingAction = action,
             ))
             return
@@ -378,8 +378,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             addVoicemailResult = result.addVoicemailResult,
             updatedInventory = updatedInventory,
             eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
-            targetUserId = result.targetUserId,
-            targetUserName = result.targetUserName,
+            targetUserData = result.targetUserData,
             originatingAction = action,
         ))
 
@@ -445,7 +444,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             twitchChannelId = action.twitchChannelId,
         )
 
-        chatterUserName = await self.__userIdsRepository.requireUserName(
+        chatterUserData = await self.__twitchUserIdsHelper.requireById(
             userId = action.chatterUserId,
             twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
                 twitchChannelId = action.twitchChannelId,
@@ -455,8 +454,8 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         await self.__submitEvent(GiveChatterItemEvent(
             updatedInventory = updatedInventory,
             changeAmount = action.changeAmount,
-            chatterUserName = chatterUserName,
             eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            chatterUserData = chatterUserData,
             originatingAction = action,
         ))
 
@@ -626,14 +625,14 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             ))
             return
 
-        fromChatterUserName = await self.__userIdsRepository.requireUserName(
+        fromChatterUserData = await self.__twitchUserIdsHelper.requireById(
             userId = action.fromChatterUserId,
             twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
                 twitchChannelId = action.twitchChannelId,
             ),
         )
 
-        toChatterUserName = await self.__userIdsRepository.requireUserName(
+        toChatterUserData = await self.__twitchUserIdsHelper.requireById(
             userId = action.toChatterUserId,
             twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
                 twitchChannelId = action.twitchChannelId,
@@ -658,9 +657,9 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             await self.__submitEvent(TradeChatterNotEnoughInventoryItemEvent(
                 tradeAmount = tradeAmount,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
-                fromChatterUserName = fromChatterUserName,
-                toChatterUserName = toChatterUserName,
                 originatingAction = action,
+                fromChatterUserData = fromChatterUserData,
+                toChatterUserData = toChatterUserData,
             ))
             return
 
@@ -683,9 +682,9 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             toChatterInventory = toChatterInventory,
             tradeAmount = tradeAmount,
             eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
-            fromChatterUserName = fromChatterUserName,
-            toChatterUserName = toChatterUserName,
             originatingAction = action,
+            fromChatterUserData = fromChatterUserData,
+            toChatterUserData = toChatterUserData,
         ))
 
     async def __handleUseItemAction(self, action: UseChatterItemAction):

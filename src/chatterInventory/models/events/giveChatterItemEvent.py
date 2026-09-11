@@ -4,15 +4,16 @@ from dataclasses import dataclass
 from .absChatterItemEvent import AbsChatterItemEvent
 from ..chatterInventoryData import ChatterInventoryData
 from ..giveChatterItemAction import GiveChatterItemAction
+from ....twitch.localModels.twitchUserInterface import TwitchUserInterface
 
 
 @dataclass(frozen = True, slots = True)
 class GiveChatterItemEvent(AbsChatterItemEvent):
     updatedInventory: ChatterInventoryData
-    changeAmount: int
-    chatterUserName: str
-    eventId: str
     originatingAction: GiveChatterItemAction
+    changeAmount: int
+    eventId: str
+    chatterUserData: TwitchUserInterface
 
     @property
     def changeAmountString(self) -> str:
