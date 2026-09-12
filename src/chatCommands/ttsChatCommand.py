@@ -192,6 +192,7 @@ class TtsChatCommand(AbsChatCommand):
         isEditor = await self.__twitchChannelEditorsRepository.isEditor(
             chatterUserId = chatMessage.chatterUserId,
             twitchChannelId = chatMessage.twitchChannelId,
+            forceRefresh = True,
         )
 
         return isStreamer or isAdministrator or isEditor
