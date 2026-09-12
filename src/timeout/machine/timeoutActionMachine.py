@@ -536,12 +536,12 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             return
 
         try:
-            targetUserName = await self.__requireUserName(
+            targetUserData = await self.__requireUserData(
                 action = action,
                 chatterUserId = action.targetUserId,
             )
         except Exception as e:
-            self.__timber.log('TimeoutActionMachine', f'Failed to fetch username for basic timeout target ({action=})', e, traceback.format_exc())
+            self.__timber.log('TimeoutActionMachine', f'Failed to fetch user data for basic timeout target ({action=})', e, traceback.format_exc())
             await self.__submitEvent(BasicTimeoutTargetUnavailableTimeoutEvent(
                 originatingAction = action,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
@@ -550,7 +550,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
 
         timeoutTarget = TimeoutTarget(
             userId = action.targetUserId,
-            userName = targetUserName,
+            userLogin = targetUserData.userLogin,
+            userName = targetUserData.userName,
         )
 
         timeoutDuration = await self.__calculateTimeoutDurationUseCase.invoke(
@@ -901,7 +902,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
-        instigatorUserName = await self.__requireUserName(
+        instigatorUserData = await self.__requireUserData(
             action = action,
             chatterUserId = action.instigatorUserId,
         )
@@ -925,7 +926,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             self.__timber.log('TimeoutActionMachine', f'Failed to determine vore target ({action=})', e, traceback.format_exc())
             await self.__submitEvent(NoVoreTargetAvailableTimeoutEvent(
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
-                instigatorUserName = instigatorUserName,
+                instigatorUserData = instigatorUserData,
                 originatingAction = action,
             ))
             return
@@ -963,8 +964,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             await self.__submitEvent(VoreTimeoutFailedTimeoutEvent(
                 timeoutTarget = timeoutTarget,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
-                instigatorUserName = instigatorUserName,
                 timeoutResult = timeoutResult,
+                instigatorUserData = instigatorUserData,
                 originatingAction = action,
             ))
             return
@@ -992,9 +993,9 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
             eventId = await self.__timeoutIdGenerator.generateEventId(),
-            instigatorUserName = instigatorUserName,
             ripBozoEmote = await self.__trollmojiHelper.getGottemEmoteOrBackup(),
             timeoutResult = timeoutResult,
+            instigatorUserData = instigatorUserData,
             originatingAction = action,
         ))
 
