@@ -9,6 +9,7 @@ class TwitchChannelEditorsRepositoryInterface(Clearable, ABC):
     async def fetchEditorIds(
         self,
         twitchChannelId: str,
+        forceRefresh: bool = False,
     ) -> frozenset[str]:
         pass
 
@@ -17,5 +18,6 @@ class TwitchChannelEditorsRepositoryInterface(Clearable, ABC):
         self,
         chatterUserId: str,
         twitchChannelId: str,
+        forceRefresh: bool = False,
     ) -> bool:
         pass
