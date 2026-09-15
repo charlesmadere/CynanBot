@@ -1,7 +1,7 @@
 import random
-from dataclasses import dataclass
 from typing import Final
 
+from .determineBananaTargetUseCaseInterface import DetermineBananaTargetUseCaseInterface
 from ..exceptions import BananaTimeoutDiceRollFailedException
 from ..guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
 from ..models.actions.bananaTimeoutAction import BananaTimeoutAction
@@ -9,18 +9,11 @@ from ..models.timeoutDiceRoll import TimeoutDiceRoll
 from ..models.timeoutDiceRollFailureData import TimeoutDiceRollFailureData
 from ..models.timeoutTarget import TimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
-from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
+from ...twitch.localModels.twitchUserInterface import TwitchUserInterface
 
 
-class DetermineBananaTargetUseCase:
-
-    @dataclass(frozen = True, slots = True)
-    class ResultData:
-        isReverse: bool
-        diceRoll: TimeoutDiceRoll | None
-        diceRollFailureData: TimeoutDiceRollFailureData | None
-        timeoutTarget: TimeoutTarget
+class DetermineBananaTargetUseCase(DetermineBananaTargetUseCaseInterface):
 
     def __init__(
         self,
@@ -70,18 +63,18 @@ class DetermineBananaTargetUseCase:
     async def invoke(
         self,
         timeoutAction: BananaTimeoutAction,
-        instigatorUserName: str,
         diceRoll: TimeoutDiceRoll | None,
         timeoutTarget: TimeoutTarget,
-    ) -> ResultData:
+        instigatorUserData: TwitchUserInterface,
+    ) -> DetermineBananaTargetUseCaseInterface.ResultData:
         if not isinstance(timeoutAction, BananaTimeoutAction):
             raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
-        elif not utils.isValidStr(instigatorUserName):
-            raise TypeError(f'instigatorUserName argument is malformed: \"{instigatorUserName}\"')
         elif diceRoll is not None and not isinstance(diceRoll, TimeoutDiceRoll):
             raise TypeError(f'diceRoll argument is malformed: \"{diceRoll}\"')
         elif not isinstance(timeoutTarget, TimeoutTarget):
             raise TypeError(f'timeoutTarget argument is malformed: \"{timeoutTarget}\"')
+        elif not isinstance(instigatorUserData, TwitchUserInterface):
+            raise TypeError(f'instigatorUserData argument is malformed: \"{instigatorUserData}\"')
 
         isTryingToTimeoutStreamer = timeoutTarget.userId == timeoutAction.twitchChannelId
 
@@ -89,7 +82,8 @@ class DetermineBananaTargetUseCase:
             return DetermineBananaTargetUseCase.ResultData(
                 timeoutTarget = TimeoutTarget(
                     userId = timeoutAction.instigatorUserId,
-                    userName = instigatorUserName,
+                    userLogin = instigatorUserData.getUserLogin(),
+                    userName = instigatorUserData.getUserName(),
                 ),
                 isReverse = False,
                 diceRoll = None,
@@ -114,13 +108,14 @@ class DetermineBananaTargetUseCase:
             diceRoll = diceRoll,
         )
 
-        self.__timber.log('DetermineBananaTargetUseCase', f'Generated dice roll failure data ({timeoutAction=}) ({instigatorUserName=}) ({timeoutTarget=}) ({diceRoll=}) ({diceRollFailureData=})')
+        self.__timber.log('DetermineBananaTargetUseCase', f'Generated dice roll failure data ({timeoutAction=}) ({instigatorUserData=}) ({timeoutTarget=}) ({diceRoll=}) ({diceRollFailureData=})')
 
         if diceRoll.roll <= diceRollFailureData.reverseRoll:
             return DetermineBananaTargetUseCase.ResultData(
                 timeoutTarget = TimeoutTarget(
                     userId = timeoutAction.instigatorUserId,
-                    userName = instigatorUserName,
+                    userLogin = instigatorUserData.getUserLogin(),
+                    userName = instigatorUserData.getUserName(),
                 ),
                 isReverse = True,
                 diceRoll = diceRoll,

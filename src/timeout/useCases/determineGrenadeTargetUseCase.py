@@ -11,8 +11,9 @@ from ...twitch.activeChatters.activeChatter import ActiveChatter
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
+from ...twitch.userIds.twitchUserData import TwitchUserData
+from ...twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from ...users.exceptions import NoSuchUserException
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class DetermineGrenadeTargetUseCase:
@@ -24,7 +25,7 @@ class DetermineGrenadeTargetUseCase:
         timeoutActionSettings: TimeoutActionSettingsInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
@@ -36,27 +37,27 @@ class DetermineGrenadeTargetUseCase:
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionSettings: Final[TimeoutActionSettingsInterface] = timeoutActionSettings
         self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
 
-    async def __fetchUserName(
+    async def __fetchUserData(
         self,
         twitchChannelId: str,
         userId: str,
-    ) -> str:
+    ) -> TwitchUserData:
         twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
             twitchChannelId = twitchChannelId,
         )
 
         try:
-            return await self.__userIdsRepository.requireUserName(
+            return await self.__twitchUserIdsHelper.requireById(
                 userId = userId,
                 twitchAccessToken = twitchAccessToken,
             )
@@ -75,14 +76,15 @@ class DetermineGrenadeTargetUseCase:
         randomReverseNumber = random.random()
 
         if randomReverseNumber <= additionalReverseProbability:
-            targetUserName = await self.__fetchUserName(
+            targetUserData = await self.__fetchUserData(
                 twitchChannelId = timeoutAction.twitchChannelId,
                 userId = timeoutAction.instigatorUserId,
             )
 
             return TimeoutTarget(
                 userId = timeoutAction.instigatorUserId,
-                userName = targetUserName,
+                userLogin = targetUserData.userLogin,
+                userName = targetUserData.userName,
             )
 
         activeChatters = await self.__activeChattersRepository.get(
@@ -110,5 +112,6 @@ class DetermineGrenadeTargetUseCase:
 
         return TimeoutTarget(
             userId = randomChatter.chatterUserId,
+            userLogin = randomChatter.chatterUserLogin,
             userName = randomChatter.chatterUserName,
         )

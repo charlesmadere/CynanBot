@@ -5,10 +5,10 @@ from .timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsReposit
 from ..friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
 from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..officialAccounts.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
+from ..userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from ...misc import utils as utils
 from ...storage.linesReaderInterface import LinesReaderInterface
 from ...timber.timberInterface import TimberInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
@@ -19,7 +19,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         timber: TimberInterface,
         twitchFriendsUserIdProvider: TwitchFriendsUserIdRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         otherImmuneUserIdsLinesReader: LinesReaderInterface | None = None,
     ):
         if not isinstance(officialTwitchAccountUserIdProvider, OfficialTwitchAccountUserIdProviderInterface):
@@ -30,8 +30,8 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdProvider argument is malformed: \"{twitchFriendsUserIdProvider}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif otherImmuneUserIdsLinesReader is not None and not isinstance(otherImmuneUserIdsLinesReader, LinesReaderInterface):
             raise TypeError(f'immuneUserIdsLinesReader argument is malformed: \"{otherImmuneUserIdsLinesReader}\"')
 
@@ -39,7 +39,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         self.__timber: Final[TimberInterface] = timber
         self.__twitchFriendsUserIdProvider: Final[TwitchFriendsUserIdRepositoryInterface] = twitchFriendsUserIdProvider
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__otherImmuneUserIdsLinesReader: Final[LinesReaderInterface | None] = otherImmuneUserIdsLinesReader
 
         self.__immuneUserIds: frozenset[str] | None = None
@@ -94,7 +94,7 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
 
         if twitchUserId is None:
             twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-            twitchUserId = await self.__userIdsRepository.requireUserId(twitchHandle)
+            twitchUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(twitchHandle)
             self.__twitchUserId = twitchUserId
 
         return twitchUserId
