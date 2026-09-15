@@ -10,6 +10,7 @@ from src.chatterInventory.models.chatterItemType import ChatterItemType
 from src.chatterInventory.models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
 from src.chatterInventory.models.itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from src.chatterInventory.models.itemDetails.bananaItemDetails import BananaItemDetails
+from src.chatterInventory.models.itemDetails.crowdMicItemDetails import CrowdMicItemDetails
 from src.chatterInventory.models.itemDetails.gashaponItemDetails import GashaponItemDetails
 from src.chatterInventory.models.itemDetails.gashaponItemPullRate import GashaponItemPullRate
 from src.chatterInventory.models.itemDetails.grenadeItemDetails import GrenadeItemDetails
@@ -106,6 +107,30 @@ class TestChatterInventoryMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseCrowdMicItemDetails(self):
+        details = CrowdMicItemDetails(
+            durationSeconds = 300,
+        )
+
+        result = await self.mapper.parseCrowdMicItemDetails({
+            'durationSeconds': details.durationSeconds,
+        })
+
+        assert isinstance(result, CrowdMicItemDetails)
+        assert result == details
+        assert result.durationSeconds == details.durationSeconds
+
+    @pytest.mark.asyncio
+    async def test_parseCrowdMicItemDetails_withEmptyDictionary(self):
+        result = await self.mapper.parseCrowdMicItemDetails(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseCrowdMicItemDetails_withNone(self):
+        result = await self.mapper.parseCrowdMicItemDetails(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseGashaponItemDetails(self):
         airStrikePullRate = GashaponItemPullRate(
             pullRate = 0.25,
@@ -132,6 +157,13 @@ class TestChatterInventoryMapper:
             pullRate = 0.2,
             iterations = 1,
             maximumPullAmount = 1,
+            minimumPullAmount = 0,
+        )
+
+        crowdMicsPullRate = GashaponItemPullRate(
+            pullRate = 0.0,
+            iterations = 0,
+            maximumPullAmount = 0,
             minimumPullAmount = 0,
         )
 
@@ -169,6 +201,7 @@ class TestChatterInventoryMapper:
                 ChatterItemType.ANIMAL_PET: animalPetPullRate,
                 ChatterItemType.BANANA: bananaPullRate,
                 ChatterItemType.CASSETTE_TAPE: cassetteTapePullRate,
+                ChatterItemType.CROWD_MIC: crowdMicsPullRate,
                 ChatterItemType.GASHAPON: gashaponPullRate,
                 ChatterItemType.GRENADE: grenadePullRate,
                 ChatterItemType.TM_36: tm36PullRate,
@@ -201,6 +234,12 @@ class TestChatterInventoryMapper:
                     'iterations': cassetteTapePullRate.iterations,
                     'maximumPullAmount': cassetteTapePullRate.maximumPullAmount,
                     'minimumPullAmount': cassetteTapePullRate.minimumPullAmount,
+                },
+                await self.mapper.serializeItemType(ChatterItemType.CROWD_MIC): {
+                    'pullRate': crowdMicsPullRate.pullRate,
+                    'iterations': crowdMicsPullRate.iterations,
+                    'maximumPullAmount': crowdMicsPullRate.maximumPullAmount,
+                    'minimumPullAmount': crowdMicsPullRate.minimumPullAmount,
                 },
                 await self.mapper.serializeItemType(ChatterItemType.GASHAPON): {
                     'pullRate': gashaponPullRate.pullRate,
@@ -237,6 +276,7 @@ class TestChatterInventoryMapper:
         assert result[ChatterItemType.ANIMAL_PET] == animalPetPullRate
         assert result[ChatterItemType.BANANA] == bananaPullRate
         assert result[ChatterItemType.CASSETTE_TAPE] == cassetteTapePullRate
+        assert result[ChatterItemType.CROWD_MIC] == crowdMicsPullRate
         assert result[ChatterItemType.GASHAPON] == gashaponPullRate
         assert result[ChatterItemType.GRENADE] == grenadePullRate
         assert result[ChatterItemType.TM_36] == tm36PullRate
@@ -358,6 +398,7 @@ class TestChatterInventoryMapper:
         animalPets = round(random.uniform(0.01, 1.00) * 100)
         bananas = round(random.uniform(0.01, 1.00) * 100)
         cassetteTapes = round(random.uniform(0.01, 1.00) * 100)
+        crowdMics = round(random.uniform(0.01, 1.00) * 100)
         gashapons = round(random.uniform(0.01, 1.00) * 100)
         grenades = round(random.uniform(0.01, 1.00) * 100)
         tm36s = round(random.uniform(0.01, 1.00) * 100)
@@ -368,6 +409,7 @@ class TestChatterInventoryMapper:
             await self.mapper.serializeItemType(ChatterItemType.ANIMAL_PET): animalPets,
             await self.mapper.serializeItemType(ChatterItemType.BANANA): bananas,
             await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE): cassetteTapes,
+            await self.mapper.serializeItemType(ChatterItemType.CROWD_MIC): crowdMics,
             await self.mapper.serializeItemType(ChatterItemType.GASHAPON): gashapons,
             await self.mapper.serializeItemType(ChatterItemType.GRENADE): grenades,
             await self.mapper.serializeItemType(ChatterItemType.TM_36): tm36s,
@@ -381,6 +423,7 @@ class TestChatterInventoryMapper:
         assert result[ChatterItemType.ANIMAL_PET] == animalPets
         assert result[ChatterItemType.BANANA] == bananas
         assert result[ChatterItemType.CASSETTE_TAPE] == cassetteTapes
+        assert result[ChatterItemType.CROWD_MIC] == crowdMics
         assert result[ChatterItemType.GASHAPON] == gashapons
         assert result[ChatterItemType.GRENADE] == grenades
         assert result[ChatterItemType.TM_36] == tm36s
@@ -401,6 +444,7 @@ class TestChatterInventoryMapper:
         assert result[ChatterItemType.ANIMAL_PET] == 0
         assert result[ChatterItemType.BANANA] == 0
         assert result[ChatterItemType.CASSETTE_TAPE] == 0
+        assert result[ChatterItemType.CROWD_MIC] == 0
         assert result[ChatterItemType.GASHAPON] == 0
         assert result[ChatterItemType.GRENADE] == 0
         assert result[ChatterItemType.TM_36] == 0
@@ -421,6 +465,7 @@ class TestChatterInventoryMapper:
         assert result[ChatterItemType.ANIMAL_PET] == 0
         assert result[ChatterItemType.BANANA] == 0
         assert result[ChatterItemType.CASSETTE_TAPE] == 0
+        assert result[ChatterItemType.CROWD_MIC] == 0
         assert result[ChatterItemType.GASHAPON] == 0
         assert result[ChatterItemType.GRENADE] == grenades
         assert result[ChatterItemType.TM_36] == 0
@@ -448,6 +493,7 @@ class TestChatterInventoryMapper:
         animalPets = round(random.uniform(-1.00, -0.01) * 100)
         bananas = round(random.uniform(-1.00, -0.01) * 100)
         cassetteTapes = round(random.uniform(-1.00, -0.01) * 100)
+        crowdMics = round(random.uniform(-1.00, -0.01) * 100)
         gashapons = round(random.uniform(-1.00, -0.01) * 100)
         grenades = round(random.uniform(-1.00, -0.01) * 100)
         tm36s = round(random.uniform(-1.00, -0.01) * 100)
@@ -458,6 +504,7 @@ class TestChatterInventoryMapper:
             await self.mapper.serializeItemType(ChatterItemType.ANIMAL_PET): animalPets,
             await self.mapper.serializeItemType(ChatterItemType.BANANA): bananas,
             await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE): cassetteTapes,
+            await self.mapper.serializeItemType(ChatterItemType.CROWD_MIC): crowdMics,
             await self.mapper.serializeItemType(ChatterItemType.GASHAPON): gashapons,
             await self.mapper.serializeItemType(ChatterItemType.GRENADE): grenades,
             await self.mapper.serializeItemType(ChatterItemType.TM_36): tm36s,
@@ -472,6 +519,7 @@ class TestChatterInventoryMapper:
         assert result[ChatterItemType.ANIMAL_PET] == 0
         assert result[ChatterItemType.BANANA] == 0
         assert result[ChatterItemType.CASSETTE_TAPE] == 0
+        assert result[ChatterItemType.CROWD_MIC] == 0
         assert result[ChatterItemType.GASHAPON] == 0
         assert result[ChatterItemType.GRENADE] == 0
         assert result[ChatterItemType.TM_36] == 0
@@ -601,6 +649,46 @@ class TestChatterInventoryMapper:
 
         result = await self.mapper.parseItemType('cassette tapes')
         assert result is ChatterItemType.CASSETTE_TAPE
+
+    @pytest.mark.asyncio
+    async def test_parseItemType_withCrowdMic(self):
+        result = await self.mapper.parseItemType('crowd_mic')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.parseItemType('crowd-mic')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.parseItemType('crowd mic')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.parseItemType('crowd_mics')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.parseItemType('crowd-mics')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.parseItemType('crowd mics')
+        assert result is ChatterItemType.CROWD_MIC
+
+    @pytest.mark.asyncio
+    async def test_parseItemType_withCrowdMicrophone(self):
+        result = await self.mapper.parseItemType('crowd_microphone')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.parseItemType('crowd-microphone')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.parseItemType('crowd microphone')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.parseItemType('crowd_microphones')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.parseItemType('crowd-microphones')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.parseItemType('crowd microphones')
+        assert result is ChatterItemType.CROWD_MIC
 
     @pytest.mark.asyncio
     async def test_parseItemType_withChest(self):
@@ -959,6 +1047,46 @@ class TestChatterInventoryMapper:
         assert result is ChatterItemType.CASSETTE_TAPE
 
     @pytest.mark.asyncio
+    async def test_requireItemType_withCrowdMic(self):
+        result = await self.mapper.requireItemType('crowd_mic')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.requireItemType('crowd-mic')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.requireItemType('crowd mic')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.requireItemType('crowd_mics')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.requireItemType('crowd-mics')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.requireItemType('crowd mics')
+        assert result is ChatterItemType.CROWD_MIC
+
+    @pytest.mark.asyncio
+    async def test_requireItemType_withCrowdMicrophone(self):
+        result = await self.mapper.requireItemType('crowd_microphone')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.requireItemType('crowd-microphone')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.requireItemType('crowd microphone')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.requireItemType('crowd_microphones')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.requireItemType('crowd-microphones')
+        assert result is ChatterItemType.CROWD_MIC
+
+        result = await self.mapper.requireItemType('crowd microphones')
+        assert result is ChatterItemType.CROWD_MIC
+
+    @pytest.mark.asyncio
     async def test_requireItemType_withEmptyString(self):
         result: ChatterItemType | None = None
 
@@ -1179,6 +1307,7 @@ class TestChatterInventoryMapper:
         animalPets = round(random.uniform(0.01, 1.00) * 100)
         bananas = round(random.uniform(0.01, 1.00) * 100)
         cassetteTapes = round(random.uniform(0.01, 1.00) * 100)
+        crowdMics = round(random.uniform(0.01, 1.00) * 100)
         gashapons = round(random.uniform(0.01, 1.00) * 100)
         grenades = round(random.uniform(0.01, 1.00) * 100)
         tm36s = round(random.uniform(0.01, 1.00) * 100)
@@ -1189,6 +1318,7 @@ class TestChatterInventoryMapper:
             ChatterItemType.ANIMAL_PET: animalPets,
             ChatterItemType.BANANA: bananas,
             ChatterItemType.CASSETTE_TAPE: cassetteTapes,
+            ChatterItemType.CROWD_MIC: crowdMics,
             ChatterItemType.GASHAPON: gashapons,
             ChatterItemType.GRENADE: grenades,
             ChatterItemType.TM_36: tm36s,
@@ -1202,6 +1332,7 @@ class TestChatterInventoryMapper:
         assert result[await self.mapper.serializeItemType(ChatterItemType.ANIMAL_PET)] == animalPets
         assert result[await self.mapper.serializeItemType(ChatterItemType.BANANA)] == bananas
         assert result[await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE)] == cassetteTapes
+        assert result[await self.mapper.serializeItemType(ChatterItemType.CROWD_MIC)] == crowdMics
         assert result[await self.mapper.serializeItemType(ChatterItemType.GASHAPON)] == gashapons
         assert result[await self.mapper.serializeItemType(ChatterItemType.GRENADE)] == grenades
         assert result[await self.mapper.serializeItemType(ChatterItemType.TM_36)] == tm36s
@@ -1223,6 +1354,7 @@ class TestChatterInventoryMapper:
         animalPets = round(random.uniform(-1.00, -0.01) * 100)
         bananas = round(random.uniform(-1.00, -0.01) * 100)
         cassetteTapes = round(random.uniform(-1.00, -0.01) * 100)
+        crowdMics = round(random.uniform(-1.00, -0.01) * 100)
         gashapons = round(random.uniform(-1.00, -0.01) * 100)
         grenades = round(random.uniform(-1.00, -0.01) * 100)
         tm36s = round(random.uniform(-1.00, -0.01) * 100)
@@ -1233,6 +1365,7 @@ class TestChatterInventoryMapper:
             ChatterItemType.ANIMAL_PET: animalPets,
             ChatterItemType.BANANA: bananas,
             ChatterItemType.CASSETTE_TAPE: cassetteTapes,
+            ChatterItemType.CROWD_MIC: crowdMics,
             ChatterItemType.GASHAPON: gashapons,
             ChatterItemType.GRENADE: grenades,
             ChatterItemType.TM_36: tm36s,
@@ -1272,6 +1405,11 @@ class TestChatterInventoryMapper:
     async def test_serializeItemType_withCassetteTape(self):
         result = await self.mapper.serializeItemType(ChatterItemType.CASSETTE_TAPE)
         assert result == 'cassette_tape'
+
+    @pytest.mark.asyncio
+    async def test_serializeItemType_withCrowdMic(self):
+        result = await self.mapper.serializeItemType(ChatterItemType.CROWD_MIC)
+        assert result == 'crowd_mic'
 
     @pytest.mark.asyncio
     async def test_serializeItemType_withGashapon(self):

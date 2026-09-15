@@ -9,6 +9,7 @@ from ..models.chatterItemType import ChatterItemType
 from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
 from ..models.itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from ..models.itemDetails.bananaItemDetails import BananaItemDetails
+from ..models.itemDetails.crowdMicItemDetails import CrowdMicItemDetails
 from ..models.itemDetails.gashaponItemDetails import GashaponItemDetails
 from ..models.itemDetails.gashaponItemPullRate import GashaponItemPullRate
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
@@ -45,6 +46,10 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         cassetteTape.append(re.compile(r'^\s*cass?ett?es?(?:\s+|_|-)?tapes?\s*$', re.IGNORECASE))
         cassetteTape.freeze()
 
+        crowdMics: FrozenList[Pattern] = FrozenList()
+        crowdMics.append(re.compile(r'^\s*crowds?(?:\s+|_|-)?mic(?:rophone)?s?\s*$', re.IGNORECASE))
+        crowdMics.freeze()
+
         gashapon: FrozenList[Pattern] = FrozenList()
         gashapon.append(re.compile(r'^\s*chest\s*$', re.IGNORECASE))
         gashapon.append(re.compile(r'^\s*gat?cha(?:pon)?s?\s*$', re.IGNORECASE))
@@ -75,6 +80,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
             ChatterItemType.ANIMAL_PET: animalPet,
             ChatterItemType.BANANA: banana,
             ChatterItemType.CASSETTE_TAPE: cassetteTape,
+            ChatterItemType.CROWD_MIC: crowdMics,
             ChatterItemType.GASHAPON: gashapon,
             ChatterItemType.GRENADE: grenade,
             ChatterItemType.TM_36: tm36,
@@ -125,6 +131,19 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
         return BananaItemDetails(
             randomChanceEnabled = randomChanceEnabled,
+            durationSeconds = durationSeconds,
+        )
+
+    async def parseCrowdMicItemDetails(
+        self,
+        itemDetailsJson: dict[str, Any] | Any | None,
+    ) -> CrowdMicItemDetails | None:
+        if not isinstance(itemDetailsJson, dict) or len(itemDetailsJson) == 0:
+            return None
+
+        durationSeconds = utils.getIntFromDict(itemDetailsJson, 'durationSeconds')
+
+        return CrowdMicItemDetails(
             durationSeconds = durationSeconds,
         )
 
@@ -320,6 +339,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
             case ChatterItemType.ANIMAL_PET: return 'animal_pet'
             case ChatterItemType.BANANA: return 'banana'
             case ChatterItemType.CASSETTE_TAPE: return 'cassette_tape'
+            case ChatterItemType.CROWD_MIC: return 'crowd_mic'
             case ChatterItemType.GASHAPON: return 'gashapon'
             case ChatterItemType.GRENADE: return 'grenade'
             case ChatterItemType.TM_36: return 'tm36'

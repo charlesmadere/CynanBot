@@ -9,9 +9,10 @@ from frozenlist import FrozenList
 
 from .chatterInventoryMachineInterface import ChatterInventoryMachineInterface
 from ..exceptions import CassetteTapeFeatureIsDisabledException, CassetteTapeMessageHasNoTargetException, \
-    CassetteTapeTargetIsNotFollowingException, UnknownChatterItemTypeException, \
-    VoicemailMessageIsEmptyException, VoicemailTargetIsOriginatingUserException, \
-    VoicemailTargetIsStreamerException
+    CassetteTapeTargetIsNotFollowingException, CrowdMicrophoneAlreadyStartedException, \
+    UnknownChatterItemTypeException, VoicemailMessageIsEmptyException, \
+    VoicemailTargetIsOriginatingUserException, VoicemailTargetIsStreamerException
+from ..helpers.crowdMicrophoneHelperInterface import CrowdMicrophoneHelperInterface
 from ..idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
 from ..listeners.chatterItemEventListener import ChatterItemEventListener
 from ..models.absChatterItemAction import AbsChatterItemAction
@@ -23,6 +24,9 @@ from ..models.events.cassetteTapeMessageHasNoTargetChatterItemEvent import \
     CassetteTapeMessageHasNoTargetChatterItemEvent
 from ..models.events.cassetteTapeTargetIsNotFollowingChatterItemEvent import \
     CassetteTapeTargetIsNotFollowingChatterItemEvent
+from ..models.events.crowdMicAlreadyStartedItemEvent import CrowdMicAlreadyStartedItemEvent
+from ..models.events.crowdMicEndedItemEvent import CrowdMicEndedItemEvent
+from ..models.events.crowdMicStartedItemEvent import CrowdMicStartedItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
 from ..models.events.gashaponNotRewardedItemDisabledChatterItemEvent import \
@@ -75,6 +79,7 @@ from ...timeout.models.actions.voreTimeoutAction import VoreTimeoutAction
 from ...timeout.models.exactTimeoutDuration import ExactTimeoutDuration
 from ...timeout.models.randomLinearTimeoutDuration import RandomLinearTimeoutDuration
 from ...timeout.models.timeoutStreamStatusRequirement import TimeoutStreamStatusRequirement
+from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ...twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
@@ -97,12 +102,14 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         chatterInventoryRepository: ChatterInventoryRepositoryInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
         chatterItemEventListener: ChatterItemEventListener,
+        crowdMicrophoneHelper: CrowdMicrophoneHelperInterface,
         emojiHelper: EmojiHelperInterface,
         gashaponItemUseCase: GashaponItemUseCaseInterface,
         gashaponRewardUseCase: GashaponRewardUseCaseInterface,
         timber: TimberInterface,
         timeoutActionMachine: TimeoutActionMachineInterface,
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
+        trollmojiHelper: TrollmojiHelperInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
@@ -122,6 +129,8 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
         elif not isinstance(chatterItemEventListener, ChatterItemEventListener):
             raise TypeError(f'chatterItemEventListener argument is malformed: \"{chatterItemEventListener}\"')
+        elif not isinstance(crowdMicrophoneHelper, CrowdMicrophoneHelperInterface):
+            raise TypeError(f'crowdMicrophoneHelper argument is malformed: \"{crowdMicrophoneHelper}\"')
         elif not isinstance(emojiHelper, EmojiHelperInterface):
             raise TypeError(f'emojiHelper argument is malformed: \"{emojiHelper}\"')
         elif not isinstance(gashaponItemUseCase, GashaponItemUseCaseInterface):
@@ -134,6 +143,8 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             raise TypeError(f'timeoutActionMachine argument is malformed: \"{timeoutActionMachine}\"')
         elif not isinstance(timeoutIdGenerator, TimeoutIdGeneratorInterface):
             raise TypeError(f'timeoutIdGenerator argument is malformed: \"{timeoutIdGenerator}\"')
+        elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
+            raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -157,12 +168,14 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         self.__chatterInventoryRepository: Final[ChatterInventoryRepositoryInterface] = chatterInventoryRepository
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__chatterItemEventListener: Final[ChatterItemEventListener] = chatterItemEventListener
+        self.__crowdMicrophoneHelper: Final[CrowdMicrophoneHelperInterface] = crowdMicrophoneHelper
         self.__emojiHelper: Final[EmojiHelperInterface] = emojiHelper
         self.__gashaponItemUseCase: Final[GashaponItemUseCaseInterface] = gashaponItemUseCase
         self.__gashaponRewardUseCase: Final[GashaponRewardUseCaseInterface] = gashaponRewardUseCase
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
+        self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
@@ -381,6 +394,56 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
             targetUserId = result.targetUserId,
             targetUserName = result.targetUserName,
+            originatingAction = action,
+        ))
+
+    async def __handleCrowdMicItemAction(
+        self,
+        chatterInventory: ChatterInventoryData | None,
+        action: UseChatterItemAction,
+    ):
+        itemDetails = await self.__chatterInventorySettings.getCrowdMicItemDetails()
+        updatedInventory: ChatterInventoryData | None = None
+
+        try:
+            microphone = await self.__crowdMicrophoneHelper.startMicrophone(
+                durationSeconds = itemDetails.durationSeconds,
+                twitchChannelId = action.twitchChannelId,
+            )
+        except CrowdMicrophoneAlreadyStartedException as e:
+            self.__timber.log('ChatterInventoryMachine', f'Failed starting new crowd microphone as one is already in progress ({action=})', e, traceback.format_exc())
+
+            if action.bits >= 1:
+                updatedInventory = await self.__chatterInventoryRepository.update(
+                    itemType = ChatterItemType.CROWD_MIC,
+                    changeAmount = 1,
+                    chatterUserId = action.chatterUserId,
+                    twitchChannelId = action.twitchChannelId,
+                )
+
+            await self.__submitEvent(CrowdMicAlreadyStartedItemEvent(
+                itemDetails = itemDetails,
+                microphone = e.currentCrowdMicrophone,
+                updatedInventory = updatedInventory,
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                originatingAction = action,
+            ))
+            return
+
+        if not action.ignoreInventory:
+            updatedInventory = await self.__chatterInventoryRepository.update(
+                itemType = ChatterItemType.CROWD_MIC,
+                changeAmount = -1,
+                chatterUserId = action.chatterUserId,
+                twitchChannelId = action.twitchChannelId,
+            )
+
+        await self.__submitEvent(CrowdMicStartedItemEvent(
+            itemDetails = itemDetails,
+            microphone = microphone,
+            updatedInventory = updatedInventory,
+            eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            singingEmoji = await self.__trollmojiHelper.getSingingEmoteOrBackup(),
             originatingAction = action,
         ))
 
@@ -741,6 +804,12 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
                     action = action,
                 )
 
+            case ChatterItemType.CROWD_MIC:
+                await self.__handleCrowdMicItemAction(
+                    chatterInventory = chatterInventory,
+                    action = action,
+                )
+
             case ChatterItemType.GASHAPON:
                 await self.__handleGashaponItemAction(
                     chatterInventory = chatterInventory,
@@ -805,6 +874,25 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             itemDetails = itemDetails,
         ))
 
+    async def __refreshCrowdMicrophones(self):
+        deadMicrophones = await self.__crowdMicrophoneHelper.getAllDeadMicrophones()
+
+        if len(deadMicrophones) == 0:
+            return
+
+        for deadMicrophone in deadMicrophones:
+            await self.__crowdMicrophoneHelper.removeMicrophone(
+                twitchChannelId = deadMicrophone.twitchChannelId,
+            )
+
+            await self.__submitEvent(CrowdMicEndedItemEvent(
+                deadMicrophone = deadMicrophone,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+                originatingAction = deadMicrophone.originatingAction,
+            ))
+
+        self.__timber.log('ChatterInventoryMachine', f'Finished removing {len(deadMicrophones)} dead microphone(s)')
+
     def start(self):
         if self.__isStarted:
             self.__timber.log('ChatterInventoryMachine', 'Not starting ChatterInventoryMachine as it has already been started')
@@ -834,6 +922,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
                 except Exception as e:
                     self.__timber.log('ChatterInventoryMachine', f'Encountered unknown Exception when looping through actions (queue size: {self.__actionQueue.qsize()}) ({len(actions)=}) ({index=}) ({action=})', e, traceback.format_exc())
 
+            await self.__refreshCrowdMicrophones()
             await asyncio.sleep(self.__sleepTimeSeconds)
 
     async def __startEventLoop(self):

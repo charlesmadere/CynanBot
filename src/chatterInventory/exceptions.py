@@ -1,5 +1,6 @@
 from typing import Final
 
+from .models.crowdMicrophoneStatus import CrowdMicrophoneStatus
 from .models.useChatterItemAction import UseChatterItemAction
 
 
@@ -61,6 +62,18 @@ class ChatterInventoryIsDisabledException(Exception):
 
     def __init__(self, message: str):
         super().__init__(message)
+
+
+class CrowdMicrophoneAlreadyStartedException(Exception):
+
+    def __init__(self, currentCrowdMicrophone: CrowdMicrophoneStatus):
+        super().__init__(currentCrowdMicrophone)
+
+        self.__currentCrowdMicrophone: Final[CrowdMicrophoneStatus] = currentCrowdMicrophone
+
+    @property
+    def currentCrowdMicrophone(self) -> CrowdMicrophoneStatus:
+        return self.__currentCrowdMicrophone
 
 
 class UnknownChatterItemTypeException(Exception):
