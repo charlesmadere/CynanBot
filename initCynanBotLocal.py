@@ -17,6 +17,7 @@ from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import Chatt
 from src.channelPointRedemptions.mouseCursorPointRedemption import MouseCursorPointRedemption
 from src.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 from src.chatActions.absChatAction import AbsChatAction
+from src.chatActions.crowdMicrophoneChatAction import CrowdMicrophoneChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
 from src.chatActions.watchStreakAnnounceChatAction import WatchStreakAnnounceChatAction
@@ -54,6 +55,8 @@ from src.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from src.chatterInventory.configuration.chatterItemEventHandler import ChatterItemEventHandler
 from src.chatterInventory.helpers.chatterInventoryHelper import ChatterInventoryHelper
 from src.chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
+from src.chatterInventory.helpers.crowdMicrophoneHelper import CrowdMicrophoneHelper
+from src.chatterInventory.helpers.crowdMicrophoneHelperInterface import CrowdMicrophoneHelperInterface
 from src.chatterInventory.helpers.useChatterItemHelper import UseChatterItemHelper
 from src.chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from src.chatterInventory.idGenerator.chatterInventoryIdGenerator import ChatterInventoryIdGenerator
@@ -1806,6 +1809,11 @@ chatterItemEventListener: Final[ChatterItemEventListener] = ChatterItemEventHand
     twitchChatMessenger = twitchChatMessenger,
 )
 
+crowdMicrophoneHelper: Final[CrowdMicrophoneHelperInterface] = CrowdMicrophoneHelper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
 gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface] = GashaponRewardHistoryRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -1837,12 +1845,14 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     chatterInventoryRepository = chatterInventoryRepository,
     chatterInventorySettings = chatterInventorySettings,
     chatterItemEventListener = chatterItemEventListener,
+    crowdMicrophoneHelper = crowdMicrophoneHelper,
     emojiHelper = emojiHelper,
     gashaponItemUseCase = gashaponItemUseCase,
     gashaponRewardUseCase = gashaponRewardUseCase,
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
     timeoutIdGenerator = timeoutIdGenerator,
+    trollmojiHelper = trollmojiHelper,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,
@@ -2125,6 +2135,11 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption | None]] = frozense
 })
 
 chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
+    CrowdMicrophoneChatAction(
+        compositeTtsManagerProvider = compositeTtsManagerProvider,
+        crowdMicrophoneStatusProvider = crowdMicrophoneHelper,
+        timber = timber,
+    ),
     SupStreamerChatAction(
         chatterPreferredNameHelper = chatterPreferredNameHelper,
         chatterPreferredTtsHelper = chatterPreferredTtsHelper,
