@@ -31,15 +31,6 @@ class CrowdMicrophoneHelper(CrowdMicrophoneHelperInterface):
 
         self.__crowdMicrophones: Final[dict[str, CrowdMicrophoneStatus | None]] = dict()
 
-    async def get(
-        self,
-        twitchChannelId: str,
-    ) -> CrowdMicrophoneStatus | None:
-        if not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-
-        return self.__crowdMicrophones.get(twitchChannelId, None)
-
     async def getAllDeadMicrophones(self) -> frozenset[CrowdMicrophoneStatus]:
         allDeadMicrophones: set[CrowdMicrophoneStatus] = set()
         now = self.__timeZoneRepository.getNow()
@@ -51,6 +42,15 @@ class CrowdMicrophoneHelper(CrowdMicrophoneHelperInterface):
                 allDeadMicrophones.add(microphone)
 
         return frozenset(allDeadMicrophones)
+
+    async def getMicrophone(
+        self,
+        twitchChannelId: str,
+    ) -> CrowdMicrophoneStatus | None:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        return self.__crowdMicrophones.get(twitchChannelId, None)
 
     async def removeMicrophone(
         self,
