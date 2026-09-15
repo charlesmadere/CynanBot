@@ -69,7 +69,6 @@ class User(UserInterface):
         isTranslateEnabled: bool,
         isTriviaGameEnabled: bool,
         isTtsEnabled: bool,
-        isVoicemailEnabled: bool,
         isVulnerableChattersEnabled: bool,
         isWatchStreakTtsAnnounceEnabled: bool,
         isWeatherEnabled: bool,
@@ -228,8 +227,6 @@ class User(UserInterface):
             raise TypeError(f'isTriviaGameEnabled argument is malformed: \"{isTriviaGameEnabled}\"')
         elif not utils.isValidBool(isTtsEnabled):
             raise TypeError(f'isTtsEnabled argument is malformed: \"{isTtsEnabled}\"')
-        elif not utils.isValidBool(isVoicemailEnabled):
-            raise TypeError(f'isVoicemailEnabled argument is malformed: \"{isVoicemailEnabled}\"')
         elif not utils.isValidBool(isVulnerableChattersEnabled):
             raise TypeError(f'isVulnerableChattersEnabled argument is malformed: \"{isVulnerableChattersEnabled}\"')
         elif not utils.isValidBool(isWatchStreakTtsAnnounceEnabled):
@@ -400,7 +397,6 @@ class User(UserInterface):
         self.__isTranslateEnabled: bool = isTranslateEnabled
         self.__isTriviaGameEnabled: Final[bool] = isTriviaGameEnabled
         self.__isTtsEnabled: Final[bool] = isTtsEnabled
-        self.__isVoicemailEnabled: Final[bool] = isVoicemailEnabled
         self.__isVulnerableChattersEnabled: bool = isVulnerableChattersEnabled
         self.__isWatchStreakTtsAnnounceEnabled: Final[bool] = isWatchStreakTtsAnnounceEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
@@ -868,10 +864,6 @@ class User(UserInterface):
     @property
     def isTtsEnabled(self) -> bool:
         return self.__isTtsEnabled
-
-    @property
-    def isVoicemailEnabled(self) -> bool:
-        return self.__isVoicemailEnabled
 
     @property
     def isVulnerableChattersEnabled(self) -> bool:

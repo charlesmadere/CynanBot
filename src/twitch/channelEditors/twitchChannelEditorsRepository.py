@@ -17,7 +17,7 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
     @dataclass(frozen = True, slots = True)
     class ChannelEditorsData:
         fetchedAt: datetime
-        editors: frozenset[str]
+        editorUserIds: frozenset[str]
         twitchChannelId: str
 
     def __init__(
@@ -53,6 +53,7 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
 
     async def __fetchEditorsData(
         self,
+        forceRefresh: bool,
         twitchChannelId: str,
     ) -> ChannelEditorsData:
         editorsData = self.__cache.get(twitchChannelId, None)
@@ -62,7 +63,7 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
         if editorsData is None:
             mustFetch = True
         else:
-            mustFetch = editorsData.fetchedAt + self.__cacheTimeToLive <= now
+            mustFetch = forceRefresh or (editorsData.fetchedAt + self.__cacheTimeToLive <= now)
 
         if not mustFetch and editorsData is not None:
             return editorsData
@@ -90,7 +91,7 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
         if editorsData is None:
             editorsData = TwitchChannelEditorsRepository.ChannelEditorsData(
                 fetchedAt = now,
-                editors = frozenset(),
+                editorUserIds = frozenset(),
                 twitchChannelId = twitchChannelId,
             )
 
@@ -100,31 +101,39 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
     async def fetchEditorIds(
         self,
         twitchChannelId: str,
+        forceRefresh: bool = False,
     ) -> frozenset[str]:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not utils.isValidBool(forceRefresh):
+            raise TypeError(f'forceRefresh argument is malformed: \"{forceRefresh}\"')
 
         editorsData = await self.__fetchEditorsData(
+            forceRefresh = forceRefresh,
             twitchChannelId = twitchChannelId,
         )
 
-        return editorsData.editors
+        return editorsData.editorUserIds
 
     async def isEditor(
         self,
         chatterUserId: str,
         twitchChannelId: str,
+        forceRefresh: bool = False,
     ) -> bool:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not utils.isValidBool(forceRefresh):
+            raise TypeError(f'forceRefresh argument is malformed: \"{forceRefresh}\"')
 
-        editorIds = await self.fetchEditorIds(
+        editorsData = await self.__fetchEditorsData(
+            forceRefresh = forceRefresh,
             twitchChannelId = twitchChannelId,
         )
 
-        return chatterUserId in editorIds
+        return chatterUserId in editorsData.editorUserIds
 
     async def __mapEditorsResponseToEditorsData(
         self,
@@ -139,6 +148,6 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
 
         return TwitchChannelEditorsRepository.ChannelEditorsData(
             fetchedAt = fetchedAt,
-            editors = frozenset(editorUserIds),
+            editorUserIds = frozenset(editorUserIds),
             twitchChannelId = twitchChannelId,
         )

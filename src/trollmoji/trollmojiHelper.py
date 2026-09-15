@@ -178,6 +178,25 @@ class TrollmojiHelper(TrollmojiHelperInterface):
             twitchEmoteChannelId = shrugEmote.twitchChannelId,
         )
 
+    async def getSingingEmote(self) -> str | None:
+        singingEmote = await self.__trollmojiSettingsRepository.getSingingEmote()
+
+        if singingEmote is None:
+            return None
+
+        return await self.getEmote(
+            emoteText = singingEmote.emoteText,
+            twitchEmoteChannelId = singingEmote.twitchChannelId,
+        )
+
+    async def getSingingEmoteOrBackup(self) -> str:
+        singingEmote = await self.getSingingEmote()
+
+        if utils.isValidStr(singingEmote):
+            return singingEmote
+        else:
+            return await self.__trollmojiSettingsRepository.getSingingEmoteBackup()
+
     async def getThumbsDownEmote(self) -> str | None:
         thumbsDownEmote = await self.__trollmojiSettingsRepository.getThumbsDownEmote()
 

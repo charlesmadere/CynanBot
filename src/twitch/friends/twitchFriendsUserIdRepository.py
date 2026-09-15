@@ -10,6 +10,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         acacUserId: str | None = '1274825203',
         albeeesUserId: str | None = '61963795',
         albeeevUserId: str | None = '1387490799',
+        amySumisuUserId: str | None = '526746071',
         aneevUserId: str | None = '1284413302',
         anivUserId: str | None = '749050409',
         aoyamabukiUserId: str | None = '600886831',
@@ -58,6 +59,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'albeeesUserId argument is malformed: \"{albeeesUserId}\"')
         elif albeeevUserId is not None and not isinstance(albeeevUserId, str):
             raise TypeError(f'albeeevUserId argument is malformed: \"{albeeevUserId}\"')
+        elif amySumisuUserId is not None and not isinstance(amySumisuUserId, str):
+            raise TypeError(f'amySumisuUserId argument is malformed: \"{amySumisuUserId}\"')
         elif aneevUserId is not None and not isinstance(aneevUserId, str):
             raise TypeError(f'aneevUserId argument is malformed: \"{aneevUserId}\"')
         elif anivUserId is not None and not isinstance(anivUserId, str):
@@ -74,16 +77,10 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'charlyUserId argument is malformed: \"{charlyUserId}\"')
         elif concisionUserId is not None and not isinstance(concisionUserId, str):
             raise TypeError(f'concisionUserId argument is malformed: \"{concisionUserId}\"')
-        elif cynanBotUserId is not None and not isinstance(cynanBotUserId, str):
-            raise TypeError(f'cynanBotUserId argument is malformed: \"{cynanBotUserId}\"')
-        elif cynanBotTtsUserId is not None and not isinstance(cynanBotTtsUserId, str):
-            raise TypeError(f'cynanBotTtsUserId argument is malformed: \"{cynanBotTtsUserId}\"')
         elif dylanStewUserId is not None and not isinstance(dylanStewUserId, str):
             raise TypeError(f'dylanStewUserId argument is malformed: \"{dylanStewUserId}\"')
         elif eddieUserId is not None and not isinstance(eddieUserId, str):
             raise TypeError(f'eddieUserId argument is malformed: \"{eddieUserId}\"')
-        elif funtoonUserId is not None and not isinstance(funtoonUserId, str):
-            raise TypeError(f'funtoonUserId argument is malformed: \"{funtoonUserId}\"')
         elif guwuBotUserId is not None and not isinstance(guwuBotUserId, str):
             raise TypeError(f'guwuBotUserId argument is malformed: \"{guwuBotUserId}\"')
         elif harleyHardtUserId is not None and not isinstance(harleyHardtUserId, str):
@@ -144,6 +141,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         self.__acacUserId: Final[str | None] = acacUserId
         self.__albeeesUserId: Final[str | None] = albeeesUserId
         self.__albeeevUserId: Final[str | None] = albeeevUserId
+        self.__amySumisuUserId: Final[str | None] = amySumisuUserId
         self.__aneevUserId: Final[str | None] = aneevUserId
         self.__anivUserId: Final[str | None] = anivUserId
         self.__aoyamabukiUserId: Final[str | None] = aoyamabukiUserId
@@ -152,11 +150,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         self.__boatWaifuUserId: Final[str | None] = boatWaifuUserId
         self.__charlyUserId: Final[str | None] = charlyUserId
         self.__concisionUserId: Final[str | None] = concisionUserId
-        self.__cynanBotUserId: Final[str | None] = cynanBotUserId
-        self.__cynanBotTtsUserId: Final[str | None] = cynanBotTtsUserId
         self.__dylanStewUserId: Final[str | None] = dylanStewUserId
         self.__eddieUserId: Final[str | None] = eddieUserId
-        self.__funtoonUserId: Final[str | None] = funtoonUserId
         self.__guwuBotUserId: Final[str | None] = guwuBotUserId
         self.__harleyHardtUserId: Final[str | None] = harleyHardtUserId
         self.__hokkaidoubareUserId: Final[str | None] = hokkaidoubareUserId
@@ -195,6 +190,9 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
     async def getAlbeeevUserId(self) -> str | None:
         return self.__albeeevUserId
 
+    async def getAmySumisuUserId(self) -> str | None:
+        return self.__amySumisuUserId
+
     async def getAneevUserId(self) -> str | None:
         return self.__aneevUserId
 
@@ -218,12 +216,6 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
 
     async def getConcisionUserId(self) -> str | None:
         return self.__concisionUserId
-
-    async def getCynanBotUserId(self) -> str | None:
-        return self.__cynanBotUserId
-
-    async def getCynanBotTtsUserId(self) -> str | None:
-        return self.__cynanBotTtsUserId
 
     async def getDylanStewUserId(self) -> str | None:
         return self.__dylanStewUserId

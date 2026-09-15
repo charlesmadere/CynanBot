@@ -135,10 +135,6 @@ class TestUserJsonConstants:
         result = UserJsonConstant.TTS_ENABLED.jsonKey
         assert result == 'ttsEnabled'
 
-    def test_jsonkey_withVoicemailEnabled(self):
-        result = UserJsonConstant.VOICEMAIL_ENABLED.jsonKey
-        assert result == 'voicemailEnabled'
-
     def test_jsonKey_withVulnerableChattersEnabled(self):
         result = UserJsonConstant.VULNERABLE_CHATTERS_ENABLED.jsonKey
         assert result == 'vulnerableChattersEnabled'

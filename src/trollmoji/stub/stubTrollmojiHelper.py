@@ -12,6 +12,7 @@ class StubTrollmojiHelper(TrollmojiHelperInterface):
         explodedEmoteBackup: str = '💥',
         gottemEmoteBackup: str = 'RIPBOZO',
         hypeEmoteBackup: str = '‼️',
+        singingEmoteBackup: str = '🎤',
     ):
         if not utils.isValidStr(bombEmoteBackup):
             raise TypeError(f'bombEmoteBackup argument is malformed: \"{bombEmoteBackup}\"')
@@ -21,11 +22,14 @@ class StubTrollmojiHelper(TrollmojiHelperInterface):
             raise TypeError(f'gottemEmoteBackup argument is malformed: \"{gottemEmoteBackup}\"')
         elif not utils.isValidStr(hypeEmoteBackup):
             raise TypeError(f'hypeEmoteBackup argument is malformed: \"{hypeEmoteBackup}\"')
+        elif not utils.isValidStr(singingEmoteBackup):
+            raise TypeError(f'singingEmoteBackup argument is malformed: \"{singingEmoteBackup}\"')
 
         self.__bombEmoteBackup: Final[str] = bombEmoteBackup
         self.__explodedEmoteBackup: Final[str] = explodedEmoteBackup
         self.__gottemEmoteBackup: Final[str] = gottemEmoteBackup
         self.__hypeEmoteBackup: Final[str] = hypeEmoteBackup
+        self.__singingEmoteBackup: Final[str] = singingEmoteBackup
 
     async def getBombEmote(self) -> str | None:
         # this method is intentionally empty
@@ -90,6 +94,18 @@ class StubTrollmojiHelper(TrollmojiHelperInterface):
     async def getShrugEmote(self) -> str | None:
         # this method is intentionally empty
         return None
+
+    async def getSingingEmote(self) -> str | None:
+        # this method is intentionally empty
+        return None
+
+    async def getSingingEmoteOrBackup(self) -> str:
+        singingEmote = await self.getSingingEmote()
+
+        if utils.isValidStr(singingEmote):
+            return singingEmote
+        else:
+            return self.__singingEmoteBackup
 
     async def getThumbsDownEmote(self) -> str | None:
         # this method is intentionally empty

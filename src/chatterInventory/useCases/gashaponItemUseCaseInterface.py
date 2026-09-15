@@ -11,7 +11,7 @@ from ..models.useChatterItemAction import UseChatterItemAction
 
 class GashaponItemUseCaseInterface(ABC):
 
-    class AbsResult:
+    class AbsResult(ABC):
         pass
 
     @dataclass(frozen = True, slots = True)

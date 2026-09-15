@@ -10,8 +10,11 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         self,
         beeblyBoopBotUserId: str | None = '812848264',
         blerpUserId: str | None = '253326823',
+        cynanBotUserId: str | None = '546457893',
+        cynanBotTtsUserId: str | None = '977636741',
         disappointBotUserId: str | None = '169809959',
         frostyToolsDotComUserId: str | None = '955237329',
+        funtoonUserId: str | None = '477393386',
         moobotUserId: str | None = '1564983',
         nightBotUserId: str | None = '19264788',
         puptimeUserId: str | None = '213177587',
@@ -33,8 +36,14 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
             raise TypeError(f'blerpUserId argument is malformed: \"{blerpUserId}\"')
         elif disappointBotUserId is not None and not isinstance(disappointBotUserId, str):
             raise TypeError(f'disappointBotUserId argument is malformed: \"{disappointBotUserId}\"')
+        elif cynanBotUserId is not None and not isinstance(cynanBotUserId, str):
+            raise TypeError(f'cynanBotUserId argument is malformed: \"{cynanBotUserId}\"')
+        elif cynanBotTtsUserId is not None and not isinstance(cynanBotTtsUserId, str):
+            raise TypeError(f'cynanBotTtsUserId argument is malformed: \"{cynanBotTtsUserId}\"')
         elif frostyToolsDotComUserId is not None and not isinstance(frostyToolsDotComUserId, str):
             raise TypeError(f'frostyToolsDotComUserId argument is malformed: \"{frostyToolsDotComUserId}\"')
+        elif funtoonUserId is not None and not isinstance(funtoonUserId, str):
+            raise TypeError(f'funtoonUserId argument is malformed: \"{funtoonUserId}\"')
         elif moobotUserId is not None and not isinstance(moobotUserId, str):
             raise TypeError(f'moobotUserId argument is malformed: \"{moobotUserId}\"')
         elif nightBotUserId is not None and not isinstance(nightBotUserId, str):
@@ -66,8 +75,11 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
 
         self.__beeblyBoopBotUserId: Final[str | None] = beeblyBoopBotUserId
         self.__blerpUserId: Final[str | None] = blerpUserId
+        self.__cynanBotUserId: Final[str | None] = cynanBotUserId
+        self.__cynanBotTtsUserId: Final[str | None] = cynanBotTtsUserId
         self.__disappointBotUserId: Final[str | None] = disappointBotUserId
         self.__frostyToolsDotComUserId: Final[str | None] = frostyToolsDotComUserId
+        self.__funtoonUserId: Final[str | None] = funtoonUserId
         self.__moobotUserId: Final[str | None] = moobotUserId
         self.__nightBotUserId: Final[str | None] = nightBotUserId
         self.__puptimeUserId: Final[str | None] = puptimeUserId
@@ -94,6 +106,14 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         if utils.isValidStr(blerpUserId):
             allUserIds.add(blerpUserId)
 
+        cynanBotUserId = await self.getCynanBotUserId()
+        if utils.isValidStr(cynanBotUserId):
+            allUserIds.add(cynanBotUserId)
+
+        cynanBotTtsUserId = await self.getCynanBotTtsUserId()
+        if utils.isValidStr(cynanBotTtsUserId):
+            allUserIds.add(cynanBotTtsUserId)
+
         disappointBotUserId = await self.getDisappointBotUserId()
         if utils.isValidStr(disappointBotUserId):
             allUserIds.add(disappointBotUserId)
@@ -101,6 +121,10 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         frostyToolsDotComUserId = await self.getFrostyToolsDotComUserId()
         if utils.isValidStr(frostyToolsDotComUserId):
             allUserIds.add(frostyToolsDotComUserId)
+
+        funtoonUserId = await self.getFuntoonUserId()
+        if utils.isValidStr(funtoonUserId):
+            allUserIds.add(funtoonUserId)
 
         moobotUserId = await self.getMoobotUserId()
         if utils.isValidStr(moobotUserId):
@@ -164,11 +188,20 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
     async def getBlerpUserId(self) -> str | None:
         return self.__blerpUserId
 
+    async def getCynanBotUserId(self) -> str | None:
+        return self.__cynanBotUserId
+
+    async def getCynanBotTtsUserId(self) -> str | None:
+        return self.__cynanBotTtsUserId
+
     async def getDisappointBotUserId(self) -> str | None:
         return self.__disappointBotUserId
 
     async def getFrostyToolsDotComUserId(self) -> str | None:
         return self.__frostyToolsDotComUserId
+
+    async def getFuntoonUserId(self) -> str | None:
+        return self.__funtoonUserId
 
     async def getMoobotUserId(self) -> str | None:
         return self.__moobotUserId
