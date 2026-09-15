@@ -408,7 +408,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         try:
             microphone = await self.__crowdMicrophoneHelper.startMicrophone(
                 durationSeconds = itemDetails.durationSeconds,
-                twitchChannelId = action.twitchChannelId,
+                originatingAction = action,
             )
         except CrowdMicrophoneAlreadyStartedException as e:
             self.__timber.log('ChatterInventoryMachine', f'Failed starting new crowd microphone as one is already in progress ({action=})', e, traceback.format_exc())
