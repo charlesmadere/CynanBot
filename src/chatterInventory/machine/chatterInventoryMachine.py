@@ -384,6 +384,14 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             originatingAction = action,
         ))
 
+    async def __handleCrowdMicItemAction(
+        self,
+        chatterInventory: ChatterInventoryData | None,
+        action: UseChatterItemAction,
+    ):
+        # TODO
+        pass
+
     async def __handleGashaponItemAction(
         self,
         chatterInventory: ChatterInventoryData | None,
@@ -737,6 +745,12 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
 
             case ChatterItemType.CASSETTE_TAPE:
                 await self.__handleCassetteTapeItemAction(
+                    chatterInventory = chatterInventory,
+                    action = action,
+                )
+
+            case ChatterItemType.CROWD_MIC:
+                await self.__handleCrowdMicItemAction(
                     chatterInventory = chatterInventory,
                     action = action,
                 )
