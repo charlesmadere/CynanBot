@@ -49,7 +49,7 @@ class VoicemailChatAction(AbsChatAction):
         mostRecentChat: MostRecentChat | None,
         chatMessage: TwitchChatMessage,
     ) -> ChatActionResult:
-        if not chatMessage.twitchUser.isVoicemailEnabled or not chatMessage.twitchUser.isTtsEnabled:
+        if not chatMessage.twitchUser.isTtsEnabled:
             return ChatActionResult.IGNORED
         elif not await self.__voicemailSettingsRepository.isEnabled():
             return ChatActionResult.IGNORED

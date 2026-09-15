@@ -189,7 +189,6 @@ class UsersRepository(UsersRepositoryInterface):
         isTranslateEnabled = utils.getBoolFromDict(userJson, 'translateEnabled', False)
         isTriviaGameEnabled = utils.getBoolFromDict(userJson, 'triviaGameEnabled', False)
         isTtsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.TTS_ENABLED.jsonKey, False)
-        isVoicemailEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.VOICEMAIL_ENABLED.jsonKey, False)
         isVulnerableChattersEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.VULNERABLE_CHATTERS_ENABLED.jsonKey, False)
         isWatchStreakTtsAnnounceEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.WATCH_STREAK_TTS_ANNOUNCE_ENABLED.jsonKey, False)
         isWeatherEnabled = utils.getBoolFromDict(userJson, 'weatherEnabled', False)
@@ -415,7 +414,6 @@ class UsersRepository(UsersRepositoryInterface):
             isTranslateEnabled = isTranslateEnabled,
             isTriviaGameEnabled = isTriviaGameEnabled,
             isTtsEnabled = isTtsEnabled,
-            isVoicemailEnabled = isVoicemailEnabled,
             isVulnerableChattersEnabled = isVulnerableChattersEnabled,
             isWatchStreakTtsAnnounceEnabled = isWatchStreakTtsAnnounceEnabled,
             isWeatherEnabled = isWeatherEnabled,
