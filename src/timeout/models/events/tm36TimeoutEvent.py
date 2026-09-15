@@ -6,6 +6,7 @@ from ..actions.tm36TimeoutAction import Tm36TimeoutAction
 from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ..timeoutTarget import TimeoutTarget
 from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
+from ....twitch.localModels.twitchUserInterface import TwitchUserInterface
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
@@ -16,10 +17,10 @@ class Tm36TimeoutEvent(AbsTimeoutEvent):
     bombEmote: str
     eventId: str
     explodedEmote: str
-    targetUserName: str
     splashTimeoutTarget: TimeoutTarget | None
     originatingAction: Tm36TimeoutAction
     timeoutResult: TwitchTimeoutResult
+    targetUserData: TwitchUserInterface
 
     def getEventId(self) -> str:
         return self.eventId

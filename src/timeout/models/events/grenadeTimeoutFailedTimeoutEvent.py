@@ -4,6 +4,7 @@ from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.grenadeTimeoutAction import GrenadeTimeoutAction
 from ..timeoutTarget import TimeoutTarget
+from ....twitch.localModels.twitchUserInterface import TwitchUserInterface
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
@@ -11,9 +12,9 @@ from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 class GrenadeTimeoutFailedTimeoutEvent(AbsTimeoutEvent):
     originatingAction: GrenadeTimeoutAction
     eventId: str
-    instigatorUserName: str
     timeoutTarget: TimeoutTarget
     timeoutResult: TwitchTimeoutResult
+    instigatorUserData: TwitchUserInterface
 
     def getEventId(self) -> str:
         return self.eventId

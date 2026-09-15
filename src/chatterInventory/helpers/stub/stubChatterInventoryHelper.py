@@ -9,7 +9,7 @@ from ...models.chatterItemType import ChatterItemType
 from ...models.preparedChatterInventoryData import PreparedChatterInventoryData
 from ....misc import utils as utils
 from ....twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ....users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ....twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
 
 class StubChatterInventoryHelper(ChatterInventoryHelperInterface):
@@ -17,15 +17,15 @@ class StubChatterInventoryHelper(ChatterInventoryHelperInterface):
     def __init__(
         self,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
         if not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
 
     async def get(
         self,
@@ -41,12 +41,12 @@ class StubChatterInventoryHelper(ChatterInventoryHelperInterface):
             twitchChannelId = twitchChannelId,
         )
 
-        chatterUserName = await self.__userIdsRepository.requireUserName(
+        chatterUserData = await self.__twitchUserIdsHelper.requireById(
             userId = chatterUserId,
             twitchAccessToken = twitchAccessToken,
         )
 
-        twitchChannel = await self.__userIdsRepository.requireUserName(
+        twitchChannelData = await self.__twitchUserIdsHelper.requireById(
             userId = twitchChannelId,
             twitchAccessToken = twitchAccessToken,
         )
@@ -62,8 +62,8 @@ class StubChatterInventoryHelper(ChatterInventoryHelperInterface):
                 chatterUserId = chatterUserId,
                 twitchChannelId = twitchChannelId,
             ),
-            chatterUserName = chatterUserName,
-            twitchChannel = twitchChannel,
+            twitchChannel = twitchChannelData.userLogin,
+            chatterUserData = chatterUserData,
         )
 
     async def give(
@@ -88,12 +88,12 @@ class StubChatterInventoryHelper(ChatterInventoryHelperInterface):
             twitchChannelId = twitchChannelId,
         )
 
-        chatterUserName = await self.__userIdsRepository.requireUserName(
+        chatterUserData = await self.__twitchUserIdsHelper.requireById(
             userId = chatterUserId,
             twitchAccessToken = twitchAccessToken,
         )
 
-        twitchChannel = await self.__userIdsRepository.requireUserName(
+        twitchChannelData = await self.__twitchUserIdsHelper.requireById(
             userId = twitchChannelId,
             twitchAccessToken = twitchAccessToken,
         )
@@ -111,6 +111,6 @@ class StubChatterInventoryHelper(ChatterInventoryHelperInterface):
             ),
             givenItem = itemType,
             givenAmount = giveAmount,
-            chatterUserName = chatterUserName,
-            twitchChannel = twitchChannel,
+            twitchChannel = twitchChannelData.userLogin,
+            chatterUserData = chatterUserData,
         )

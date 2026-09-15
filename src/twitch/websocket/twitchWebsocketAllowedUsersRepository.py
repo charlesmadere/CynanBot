@@ -1,9 +1,11 @@
+from typing import Final
+
 from .twitchWebsocketAllowedUsersRepositoryInterface import TwitchWebsocketAllowedUsersRepositoryInterface
 from .twitchWebsocketUser import TwitchWebsocketUser
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -13,47 +15,53 @@ class TwitchWebsocketAllowedUsersRepository(TwitchWebsocketAllowedUsersRepositor
         self,
         timber: TimberInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
+        self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
 
-    async def __buildTwitchWebsocketUsers(self, enabledUserNames: set[str]) -> set[TwitchWebsocketUser]:
+    async def __buildTwitchWebsocketUsers(
+        self,
+        enabledUserNames: set[str],
+    ) -> set[TwitchWebsocketUser]:
         users: set[TwitchWebsocketUser] = set()
 
         if len(enabledUserNames) == 0:
             return users
 
-        for userName in enabledUserNames:
-            twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(userName)
+        for index, userName in enumerate(enabledUserNames):
+            twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
+                twitchChannel = userName,
+            )
 
             if not utils.isValidStr(twitchAccessToken):
                 continue
 
-            userId = await self.__userIdsRepository.fetchUserId(
-                userName = userName,
-                twitchAccessToken = twitchAccessToken
+            userData = await self.__twitchUserIdsHelper.getByLoginOrName(
+                userLoginOrName = userName,
+                twitchAccessToken = twitchAccessToken,
             )
 
-            if not utils.isValidStr(userId):
-                self.__timber.log('TwitchWebsocketAllowedUsersRepository', f'Unable to find user ID when building up Twitch Websocket user list ({userName=}) ({twitchAccessToken=}) ({userId=})')
+            if userData is None:
+                self.__timber.log('TwitchWebsocketAllowedUsersRepository', f'Unable to find user data when building up Twitch Websocket user list ({userName=}) ({index=}) ({userData=})')
                 continue
 
             users.add(TwitchWebsocketUser(
-                userId = userId,
-                userName = userName
+                userId = userData.userId,
+                userLogin = userData.userLogin,
+                userName = userData.userName,
             ))
 
         return users

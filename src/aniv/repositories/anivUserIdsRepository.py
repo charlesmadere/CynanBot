@@ -21,6 +21,9 @@ class AnivUserIdsRepository(AnivUserIdsRepositoryInterface):
 
         self.__cache: frozendict[WhichAnivUser, str | None] | None = None
 
+    async def clearCaches(self):
+        self.__cache = None
+
     async def determineAnivUser(
         self,
         chatterUserId: str | None,

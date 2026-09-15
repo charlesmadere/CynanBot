@@ -1,16 +1,16 @@
 import random
 from typing import Final
 
+from .determineTm36SplashTargetUseCaseInterface import DetermineTm36SplashTargetUseCaseInterface
 from ..models.actions.tm36TimeoutAction import Tm36TimeoutAction
 from ..models.timeoutTarget import TimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ...timber.timberInterface import TimberInterface
-from ...twitch.activeChatters.activeChatter import ActiveChatter
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 
 
-class DetermineTm36SplashTargetUseCase:
+class DetermineTm36SplashTargetUseCase(DetermineTm36SplashTargetUseCaseInterface):
 
     def __init__(
         self,
@@ -50,7 +50,7 @@ class DetermineTm36SplashTargetUseCase:
             twitchChannelId = timeoutAction.twitchChannelId,
         )
 
-        vulnerableChatters: dict[str, ActiveChatter] = dict(activeChatters)
+        vulnerableChatters = dict(activeChatters)
         vulnerableChatters.pop(timeoutAction.twitchChannelId, None)
 
         allImmuneUserIds = await self.__timeoutImmuneUserIdsRepository.getAllUserIds()
@@ -71,5 +71,6 @@ class DetermineTm36SplashTargetUseCase:
 
         return TimeoutTarget(
             userId = randomChatter.chatterUserId,
+            userLogin = randomChatter.chatterUserLogin,
             userName = randomChatter.chatterUserName,
         )

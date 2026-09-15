@@ -4,6 +4,7 @@ from frozendict import frozendict
 
 from .chatterInventoryData import ChatterInventoryData
 from .chatterItemType import ChatterItemType
+from ...twitch.localModels.twitchUserInterface import TwitchUserInterface
 
 
 @dataclass(frozen = True, slots = True)
@@ -11,8 +12,8 @@ class ChatterItemGiveResult:
     chatterInventory: ChatterInventoryData
     givenItem: ChatterItemType
     givenAmount: int
-    chatterUserName: str
     twitchChannel: str
+    chatterUserData: TwitchUserInterface
 
     @property
     def chatterUserId(self) -> str:

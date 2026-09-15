@@ -3,9 +3,10 @@ from abc import ABC, abstractmethod
 from frozendict import frozendict
 
 from ..models.whichAnivUser import WhichAnivUser
+from ...misc.clearable import Clearable
 
 
-class AnivUserIdsRepositoryInterface(ABC):
+class AnivUserIdsRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
     async def determineAnivUser(
