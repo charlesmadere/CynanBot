@@ -75,7 +75,7 @@ class CrowdMicrophoneHelper(CrowdMicrophoneHelperInterface):
         elif not isinstance(originatingAction, UseChatterItemAction):
             raise TypeError(f'originatingAction argument is malformed: \"{originatingAction}\"')
 
-        currentCrowdMicrophone = await self.get(
+        currentCrowdMicrophone = await self.getMicrophone(
             twitchChannelId = originatingAction.twitchChannelId,
         )
 
