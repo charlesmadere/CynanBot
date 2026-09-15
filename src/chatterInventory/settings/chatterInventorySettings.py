@@ -38,7 +38,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             durationSeconds = 90, # 1 minute 30 seconds
         ),
         defaultCrowdMicItemDetails: CrowdMicItemDetails = CrowdMicItemDetails(
-            durationSeconds = 180, # 3 minutes
+            durationSeconds = 210, # 3 minutes 30 seconds
         ),
         defaultGashaponItemDetails: GashaponItemDetails = GashaponItemDetails(
             pullRates = frozendict({

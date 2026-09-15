@@ -888,6 +888,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             await self.__submitEvent(CrowdMicEndedItemEvent(
                 deadMicrophone = deadMicrophone,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
+                singingEmote = await self.__trollmojiHelper.getSingingEmoteOrBackup(),
                 originatingAction = deadMicrophone.originatingAction,
             ))
 

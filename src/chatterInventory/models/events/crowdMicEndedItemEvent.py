@@ -9,6 +9,7 @@ from ..useChatterItemAction import UseChatterItemAction
 class CrowdMicEndedItemEvent(AbsChatterItemEvent):
     deadMicrophone: CrowdMicrophoneStatus
     eventId: str
+    singingEmote: str
     originatingAction: UseChatterItemAction
 
     def getEventId(self) -> str:
