@@ -1,8 +1,15 @@
 from abc import ABC, abstractmethod
 
+from .crowdMicrophoneStatusProviderInterface import CrowdMicrophoneStatusProviderInterface
+from ..models.crowdMicrophoneStatus import CrowdMicrophoneStatus
 
-class CrowdMicrophoneHelperInterface(ABC):
+
+class CrowdMicrophoneHelperInterface(CrowdMicrophoneStatusProviderInterface, ABC):
 
     @abstractmethod
-    async def isCurrentlyEnabled(self, twitchChannelId: str) -> bool:
+    async def start(
+        self,
+        durationSeconds: int,
+        twitchChannelId: str,
+    ) -> CrowdMicrophoneStatus:
         pass

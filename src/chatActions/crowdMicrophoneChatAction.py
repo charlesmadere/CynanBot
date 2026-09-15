@@ -2,7 +2,7 @@ from typing import Final
 
 from .absChatAction import AbsChatAction
 from .chatActionResult import ChatActionResult
-from ..chatterInventory.helpers.crowdMicrophoneHelperInterface import CrowdMicrophoneHelperInterface
+from ..chatterInventory.helpers.crowdMicrophoneStatusProviderInterface import CrowdMicrophoneStatusProviderInterface
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..timber.timberInterface import TimberInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
@@ -12,15 +12,15 @@ class CrowdMicrophoneChatAction(AbsChatAction):
 
     def __init__(
         self,
-        crowdMicrophoneHelper: CrowdMicrophoneHelperInterface,
+        crowdMicrophoneStatusProvider: CrowdMicrophoneStatusProviderInterface,
         timber: TimberInterface,
     ):
-        if not isinstance(crowdMicrophoneHelper, CrowdMicrophoneHelperInterface):
-            raise TypeError(f'crowdMicrophoneHelper argument is malformed: \"{crowdMicrophoneHelper}\"')
+        if not isinstance(crowdMicrophoneStatusProvider, CrowdMicrophoneStatusProviderInterface):
+            raise TypeError(f'crowdMicrophoneStatusProvider argument is malformed: \"{crowdMicrophoneStatusProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__crowdMicrophoneHelper: Final[CrowdMicrophoneHelperInterface] = crowdMicrophoneHelper
+        self.__crowdMicrophoneStatusProvider: Final[CrowdMicrophoneStatusProviderInterface] = crowdMicrophoneStatusProvider
         self.__timber: Final[TimberInterface] = timber
 
     @property
@@ -32,9 +32,11 @@ class CrowdMicrophoneChatAction(AbsChatAction):
         mostRecentChat: MostRecentChat | None,
         chatMessage: TwitchChatMessage,
     ) -> ChatActionResult:
-        if not await self.__crowdMicrophoneHelper.isCurrentlyEnabled(
+        status = not await self.__crowdMicrophoneStatusProvider.get(
             twitchChannelId = chatMessage.twitchChannelId,
-        ):
+        )
+
+        if status is None:
             return ChatActionResult.IGNORED
 
         # TODO

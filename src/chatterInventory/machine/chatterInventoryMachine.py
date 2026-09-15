@@ -389,6 +389,8 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         chatterInventory: ChatterInventoryData | None,
         action: UseChatterItemAction,
     ):
+
+
         # TODO
         pass
 
