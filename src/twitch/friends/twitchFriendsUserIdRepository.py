@@ -10,6 +10,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         acacUserId: str | None = '1274825203',
         albeeesUserId: str | None = '61963795',
         albeeevUserId: str | None = '1387490799',
+        amySumisuUserId: str | None = '526746071',
         aneevUserId: str | None = '1284413302',
         anivUserId: str | None = '749050409',
         aoyamabukiUserId: str | None = '600886831',
@@ -58,6 +59,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'albeeesUserId argument is malformed: \"{albeeesUserId}\"')
         elif albeeevUserId is not None and not isinstance(albeeevUserId, str):
             raise TypeError(f'albeeevUserId argument is malformed: \"{albeeevUserId}\"')
+        elif amySumisuUserId is not None and not isinstance(amySumisuUserId, str):
+            raise TypeError(f'amySumisuUserId argument is malformed: \"{amySumisuUserId}\"')
         elif aneevUserId is not None and not isinstance(aneevUserId, str):
             raise TypeError(f'aneevUserId argument is malformed: \"{aneevUserId}\"')
         elif anivUserId is not None and not isinstance(anivUserId, str):
@@ -144,6 +147,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         self.__acacUserId: Final[str | None] = acacUserId
         self.__albeeesUserId: Final[str | None] = albeeesUserId
         self.__albeeevUserId: Final[str | None] = albeeevUserId
+        self.__amySumisuUserId: Final[str | None] = amySumisuUserId
         self.__aneevUserId: Final[str | None] = aneevUserId
         self.__anivUserId: Final[str | None] = anivUserId
         self.__aoyamabukiUserId: Final[str | None] = aoyamabukiUserId
@@ -194,6 +198,9 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
 
     async def getAlbeeevUserId(self) -> str | None:
         return self.__albeeevUserId
+
+    async def getAmySumisuUserId(self) -> str | None:
+        return self.__amySumisuUserId
 
     async def getAneevUserId(self) -> str | None:
         return self.__aneevUserId
