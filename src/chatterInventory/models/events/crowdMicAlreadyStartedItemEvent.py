@@ -10,7 +10,7 @@ from ..useChatterItemAction import UseChatterItemAction
 @dataclass(frozen = True, slots = True)
 class CrowdMicAlreadyStartedItemEvent(AbsChatterItemEvent):
     itemDetails: CrowdMicItemDetails
-    microphoneStatus: CrowdMicrophoneStatus
+    microphone: CrowdMicrophoneStatus
     updatedInventory: ChatterInventoryData | None
     eventId: str
     originatingAction: UseChatterItemAction

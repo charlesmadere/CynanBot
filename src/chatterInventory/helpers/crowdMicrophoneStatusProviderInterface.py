@@ -6,7 +6,7 @@ from ..models.crowdMicrophoneStatus import CrowdMicrophoneStatus
 class CrowdMicrophoneStatusProviderInterface(ABC):
 
     @abstractmethod
-    async def get(
+    async def getMicrophone(
         self,
         twitchChannelId: str,
     ) -> CrowdMicrophoneStatus | None:

@@ -11,6 +11,7 @@ from ..models.events.cassetteTapeMessageHasNoTargetChatterItemEvent import \
 from ..models.events.cassetteTapeTargetIsNotFollowingChatterItemEvent import \
     CassetteTapeTargetIsNotFollowingChatterItemEvent
 from ..models.events.crowdMicAlreadyStartedItemEvent import CrowdMicAlreadyStartedItemEvent
+from ..models.events.crowdMicEndedItemEvent import CrowdMicEndedItemEvent
 from ..models.events.crowdMicStartedItemEvent import CrowdMicStartedItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
@@ -105,6 +106,11 @@ class ChatterItemEventHandler(ChatterItemEventListener):
 
         elif isinstance(event, CrowdMicAlreadyStartedItemEvent):
             await self.__handleCrowdMicAlreadyStartedItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, CrowdMicEndedItemEvent):
+            await self.__handleCrowdMicEndedItemEvent(
                 event = event,
             )
 
@@ -292,6 +298,16 @@ class ChatterItemEventHandler(ChatterItemEventListener):
     ):
         self.__twitchChatMessenger.send(
             text = f'⚠ Sorry, a crowd microphone is already in progress!',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleCrowdMicEndedItemEvent(
+        self,
+        event: CrowdMicEndedItemEvent,
+    ):
+        self.__twitchChatMessenger.send(
+            text = f'🛑 Crowd microphone has ended! 🛑',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )

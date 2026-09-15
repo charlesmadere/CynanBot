@@ -32,7 +32,7 @@ class CrowdMicrophoneChatAction(AbsChatAction):
         mostRecentChat: MostRecentChat | None,
         chatMessage: TwitchChatMessage,
     ) -> ChatActionResult:
-        status = await self.__crowdMicrophoneStatusProvider.get(
+        status = await self.__crowdMicrophoneStatusProvider.getMicrophone(
             twitchChannelId = chatMessage.twitchChannelId,
         )
 

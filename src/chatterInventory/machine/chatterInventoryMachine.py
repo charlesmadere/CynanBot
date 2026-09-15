@@ -25,6 +25,7 @@ from ..models.events.cassetteTapeMessageHasNoTargetChatterItemEvent import \
 from ..models.events.cassetteTapeTargetIsNotFollowingChatterItemEvent import \
     CassetteTapeTargetIsNotFollowingChatterItemEvent
 from ..models.events.crowdMicAlreadyStartedItemEvent import CrowdMicAlreadyStartedItemEvent
+from ..models.events.crowdMicEndedItemEvent import CrowdMicEndedItemEvent
 from ..models.events.crowdMicStartedItemEvent import CrowdMicStartedItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
@@ -405,7 +406,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         updatedInventory: ChatterInventoryData | None = None
 
         try:
-            microphoneStatus = await self.__crowdMicrophoneHelper.start(
+            microphone = await self.__crowdMicrophoneHelper.startMicrophone(
                 durationSeconds = itemDetails.durationSeconds,
                 twitchChannelId = action.twitchChannelId,
             )
@@ -422,7 +423,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
 
             await self.__submitEvent(CrowdMicAlreadyStartedItemEvent(
                 itemDetails = itemDetails,
-                microphoneStatus = e.currentCrowdMicrophone,
+                microphone = e.currentCrowdMicrophone,
                 updatedInventory = updatedInventory,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
                 originatingAction = action,
@@ -439,7 +440,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
 
         await self.__submitEvent(CrowdMicStartedItemEvent(
             itemDetails = itemDetails,
-            microphoneStatus = microphoneStatus,
+            microphone = microphone,
             updatedInventory = updatedInventory,
             eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
             singingEmoji = await self.__trollmojiHelper.getSingingEmoteOrBackup(),
@@ -873,6 +874,25 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             itemDetails = itemDetails,
         ))
 
+    async def __refreshCrowdMicrophones(self):
+        deadMicrophones = await self.__crowdMicrophoneHelper.getAllDeadMicrophones()
+
+        if len(deadMicrophones) == 0:
+            return
+
+        for deadMicrophone in deadMicrophones:
+            await self.__crowdMicrophoneHelper.removeMicrophone(
+                twitchChannelId = deadMicrophone.twitchChannelId,
+            )
+
+            await self.__submitEvent(CrowdMicEndedItemEvent(
+                deadMicrophone = deadMicrophone,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+                originatingAction = deadMicrophone.originatingAction,
+            ))
+
+        self.__timber.log('ChatterInventoryMachine', f'Finished removing {len(deadMicrophones)} dead microphone(s)')
+
     def start(self):
         if self.__isStarted:
             self.__timber.log('ChatterInventoryMachine', 'Not starting ChatterInventoryMachine as it has already been started')
@@ -902,6 +922,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
                 except Exception as e:
                     self.__timber.log('ChatterInventoryMachine', f'Encountered unknown Exception when looping through actions (queue size: {self.__actionQueue.qsize()}) ({len(actions)=}) ({index=}) ({action=})', e, traceback.format_exc())
 
+            await self.__refreshCrowdMicrophones()
             await asyncio.sleep(self.__sleepTimeSeconds)
 
     async def __startEventLoop(self):

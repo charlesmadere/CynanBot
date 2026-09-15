@@ -4,6 +4,7 @@ from typing import Final
 from .crowdMicrophoneHelperInterface import CrowdMicrophoneHelperInterface
 from ..exceptions import CrowdMicrophoneAlreadyStartedException
 from ..models.crowdMicrophoneStatus import CrowdMicrophoneStatus
+from ..models.useChatterItemAction import UseChatterItemAction
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -37,31 +38,45 @@ class CrowdMicrophoneHelper(CrowdMicrophoneHelperInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        currentCrowdMicrophone = self.__crowdMicrophones.get(twitchChannelId, None)
-        if currentCrowdMicrophone is None:
-            return None
+        return self.__crowdMicrophones.get(twitchChannelId, None)
 
+    async def getAllDeadMicrophones(self) -> frozenset[CrowdMicrophoneStatus]:
+        allDeadMicrophones: set[CrowdMicrophoneStatus] = set()
         now = self.__timeZoneRepository.getNow()
-        if now < currentCrowdMicrophone.endTime:
-            return currentCrowdMicrophone
 
-        self.__crowdMicrophones.pop(twitchChannelId, None)
-        return None
+        for microphone in self.__crowdMicrophones.values():
+            if microphone is None:
+                continue
+            elif now > microphone.endTime:
+                allDeadMicrophones.add(microphone)
 
-    async def start(
+        return frozenset(allDeadMicrophones)
+
+    async def removeMicrophone(
+        self,
+        twitchChannelId: str,
+    ) -> CrowdMicrophoneStatus | None:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        removedMicrophone = self.__crowdMicrophones.pop(twitchChannelId, None)
+        self.__timber.log('CrowdMicrophoneHelper', f'Removed crowd microphone ({removedMicrophone=}) ({twitchChannelId=})')
+        return removedMicrophone
+
+    async def startMicrophone(
         self,
         durationSeconds: int,
-        twitchChannelId: str,
+        originatingAction: UseChatterItemAction,
     ) -> CrowdMicrophoneStatus:
         if not utils.isValidInt(durationSeconds):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
         elif durationSeconds < 1 or durationSeconds > utils.getShortMaxSafeSize():
             raise ValueError(f'durationSeconds argument is out of bounds: {durationSeconds}')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not isinstance(originatingAction, UseChatterItemAction):
+            raise TypeError(f'originatingAction argument is malformed: \"{originatingAction}\"')
 
         currentCrowdMicrophone = await self.get(
-            twitchChannelId = twitchChannelId,
+            twitchChannelId = originatingAction.twitchChannelId,
         )
 
         if currentCrowdMicrophone is not None:
@@ -75,9 +90,10 @@ class CrowdMicrophoneHelper(CrowdMicrophoneHelperInterface):
         newCrowdMicrophone = CrowdMicrophoneStatus(
             endTime = endTime,
             totalDurationSeconds = durationSeconds,
-            twitchChannelId = twitchChannelId,
+            twitchChannelId = originatingAction.twitchChannelId,
+            originatingAction = originatingAction,
         )
 
         self.__timber.log('CrowdMicrophoneHelper', f'Starting new crowd microphone ({newCrowdMicrophone=})')
-        self.__crowdMicrophones[twitchChannelId] = newCrowdMicrophone
+        self.__crowdMicrophones[newCrowdMicrophone.twitchChannelId] = newCrowdMicrophone
         return newCrowdMicrophone
