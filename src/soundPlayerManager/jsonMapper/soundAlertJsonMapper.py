@@ -21,6 +21,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case 'bean': return SoundAlert.BEAN
             case 'cheer': return SoundAlert.CHEER
             case 'click_navigation': return SoundAlert.CLICK_NAVIGATION
+            case 'crowd_microphone': return SoundAlert.CROWD_MICROPHONE
             case 'follow': return SoundAlert.FOLLOW
             case 'gashapon': return SoundAlert.GASHAPON
             case 'grenade_1': return SoundAlert.GRENADE_1
@@ -79,6 +80,7 @@ class SoundAlertJsonMapper(SoundAlertJsonMapperInterface):
             case SoundAlert.BEAN: return 'bean'
             case SoundAlert.CHEER: return 'cheer'
             case SoundAlert.CLICK_NAVIGATION: return 'click_navigation'
+            case SoundAlert.CROWD_MICROPHONE: return 'crowd_microphone'
             case SoundAlert.FOLLOW: return 'follow'
             case SoundAlert.GASHAPON: return 'gashapon'
             case SoundAlert.GRENADE_1: return 'grenade_1'

@@ -1,6 +1,7 @@
 import locale
-import math
 from typing import Final
+
+import math
 
 from ..listeners.chatterItemEventListener import ChatterItemEventListener
 from ..models.chatterItemType import ChatterItemType
@@ -315,7 +316,9 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         self,
         event: CrowdMicStartedItemEvent,
     ):
-        # TODO play a sound here
+        if event.user.areSoundAlertsEnabled:
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(SoundAlert.CROWD_MICROPHONE))
 
         durationMessage = utils.secondsToDurationMessage(
             secondsDuration = event.itemDetails.durationSeconds,

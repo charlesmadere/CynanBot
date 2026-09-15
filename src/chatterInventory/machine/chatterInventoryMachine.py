@@ -423,7 +423,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
 
             await self.__submitEvent(CrowdMicAlreadyStartedItemEvent(
                 itemDetails = itemDetails,
-                microphone = e.currentCrowdMicrophone,
+                microphone = e.currentMicrophone,
                 updatedInventory = updatedInventory,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
                 originatingAction = action,
@@ -881,7 +881,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             return
 
         for deadMicrophone in deadMicrophones:
-            await self.__crowdMicrophoneHelper.removeMicrophone(
+            await self.__crowdMicrophoneHelper.stopMicrophone(
                 twitchChannelId = deadMicrophone.twitchChannelId,
             )
 

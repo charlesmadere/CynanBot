@@ -18,7 +18,6 @@ class CassetteTapeMessageHasNoTargetException(Exception):
         originatingAction: UseChatterItemAction,
     ):
         super().__init__(cleanedMessage, originatingAction)
-
         self.__cleanedMessage: Final[str] = cleanedMessage
         self.__originatingAction: Final[UseChatterItemAction] = originatingAction
 
@@ -40,7 +39,6 @@ class CassetteTapeTargetIsNotFollowingException(Exception):
         originatingAction: UseChatterItemAction,
     ):
         super().__init__(targetUserId, targetUserName, originatingAction)
-
         self.__targetUserId: Final[str] = targetUserId
         self.__targetUserName: Final[str] = targetUserName
         self.__originatingAction: Final[UseChatterItemAction] = originatingAction
@@ -66,14 +64,16 @@ class ChatterInventoryIsDisabledException(Exception):
 
 class CrowdMicrophoneAlreadyStartedException(Exception):
 
-    def __init__(self, currentCrowdMicrophone: CrowdMicrophoneStatus):
-        super().__init__(currentCrowdMicrophone)
-
-        self.__currentCrowdMicrophone: Final[CrowdMicrophoneStatus] = currentCrowdMicrophone
+    def __init__(
+        self,
+        currentMicrophone: CrowdMicrophoneStatus,
+    ):
+        super().__init__(currentMicrophone)
+        self.__currentMicrophone: Final[CrowdMicrophoneStatus] = currentMicrophone
 
     @property
-    def currentCrowdMicrophone(self) -> CrowdMicrophoneStatus:
-        return self.__currentCrowdMicrophone
+    def currentMicrophone(self) -> CrowdMicrophoneStatus:
+        return self.__currentMicrophone
 
 
 class UnknownChatterItemTypeException(Exception):
@@ -96,7 +96,6 @@ class VoicemailMessageIsEmptyException(Exception):
         originatingAction: UseChatterItemAction,
     ):
         super().__init__(message, originatingAction)
-
         self.__message: Final[str | None] = message
         self.__originatingAction: Final[UseChatterItemAction] = originatingAction
 
@@ -117,7 +116,6 @@ class VoicemailTargetInboxIsFullException(Exception):
         targetUserName: str,
     ):
         super().__init__(targetUserId, targetUserName)
-
         self.__targetUserId: Final[str] = targetUserId
         self.__targetUserName: Final[str] = targetUserName
 
