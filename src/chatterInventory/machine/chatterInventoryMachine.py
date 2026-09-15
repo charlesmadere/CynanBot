@@ -441,8 +441,8 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             itemDetails = itemDetails,
             microphoneStatus = microphoneStatus,
             updatedInventory = updatedInventory,
-            emoji = await self.__trollmojiHelper.getSingingEmoteOrBackup(),
             eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+            singingEmoji = await self.__trollmojiHelper.getSingingEmoteOrBackup(),
             originatingAction = action,
         ))
 

@@ -10,6 +10,8 @@ from ..models.events.cassetteTapeMessageHasNoTargetChatterItemEvent import \
     CassetteTapeMessageHasNoTargetChatterItemEvent
 from ..models.events.cassetteTapeTargetIsNotFollowingChatterItemEvent import \
     CassetteTapeTargetIsNotFollowingChatterItemEvent
+from ..models.events.crowdMicAlreadyStartedItemEvent import CrowdMicAlreadyStartedItemEvent
+from ..models.events.crowdMicStartedItemEvent import CrowdMicStartedItemEvent
 from ..models.events.disabledFeatureChatterItemEvent import DisabledFeatureChatterItemEvent
 from ..models.events.disabledItemTypeChatterItemEvent import DisabledItemTypeChatterItemEvent
 from ..models.events.gashaponNotRewardedItemDisabledChatterItemEvent import \
@@ -98,6 +100,16 @@ class ChatterItemEventHandler(ChatterItemEventListener):
 
         elif isinstance(event, CassetteTapeTargetIsNotFollowingChatterItemEvent):
             await self.__handleCassetteTapeTargetIsNotFollowingChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, CrowdMicAlreadyStartedItemEvent):
+            await self.__handleCrowdMicAlreadyStartedItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, CrowdMicStartedItemEvent):
+            await self.__handleCrowdMicStartedItemEvent(
                 event = event,
             )
 
@@ -270,6 +282,33 @@ class ChatterItemEventHandler(ChatterItemEventListener):
     ):
         self.__twitchChatMessenger.send(
             text = f'⚠ Sorry, you can\'t send a voicemail to someone who isn\'t following the channel',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleCrowdMicAlreadyStartedItemEvent(
+        self,
+        event: CrowdMicAlreadyStartedItemEvent,
+    ):
+        self.__twitchChatMessenger.send(
+            text = f'⚠ Sorry, a crowd microphone is already in progress!',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
+
+    async def __handleCrowdMicStartedItemEvent(
+        self,
+        event: CrowdMicStartedItemEvent,
+    ):
+        # TODO play a sound here
+
+        durationMessage = utils.secondsToDurationMessage(
+            secondsDuration = event.itemDetails.durationSeconds,
+            includeMinutesAndSeconds = True,
+        )
+
+        self.__twitchChatMessenger.send(
+            text = f'{event.singingEmoji} Crowd microphone has started for {durationMessage}! {event.singingEmoji}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )

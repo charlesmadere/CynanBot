@@ -12,8 +12,8 @@ class CrowdMicStartedItemEvent(AbsChatterItemEvent):
     itemDetails: CrowdMicItemDetails
     microphoneStatus: CrowdMicrophoneStatus
     updatedInventory: ChatterInventoryData | None
-    emoji: str
     eventId: str
+    singingEmoji: str
     originatingAction: UseChatterItemAction
 
     def getEventId(self) -> str:
