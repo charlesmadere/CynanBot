@@ -77,16 +77,10 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'charlyUserId argument is malformed: \"{charlyUserId}\"')
         elif concisionUserId is not None and not isinstance(concisionUserId, str):
             raise TypeError(f'concisionUserId argument is malformed: \"{concisionUserId}\"')
-        elif cynanBotUserId is not None and not isinstance(cynanBotUserId, str):
-            raise TypeError(f'cynanBotUserId argument is malformed: \"{cynanBotUserId}\"')
-        elif cynanBotTtsUserId is not None and not isinstance(cynanBotTtsUserId, str):
-            raise TypeError(f'cynanBotTtsUserId argument is malformed: \"{cynanBotTtsUserId}\"')
         elif dylanStewUserId is not None and not isinstance(dylanStewUserId, str):
             raise TypeError(f'dylanStewUserId argument is malformed: \"{dylanStewUserId}\"')
         elif eddieUserId is not None and not isinstance(eddieUserId, str):
             raise TypeError(f'eddieUserId argument is malformed: \"{eddieUserId}\"')
-        elif funtoonUserId is not None and not isinstance(funtoonUserId, str):
-            raise TypeError(f'funtoonUserId argument is malformed: \"{funtoonUserId}\"')
         elif guwuBotUserId is not None and not isinstance(guwuBotUserId, str):
             raise TypeError(f'guwuBotUserId argument is malformed: \"{guwuBotUserId}\"')
         elif harleyHardtUserId is not None and not isinstance(harleyHardtUserId, str):
@@ -156,11 +150,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         self.__boatWaifuUserId: Final[str | None] = boatWaifuUserId
         self.__charlyUserId: Final[str | None] = charlyUserId
         self.__concisionUserId: Final[str | None] = concisionUserId
-        self.__cynanBotUserId: Final[str | None] = cynanBotUserId
-        self.__cynanBotTtsUserId: Final[str | None] = cynanBotTtsUserId
         self.__dylanStewUserId: Final[str | None] = dylanStewUserId
         self.__eddieUserId: Final[str | None] = eddieUserId
-        self.__funtoonUserId: Final[str | None] = funtoonUserId
         self.__guwuBotUserId: Final[str | None] = guwuBotUserId
         self.__harleyHardtUserId: Final[str | None] = harleyHardtUserId
         self.__hokkaidoubareUserId: Final[str | None] = hokkaidoubareUserId
@@ -225,12 +216,6 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
 
     async def getConcisionUserId(self) -> str | None:
         return self.__concisionUserId
-
-    async def getCynanBotUserId(self) -> str | None:
-        return self.__cynanBotUserId
-
-    async def getCynanBotTtsUserId(self) -> str | None:
-        return self.__cynanBotTtsUserId
 
     async def getDylanStewUserId(self) -> str | None:
         return self.__dylanStewUserId

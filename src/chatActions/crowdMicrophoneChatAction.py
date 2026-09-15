@@ -9,6 +9,8 @@ from ..tts.models.ttsEvent import TtsEvent
 from ..tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..tts.provider.compositeTtsManagerProviderInterface import CompositeTtsManagerProviderInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
+from ..twitch.officialAccounts.officialTwitchAccountUserIdProviderInterface import \
+    OfficialTwitchAccountUserIdProviderInterface
 
 
 class CrowdMicrophoneChatAction(AbsChatAction):
@@ -17,17 +19,21 @@ class CrowdMicrophoneChatAction(AbsChatAction):
         self,
         compositeTtsManagerProvider: CompositeTtsManagerProviderInterface,
         crowdMicrophoneStatusProvider: CrowdMicrophoneStatusProviderInterface,
+        officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface,
         timber: TimberInterface,
     ):
         if not isinstance(compositeTtsManagerProvider, CompositeTtsManagerProviderInterface):
             raise TypeError(f'compositeTtsManagerProvider argument is malformed: \"{compositeTtsManagerProvider}\"')
-        if not isinstance(crowdMicrophoneStatusProvider, CrowdMicrophoneStatusProviderInterface):
+        elif not isinstance(crowdMicrophoneStatusProvider, CrowdMicrophoneStatusProviderInterface):
             raise TypeError(f'crowdMicrophoneStatusProvider argument is malformed: \"{crowdMicrophoneStatusProvider}\"')
+        elif not isinstance(officialTwitchAccountUserIdProvider, OfficialTwitchAccountUserIdProviderInterface):
+            raise TypeError(f'officialTwitchAccountUserIdProvider argument is malformed: \"{officialTwitchAccountUserIdProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__compositeTtsManagerProvider: Final[CompositeTtsManagerProviderInterface] = compositeTtsManagerProvider
         self.__crowdMicrophoneStatusProvider: Final[CrowdMicrophoneStatusProviderInterface] = crowdMicrophoneStatusProvider
+        self.__officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderInterface] = officialTwitchAccountUserIdProvider
         self.__timber: Final[TimberInterface] = timber
 
     @property
@@ -44,6 +50,10 @@ class CrowdMicrophoneChatAction(AbsChatAction):
         )
 
         if status is None:
+            return ChatActionResult.IGNORED
+        elif chatMessage.chatterUserId == chatMessage.twitchChannelId:
+            return ChatActionResult.IGNORED
+        elif chatMessage.chatterUserId in await self.__officialTwitchAccountUserIdProvider.getAllUserIds():
             return ChatActionResult.IGNORED
 
         compositeTtsManager = self.__compositeTtsManagerProvider.constructNewInstance(

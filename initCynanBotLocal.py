@@ -2138,6 +2138,7 @@ chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
     CrowdMicrophoneChatAction(
         compositeTtsManagerProvider = compositeTtsManagerProvider,
         crowdMicrophoneStatusProvider = crowdMicrophoneHelper,
+        officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
         timber = timber,
     ),
     SupStreamerChatAction(
