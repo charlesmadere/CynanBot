@@ -44,7 +44,7 @@ class CrowdMicrophoneHelper(CrowdMicrophoneHelperInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        associatedTtsManagers = self.__associatedTtsManagers[twitchChannelId]
+        associatedTtsManagers = self.__associatedTtsManagers.get(twitchChannelId, None)
 
         if associatedTtsManagers is None:
             associatedTtsManagers = list()
