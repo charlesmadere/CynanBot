@@ -44,6 +44,7 @@ class DetermineTm36SplashTargetUseCase:
         randomSplashNumber = random.random()
 
         if randomSplashNumber > splashDamageProbability:
+            self.__timber.log('DetermineTm36SplashTargetUseCase', f'Failed RNG roll for splash damage ({splashDamageProbability=}) ({randomSplashNumber=}) ({timeoutAction=})')
             return None
 
         activeChatters = await self.__activeChattersRepository.get(
@@ -59,7 +60,7 @@ class DetermineTm36SplashTargetUseCase:
             vulnerableChatters.pop(immuneUserId, None)
 
         if len(vulnerableChatters) == 0:
-            self.__timber.log('DetermineTm36SplashTargetUseCase', f'Attempted to timeout random target, but no active chatter(s) were found ({timeoutAction=}) ({splashDamageProbability=}) ({randomSplashNumber=}) ({activeChatters=}) ({vulnerableChatters=})')
+            self.__timber.log('DetermineTm36SplashTargetUseCase', f'Attempted to timeout random target, but no active chatter(s) were found ({splashDamageProbability=}) ({randomSplashNumber=}) ({timeoutAction=}) ({activeChatters=}) ({vulnerableChatters=})')
             return None
 
         randomChatter = random.choice(list(vulnerableChatters.values()))

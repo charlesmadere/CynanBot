@@ -2137,7 +2137,7 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption | None]] = frozense
 chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
     CrowdMicrophoneChatAction(
         compositeTtsManagerProvider = compositeTtsManagerProvider,
-        crowdMicrophoneStatusProvider = crowdMicrophoneHelper,
+        crowdMicrophoneProvider = crowdMicrophoneHelper,
         officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
         timber = timber,
     ),

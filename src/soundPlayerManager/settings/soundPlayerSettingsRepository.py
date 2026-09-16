@@ -61,6 +61,13 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
                     fallback = 'Click Navigation.mp3',
                 )
 
+            case SoundAlert.CROWD_MICROPHONE:
+                return utils.getStrFromDict(
+                    d = jsonContents,
+                    key = 'crowdMicrophonePath',
+                    fallback = 'Crowd Microphone.mp3',
+                )
+
             case SoundAlert.FOLLOW:
                 return utils.getStrFromDict(
                     d = jsonContents,

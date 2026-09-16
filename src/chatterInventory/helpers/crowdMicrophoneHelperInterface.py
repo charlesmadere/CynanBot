@@ -1,21 +1,14 @@
 from abc import ABC, abstractmethod
 
-from .crowdMicrophoneStatusProviderInterface import CrowdMicrophoneStatusProviderInterface
+from .crowdMicrophoneProviderInterface import CrowdMicrophoneProviderInterface
 from ..models.crowdMicrophoneStatus import CrowdMicrophoneStatus
 from ..models.useChatterItemAction import UseChatterItemAction
 
 
-class CrowdMicrophoneHelperInterface(CrowdMicrophoneStatusProviderInterface, ABC):
+class CrowdMicrophoneHelperInterface(CrowdMicrophoneProviderInterface, ABC):
 
     @abstractmethod
     async def getAllDeadMicrophones(self) -> frozenset[CrowdMicrophoneStatus]:
-        pass
-
-    @abstractmethod
-    async def removeMicrophone(
-        self,
-        twitchChannelId: str,
-    ) -> CrowdMicrophoneStatus | None:
         pass
 
     @abstractmethod
@@ -24,4 +17,11 @@ class CrowdMicrophoneHelperInterface(CrowdMicrophoneStatusProviderInterface, ABC
         durationSeconds: int,
         originatingAction: UseChatterItemAction,
     ) -> CrowdMicrophoneStatus:
+        pass
+
+    @abstractmethod
+    async def stopMicrophone(
+        self,
+        twitchChannelId: str,
+    ) -> CrowdMicrophoneStatus | None:
         pass

@@ -1,3 +1,4 @@
+import traceback
 from datetime import timedelta
 from typing import Final
 
@@ -8,6 +9,7 @@ from ..models.useChatterItemAction import UseChatterItemAction
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
+from ...tts.compositeTtsManagerInterface import CompositeTtsManagerInterface
 
 
 class CrowdMicrophoneHelper(CrowdMicrophoneHelperInterface):
@@ -30,6 +32,25 @@ class CrowdMicrophoneHelper(CrowdMicrophoneHelperInterface):
         self.__extraTimeBuffer: Final[timedelta] = extraTimeBuffer
 
         self.__crowdMicrophones: Final[dict[str, CrowdMicrophoneStatus | None]] = dict()
+        self.__associatedTtsManagers: Final[dict[str, list[CompositeTtsManagerInterface] | None]] = dict()
+
+    async def addAssociatedTtsManager(
+        self,
+        compositeTtsManager: CompositeTtsManagerInterface,
+        twitchChannelId: str,
+    ):
+        if not isinstance(compositeTtsManager, CompositeTtsManagerInterface):
+            raise TypeError(f'compositeTtsManager argument is malformed: \"{compositeTtsManager}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        associatedTtsManagers = self.__associatedTtsManagers[twitchChannelId]
+
+        if associatedTtsManagers is None:
+            associatedTtsManagers = list()
+            self.__associatedTtsManagers[twitchChannelId] = associatedTtsManagers
+
+        associatedTtsManagers.append(compositeTtsManager)
 
     async def getAllDeadMicrophones(self) -> frozenset[CrowdMicrophoneStatus]:
         allDeadMicrophones: set[CrowdMicrophoneStatus] = set()
@@ -52,17 +73,6 @@ class CrowdMicrophoneHelper(CrowdMicrophoneHelperInterface):
 
         return self.__crowdMicrophones.get(twitchChannelId, None)
 
-    async def removeMicrophone(
-        self,
-        twitchChannelId: str,
-    ) -> CrowdMicrophoneStatus | None:
-        if not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-
-        removedMicrophone = self.__crowdMicrophones.pop(twitchChannelId, None)
-        self.__timber.log('CrowdMicrophoneHelper', f'Removed crowd microphone ({removedMicrophone=}) ({twitchChannelId=})')
-        return removedMicrophone
-
     async def startMicrophone(
         self,
         durationSeconds: int,
@@ -75,13 +85,13 @@ class CrowdMicrophoneHelper(CrowdMicrophoneHelperInterface):
         elif not isinstance(originatingAction, UseChatterItemAction):
             raise TypeError(f'originatingAction argument is malformed: \"{originatingAction}\"')
 
-        currentCrowdMicrophone = await self.getMicrophone(
+        currentMicrophone = await self.getMicrophone(
             twitchChannelId = originatingAction.twitchChannelId,
         )
 
-        if currentCrowdMicrophone is not None:
+        if currentMicrophone is not None:
             raise CrowdMicrophoneAlreadyStartedException(
-                currentCrowdMicrophone = currentCrowdMicrophone,
+                currentMicrophone= currentMicrophone,
             )
 
         now = self.__timeZoneRepository.getNow()
@@ -94,6 +104,48 @@ class CrowdMicrophoneHelper(CrowdMicrophoneHelperInterface):
             originatingAction = originatingAction,
         )
 
-        self.__timber.log('CrowdMicrophoneHelper', f'Starting new crowd microphone ({newCrowdMicrophone=})')
         self.__crowdMicrophones[newCrowdMicrophone.twitchChannelId] = newCrowdMicrophone
+        self.__timber.log('CrowdMicrophoneHelper', f'Starting new crowd microphone ({newCrowdMicrophone=})')
         return newCrowdMicrophone
+
+    async def __stopAllAssociatedTtsManagers(
+        self,
+        twitchChannelId: str,
+    ):
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        associatedTtsManagers = self.__associatedTtsManagers.pop(twitchChannelId, None)
+
+        if associatedTtsManagers is None or len(associatedTtsManagers) == 0:
+            self.__timber.log('CrowdMicrophoneHelper', f'No TTS Manager is available to be stopped ({associatedTtsManagers=}) ({twitchChannelId=})')
+            return
+
+        stopped = 0
+        errors = 0
+
+        for index, ttsManager in enumerate(associatedTtsManagers):
+            if not ttsManager.isLoadingOrPlaying:
+                continue
+
+            try:
+                await ttsManager.stopTtsEvent()
+                stopped += 1
+            except Exception as e:
+                self.__timber.log('CrowdMicrophoneHelper', f'Encountered exception when trying to stop TTS Manager ({index=}) ({ttsManager=}) ({twitchChannelId=})', e, traceback.format_exc())
+                errors += 1
+
+        associatedTtsManagers.clear()
+        self.__timber.log('CrowdMicrophoneHelper', f'Finished stopping all TTS Managers ({errors=}) ({stopped=}) ({twitchChannelId=})')
+
+    async def stopMicrophone(
+        self,
+        twitchChannelId: str,
+    ) -> CrowdMicrophoneStatus | None:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        removedMicrophone = self.__crowdMicrophones.pop(twitchChannelId, None)
+        await self.__stopAllAssociatedTtsManagers(twitchChannelId = twitchChannelId)
+        self.__timber.log('CrowdMicrophoneHelper', f'Removed crowd microphone ({removedMicrophone=}) ({twitchChannelId=})')
+        return removedMicrophone

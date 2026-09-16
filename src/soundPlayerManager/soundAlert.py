@@ -7,6 +7,7 @@ class SoundAlert(Enum):
     BEAN = auto()
     CHEER = auto()
     CLICK_NAVIGATION = auto()
+    CROWD_MICROPHONE = auto()
     FOLLOW = auto()
     GASHAPON = auto()
     GRENADE_1 = auto()

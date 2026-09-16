@@ -847,8 +847,10 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         )
 
         if splashTimeoutTarget is not None:
+            splashTimeoutDurationSeconds = int(round(max(timeoutDuration.seconds / float(10), float(30))))
+
             splashTimeoutResult = await self.__twitchTimeoutHelper.timeout(
-                durationSeconds = timeoutDuration.seconds,
+                durationSeconds = splashTimeoutDurationSeconds,
                 reason = f'Hit by {ChatterItemType.TM_36.humanName} splash damage timeout from {targetUserName}',
                 twitchAccessToken = action.moderatorTwitchAccessToken,
                 twitchChannelAccessToken = action.userTwitchAccessToken,

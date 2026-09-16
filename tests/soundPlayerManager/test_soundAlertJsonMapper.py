@@ -25,6 +25,10 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.parseSoundAlert('click_navigation')
         assert result is SoundAlert.CLICK_NAVIGATION
 
+    def test_parseSoundAlert_withCrowdMicrophoneString(self):
+        result = self.jsonMapper.parseSoundAlert('crowd_microphone')
+        assert result is SoundAlert.CROWD_MICROPHONE
+
     def test_parseSoundAlert_withEmptyString(self):
         result = self.jsonMapper.parseSoundAlert('')
         assert result is None
@@ -181,6 +185,10 @@ class TestSoundAlertJsonMapper:
         result = self.jsonMapper.requireSoundAlert('click_navigation')
         assert result is SoundAlert.CLICK_NAVIGATION
 
+    def test_requireSoundAlert_withCrowdMicrophoneString(self):
+        result = self.jsonMapper.requireSoundAlert('crowd_microphone')
+        assert result is SoundAlert.CROWD_MICROPHONE
+
     def test_requireSoundAlert_withEmptyString(self):
         result: SoundAlert | None = None
 
@@ -277,6 +285,10 @@ class TestSoundAlertJsonMapper:
     def test_serializeSoundAlert_withClickNavigation(self):
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.CLICK_NAVIGATION)
         assert result == 'click_navigation'
+
+    def test_serializeSoundAlert_withCrowdMicrophone(self):
+        result = self.jsonMapper.serializeSoundAlert(SoundAlert.CROWD_MICROPHONE)
+        assert result == 'crowd_microphone'
 
     def test_serializeSoundAlert_withFollow(self):
         result = self.jsonMapper.serializeSoundAlert(SoundAlert.FOLLOW)
