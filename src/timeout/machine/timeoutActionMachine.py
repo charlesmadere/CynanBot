@@ -855,7 +855,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 twitchAccessToken = action.moderatorTwitchAccessToken,
                 twitchChannelAccessToken = action.userTwitchAccessToken,
                 twitchChannelId = action.twitchChannelId,
-                userIdToTimeout = action.targetUserId,
+                userIdToTimeout = splashTimeoutTarget.userId,
                 user = action.user,
             )
 
