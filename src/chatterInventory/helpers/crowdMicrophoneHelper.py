@@ -31,8 +31,8 @@ class CrowdMicrophoneHelper(CrowdMicrophoneHelperInterface):
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__extraTimeBuffer: Final[timedelta] = extraTimeBuffer
 
-        self.__crowdMicrophones: Final[dict[str, CrowdMicrophoneStatus | None]] = dict()
         self.__associatedTtsManagers: Final[dict[str, list[CompositeTtsManagerInterface] | None]] = dict()
+        self.__crowdMicrophones: Final[dict[str, CrowdMicrophoneStatus | None]] = dict()
 
     async def addAssociatedTtsManager(
         self,
