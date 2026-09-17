@@ -42,7 +42,7 @@ class DetermineTm36SplashTargetUseCase:
 
         splashDamageProbability = await self.__timeoutActionSettings.getTm36SplashDamageProbability()
         randomSplashNumber = random.random()
-        successfulSplash = randomSplashNumber > splashDamageProbability
+        successfulSplash = randomSplashNumber < splashDamageProbability
 
         self.__timber.log('DetermineTm36SplashTargetUseCase', f'Rolled for splash damage ({successfulSplash=}) ({splashDamageProbability=}) ({randomSplashNumber=}) ({timeoutAction=})')
 
