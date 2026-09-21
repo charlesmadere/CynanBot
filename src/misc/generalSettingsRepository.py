@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from .clearable import Clearable
 from .generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
@@ -42,13 +42,13 @@ class GeneralSettingsRepository(
         elif not isinstance(defaultSoundPlayerType, SoundPlayerType):
             raise TypeError(f'defaultSoundPlayerType argument is malformed: \"{defaultSoundPlayerType}\"')
 
-        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
-        self.__networkJsonMapper: NetworkJsonMapperInterface = networkJsonMapper
-        self.__soundPlayerJsonMapper: SoundPlayerJsonMapperInterface = soundPlayerJsonMapper
-        self.__storageJsonMapper: StorageJsonMapperInterface = storageJsonMapper
-        self.__defaultDatabaseType: DatabaseType = defaultDatabaseType
-        self.__defaultNetworkClientType: NetworkClientType = defaultNetworkClientType
-        self.__defaultSoundPlayerType: SoundPlayerType = defaultSoundPlayerType
+        self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
+        self.__networkJsonMapper: Final[NetworkJsonMapperInterface] = networkJsonMapper
+        self.__soundPlayerJsonMapper: Final[SoundPlayerJsonMapperInterface] = soundPlayerJsonMapper
+        self.__storageJsonMapper: Final[StorageJsonMapperInterface] = storageJsonMapper
+        self.__defaultDatabaseType: Final[DatabaseType] = defaultDatabaseType
+        self.__defaultNetworkClientType: Final[NetworkClientType] = defaultNetworkClientType
+        self.__defaultSoundPlayerType: Final[SoundPlayerType] = defaultSoundPlayerType
 
         self.__cache: GeneralSettingsRepositorySnapshot | None = None
 
