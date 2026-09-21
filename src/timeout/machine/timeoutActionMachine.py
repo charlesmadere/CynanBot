@@ -842,13 +842,14 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
-        splashTimeoutTarget = await self.__determineTm36SplashTargetUseCase.invoke(
+        splashTimeoutTargets = await self.__determineTm36SplashTargetUseCase.invoke(
             timeoutAction = action,
         )
 
-        if splashTimeoutTarget is not None:
-            splashTimeoutDurationSeconds = int(round(max(timeoutDuration.seconds / float(10), float(30))))
+        successfullyHitSplashTargets: FrozenList[TimeoutTarget] = FrozenList()
+        splashTimeoutDurationSeconds = int(round(timeoutDuration.seconds / float(10)))
 
+        for splashTimeoutTarget in splashTimeoutTargets:
             splashTimeoutResult = await self.__twitchTimeoutHelper.timeout(
                 durationSeconds = splashTimeoutDurationSeconds,
                 reason = f'Hit by {ChatterItemType.TM_36.humanName} splash damage timeout from {targetUserName}',
@@ -860,15 +861,16 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             )
 
             if splashTimeoutResult is TwitchTimeoutResult.SUCCESS:
+                successfullyHitSplashTargets.append(splashTimeoutTarget)
+
                 await self.__asplodieStatsRepository.addAsplodie(
                     isSelfAsplodie = False,
                     durationAsplodiedSeconds = timeoutDuration.seconds,
                     chatterUserId = splashTimeoutTarget.userId,
                     twitchChannelId = action.twitchChannelId,
                 )
-            else:
-                splashTimeoutTarget = None
 
+        successfullyHitSplashTargets.freeze()
         updatedInventory: ChatterItemGiveResult | None = None
 
         if not action.ignoreInventory:
@@ -882,12 +884,12 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         await self.__submitEvent(Tm36TimeoutEvent(
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
-            originatingAction = action,
+            splashTimeoutTargets = successfullyHitSplashTargets,
             bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup(),
             eventId = await self.__timeoutIdGenerator.generateEventId(),
             explodedEmote = await self.__trollmojiHelper.getExplodedEmoteOrBackup(),
             targetUserName = targetUserName,
-            splashTimeoutTarget = splashTimeoutTarget,
+            originatingAction = action,
             timeoutResult = timeoutResult,
         ))
 

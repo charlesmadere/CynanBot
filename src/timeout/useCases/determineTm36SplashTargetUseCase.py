@@ -1,9 +1,12 @@
 import random
-from typing import Final
+from typing import Collection, Final
+
+from frozenlist import FrozenList
 
 from ..models.actions.tm36TimeoutAction import Tm36TimeoutAction
 from ..models.timeoutTarget import TimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
+from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.activeChatters.activeChatter import ActiveChatter
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
@@ -36,7 +39,7 @@ class DetermineTm36SplashTargetUseCase:
     async def invoke(
         self,
         timeoutAction: Tm36TimeoutAction,
-    ) -> TimeoutTarget | None:
+    ) -> Collection[TimeoutTarget]:
         if not isinstance(timeoutAction, Tm36TimeoutAction):
             raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
 
@@ -46,8 +49,11 @@ class DetermineTm36SplashTargetUseCase:
 
         self.__timber.log('DetermineTm36SplashTargetUseCase', f'Rolled for splash damage ({successfulSplash=}) ({splashDamageProbability=}) ({randomSplashNumber=}) ({timeoutAction=})')
 
+        splashTargets: FrozenList[TimeoutTarget] = FrozenList()
+
         if not successfulSplash:
-            return None
+            splashTargets.freeze()
+            return splashTargets
 
         activeChatters = await self.__activeChattersRepository.get(
             twitchChannelId = timeoutAction.twitchChannelId,
@@ -64,16 +70,24 @@ class DetermineTm36SplashTargetUseCase:
 
         if len(vulnerableChatters) == 0:
             self.__timber.log('DetermineTm36SplashTargetUseCase', f'Attempted to timeout random target, but no active chatter(s) were found ({successfulSplash=}) ({splashDamageProbability=}) ({randomSplashNumber=}) ({timeoutAction=}) ({activeChatters=}) ({vulnerableChatters=})')
-            return None
+            splashTargets.freeze()
+            return splashTargets
 
-        randomChatter = random.choice(list(vulnerableChatters.values()))
+        randomlySortedChatters = list(vulnerableChatters.values())
+        random.shuffle(randomlySortedChatters)
 
-        await self.__activeChattersRepository.remove(
-            chatterUserId = randomChatter.chatterUserId,
-            twitchChannelId = timeoutAction.twitchChannelId,
-        )
+        rollAgain = True
+        maxSplashTargets = await self.__timeoutActionSettings.getTm36MaxSplashDamageTargets()
 
-        return TimeoutTarget(
-            userId = randomChatter.chatterUserId,
-            userName = randomChatter.chatterUserName,
-        )
+        while rollAgain and len(randomlySortedChatters) >= 1 and len(splashTargets) < maxSplashTargets:
+            randomChatter = randomlySortedChatters.pop()
+
+            splashTargets.append(TimeoutTarget(
+                userId = randomChatter.chatterUserId,
+                userName = randomChatter.chatterUserName,
+            ))
+
+            rollAgain = utils.randomBool()
+
+        splashTargets.freeze()
+        return splashTargets
