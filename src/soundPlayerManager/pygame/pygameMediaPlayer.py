@@ -127,7 +127,7 @@ class PygameMediaPlayer:
             self.__isPlayingOrLoading = False
             return
 
-        pygameChannel.play(sound = pygameSound)
+        pygameChannel.play(pygameSound)
 
         while pygameChannel.get_busy() and not task.isCanceled:
             time.sleep(self.__playbackLoopSleepTimeSeconds)
