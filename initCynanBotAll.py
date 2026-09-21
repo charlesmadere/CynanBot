@@ -1,3 +1,16 @@
+#################################################################
+## Begin thread fix code for Bleak and Pygame interoperability ##
+#################################################################
+import sys
+
+# Force pywin32/pythoncom to use Multi-Threaded Apartment (MTA)
+# THIS MUST BE SET BEFORE ANY OTHER IMPORTS
+sys.coinit_flags = 0
+###############################################################
+## End thread fix code for Bleak and Pygame interoperability ##
+###############################################################
+
+
 import asyncio
 import locale
 from asyncio import AbstractEventLoop
@@ -375,6 +388,8 @@ from src.pkmn.pokepediaJsonMapper import PokepediaJsonMapper
 from src.pkmn.pokepediaJsonMapperInterface import PokepediaJsonMapperInterface
 from src.pkmn.pokepediaRepository import PokepediaRepository
 from src.pkmn.pokepediaRepositoryInterface import PokepediaRepositoryInterface
+from src.pygame.pygameInitializer import PygameInitializer
+from src.pygame.pygameInitializerInterface import PygameInitializerInterface
 from src.recurringActions.configuration.recurringActionsEventHandler import RecurringActionsEventHandler
 from src.recurringActions.jsonParser.recurringActionsJsonParser import RecurringActionsJsonParser
 from src.recurringActions.jsonParser.recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
@@ -1283,6 +1298,10 @@ twitchWebsocketSubscriptionHelper: Final[TwitchWebsocketSubscriptionHelperInterf
 ## Sound Player initialization section ##
 #########################################
 
+pygameInitializer: Final[PygameInitializerInterface] = PygameInitializer(
+    timber = timber,
+)
+
 soundPlayerSettingsRepository: Final[SoundPlayerSettingsRepositoryInterface] = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
@@ -1299,6 +1318,7 @@ soundPlayerRandomizerHelper: Final[SoundPlayerRandomizerHelperInterface] = Sound
 soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = SoundPlayerManagerProvider(
     backgroundTaskHelper = backgroundTaskHelper,
     generalSettingsRepository = generalSettingsRepository,
+    pygameInitializer = pygameInitializer,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository,

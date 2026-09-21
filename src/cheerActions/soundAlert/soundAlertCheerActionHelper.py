@@ -5,6 +5,7 @@ from frozendict import frozendict
 from .soundAlertCheerAction import SoundAlertCheerAction
 from .soundAlertCheerActionHelperInterface import SoundAlertCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
+from ..cheerActionStreamStatusRequirement import CheerActionStreamStatusRequirement
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
@@ -41,6 +42,21 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
         self.__soundPlayerRandomizerHelper: Final[SoundPlayerRandomizerHelperInterface] = soundPlayerRandomizerHelper
         self.__timber: Final[TimberInterface] = timber
+
+    async def __checkStreamStatusRequirement(self, action: AbsCheerAction) -> bool:
+        streamStatusRequirement = action.getStreamStatusRequirement()
+
+        if streamStatusRequirement is CheerActionStreamStatusRequirement.ANY:
+            return True
+
+        isLive = await self.__isLiveOnTwitchRepository.isLive(
+            twitchChannelId = action.getTwitchChannelId(),
+        )
+
+        match streamStatusRequirement:
+            case CheerActionStreamStatusRequirement.ONLINE: return isLive
+            case CheerActionStreamStatusRequirement.OFFLINE: return not isLive
+            case _: raise ValueError(f'Encountered unknown CheerActionStreamStatusRequirement value: \"{streamStatusRequirement}\"')
 
     async def handleSoundAlertCheerAction(
         self,
@@ -85,8 +101,8 @@ class SoundAlertCheerActionHelper(SoundAlertCheerActionHelperInterface):
 
         if not isinstance(action, SoundAlertCheerAction) or not action.isEnabled:
             return False
-        elif not await self.__isLiveOnTwitchRepository.isLive(twitchChannelId):
-            self.__timber.log('SoundAlertCheerActionHelper', f'Received a sound alert CheerAction but the streamer is not currently live ({action=}) ({bits=}) ({cheerUserId=}) ({cheerUserName=}) ({user=})')
+        elif not await self.__checkStreamStatusRequirement(action):
+            self.__timber.log('SoundAlertCheerActionHelper', f'Received a sound alert CheerAction but the streamer does not have the required stream status ({action=}) ({bits=}) ({cheerUserId=}) ({cheerUserName=}) ({user=})')
             return False
 
         self.__backgroundTaskHelper.createTask(self.__playSoundAlert(

@@ -11,6 +11,10 @@ class TestSoundPlayerJsonMapper:
         result = self.jsonMapper.parseSoundPlayerType('audio_player')
         assert result is SoundPlayerType.AUDIO_PLAYER
 
+    def test_parseSoundPlayerType_withPygameString(self):
+        result = self.jsonMapper.parseSoundPlayerType('pygame')
+        assert result is SoundPlayerType.PYGAME
+
     def test_parseSoundPlayerType_withStubString(self):
         result = self.jsonMapper.parseSoundPlayerType('stub')
         assert result is SoundPlayerType.STUB

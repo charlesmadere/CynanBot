@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from . import utils as utils
 from ..network.networkClientType import NetworkClientType
@@ -36,13 +36,13 @@ class GeneralSettingsRepositorySnapshot:
         elif not isinstance(storageJsonMapper, StorageJsonMapperInterface):
             raise TypeError(f'storageJsonMapper argument is malformed: \"{storageJsonMapper}\"')
 
-        self.__defaultDatabaseType: DatabaseType = defaultDatabaseType
-        self.__defaultNetworkClientType: NetworkClientType = defaultNetworkClientType
-        self.__jsonContents: dict[str, Any] = jsonContents
-        self.__networkJsonMapper: NetworkJsonMapperInterface = networkJsonMapper
-        self.__soundPlayerJsonMapper: SoundPlayerJsonMapperInterface = soundPlayerJsonMapper
-        self.__defaultSoundPlayerType: SoundPlayerType = defaultSoundPlayerType
-        self.__storageJsonMapper: StorageJsonMapperInterface = storageJsonMapper
+        self.__defaultDatabaseType: Final[DatabaseType] = defaultDatabaseType
+        self.__defaultNetworkClientType: Final[NetworkClientType] = defaultNetworkClientType
+        self.__jsonContents: Final[dict[str, Any]] = jsonContents
+        self.__networkJsonMapper: Final[NetworkJsonMapperInterface] = networkJsonMapper
+        self.__soundPlayerJsonMapper: Final[SoundPlayerJsonMapperInterface] = soundPlayerJsonMapper
+        self.__defaultSoundPlayerType: Final[SoundPlayerType] = defaultSoundPlayerType
+        self.__storageJsonMapper: Final[StorageJsonMapperInterface] = storageJsonMapper
 
     def getSuperTriviaGamePoints(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'superTriviaGamePoints', 25)

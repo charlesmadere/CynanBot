@@ -266,7 +266,7 @@ class AudioPlayerSoundPlayerManager(SoundPlayerManagerInterface):
             )
 
             self.__mediaPlayer = mediaPlayer
-            self.__timber.log('AudioPlayerSoundPlayerManager', f'Created new AudioPlayerMediaPlayer instance: \"{mediaPlayer}\"')
+            self.__timber.log('AudioPlayerSoundPlayerManager', f'Created new media player instance ({mediaPlayer=})')
 
         return mediaPlayer
 
