@@ -235,6 +235,18 @@ class PixelsDiceMachine(PixelsDiceMachineInterface):
 
         self.__isStarted = True
         self.__timber.log('PixelsDiceMachine', 'Starting PixelsDiceMachine...')
+
+        try:
+            from bleak.backends.winrt.util import uninitialize_sta
+            uninitialize_sta() # undo the unwanted STA side effect from pywin32
+            self.__timber.log('PixelsDiceMachine', f'Successfully ran `uninitialize_sta()` (a weird fix required for running both Bleak and Pygame simultaneously)')
+        except ImportError:
+            # this exception can be safely ignored
+            pass
+        except Exception as e:
+            self.__timber.log('PixelsDiceMachine', f'Encountered unknown exception when trying to run `uninitialize_sta()`', e, traceback.format_exc())
+            raise RuntimeError(f'PixelsDiceMachine encountered unknown unknown exception when trying to run `uninitialize_sta()`: {e}')
+
         self.__backgroundTaskHelper.createTask(self.__startConnectionLoop())
         self.__backgroundTaskHelper.createTask(self.__startEventLoop())
 

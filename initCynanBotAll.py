@@ -1,16 +1,3 @@
-#################################################################
-## Begin thread fix code for Bleak and Pygame interoperability ##
-#################################################################
-import sys
-
-# Force pywin32/pythoncom to use Multi-Threaded Apartment (MTA)
-# THIS MUST BE SET BEFORE ANY OTHER IMPORTS
-sys.coinit_flags = 0
-###############################################################
-## End thread fix code for Bleak and Pygame interoperability ##
-###############################################################
-
-
 import asyncio
 import locale
 from asyncio import AbstractEventLoop
