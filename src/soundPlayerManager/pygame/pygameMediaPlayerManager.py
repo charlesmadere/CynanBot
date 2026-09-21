@@ -1,44 +1,54 @@
 import asyncio
 import os
 import traceback
+from asyncio import AbstractEventLoop
 from typing import Collection, Final
 
 import aiofiles.ospath
 from frozenlist import FrozenList
 
-from .vlcMediaPlayer import VlcMediaPlayer
+from .pygameMediaPlayer import PygameMediaPlayer
 from ..settings.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ..soundAlert import SoundAlert
 from ..soundPlaybackFile import SoundPlaybackFile
 from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..soundPlayerPlaylist import SoundPlayerPlaylist
-from ...misc import utils as utils
+from ...misc import utils
+from ...pygame.pygameInitializerInterface import PygameInitializerInterface
 from ...timber.timberInterface import TimberInterface
 
 
-class VlcSoundPlayerManager(SoundPlayerManagerInterface):
+class PygameMediaPlayerManager(SoundPlayerManagerInterface):
 
     def __init__(
         self,
+        eventLoop: AbstractEventLoop,
+        pygameInitializer: PygameInitializerInterface,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
         playbackLoopSleepTimeSeconds: float = 0.25,
     ):
-        if not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
+        if not isinstance(eventLoop, AbstractEventLoop):
+            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif not isinstance(pygameInitializer, PygameInitializerInterface):
+            raise TypeError(f'pygameInitializer argument is malformed: \"{pygameInitializer}\"')
+        elif not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidNum(playbackLoopSleepTimeSeconds):
             raise TypeError(f'playbackLoopSleepTimeSeconds argument is malformed: \"{playbackLoopSleepTimeSeconds}\"')
-        elif playbackLoopSleepTimeSeconds < 0.25 or playbackLoopSleepTimeSeconds > 1:
+        elif playbackLoopSleepTimeSeconds < 0.125 or playbackLoopSleepTimeSeconds > 1:
             raise ValueError(f'playbackLoopSleepTimeSeconds argument is out of bounds: {playbackLoopSleepTimeSeconds}')
 
+        self.__eventLoop: Final[AbstractEventLoop] = eventLoop
+        self.__pygameInitializer: Final[PygameInitializerInterface] = pygameInitializer
         self.__soundPlayerSettingsRepository: Final[SoundPlayerSettingsRepositoryInterface] = soundPlayerSettingsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__playbackLoopSleepTimeSeconds: Final[float] = playbackLoopSleepTimeSeconds
 
         self.__isLoadingOrPlaying: bool = False
-        self.__mediaPlayer: VlcMediaPlayer | None = None
+        self.__mediaPlayer: PygameMediaPlayer | None = None
 
     @property
     def isLoadingOrPlaying(self) -> bool:
@@ -58,21 +68,27 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         self.__isLoadingOrPlaying = True
 
         if len(playlist.playlistFiles) == 0:
-            self.__timber.log('VlcSoundPlayerManager', f'playlist argument has no elements: \"{playlist}\"')
+            self.__timber.log('PygameMediaPlayerManager', f'filePaths argument has no elements: \"{playlist}\"')
             self.__isLoadingOrPlaying = False
             return False
 
         for index, playlistFile in enumerate(playlist.playlistFiles):
             if not utils.isValidStr(playlistFile.filePath):
-                self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} is not a valid string: ({playlist=}) ({playlistFile=})')
+                self.__timber.log('PygameMediaPlayerManager', f'The given file path at index {index} is not a valid string: ({playlist=}) ({playlistFile=})')
                 self.__isLoadingOrPlaying = False
                 return False
-            elif not await aiofiles.ospath.exists(playlistFile.filePath):
-                self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} does not exist: ({playlist=}) ({playlistFile=})')
+            elif not await aiofiles.ospath.exists(
+                path = playlistFile.filePath,
+                loop = self.__eventLoop,
+            ):
+                self.__timber.log('PygameMediaPlayerManager', f'The given file path at index {index} does not exist: ({playlist=}) ({playlistFile=})')
                 self.__isLoadingOrPlaying = False
                 return False
-            elif not await aiofiles.ospath.isfile(playlistFile.filePath):
-                self.__timber.log('VlcSoundPlayerManager', f'The given file path at index {index} is not a file: ({playlist=}) ({playlistFile=})')
+            elif not await aiofiles.ospath.isfile(
+                path = playlistFile.filePath,
+                loop = self.__eventLoop,
+            ):
+                self.__timber.log('PygameMediaPlayerManager', f'The given file path at index {index} is not a file: ({playlist=}) ({playlistFile=})')
                 self.__isLoadingOrPlaying = False
                 return False
 
@@ -95,7 +111,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         if not await self.__soundPlayerSettingsRepository.isEnabled():
             return False
         elif self.isLoadingOrPlaying:
-            self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
+            self.__timber.log('PygameMediaPlayerManager', f'There is already an ongoing sound!')
             return False
 
         filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(
@@ -103,26 +119,14 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         )
 
         if not utils.isValidStr(filePath):
-            self.__timber.log('VlcSoundPlayerManager', f'No file path available for sound alert ({alert=}) ({filePath=})')
+            self.__timber.log('PygameMediaPlayerManager', f'No file path available for sound alert ({alert=}) ({filePath=})')
             return False
 
         filePath = os.path.normpath(filePath)
-        playlistFiles: FrozenList[SoundPlaybackFile] = FrozenList()
 
-        playlistFiles.append(SoundPlaybackFile(
-            volume = None,
+        return await self.playSoundFile(
             filePath = filePath,
-        ))
-
-        playlistFiles.freeze()
-
-        playlist = SoundPlayerPlaylist(
-            playlistFiles = playlistFiles,
             volume = volume,
-        )
-
-        return await self.playPlaylist(
-            playlist = playlist,
         )
 
     async def playSoundFile(
@@ -136,12 +140,12 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             raise TypeError(f'volume argument is malformed: \"{volume}\"')
 
         if not utils.isValidStr(filePath):
-            self.__timber.log('VlcSoundPlayerManager', f'The given file path is not a valid string: \"{filePath}\"')
+            self.__timber.log('PygameMediaPlayerManager', f'The given file path is not a valid string: \"{filePath}\"')
             return False
         elif not await self.__soundPlayerSettingsRepository.isEnabled():
             return False
         elif self.isLoadingOrPlaying:
-            self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
+            self.__timber.log('PygameMediaPlayerManager', f'There is already an ongoing sound!')
             return False
 
         playlistFiles: FrozenList[SoundPlaybackFile] = FrozenList()
@@ -175,7 +179,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         if not await self.__soundPlayerSettingsRepository.isEnabled():
             return False
         elif self.isLoadingOrPlaying:
-            self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
+            self.__timber.log('PygameMediaPlayerManager', f'There is already an ongoing sound!')
             return False
 
         playlistFiles: FrozenList[SoundPlaybackFile] = FrozenList()
@@ -189,7 +193,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         playlistFiles.freeze()
 
         if len(playlistFiles) == 0:
-            self.__timber.log('VlcSoundPlayerManager', f'filePaths argument has no elements: \"{filePaths}\"')
+            self.__timber.log('PygameMediaPlayerManager', f'filePaths argument has no elements: \"{filePaths}\"')
             return False
 
         playlist = SoundPlayerPlaylist(
@@ -211,59 +215,55 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         if not utils.isValidInt(baseVolume):
             baseVolume = await self.__soundPlayerSettingsRepository.getMediaPlayerVolume()
 
+        await mediaPlayer.setVolume(baseVolume)
+
         playErrorOccurred: bool = False
         currentPlaylistIndex: int = -1
         currentVolume: int | None = None
         currentFile: SoundPlaybackFile | None = None
 
-        self.__timber.log('VlcSoundPlayerManager', f'Started playing playlist ({playlist=}) ({baseVolume=}) ({mediaPlayer=})')
+        self.__timber.log('PygameMediaPlayerManager', f'Started playing playlist ({playlist=}) ({baseVolume=}) ({mediaPlayer=})')
 
         try:
             while self.__isLoadingOrPlaying and not playErrorOccurred and (currentPlaylistIndex < len(playlist.playlistFiles) or mediaPlayer.isPlaying):
-                match mediaPlayer.playbackState:
-                    case VlcMediaPlayer.PlaybackState.ERROR:
-                        playErrorOccurred = True
+                if mediaPlayer.isPlaying:
+                    pass
+                else:
+                    if currentPlaylistIndex < 0:
+                        currentPlaylistIndex = 0
+                    else:
+                        currentPlaylistIndex += 1
 
-                    case VlcMediaPlayer.PlaybackState.PLAYING:
-                        # intentionally empty
-                        pass
+                    if currentPlaylistIndex < len(playlist.playlistFiles):
+                        currentFile = playlist.playlistFiles[currentPlaylistIndex]
+                        currentVolume = currentFile.volume
 
-                    case VlcMediaPlayer.PlaybackState.STOPPED:
-                        if currentPlaylistIndex < 0:
-                            currentPlaylistIndex = 0
-                        else:
-                            currentPlaylistIndex += 1
+                        if not utils.isValidInt(currentVolume):
+                            currentVolume = baseVolume
 
-                        if currentPlaylistIndex < len(playlist.playlistFiles):
-                            currentFile = playlist.playlistFiles[currentPlaylistIndex]
-                            currentVolume = currentFile.volume
-
-                            if not utils.isValidInt(currentVolume):
-                                currentVolume = baseVolume
-
-                            await mediaPlayer.setMedia(currentFile.filePath)
-                            await mediaPlayer.setVolume(currentVolume)
-
-                            if not await mediaPlayer.play():
-                                self.__timber.log('VlcSoundPlayerManager', f'Received bad playback result when attempting to play media element at playlist index ({currentPlaylistIndex=}) ({currentFile=}) ({currentVolume=}) ({playlist=}) ({baseVolume=}) ({mediaPlayer=})')
-                                playErrorOccurred = True
+                        if not await mediaPlayer.play():
+                            self.__timber.log('PygameMediaPlayerManager', f'Received bad playback result when attempting to play media element at playlist index ({currentPlaylistIndex=}) ({currentFile=}) ({currentVolume=}) ({playlist=}) ({baseVolume=}) ({mediaPlayer=})')
+                            playErrorOccurred = True
 
                 await asyncio.sleep(self.__playbackLoopSleepTimeSeconds)
         except Exception as e:
-            self.__timber.log('VlcSoundPlayerManager', f'Encountered exception when progressing through playlist ({playErrorOccurred=}) ({currentPlaylistIndex=}) ({currentFile=}) ({currentVolume=}) ({playlist=}) ({baseVolume=}) ({mediaPlayer=})', e, traceback.format_exc())
+            self.__timber.log('PygameMediaPlayerManager', f'Encountered exception when progressing through playlist ({playErrorOccurred=}) ({currentPlaylistIndex=}) ({currentFile=}) ({currentVolume=}) ({playlist=}) ({baseVolume=}) ({mediaPlayer=})', e, traceback.format_exc())
 
         self.__isLoadingOrPlaying = False
 
-    async def __retrieveMediaPlayer(self) -> VlcMediaPlayer:
+    async def __retrieveMediaPlayer(self) -> PygameMediaPlayer:
         mediaPlayer = self.__mediaPlayer
 
         if mediaPlayer is None:
-            mediaPlayer = VlcMediaPlayer(
+            self.__pygameInitializer.start()
+
+            mediaPlayer = PygameMediaPlayer(
+                eventLoop = self.__eventLoop,
                 timber = self.__timber,
             )
 
             self.__mediaPlayer = mediaPlayer
-            self.__timber.log('VlcSoundPlayerManager', f'Created new media player instance ({mediaPlayer=})')
+            self.__timber.log('PygameMediaPlayerManager', f'Created new media player instance ({mediaPlayer=})')
 
         return mediaPlayer
 

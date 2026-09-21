@@ -1,8 +1,14 @@
+import time
 from asyncio import AbstractEventLoop
+from threading import Thread
 from typing import Final
 
 import aiofiles.ospath
+import pygame.mixer
+from pygame.mixer import Channel as PygameChannel
+from pygame.mixer import Sound as PygameSound
 
+from .pygameMediaPlaybackTask import PygameMediaPlaybackTask
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
@@ -13,22 +19,29 @@ class PygameMediaPlayer:
         self,
         eventLoop: AbstractEventLoop,
         timber: TimberInterface,
+        playbackLoopSleepTimeSeconds: float = 0.125,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not utils.isValidNum(playbackLoopSleepTimeSeconds):
+            raise TypeError(f'playbackLoopSleepTimeSeconds argument is malformed: \"{playbackLoopSleepTimeSeconds}\"')
+        elif playbackLoopSleepTimeSeconds < 0.125 or playbackLoopSleepTimeSeconds > 1:
+            raise ValueError(f'playbackLoopSleepTimeSeconds argument is out of bounds: {playbackLoopSleepTimeSeconds}')
 
         self.__eventLoop: Final[AbstractEventLoop] = eventLoop
         self.__timber: Final[TimberInterface] = timber
+        self.__playbackLoopSleepTimeSeconds: Final[float] = playbackLoopSleepTimeSeconds
 
         self.__isPlayingOrLoading: bool = False
         self.__volume: float = float(1)
+        self.__playbackTask: PygameMediaPlaybackTask | None = None
         self.__filePath: str | None = None
 
     @property
     def isPlaying(self) -> bool:
-        return self.__isPlayingOrLoading
+        return self.__isPlayingOrLoading or self.__playbackTask is not None
 
     async def play(self) -> bool:
         self.__isPlayingOrLoading = True
@@ -60,10 +73,70 @@ class PygameMediaPlayer:
             self.__timber.log('PygameMediaPlayer', f'Attempted to play, but filePath points to something that is not a file ({filePath=})')
             return False
 
-        # TODO
-        pass
+        playbackTask = PygameMediaPlaybackTask(
+            volume = self.__volume,
+            filePath = filePath,
+        )
+
+        playbackThread = Thread(
+            target = self.__play,
+            args = ( playbackTask, ),
+        )
+
+        self.__playbackTask = playbackTask
+        playbackThread.start()
 
         return True
+
+    def __play(self, task: PygameMediaPlaybackTask):
+        if not isinstance(task, PygameMediaPlaybackTask):
+            raise TypeError(f'task argument is malformed: \"{task}\"')
+
+        pygameChannel: PygameChannel | None = None
+        pygameChannelException: Exception | None = None
+
+        try:
+            pygameChannel = pygame.mixer.find_channel(force = False)
+        except Exception as e:
+            pygameChannelException = e
+
+        if pygameChannel is None or pygameChannelException is not None:
+            self.__playbackTask = None
+            self.__isPlayingOrLoading = False
+            self.__timber.log('PygameMediaPlayer', f'Pygame failed to allocate channel ({pygameChannel=}) ({pygameChannelException=}) ({task=})')
+            return
+
+        pygameSound: PygameSound | None = None
+        pygameSoundException: Exception | None = None
+
+        try:
+            pygameSound = PygameSound(task.filePath)
+        except Exception as e:
+            pygameSoundException = e
+
+        if pygameSound is None or pygameChannelException is not None:
+            self.__playbackTask = None
+            self.__isPlayingOrLoading = False
+            self.__timber.log('PygameMediaPlayer', f'Pygame failed to load sound ({pygameSound=}) ({pygameSoundException=}) ({pygameChannel=}) ({pygameChannelException=}) ({task=})')
+            return
+
+        pygameChannel.set_volume(task.volume)
+
+        if task.isCanceled:
+            self.__playbackTask = None
+            self.__isPlayingOrLoading = False
+            return
+
+        pygameChannel.play(sound = pygameSound)
+
+        while pygameChannel.get_busy() and not task.isCanceled:
+            time.sleep(self.__playbackLoopSleepTimeSeconds)
+
+        if task.isCanceled:
+            pygameChannel.stop()
+
+        self.__playbackTask = None
+        self.__isPlayingOrLoading = False
 
     async def setMedia(self, filePath: str):
         if not utils.isValidStr(filePath):
@@ -88,5 +161,7 @@ class PygameMediaPlayer:
         if not self.isPlaying:
             return
 
-        # TODO
-        pass
+        playbackTask = self.__playbackTask
+
+        if playbackTask is not None:
+            playbackTask.cancel()

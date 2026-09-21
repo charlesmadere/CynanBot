@@ -1,3 +1,4 @@
+import time
 import traceback
 from asyncio import AbstractEventLoop
 from datetime import datetime, timedelta
@@ -6,7 +7,6 @@ from typing import Any, Final
 
 import aiofiles.ospath
 import librosa
-import time
 from audioplayer import AudioPlayer
 
 from .audioPlayerPlaybackTask import AudioPlayerPlaybackTask
@@ -170,12 +170,12 @@ class AudioPlayerMediaPlayer:
 
         if volume < 0:
             self.__timber.log('AudioPlayerMediaPlayer', f'The given volume parameter was too small and has been coerced to 0 ({volume=})')
-            volume = 0
+            self.__volume = 0
         elif volume > 100:
             self.__timber.log('AudioPlayerMediaPlayer', f'The given volume parameter was too large and has been coerced to 100 ({volume=})')
-            volume = 100
-
-        self.__volume = volume
+            self.__volume = 100
+        else:
+            self.__volume = volume
 
     async def stop(self):
         if not self.isPlaying:

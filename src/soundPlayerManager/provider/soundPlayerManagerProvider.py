@@ -2,6 +2,7 @@ from typing import Final
 
 from .soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ..audioPlayer.audioPlayerSoundPlayerManager import AudioPlayerSoundPlayerManager
+from ..pygame.pygameMediaPlayerManager import PygameMediaPlayerManager
 from ..settings.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
 from ..soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ..soundPlayerType import SoundPlayerType
@@ -10,6 +11,7 @@ from ..vlc.vlcSoundPlayerManager import VlcSoundPlayerManager
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...misc.generalSettingsRepository import GeneralSettingsRepository
+from ...pygame.pygameInitializerInterface import PygameInitializerInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -19,14 +21,17 @@ class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         generalSettingsRepository: GeneralSettingsRepository,
+        pygameInitializer: PygameInitializerInterface,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif generalSettingsRepository is not None and not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not isinstance(pygameInitializer, PygameInitializerInterface):
+            raise TypeError(f'pygameInitializer argument is malformed: \"{pygameInitializer}\"')
         elif not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -36,6 +41,7 @@ class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
+        self.__pygameInitializer: Final[PygameInitializerInterface] = pygameInitializer
         self.__soundPlayerSettingsRepository: Final[SoundPlayerSettingsRepositoryInterface] = soundPlayerSettingsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
@@ -53,6 +59,14 @@ class SoundPlayerManagerProvider(SoundPlayerManagerProviderInterface):
                     soundPlayerSettingsRepository = self.__soundPlayerSettingsRepository,
                     timber = self.__timber,
                     timeZoneRepository = self.__timeZoneRepository,
+                )
+
+            case SoundPlayerType.PYGAME:
+                return PygameMediaPlayerManager(
+                    eventLoop = self.__backgroundTaskHelper.eventLoop,
+                    pygameInitializer = self.__pygameInitializer,
+                    soundPlayerSettingsRepository = self.__soundPlayerSettingsRepository,
+                    timber = self.__timber,
                 )
 
             case SoundPlayerType.STUB:
