@@ -47,9 +47,7 @@ class PygameInitializer(PygameInitializerInterface):
             frequency = self.__audioFrequency.hzValue,
         )
 
-        pygame.mixer.set_num_channels(
-            count = self.__channelCount,
-        )
+        pygame.mixer.set_num_channels(self.__channelCount)
 
         audioDeviceName = self.__audioDeviceName
         if not utils.isValidStr(audioDeviceName):
