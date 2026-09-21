@@ -271,6 +271,8 @@ from src.pixelsDice.mappers.pixelsDiceStateMapper import PixelsDiceStateMapper
 from src.pixelsDice.mappers.pixelsDiceStateMapperInterface import PixelsDiceStateMapperInterface
 from src.pixelsDice.settings.pixelsDiceSettings import PixelsDiceSettings
 from src.pixelsDice.settings.pixelsDiceSettingsInterface import PixelsDiceSettingsInterface
+from src.pygame.pygameInitializer import PygameInitializer
+from src.pygame.pygameInitializerInterface import PygameInitializerInterface
 from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.soundPlayerManager.jsonMapper.soundAlertJsonMapper import SoundAlertJsonMapper
@@ -975,6 +977,10 @@ twitchWebsocketSubscriptionHelper: Final[TwitchWebsocketSubscriptionHelperInterf
 ## Sound Player initialization section ##
 #########################################
 
+pygameInitializer: Final[PygameInitializerInterface] = PygameInitializer(
+    timber = timber,
+)
+
 soundPlayerSettingsRepository: Final[SoundPlayerSettingsRepositoryInterface] = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
@@ -991,6 +997,7 @@ soundPlayerRandomizerHelper: Final[SoundPlayerRandomizerHelperInterface] = Sound
 soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = SoundPlayerManagerProvider(
     backgroundTaskHelper = backgroundTaskHelper,
     generalSettingsRepository = generalSettingsRepository,
+    pygameInitializer = pygameInitializer,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository,

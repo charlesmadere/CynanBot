@@ -17,6 +17,7 @@ class SoundPlayerJsonMapper(SoundPlayerJsonMapperInterface):
 
         match soundPlayerType:
             case 'audio_player': return SoundPlayerType.AUDIO_PLAYER
+            case 'pygame': return SoundPlayerType.PYGAME
             case 'stub': return SoundPlayerType.STUB
             case 'vlc': return SoundPlayerType.VLC
             case _: raise ValueError(f'Unknown SoundPlayerType value: \"{soundPlayerType}\"')
