@@ -41,7 +41,7 @@ class CommodoreSamSettingsRepository(CommodoreSamSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 4)
+        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 20)
 
     async def getMouthParameter(self) -> int | None:
         return await self.__getIntOrNone('mouth')
