@@ -241,6 +241,9 @@ class PygameMediaPlayerManager(SoundPlayerManagerInterface):
                         if not utils.isValidInt(currentVolume):
                             currentVolume = baseVolume
 
+                        await mediaPlayer.setMedia(currentFile.filePath)
+                        await mediaPlayer.setVolume(currentVolume)
+
                         if not await mediaPlayer.play():
                             self.__timber.log('PygameMediaPlayerManager', f'Received bad playback result when attempting to play media element at playlist index ({currentPlaylistIndex=}) ({currentFile=}) ({currentVolume=}) ({playlist=}) ({baseVolume=}) ({mediaPlayer=})')
                             playErrorOccurred = True
