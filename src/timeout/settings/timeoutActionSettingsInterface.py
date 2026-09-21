@@ -22,5 +22,9 @@ class TimeoutActionSettingsInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getTm36MaxSplashDamageTargets(self) -> int:
+        pass
+
+    @abstractmethod
     async def getTm36SplashDamageProbability(self) -> float:
         pass

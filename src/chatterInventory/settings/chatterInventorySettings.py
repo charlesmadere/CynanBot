@@ -25,7 +25,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         chatterInventoryMapper: ChatterInventoryMapperInterface,
         settingsJsonReader: JsonReaderInterface,
         defaultAirStrikeItemDetails: AirStrikeItemDetails = AirStrikeItemDetails(
-            maxDurationSeconds = 60,
+            maxDurationSeconds = 56,
             minDurationSeconds = 42,
             maxTargets = 11,
             minTargets = 8,
@@ -79,7 +79,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
                     minimumPullAmount = 1,
                 ),
                 ChatterItemType.TM_36: GashaponItemPullRate(
-                    pullRate = 0.05,
+                    pullRate = 0.25,
                     iterations = 1,
                     maximumPullAmount = 1,
                     minimumPullAmount = 0,
@@ -98,7 +98,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         ),
         defaultDaysBetweenGashaponRewards: int = 21,
         defaultTm36ItemDetails: Tm36ItemDetails = Tm36ItemDetails(
-            maxDurationSeconds = 720, # 12 minutes
+            maxDurationSeconds = 300, # 5 minutes
             minDurationSeconds = 180, # 3 minutes
         ),
         defaultVoreItemDetails: VoreItemDetails = VoreItemDetails(

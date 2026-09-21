@@ -1,8 +1,8 @@
+import math
 import random
 import traceback
 from typing import Final
 
-import math
 from frozenlist import FrozenList
 
 from ..exceptions import UnknownTimeoutTargetException

@@ -648,11 +648,23 @@ class TimeoutEventHandler(TimeoutEventListener):
             twitchChannelId = event.twitchChannelId,
         )
 
-        if event.splashTimeoutTarget is None:
+        if len(event.splashTimeoutTargets) == 0:
             return
 
+        userNames: list[str] = list()
+        for splashTimeoutTarget in event.splashTimeoutTargets:
+            userNames.append(f'@{splashTimeoutTarget.userName}')
+
+        userNamesString = ', '.join(userNames)
+        userNamesSuffix: str
+
+        if len(userNames) == 1:
+            userNamesSuffix = 'was'
+        else:
+            userNamesSuffix = 'were'
+
         self.__twitchChatMessenger.send(
-            text = f'{event.explodedEmote} @{event.splashTimeoutTarget.userName} was also hit with self destruct\'s splash damage! {event.bombEmote}',
+            text = f'{event.explodedEmote} {userNamesString} {userNamesSuffix} also hit with self destruct\'s splash damage! {event.bombEmote}',
             twitchChannelId = event.twitchChannelId,
         )
 
