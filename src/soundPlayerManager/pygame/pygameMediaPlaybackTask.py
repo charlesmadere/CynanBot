@@ -10,7 +10,7 @@ class PygameMediaPlaybackTask:
         volume: float,
         filePath: str,
     ):
-        if not utils.isValidInt(volume):
+        if not utils.isValidNum(volume):
             raise TypeError(f'volume argument is malformed: \"{volume}\"')
         elif volume < float(0) or volume > float(100):
             raise ValueError(f'volume argument is out of bounds: {volume}')
