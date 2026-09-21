@@ -16,7 +16,7 @@ class PygameInitializer(PygameInitializerInterface):
         timber: TimberInterface,
         channelCount: int = 128,
         audioFrequency: PygameAudioFrequency = PygameAudioFrequency.FORTY_EIGHT_KHZ,
-        audioDeviceName: str | None = 'Motherboard Audio',
+        audioDeviceName: str | None = 'Motherboard Audio (Realtek USB2.0 Audio)',
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
