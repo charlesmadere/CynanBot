@@ -16,10 +16,10 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
         halfLifeJsonParser: HalfLifeVoiceParserInterface,
         settingsJsonReader: JsonReaderInterface,
         defaultVoiceVolumes: frozendict[HalfLifeVoice, int | None] = frozendict({
-            HalfLifeVoice.BARNEY: 7,
-            HalfLifeVoice.INTERCOM: 4,
-            HalfLifeVoice.SCIENTIST: 4,
-            HalfLifeVoice.SOLDIER: 2,
+            HalfLifeVoice.BARNEY: 35,
+            HalfLifeVoice.INTERCOM: 20,
+            HalfLifeVoice.SCIENTIST: 20,
+            HalfLifeVoice.SOLDIER: 10,
         }),
         defaultVoice: HalfLifeVoice = HalfLifeVoice.ALL,
     ):
@@ -55,7 +55,7 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 5)
+        return utils.getIntFromDict(jsonContents, 'media_player_volume', fallback = 25)
 
     async def getVoiceVolumes(self) -> frozendict[HalfLifeVoice, int | None]:
         jsonContents = await self.__readJson()
