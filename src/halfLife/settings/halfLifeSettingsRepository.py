@@ -59,7 +59,7 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
 
     async def getVoiceVolumes(self) -> frozendict[HalfLifeVoice, int | None]:
         jsonContents = await self.__readJson()
-        rawVoiceVolumes: dict[str, int] | None = jsonContents.get('voice_volumes', None)
+        rawVoiceVolumes: dict[str, int | None] | None = jsonContents.get('voice_volumes', None)
 
         if rawVoiceVolumes is None:
             return self.__defaultVoiceVolumes

@@ -31,7 +31,7 @@ class MicrosoftSamSettingsRepository(MicrosoftSamSettingsRepositoryInterface):
     async def clearCaches(self):
         self.__cache = None
 
-    async def getDefaultVoice(self) -> MicrosoftSamVoice | None:
+    async def getDefaultVoice(self) -> MicrosoftSamVoice:
         jsonContents = await self.__readJson()
 
         defaultVoice = utils.getStrFromDict(
