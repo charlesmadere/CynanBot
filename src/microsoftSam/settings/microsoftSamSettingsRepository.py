@@ -48,7 +48,7 @@ class MicrosoftSamSettingsRepository(MicrosoftSamSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 45)
+        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 50)
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
