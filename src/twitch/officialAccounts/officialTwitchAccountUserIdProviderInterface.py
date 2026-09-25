@@ -36,6 +36,10 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
         pass
 
     @abstractmethod
+    async def getMinecraftUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getMoobotUserId(self) -> str | None:
         pass
 
