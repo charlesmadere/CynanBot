@@ -15,6 +15,7 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         disappointBotUserId: str | None = '169809959',
         frostyToolsDotComUserId: str | None = '955237329',
         funtoonUserId: str | None = '477393386',
+        minecraftUserId: str | None = '112568845',
         moobotUserId: str | None = '1564983',
         nightBotUserId: str | None = '19264788',
         puptimeUserId: str | None = '213177587',
@@ -44,6 +45,8 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
             raise TypeError(f'frostyToolsDotComUserId argument is malformed: \"{frostyToolsDotComUserId}\"')
         elif funtoonUserId is not None and not isinstance(funtoonUserId, str):
             raise TypeError(f'funtoonUserId argument is malformed: \"{funtoonUserId}\"')
+        elif minecraftUserId is not None and not isinstance(minecraftUserId, str):
+            raise TypeError(f'minecraftUserId argument is malformed: \"{minecraftUserId}\"')
         elif moobotUserId is not None and not isinstance(moobotUserId, str):
             raise TypeError(f'moobotUserId argument is malformed: \"{moobotUserId}\"')
         elif nightBotUserId is not None and not isinstance(nightBotUserId, str):
@@ -80,6 +83,7 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         self.__disappointBotUserId: Final[str | None] = disappointBotUserId
         self.__frostyToolsDotComUserId: Final[str | None] = frostyToolsDotComUserId
         self.__funtoonUserId: Final[str | None] = funtoonUserId
+        self.__minecraftUserId: Final[str | None] = minecraftUserId
         self.__moobotUserId: Final[str | None] = moobotUserId
         self.__nightBotUserId: Final[str | None] = nightBotUserId
         self.__puptimeUserId: Final[str | None] = puptimeUserId
@@ -125,6 +129,10 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         funtoonUserId = await self.getFuntoonUserId()
         if utils.isValidStr(funtoonUserId):
             allUserIds.add(funtoonUserId)
+
+        minecraftUserId = await self.getMinecraftUserId()
+        if utils.isValidStr(minecraftUserId):
+            allUserIds.add(minecraftUserId)
 
         moobotUserId = await self.getMoobotUserId()
         if utils.isValidStr(moobotUserId):
@@ -202,6 +210,9 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
 
     async def getFuntoonUserId(self) -> str | None:
         return self.__funtoonUserId
+
+    async def getMinecraftUserId(self) -> str | None:
+        return self.__minecraftUserId
 
     async def getMoobotUserId(self) -> str | None:
         return self.__moobotUserId
