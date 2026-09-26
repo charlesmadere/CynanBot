@@ -844,6 +844,8 @@ officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderIn
 twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = TwitchFriendsUserIdRepository()
 
 hardcodedTwitchChannelEditorsRepository: Final[HardcodedTwitchChannelEditorsRepositoryInterface] = HardcodedTwitchChannelEditorsRepository(
+    officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
+    timber = timber,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
 )
 
