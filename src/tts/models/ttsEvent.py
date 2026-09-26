@@ -12,6 +12,7 @@ class TtsEvent:
     twitchChannel: str
     twitchChannelId: str
     userId: str
+    userLogin: str
     userName: str
     donation: TtsDonation | None
     provider: TtsProvider

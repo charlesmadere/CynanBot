@@ -247,7 +247,7 @@ class TimeoutEventHandler(TimeoutEventListener):
         else:
             peoplePluralityString = f'{peopleCountString} chatters hit'
 
-        message = f'{event.explodedEmote} {peoplePluralityString} by @{event.instigatorUserName} with a {event.timeoutDuration.secondsStr}s timeout! {userNamesString} {event.bombEmote}'
+        message = f'{event.explodedEmote} {peoplePluralityString} by @{event.instigatorUserData.getUserName()} with a {event.timeoutDuration.secondsStr}s timeout! {userNamesString} {event.bombEmote}'
 
         self.__twitchChatMessenger.send(
             text = message,
@@ -284,7 +284,7 @@ class TimeoutEventHandler(TimeoutEventListener):
         event: BananaTimeoutDiceRollFailedEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'{event.ripBozoEmote} Sorry @{event.instigatorUserName}, your timeout of @{event.timeoutTarget.userName} failed {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, but needed greater than {event.diceRollFailureData.failureRoll}) {event.ripBozoEmote}',
+            text = f'{event.ripBozoEmote} Sorry @{event.instigatorUserData.getUserName()}, your timeout of @{event.timeoutTarget.userName} failed {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, but needed greater than {event.diceRollFailureData.failureRoll}) {event.ripBozoEmote}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -294,7 +294,7 @@ class TimeoutEventHandler(TimeoutEventListener):
         event: BananaTimeoutDiceRollQueuedEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'🎲 @{event.instigatorUserName} queued up a dice roll versus @{event.timeoutTarget.userName}! (queue size is now {event.requestQueueSizeStr})',
+            text = f'🎲 @{event.instigatorUserData.getUserName()} queued up a dice roll versus @{event.timeoutTarget.userName}! (queue size is now {event.requestQueueSizeStr})',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -304,15 +304,16 @@ class TimeoutEventHandler(TimeoutEventListener):
         event: BananaTimeoutEvent,
     ):
         chatMessage: str
+
         if event.diceRoll is not None and event.diceRollFailureData is not None:
             if event.isReverse:
-                chatMessage = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserName} dropped a banana but they tripped themselves up! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} but got a {event.diceRoll.roll})'
+                chatMessage = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserData.getUserName()} dropped a banana but they tripped themselves up! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} but got a {event.diceRoll.roll})'
             else:
-                chatMessage = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.timeoutTarget.userName}! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, needed greater than {event.diceRollFailureData.failureRoll})'
+                chatMessage = f'{event.ripBozoEmote} @{event.instigatorUserData.getUserName()} dropped a banana that tripped up @{event.timeoutTarget.userName}! {event.ripBozoEmote} (rolled a d{event.diceRoll.dieSize} and got a {event.diceRoll.roll}, needed greater than {event.diceRollFailureData.failureRoll})'
         elif event.isReverse:
-            chatMessage = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserName} dropped a banana but they tripped themselves up! {event.ripBozoEmote}'
+            chatMessage = f'{event.ripBozoEmote} Oh no! @{event.instigatorUserData.getUserName()} dropped a banana but they tripped themselves up! {event.ripBozoEmote}'
         else:
-            chatMessage = f'{event.ripBozoEmote} @{event.instigatorUserName} dropped a banana that tripped up @{event.timeoutTarget.userName}! {event.ripBozoEmote}'
+            chatMessage = f'{event.ripBozoEmote} @{event.instigatorUserData.getUserName()} dropped a banana that tripped up @{event.timeoutTarget.userName}! {event.ripBozoEmote}'
 
         self.__twitchChatMessenger.send(
             text = chatMessage,
@@ -329,9 +330,9 @@ class TimeoutEventHandler(TimeoutEventListener):
             ttsMessage: str
 
             if event.isReverse:
-                ttsMessage = f'Oh no! {event.instigatorUserName} got hit with a reverse! What a dumb idiot! Rip bozo!'
+                ttsMessage = f'Oh no! @{event.instigatorUserData.getUserName()} got hit with a reverse! What a dumb idiot! Rip bozo!'
             else:
-                ttsMessage = f'{event.instigatorUserName} timed out {event.timeoutTarget.userName} for {event.timeoutDuration.message}! Rip bozo!'
+                ttsMessage = f'@{event.instigatorUserData.getUserName()} timed out {event.timeoutTarget.userName} for {event.timeoutDuration.message}! Rip bozo!'
 
             providerOverridableStatus: TtsProviderOverridableStatus
 
@@ -344,8 +345,9 @@ class TimeoutEventHandler(TimeoutEventListener):
                 message = ttsMessage,
                 twitchChannel = event.twitchChannel,
                 twitchChannelId = event.twitchChannelId,
-                userId = event.originatingAction.instigatorUserId,
-                userName = event.instigatorUserName,
+                userId = event.instigatorUserData.getUserId(),
+                userLogin = event.instigatorUserData.getUserLogin(),
+                userName = event.instigatorUserData.getUserName(),
                 donation = None,
                 provider = event.user.defaultTtsProvider,
                 providerOverridableStatus = providerOverridableStatus,
@@ -366,16 +368,16 @@ class TimeoutEventHandler(TimeoutEventListener):
         self,
         event: BananaTimeoutFailedTimeoutEvent,
     ):
-        if event.timeoutResult is TwitchTimeoutResult.BANNED:
-            # ignore this...
-            return
-
-        elif event.timeoutResult is TwitchTimeoutResult.ALREADY_TIMED_OUT:
+        if event.timeoutResult is TwitchTimeoutResult.ALREADY_TIMED_OUT:
             self.__twitchChatMessenger.send(
-                text = f'Sorry @{event.instigatorUserName}, you can\'t throw a {ChatterItemType.BANANA.humanName} at someone who is already timed out!',
+                text = f'Sorry @{event.instigatorUserData.getUserName()}, you can\'t throw a {ChatterItemType.BANANA.humanName} at someone who is already timed out!',
                 twitchChannelId = event.twitchChannelId,
                 replyMessageId = event.twitchChatMessageId,
             )
+            return
+
+        if event.timeoutResult is TwitchTimeoutResult.BANNED:
+            # ignore this...
             return
 
         # the rest of these cases are currently intentionally empty
@@ -432,7 +434,7 @@ class TimeoutEventHandler(TimeoutEventListener):
         timeoutScoreString = f'({statsString}, {dodgePercentString})'
 
         self.__twitchChatMessenger.send(
-            text = f'@{event.targetUserName} {event.ripBozoEmote} {event.timeoutDuration.message} {event.ripBozoEmote} {timeoutScoreString}',
+            text = f'@{event.targetUserData.getUserName()} {event.ripBozoEmote} {event.timeoutDuration.message} {event.ripBozoEmote} {timeoutScoreString}',
             twitchChannelId = event.twitchChannelId,
         )
 
@@ -644,7 +646,7 @@ class TimeoutEventHandler(TimeoutEventListener):
             ))
 
         self.__twitchChatMessenger.send(
-            text = f'{event.explodedEmote} @{event.targetUserName} used {ChatterItemType.TM_36.humanName}, its self destruct! {event.bombEmote}',
+            text = f'{event.explodedEmote} @{event.targetUserData.getUserName()} used {ChatterItemType.TM_36.humanName}, its self destruct! {event.bombEmote}',
             twitchChannelId = event.twitchChannelId,
         )
 
@@ -696,7 +698,7 @@ class TimeoutEventHandler(TimeoutEventListener):
             ))
 
         self.__twitchChatMessenger.send(
-            text = f'{event.ripBozoEmote} @{event.instigatorUserName} used {ChatterItemType.VORE.humanName} on @{event.timeoutTarget.userName}!',
+            text = f'{event.ripBozoEmote} @{event.instigatorUserData.getUserName()} used {ChatterItemType.VORE.humanName} on @{event.timeoutTarget.userName}!',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )

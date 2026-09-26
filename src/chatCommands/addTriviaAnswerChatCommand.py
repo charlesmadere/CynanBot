@@ -93,7 +93,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Attempted to handle command, but not enough arguments were supplied ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         emote: str | None = splits[1]
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
@@ -106,7 +106,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Attempted to handle command, but an invalid emote argument was given ({emote=}) ({normalizedEmote=}) ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
             emote = normalizedEmote,
@@ -121,7 +121,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Attempted to handle command, but no trivia question reference was found ({reference=}) ({emote=}) ({normalizedEmote=}) ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         additionalAnswer: str | None = ' '.join(splits[2:])
         if not utils.isValidStr(additionalAnswer):
@@ -185,5 +185,5 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
 
             self.__timber.log(self.commandName, f'Attempted to handle command, but the question has too many additional answers ({additionalAnswer=}) ({reference=}) ({emote=}) ({normalizedEmote=}) ({splits=}) ({chatMessage=})', e, traceback.format_exc())
 
-        self.__timber.log(self.commandName, f'Handled ({additionalAnswer=}) ({reference=}) ({emote=}) ({normalizedEmote=}) ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({additionalAnswer=}) ({reference=}) ({emote=}) ({normalizedEmote=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED

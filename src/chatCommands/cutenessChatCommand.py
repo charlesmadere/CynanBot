@@ -117,5 +117,5 @@ class CutenessChatCommand(AbsChatCommand):
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log('CutenessChatCommand', f'Handled ({result=})')
+        self.__timber.log('CutenessChatCommand', f'Consumed ({result=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED

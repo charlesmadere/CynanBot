@@ -1,17 +1,19 @@
 from dataclasses import dataclass
-from typing import Any
+
+from ...twitch.localModels.twitchUserInterface import TwitchUserInterface
 
 
 @dataclass(frozen = True, slots = True)
-class TimeoutTarget:
+class TimeoutTarget(TwitchUserInterface):
     userId: str
+    userLogin: str
     userName: str
 
-    def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, TimeoutTarget):
-            return False
+    def getUserId(self) -> str:
+        return self.userId
 
-        return self.userId == other.userId
+    def getUserLogin(self) -> str:
+        return self.userLogin
 
-    def __hash__(self) -> int:
-        return hash(self.userId)
+    def getUserName(self) -> str:
+        return self.userName

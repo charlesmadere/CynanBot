@@ -17,7 +17,7 @@ from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ..twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
 
 class CheerActionHelper(CheerActionHelperInterface):
@@ -33,7 +33,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         ttsCheerActionHelper: TtsCheerActionHelperInterface | None,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         queueSleepTimeSeconds: float = 0.5,
         queueTimeoutSeconds: int = 3,
     ):
@@ -55,8 +55,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 0.125 or queueSleepTimeSeconds > 3:
@@ -75,7 +75,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__ttsCheerActionHelper: Final[TtsCheerActionHelperInterface | None] = ttsCheerActionHelper
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__queueSleepTimeSeconds: Final[float] = queueSleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
@@ -93,8 +93,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             twitchChannelId = cheerInfo.twitchChannelId,
         )
 
-        moderatorUserId = await self.__userIdsRepository.requireUserId(
-            userName = await self.__twitchHandleProvider.getTwitchHandle(),
+        moderatorUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(
+            userLoginOrName = await self.__twitchHandleProvider.getTwitchHandle(),
             twitchAccessToken = userTwitchAccessToken,
         )
 
@@ -154,6 +154,7 @@ class CheerActionHelper(CheerActionHelperInterface):
             actions = actions,
             bits = cheerInfo.bits,
             cheerUserId = cheerInfo.cheerUserId,
+            cheerUserLogin = cheerInfo.cheerUserLogin,
             cheerUserName = cheerInfo.cheerUserName,
             message = cheerInfo.message,
             twitchChannelId = cheerInfo.twitchChannelId,

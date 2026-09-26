@@ -31,7 +31,7 @@ from ..triviaFetchOptions import TriviaFetchOptions
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ...twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 
 
 class GlacialTriviaQuestionRepository(
@@ -48,7 +48,7 @@ class GlacialTriviaQuestionRepository(
         triviaSettings: TriviaSettingsInterface,
         triviaSourceParser: TriviaSourceParserInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsRepository: TwitchUserIdsRepositoryInterface,
         triviaDatabaseFile: str = '../db/glacialTriviaQuestionsDatabase.sqlite',
     ):
         super().__init__(
@@ -67,8 +67,8 @@ class GlacialTriviaQuestionRepository(
             raise TypeError(f'triviaSourceParser argument is malformed: \"{triviaSourceParser}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsRepository, TwitchUserIdsRepositoryInterface):
+            raise TypeError(f'twitchUserIdsRepository argument is malformed: \"{twitchUserIdsRepository}\"')
         elif not utils.isValidStr(triviaDatabaseFile):
             raise TypeError(f'triviaDatabaseFile argument is malformed: \"{triviaDatabaseFile}\"')
 
@@ -78,7 +78,7 @@ class GlacialTriviaQuestionRepository(
         self.__triviaQuestionCompiler: Final[TriviaQuestionCompilerInterface] = triviaQuestionCompiler
         self.__triviaSourceParser: Final[TriviaSourceParserInterface] = triviaSourceParser
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = twitchUserIdsRepository
         self.__triviaDatabaseFile: Final[str] = triviaDatabaseFile
 
         self.__areTablesCreated: bool = False
@@ -586,7 +586,7 @@ class GlacialTriviaQuestionRepository(
             return twitchChannelId
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        twitchChannelId = await self.__userIdsRepository.requireUserId(twitchHandle)
+        twitchChannelId = await self.__twitchUserIdsRepository.requireIdByLoginOrName(twitchHandle)
         self.__twitchChannelId = twitchChannelId
 
         return twitchChannelId

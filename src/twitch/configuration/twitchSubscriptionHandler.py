@@ -1,5 +1,6 @@
 import math
 import random
+import traceback
 from typing import Final
 
 from ..absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
@@ -11,6 +12,8 @@ from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderI
 from ..localModels.mapper.twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
 from ..officialAccounts.officialTwitchAccountUserIdProviderInterface import OfficialTwitchAccountUserIdProviderInterface
 from ..tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
+from ..userIds.exceptions import NoTwitchUserDataFoundException
+from ..userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from ...misc import utils as utils
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
@@ -21,7 +24,6 @@ from ...trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ...tts.models.ttsEvent import TtsEvent
 from ...tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ...tts.models.ttsSubscriptionDonation import TtsSubscriptionDonation
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...users.userInterface import UserInterface
 
 
@@ -39,7 +41,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchLocalModelsMapper: TwitchLocalModelsMapperInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
         if not isinstance(officialTwitchAccountUserIdProvider, OfficialTwitchAccountUserIdProviderInterface):
             raise TypeError(f'officialTwitchAccountUserIdProvider argument is malformed: \"{officialTwitchAccountUserIdProvider}\"')
@@ -61,8 +63,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise TypeError(f'twitchLocalModelsMapper argument is malformed: \"{twitchLocalModelsMapper}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
         self.__officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderInterface] = officialTwitchAccountUserIdProvider
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
@@ -74,7 +76,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchLocalModelsMapper: Final[TwitchLocalModelsMapperInterface] = twitchLocalModelsMapper
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
 
     async def onNewSubscription(self, subscriptionData: AbsTwitchSubscriptionHandler.SubscriptionData):
         if not isinstance(subscriptionData, AbsTwitchSubscriptionHandler.SubscriptionData):
@@ -133,12 +135,17 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 twitchChannelId = twitchChannelId,
             )
 
-            eventUserName = await self.__userIdsRepository.fetchUserName(
-                userId = eventUserId,
-                twitchAccessToken = twitchAccessToken,
-            )
+            try:
+                chatterUserData = await self.__twitchUserIdsHelper.requireById(
+                    userId = eventUserId,
+                    twitchAccessToken = twitchAccessToken,
+                )
 
-            eventUserLogin = eventUserName
+                eventUserLogin = chatterUserData.userLogin
+                eventUserName = chatterUserData.userName
+            except NoTwitchUserDataFoundException as e:
+                self.__timber.log('TwitchSubscriptionHandler', f'Failed to fetch anonymous gifter chatter data ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({eventUserId=})', e, traceback.format_exc())
+                return
 
         if not utils.isValidStr(eventUserId) or not utils.isValidStr(eventUserLogin) or not utils.isValidStr(eventUserName) or tier is None or subscriptionType is None:
             self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({eventUserId=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
@@ -182,8 +189,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
 
-        twitchId = await self.__userIdsRepository.fetchUserId(
-            userName = twitchHandle,
+        twitchId = await self.__twitchUserIdsHelper.getIdByLoginOrName(
+            userLoginOrName = twitchHandle,
         )
 
         if not utils.isValidStr(twitchId) or twitchId != recipientUserId:

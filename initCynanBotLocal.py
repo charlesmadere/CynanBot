@@ -339,10 +339,15 @@ from src.timeout.settings.timeoutActionSettingsInterface import TimeoutActionSet
 from src.timeout.useCases.calculateTimeoutDurationUseCase import CalculateTimeoutDurationUseCase
 from src.timeout.useCases.calculateTimeoutDurationUseCaseInterface import CalculateTimeoutDurationUseCaseInterface
 from src.timeout.useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
+from src.timeout.useCases.determineAirStrikeTargetsUseCaseInterface import DetermineAirStrikeTargetsUseCaseInterface
 from src.timeout.useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
+from src.timeout.useCases.determineBananaTargetUseCaseInterface import DetermineBananaTargetUseCaseInterface
 from src.timeout.useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
+from src.timeout.useCases.determineGrenadeTargetUseCaseInterface import DetermineGrenadeTargetUseCaseInterface
 from src.timeout.useCases.determineTimeoutTargetUseCase import DetermineTimeoutTargetUseCase
+from src.timeout.useCases.determineTimeoutTargetUseCaseInterface import DetermineTimeoutTargetUseCaseInterface
 from src.timeout.useCases.determineTm36SplashTargetUseCase import DetermineTm36SplashTargetUseCase
+from src.timeout.useCases.determineTm36SplashTargetUseCaseInterface import DetermineTm36SplashTargetUseCaseInterface
 from src.trollmoji.trollmojiHelper import TrollmojiHelper
 from src.trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepository
@@ -1730,7 +1735,7 @@ chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = ChatterInventor
 
 calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface] = CalculateTimeoutDurationUseCase()
 
-determineAirStrikeTargetsUseCase = DetermineAirStrikeTargetsUseCase(
+determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCaseInterface] = DetermineAirStrikeTargetsUseCase(
     activeChattersRepository = activeChattersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
@@ -1739,13 +1744,13 @@ determineAirStrikeTargetsUseCase = DetermineAirStrikeTargetsUseCase(
     userIdsRepository = userIdsRepository,
 )
 
-determineBananaTargetUseCase = DetermineBananaTargetUseCase(
+determineBananaTargetUseCase: Final[DetermineBananaTargetUseCaseInterface] = DetermineBananaTargetUseCase(
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
 )
 
-determineGrenadeTargetUseCase = DetermineGrenadeTargetUseCase(
+determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCaseInterface] = DetermineGrenadeTargetUseCase(
     activeChattersRepository = activeChattersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
@@ -1754,21 +1759,21 @@ determineGrenadeTargetUseCase = DetermineGrenadeTargetUseCase(
     userIdsRepository = userIdsRepository,
 )
 
-determineTimeoutTargetUseCase = DetermineTimeoutTargetUseCase(
+determineTimeoutTargetUseCase: Final[DetermineTimeoutTargetUseCaseInterface] = DetermineTimeoutTargetUseCase(
     timber = timber,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     twitchTokensUtils = twitchTokensUtils,
     userIdsRepository = userIdsRepository,
 )
 
-determineTm36SplashTargetUseCase = DetermineTm36SplashTargetUseCase(
+determineTm36SplashTargetUseCase: Final[DetermineTm36SplashTargetUseCaseInterface] = DetermineTm36SplashTargetUseCase(
     activeChattersRepository = activeChattersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
 )
 
-timeoutIdGenerator: TimeoutIdGeneratorInterface = TimeoutIdGenerator()
+timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = TimeoutIdGenerator()
 
 anivCopyMessageTimeoutScoreRepository: Final[AnivCopyMessageTimeoutScoreRepositoryInterface] = AnivCopyMessageTimeoutScoreRepository(
     backingDatabase = backingDatabase,

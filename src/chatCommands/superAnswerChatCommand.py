@@ -72,5 +72,5 @@ class SuperAnswerChatCommand(AbsChatCommand):
             userName = chatMessage.chatterUserName,
         ))
 
-        self.__timber.log(self.commandName, f'Handled ({actionId=}) ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({actionId=}) ({answer=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED

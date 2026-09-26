@@ -1,5 +1,6 @@
 import re
 import traceback
+from dataclasses import dataclass
 from typing import Collection, Final, Pattern
 
 from .absChatCommand import AbsChatCommand
@@ -11,10 +12,18 @@ from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
+from ..twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
 
 class GiveCutenessChatCommand(AbsChatCommand):
+
+    @dataclass(frozen = True, slots = True)
+    class Arguments:
+        giveAmount: int
+        chatterUserId: str
+        chatterUserLogin: str
+        chatterUserName: str
 
     def __init__(
         self,
@@ -23,7 +32,8 @@ class GiveCutenessChatCommand(AbsChatCommand):
         triviaUtils: TriviaUtilsInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchTokensUtils: TwitchTokensUtilsInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -35,19 +45,24 @@ class GiveCutenessChatCommand(AbsChatCommand):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
+            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
         self.__cutenessRepository: Final[CutenessRepositoryInterface] = cutenessRepository
         self.__timber: Final[TimberInterface] = timber
         self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
             re.compile(r'^\s*!givecuteness\b', re.IGNORECASE),
         })
+
+        self.__argumentsPattern: Final[Pattern] = re.compile(r'^\s*!\w+\s+@?(\w+)\s+(-?\d+)', re.IGNORECASE)
 
     @property
     def commandName(self) -> str:
@@ -60,79 +75,95 @@ class GiveCutenessChatCommand(AbsChatCommand):
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
         if not chatMessage.twitchUser.isCutenessEnabled or not chatMessage.twitchUser.isGiveCutenessEnabled:
             return ChatCommandResult.IGNORED
-        elif not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannelId = chatMessage.twitchChannelId,
-            userId = chatMessage.chatterUserId,
-        ):
+        elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
-        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
+        arguments = await self.__parseArguments(
+            chatMessage = chatMessage,
+        )
 
-        splits = utils.getCleanedSplits(chatMessage.text)
-        if len(splits) < 3:
-            self.__timber.log(self.commandName, f'Less than 2 arguments given ({chatMessage=}) ({splits=})')
+        if arguments is None:
             self.__twitchChatMessenger.send(
-                text = f'⚠ Username and amount is necessary for this command. Example: !givecuteness @{twitchHandle} 5',
+                text = f'⚠ Invalid arguments! Example use: !givecuteness @{chatMessage.chatterUserName} 10',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return ChatCommandResult.HANDLED
 
-        targetUserName: str | None = splits[1]
-        if not utils.isValidStr(targetUserName) or not utils.strContainsAlphanumericCharacters(targetUserName):
-            self.__timber.log(self.commandName, f'Given target username is malformed ({chatMessage=}) ({splits=}) ({targetUserName=})')
-            self.__twitchChatMessenger.send(
-                text = f'⚠ Username argument is malformed. Example: !givecuteness @{twitchHandle} 5',
-                twitchChannelId = chatMessage.twitchChannelId,
-                replyMessageId = chatMessage.twitchChatMessageId,
-            )
-            return ChatCommandResult.HANDLED
-
-        targetUserName = utils.removePreceedingAt(targetUserName)
-        incrementAmountStr: str | None = splits[2]
-
-        try:
-            incrementAmount = int(incrementAmountStr)
-        except Exception as e:
-            self.__timber.log(self.commandName, f'Unable to convert increment amount into an int ({chatMessage=}) ({splits=}) ({targetUserName=}) ({incrementAmountStr=})', e, traceback.format_exc())
-            self.__twitchChatMessenger.send(
-                text = f'⚠ Increment amount argument is malformed. Example: !givecuteness @{targetUserName} 5',
-                twitchChannelId = chatMessage.twitchChannelId,
-                replyMessageId = chatMessage.twitchChatMessageId,
-            )
-            return ChatCommandResult.HANDLED
-
-        targetUserId = await self.__userIdsRepository.fetchUserId(userName = targetUserName)
-
-        if not utils.isValidStr(targetUserId):
-            self.__twitchChatMessenger.send(
-                text = f'⚠ Unable to fetch user ID for \"{targetUserName}\"',
-                twitchChannelId = chatMessage.twitchChannelId,
-                replyMessageId = chatMessage.twitchChatMessageId,
-            )
-            return ChatCommandResult.HANDLED
+            self.__timber.log(self.commandName, f'Invalid arguments ({arguments=}) ({chatMessage=})')
+            return ChatCommandResult.CONSUMED
 
         try:
             result = await self.__cutenessRepository.fetchCutenessIncrementedBy(
-                incrementAmount = incrementAmount,
+                incrementAmount = arguments.giveAmount,
                 twitchChannel = chatMessage.twitchChannel,
                 twitchChannelId = chatMessage.twitchChannelId,
-                userId = targetUserId,
-                userName = targetUserName,
-            )
-
-            self.__twitchChatMessenger.send(
-                text = f'ⓘ Cuteness for @{targetUserName} is now {result.newCutenessStr} (was previously {result.previousCutenessStr})',
-                twitchChannelId = chatMessage.twitchChannelId,
-                replyMessageId = chatMessage.twitchChatMessageId,
+                userId = arguments.chatterUserId,
+                userName = arguments.chatterUserLogin,
             )
         except (OverflowError, ValueError) as e:
-            self.__timber.log(self.commandName, f'Error giving cuteness ({chatMessage=}) ({incrementAmount=}) ({targetUserId=}) ({targetUserName=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
-                text = f'⚠ Error giving cuteness to \"{targetUserName}\"',
+                text = f'⚠ Error giving cuteness! Example use: !givecuteness @{chatMessage.chatterUserName} 10',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log(self.commandName, f'Consumed ({chatMessage=}) ({incrementAmount=}) ({targetUserId=}) ({targetUserName=})')
+            self.__timber.log(self.commandName, f'Error giving cuteness ({arguments=}) ({chatMessage=})', e, traceback.format_exc())
+            return ChatCommandResult.CONSUMED
+
+        self.__twitchChatMessenger.send(
+            text = f'ⓘ Cuteness for @{arguments.chatterUserLogin} is now {result.newCutenessStr} (was previously {result.previousCutenessStr})',
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
+        )
+
+        self.__timber.log(self.commandName, f'Consumed ({result=}) ({arguments=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
+
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+
+        isPrivilegedTriviaUser = await self.__triviaUtils.isPrivilegedTriviaUser(
+            twitchChannelId = chatMessage.twitchChannelId,
+            userId = chatMessage.chatterUserId,
+        )
+
+        return isStreamer or isPrivilegedTriviaUser
+
+    async def __parseArguments(self, chatMessage: TwitchChatMessage) -> Arguments | None:
+        argumentsMatch = self.__argumentsPattern.match(chatMessage.text)
+        if argumentsMatch is None:
+            return None
+
+        chatterUserName = argumentsMatch.group(1)
+
+        try:
+            chatterUserData = await self.__twitchUserIdsHelper.requireByLoginOrName(
+                userLoginOrName = chatterUserName,
+                twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+                    twitchChannelId = chatMessage.twitchChannelId,
+                ),
+            )
+        except Exception as e:
+            self.__timber.log(self.commandName, f'Failed to fetch user data for the given chatter username ({chatterUserName=}) ({argumentsMatch=}) ({chatMessage=})', e, traceback.format_exc())
+            return None
+
+        giveAmount = 1
+        giveAmountString = argumentsMatch.group(2)
+
+        if utils.isValidStr(giveAmountString):
+            try:
+                giveAmount = int(giveAmountString)
+            except Exception as e:
+                self.__timber.log(self.commandName, f'Failed to parse giveAmountString into an int ({giveAmountString=}) ({chatterUserData=}) ({chatterUserName=}) ({argumentsMatch=}) ({chatMessage=})', e, traceback.format_exc())
+                return None
+
+            if giveAmount < utils.getShortMinSafeSize() or giveAmount > utils.getShortMaxSafeSize():
+                self.__timber.log(self.commandName, f'The giveAmount value is out of bounds ({giveAmount=}) ({giveAmountString=}) ({chatterUserData=}) ({chatterUserName=}) ({argumentsMatch=}) ({chatMessage=})')
+                return None
+
+        return GiveCutenessChatCommand.Arguments(
+            giveAmount = giveAmount,
+            chatterUserId = chatterUserData.userId,
+            chatterUserLogin = chatterUserData.userLogin,
+            chatterUserName = chatterUserData.userName,
+        )

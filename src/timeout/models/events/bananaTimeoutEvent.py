@@ -9,6 +9,7 @@ from ..timeoutDiceRollFailureData import TimeoutDiceRollFailureData
 from ..timeoutTarget import TimeoutTarget
 from ....asplodieStats.models.asplodieStats import AsplodieStats
 from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
+from ....twitch.localModels.twitchUserInterface import TwitchUserInterface
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
@@ -20,12 +21,12 @@ class BananaTimeoutEvent(AbsTimeoutEvent):
     timeoutDuration: CalculatedTimeoutDuration
     updatedInventory: ChatterItemGiveResult | None
     eventId: str
-    instigatorUserName: str
     ripBozoEmote: str
     diceRoll: TimeoutDiceRoll | None
     diceRollFailureData: TimeoutDiceRollFailureData | None
     timeoutTarget: TimeoutTarget
     timeoutResult: TwitchTimeoutResult
+    instigatorUserData: TwitchUserInterface
 
     def getEventId(self) -> str:
         return self.eventId

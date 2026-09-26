@@ -6,6 +6,7 @@ from frozenlist import FrozenList
 from .additionalTriviaAnswer import AdditionalTriviaAnswer
 from .additionalTriviaAnswers import AdditionalTriviaAnswers
 from .additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
+from ..misc.triviaQuestionTypeParserInterface import TriviaQuestionTypeParserInterface
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..settings.triviaSettingsInterface import TriviaSettingsInterface
@@ -19,9 +20,6 @@ from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
 from ...storage.exceptions import DatabaseOperationalError
 from ...timber.timberInterface import TimberInterface
-from ...twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ...twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterface):
@@ -30,30 +28,22 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
+        triviaQuestionTypeParser: TriviaQuestionTypeParserInterface,
         triviaSettings: TriviaSettingsInterface,
-        twitchHandleProvider: TwitchHandleProviderInterface,
-        twitchTokensRepository: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaQuestionTypeParser, TriviaQuestionTypeParserInterface):
+            raise TypeError(f'triviaQuestionTypeParser argument is malformed: \"{triviaQuestionTypeParser}\"')
         elif not isinstance(triviaSettings, TriviaSettingsInterface):
             raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
-        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
-            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__backingDatabase: Final[BackingDatabase] = backingDatabase
         self.__timber: Final[TimberInterface] = timber
+        self.__triviaQuestionTypeParser: Final[TriviaQuestionTypeParserInterface] = triviaQuestionTypeParser
         self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
-        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
-        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
         self.__isDatabaseReady: bool = False
 
@@ -108,21 +98,12 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                         triviaSource = triviaSource,
                     )
 
-        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
-
-        userName = await self.__userIdsRepository.requireUserName(
-            userId = userId,
-            twitchAccessToken = twitchAccessToken,
-        )
-
         additionalAnswersList.append(AdditionalTriviaAnswer(
             answer = additionalAnswer,
             userId = userId,
-            userName = userName,
         ))
 
-        additionalAnswersList.sort(key = lambda additionalAnswer: (additionalAnswer.answer.casefold(), additionalAnswer.userName.casefold()))
+        additionalAnswersList.sort(key = lambda additionalAnswer: additionalAnswer.answer.casefold())
 
         if len(additionalAnswersList) > await self.__triviaSettings.getMaxAdditionalTriviaAnswers():
             raise TooManyAdditionalTriviaAnswersException(
@@ -257,10 +238,9 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         try:
             records = await connection.fetchRows(
                 '''
-                    SELECT additionaltriviaanswers.additionalanswer, additionaltriviaanswers.userid, userids.username FROM additionaltriviaanswers
-                    INNER JOIN userids ON additionaltriviaanswers.userid = userids.userid
-                    WHERE additionaltriviaanswers.triviaid = $1 AND additionaltriviaanswers.triviasource = $2 AND additionaltriviaanswers.triviatype = $3
-                    ORDER BY additionaltriviaanswers.additionalanswer ASC
+                    SELECT additionalanswer, userid FROM additionaltriviaanswers
+                    WHERE triviaid = $1 AND triviasource = $2 AND triviatype = $3
+                    ORDER BY additionalanswer ASC
                 ''',
                 triviaId, triviaSource.toStr(), triviaQuestionType.toStr(),
             )
@@ -278,10 +258,9 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             additionalAnswers.append(AdditionalTriviaAnswer(
                 answer = record[0],
                 userId = record[1],
-                userName = record[2],
             ))
 
-        additionalAnswers.sort(key = lambda additionalAnswer: (additionalAnswer.answer.casefold(), additionalAnswer.userName.casefold()))
+        additionalAnswers.sort(key = lambda additionalAnswer: additionalAnswer.answer.casefold())
 
         frozenAnswers: FrozenList[AdditionalTriviaAnswer] = FrozenList(additionalAnswers)
         frozenAnswers.freeze()

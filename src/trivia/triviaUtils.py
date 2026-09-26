@@ -22,7 +22,7 @@ from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ..twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
 
 
@@ -37,7 +37,7 @@ class TriviaUtils(TriviaUtilsInterface):
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface,
         triviaQuestionPresenter: TriviaQuestionPresenterInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsRepository: TwitchUserIdsRepositoryInterface,
         celebratoryEmote: str = '🎉',
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
@@ -54,8 +54,8 @@ class TriviaUtils(TriviaUtilsInterface):
             raise TypeError(f'triviaQuestionPresenter argument is malformed: \"{triviaQuestionPresenter}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsRepository, TwitchUserIdsRepositoryInterface):
+            raise TypeError(f'twitchUserIdsRepository argument is malformed: \"{twitchUserIdsRepository}\"')
         elif not utils.isValidStr(celebratoryEmote):
             raise TypeError(f'celebratoryEmote argument is malformed: \"{celebratoryEmote}\"')
 
@@ -66,7 +66,7 @@ class TriviaUtils(TriviaUtilsInterface):
         self.__triviaGameGlobalControllersRepository: Final[TriviaGameGlobalControllersRepositoryInterface] = triviaGameGlobalControllersRepository
         self.__triviaQuestionPresenter: Final[TriviaQuestionPresenterInterface] = triviaQuestionPresenter
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = twitchUserIdsRepository
         self.__celebratoryEmote: Final[str] = celebratoryEmote
 
     async def getClearedSuperTriviaQueueMessage(self, numberOfGamesRemoved: int) -> str:
@@ -519,8 +519,8 @@ class TriviaUtils(TriviaUtilsInterface):
 
         userNames: list[str] = list()
         for bannedController in frozenBannedControllers:
-            userName = await self.__userIdsRepository.requireUserName(bannedController)
-            userNames.append(userName)
+            userData = await self.__twitchUserIdsRepository.requireById(bannedController)
+            userNames.append(userData.getUserName())
 
         userNames.sort(key = lambda userName: userName.casefold())
         bannedControllersStr = ', '.join(userNames)
@@ -541,8 +541,8 @@ class TriviaUtils(TriviaUtilsInterface):
 
         userNames: list[str] = list()
         for gameController in frozenGameControllers:
-            userName = await self.__userIdsRepository.requireUserName(gameController)
-            userNames.append(userName)
+            userData = await self.__twitchUserIdsRepository.requireById(gameController)
+            userNames.append(userData.getUserName())
 
         userNames.sort(key = lambda userName: userName.casefold())
         gameControllersStr = ', '.join(userNames)
@@ -563,8 +563,8 @@ class TriviaUtils(TriviaUtilsInterface):
 
         userNames: list[str] = list()
         for gameController in frozenGameControllers:
-            userName = await self.__userIdsRepository.requireUserName(gameController)
-            userNames.append(userName)
+            userData = await self.__twitchUserIdsRepository.requireById(gameController)
+            userNames.append(userData.getUserName())
 
         userNames.sort(key = lambda userName: userName.casefold())
         gameControllersStr = ', '.join(userNames)

@@ -66,7 +66,7 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
 
         if await self.__twitchChannelEditorsRepository.isEditor(
             chatterUserId = chatMessage.chatterUserId,
-            twitchChannelId =  chatMessage.twitchChannelId,
+            twitchChannelId = chatMessage.twitchChannelId,
         ):
             printOut = await self.__handleChatCommandAsEditor(
                 chatMessage = chatMessage,
@@ -82,7 +82,7 @@ class AnivTimeoutsChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __handleChatCommandAsEditor(self, chatMessage: TwitchChatMessage) -> str:

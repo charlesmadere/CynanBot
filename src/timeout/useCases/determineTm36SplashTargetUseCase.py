@@ -3,6 +3,7 @@ from typing import Collection, Final
 
 from frozenlist import FrozenList
 
+from .determineTm36SplashTargetUseCaseInterface import DetermineTm36SplashTargetUseCaseInterface
 from ..models.actions.tm36TimeoutAction import Tm36TimeoutAction
 from ..models.timeoutTarget import TimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
@@ -13,7 +14,7 @@ from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveCha
 from ...twitch.timeout.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
 
 
-class DetermineTm36SplashTargetUseCase:
+class DetermineTm36SplashTargetUseCase(DetermineTm36SplashTargetUseCaseInterface):
 
     def __init__(
         self,
@@ -73,17 +74,18 @@ class DetermineTm36SplashTargetUseCase:
             splashTargets.freeze()
             return splashTargets
 
-        randomlySortedChatters = list(vulnerableChatters.values())
+        randomlySortedChatters: list[ActiveChatter] = list(vulnerableChatters.values())
         random.shuffle(randomlySortedChatters)
 
         rollAgain = True
-        maxSplashTargets = await self.__timeoutActionSettings.getTm36MaxSplashDamageTargets()
+        maxTargets = await self.__timeoutActionSettings.getTm36MaxSplashDamageTargets()
 
-        while rollAgain and len(randomlySortedChatters) >= 1 and len(splashTargets) < maxSplashTargets:
+        while rollAgain and len(randomlySortedChatters) >= 1 and len(splashTargets) < maxTargets:
             randomChatter = randomlySortedChatters.pop()
 
             splashTargets.append(TimeoutTarget(
                 userId = randomChatter.chatterUserId,
+                userLogin = randomChatter.chatterUserLogin,
                 userName = randomChatter.chatterUserName,
             ))
 

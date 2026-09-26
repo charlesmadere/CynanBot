@@ -3,13 +3,14 @@ from dataclasses import dataclass
 from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.bananaTimeoutAction import BananaTimeoutAction
+from ....twitch.localModels.twitchUserInterface import TwitchUserInterface
 
 
 @dataclass(frozen = True, slots = True)
 class NoBananaInventoryAvailableTimeoutEvent(AbsTimeoutEvent):
     originatingAction: BananaTimeoutAction
     eventId: str
-    instigatorUserName: str
+    instigatorUserData: TwitchUserInterface
 
     def getEventId(self) -> str:
         return self.eventId
