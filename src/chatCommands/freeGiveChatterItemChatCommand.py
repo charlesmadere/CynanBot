@@ -74,6 +74,7 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
             re.compile(r'^\s*!freegive(?:chatter)?item\b', re.IGNORECASE),
             re.compile(r'^\s*!free(?:chatter)?item(?:give)?\b', re.IGNORECASE),
+            re.compile(r'^\s*!givefree(?:chatter)?item\b', re.IGNORECASE),
         })
 
     async def __chooseRandomEnabledItemType(self) -> str:
@@ -129,12 +130,17 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
             amount = updatedInventory[itemType]
             amountString = locale.format_string("%d", amount, grouping = True)
 
-            if amount == 1:
-                inventoryStrings.append(f'{amountString} {itemType.humanName}')
-            else:
-                inventoryStrings.append(f'{amountString} {itemType.pluralHumanName}')
+            match amount:
+                case 0: continue
+                case 1: inventoryStrings.append(f'{amountString} {itemType.humanName}')
+                case _: inventoryStrings.append(f'{amountString} {itemType.pluralHumanName}')
 
-        inventoryString = ', '.join(inventoryStrings)
+        inventoryString: str
+
+        if len(inventoryStrings) == 0:
+            inventoryString = f'inventory is empty {utils.getRandomSadEmoji()}'
+        else:
+            inventoryString = ', '.join(inventoryStrings)
 
         self.__twitchChatMessenger.send(
             text = f'ⓘ Updated inventory for @{updatedInventory.chatterUserName} — {inventoryString}',

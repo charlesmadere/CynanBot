@@ -300,10 +300,6 @@ def getRandomSadEmoji() -> str:
     sadEmoji: list[str] = [ '😭', '😢', '😿', '🤣', '😥', '🥲' ]
     return random.choice(sadEmoji)
 
-def getRandomSpaceEmoji() -> str:
-    spaceEmoji: list[str] = [ '🚀', '👾', '☄️', '🌌', '👨‍🚀', '👩‍🚀', '👽', '🌠' ]
-    return random.choice(spaceEmoji)
-
 def getShortMaxSafeSize() -> int:
     # taken from Java's Short.MAX_VALUE constant
     return 32767

@@ -406,6 +406,9 @@ from src.twitch.api.jsonMapper.twitchJsonMapper import TwitchJsonMapper
 from src.twitch.api.jsonMapper.twitchJsonMapperInterface import TwitchJsonMapperInterface
 from src.twitch.api.twitchApiService import TwitchApiService
 from src.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
+from src.twitch.channelEditors.hardcodedTwitchChannelEditorsRepository import HardcodedTwitchChannelEditorsRepository
+from src.twitch.channelEditors.hardcodedTwitchChannelEditorsRepositoryInterface import \
+    HardcodedTwitchChannelEditorsRepositoryInterface
 from src.twitch.channelEditors.twitchChannelEditorsRepository import TwitchChannelEditorsRepository
 from src.twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from src.twitch.channelInformationHelper.twitchChannelInformationHelper import TwitchChannelInformationHelper
@@ -830,7 +833,18 @@ emojiHelper: Final[EmojiHelperInterface] = EmojiHelper(
     emojiRepository = emojiRepository,
 )
 
+globalTwitchConstants: Final[GlobalTwitchConstantsInterface] = GlobalTwitchConstants()
+
+officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderInterface] = OfficialTwitchAccountUserIdProvider()
+
+twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = TwitchFriendsUserIdRepository()
+
+hardcodedTwitchChannelEditorsRepository: Final[HardcodedTwitchChannelEditorsRepositoryInterface] = HardcodedTwitchChannelEditorsRepository(
+    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
+)
+
 twitchChannelEditorsRepository: Final[TwitchChannelEditorsRepositoryInterface] = TwitchChannelEditorsRepository(
+    hardcodedTwitchChannelEditorsRepository = hardcodedTwitchChannelEditorsRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
@@ -895,12 +909,6 @@ twitchModeratorHelper: Final[TwitchModeratorHelperInterface] = TwitchModeratorHe
     twitchApiService = twitchApiService,
     twitchTokensRepository = twitchTokensRepository,
 )
-
-globalTwitchConstants: Final[GlobalTwitchConstantsInterface] = GlobalTwitchConstants()
-
-officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderInterface] = OfficialTwitchAccountUserIdProvider()
-
-twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = TwitchFriendsUserIdRepository()
 
 twitchChatMessenger: Final[TwitchChatMessengerInterface] = TwitchChatMessenger(
     backgroundTaskHelper = backgroundTaskHelper,

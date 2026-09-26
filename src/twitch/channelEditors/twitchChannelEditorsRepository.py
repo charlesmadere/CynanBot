@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Final
 
+from .hardcodedTwitchChannelEditorsRepositoryInterface import HardcodedTwitchChannelEditorsRepositoryInterface
 from .twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from ..api.models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
@@ -22,13 +23,16 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
 
     def __init__(
         self,
+        hardcodedTwitchChannelEditorsRepository: HardcodedTwitchChannelEditorsRepositoryInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         cacheTimeToLive: timedelta = timedelta(days = 1),
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(hardcodedTwitchChannelEditorsRepository, HardcodedTwitchChannelEditorsRepositoryInterface):
+            raise TypeError(f'hardcodedTwitchChannelEditorsRepository argument is malformed: \"{hardcodedTwitchChannelEditorsRepository}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
@@ -39,6 +43,7 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
         elif not isinstance(cacheTimeToLive, timedelta):
             raise TypeError(f'cacheTimeToLive argument is malformed: \"{cacheTimeToLive}\"')
 
+        self.__hardcodedTwitchChannelEditorsRepository: Final[HardcodedTwitchChannelEditorsRepositoryInterface] = hardcodedTwitchChannelEditorsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
@@ -145,6 +150,12 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
 
         for channelEditor in channelEditorsResponse.editors:
             editorUserIds.add(channelEditor.userId)
+
+        hardcodedEditorUserIds = await self.__hardcodedTwitchChannelEditorsRepository.get(
+            twitchChannelId = twitchChannelId,
+        )
+
+        editorUserIds.update(hardcodedEditorUserIds)
 
         return TwitchChannelEditorsRepository.ChannelEditorsData(
             fetchedAt = fetchedAt,
