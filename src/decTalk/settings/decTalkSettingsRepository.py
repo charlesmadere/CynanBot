@@ -48,7 +48,7 @@ class DecTalkSettingsRepository(DecTalkSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 40)
+        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 36)
 
     async def requireDecTalkExecutablePath(self) -> str:
         decTalkPath = await self.getDecTalkExecutablePath()
