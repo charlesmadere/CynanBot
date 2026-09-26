@@ -70,7 +70,7 @@ class TriviaScoreChatCommand(AbsChatCommand):
             re.compile(r'^\s*!triviascore\b', re.IGNORECASE),
         })
 
-        self.__argumentsPattern: Final[Pattern] = re.compile(r'^\s*!\w+\s+@?(\w+)\s+(\w+)(?:\s+(-?\d+))?', re.IGNORECASE)
+        self.__argumentsPattern: Final[Pattern] = re.compile(r'^\s*!\w+\s+@?(\w+)', re.IGNORECASE)
 
     @property
     def commandName(self) -> str:
@@ -133,7 +133,7 @@ class TriviaScoreChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Consumed ({shinyResult=}) ({toxicResult=}) ({triviaResult=}) ({arguments=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({triviaResult=}) ({toxicResult=}) ({shinyResult=}) ({arguments=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __parseArguments(self, chatMessage: TwitchChatMessage) -> Arguments | None:
