@@ -2736,36 +2736,36 @@ recurringActionsWizard: Final[RecurringActionsWizardInterface] = RecurringAction
 ## Translation initialization section ##
 ########################################
 
-deepLJsonMapper: DeepLJsonMapperInterface = DeepLJsonMapper(
+deepLJsonMapper: Final[DeepLJsonMapperInterface] = DeepLJsonMapper(
     languagesRepository = languagesRepository,
-    timber = timber
+    timber = timber,
 )
 
-deepLApiService: DeepLApiServiceInterface = DeepLApiService(
+deepLApiService: Final[DeepLApiServiceInterface] = DeepLApiService(
     deepLAuthKeyProvider = authRepository,
     deepLJsonMapper = deepLJsonMapper,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
-deepLTranslationApi = DeepLTranslationApi(
+deepLTranslationApi: Final[DeepLTranslationApi] = DeepLTranslationApi(
     deepLApiService = deepLApiService,
     deepLAuthKeyProvider = authRepository,
-    timber = timber
+    timber = timber,
 )
 
-googleTranslationApi = GoogleTranslationApi(
+googleTranslationApi: Final[GoogleTranslationApi] = GoogleTranslationApi(
     googleApiService = googleApiService,
     googleCloudProjectCredentialsProvider = authRepository,
     languagesRepository = languagesRepository,
-    timber = timber
+    timber = timber,
 )
 
-translationHelper: TranslationHelperInterface = TranslationHelper(
+translationHelper: Final[TranslationHelperInterface] = TranslationHelper(
     deepLTranslationApi = deepLTranslationApi,
     googleTranslationApi = googleTranslationApi,
     languagesRepository = languagesRepository,
-    timber = timber
+    timber = timber,
 )
 
 
