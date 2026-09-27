@@ -204,5 +204,5 @@ class TestCutenessPresenter:
 
     def test_sanity(self):
         assert self.presenter is not None
-        assert isinstance(self.presenter, CutenessPresenterInterface)
         assert isinstance(self.presenter, CutenessPresenter)
+        assert isinstance(self.presenter, CutenessPresenterInterface)
