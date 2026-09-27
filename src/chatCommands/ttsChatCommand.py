@@ -167,6 +167,7 @@ class TtsChatCommand(AbsChatCommand):
                 twitchChannel = chatMessage.twitchChannel,
                 twitchChannelId = chatMessage.twitchChannelId,
                 userId = chatMessage.chatterUserId,
+                userLogin = chatMessage.chatterUserLogin,
                 userName = chatMessage.chatterUserName,
                 donation = None,
                 provider = parsedTtsMessage.ttsProvider,

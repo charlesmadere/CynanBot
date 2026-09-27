@@ -11,6 +11,7 @@ class WatchStreaksHelperInterface(ABC):
         self,
         watchStreak: int,
         chatterUserId: str,
+        chatterUserLogin: str,
         chatterUserName: str,
         twitchChannelId: str,
         user: UserInterface,

@@ -56,6 +56,7 @@ class WatchStreaksHelper(WatchStreaksHelperInterface):
         self,
         watchStreak: int,
         chatterUserId: str,
+        chatterUserLogin: str,
         chatterUserName: str,
         twitchChannelId: str,
         user: UserInterface,
@@ -66,6 +67,8 @@ class WatchStreaksHelper(WatchStreaksHelperInterface):
             raise ValueError(f'watchStreak argument is out of bounds: {watchStreak}')
         elif not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(chatterUserLogin):
+            raise TypeError(f'chatterUserLogin argument is malformed: \"{chatterUserLogin}\"')
         elif not utils.isValidStr(chatterUserName):
             raise TypeError(f'chatterUserName argument is malformed: \"{chatterUserName}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -100,6 +103,7 @@ class WatchStreaksHelper(WatchStreaksHelperInterface):
                 twitchChannel = user.handle,
                 twitchChannelId = twitchChannelId,
                 userId = chatterUserId,
+                userLogin = chatterUserLogin,
                 userName = chatterUserName,
                 donation = None,
                 provider = user.defaultTtsProvider,

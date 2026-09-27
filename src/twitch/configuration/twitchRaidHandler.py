@@ -161,6 +161,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
                 twitchChannel = user.handle,
                 twitchChannelId = raidData.twitchChannelId,
                 userId = raidData.raidUserId,
+                userLogin = raidData.raidUserLogin,
                 userName = raidData.raidUserName,
                 donation = None,
                 provider = user.defaultTtsProvider,

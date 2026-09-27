@@ -166,6 +166,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
                 twitchChannel = event.twitchChannel,
                 twitchChannelId = event.twitchChannelId,
                 userId = event.userId,
+                userLogin = event.userLogin,
                 userName = event.userName,
                 donation = event.donation,
                 provider = provider,
