@@ -160,6 +160,10 @@ class TwitchFriendsUserIdRepositoryInterface(ABC):
         pass
 
     @abstractmethod
+    async def getTawUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getTsteineUserId(self) -> str | None:
         pass
 

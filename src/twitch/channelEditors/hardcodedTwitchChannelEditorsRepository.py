@@ -64,5 +64,7 @@ class HardcodedTwitchChannelEditorsRepository(HardcodedTwitchChannelEditorsRepos
             await self.__twitchFriendsUserIdRepository.getEddieUserId(),
             await self.__twitchFriendsUserIdRepository.getHarleyHardtUserId(),
             await self.__twitchFriendsUserIdRepository.getImytUserId(),
+            await self.__twitchFriendsUserIdRepository.getStashiocatUserId(),
+            await self.__twitchFriendsUserIdRepository.getTawUserId(),
             await self.__twitchFriendsUserIdRepository.getTsteineUserId(),
         })
