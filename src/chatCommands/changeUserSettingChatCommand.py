@@ -7,6 +7,7 @@ from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
+from ..misc.randomUtilsInterface import RandomUtilsInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
@@ -20,12 +21,15 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
+        randomUtils: RandomUtilsInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         usersRepository: UsersRepositoryInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
@@ -34,6 +38,7 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
@@ -65,7 +70,7 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
             return ChatCommandResult.IGNORED
 
         randomJsonConstant = await self.__getRandomJsonConstant()
-        randomBoolean = str(utils.randomBool()).lower()
+        randomBoolean = str(self.__randomUtils.bool()).lower()
 
         splits = utils.getCleanedSplits(chatMessage.text)
         if len(splits) < 2:
@@ -123,7 +128,7 @@ class ChangeUserSettingChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({jsonConstant=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({value=}) ({jsonConstant=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:

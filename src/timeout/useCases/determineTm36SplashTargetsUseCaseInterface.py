@@ -5,7 +5,7 @@ from ..models.actions.tm36TimeoutAction import Tm36TimeoutAction
 from ..models.timeoutTarget import TimeoutTarget
 
 
-class DetermineTm36SplashTargetUseCaseInterface(ABC):
+class DetermineTm36SplashTargetsUseCaseInterface(ABC):
 
     @abstractmethod
     async def invoke(

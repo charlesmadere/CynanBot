@@ -1,7 +1,6 @@
 import locale
-from typing import Final
-
 import math
+from typing import Final
 
 from ..listeners.chatterItemEventListener import ChatterItemEventListener
 from ..models.chatterItemType import ChatterItemType
