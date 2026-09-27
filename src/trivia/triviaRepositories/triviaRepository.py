@@ -3,6 +3,7 @@ import queue
 import random
 import traceback
 from queue import SimpleQueue
+from typing import Final
 
 from frozendict import frozendict
 
@@ -45,7 +46,7 @@ from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ...twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 
 
 class TriviaRepository(TriviaRepositoryInterface):
@@ -72,7 +73,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         triviaSourceInstabilityHelper: TriviaSourceInstabilityHelper,
         triviaVerifier: TriviaVerifierInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsRepository: TwitchUserIdsRepositoryInterface,
         willFryTriviaQuestionRepository: WillFryTriviaQuestionRepository,
         wwtbamTriviaQuestionRepository: WwtbamTriviaQuestionRepository,
         spoolerLoopSleepTimeSeconds: float = 120,
@@ -118,8 +119,8 @@ class TriviaRepository(TriviaRepositoryInterface):
             raise TypeError(f'triviaVerifier argument is malformed: \"{triviaVerifier}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsRepository, TwitchUserIdsRepositoryInterface):
+            raise TypeError(f'twitchUserIdsRepository argument is malformed: \"{twitchUserIdsRepository}\"')
         elif not isinstance(willFryTriviaQuestionRepository, WillFryTriviaQuestionRepository):
             raise TypeError(f'willFryTriviaQuestionRepository argument is malformed: \"{willFryTriviaQuestionRepository}\"')
         elif not isinstance(wwtbamTriviaQuestionRepository, WwtbamTriviaQuestionRepository):
@@ -153,7 +154,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         self.__triviaSourceInstabilityHelper: TriviaSourceInstabilityHelper = triviaSourceInstabilityHelper
         self.__triviaVerifier: TriviaVerifierInterface = triviaVerifier
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = twitchUserIdsRepository
         self.__willFryTriviaQuestionRepository: TriviaQuestionRepositoryInterface = willFryTriviaQuestionRepository
         self.__wwtbamTriviaQuestionRepository: TriviaQuestionRepositoryInterface = wwtbamTriviaQuestionRepository
         self.__spoolerLoopSleepTimeSeconds: float = spoolerLoopSleepTimeSeconds
@@ -216,7 +217,7 @@ class TriviaRepository(TriviaRepositoryInterface):
             TriviaSource.THE_QUESTION_CO: self.__triviaQuestionCompanyTriviaQuestionRepository,
             TriviaSource.TRIVIA_DATABASE: self.__triviaDatabaseTriviaQuestionRepository,
             TriviaSource.WILL_FRY_TRIVIA: self.__willFryTriviaQuestionRepository,
-            TriviaSource.WWTBAM: self.__wwtbamTriviaQuestionRepository
+            TriviaSource.WWTBAM: self.__wwtbamTriviaQuestionRepository,
         }
 
         if len(triviaSourceToRepositoryMap.keys()) != len(TriviaSource):
@@ -226,7 +227,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
     async def __getTriviaSource(
         self,
-        triviaFetchOptions: TriviaFetchOptions
+        triviaFetchOptions: TriviaFetchOptions,
     ) -> TriviaQuestionRepositoryInterface:
         if not isinstance(triviaFetchOptions, TriviaFetchOptions):
             raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
@@ -279,7 +280,7 @@ class TriviaRepository(TriviaRepositoryInterface):
                         triviaFetchOptions = triviaFetchOptions,
                     )
                 except UnavailableTriviaSourceException as e:
-                    self.__timber.log('TriviaRepository', f'Failed to get trivia source ({triviaFetchOptions=}): {e}', e, traceback.format_exc())
+                    self.__timber.log('TriviaRepository', f'Failed to get trivia source ({triviaFetchOptions=})', e, traceback.format_exc())
                     return None
 
                 triviaSource = triviaQuestionRepository.triviaSource
@@ -288,16 +289,16 @@ class TriviaRepository(TriviaRepositoryInterface):
                 try:
                     question = await triviaQuestionRepository.fetchTriviaQuestion(triviaFetchOptions)
                 except (NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException, NoTriviaQuestionException) as e:
-                    self.__timber.log('TriviaRepository', f'Failed to fetch trivia question due to malformed data (trivia source was \"{triviaSource}\"): {e}', e, traceback.format_exc())
+                    self.__timber.log('TriviaRepository', f'Failed to fetch trivia question due to malformed data (trivia source was \"{triviaSource}\")', e, traceback.format_exc())
                 except GenericTriviaNetworkException as e:
                     errorCount = self.__triviaSourceInstabilityHelper.incrementErrorCount(triviaSource)
-                    self.__timber.log('TriviaRepository', f'Encountered network Exception when fetching trivia question (trivia source was \"{triviaSource}\") (new error count is {errorCount}): {e}', e, traceback.format_exc())
+                    self.__timber.log('TriviaRepository', f'Encountered network Exception when fetching trivia question (trivia source was \"{triviaSource}\") (new error count is {errorCount})', e, traceback.format_exc())
                 except MalformedTriviaJsonException as e:
                     errorCount = self.__triviaSourceInstabilityHelper.incrementErrorCount(triviaSource)
-                    self.__timber.log('TriviaRepository', f'Encountered malformed JSON Exception when fetching trivia question (trivia source was \"{triviaSource}\") (new error count is {errorCount}): {e}', e, traceback.format_exc())
+                    self.__timber.log('TriviaRepository', f'Encountered malformed JSON Exception when fetching trivia question (trivia source was \"{triviaSource}\") (new error count is {errorCount})', e, traceback.format_exc())
                 except Exception as e:
                     errorCount = self.__triviaSourceInstabilityHelper.incrementErrorCount(triviaSource)
-                    self.__timber.log('TriviaRepository', f'Encountered unknown Exception when fetching trivia question (trivia source was \"{triviaSource}\") (new error count is {errorCount}): {e}', e, traceback.format_exc())
+                    self.__timber.log('TriviaRepository', f'Encountered unknown Exception when fetching trivia question (trivia source was \"{triviaSource}\") (new error count is {errorCount})', e, traceback.format_exc())
 
             if question is not None and await self.__verifyTriviaQuestionContent(
                 question = question,
@@ -316,7 +317,7 @@ class TriviaRepository(TriviaRepositoryInterface):
             retryCount = retryCount + 1
             await asyncio.sleep(self.__triviaRetrySleepTimeSeconds * float(retryCount))
 
-        raise TooManyTriviaFetchAttemptsException(f'Unable to fetch trivia after {retryCount} attempts ({maxRetryCount=}) ({attemptedTriviaSources=}) ({triviaFetchOptions=})')
+        raise TooManyTriviaFetchAttemptsException(f'Unable to fetch trivia after too many attempts ({question=}) ({retryCount=}) ({maxRetryCount=}) ({attemptedTriviaSources=}) ({triviaFetchOptions=})')
 
     async def __getCurrentlyInvalidTriviaSources(
         self,
@@ -376,7 +377,7 @@ class TriviaRepository(TriviaRepositoryInterface):
             return twitchChannelId
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        twitchChannelId = await self.__userIdsRepository.requireUserId(twitchHandle)
+        twitchChannelId = await self.__twitchUserIdsRepository.requireIdByLoginOrName(twitchHandle)
         self.__twitchChannelId = twitchChannelId
 
         return twitchChannelId

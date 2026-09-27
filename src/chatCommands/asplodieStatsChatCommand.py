@@ -8,7 +8,6 @@ from ..asplodieStats.repository.asplodieStatsRepositoryInterface import Asplodie
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class AsplodieStatsChatCommand(AbsChatCommand):
@@ -19,7 +18,6 @@ class AsplodieStatsChatCommand(AbsChatCommand):
         asplodieStatsRepository: AsplodieStatsRepositoryInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
     ):
         if not isinstance(asplodieStatsPresenter, AsplodieStatsPresenter):
             raise TypeError(f'asplodieStatsPresenter argument is malformed: \"{asplodieStatsPresenter}\"')
@@ -29,17 +27,14 @@ class AsplodieStatsChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__asplodieStatsPresenter: Final[AsplodieStatsPresenter] = asplodieStatsPresenter
         self.__asplodieStatsRepository: Final[AsplodieStatsRepositoryInterface] = asplodieStatsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!(?:my)?asplodiestats\b', re.IGNORECASE),
+            re.compile(r'^\s*!(?:my)?asplodiestats?\b', re.IGNORECASE),
         })
 
     @property

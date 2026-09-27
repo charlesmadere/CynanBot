@@ -8,7 +8,7 @@ from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
 from ...storage.jsonReaderInterface import JsonReaderInterface
 from ...timber.timberInterface import TimberInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ...twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 
 
 class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
@@ -17,21 +17,21 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsRepository: TwitchUserIdsRepositoryInterface,
         seedFileReader: JsonReaderInterface | None = None,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsRepository, TwitchUserIdsRepositoryInterface):
+            raise TypeError(f'twitchUserIdsRepository argument is malformed: \"{twitchUserIdsRepository}\"')
         elif seedFileReader is not None and not isinstance(seedFileReader, JsonReaderInterface):
             raise TypeError(f'seedFileReader argument is malformed: \"{seedFileReader}\"')
 
         self.__backingDatabase: Final[BackingDatabase] = backingDatabase
         self.__timber: Final[TimberInterface] = timber
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = twitchUserIdsRepository
         self.__seedFileReader: JsonReaderInterface | None = seedFileReader
 
         self.__isDatabaseReady: bool = False
@@ -50,23 +50,25 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
         self.__seedFileReader = None
 
         if not await seedFileReader.fileExistsAsync():
-            self.__timber.log('StreamElementsUserKeyRepository', f'Seed file (\"{seedFileReader}\") does not exist')
+            self.__timber.log('StreamElementsUserKeyRepository', f'Seed file does not exist ({seedFileReader=})')
             return
 
         jsonContents = await seedFileReader.readJsonAsync()
         await seedFileReader.deleteFileAsync()
 
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
-            self.__timber.log('StreamElementsUserKeyRepository', f'Seed file (\"{seedFileReader}\") is empty')
+            self.__timber.log('StreamElementsUserKeyRepository', f'Seed file is empty ({seedFileReader=})')
             return
 
-        self.__timber.log('StreamElementsUserKeyRepository', f'Reading in seed file \"{seedFileReader}\"...')
+        self.__timber.log('StreamElementsUserKeyRepository', f'Reading in seed file ({seedFileReader=})...')
 
         for twitchChannel, userKey in jsonContents.items():
             try:
-                twitchChannelId = await self.__userIdsRepository.requireUserId(twitchChannel)
+                twitchChannelId = await self.__twitchUserIdsRepository.requireIdByLoginOrName(
+                    userLoginOrName = twitchChannel,
+                )
             except Exception as e:
-                self.__timber.log('StreamElementsUserKeyRepository', f'Failed to fetch Twitch channel ID for \"{twitchChannel}\": {e}', e, traceback.format_exc())
+                self.__timber.log('StreamElementsUserKeyRepository', f'Failed to fetch Twitch channel ID ({twitchChannel=}) ({seedFileReader=})', e, traceback.format_exc())
                 continue
 
             await self.set(
@@ -74,7 +76,7 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
                 twitchChannelId = twitchChannelId,
             )
 
-        self.__timber.log('StreamElementsUserKeyRepository', f'Finished reading in seed file \"{seedFileReader}\"')
+        self.__timber.log('StreamElementsUserKeyRepository', f'Finished reading in seed file ({seedFileReader=})')
 
     async def get(self, twitchChannelId: str) -> str | None:
         if not utils.isValidStr(twitchChannelId):

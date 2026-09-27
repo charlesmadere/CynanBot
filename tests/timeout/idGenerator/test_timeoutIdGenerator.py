@@ -1,5 +1,5 @@
 import re
-from typing import Pattern
+from typing import Final, Pattern
 
 import pytest
 
@@ -9,9 +9,9 @@ from src.timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGenerat
 
 class TestTimeoutIdGenerator:
 
-    actionIdRegEx: Pattern = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
-    eventIdRegEx: Pattern = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
-    idGenerator: TimeoutIdGeneratorInterface = TimeoutIdGenerator()
+    actionIdRegEx: Final[Pattern] = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
+    eventIdRegEx: Final[Pattern] = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
+    idGenerator: Final[TimeoutIdGeneratorInterface] = TimeoutIdGenerator()
 
     @pytest.mark.asyncio
     async def test_generateActionId(self):

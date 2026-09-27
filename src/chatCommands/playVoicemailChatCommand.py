@@ -96,6 +96,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
                 twitchChannel = chatMessage.twitchChannel,
                 twitchChannelId = chatMessage.twitchChannelId,
                 userId = voicemail.originatingUserId,
+                userLogin = voicemail.originatingUserLogin,
                 userName = voicemail.originatingUserName,
                 donation = None,
                 provider = chatMessage.twitchUser.defaultTtsProvider,

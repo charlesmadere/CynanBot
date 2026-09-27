@@ -12,7 +12,7 @@ from ..settings.cutenessSettingsInterface import CutenessSettingsInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ...twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
 
 class CutenessHelper(CutenessHelperInterface):
@@ -23,7 +23,7 @@ class CutenessHelper(CutenessHelperInterface):
         cutenessSettings: CutenessSettingsInterface,
         timber: TimberInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -33,14 +33,14 @@ class CutenessHelper(CutenessHelperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
         self.__cutenessRepository: Final[CutenessRepositoryInterface] = cutenessRepository
         self.__cutenessSettings: Final[CutenessSettingsInterface] = cutenessSettings
         self.__timber: Final[TimberInterface] = timber
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
 
     async def fetchCuteness(
         self,
@@ -60,7 +60,7 @@ class CutenessHelper(CutenessHelperInterface):
             twitchChannelId = twitchChannelId,
         )
 
-        chatterUserName = await self.__userIdsRepository.requireUserName(
+        chatterUserData = await self.__twitchUserIdsHelper.requireById(
             userId = chatterUserId,
             twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
                 twitchChannelId = twitchChannelId,
@@ -69,8 +69,8 @@ class CutenessHelper(CutenessHelperInterface):
 
         return PreparedCutenessResult(
             cutenessResult = cutenessResult,
-            chatterUserLogin = chatterUserName,
-            chatterUserName = chatterUserName,
+            chatterUserLogin = chatterUserData.userLogin,
+            chatterUserName = chatterUserData.userName,
         )
 
     async def fetchCutenessChampions(
@@ -94,18 +94,19 @@ class CutenessHelper(CutenessHelperInterface):
         preparedChampions: FrozenList[PreparedCutenessLeaderboardEntry] = FrozenList()
 
         for index, cutenessChampion in enumerate(cutenessChampionsResult.champions):
-            chatterUserName = await self.__userIdsRepository.fetchUserName(
+            chatterUserData = await self.__twitchUserIdsHelper.getById(
                 userId = cutenessChampion.chatterUserId,
                 twitchAccessToken = twitchAccessToken,
             )
 
-            if utils.isValidStr(chatterUserName):
+            if chatterUserData is None:
+                self.__timber.log('CutenessHelper', f'Failed to fetch user when fetching cuteness champions ({chatterUserData=}) ({index=}) ({cutenessChampion=}) ({cutenessChampionsResult=}) ({twitchChannelId=})')
+            else:
                 preparedChampions.append(PreparedCutenessLeaderboardEntry(
                     cutenessLeaderboardEntry = cutenessChampion,
-                    chatterUserName = chatterUserName,
+                    chatterUserLogin = chatterUserData.userLogin,
+                    chatterUserName = chatterUserData.userName,
                 ))
-            else:
-                self.__timber.log('CutenessHelper', f'Failed to fetch userName when fetching cuteness champions ({chatterUserName=}) ({index=}) ({cutenessChampion=}) ({cutenessChampionsResult=}) ({twitchChannelId=})')
 
         preparedChampions.freeze()
 

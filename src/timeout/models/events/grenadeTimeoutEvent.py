@@ -7,6 +7,7 @@ from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ..timeoutTarget import TimeoutTarget
 from ....asplodieStats.models.asplodieStats import AsplodieStats
 from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
+from ....twitch.localModels.twitchUserInterface import TwitchUserInterface
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
@@ -19,9 +20,9 @@ class GrenadeTimeoutEvent(AbsTimeoutEvent):
     bombEmote: str
     eventId: str
     explodedEmote: str
-    instigatorUserName: str
     timeoutTarget: TimeoutTarget
     timeoutResult: TwitchTimeoutResult
+    instigatorUserData: TwitchUserInterface
 
     def getEventId(self) -> str:
         return self.eventId

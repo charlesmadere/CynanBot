@@ -14,6 +14,7 @@ class TtsCheerActionHelperInterface(ABC):
         actions: frozendict[int, AbsCheerAction],
         bits: int,
         cheerUserId: str,
+        cheerUserLogin: str,
         cheerUserName: str,
         message: str | None,
         twitchChannelId: str,

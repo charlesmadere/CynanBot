@@ -339,10 +339,15 @@ from src.timeout.settings.timeoutActionSettingsInterface import TimeoutActionSet
 from src.timeout.useCases.calculateTimeoutDurationUseCase import CalculateTimeoutDurationUseCase
 from src.timeout.useCases.calculateTimeoutDurationUseCaseInterface import CalculateTimeoutDurationUseCaseInterface
 from src.timeout.useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
+from src.timeout.useCases.determineAirStrikeTargetsUseCaseInterface import DetermineAirStrikeTargetsUseCaseInterface
 from src.timeout.useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
+from src.timeout.useCases.determineBananaTargetUseCaseInterface import DetermineBananaTargetUseCaseInterface
 from src.timeout.useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
+from src.timeout.useCases.determineGrenadeTargetUseCaseInterface import DetermineGrenadeTargetUseCaseInterface
 from src.timeout.useCases.determineTimeoutTargetUseCase import DetermineTimeoutTargetUseCase
+from src.timeout.useCases.determineTimeoutTargetUseCaseInterface import DetermineTimeoutTargetUseCaseInterface
 from src.timeout.useCases.determineTm36SplashTargetUseCase import DetermineTm36SplashTargetUseCase
+from src.timeout.useCases.determineTm36SplashTargetUseCaseInterface import DetermineTm36SplashTargetUseCaseInterface
 from src.trollmoji.trollmojiHelper import TrollmojiHelper
 from src.trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from src.trollmoji.trollmojiSettingsRepository import TrollmojiSettingsRepository
@@ -513,8 +518,6 @@ from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJso
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.ttsBoosterPackParser import TtsBoosterPackParser
 from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
-from src.users.userIdsRepository import UserIdsRepository
-from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
 from src.users.usersRepositoryInterface import UsersRepositoryInterface
 from src.voicemail.helpers.voicemailHelper import VoicemailHelper
@@ -649,13 +652,6 @@ twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = TwitchUserIdsHelper(
     twitchUserIdsRepository = twitchUserIdsRepository,
 )
 
-userIdsRepository: Final[UserIdsRepositoryInterface] = UserIdsRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    twitchApiService = twitchApiService,
-    twitchUserIdsHelper = twitchUserIdsHelper,
-)
-
 twitchTokensStorage: Final[TwitchTokensStorageInterface] = TwitchTokensStorage(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -668,7 +664,7 @@ twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = TwitchTokensRep
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     twitchTokensStorage = twitchTokensStorage,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsRepository = twitchUserIdsRepository,
     seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/twitchTokensRepositorySeedFile.json',
@@ -677,8 +673,7 @@ twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = TwitchTokensRep
 
 administratorProvider: Final[AdministratorProviderInterface] = AdministratorProvider(
     generalSettingsRepository = generalSettingsRepository,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsRepository = twitchUserIdsRepository,
 )
 
 bannedWordsRepository: Final[BannedWordsRepositoryInterface] = BannedWordsRepository(
@@ -704,7 +699,7 @@ twitchSubscriptionsRepository: Final[TwitchSubscriptionsRepositoryInterface] = T
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 twitchEmotesHelper: Final[TwitchEmotesHelperInterface] = TwitchEmotesHelper(
@@ -714,7 +709,6 @@ twitchEmotesHelper: Final[TwitchEmotesHelperInterface] = TwitchEmotesHelper(
     twitchHandleProvider = authRepository,
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
 )
 
 twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface] = TwitchFollowingStatusRepository(
@@ -788,7 +782,7 @@ activeChattersRepository: Final[ActiveChattersRepositoryInterface] = ActiveChatt
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 
@@ -799,22 +793,22 @@ activeChattersRepository: Final[ActiveChattersRepositoryInterface] = ActiveChatt
 funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsRepository = twitchUserIdsRepository,
     seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/funtoonTokensRepositorySeedFile.json',
     ),
 )
 
-funtoonJsonMapper: FuntoonJsonMapperInterface = FuntoonJsonMapper()
+funtoonJsonMapper: Final[FuntoonJsonMapperInterface] = FuntoonJsonMapper()
 
-funtoonApiService: FuntoonApiServiceInterface = FuntoonApiService(
+funtoonApiService: Final[FuntoonApiServiceInterface] = FuntoonApiService(
     funtoonJsonMapper = funtoonJsonMapper,
     networkClientProvider = networkClientProvider,
     timber = timber,
 )
 
-funtoonHelper: FuntoonHelperInterface = FuntoonHelper(
+funtoonHelper: Final[FuntoonHelperInterface] = FuntoonHelper(
     funtoonApiService = funtoonApiService,
     funtoonJsonMapper = funtoonJsonMapper,
     funtoonTokensRepository = funtoonTokensRepository,
@@ -824,7 +818,7 @@ funtoonHelper: FuntoonHelperInterface = FuntoonHelper(
 emojiRepository: Final[EmojiRepositoryInterface] = EmojiRepository(
     emojiJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = 'emojiRepository.json'
+        fileName = 'emojiRepository.json',
     ),
     timber = timber,
 )
@@ -869,13 +863,13 @@ isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = IsLiveOnTwi
 
 languagesRepository: Final[LanguagesRepositoryInterface] = LanguagesRepository()
 
-locationsRepository: LocationsRepositoryInterface = LocationsRepository(
+locationsRepository: Final[LocationsRepositoryInterface] = LocationsRepository(
     locationsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = 'locationsRepository.json'
+        fileName = 'locationsRepository.json',
     ),
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 mostRecentChatsRepository: Final[MostRecentChatsRepositoryInterface] = MostRecentChatsRepository(
@@ -903,7 +897,7 @@ twitchTimeoutRemodHelper: Final[TwitchTimeoutRemodHelperInterface] = TwitchTimeo
     twitchApiService = twitchApiService,
     twitchTimeoutRemodRepository = twitchTimeoutRemodRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 twitchModeratorHelper: Final[TwitchModeratorHelperInterface] = TwitchModeratorHelper(
@@ -921,7 +915,7 @@ twitchChatMessenger: Final[TwitchChatMessengerInterface] = TwitchChatMessenger(
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = TimeoutImmuneUserIdsRepository(
@@ -929,7 +923,7 @@ timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] =
     timber = timber,
     twitchFriendsUserIdProvider = twitchFriendsUserIdRepository,
     twitchHandleProvider = authRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
     otherImmuneUserIdsLinesReader = LinesFileReader(
         eventLoop = eventLoop,
         fileName = '../config/otherImmuneUserIds.txt',
@@ -939,7 +933,7 @@ timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] =
 twitchWebsocketAllowedUsersRepository: Final[TwitchWebsocketAllowedUsersRepositoryInterface] = TwitchWebsocketAllowedUsersRepository(
     timber = timber,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
     usersRepository = usersRepository,
 )
 
@@ -1213,7 +1207,7 @@ commodoreSamTtsManagerProvider: Final[CommodoreSamTtsManagerProviderInterface] =
 ## DECTalk initialization section ##
 ####################################
 
-decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = DecTalkSettingsRepository(
+decTalkSettingsRepository: Final[DecTalkSettingsRepositoryInterface] = DecTalkSettingsRepository(
     decTalkVoiceMapper = decTalkVoiceMapper,
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
@@ -1221,18 +1215,18 @@ decTalkSettingsRepository: DecTalkSettingsRepositoryInterface = DecTalkSettingsR
     )
 )
 
-decTalkApiService: DecTalkApiServiceInterface = DecTalkApiService(
+decTalkApiService: Final[DecTalkApiServiceInterface] = DecTalkApiService(
     eventLoop = eventLoop,
     decTalkSettingsRepository = decTalkSettingsRepository,
     timber = timber,
-    ttsDirectoryProvider = ttsDirectoryProvider
+    ttsDirectoryProvider = ttsDirectoryProvider,
 )
 
-decTalkHelper: DecTalkHelperInterface = DecTalkHelper(
+decTalkHelper: Final[DecTalkHelperInterface] = DecTalkHelper(
     decTalkApiService = decTalkApiService,
     decTalkSettingsRepository = decTalkSettingsRepository,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository = timeZoneRepository,
 )
 
 decTalkMessageCleaner: Final[DecTalkMessageCleanerInterface] = DecTalkMessageCleaner(
@@ -1381,8 +1375,8 @@ microsoftSamSettingsRepository: Final[MicrosoftSamSettingsRepositoryInterface] =
     microsoftSamJsonParser = microsoftSamJsonParser,
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/microsoftSamSettingsRepository.json'
-    )
+        fileName = '../config/microsoftSamSettingsRepository.json',
+    ),
 )
 
 microsoftSamApiService: Final[MicrosoftSamApiServiceInterface] = MicrosoftSamApiService(
@@ -1453,20 +1447,20 @@ streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = St
 streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = StreamElementsUserKeyRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsRepository = twitchUserIdsRepository,
     seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/streamElementsUserKeyRepositorySeedFile.json',
     ),
 )
 
-streamElementsApiHelper: StreamElementsApiHelperInterface = StreamElementsApiHelper(
+streamElementsApiHelper: Final[StreamElementsApiHelperInterface] = StreamElementsApiHelper(
     streamElementsApiService = streamElementsApiService,
     streamElementsUserKeyRepository = streamElementsUserKeyRepository,
     timber = timber,
 )
 
-streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
+streamElementsHelper: Final[StreamElementsHelperInterface] = StreamElementsHelper(
     eventLoop = eventLoop,
     glacialTtsFileRetriever = glacialTtsFileRetriever,
     streamElementsApiHelper = streamElementsApiHelper,
@@ -1476,7 +1470,7 @@ streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
     timber = timber,
 )
 
-streamElementsTtsManagerProvider: StreamElementsTtsManagerProviderInterface = StreamElementsTtsManagerProvider(
+streamElementsTtsManagerProvider: Final[StreamElementsTtsManagerProviderInterface] = StreamElementsTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     streamElementsHelper = streamElementsHelper,
@@ -1503,7 +1497,7 @@ ttsMonsterSettingsRepository: Final[TtsMonsterSettingsRepositoryInterface] = Tts
 ttsMonsterTokensRepository: Final[TtsMonsterTokensRepositoryInterface] = TtsMonsterTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsRepository = twitchUserIdsRepository,
     seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/ttsMonsterTokensRepositorySeedFile.json',
@@ -1609,14 +1603,14 @@ trollmojiHelper: Final[TrollmojiHelperInterface] = TrollmojiHelper(
 ## Timeout initialization section ##
 ####################################
 
-asplodieStatsPresenter: AsplodieStatsPresenter = AsplodieStatsPresenter()
+asplodieStatsPresenter: Final[AsplodieStatsPresenter] = AsplodieStatsPresenter()
 
-asplodieStatsRepository: AsplodieStatsRepositoryInterface = AsplodieStatsRepository(
+asplodieStatsRepository: Final[AsplodieStatsRepositoryInterface] = AsplodieStatsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
 )
 
-guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface = GuaranteedTimeoutUsersRepository(
+guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = GuaranteedTimeoutUsersRepository(
     timber = timber,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
 )
@@ -1630,7 +1624,7 @@ twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = TwitchTimeoutHelper(
     twitchHandleProvider = authRepository,
     twitchModeratorHelper = twitchModeratorHelper,
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 timeoutActionSettings: Final[TimeoutActionSettingsInterface] = TimeoutActionSettings(
@@ -1665,7 +1659,7 @@ voicemailHelper: Final[VoicemailHelperInterface] = VoicemailHelper(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
     voicemailsRepository = voicemailsRepository,
     voicemailSettingsRepository = voicemailSettingsRepository,
 )
@@ -1725,50 +1719,50 @@ chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = ChatterInventor
     chatterInventoryRepository = chatterInventoryRepository,
     chatterInventorySettings = chatterInventorySettings,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface] = CalculateTimeoutDurationUseCase()
 
-determineAirStrikeTargetsUseCase = DetermineAirStrikeTargetsUseCase(
+determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCaseInterface] = DetermineAirStrikeTargetsUseCase(
     activeChattersRepository = activeChattersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
-determineBananaTargetUseCase = DetermineBananaTargetUseCase(
+determineBananaTargetUseCase: Final[DetermineBananaTargetUseCaseInterface] = DetermineBananaTargetUseCase(
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
 )
 
-determineGrenadeTargetUseCase = DetermineGrenadeTargetUseCase(
+determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCaseInterface] = DetermineGrenadeTargetUseCase(
     activeChattersRepository = activeChattersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
-determineTimeoutTargetUseCase = DetermineTimeoutTargetUseCase(
+determineTimeoutTargetUseCase: Final[DetermineTimeoutTargetUseCaseInterface] = DetermineTimeoutTargetUseCase(
     timber = timber,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
-determineTm36SplashTargetUseCase = DetermineTm36SplashTargetUseCase(
+determineTm36SplashTargetUseCase: Final[DetermineTm36SplashTargetUseCaseInterface] = DetermineTm36SplashTargetUseCase(
     activeChattersRepository = activeChattersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
 )
 
-timeoutIdGenerator: TimeoutIdGeneratorInterface = TimeoutIdGenerator()
+timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = TimeoutIdGenerator()
 
 anivCopyMessageTimeoutScoreRepository: Final[AnivCopyMessageTimeoutScoreRepositoryInterface] = AnivCopyMessageTimeoutScoreRepository(
     backingDatabase = backingDatabase,
@@ -1803,13 +1797,13 @@ timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachin
     trollmojiHelper = trollmojiHelper,
     twitchTimeoutHelper = twitchTimeoutHelper,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 cassetteTapeItemUseCase: Final[CassetteTapeItemUseCaseInterface] = CassetteTapeItemUseCase(
     chatterInventorySettings = chatterInventorySettings,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
     voicemailHelper = voicemailHelper,
     voicemailSettingsRepository = voicemailSettingsRepository,
 )
@@ -1873,7 +1867,7 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 itemRequestMessageParser = ItemRequestMessageParser(
@@ -1946,7 +1940,7 @@ crowdControlAutomator: Final[CrowdControlAutomatorInterface] = CrowdControlAutom
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchHandleProvider = authRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsRepository = twitchUserIdsRepository,
     usersRepository = usersRepository,
 )
 
@@ -1966,32 +1960,32 @@ crowdControlCheerActionHelper: Final[CrowdControlCheerActionHelperInterface] = C
 ## Translation initialization section ##
 ########################################
 
-deepLJsonMapper: DeepLJsonMapperInterface = DeepLJsonMapper(
+deepLJsonMapper: Final[DeepLJsonMapperInterface] = DeepLJsonMapper(
     languagesRepository = languagesRepository,
-    timber = timber
+    timber = timber,
 )
 
-deepLApiService: DeepLApiServiceInterface = DeepLApiService(
+deepLApiService: Final[DeepLApiServiceInterface] = DeepLApiService(
     deepLAuthKeyProvider = authRepository,
     deepLJsonMapper = deepLJsonMapper,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
 )
 
 deepLTranslationApi = DeepLTranslationApi(
     deepLApiService = deepLApiService,
     deepLAuthKeyProvider = authRepository,
-    timber = timber
+    timber = timber,
 )
 
 googleTranslationApi = GoogleTranslationApi(
     googleApiService = googleApiService,
     googleCloudProjectCredentialsProvider = authRepository,
     languagesRepository = languagesRepository,
-    timber = timber
+    timber = timber,
 )
 
-translationHelper: TranslationHelperInterface = TranslationHelper(
+translationHelper: Final[TranslationHelperInterface] = TranslationHelper(
     deepLTranslationApi = deepLTranslationApi,
     googleTranslationApi = googleTranslationApi,
     languagesRepository = languagesRepository,
@@ -2053,7 +2047,7 @@ cheerActionHelper: Final[CheerActionHelperInterface] = CheerActionHelper(
     ttsCheerActionHelper = ttsCheerActionHelper,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 
@@ -2220,7 +2214,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,
-        userIdsRepository = userIdsRepository,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     GetChatterPreferredNameChatCommand(
         chatterPreferredNameHelper = chatterPreferredNameHelper,
@@ -2262,7 +2256,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,
-        userIdsRepository = userIdsRepository,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     LoremIpsumChatCommand(
         administratorProvider = administratorProvider,
@@ -2302,9 +2296,8 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         chatterPreferredNameSettings = chatterPreferredNameSettings,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
-        twitchHandleProvider = authRepository,
         twitchTokensUtils = twitchTokensUtils,
-        userIdsRepository = userIdsRepository,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     SetChatterPreferredTtsChatCommand(
         administratorProvider = administratorProvider,
@@ -2313,10 +2306,9 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
         timber = timber,
         ttsJsonMapper = ttsJsonMapper,
-        twitchHandleProvider = authRepository,
-        twitchTokensUtils = twitchTokensUtils,
         twitchChatMessenger = twitchChatMessenger,
-        userIdsRepository = userIdsRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     SkipTtsChatCommand(
         administratorProvider = administratorProvider,
@@ -2370,7 +2362,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         timeZoneRepository = timeZoneRepository,
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,
-        userIdsRepository = userIdsRepository,
+        twitchUserIdsHelper = twitchUserIdsHelper,
         voicemailHelper = voicemailHelper,
         voicemailSettingsRepository = voicemailSettingsRepository,
     ),
@@ -2406,7 +2398,7 @@ twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
     triviaGameMachine = None,
     twitchLocalModelsMapper = twitchLocalModelsMapper,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
     chatActions = chatActions,
     chatCommands = chatCommands,
 )
@@ -2465,7 +2457,7 @@ twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscript
     twitchHandleProvider = authRepository,
     twitchLocalModelsMapper = twitchLocalModelsMapper,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 twitchWebsocketDataBundleListener: Final[TwitchWebsocketDataBundleListener] = TwitchWebsocketDataBundleHandler(
@@ -2480,7 +2472,7 @@ twitchWebsocketDataBundleListener: Final[TwitchWebsocketDataBundleListener] = Tw
     raidHandler = twitchRaidHandler,
     subscriptionHandler = twitchSubscriptionHandler,
     timber = timber,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
     usersRepository = usersRepository,
 )
 

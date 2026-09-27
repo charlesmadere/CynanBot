@@ -62,8 +62,8 @@ from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..timber.timberInterface import TimberInterface
-from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
+from ..twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
 
 class TriviaGameMachine(TriviaGameMachineInterface):
@@ -87,8 +87,8 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         triviaScoreRepository: TriviaScoreRepositoryInterface,
         triviaSettings: TriviaSettingsInterface,
         triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface,
-        twitchTokensRepository: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchTokensUtils: TwitchTokensUtilsInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         sleepTimeSeconds: float = 0.5,
         queueTimeoutSeconds: int = 3,
     ):
@@ -126,10 +126,10 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not isinstance(triviaTwitchEmoteHelper, TriviaTwitchEmoteHelperInterface):
             raise TypeError(f'triviaTwitchEmoteHelper argument is malformed: \"{triviaTwitchEmoteHelper}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise TypeError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
+            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 0.125 or sleepTimeSeconds > 3:
@@ -156,8 +156,8 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self.__triviaScoreRepository: Final[TriviaScoreRepositoryInterface] = triviaScoreRepository
         self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
         self.__triviaTwitchEmoteHelper: Final[TriviaTwitchEmoteHelperInterface] = triviaTwitchEmoteHelper
-        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
@@ -188,7 +188,10 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         if action is not None:
             answeredUserIds.pop(action.userId, None)
 
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(state.getTwitchChannelId())
+        twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+            twitchChannelId = state.getTwitchChannelId(),
+        )
+
         toxicTriviaPunishments: list[ToxicTriviaPunishment] = list()
         totalPointsStolen = 0
 
@@ -196,7 +199,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             punishedByPoints = -1 * answerCount * toxicTriviaPunishmentMultiplier * state.regularTriviaPointsForWinning
             totalPointsStolen = totalPointsStolen + abs(punishedByPoints)
 
-            userName = await self.__userIdsRepository.requireUserName(
+            userData = await self.__twitchUserIdsHelper.requireById(
                 userId = userId,
                 twitchAccessToken = twitchAccessToken,
             )
@@ -206,7 +209,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 twitchChannel = state.getTwitchChannel(),
                 twitchChannelId = state.getTwitchChannelId(),
                 userId = userId,
-                userName = userName,
+                userName = userData.userLogin,
             )
 
             toxicTriviaPunishments.append(ToxicTriviaPunishment(
@@ -214,7 +217,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 numberOfPunishments = answerCount,
                 punishedByPoints = punishedByPoints,
                 userId = userId,
-                userName = userName,
+                userName = userData.userLogin,
             ))
 
         self.__timber.log('TriviaGameMachine', f'Applied toxic trivia punishments to {len(toxicTriviaPunishments)} user(s) in \"{state.getTwitchChannel()}\" for a total punishment of {totalPointsStolen} point(s)')

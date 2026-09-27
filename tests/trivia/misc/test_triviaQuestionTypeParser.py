@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.trivia.misc.triviaQuestionTypeParser import TriviaQuestionTypeParser
@@ -7,17 +9,7 @@ from src.trivia.questions.triviaQuestionType import TriviaQuestionType
 
 class TestTriviaQuestionTypeParser:
 
-    parser: TriviaQuestionTypeParserInterface = TriviaQuestionTypeParser()
-
-    @pytest.mark.asyncio
-    async def test_parse_withBoolString(self):
-        result = await self.parser.parse('bool')
-        assert result is TriviaQuestionType.TRUE_FALSE
-
-    @pytest.mark.asyncio
-    async def test_parse_withBooleanString(self):
-        result = await self.parser.parse('boolean')
-        assert result is TriviaQuestionType.TRUE_FALSE
+    parser: Final[TriviaQuestionTypeParserInterface] = TriviaQuestionTypeParser()
 
     @pytest.mark.asyncio
     async def test_parse_withEmptyString(self):
@@ -37,6 +29,11 @@ class TestTriviaQuestionTypeParser:
             assert result is TriviaQuestionType.MULTIPLE_CHOICE
 
     @pytest.mark.asyncio
+    async def test_parse_withMultipleChoiceTriviaQuestionType(self):
+        result = await self.parser.parse(TriviaQuestionType.MULTIPLE_CHOICE.toStr())
+        assert result is TriviaQuestionType.MULTIPLE_CHOICE
+
+    @pytest.mark.asyncio
     async def test_parse_withNone(self):
         result: TriviaQuestionType | None = None
 
@@ -52,6 +49,11 @@ class TestTriviaQuestionTypeParser:
         for string in strings:
             result = await self.parser.parse(string)
             assert result is TriviaQuestionType.QUESTION_ANSWER
+
+    @pytest.mark.asyncio
+    async def test_parse_withQuestionAnswerTriviaQuestionType(self):
+        result = await self.parser.parse(TriviaQuestionType.QUESTION_ANSWER.toStr())
+        assert result is TriviaQuestionType.QUESTION_ANSWER
 
     @pytest.mark.asyncio
     async def test_parse_withRandomNoise1(self):
@@ -74,17 +76,17 @@ class TestTriviaQuestionTypeParser:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_parse_withTrueDashFalseString(self):
-        result = await self.parser.parse('true-false')
-        assert result is TriviaQuestionType.TRUE_FALSE
-
-    @pytest.mark.asyncio
     async def test_parse_withTrueFalseStrings(self):
-        strings: set[str] = { 'true-false', 'true_false', 'true false' }
+        strings: set[str] = { 'bool', 'boolean', 'true-false', 'true_false', 'true false' }
 
         for string in strings:
             result = await self.parser.parse(string)
             assert result is TriviaQuestionType.TRUE_FALSE
+
+    @pytest.mark.asyncio
+    async def test_parse_withTrueFalseTriviaQuestionType(self):
+        result = await self.parser.parse(TriviaQuestionType.TRUE_FALSE.toStr())
+        assert result is TriviaQuestionType.TRUE_FALSE
 
     @pytest.mark.asyncio
     async def test_parse_withWhitespaceString(self):

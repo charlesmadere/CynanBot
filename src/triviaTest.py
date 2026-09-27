@@ -160,8 +160,6 @@ from .twitch.tokens.twitchTokensRepository import TwitchTokensRepository
 from .twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from .twitch.websocket.twitchWebsocketJsonMapper import TwitchWebsocketJsonMapper
 from .twitch.websocket.twitchWebsocketJsonMapperInterface import TwitchWebsocketJsonMapperInterface
-from .users.userIdsRepository import UserIdsRepository
-from .users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 eventLoop: Final[AbstractEventLoop] = asyncio.new_event_loop()
 asyncio.set_event_loop(eventLoop)
@@ -204,12 +202,6 @@ twitchApiService: TwitchApiServiceInterface = TwitchApiService(
 )
 
 officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface = OfficialTwitchAccountUserIdProvider()
-
-userIdsRepository: Final[UserIdsRepositoryInterface] = UserIdsRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    twitchApiService = twitchApiService,
-)
 
 twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository(
     backgroundTaskHelper = backgroundTaskHelper,

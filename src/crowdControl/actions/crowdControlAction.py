@@ -13,6 +13,7 @@ class CrowdControlAction(ABC):
         dateTime: datetime,
         actionId: str,
         chatterUserId: str,
+        chatterUserLogin: str,
         chatterUserName: str,
         twitchChannel: str,
         twitchChannelId: str,
@@ -24,6 +25,8 @@ class CrowdControlAction(ABC):
             raise TypeError(f'actionId argument is malformed: \"{actionId}\"')
         elif not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(chatterUserLogin):
+            raise TypeError(f'chatterUserLogin argument is malformed: \"{chatterUserLogin}\"')
         elif not utils.isValidStr(chatterUserName):
             raise TypeError(f'chatterUserName argument is malformed: \"{chatterUserName}\"')
         elif not utils.isValidStr(twitchChannel):
@@ -36,6 +39,7 @@ class CrowdControlAction(ABC):
         self.__dateTime: Final[datetime] = dateTime
         self.__actionId: Final[str] = actionId
         self.__chatterUserId: Final[str] = chatterUserId
+        self.__chatterUserLogin: Final[str] = chatterUserLogin
         self.__chatterUserName: Final[str] = chatterUserName
         self.__twitchChannel: Final[str] = twitchChannel
         self.__twitchChannelId: Final[str] = twitchChannelId
@@ -55,6 +59,10 @@ class CrowdControlAction(ABC):
     @property
     def chatterUserId(self) -> str:
         return self.__chatterUserId
+
+    @property
+    def chatterUserLogin(self) -> str:
+        return self.__chatterUserLogin
 
     @property
     def chatterUserName(self) -> str:
@@ -80,6 +88,7 @@ class CrowdControlAction(ABC):
             'actionId': self.__actionId,
             'actionType': self.actionType,
             'chatterUserId': self.__chatterUserId,
+            'chatterUserLogin': self.__chatterUserLogin,
             'chatterUserName': self.__chatterUserName,
             'dateTime': self.__dateTime,
             'handleAttempts': self.__handleAttempts,

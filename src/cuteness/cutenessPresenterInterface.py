@@ -9,7 +9,10 @@ from .cutenessResult import CutenessResult
 class CutenessPresenterInterface(ABC):
 
     @abstractmethod
-    async def printCuteness(self, result: CutenessResult) -> str:
+    async def printCuteness(
+        self,
+        result: CutenessResult,
+    ) -> str:
         pass
 
     @abstractmethod
@@ -29,5 +32,8 @@ class CutenessPresenterInterface(ABC):
         pass
 
     @abstractmethod
-    async def printLeaderboardPlacement(self, entry: CutenessLeaderboardEntry) -> str:
+    async def printLeaderboardPlacement(
+        self,
+        entry: CutenessLeaderboardEntry,
+    ) -> str:
         pass

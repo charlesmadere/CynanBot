@@ -77,6 +77,7 @@ class CrowdMicrophoneChatAction(AbsChatAction):
             twitchChannel = chatMessage.twitchChannel,
             twitchChannelId = chatMessage.twitchChannelId,
             userId = chatMessage.chatterUserId,
+            userLogin = chatMessage.chatterUserLogin,
             userName = chatMessage.chatterUserLogin,
             donation = None,
             provider = chatMessage.twitchUser.defaultTtsProvider,

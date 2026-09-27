@@ -1,24 +1,40 @@
+from typing import Final
+
 from .cutenessHistoryResult import CutenessHistoryResult
 from .cutenessLeaderboardEntry import CutenessLeaderboardEntry
 from .cutenessLeaderboardHistoryResult import CutenessLeaderboardHistoryResult
 from .cutenessUtilsInterface import CutenessUtilsInterface
 from ..misc import utils as utils
+from ..twitch.userIds.exceptions import NoTwitchUserDataFoundException
+from ..twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 
 
 class CutenessUtils(CutenessUtilsInterface):
 
+    def __init__(
+        self,
+        twitchUserIdsRepository: TwitchUserIdsRepositoryInterface,
+    ):
+        if not isinstance(twitchUserIdsRepository, TwitchUserIdsRepositoryInterface):
+            raise TypeError(f'twitchUserIdsRepository argument is malformed: \"{twitchUserIdsRepository}\"')
+
+        self.__twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = twitchUserIdsRepository
+
     def getCutenessHistory(
         self,
         result: CutenessHistoryResult,
+        chatterUserName: str,
         delimiter: str = ', ',
     ) -> str:
         if not isinstance(result, CutenessHistoryResult):
             raise TypeError(f'result argument is malformed: \"{result}\"')
+        elif not utils.isValidStr(chatterUserName):
+            raise TypeError(f'chatterUserName argument is malformed: \"{chatterUserName}\"')
         elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if result.entries is None or len(result.entries) == 0:
-            return f'ⓘ @{result.userName} has no cuteness history 😿'
+            return f'ⓘ @{chatterUserName} has no cuteness history 😿'
 
         historyStrs: list[str] = list()
 
@@ -30,19 +46,19 @@ class CutenessUtils(CutenessUtilsInterface):
         totalCuteness = result.totalCuteness
 
         if bestCuteness is not None and utils.isValidInt(totalCuteness) and totalCuteness >= 1:
-            return f'ⓘ @{result.userName} has a total cuteness of {result.totalCutenessStr} with their best ever cuteness being {bestCuteness.cutenessStr} in {bestCuteness.cutenessDate.getHumanString()}. And here is their recent cuteness history: {historyStr} ✨'
+            return f'ⓘ @{chatterUserName} has a total cuteness of {result.totalCutenessStr} with their best ever cuteness being {bestCuteness.cutenessStr} in {bestCuteness.cutenessDate.getHumanString()}. And here is their recent cuteness history: {historyStr} ✨'
         elif bestCuteness is not None and (not utils.isValidInt(totalCuteness) or totalCuteness == 0):
-            return f'ⓘ @{result.userName}\'s best ever cuteness was {bestCuteness.cutenessStr} in {bestCuteness.cutenessDate.getHumanString()}, with a recent cuteness history of {historyStr} ✨'
+            return f'ⓘ @{chatterUserName}\'s best ever cuteness was {bestCuteness.cutenessStr} in {bestCuteness.cutenessDate.getHumanString()}, with a recent cuteness history of {historyStr} ✨'
         elif bestCuteness is None and utils.isValidInt(totalCuteness) and totalCuteness >= 1:
-            return f'ⓘ @{result.userName} has a total cuteness of {result.totalCutenessStr}, with a recent cuteness history of {historyStr} ✨'
+            return f'ⓘ @{chatterUserName} has a total cuteness of {result.totalCutenessStr}, with a recent cuteness history of {historyStr} ✨'
         else:
-            return f'ⓘ @{result.userName}\'s recent cuteness history: {historyStr} ✨'
+            return f'ⓘ @{chatterUserName}\'s recent cuteness history: {historyStr} ✨'
 
-    def getCutenessLeaderboardHistory(
+    async def getCutenessLeaderboardHistory(
         self,
         result: CutenessLeaderboardHistoryResult,
-        entryDelimiter: str,
-        leaderboardDelimiter: str
+        entryDelimiter: str = ', ',
+        leaderboardDelimiter: str = ' — ',
     ) -> str:
         if not isinstance(result, CutenessLeaderboardHistoryResult):
             raise TypeError(f'result argument is malformed: \"{result}\"')
@@ -52,7 +68,7 @@ class CutenessUtils(CutenessUtilsInterface):
             raise TypeError(f'leaderboardDelimiter argument is malformed: \"{leaderboardDelimiter}\"')
 
         if result.leaderboards is None or len(result.leaderboards) == 0:
-            return f'ⓘ There is no Cuteness Leaderboard History here 😿'
+            return f'ⓘ There is no Cuteness leaderboard history here 😿'
 
         leaderboardStrings: list[str] = list()
 
@@ -62,29 +78,28 @@ class CutenessUtils(CutenessUtilsInterface):
 
             entryStrings: list[str] = list()
             for entry in leaderboard.entries:
-                entryStrings.append(self.__getLeaderboardPlacementString(entry))
+                try:
+                    chatterUserData = await self.__twitchUserIdsRepository.requireById(
+                        userId = entry.userId,
+                    )
+
+                    entryStrings.append(self.__getLeaderboardPlacementString(
+                        entry = entry,
+                        chatterUserName = chatterUserData.userName,
+                    ))
+                except NoTwitchUserDataFoundException:
+                    # this exception can be safely ignored
+                    pass
 
             leaderboardStrings.append(f'{leaderboard.cutenessDate.getHumanString()} {entryDelimiter.join(entryStrings)}')
 
-        return f'ⓘ Cuteness Leaderboard History — {leaderboardDelimiter.join(leaderboardStrings)} ✨'
+        return f'ⓘ Cuteness leaderboard history — {leaderboardDelimiter.join(leaderboardStrings)} ✨'
 
-    def getLeaderboard(self, entries: list[CutenessLeaderboardEntry], delimiter: str) -> str:
-        if not isinstance(entries, list) or len(entries) == 0:
-            raise TypeError(f'entries argument is malformed: \"{entries}\"')
-        elif not isinstance(delimiter, str):
-            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        entryStrings: list[str] = list()
-
-        for entry in entries:
-            entryStrings.append(self.__getLeaderboardPlacementString(entry))
-
-        return delimiter.join(entryStrings)
-
-    def __getLeaderboardPlacementString(self, entry: CutenessLeaderboardEntry) -> str:
-        if not isinstance(entry, CutenessLeaderboardEntry):
-            raise TypeError(f'result argument is malformed: \"{entry}\"')
-
+    def __getLeaderboardPlacementString(
+        self,
+        entry: CutenessLeaderboardEntry,
+        chatterUserName: str,
+    ) -> str:
         rankStr: str
 
         match entry.rank:
@@ -93,4 +108,4 @@ class CutenessUtils(CutenessUtilsInterface):
             case 3: rankStr = '🥉'
             case _: rankStr = f'#{entry.rankStr}'
 
-        return f'{rankStr} @{entry.userName} ({entry.cutenessStr})'
+        return f'{rankStr} @{chatterUserName} ({entry.cutenessStr})'

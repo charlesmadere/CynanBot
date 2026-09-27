@@ -1,9 +1,10 @@
 import re
+import traceback
+from dataclasses import dataclass
 from typing import Collection, Final, Pattern
 
 from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
-from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
@@ -13,10 +14,16 @@ from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessen
 from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ..twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
 
 class RemoveBannedTriviaControllerChatCommand(AbsChatCommand):
+
+    @dataclass(frozen = True, slots = True)
+    class Arguments:
+        chatterUserId: str
+        chatterUserLogin: str
+        chatterUserName: str
 
     def __init__(
         self,
@@ -26,7 +33,7 @@ class RemoveBannedTriviaControllerChatCommand(AbsChatCommand):
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -40,8 +47,8 @@ class RemoveBannedTriviaControllerChatCommand(AbsChatCommand):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__bannedTriviaGameControllersRepository: Final[BannedTriviaGameControllersRepositoryInterface] = bannedTriviaGameControllersRepository
@@ -49,13 +56,15 @@ class RemoveBannedTriviaControllerChatCommand(AbsChatCommand):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
             re.compile(r'^\s*!del(?:ete)?bannedtriviacontroller\b', re.IGNORECASE),
             re.compile(r'^\s*!removebannedtriviacontroller\b', re.IGNORECASE),
             re.compile(r'^\s*!rmbannedtriviacontroller\b', re.IGNORECASE),
         })
+
+        self.__argumentsPattern: Final[Pattern] = re.compile(r'^\s*!\w+\s+@?(\w+)', re.IGNORECASE)
 
     @property
     def commandName(self) -> str:
@@ -69,76 +78,76 @@ class RemoveBannedTriviaControllerChatCommand(AbsChatCommand):
         if not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
-        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-
-        splits = utils.getCleanedSplits(chatMessage.text)
-        if len(splits) < 2:
-            self.__twitchChatMessenger.send(
-                text = f'⚠ Unable to remove banned trivia controller as no username argument was given. Example: !removebannedtriviacontroller @{twitchHandle}',
-                twitchChannelId = chatMessage.twitchChannelId,
-                replyMessageId = chatMessage.twitchChatMessageId,
-            )
-
-            self.__timber.log(self.commandName, f'Attempted to handle command, but no arguments were supplied ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
-
-        targetUserName: str | None = utils.removePreceedingAt(splits[1])
-        if not utils.isValidStr(targetUserName) or not utils.strContainsAlphanumericCharacters(targetUserName):
-            self.__twitchChatMessenger.send(
-                text = f'⚠ Unable to remove banned trivia controller as username argument is malformed. Example: !removebannedtriviacontroller @{twitchHandle}',
-                twitchChannelId = chatMessage.twitchChannelId,
-                replyMessageId = chatMessage.twitchChatMessageId,
-            )
-
-            self.__timber.log(self.commandName, f'Attempted to handle command, but the username argument is malformed ({targetUserName=}) ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
-
-        targetUserId = await self.__userIdsRepository.fetchUserId(
-            userName = targetUserName,
-            twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-                twitchChannelId = chatMessage.twitchChannelId,
-            ),
+        arguments = await self.__parseArguments(
+            chatMessage = chatMessage,
         )
 
-        if not utils.isValidStr(targetUserId):
+        if arguments is None:
             self.__twitchChatMessenger.send(
-                text = f'⚠ Unable to remove banned trivia controller as no user ID could be found for the given username',
+                text = f'⚠ Invalid arguments! Example use: !removebannedtriviacontroller @{chatMessage.chatterUserLogin}',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-            self.__timber.log(self.commandName, f'Failed to fetch user ID for the given username ({targetUserId=}) ({targetUserName=}) ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            self.__timber.log(self.commandName, f'Invalid arguments ({arguments=}) ({chatMessage=})')
+            return ChatCommandResult.CONSUMED
 
         result = await self.__bannedTriviaGameControllersRepository.removeBannedController(
-            userId = targetUserId,
+            userId = arguments.chatterUserId,
         )
 
         match result:
             case RemoveBannedTriviaGameControllerResult.ERROR:
                 self.__twitchChatMessenger.send(
-                    text = f'⚠ An error occurred when trying to remove @{targetUserName} as a banned trivia game controller!',
+                    text = f'⚠ An error occurred when trying to remove @{arguments.chatterUserName} as a banned trivia game controller!',
                     twitchChannelId = chatMessage.twitchChannelId,
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
             case RemoveBannedTriviaGameControllerResult.NOT_BANNED:
                 self.__twitchChatMessenger.send(
-                    text = f'⚠ @{targetUserName} is not a banned trivia controller',
+                    text = f'⚠ @{arguments.chatterUserName} is not a banned trivia controller',
                     twitchChannelId = chatMessage.twitchChannelId,
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
             case RemoveBannedTriviaGameControllerResult.REMOVED:
                 self.__twitchChatMessenger.send(
-                    text = f'ⓘ Removed @{targetUserName} as a banned trivia game controller',
+                    text = f'ⓘ Removed @{arguments.chatterUserName} as a banned trivia game controller',
                     twitchChannelId = chatMessage.twitchChannelId,
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
-        self.__timber.log(self.commandName, f'Handled ({result=}) ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({result=}) ({arguments=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+
         isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
-        return isAdministrator
+
+        return isStreamer or isAdministrator
+
+    async def __parseArguments(self, chatMessage: TwitchChatMessage) -> Arguments | None:
+        argumentsMatch = self.__argumentsPattern.match(chatMessage.text)
+        if argumentsMatch is None:
+            return None
+
+        chatterUserName = argumentsMatch.group(1)
+
+        try:
+            chatterUserData = await self.__twitchUserIdsHelper.requireByLoginOrName(
+                userLoginOrName = chatterUserName,
+                twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+                    twitchChannelId = chatMessage.twitchChannelId,
+                ),
+            )
+        except Exception as e:
+            self.__timber.log(self.commandName, f'Failed to fetch user data for the given chatter username ({chatterUserName=}) ({argumentsMatch=}) ({chatMessage=})', e, traceback.format_exc())
+            return None
+
+        return RemoveBannedTriviaControllerChatCommand.Arguments(
+            chatterUserId = chatterUserData.userId,
+            chatterUserLogin = chatterUserData.userLogin,
+            chatterUserName = chatterUserData.userName,
+        )

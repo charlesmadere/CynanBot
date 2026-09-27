@@ -2,14 +2,14 @@ from dataclasses import dataclass
 
 from .absChatterItemEvent import AbsChatterItemEvent
 from ..useChatterItemAction import UseChatterItemAction
+from ....twitch.localModels.twitchUserInterface import TwitchUserInterface
 
 
 @dataclass(frozen = True, slots = True)
 class CassetteTapeTargetIsNotFollowingChatterItemEvent(AbsChatterItemEvent):
-    chatterUserName: str
     eventId: str
-    targetUserId: str
-    targetUserName: str
+    chatterUserData: TwitchUserInterface
+    targetUserData: TwitchUserInterface
     originatingAction: UseChatterItemAction
 
     def getEventId(self) -> str:

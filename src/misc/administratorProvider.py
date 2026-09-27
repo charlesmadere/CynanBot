@@ -2,8 +2,7 @@ from typing import Final
 
 from .administratorProviderInterface import AdministratorProviderInterface
 from .generalSettingsRepository import GeneralSettingsRepository
-from ..twitch.tokens.twitchTokensRepository import TwitchTokensRepositoryInterface
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ..twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 
 
 class AdministratorProvider(AdministratorProviderInterface):
@@ -11,19 +10,15 @@ class AdministratorProvider(AdministratorProviderInterface):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        twitchTokensRepository: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsRepository: TwitchUserIdsRepositoryInterface,
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise TypeError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsRepository, TwitchUserIdsRepositoryInterface):
+            raise TypeError(f'twitchUserIdsRepository argument is malformed: \"{twitchUserIdsRepository}\"')
 
         self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
-        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = twitchUserIdsRepository
 
         self.__administratorUserId: str | None = None
 
@@ -36,15 +31,10 @@ class AdministratorProvider(AdministratorProviderInterface):
         if administratorUserId is not None:
             return administratorUserId
 
-        userName = await self.getAdministratorUserName()
+        userLoginOrName = await self.getAdministratorUserName()
 
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
-            twitchChannel = userName,
-        )
-
-        administratorUserId = await self.__userIdsRepository.requireUserId(
-            userName = userName,
-            twitchAccessToken = twitchAccessToken,
+        administratorUserId = await self.__twitchUserIdsRepository.requireIdByLoginOrName(
+            userLoginOrName = userLoginOrName,
         )
 
         self.__administratorUserId = administratorUserId

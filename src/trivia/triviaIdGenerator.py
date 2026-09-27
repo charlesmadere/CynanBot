@@ -25,7 +25,7 @@ class TriviaIdGenerator(TriviaIdGeneratorInterface):
         self,
         question: str,
         category: str | None = None,
-        difficulty: str | None = None
+        difficulty: str | None = None,
     ) -> str:
         if not utils.isValidStr(question):
             raise TypeError(f'question argument is malformed: \"{question}\"')

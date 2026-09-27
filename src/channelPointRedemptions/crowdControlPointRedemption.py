@@ -75,6 +75,7 @@ class CrowdControlPointRedemption(AbsChannelPointRedemption):
                 startOfGigaShuffleSize = None,
                 actionId = actionId,
                 chatterUserId = pointsRedemption.redemptionUserId,
+                chatterUserLogin = pointsRedemption.redemptionUserLogin,
                 chatterUserName = pointsRedemption.redemptionUserName,
                 twitchChannel = pointsRedemption.twitchChannel,
                 twitchChannelId = pointsRedemption.twitchChannelId,

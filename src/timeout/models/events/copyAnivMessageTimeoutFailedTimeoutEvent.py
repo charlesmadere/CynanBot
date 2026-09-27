@@ -4,16 +4,17 @@ from .absTimeoutEvent import AbsTimeoutEvent
 from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.copyAnivMessageTimeoutAction import CopyAnivMessageTimeoutAction
 from ....aniv.models.whichAnivUser import WhichAnivUser
+from ....twitch.localModels.twitchUserInterface import TwitchUserInterface
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
 @dataclass(frozen = True, slots = True)
 class CopyAnivMessageTimeoutFailedTimeoutEvent(AbsTimeoutEvent):
     originatingAction: CopyAnivMessageTimeoutAction
-    anivUserName: str
     eventId: str
-    targetUserName: str
     timeoutResult: TwitchTimeoutResult
+    anivUserData: TwitchUserInterface
+    targetUserData: TwitchUserInterface
 
     def getEventId(self) -> str:
         return self.eventId

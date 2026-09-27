@@ -56,7 +56,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         triviaId = await self.__triviaIdGenerator.generateQuestionId(
             question = question,
             category = category,
-            difficulty = TriviaDifficulty.UNKNOWN.toStr()
+            difficulty = TriviaDifficulty.UNKNOWN.toStr(),
         )
 
         if isinstance(pokepediaTriviaQuestion, BooleanPokepediaTriviaQuestion):

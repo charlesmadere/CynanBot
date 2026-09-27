@@ -9,7 +9,7 @@ class AdditionalTriviaAnswerAlreadyExistsException(Exception):
         message: str,
         triviaId: str,
         triviaQuestionType: TriviaQuestionType,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ):
         super().__init__(message, triviaId, triviaQuestionType, triviaSource)
 
@@ -26,7 +26,7 @@ class AdditionalTriviaAnswerIsUnsupportedTriviaTypeException(Exception):
         self,
         message: str,
         triviaQuestionType: TriviaQuestionType,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ):
         super().__init__(message, triviaQuestionType, triviaSource)
 
@@ -90,7 +90,7 @@ class GenericTriviaNetworkException(Exception):
     def __init__(
         self,
         triviaSource: TriviaSource,
-        exception: Exception | None = None
+        exception: Exception | None = None,
     ):
         super().__init__(triviaSource, exception)
 
@@ -126,7 +126,7 @@ class TooManyAdditionalTriviaAnswersException(Exception):
         answerCount: int,
         triviaId: str,
         triviaQuestionType: TriviaQuestionType,
-        triviaSource: TriviaSource
+        triviaSource: TriviaSource,
     ):
         super().__init__(answerCount, triviaId, triviaQuestionType, triviaSource)
 
