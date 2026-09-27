@@ -298,6 +298,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 twitchChannel = user.handle,
                 twitchChannelId = subscriptionData.twitchChannelId,
                 userId = subscriptionData.eventUserId,
+                userLogin = subscriptionData.eventUserLogin,
                 userName = subscriptionData.eventUserName,
                 donation = TtsSubscriptionDonation(
                     isAnonymous = isAnonymous,

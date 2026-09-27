@@ -41,6 +41,7 @@ class WatchStreakAnnounceChatAction(AbsChatAction):
         result = await self.__watchStreaksHelper.watchStreakTtsAnnounce(
             watchStreak = chatMessage.watchStreak.streakCount,
             chatterUserId = chatMessage.chatterUserId,
+            chatterUserLogin = chatMessage.chatterUserLogin,
             chatterUserName = chatMessage.chatterUserName,
             twitchChannelId = chatMessage.twitchChannelId,
             user = chatMessage.twitchUser,

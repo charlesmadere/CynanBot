@@ -233,6 +233,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
                 twitchChannel = user.handle,
                 twitchChannelId = predictionData.twitchChannelId,
                 userId = predictionData.twitchChannelId,
+                userLogin = user.handle,
                 userName = user.handle,
                 donation = None,
                 provider = user.defaultTtsProvider,
