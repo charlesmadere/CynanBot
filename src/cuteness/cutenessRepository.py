@@ -125,7 +125,7 @@ class CutenessRepository(CutenessRepositoryInterface):
         for index, record in enumerate(records):
             # Cuteness can potentially arrive from the database as a decimal.Decimal type,
             # so let's make sure to convert that into an int.
-            cuteness = int(round(record[2]))
+            cuteness = int(round(record[1]))
 
             champions.append(CutenessLeaderboardEntry(
                 cuteness = cuteness,
