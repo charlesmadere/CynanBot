@@ -10,7 +10,7 @@ from src.cuteness.cutenessPresenterInterface import CutenessPresenterInterface
 from src.cuteness.cutenessResult import CutenessResult
 from src.twitch.localModels.twitchUserInterface import TwitchUserInterface
 from src.twitch.userIds.twitchUserData import TwitchUserData
-from src.twitch.userIds.twitchUserIdsRepository import TwitchUserIdsRepositoryInterface
+from src.twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 
 
 class TestCutenessPresenter:
