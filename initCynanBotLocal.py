@@ -34,7 +34,6 @@ from src.chatCommands.getCheerActionsChatCommand import GetCheerActionsChatComma
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from src.chatCommands.getStreamTitleChatCommand import GetStreamTitleChatCommand
 from src.chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
-from src.chatCommands.loremIpsumChatCommand import LoremIpsumChatCommand
 from src.chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
 from src.chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
 from src.chatCommands.removeChatterPreferredTtsChatCommand import RemoveChatterPreferredTtsChatCommand
@@ -2262,11 +2261,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,
         twitchUserIdsHelper = twitchUserIdsHelper,
-    ),
-    LoremIpsumChatCommand(
-        administratorProvider = administratorProvider,
-        timber = timber,
-        twitchChatMessenger = twitchChatMessenger,
     ),
     PlayVoicemailChatCommand(
         streamAlertsManager = streamAlertsManager,

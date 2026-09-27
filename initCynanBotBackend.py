@@ -2182,6 +2182,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     LoremIpsumChatCommand(
         administratorProvider = administratorProvider,
+        randomUtils = randomUtils,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
