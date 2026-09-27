@@ -209,7 +209,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 twitchChannel = state.getTwitchChannel(),
                 twitchChannelId = state.getTwitchChannelId(),
                 userId = userId,
-                userName = userData.userLogin,
             )
 
             toxicTriviaPunishments.append(ToxicTriviaPunishment(
@@ -410,7 +409,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             twitchChannel = state.getTwitchChannel(),
             twitchChannelId = state.getTwitchChannelId(),
             userId = action.userId,
-            userName = action.userName,
         )
 
         triviaScoreResult = await self.__triviaScoreRepository.incrementTriviaWins(
@@ -531,7 +529,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             twitchChannel = state.getTwitchChannel(),
             twitchChannelId = state.getTwitchChannelId(),
             userId = action.userId,
-            userName = action.userName,
         )
 
         remainingQueueSize = await self.__queuedTriviaGameStore.getQueuedSuperGamesSize(
