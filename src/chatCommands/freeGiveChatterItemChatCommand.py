@@ -133,15 +133,17 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
             amount = updatedInventory[itemType]
             amountString = locale.format_string("%d", amount, grouping = True)
 
-            match amount:
-                case 0: continue
-                case 1: inventoryStrings.append(f'{amountString} {itemType.humanName}')
-                case _: inventoryStrings.append(f'{amountString} {itemType.pluralHumanName}')
+            if amount == 0:
+                continue
+            elif amount == 1:
+                inventoryStrings.append(f'{amountString} {itemType.humanName}')
+            else:
+                inventoryStrings.append(f'{amountString} {itemType.pluralHumanName}')
 
         inventoryString: str
 
         if len(inventoryStrings) == 0:
-            inventoryString = f'inventory is empty {utils.getRandomSadEmoji()}'
+            inventoryString = f'inventory is empty 😿'
         else:
             inventoryString = ', '.join(inventoryStrings)
 
