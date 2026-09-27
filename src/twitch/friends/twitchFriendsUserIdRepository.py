@@ -43,6 +43,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         patLanicusUserId: str | None = '46826466',
         stashiocatUserId: str | None = '20889981',
         steineBotUserId: str | None = '1460771942',
+        tawUserId: str | None = '32465208',
         teaTalkUserId: str | None = '479387514',
         theBinchBotUserId: str | None = '1053271950',
         theCatComputerUserId: str | None = '1326985885',
@@ -124,6 +125,8 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'stashiocatUserId argument is malformed: \"{stashiocatUserId}\"')
         elif steineBotUserId is not None and not isinstance(steineBotUserId, str):
             raise TypeError(f'steineBotUserId argument is malformed: \"{steineBotUserId}\"')
+        elif tawUserId is not None and not isinstance(tawUserId, str):
+            raise TypeError(f'tawUserId argument is malformed: \"{tawUserId}\"')
         elif teaTalkUserId is not None and not isinstance(teaTalkUserId, str):
             raise TypeError(f'teaTalkUserId argument is malformed: \"{teaTalkUserId}\"')
         elif theBinchBotUserId is not None and not isinstance(theBinchBotUserId, str):
@@ -177,6 +180,7 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
         self.__patLanicusUserId: Final[str | None] = patLanicusUserId
         self.__stashiocatUserId: Final[str | None] = stashiocatUserId
         self.__steineBotUserId: Final[str | None] = steineBotUserId
+        self.__tawUserId: Final[str | None] = tawUserId
         self.__teaTalkUserId: Final[str | None ] = teaTalkUserId
         self.__theBinchBotUserId: Final[str | None] = theBinchBotUserId
         self.__theCatComputerUserId: Final[str | None] = theCatComputerUserId
@@ -302,6 +306,9 @@ class TwitchFriendsUserIdRepository(TwitchFriendsUserIdRepositoryInterface):
 
     async def getTheCatComputerUserId(self) -> str | None:
         return self.__theCatComputerUserId
+
+    async def getTawUserId(self) -> str | None:
+        return self.__tawUserId
 
     async def getTsteineUserId(self) -> str | None:
         return self.__tsteineUserId
