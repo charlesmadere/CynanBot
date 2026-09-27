@@ -422,9 +422,6 @@ def permuteSubArrays(array: list[Any], pos: int = 0) -> Generator[list[Any], Non
         for subArray in permuteSubArrays(array, pos + 1):
             yield [array[pos]] + list(subArray)
 
-def randomBool() -> bool:
-    return bool(random.getrandbits(1))
-
 @overload
 def removePreceedingAt(s: None) -> None:
     ...
