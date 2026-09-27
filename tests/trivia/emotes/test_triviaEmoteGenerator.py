@@ -38,9 +38,6 @@ class TestTriviaEmoteGenerator:
         triviaEmoteRepository = triviaEmoteRepository
     )
 
-    def __init__(self):
-        asyncio.set_event_loop(self.eventLoop)
-
     @pytest.mark.asyncio
     async def test_getRandomEmote(self):
         for _ in range(100):
