@@ -47,13 +47,13 @@ class CutenessPresenter(CutenessPresenterInterface):
         if result.champions is None or len(result.champions) == 0:
             return f'😿 There are no cuteness champions'
 
-        championsStrs: list[str] = list()
+        championsStrings: list[str] = list()
 
         for champion in result.champions:
-            championsStrs.append(await self.printLeaderboardPlacement(champion))
+            championsStrings.append(await self.printLeaderboardPlacement(champion))
 
-        championsStr = delimiter.join(championsStrs)
-        return f'✨ Cuteness Champions {championsStr}'
+        championsString = delimiter.join(championsStrings)
+        return f'✨ Cuteness Champions {championsString}'
 
     async def printLeaderboard(
         self,
@@ -86,9 +86,9 @@ class CutenessPresenter(CutenessPresenterInterface):
         entriesString = delimiter.join(entryStrings)
 
         if utils.isValidStr(specificLookupText):
-            return f'✨ {specificLookupText}, and the {result.cutenessDate.getHumanString()} Leaderboard is: {entriesString}'
+            return f'✨ {specificLookupText}, and the {result.cutenessDate.getHumanString()} leaderboard is: {entriesString}'
         else:
-            return f'✨ {result.cutenessDate.getHumanString()} Leaderboard {entriesString}'
+            return f'✨ {result.cutenessDate.getHumanString()} leaderboard {entriesString}'
 
     async def printLeaderboardPlacement(
         self,
