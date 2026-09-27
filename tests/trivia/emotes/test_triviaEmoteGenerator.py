@@ -20,22 +20,22 @@ class TestTriviaEmoteGenerator:
     eventLoop: AbstractEventLoop = asyncio.new_event_loop()
 
     backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
-        eventLoop = eventLoop
+        eventLoop = eventLoop,
     )
 
     backingDatabase: BackingDatabase = SqliteBackingDatabase(
-        eventLoop = eventLoop
+        eventLoop = eventLoop,
     )
 
     timber: TimberInterface = TimberStub()
 
     triviaEmoteRepository: TriviaEmoteRepositoryInterface = TriviaEmoteRepository(
-        backingDatabase = backingDatabase
+        backingDatabase = backingDatabase,
     )
 
     triviaEmoteGenerator: TriviaEmoteGeneratorInterface = TriviaEmoteGenerator(
         timber = timber,
-        triviaEmoteRepository = triviaEmoteRepository
+        triviaEmoteRepository = triviaEmoteRepository,
     )
 
     @pytest.mark.asyncio
@@ -989,3 +989,4 @@ class TestTriviaEmoteGenerator:
     def test_sanity(self):
         assert self.triviaEmoteGenerator is not None
         assert isinstance(self.triviaEmoteGenerator, TriviaEmoteGenerator)
+        assert isinstance(self.triviaEmoteGenerator, TriviaEmoteGeneratorInterface)
