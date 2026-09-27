@@ -148,7 +148,7 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
             inventoryString = ', '.join(inventoryStrings)
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ Updated inventory for @{updatedInventory.chatterUserData.getUserLogin()} — {inventoryString}',
+            text = f'ⓘ Updated inventory for @{updatedInventory.chatterUserData.getUserName()} — {inventoryString}',
             twitchChannelId = chatMessage.twitchChannelId,
             replyMessageId = chatMessage.twitchChatMessageId,
         )
