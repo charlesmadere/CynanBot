@@ -50,9 +50,9 @@ class CutenessPresenter(CutenessPresenterInterface):
         )
 
         if utils.isValidInt(result.cuteness) and result.requireCuteness() >= 1:
-            return f'{chatterUserData.userName}\'s {result.cutenessDate.getHumanString()} cuteness is {result.cutenessStr} ✨'
+            return f'✨ {chatterUserData.userName}\'s {result.cutenessDate.getHumanString()} cuteness is {result.cutenessStr}'
         else:
-            return f'{chatterUserData.userName} has no cuteness in {result.cutenessDate.getHumanString()}'
+            return f'😿 {chatterUserData.userName} has no cuteness in {result.cutenessDate.getHumanString()}'
 
     async def printCutenessChampions(
         self,
