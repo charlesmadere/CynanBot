@@ -95,7 +95,9 @@ class TwitchChannelEditorsRepository(TwitchChannelEditorsRepositoryInterface):
         if editorsData is None:
             editorsData = TwitchChannelEditorsRepository.ChannelEditorsData(
                 fetchedAt = now,
-                editorUserIds = frozenset(),
+                editorUserIds = await self.__hardcodedTwitchChannelEditorsRepository.get(
+                    twitchChannelId = twitchChannelId,
+                ),
                 twitchChannelId = twitchChannelId,
             )
 

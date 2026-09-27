@@ -1,10 +1,7 @@
 import re
 import traceback
-import uuid
 from dataclasses import dataclass
 from typing import Collection, Final, Pattern
-
-from frozenlist import FrozenList
 
 from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
@@ -13,8 +10,6 @@ from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
-from ..twitch.localModels.twitchChatMessageFragment import TwitchChatMessageFragment
-from ..twitch.localModels.twitchChatMessageFragmentType import TwitchChatMessageFragmentType
 
 
 class TestCheerChatCommand(AbsChatCommand):
@@ -55,33 +50,6 @@ class TestCheerChatCommand(AbsChatCommand):
     @property
     def commandPatterns(self) -> Collection[Pattern]:
         return self.__commandPatterns
-
-    async def __generateEventId(self) -> str:
-        eventId = str(uuid.uuid4())
-        return self.__eventIdRegEx.sub('', eventId)
-
-    async def __generateMessageFragments(self, arguments: Arguments) -> FrozenList[TwitchChatMessageFragment]:
-        messageFragments: FrozenList[TwitchChatMessageFragment] = FrozenList()
-
-        messageFragments.append(TwitchChatMessageFragment(
-            text = 'cheer' + str(arguments.bits),
-            cheermote = None,
-            emote = None,
-            mention = None,
-            fragmentType = TwitchChatMessageFragmentType.CHEERMOTE,
-        ))
-
-        if utils.isValidStr(arguments.text):
-            messageFragments.append(TwitchChatMessageFragment(
-                text = arguments.text,
-                cheermote = None,
-                emote = None,
-                mention = None,
-                fragmentType = TwitchChatMessageFragmentType.TEXT,
-            ))
-
-        messageFragments.freeze()
-        return messageFragments
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
         if chatMessage.twitchChannelId != chatMessage.chatterUserId:
@@ -124,12 +92,11 @@ class TestCheerChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({handled=}) ({exception=}) ({arguments=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({handled=}) ({exception=}) ({arguments=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __parseArguments(self, chatMessage: TwitchChatMessage) -> Arguments | None:
         argumentsMatch = self.__argumentFormat.fullmatch(chatMessage.text)
-
         if argumentsMatch is None:
             return None
 
@@ -143,7 +110,7 @@ class TestCheerChatCommand(AbsChatCommand):
         if not utils.isValidInt(bits) or bits < 1 or bits > utils.getIntMaxSafeSize():
             return None
 
-        text = ' '.join(utils.getCleanedSplits(argumentsMatch.group(2)))
+        text = utils.cleanStr(argumentsMatch.group(2))
 
         return TestCheerChatCommand.Arguments(
             bits = bits,

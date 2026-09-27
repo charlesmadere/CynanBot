@@ -32,7 +32,7 @@ class CutenessMapper(CutenessMapperInterface):
 
         try:
             return datetime.strptime(utcYearAndMonthString, '%Y-%m').replace(
-                tzinfo = self.__timeZoneRepository.getDefault()
+                tzinfo = self.__timeZoneRepository.getDefault(),
             )
         except Exception as e:
             self.__timber.log('CutenessMapper', f'Encountered exception when trying to parse the given utcYearAndMonthString ({utcYearAndMonthString=})', e, traceback.format_exc())
