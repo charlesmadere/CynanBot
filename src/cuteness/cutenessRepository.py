@@ -16,7 +16,6 @@ from ..misc import utils as utils
 from ..storage.backingDatabase import BackingDatabase
 from ..storage.databaseConnection import DatabaseConnection
 from ..storage.databaseType import DatabaseType
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class CutenessRepository(CutenessRepositoryInterface):
@@ -24,15 +23,12 @@ class CutenessRepository(CutenessRepositoryInterface):
     def __init__(
         self,
         backingDatabase: BackingDatabase,
-        userIdsRepository: UserIdsRepositoryInterface,
         historyLeaderboardSize: int = 3,
         historySize: int = 5,
         leaderboardSize: int = 10,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidInt(historyLeaderboardSize):
             raise TypeError(f'historyLeaderboardSize argument is malformed: \"{historyLeaderboardSize}\"')
         elif historyLeaderboardSize < 2 or historyLeaderboardSize > 6:
@@ -47,7 +43,6 @@ class CutenessRepository(CutenessRepositoryInterface):
             raise ValueError(f'leaderboardSize argument is out of bounds: {leaderboardSize}')
 
         self.__backingDatabase: Final[BackingDatabase] = backingDatabase
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
         self.__historyLeaderboardSize: Final[int] = historyLeaderboardSize
         self.__historySize: Final[int] = historySize
         self.__leaderboardSize: Final[int] = leaderboardSize
@@ -59,7 +54,6 @@ class CutenessRepository(CutenessRepositoryInterface):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str,
     ) -> CutenessResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -67,19 +61,14 @@ class CutenessRepository(CutenessRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
-            raise TypeError(f'userName argument is malformed: \"{userName}\"')
-
-        await self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
         cutenessDate = CutenessDate()
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
-                SELECT cuteness.cuteness, cuteness.userid, userids.username FROM cuteness
-                INNER JOIN userids ON cuteness.userid = userids.userid
-                WHERE cuteness.twitchchannelid = $1 AND cuteness.userid = $2 AND cuteness.utcyearandmonth = $3
+                SELECT cuteness, userid FROM cuteness
+                WHERE twitchchannelid = $1 AND userid = $2 AND utcyearandmonth = $3
                 LIMIT 1
             ''',
             twitchChannelId, userId, cutenessDate.getDatabaseString(),
@@ -92,14 +81,12 @@ class CutenessRepository(CutenessRepositoryInterface):
                 cutenessDate = cutenessDate,
                 cuteness = 0,
                 userId = userId,
-                userName = userName,
             )
         else:
             return CutenessResult(
                 cutenessDate = cutenessDate,
                 cuteness = record[0],
                 userId = userId,
-                userName = userName,
             )
 
     async def fetchCutenessChampions(
@@ -115,10 +102,9 @@ class CutenessRepository(CutenessRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
             '''
-                SELECT cuteness.userid, userids.username, SUM(cuteness.cuteness) AS totalcuteness FROM cuteness
-                INNER JOIN userids ON cuteness.userid = userids.userid
-                WHERE cuteness.twitchchannelid = $1 AND cuteness.userid != $2
-                GROUP BY cuteness.userid, userids.username
+                SELECT userid, SUM(cuteness) AS totalcuteness FROM cuteness
+                WHERE twitchchannelid = $1 AND userid != $2
+                GROUP BY userid
                 ORDER BY totalcuteness DESC
                 LIMIT $3
             ''',
@@ -145,7 +131,6 @@ class CutenessRepository(CutenessRepositoryInterface):
                 cuteness = cuteness,
                 rank = index + 1,
                 userId = record[0],
-                userName = record[1],
             ))
 
         champions.freeze()
@@ -161,7 +146,6 @@ class CutenessRepository(CutenessRepositoryInterface):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str,
     ) -> CutenessHistoryResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -169,10 +153,6 @@ class CutenessRepository(CutenessRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
-            raise TypeError(f'userName argument is malformed: \"{userName}\"')
-
-        await self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
@@ -189,7 +169,6 @@ class CutenessRepository(CutenessRepositoryInterface):
             await connection.close()
             return CutenessHistoryResult(
                 userId = userId,
-                userName = userName,
             )
 
         entries: list[CutenessHistoryEntry] = list()
@@ -199,7 +178,6 @@ class CutenessRepository(CutenessRepositoryInterface):
                 cutenessDate = CutenessDate(record[1]),
                 cuteness = record[0],
                 userId = userId,
-                userName = userName,
             ))
 
         # sort entries into newest to oldest order
@@ -241,14 +219,12 @@ class CutenessRepository(CutenessRepositoryInterface):
                 cutenessDate = CutenessDate(record[1]),
                 cuteness = record[0],
                 userId = userId,
-                userName = userName,
             )
 
         await connection.close()
 
         return CutenessHistoryResult(
             userId = userId,
-            userName = userName,
             bestCuteness = bestCuteness,
             entries = frozenEntries,
             totalCuteness = totalCuteness,
@@ -260,7 +236,6 @@ class CutenessRepository(CutenessRepositoryInterface):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str,
     ) -> IncrementedCutenessResult:
         if not utils.isValidInt(incrementAmount):
             raise TypeError(f'incrementAmount argument is malformed: \"{incrementAmount}\"')
@@ -272,10 +247,6 @@ class CutenessRepository(CutenessRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
-            raise TypeError(f'userName argument is malformed: \"{userName}\"')
-
-        await self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
         cutenessDate = CutenessDate()
 
@@ -318,7 +289,6 @@ class CutenessRepository(CutenessRepositoryInterface):
             previousCuteness = previousCuteness,
             twitchChannelId = twitchChannelId,
             userId = userId,
-            userName = userName,
         )
 
     async def fetchCutenessLeaderboard(
@@ -326,7 +296,6 @@ class CutenessRepository(CutenessRepositoryInterface):
         twitchChannel: str,
         twitchChannelId: str,
         specificLookupUserId: str | None = None,
-        specificLookupUserName: str | None = None,
     ) -> CutenessLeaderboardResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -334,18 +303,15 @@ class CutenessRepository(CutenessRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif specificLookupUserId is not None and not isinstance(specificLookupUserId, str):
             raise TypeError(f'specificLookupUserId argument is malformed: \"{specificLookupUserId}\"')
-        elif specificLookupUserName is not None and not isinstance(specificLookupUserName, str):
-            raise TypeError(f'specificLookupUserName argument is malformed: \"{specificLookupUserName}\"')
 
         cutenessDate = CutenessDate()
 
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
             '''
-                SELECT cuteness.cuteness, cuteness.userid, userids.username FROM cuteness
-                INNER JOIN userids ON cuteness.userid = userids.userid
-                WHERE cuteness.twitchchannelid = $1 AND cuteness.utcyearandmonth = $2 AND cuteness.cuteness IS NOT NULL AND cuteness.cuteness >= 1 AND cuteness.userid != $3
-                ORDER BY cuteness.cuteness DESC
+                SELECT cuteness, userid FROM cuteness
+                WHERE twitchchannelid = $1 AND utcyearandmonth = $2 AND cuteness IS NOT NULL AND cuteness >= 1 AND userid != $3
+                ORDER BY cuteness DESC
                 LIMIT $4
             ''',
             twitchChannelId, cutenessDate.getDatabaseString(), twitchChannelId, self.__leaderboardSize,
@@ -354,7 +320,9 @@ class CutenessRepository(CutenessRepositoryInterface):
         await connection.close()
 
         if records is None or len(records) == 0:
-            return CutenessLeaderboardResult(cutenessDate = cutenessDate)
+            return CutenessLeaderboardResult(
+                cutenessDate = cutenessDate,
+            )
 
         entries: FrozenList[CutenessLeaderboardEntry] = FrozenList()
 
@@ -363,35 +331,24 @@ class CutenessRepository(CutenessRepositoryInterface):
                 cuteness = record[0],
                 rank = index + 1,
                 userId = record[1],
-                userName = record[2],
             ))
 
         entries.freeze()
 
         specificLookupAlreadyInResults = False
-        if utils.isValidStr(specificLookupUserId) or utils.isValidStr(specificLookupUserName):
+        if utils.isValidStr(specificLookupUserId):
             for entry in entries:
-                if utils.isValidStr(specificLookupUserId) and entry.userId == specificLookupUserId:
-                    specificLookupAlreadyInResults = True
-                    break
-                elif utils.isValidStr(specificLookupUserName) and entry.userName == specificLookupUserName:
+                if entry.userId == specificLookupUserId:
                     specificLookupAlreadyInResults = True
                     break
 
         specificLookupCutenessResult: CutenessResult | None = None
-        if not specificLookupAlreadyInResults:
-            if utils.isValidStr(specificLookupUserId):
-                specificLookupUserName = await self.__userIdsRepository.fetchUserName(userId = specificLookupUserId)
-            elif utils.isValidStr(specificLookupUserName):
-                specificLookupUserId = await self.__userIdsRepository.fetchUserId(userName = specificLookupUserName)
-
-            if utils.isValidStr(specificLookupUserId) and utils.isValidStr(specificLookupUserName):
-                specificLookupCutenessResult = await self.fetchCuteness(
-                    twitchChannel = twitchChannel,
-                    twitchChannelId = twitchChannelId,
-                    userId = specificLookupUserId,
-                    userName = specificLookupUserName,
-                )
+        if not specificLookupAlreadyInResults and utils.isValidStr(specificLookupUserId):
+            specificLookupCutenessResult = await self.fetchCuteness(
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId,
+                userId = specificLookupUserId,
+            )
 
         return CutenessLeaderboardResult(
             cutenessDate = cutenessDate,
@@ -433,10 +390,9 @@ class CutenessRepository(CutenessRepositoryInterface):
             cutenessDate = CutenessDate(record[0])
             monthRecords = await connection.fetchRows(
                 '''
-                    SELECT cuteness.cuteness, cuteness.userid, userids.username FROM cuteness
-                    INNER JOIN userids ON cuteness.userid = userids.userid
-                    WHERE cuteness.cuteness IS NOT NULL AND cuteness.cuteness >= 1 AND cuteness.twitchchannelid = $1 AND cuteness.userid != $2 AND cuteness.utcyearandmonth = $3
-                    ORDER BY cuteness.cuteness DESC
+                    SELECT cuteness, userid FROM cuteness
+                    WHERE cuteness IS NOT NULL AND cuteness >= 1 AND twitchchannelid = $1 AND userid != $2 AND utcyearandmonth = $3
+                    ORDER BY cuteness DESC
                     LIMIT $4
                 ''',
                 twitchChannelId, twitchChannelId, cutenessDate.getDatabaseString(), self.__historyLeaderboardSize,
@@ -453,7 +409,6 @@ class CutenessRepository(CutenessRepositoryInterface):
                     cuteness = monthRecord[0],
                     rank = rank,
                     userId = monthRecord[1],
-                    userName = monthRecord[2],
                 ))
                 rank = rank + 1
 

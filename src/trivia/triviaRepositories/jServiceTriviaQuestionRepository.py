@@ -100,7 +100,7 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if not utils.isValidStr(triviaId):
             triviaId = await self.__triviaIdGenerator.generateQuestionId(
                 question = question,
-                category = category
+                category = category,
             )
 
         originalCorrectAnswers: list[str] = list()

@@ -49,14 +49,12 @@ class PsqlDatabaseConnection(DatabaseConnection):
         self.__requireNotClosed()
 
         record = await self.__connection.fetchrow(query, *args)
-
         if record is None or len(record) == 0:
             return None
 
-        frozenRecord: FrozenList[Any] = FrozenList(record)
-        frozenRecord.freeze()
-
-        return frozenRecord
+        frozenRow: FrozenList[Any] = FrozenList(record)
+        frozenRow.freeze()
+        return frozenRow
 
     async def fetchRows(self, query: str, *args: Any | None) -> FrozenList[FrozenList[Any]] | None:
         if not utils.isValidStr(query):
@@ -65,7 +63,6 @@ class PsqlDatabaseConnection(DatabaseConnection):
         self.__requireNotClosed()
 
         records = await self.__connection.fetch(query, *args)
-
         if records is None or len(records) == 0:
             return None
 
@@ -74,7 +71,6 @@ class PsqlDatabaseConnection(DatabaseConnection):
         for record in records:
             frozenRecord: FrozenList[Any] = FrozenList(record)
             frozenRecord.freeze()
-
             frozenRows.append(frozenRecord)
 
         frozenRows.freeze()

@@ -20,6 +20,6 @@ class TriviaIdGeneratorInterface(ABC):
         self,
         question: str,
         category: str | None = None,
-        difficulty: str | None = None
+        difficulty: str | None = None,
     ) -> str:
         pass

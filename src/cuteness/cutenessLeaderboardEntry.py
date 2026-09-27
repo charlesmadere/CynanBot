@@ -12,12 +12,10 @@ class CutenessLeaderboardEntry(CutenessEntry):
         cuteness: int,
         rank: int,
         userId: str,
-        userName: str,
     ):
         super().__init__(
             cuteness = cuteness,
             userId = userId,
-            userName = userName,
         )
 
         if not utils.isValidInt(rank):

@@ -61,8 +61,8 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
             response = await clientSession.get(
                 url = f'https://quizapi.io/api/v1/questions?apiKey={self.__quizApiKey}&limit=1',
                 headers = {
-                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:97.0) Gecko/20100101 Firefox/97.0'  # LOOOOL
-                }
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:97.0) Gecko/20100101 Firefox/97.0', # LOOOOL
+                },
             )
         except GenericNetworkException as e:
             self.__timber.log('QuizApiTriviaQuestionRepository', f'Encountered network error when fetching trivia question: {e}', e, traceback.format_exc())
@@ -99,7 +99,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaId = await self.__triviaIdGenerator.generateQuestionId(
                 question = question,
                 category = category,
-                difficulty = triviaDifficulty.toStr()
+                difficulty = triviaDifficulty.toStr(),
             )
 
         answersJson: dict[str, str] = triviaJson['answers']

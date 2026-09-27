@@ -249,11 +249,15 @@ from src.timeout.settings.timeoutActionSettingsInterface import TimeoutActionSet
 from src.timeout.useCases.calculateTimeoutDurationUseCase import CalculateTimeoutDurationUseCase
 from src.timeout.useCases.calculateTimeoutDurationUseCaseInterface import CalculateTimeoutDurationUseCaseInterface
 from src.timeout.useCases.determineAirStrikeTargetsUseCase import DetermineAirStrikeTargetsUseCase
+from src.timeout.useCases.determineAirStrikeTargetsUseCaseInterface import DetermineAirStrikeTargetsUseCaseInterface
 from src.timeout.useCases.determineBananaTargetUseCase import DetermineBananaTargetUseCase
+from src.timeout.useCases.determineBananaTargetUseCaseInterface import DetermineBananaTargetUseCaseInterface
 from src.timeout.useCases.determineGrenadeTargetUseCase import DetermineGrenadeTargetUseCase
+from src.timeout.useCases.determineGrenadeTargetUseCaseInterface import DetermineGrenadeTargetUseCaseInterface
 from src.timeout.useCases.determineTimeoutTargetUseCase import DetermineTimeoutTargetUseCase
 from src.timeout.useCases.determineTimeoutTargetUseCaseInterface import DetermineTimeoutTargetUseCaseInterface
 from src.timeout.useCases.determineTm36SplashTargetUseCase import DetermineTm36SplashTargetUseCase
+from src.timeout.useCases.determineTm36SplashTargetUseCaseInterface import DetermineTm36SplashTargetUseCaseInterface
 from src.transparent.transparentApiService import TransparentApiService
 from src.transparent.transparentApiServiceInterface import TransparentApiServiceInterface
 from src.transparent.transparentXmlMapper import TransparentXmlMapper
@@ -521,8 +525,6 @@ from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJso
 from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.stub.stubTtsBoosterPackParser import StubTtsBoosterPackParser
 from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
-from src.users.userIdsRepository import UserIdsRepository
-from src.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from src.users.usersRepository import UsersRepository
 from src.users.usersRepositoryInterface import UsersRepositoryInterface
 from src.weather.weatherReportPresenter import WeatherReportPresenter
@@ -645,13 +647,6 @@ twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = TwitchUserIdsHelper(
     twitchUserIdsRepository = twitchUserIdsRepository,
 )
 
-userIdsRepository: Final[UserIdsRepositoryInterface] = UserIdsRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    twitchApiService = twitchApiService,
-    twitchUserIdsHelper = twitchUserIdsHelper,
-)
-
 twitchTokensStorage: Final[TwitchTokensStorageInterface] = TwitchTokensStorage(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -664,7 +659,7 @@ twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = TwitchTokensRep
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     twitchTokensStorage = twitchTokensStorage,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsRepository = twitchUserIdsRepository,
     seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/twitchTokensRepositorySeedFile.json',
@@ -673,8 +668,7 @@ twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = TwitchTokensRep
 
 administratorProvider: Final[AdministratorProviderInterface] = AdministratorProvider(
     generalSettingsRepository = generalSettingsRepository,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsRepository = twitchUserIdsRepository,
 )
 
 bannedWordsRepository: Final[BannedWordsRepositoryInterface] = BannedWordsRepository(
@@ -700,7 +694,7 @@ twitchSubscriptionsRepository: Final[TwitchSubscriptionsRepositoryInterface] = T
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 twitchEmotesHelper: Final[TwitchEmotesHelperInterface] = TwitchEmotesHelper(
@@ -710,7 +704,6 @@ twitchEmotesHelper: Final[TwitchEmotesHelperInterface] = TwitchEmotesHelper(
     twitchHandleProvider = authRepository,
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
 )
 
 twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface] = TwitchFollowingStatusRepository(
@@ -778,7 +771,7 @@ activeChattersRepository: Final[ActiveChattersRepositoryInterface] = ActiveChatt
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 
@@ -786,14 +779,17 @@ activeChattersRepository: Final[ActiveChattersRepositoryInterface] = ActiveChatt
 ## Cuteness initialization section ##
 #####################################
 
-cutenessPresenter: Final[CutenessPresenterInterface] = CutenessPresenter()
+cutenessPresenter: Final[CutenessPresenterInterface] = CutenessPresenter(
+    twitchUserIdsRepository = twitchUserIdsRepository,
+)
 
 cutenessRepository: Final[CutenessRepositoryInterface] = CutenessRepository(
     backingDatabase = backingDatabase,
-    userIdsRepository = userIdsRepository,
 )
 
-cutenessUtils: Final[CutenessUtilsInterface] = CutenessUtils()
+cutenessUtils: Final[CutenessUtilsInterface] = CutenessUtils(
+    twitchUserIdsRepository = twitchUserIdsRepository,
+)
 
 
 ####################################
@@ -803,7 +799,7 @@ cutenessUtils: Final[CutenessUtilsInterface] = CutenessUtils()
 funtoonTokensRepository: Final[FuntoonTokensRepositoryInterface] = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsRepository = twitchUserIdsRepository,
     seedFileReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/funtoonTokensRepositorySeedFile.json',
@@ -917,7 +913,7 @@ twitchTimeoutRemodHelper: Final[TwitchTimeoutRemodHelperInterface] = TwitchTimeo
     twitchApiService = twitchApiService,
     twitchTimeoutRemodRepository = twitchTimeoutRemodRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 twitchModeratorHelper: Final[TwitchModeratorHelperInterface] = TwitchModeratorHelper(
@@ -935,7 +931,7 @@ twitchChatMessenger: Final[TwitchChatMessengerInterface] = TwitchChatMessenger(
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = TimeoutImmuneUserIdsRepository(
@@ -943,7 +939,7 @@ timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] =
     timber = timber,
     twitchFriendsUserIdProvider = twitchFriendsUserIdRepository,
     twitchHandleProvider = authRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
     otherImmuneUserIdsLinesReader = LinesFileReader(
         eventLoop = eventLoop,
         fileName = '../config/otherImmuneUserIds.txt',
@@ -957,7 +953,7 @@ transparentXmlMapper: Final[TransparentXmlMapperInterface] = TransparentXmlMappe
 transparentApiService: Final[TransparentApiServiceInterface] = TransparentApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
-    transparentXmlMapper = transparentXmlMapper
+    transparentXmlMapper = transparentXmlMapper,
 )
 
 wordOfTheDayRepository: Final[WordOfTheDayRepositoryInterface] = WordOfTheDayRepository(
@@ -1034,7 +1030,7 @@ translationHelper: Final[TranslationHelperInterface] = TranslationHelper(
 twitchWebsocketAllowedUsersRepository: Final[TwitchWebsocketAllowedUsersRepositoryInterface] = TwitchWebsocketAllowedUsersRepository(
     timber = timber,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
     usersRepository = usersRepository,
 )
 
@@ -1180,13 +1176,13 @@ triviaSourceInstabilityHelper: Final[TriviaSourceInstabilityHelper] = TriviaSour
     timeZoneRepository = timeZoneRepository,
 )
 
+triviaQuestionTypeParser: Final[TriviaQuestionTypeParserInterface] = TriviaQuestionTypeParser()
+
 additionalTriviaAnswersRepository: Final[AdditionalTriviaAnswersRepositoryInterface] = AdditionalTriviaAnswersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
+    triviaQuestionTypeParser = triviaQuestionTypeParser,
     triviaSettings = triviaSettings,
-    twitchHandleProvider = authRepository,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
 )
 
 bannedTriviaIdsRepository: Final[BannedTriviaIdsRepositoryInterface] = BannedTriviaIdsRepository(
@@ -1265,8 +1261,6 @@ triviaGameGlobalControllersRepository: Final[TriviaGameGlobalControllersReposito
 
 triviaDifficultyParser: Final[TriviaDifficultyParserInterface] = TriviaDifficultyParser()
 
-triviaQuestionTypeParser: Final[TriviaQuestionTypeParserInterface] = TriviaQuestionTypeParser()
-
 triviaHistoryRepository: Final[TriviaHistoryRepositoryInterface] = TriviaHistoryRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -1290,7 +1284,7 @@ triviaUtils: Final[TriviaUtilsInterface] = TriviaUtils(
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
     triviaQuestionPresenter = triviaQuestionPresenter,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsRepository = twitchUserIdsRepository,
 )
 
 bongoJsonParser: Final[BongoJsonParserInterface] = BongoJsonParser(
@@ -1408,7 +1402,7 @@ glacialTriviaQuestionRepository: Final[GlacialTriviaQuestionRepositoryInterface]
     triviaSettings = triviaSettings,
     triviaSourceParser = triviaSourceParser,
     twitchHandleProvider = authRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsRepository = twitchUserIdsRepository,
 )
 
 lotrDatabaseQuestionStorage: Final[LotrDatabaseQuestionStorageInterface] = LotrDatabaseQuestionStorage(
@@ -1502,7 +1496,7 @@ triviaRepository: Final[TriviaRepositoryInterface] = TriviaRepository(
     triviaSourceInstabilityHelper = triviaSourceInstabilityHelper,
     triviaVerifier = triviaVerifier,
     twitchHandleProvider = authRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsRepository = twitchUserIdsRepository,
     willFryTriviaQuestionRepository = willFryTriviaQuestionRepository,
     wwtbamTriviaQuestionRepository = WwtbamTriviaQuestionRepository(
         timber = timber,
@@ -1542,8 +1536,8 @@ triviaGameMachine: Final[TriviaGameMachineInterface] = TriviaGameMachine(
     triviaScoreRepository = triviaScoreRepository,
     triviaSettings = triviaSettings,
     triviaTwitchEmoteHelper = triviaTwitchEmoteHelper,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
+    twitchTokensUtils = twitchTokensUtils,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 
@@ -1572,7 +1566,7 @@ twitchTimeoutHelper: Final[TwitchTimeoutHelperInterface] = TwitchTimeoutHelper(
     twitchHandleProvider = authRepository,
     twitchModeratorHelper = twitchModeratorHelper,
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 timeoutActionSettings: Final[TimeoutActionSettingsInterface] = TimeoutActionSettings(
@@ -1589,43 +1583,43 @@ timeoutActionSettings: Final[TimeoutActionSettingsInterface] = TimeoutActionSett
 
 chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = StubChatterInventoryHelper(
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface] = CalculateTimeoutDurationUseCase()
 
-determineAirStrikeTargetsUseCase = DetermineAirStrikeTargetsUseCase(
+determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCaseInterface] = DetermineAirStrikeTargetsUseCase(
     activeChattersRepository = activeChattersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
-determineBananaTargetUseCase = DetermineBananaTargetUseCase(
+determineBananaTargetUseCase: Final[DetermineBananaTargetUseCaseInterface] = DetermineBananaTargetUseCase(
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
 )
 
-determineGrenadeTargetUseCase = DetermineGrenadeTargetUseCase(
+determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCaseInterface] = DetermineGrenadeTargetUseCase(
     activeChattersRepository = activeChattersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 determineTimeoutTargetUseCase: Final[DetermineTimeoutTargetUseCaseInterface] = DetermineTimeoutTargetUseCase(
     timber = timber,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
-determineTm36SplashTargetUseCase = DetermineTm36SplashTargetUseCase(
+determineTm36SplashTargetUseCase: Final[DetermineTm36SplashTargetUseCaseInterface] = DetermineTm36SplashTargetUseCase(
     activeChattersRepository = activeChattersRepository,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
@@ -1667,7 +1661,7 @@ timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachin
     trollmojiHelper = trollmojiHelper,
     twitchTimeoutHelper = twitchTimeoutHelper,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 
@@ -1686,7 +1680,7 @@ anivCopyMessageTimeoutScoreHelper: AnivCopyMessageTimeoutScoreHelperInterface = 
     anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
     anivSettings = anivSettings,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface = AnivCopyMessageTimeoutScorePresenter()
@@ -1718,7 +1712,7 @@ mostRecentAnivMessageTimeoutHelper: Final[MostRecentAnivMessageTimeoutHelperInte
     twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 
@@ -1726,22 +1720,22 @@ mostRecentAnivMessageTimeoutHelper: Final[MostRecentAnivMessageTimeoutHelperInte
 ## Recurring Actions initialization section ##
 ##############################################
 
-recurringActionsJsonParser: RecurringActionsJsonParserInterface = RecurringActionsJsonParser(
+recurringActionsJsonParser: Final[RecurringActionsJsonParserInterface] = RecurringActionsJsonParser(
     languagesRepository = languagesRepository,
-    timber = timber
+    timber = timber,
 )
 
-recurringActionsRepository: RecurringActionsRepositoryInterface = RecurringActionsRepository(
-    backingDatabase = backingDatabase,
-    recurringActionsJsonParser = recurringActionsJsonParser,
-    timber = timber
-)
-
-mostRecentRecurringActionRepository: MostRecentRecurringActionRepositoryInterface = MostRecentRecurringActionRepository(
+recurringActionsRepository: Final[RecurringActionsRepositoryInterface] = RecurringActionsRepository(
     backingDatabase = backingDatabase,
     recurringActionsJsonParser = recurringActionsJsonParser,
     timber = timber,
-    timeZoneRepository = timeZoneRepository
+)
+
+mostRecentRecurringActionRepository: Final[MostRecentRecurringActionRepositoryInterface] = MostRecentRecurringActionRepository(
+    backingDatabase = backingDatabase,
+    recurringActionsJsonParser = recurringActionsJsonParser,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
 )
 
 recurringActionsEventListener: Final[RecurringActionsEventListener] = RecurringActionsEventHandler(
@@ -1764,10 +1758,10 @@ recurringActionsMachine: Final[RecurringActionsMachineInterface] = RecurringActi
     timeZoneRepository = timeZoneRepository,
     triviaGameBuilder = triviaGameBuilder,
     triviaGameMachine = triviaGameMachine,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
     usersRepository = usersRepository,
     weatherRepository = weatherRepository,
-    wordOfTheDayRepository = wordOfTheDayRepository
+    wordOfTheDayRepository = wordOfTheDayRepository,
 )
 
 recurringActionsHelper: Final[RecurringActionsHelperInterface] = RecurringActionsHelper(
@@ -1888,7 +1882,7 @@ redemptionCounterHelper: Final[RedemptionCounterHelperInterface] = RedemptionCou
     redemptionCounterSettings = redemptionCounterSettings,
     timber = timber,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 
@@ -1964,7 +1958,7 @@ chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
         timeoutIdGenerator = timeoutIdGenerator,
         twitchHandleProvider = authRepository,
         twitchTokensRepository = twitchTokensRepository,
-        userIdsRepository = userIdsRepository,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     RecurringActionsWizardChatAction(
         recurringActionsRepository = recurringActionsRepository,
@@ -1987,16 +1981,15 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
         twitchHandleProvider = authRepository,
         twitchTokensUtils = twitchTokensUtils,
-        userIdsRepository = userIdsRepository,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     AddGlobalTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
         timber = timber,
         triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
         twitchChatMessenger = twitchChatMessenger,
-        twitchHandleProvider = authRepository,
         twitchTokensUtils = twitchTokensUtils,
-        userIdsRepository = userIdsRepository,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     AddRecurringCutenessActionChatCommand(
         administratorProvider = administratorProvider,
@@ -2025,9 +2018,8 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         timber = timber,
         triviaGameControllersRepository = triviaGameControllersRepository,
         twitchChatMessenger = twitchChatMessenger,
-        twitchHandleProvider = authRepository,
         twitchTokensUtils = twitchTokensUtils,
-        userIdsRepository =  userIdsRepository,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     AnivTimeoutsChatCommand(
         anivCopyMessageTimeoutScoreHelper = anivCopyMessageTimeoutScoreHelper,
@@ -2082,14 +2074,16 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         cutenessRepository = cutenessRepository,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
-        userIdsRepository = userIdsRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     CutenessHistoryChatCommand(
         cutenessRepository = cutenessRepository,
         cutenessUtils = cutenessUtils,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
-        userIdsRepository = userIdsRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     CynanSourceChatCommand(
         timber = timber,
@@ -2171,7 +2165,8 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         triviaUtils = triviaUtils,
         twitchHandleProvider = authRepository,
         twitchChatMessenger = twitchChatMessenger,
-        userIdsRepository = userIdsRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     JishoChatCommand(
         generalSettingsRepository = generalSettingsRepository,
@@ -2207,16 +2202,15 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
         twitchHandleProvider = authRepository,
         twitchTokensUtils = twitchTokensUtils,
-        userIdsRepository = userIdsRepository,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     RemoveGlobalTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
         timber = timber,
         triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
         twitchChatMessenger = twitchChatMessenger,
-        twitchHandleProvider = authRepository,
         twitchTokensUtils = twitchTokensUtils,
-        userIdsRepository = userIdsRepository,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     RemoveRecurringCutenessActionChatCommand(
         administratorProvider = administratorProvider,
@@ -2238,9 +2232,8 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         timber = timber,
         triviaGameControllersRepository = triviaGameControllersRepository,
         twitchChatMessenger = twitchChatMessenger,
-        twitchHandleProvider = authRepository,
         twitchTokensUtils = twitchTokensUtils,
-        userIdsRepository = userIdsRepository,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     SuperAnswerChatCommand(
         generalSettingsRepository = generalSettingsRepository,
@@ -2286,7 +2279,8 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         triviaScoreRepository = triviaScoreRepository,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
-        userIdsRepository = userIdsRepository,
+        twitchTokensUtils = twitchTokensUtils,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     UnbanTriviaQuestionChatCommand(
         generalSettingsRepository = generalSettingsRepository,
@@ -2338,7 +2332,7 @@ twitchChatHandler: Final[AbsTwitchChatHandler] = TwitchChatHandler(
     triviaGameMachine = triviaGameMachine,
     twitchLocalModelsMapper = twitchLocalModelsMapper,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
     chatActions = chatActions,
     chatCommands = chatCommands,
 )
@@ -2397,7 +2391,7 @@ twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscript
     twitchHandleProvider = authRepository,
     twitchLocalModelsMapper = twitchLocalModelsMapper,
     twitchTokensUtils = twitchTokensUtils,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 twitchWebsocketDataBundleListener: Final[TwitchWebsocketDataBundleListener] = TwitchWebsocketDataBundleHandler(
@@ -2412,7 +2406,7 @@ twitchWebsocketDataBundleListener: Final[TwitchWebsocketDataBundleListener] = Tw
     raidHandler = twitchRaidHandler,
     subscriptionHandler = twitchSubscriptionHandler,
     timber = timber,
-    userIdsRepository = userIdsRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
     usersRepository = usersRepository,
 )
 

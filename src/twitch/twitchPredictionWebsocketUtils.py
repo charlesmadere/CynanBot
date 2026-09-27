@@ -32,10 +32,14 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
 
         match index:
             case 0:
-                return await self.outcomeColorToEventData(TwitchOutcomeColor.BLUE)
+                return await self.outcomeColorToEventData(
+                    color = TwitchOutcomeColor.BLUE,
+                )
 
             case 1:
-                return await self.outcomeColorToEventData(TwitchOutcomeColor.PINK)
+                return await self.outcomeColorToEventData(
+                    color = TwitchOutcomeColor.PINK,
+                )
 
             case 2:
                 # orange

@@ -14,7 +14,8 @@ from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ...twitch.localModels.twitchUserInterface import TwitchUserInterface
+from ...twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 from ...users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -28,7 +29,7 @@ class CrowdControlAutomator(CrowdControlAutomatorInterface):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsRepository: TwitchUserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
         refreshSleepTimeSeconds: float = 5,
     ):
@@ -44,8 +45,8 @@ class CrowdControlAutomator(CrowdControlAutomatorInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsRepository, TwitchUserIdsRepositoryInterface):
+            raise TypeError(f'twitchUserIdsRepository argument is malformed: \"{twitchUserIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not utils.isValidNum(refreshSleepTimeSeconds):
@@ -59,7 +60,7 @@ class CrowdControlAutomator(CrowdControlAutomatorInterface):
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = twitchUserIdsRepository
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
         self.__refreshSleepTimeSeconds: Final[float] = refreshSleepTimeSeconds
 
@@ -107,15 +108,14 @@ class CrowdControlAutomator(CrowdControlAutomatorInterface):
         if len(twitchChannelIds) == 0:
             return
 
-        cynanBotUserName = await self.__twitchHandleProvider.getTwitchHandle()
-        cynanBotUserId = await self.__userIdsRepository.requireUserId(cynanBotUserName)
+        selfHandle = await self.__twitchHandleProvider.getTwitchHandle()
+        selfUserData = await self.__twitchUserIdsRepository.requireByLoginOrName(selfHandle)
 
         for twitchChannelId in twitchChannelIds:
             await self.__submitGameShuffleAction(
                 now = now,
-                cynanBotUserId = cynanBotUserId,
-                cynanBotUserName = cynanBotUserName,
                 twitchChannelId = twitchChannelId,
+                selfUserData = selfUserData,
             )
 
     async def removeGameShuffleAutomator(
@@ -152,28 +152,30 @@ class CrowdControlAutomator(CrowdControlAutomatorInterface):
     async def __submitGameShuffleAction(
         self,
         now: datetime,
-        cynanBotUserId: str,
-        cynanBotUserName: str,
         twitchChannelId: str,
+        selfUserData: TwitchUserInterface,
     ):
-        userName = await self.__userIdsRepository.requireUserName(twitchChannelId)
-        user = await self.__usersRepository.getUserAsync(userName)
+        userData = await self.__twitchUserIdsRepository.requireById(twitchChannelId)
+        twitchUser = await self.__usersRepository.getUserAsync(userData.userLogin)
 
-        if not user.isCrowdControlEnabled:
-            self.__timber.log('CrowdControlAutomator', f'Removing game shuffle automator for user that has crowd control disabled ({user=}) ({twitchChannelId=})')
+        if not twitchUser.isCrowdControlEnabled:
+            self.__timber.log('CrowdControlAutomator', f'Removing game shuffle automator for user that has crowd control disabled ({twitchUser=}) ({userData=}) ({twitchChannelId=}) ({selfUserData=})')
             await self.removeGameShuffleAutomator(twitchChannelId)
             return
+
+        actionId = await self.__crowdControlIdGenerator.generateActionId()
 
         self.__crowdControlMachine.submitAction(GameShuffleCrowdControlAction(
             entryWithinGigaShuffle = False,
             dateTime = now,
             startOfGigaShuffleSize = None,
-            actionId = await self.__crowdControlIdGenerator.generateActionId(),
-            chatterUserId = cynanBotUserId,
-            chatterUserName = cynanBotUserName,
-            twitchChannel = user.handle,
+            actionId = actionId,
+            chatterUserId = selfUserData.getUserId(),
+            chatterUserLogin = selfUserData.getUserLogin(),
+            chatterUserName = selfUserData.getUserName(),
+            twitchChannel = twitchUser.handle,
             twitchChannelId = twitchChannelId,
             twitchChatMessageId = None,
         ))
 
-        self.__timber.log('CrowdControlAutomator', f'Submitted automated game shuffle ({user=}) ({twitchChannelId=})')
+        self.__timber.log('CrowdControlAutomator', f'Submitted automated game shuffle ({actionId=}) ({twitchUser=}) ({userData=}) ({twitchChannelId=}) ({selfUserData=})')

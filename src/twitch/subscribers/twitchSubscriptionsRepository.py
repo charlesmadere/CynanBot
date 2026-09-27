@@ -13,11 +13,11 @@ from ..api.models.twitchUserSubscription import TwitchUserSubscription
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..exceptions import TwitchJsonException, TwitchStatusCodeException
 from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ..userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
 from ...timber.timberInterface import TimberInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
@@ -33,7 +33,7 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         cacheSize: int = 64,
         cacheTimeToLive: timedelta = timedelta(hours = 3),
     ):
@@ -45,8 +45,8 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not utils.isValidInt(cacheSize):
             raise TypeError(f'cacheSize argument is malformed: \"{cacheSize}\"')
         elif cacheSize < 1 or cacheSize > utils.getIntMaxSafeSize():
@@ -58,7 +58,7 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__cacheTimeToLive: Final[timedelta] = cacheTimeToLive
 
         self.__chatterCaches: Final[dict[str, LRU[str, TwitchSubscriptionsRepository.Entry | None]]] = defaultdict(lambda: LRU(cacheSize))
@@ -85,8 +85,8 @@ class TwitchSubscriptionsRepository(TwitchSubscriptionsRepositoryInterface):
         if subscriptionEntry is not None and subscriptionEntry.fetchTime + self.__cacheTimeToLive >= now:
             return subscriptionEntry.subscriptionStatus
 
-        selfUserId = await self.__userIdsRepository.requireUserId(
-            userName = await self.__twitchHandleProvider.getTwitchHandle(),
+        selfUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(
+            userLoginOrName = await self.__twitchHandleProvider.getTwitchHandle(),
             twitchAccessToken = twitchAccessToken,
         )
 

@@ -64,7 +64,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
         triviaId = await self.__triviaIdGenerator.generateQuestionId(
             question = openTriviaQuestion.question,
             category = openTriviaQuestion.category,
-            difficulty = openTriviaQuestion.difficulty.toStr()
+            difficulty = openTriviaQuestion.difficulty.toStr(),
         )
 
         if isinstance(openTriviaQuestion, BooleanOpenTriviaDatabaseQuestion):

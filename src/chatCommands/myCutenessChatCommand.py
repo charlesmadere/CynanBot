@@ -53,15 +53,15 @@ class MyCutenessChatCommand(AbsChatCommand):
             twitchChannel = chatMessage.twitchChannel,
             twitchChannelId = chatMessage.twitchChannelId,
             userId = chatMessage.chatterUserId,
-            userName = chatMessage.chatterUserName,
         )
 
-        message = self.__cutenessUtils.getCutenessHistory(
+        printOut = self.__cutenessUtils.getCutenessHistory(
             result = result,
+            chatterUserName = chatMessage.chatterUserName,
         )
 
         self.__twitchChatMessenger.send(
-            text = message,
+            text = printOut,
             twitchChannelId = chatMessage.twitchChannelId,
             replyMessageId = chatMessage.twitchChatMessageId,
         )

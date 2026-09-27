@@ -11,7 +11,6 @@ class IncrementedCutenessResult:
     previousCuteness: int
     twitchChannelId: str
     userId: str
-    userName: str
 
     @property
     def newCutenessStr(self) -> str:

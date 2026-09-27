@@ -11,8 +11,9 @@ from ..settings.chatterInventorySettingsInterface import ChatterInventorySetting
 from ..useCases.cassetteTapeItemUseCaseInterface import CassetteTapeItemUseCaseInterface
 from ...misc import utils as utils
 from ...twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
+from ...twitch.localModels.twitchUserInterface import TwitchUserInterface
+from ...twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from ...users.exceptions import NoSuchUserException
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from ...voicemail.helpers.voicemailHelperInterface import VoicemailHelperInterface
 from ...voicemail.models.addVoicemailResult import AddVoicemailResult
 from ...voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
@@ -23,14 +24,13 @@ class CassetteTapeItemUseCase(CassetteTapeItemUseCaseInterface):
     @dataclass(frozen = True, slots = True)
     class ParsedVoicemailRequest:
         cleanedMessage: str
-        targetUserId: str
-        targetUserName: str
+        targetUserData: TwitchUserInterface
 
     def __init__(
         self,
         chatterInventorySettings: ChatterInventorySettingsInterface,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         voicemailHelper: VoicemailHelperInterface,
         voicemailSettingsRepository: VoicemailSettingsRepositoryInterface,
     ):
@@ -38,8 +38,8 @@ class CassetteTapeItemUseCase(CassetteTapeItemUseCaseInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
         elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not isinstance(voicemailHelper, VoicemailHelperInterface):
             raise TypeError(f'voicemailHelper argument is malformed: \"{voicemailHelper}\"')
         elif not isinstance(voicemailSettingsRepository, VoicemailSettingsRepositoryInterface):
@@ -47,7 +47,7 @@ class CassetteTapeItemUseCase(CassetteTapeItemUseCaseInterface):
 
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface] = twitchFollowingStatusRepository
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__voicemailHelper: Final[VoicemailHelperInterface] = voicemailHelper
         self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
 
@@ -75,20 +75,19 @@ class CassetteTapeItemUseCase(CassetteTapeItemUseCaseInterface):
             isFollowing = await self.__twitchFollowingStatusRepository.isFollowing(
                 twitchAccessToken = twitchAccessToken,
                 twitchChannelId = action.twitchChannelId,
-                userId = parsedVoicemailRequest.targetUserId,
+                userId = parsedVoicemailRequest.targetUserData.getUserId(),
             )
 
             if not isFollowing:
                 raise CassetteTapeTargetIsNotFollowingException(
-                    targetUserId = parsedVoicemailRequest.targetUserId,
-                    targetUserName = parsedVoicemailRequest.targetUserName,
+                    targetUserData = parsedVoicemailRequest.targetUserData,
                     originatingAction = action,
                 )
 
         addVoicemailResult = await self.__voicemailHelper.addVoicemail(
             message = parsedVoicemailRequest.cleanedMessage,
             originatingUserId = action.chatterUserId,
-            targetUserId = parsedVoicemailRequest.targetUserId,
+            targetUserId = parsedVoicemailRequest.targetUserData.getUserId(),
             twitchChannelId = action.twitchChannelId,
         )
 
@@ -98,8 +97,7 @@ class CassetteTapeItemUseCase(CassetteTapeItemUseCaseInterface):
 
             case AddVoicemailResult.MAXIMUM_FOR_TARGET_USER:
                 raise VoicemailTargetInboxIsFullException(
-                    targetUserId = parsedVoicemailRequest.targetUserId,
-                    targetUserName = parsedVoicemailRequest.targetUserName,
+                    targetUserData = parsedVoicemailRequest.targetUserData,
                 )
 
             case AddVoicemailResult.MESSAGE_MALFORMED:
@@ -111,8 +109,7 @@ class CassetteTapeItemUseCase(CassetteTapeItemUseCaseInterface):
             case AddVoicemailResult.OK:
                 return CassetteTapeItemUseCaseInterface.Result(
                     addVoicemailResult = addVoicemailResult,
-                    targetUserId = parsedVoicemailRequest.targetUserId,
-                    targetUserName = parsedVoicemailRequest.targetUserName,
+                    targetUserData = parsedVoicemailRequest.targetUserData,
                 )
 
             case AddVoicemailResult.TARGET_USER_IS_ORIGINATING_USER:
@@ -160,8 +157,8 @@ class CassetteTapeItemUseCase(CassetteTapeItemUseCaseInterface):
             )
 
         try:
-            targetUserId = await self.__userIdsRepository.requireUserId(
-                userName = targetUserName,
+            targetUserData = await self.__twitchUserIdsHelper.requireByLoginOrName(
+                userLoginOrName = targetUserName,
                 twitchAccessToken = twitchAccessToken,
             )
         except NoSuchUserException:
@@ -172,6 +169,5 @@ class CassetteTapeItemUseCase(CassetteTapeItemUseCaseInterface):
 
         return CassetteTapeItemUseCase.ParsedVoicemailRequest(
             cleanedMessage = cleanedMessage,
-            targetUserId = targetUserId,
-            targetUserName = targetUserName,
+            targetUserData = targetUserData,
         )

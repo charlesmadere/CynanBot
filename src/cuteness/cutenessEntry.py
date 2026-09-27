@@ -10,7 +10,6 @@ class CutenessEntry:
         self,
         cuteness: int,
         userId: str,
-        userName: str,
     ):
         if not utils.isValidInt(cuteness):
             raise TypeError(f'cuteness argument is malformed: \"{cuteness}\"')
@@ -18,12 +17,9 @@ class CutenessEntry:
             raise ValueError(f'cuteness argument is out of bounds: {cuteness}')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
-            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         self.__cuteness: Final[int] = cuteness
         self.__userId: Final[str] = userId
-        self.__userName: Final[str] = userName
 
     @property
     def cuteness(self) -> int:
@@ -36,7 +32,3 @@ class CutenessEntry:
     @property
     def userId(self) -> str:
         return self.__userId
-
-    @property
-    def userName(self) -> str:
-        return self.__userName

@@ -16,7 +16,6 @@ class CutenessRepositoryInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str,
     ) -> CutenessResult:
         pass
 
@@ -34,7 +33,6 @@ class CutenessRepositoryInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str,
     ) -> CutenessHistoryResult:
         pass
 
@@ -45,7 +43,6 @@ class CutenessRepositoryInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
-        userName: str,
     ) -> IncrementedCutenessResult:
         pass
 
@@ -55,7 +52,6 @@ class CutenessRepositoryInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
         specificLookupUserId: str | None = None,
-        specificLookupUserName: str | None = None,
     ) -> CutenessLeaderboardResult:
         pass
 
