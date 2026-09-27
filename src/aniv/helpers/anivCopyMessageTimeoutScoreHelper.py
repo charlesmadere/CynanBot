@@ -7,7 +7,7 @@ from ..repositories.anivCopyMessageTimeoutScoreRepositoryInterface import AnivCo
 from ..settings.anivSettingsInterface import AnivSettingsInterface
 from ...misc import utils as utils
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ...twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
 
 class AnivCopyMessageTimeoutScoreHelper(AnivCopyMessageTimeoutScoreHelperInterface):
@@ -17,7 +17,7 @@ class AnivCopyMessageTimeoutScoreHelper(AnivCopyMessageTimeoutScoreHelperInterfa
         anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface,
         anivSettings: AnivSettingsInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
         if not isinstance(anivCopyMessageTimeoutScoreRepository, AnivCopyMessageTimeoutScoreRepositoryInterface):
             raise TypeError(f'anivCopyMessageTimeoutScoreRepository argument is malformed: \"{anivCopyMessageTimeoutScoreRepository}\"')
@@ -25,13 +25,13 @@ class AnivCopyMessageTimeoutScoreHelper(AnivCopyMessageTimeoutScoreHelperInterfa
             raise TypeError(f'anivSettings argument is malformed: \"{anivSettings}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
         self.__anivCopyMessageTimeoutScoreRepository: Final[AnivCopyMessageTimeoutScoreRepositoryInterface] = anivCopyMessageTimeoutScoreRepository
         self.__anivSettings: Final[AnivSettingsInterface] = anivSettings
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
 
     async def getScore(
         self,
@@ -47,12 +47,12 @@ class AnivCopyMessageTimeoutScoreHelper(AnivCopyMessageTimeoutScoreHelperInterfa
             twitchChannelId = twitchChannelId,
         )
 
-        chatterUserName = await self.__userIdsRepository.requireUserName(
+        chatterUserData = await self.__twitchUserIdsHelper.requireById(
             userId = chatterUserId,
             twitchAccessToken = twitchAccessToken,
         )
 
-        twitchChannel = await self.__userIdsRepository.requireUserName(
+        twitchChannelData = await self.__twitchUserIdsHelper.requireById(
             userId = twitchChannelId,
             twitchAccessToken = twitchAccessToken,
         )
@@ -67,8 +67,8 @@ class AnivCopyMessageTimeoutScoreHelper(AnivCopyMessageTimeoutScoreHelperInterfa
                     chatterUserId = chatterUserId,
                     twitchChannelId = twitchChannelId,
                 ),
-                chatterUserName = chatterUserName,
-                twitchChannel = twitchChannel,
+                twitchChannel = twitchChannelData.userLogin,
+                chatterUserData = chatterUserData,
             )
 
         score = await self.__anivCopyMessageTimeoutScoreRepository.getScore(
@@ -78,6 +78,6 @@ class AnivCopyMessageTimeoutScoreHelper(AnivCopyMessageTimeoutScoreHelperInterfa
 
         return PreparedAnivCopyMessageTimeoutScore(
             score = score,
-            chatterUserName = chatterUserName,
-            twitchChannel = twitchChannel,
+            twitchChannel = twitchChannelData.userLogin,
+            chatterUserData = chatterUserData,
         )

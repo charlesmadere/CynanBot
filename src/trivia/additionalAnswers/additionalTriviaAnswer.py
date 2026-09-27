@@ -5,4 +5,3 @@ from dataclasses import dataclass
 class AdditionalTriviaAnswer:
     answer: str
     userId: str
-    userName: str

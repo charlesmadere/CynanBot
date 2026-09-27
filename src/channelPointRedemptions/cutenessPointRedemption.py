@@ -1,4 +1,3 @@
-import traceback
 from typing import Final
 
 from .absChannelPointsRedemption import AbsChannelPointRedemption
@@ -45,23 +44,14 @@ class CutenessPointRedemption(AbsChannelPointRedemption):
         if cutenessBoosterPack is None:
             return PointsRedemptionResult.IGNORED
 
-        try:
-            await self.__cutenessRepository.fetchCutenessIncrementedBy(
-                incrementAmount = cutenessBoosterPack.amount,
-                twitchChannel = pointsRedemption.twitchChannel,
-                twitchChannelId = pointsRedemption.twitchChannelId,
-                userId = pointsRedemption.redemptionUserId,
-                userName = pointsRedemption.redemptionUserName,
-            )
+        await self.__cutenessRepository.fetchCutenessIncrementedBy(
+            incrementAmount = cutenessBoosterPack.amount,
+            twitchChannel = pointsRedemption.twitchChannel,
+            twitchChannelId = pointsRedemption.twitchChannelId,
+            userId = pointsRedemption.redemptionUserId,
+        )
 
-            self.__timber.log(self.pointsRedemptionName, f'Redeemed ({cutenessBoosterPack=}) ({pointsRedemption=})')
-        except Exception as e:
-            self.__timber.log(self.pointsRedemptionName, f'Error redeeming ({cutenessBoosterPack=}) ({pointsRedemption=})', e, traceback.format_exc())
-            self.__twitchChatMessenger.send(
-                text = f'⚠ Error increasing cuteness for @{pointsRedemption.redemptionUserName}',
-                twitchChannelId = pointsRedemption.twitchChannelId,
-            )
-
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({cutenessBoosterPack=}) ({pointsRedemption=})')
         return PointsRedemptionResult.CONSUMED
 
     @property

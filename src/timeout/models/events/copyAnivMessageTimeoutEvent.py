@@ -6,6 +6,7 @@ from ..actions.copyAnivMessageTimeoutAction import CopyAnivMessageTimeoutAction
 from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ....aniv.models.anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
 from ....aniv.models.whichAnivUser import WhichAnivUser
+from ....twitch.localModels.twitchUserInterface import TwitchUserInterface
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 
@@ -14,11 +15,11 @@ class CopyAnivMessageTimeoutEvent(AbsTimeoutEvent):
     copyMessageTimeoutScore: AnivCopyMessageTimeoutScore
     originatingAction: CopyAnivMessageTimeoutAction
     timeoutDuration: CalculatedTimeoutDuration
-    anivUserName: str
     eventId: str
     ripBozoEmote: str
-    targetUserName: str
     timeoutResult: TwitchTimeoutResult
+    anivUserData: TwitchUserInterface
+    targetUserData: TwitchUserInterface
 
     def getEventId(self) -> str:
         return self.eventId

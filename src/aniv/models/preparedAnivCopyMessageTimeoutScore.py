@@ -1,13 +1,14 @@
 from dataclasses import dataclass
 
 from .anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
+from ...twitch.localModels.twitchUserInterface import TwitchUserInterface
 
 
 @dataclass(frozen = True, slots = True)
 class PreparedAnivCopyMessageTimeoutScore:
     score: AnivCopyMessageTimeoutScore
-    chatterUserName: str
     twitchChannel: str
+    chatterUserData: TwitchUserInterface
 
     @property
     def chatterUserId(self) -> str:

@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import Final
+
 import pytest
 
 from src.aniv.models.anivCopyMessageTimeoutScore import AnivCopyMessageTimeoutScore
@@ -6,11 +9,27 @@ from src.aniv.presenters.anivCopyMessageTimeoutScorePresenter import AnivCopyMes
 from src.aniv.presenters.anivCopyMessageTimeoutScorePresenterInterface import \
     AnivCopyMessageTimeoutScorePresenterInterface
 from src.language.languageEntry import LanguageEntry
+from src.twitch.localModels.twitchUserInterface import TwitchUserInterface
 
 
 class TestAnivCopyMessageTimeoutScorePresenter:
 
-    presenter: AnivCopyMessageTimeoutScorePresenterInterface = AnivCopyMessageTimeoutScorePresenter()
+    @dataclass(frozen = True, slots = True)
+    class ChatterUserData(TwitchUserInterface):
+        userId: str
+        userLogin: str
+        userName: str
+
+        def getUserId(self) -> str:
+            return self.userId
+
+        def getUserLogin(self) -> str:
+            return self.userLogin
+
+        def getUserName(self) -> str:
+            return self.userName
+
+    presenter: Final[AnivCopyMessageTimeoutScorePresenterInterface] = AnivCopyMessageTimeoutScorePresenter()
 
     @pytest.mark.asyncio
     async def test_getChannelEditorsCantPlayString_withEnglish(self):
@@ -33,8 +52,12 @@ class TestAnivCopyMessageTimeoutScorePresenter:
                 chatterUserId = 'abc123',
                 twitchChannelId = 'def456',
             ),
-            chatterUserName = 'stashiocat',
             twitchChannel = 'Oatsngoats',
+            chatterUserData = TestAnivCopyMessageTimeoutScorePresenter.ChatterUserData(
+                userId = 'abc123',
+                userLogin = 'stashiocat',
+                userName = 'stashiocat',
+            ),
         )
 
         printOut = await self.presenter.getScoreString(
@@ -55,8 +78,12 @@ class TestAnivCopyMessageTimeoutScorePresenter:
                 chatterUserId = 'abc123',
                 twitchChannelId = 'def456',
             ),
-            chatterUserName = 'stashiocat',
             twitchChannel = 'Oatsngoats',
+            chatterUserData = TestAnivCopyMessageTimeoutScorePresenter.ChatterUserData(
+                userId = 'abc123',
+                userLogin = 'stashiocat',
+                userName = 'stashiocat',
+            ),
         )
 
         printOut = await self.presenter.getScoreString(

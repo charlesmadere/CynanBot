@@ -4,16 +4,19 @@ from src.twitch.websocket.twitchWebsocketUser import TwitchWebsocketUser
 class TestTwitchWebsocketUser:
 
     def test_equals_withDifferentUserIds(self):
-        userName = 'smCharles'
+        userLogin = 'smcharly'
+        userName = 'smCharly'
 
         user1 = TwitchWebsocketUser(
             userId = '123',
-            userName = userName
+            userLogin = userLogin,
+            userName = userName,
         )
 
         user2 = TwitchWebsocketUser(
             userId = '456',
-            userName = userName
+            userLogin = userLogin,
+            userName = userName,
         )
 
         assert user1 != user2
@@ -23,27 +26,32 @@ class TestTwitchWebsocketUser:
 
         user1 = TwitchWebsocketUser(
             userId = userId,
-            userName = 'Anny'
+            userLogin = 'anny',
+            userName = 'Anny',
         )
 
         user2 = TwitchWebsocketUser(
             userId = userId,
-            userName = 'Silvervale'
+            userLogin = 'silvervale',
+            userName = 'Silvervale',
         )
 
         assert user1 == user2
 
     def test_hash_withDifferentUserIds(self):
+        userLogin = 'oatsngoats'
         userName = 'Oatsngoats'
 
         user1 = TwitchWebsocketUser(
             userId = '123',
-            userName = userName
+            userLogin = userLogin,
+            userName = userName,
         )
 
         user2 = TwitchWebsocketUser(
             userId = '456',
-            userName = userName
+            userLogin = userLogin,
+            userName = userName,
         )
 
         assert hash(user1) != hash(user2)
@@ -53,12 +61,14 @@ class TestTwitchWebsocketUser:
 
         user1 = TwitchWebsocketUser(
             userId = userId,
-            userName = 'imyt'
+            userLogin = 'imyt',
+            userName = 'imyt',
         )
 
         user2 = TwitchWebsocketUser(
             userId = userId,
-            userName = 'jay_cee'
+            userLogin = 'jay_cee',
+            userName = 'jay_cee',
         )
 
         assert hash(user1) == hash(user2)

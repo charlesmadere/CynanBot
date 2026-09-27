@@ -36,6 +36,7 @@ class TtsCheerActionHelper(TtsCheerActionHelperInterface):
         actions: frozendict[int, AbsCheerAction],
         bits: int,
         cheerUserId: str,
+        cheerUserLogin: str,
         cheerUserName: str,
         message: str | None,
         twitchChannelId: str,
@@ -49,6 +50,8 @@ class TtsCheerActionHelper(TtsCheerActionHelperInterface):
             raise ValueError(f'bits argument is out of bounds: {bits}')
         elif not utils.isValidStr(cheerUserId):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
+        elif not utils.isValidStr(cheerUserLogin):
+            raise TypeError(f'cheerUserLogin argument is malformed: \"{cheerUserLogin}\"')
         elif not utils.isValidStr(cheerUserName):
             raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
         elif message is not None and not isinstance(message, str):
@@ -83,6 +86,7 @@ class TtsCheerActionHelper(TtsCheerActionHelperInterface):
                 twitchChannel = twitchUser.handle,
                 twitchChannelId = twitchChannelId,
                 userId = cheerUserId,
+                userLogin = cheerUserLogin,
                 userName = cheerUserName,
                 donation = TtsCheerDonation(
                     bits = bits,

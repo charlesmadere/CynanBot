@@ -6,6 +6,7 @@ from .voicemailData import VoicemailData
 
 @dataclass(frozen = True, slots = True)
 class PreparedVoicemailData:
+    originatingUserLogin: str
     originatingUserName: str
     targetUserName: str
     voicemail: VoicemailData

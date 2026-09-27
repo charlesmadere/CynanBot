@@ -268,7 +268,7 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         event: UseCassetteTapeChatterItemEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'☎️ Your voicemail message for @{event.targetUserName} has been sent!',
+            text = f'☎️ Your voicemail message for @{event.targetUserData.getUserName()} has been sent!',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -463,7 +463,7 @@ class ChatterItemEventHandler(ChatterItemEventListener):
             awardedItemsString = f'{event.changeAmountString} {event.getItemType().pluralHumanName}'
 
         self.__twitchChatMessenger.send(
-            text = f'🪎 @{event.chatterUserName} you received {awardedItemsString}',
+            text = f'🪎 @{event.chatterUserData.getUserName()} you received {awardedItemsString}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
@@ -515,7 +515,7 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         toChatterQuantityString = locale.format_string("%d", toChatterQuantity, grouping = True)
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ New {event.getItemType().humanName} counts — @{event.fromChatterUserName} {fromChatterQuantityString}, @{event.toChatterUserName} {toChatterQuantityString}',
+            text = f'ⓘ New {event.getItemType().humanName} counts — @{event.fromChatterUserData.getUserName()} {fromChatterQuantityString}, @{event.toChatterUserData.getUserName()} {toChatterQuantityString}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )

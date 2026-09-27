@@ -53,7 +53,6 @@ class SqliteDatabaseConnection(DatabaseConnection):
             raise DatabaseOperationalError(f'Encountered sqlite3 OperationalError when calling `fetchRow()`: {e}')
 
         row = await cursor.fetchone()
-
         if row is None or len(row) == 0:
             await cursor.close()
             return None
@@ -75,23 +74,22 @@ class SqliteDatabaseConnection(DatabaseConnection):
         except sqlite3.OperationalError as e:
             raise DatabaseOperationalError(f'Encountered sqlite3 OperationalError when calling `fetchRows()`: {e}')
 
-        rows = await cursor.fetchall()
-
-        if rows is None:
+        records = await cursor.fetchall()
+        if records is None:
             await cursor.close()
             return None
 
-        frozenResults: FrozenList[FrozenList[Any]] = FrozenList()
+        frozenRows: FrozenList[FrozenList[Any]] = FrozenList()
 
-        for record in rows:
-            frozenRow: FrozenList[Any] = FrozenList(record)
-            frozenRow.freeze()
+        for record in records:
+            frozenRecord: FrozenList[Any] = FrozenList(record)
+            frozenRecord.freeze()
 
-            frozenResults.append(frozenRow)
+            frozenRows.append(frozenRecord)
 
-        frozenResults.freeze()
+        frozenRows.freeze()
         await cursor.close()
-        return frozenResults
+        return frozenRows
 
     @property
     def isClosed(self) -> bool:

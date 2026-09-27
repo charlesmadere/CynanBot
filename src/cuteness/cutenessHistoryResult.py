@@ -10,7 +10,6 @@ from ..misc import utils as utils
 @dataclass(frozen = True, slots = True)
 class CutenessHistoryResult:
     userId: str
-    userName: str
     bestCuteness: CutenessHistoryEntry | None = None
     entries: FrozenList[CutenessHistoryEntry] | None = None
     totalCuteness: int | None = None

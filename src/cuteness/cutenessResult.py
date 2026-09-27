@@ -10,7 +10,6 @@ class CutenessResult:
     cutenessDate: CutenessDate
     cuteness: int | None
     userId: str
-    userName: str
 
     @property
     def cutenessStr(self) -> str:

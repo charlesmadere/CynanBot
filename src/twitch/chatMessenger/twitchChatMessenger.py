@@ -15,12 +15,12 @@ from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..misc.globalTwitchConstantsInterface import GlobalTwitchConstantsInterface
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from ...timber.timberInterface import TimberInterface
-from ...users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class TwitchChatMessenger(TwitchChatMessengerInterface):
@@ -35,7 +35,7 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
         twitchApiService: TwitchApiServiceInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         sleepTimeSeconds: float = 0.125,
         maxMessageSplits: int = 3,
         queueTimeoutSeconds: int = 3,
@@ -56,8 +56,8 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 0.125 or sleepTimeSeconds > 3:
@@ -79,7 +79,7 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
         self.__maxMessageSplits: Final[int] = maxMessageSplits
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
@@ -113,7 +113,7 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
 
         if selfTwitchUserId is None:
             twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-            selfTwitchUserId = await self.__userIdsRepository.requireUserId(twitchHandle)
+            selfTwitchUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(twitchHandle)
             self.__selfTwitchUserId = selfTwitchUserId
 
         return selfTwitchUserId
@@ -198,7 +198,7 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
         selfTwitchAccessToken = await self.__getSelfTwitchAccessToken()
         selfTwitchUserId = await self.__getSelfTwitchUserId()
 
-        twitchChannel = await self.__userIdsRepository.requireUserName(
+        userData = await self.__twitchUserIdsHelper.requireById(
             userId = chatMessage.twitchChannelId,
             twitchAccessToken = selfTwitchAccessToken,
         )
@@ -209,7 +209,7 @@ class TwitchChatMessenger(TwitchChatMessengerInterface):
                 selfTwitchAccessToken = selfTwitchAccessToken,
                 selfTwitchUserId = selfTwitchUserId,
                 text = text,
-                twitchChannel = twitchChannel,
+                twitchChannel = userData.userLogin,
             )
 
     async def __sendChatMessageText(

@@ -25,7 +25,7 @@ class TestTtsCommandBuilder:
     @pytest.mark.asyncio
     async def test_buildDonationPrefix_withCheerDonation(self):
         donation = TtsCheerDonation(
-            bits = 100
+            bits = 100,
         )
 
         ttsEvent = TtsEvent(
@@ -33,11 +33,12 @@ class TestTtsCommandBuilder:
             twitchChannel = 'smCharles',
             twitchChannelId = 'abc123',
             userId = 'def456',
+            userLogin = 'stashiocat',
             userName = 'stashiocat',
             donation = donation,
             provider = TtsProvider.DEC_TALK,
             providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
-            raidInfo = None
+            raidInfo = None,
         )
 
         result = await self.commandBuilder.buildDonationPrefix(ttsEvent)
@@ -50,11 +51,12 @@ class TestTtsCommandBuilder:
             twitchChannel = 'smCharles',
             twitchChannelId = 'abc123',
             userId = 'def456',
+            userLogin = 'stashiocat',
             userName = 'stashiocat',
             donation = None,
             provider = TtsProvider.DEC_TALK,
             providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
-            raidInfo = None
+            raidInfo = None,
         )
 
         result = await self.commandBuilder.buildDonationPrefix(ttsEvent)
@@ -72,7 +74,7 @@ class TestTtsCommandBuilder:
             cumulativeMonths = None,
             durationMonths = None,
             numberOfGiftedSubs = None,
-            tier = TwitchSubscriberTier.TIER_ONE
+            tier = TwitchSubscriberTier.TIER_ONE,
         )
 
         ttsEvent = TtsEvent(
@@ -80,11 +82,12 @@ class TestTtsCommandBuilder:
             twitchChannel = 'smCharles',
             twitchChannelId = 'abc123',
             userId = 'def456',
+            userLogin = 'stashiocat',
             userName = 'stashiocat',
             donation = donation,
             provider = TtsProvider.DEC_TALK,
             providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
-            raidInfo = None
+            raidInfo = None,
         )
 
         result = await self.commandBuilder.buildDonationPrefix(ttsEvent)
@@ -97,7 +100,7 @@ class TestTtsCommandBuilder:
             cumulativeMonths = None,
             durationMonths = None,
             numberOfGiftedSubs = 5,
-            tier = TwitchSubscriberTier.TIER_TWO
+            tier = TwitchSubscriberTier.TIER_TWO,
         )
 
         ttsEvent = TtsEvent(
@@ -105,11 +108,12 @@ class TestTtsCommandBuilder:
             twitchChannel = 'smCharles',
             twitchChannelId = 'abc123',
             userId = 'def456',
+            userLogin = 'stashiocat',
             userName = 'stashiocat',
             donation = donation,
             provider = TtsProvider.DEC_TALK,
             providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
-            raidInfo = None
+            raidInfo = None,
         )
 
         result = await self.commandBuilder.buildDonationPrefix(ttsEvent)
@@ -122,7 +126,7 @@ class TestTtsCommandBuilder:
             cumulativeMonths = None,
             durationMonths = None,
             numberOfGiftedSubs = 1,
-            tier = TwitchSubscriberTier.TIER_ONE
+            tier = TwitchSubscriberTier.TIER_ONE,
         )
 
         ttsEvent = TtsEvent(
@@ -130,11 +134,12 @@ class TestTtsCommandBuilder:
             twitchChannel = 'smCharles',
             twitchChannelId = 'abc123',
             userId = 'def456',
+            userLogin = 'maerklig',
             userName = 'MAERKLiG',
             donation = donation,
             provider = TtsProvider.DEC_TALK,
             providerOverridableStatus = TtsProviderOverridableStatus.THIS_EVENT_DISABLED,
-            raidInfo = None
+            raidInfo = None,
         )
 
         result = await self.commandBuilder.buildDonationPrefix(ttsEvent)

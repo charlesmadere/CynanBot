@@ -18,6 +18,7 @@ class TestTwitchWebsocketConditionBuilder:
     async def test_build_withChannelChatMessage(self):
         websocketUser = TwitchWebsocketUser(
             userId = 'abc123',
+            userLogin = 'stashiocat',
             userName = 'stashiocat',
         )
 
@@ -34,6 +35,7 @@ class TestTwitchWebsocketConditionBuilder:
     async def test_build_withChannelChatNotification(self):
         websocketUser = TwitchWebsocketUser(
             userId = 'abc123',
+            userLogin = 'stashiocat',
             userName = 'stashiocat',
         )
 
@@ -50,7 +52,8 @@ class TestTwitchWebsocketConditionBuilder:
     async def test_build_withChannelCustomPowerUpRedemption(self):
         websocketUser = TwitchWebsocketUser(
             userId = 'abc123',
-            userName = 'smcharles',
+            userLogin = 'smcharly',
+            userName = 'smCharly',
         )
 
         result = await self.conditionBuilder.build(
@@ -66,6 +69,7 @@ class TestTwitchWebsocketConditionBuilder:
     async def test_build_withChannelPointsRedemption(self):
         websocketUser = TwitchWebsocketUser(
             userId = 'def456',
+            userLogin = 'imyt',
             userName = 'imyt',
         )
 
@@ -82,7 +86,8 @@ class TestTwitchWebsocketConditionBuilder:
     async def test_build_withHypeTrainBegin(self):
         websocketUser = TwitchWebsocketUser(
             userId = 'abc123',
-            userName = 'smCharles',
+            userLogin = 'smcharly',
+            userName = 'smCharly',
         )
 
         result = await self.conditionBuilder.build(
@@ -98,7 +103,8 @@ class TestTwitchWebsocketConditionBuilder:
     async def test_build_withHypeTrainEnd(self):
         websocketUser = TwitchWebsocketUser(
             userId = 'abc123',
-            userName = 'smCharles',
+            userLogin = 'smcharly',
+            userName = 'smCharly',
         )
 
         result = await self.conditionBuilder.build(
@@ -114,7 +120,8 @@ class TestTwitchWebsocketConditionBuilder:
     async def test_build_withHypeTrainProgress(self):
         websocketUser = TwitchWebsocketUser(
             userId = 'abc123',
-            userName = 'smCharles',
+            userLogin = 'smcharly',
+            userName = 'smCharly',
         )
 
         result = await self.conditionBuilder.build(

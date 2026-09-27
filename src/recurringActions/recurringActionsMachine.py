@@ -36,7 +36,7 @@ from ..timber.timberInterface import TimberInterface
 from ..trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ..twitch.isLive.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
-from ..users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from ..twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from ..users.userInterface import UserInterface
 from ..users.usersRepositoryInterface import UsersRepositoryInterface
 from ..weather.weatherRepositoryInterface import WeatherRepositoryInterface
@@ -57,7 +57,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         timeZoneRepository: TimeZoneRepositoryInterface,
         triviaGameBuilder: TriviaGameBuilderInterface,
         triviaGameMachine: TriviaGameMachineInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         usersRepository: UsersRepositoryInterface,
         weatherRepository: WeatherRepositoryInterface | None,
         wordOfTheDayRepository: WordOfTheDayRepositoryInterface,
@@ -89,8 +89,8 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
@@ -127,7 +127,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface] = triviaGameBuilder
         self.__triviaGameMachine: Final[TriviaGameMachineInterface] = triviaGameMachine
-        self.__userIdsRepository: Final[UserIdsRepositoryInterface] = userIdsRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__usersRepository: Final[UsersRepositoryInterface] = usersRepository
         self.__weatherRepository: Final[WeatherRepositoryInterface | None] = weatherRepository
         self.__wordOfTheDayRepository: Final[WordOfTheDayRepositoryInterface] = wordOfTheDayRepository
@@ -381,7 +381,9 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         twitchChannelIds: set[str] = set()
 
         for user in users:
-            twitchChannelId = await self.__userIdsRepository.fetchUserId(user.handle)
+            twitchChannelId = await self.__twitchUserIdsHelper.getIdByLoginOrName(
+                userLoginOrName = user.handle,
+            )
 
             if not utils.isValidStr(twitchChannelId):
                 self.__timber.log('RecurringActionsMachine', f'Unable to find Twitch user ID for \"{user.handle}\" when refreshing recurring actions')
