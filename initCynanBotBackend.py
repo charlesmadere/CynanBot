@@ -175,6 +175,8 @@ from src.misc.authRepository import AuthRepository
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from src.misc.generalSettingsRepository import GeneralSettingsRepository
+from src.misc.randomUtils import RandomUtils
+from src.misc.randomUtilsInterface import RandomUtilsInterface
 from src.misc.startable import Startable
 from src.mostRecentChat.mostRecentChatsRepository import MostRecentChatsRepository
 from src.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
@@ -256,8 +258,8 @@ from src.timeout.useCases.determineGrenadeTargetUseCase import DetermineGrenadeT
 from src.timeout.useCases.determineGrenadeTargetUseCaseInterface import DetermineGrenadeTargetUseCaseInterface
 from src.timeout.useCases.determineTimeoutTargetUseCase import DetermineTimeoutTargetUseCase
 from src.timeout.useCases.determineTimeoutTargetUseCaseInterface import DetermineTimeoutTargetUseCaseInterface
-from src.timeout.useCases.determineTm36SplashTargetUseCase import DetermineTm36SplashTargetUseCase
-from src.timeout.useCases.determineTm36SplashTargetUseCaseInterface import DetermineTm36SplashTargetUseCaseInterface
+from src.timeout.useCases.determineTm36SplashTargetsUseCase import DetermineTm36SplashTargetsUseCase
+from src.timeout.useCases.determineTm36SplashTargetsUseCaseInterface import DetermineTm36SplashTargetsUseCaseInterface
 from src.transparent.transparentApiService import TransparentApiService
 from src.transparent.transparentApiServiceInterface import TransparentApiServiceInterface
 from src.transparent.transparentXmlMapper import TransparentXmlMapper
@@ -548,6 +550,8 @@ asyncio.set_event_loop(eventLoop)
 backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = BackgroundTaskHelper(
     eventLoop = eventLoop,
 )
+
+randomUtils: Final[RandomUtilsInterface] = RandomUtils()
 
 timeZoneRepository: Final[TimeZoneRepositoryInterface] = TimeZoneRepository()
 
@@ -1621,8 +1625,9 @@ determineTimeoutTargetUseCase: Final[DetermineTimeoutTargetUseCaseInterface] = D
     twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
-determineTm36SplashTargetUseCase: Final[DetermineTm36SplashTargetUseCaseInterface] = DetermineTm36SplashTargetUseCase(
+determineTm36SplashTargetsUseCase: Final[DetermineTm36SplashTargetsUseCaseInterface] = DetermineTm36SplashTargetsUseCase(
     activeChattersRepository = activeChattersRepository,
+    randomUtils = randomUtils,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
@@ -1653,7 +1658,7 @@ timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachin
     determineBananaTargetUseCase = determineBananaTargetUseCase,
     determineGrenadeTargetUseCase = determineGrenadeTargetUseCase,
     determineTimeoutTargetUseCase = determineTimeoutTargetUseCase,
-    determineTm36SplashTargetUseCase = determineTm36SplashTargetUseCase,
+    determineTm36SplashTargetsUseCase = determineTm36SplashTargetsUseCase,
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     pixelsDiceMachine = None,

@@ -59,7 +59,7 @@ from ..useCases.determineAirStrikeTargetsUseCaseInterface import DetermineAirStr
 from ..useCases.determineBananaTargetUseCaseInterface import DetermineBananaTargetUseCaseInterface
 from ..useCases.determineGrenadeTargetUseCaseInterface import DetermineGrenadeTargetUseCaseInterface
 from ..useCases.determineTimeoutTargetUseCaseInterface import DetermineTimeoutTargetUseCaseInterface
-from ..useCases.determineTm36SplashTargetUseCaseInterface import DetermineTm36SplashTargetUseCaseInterface
+from ..useCases.determineTm36SplashTargetsUseCaseInterface import DetermineTm36SplashTargetsUseCaseInterface
 from ...aniv.repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
     AnivCopyMessageTimeoutScoreRepositoryInterface
 from ...asplodieStats.models.asplodieStats import AsplodieStats
@@ -96,7 +96,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         determineBananaTargetUseCase: DetermineBananaTargetUseCaseInterface,
         determineGrenadeTargetUseCase: DetermineGrenadeTargetUseCaseInterface,
         determineTimeoutTargetUseCase: DetermineTimeoutTargetUseCaseInterface,
-        determineTm36SplashTargetUseCase: DetermineTm36SplashTargetUseCaseInterface,
+        determineTm36SplashTargetsUseCase: DetermineTm36SplashTargetsUseCaseInterface,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         pixelsDiceMachine: PixelsDiceMachineInterface | None,
@@ -128,8 +128,8 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise TypeError(f'determineGrenadeTargetUseCase argument is malformed: \"{determineGrenadeTargetUseCase}\"')
         elif not isinstance(determineTimeoutTargetUseCase, DetermineTimeoutTargetUseCaseInterface):
             raise TypeError(f'determineTimeoutTargetUseCase argument is malformed: \"{determineTimeoutTargetUseCase}\"')
-        elif not isinstance(determineTm36SplashTargetUseCase, DetermineTm36SplashTargetUseCaseInterface):
-            raise TypeError(f'determineTm36SplashTargetUseCase argument is malformed: \"{determineTm36SplashTargetUseCase}\"')
+        elif not isinstance(determineTm36SplashTargetsUseCase, DetermineTm36SplashTargetsUseCaseInterface):
+            raise TypeError(f'determineTm36SplashTargetsUseCase argument is malformed: \"{determineTm36SplashTargetsUseCase}\"')
         elif not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
             raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
         elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
@@ -168,7 +168,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
         self.__determineBananaTargetUseCase: Final[DetermineBananaTargetUseCaseInterface] = determineBananaTargetUseCase
         self.__determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCaseInterface] = determineGrenadeTargetUseCase
         self.__determineTimeoutTargetUseCase: Final[DetermineTimeoutTargetUseCaseInterface] = determineTimeoutTargetUseCase
-        self.__determineTm36SplashTargetUseCase: Final[DetermineTm36SplashTargetUseCaseInterface] = determineTm36SplashTargetUseCase
+        self.__determineTm36SplashTargetsUseCase: Final[DetermineTm36SplashTargetsUseCaseInterface] = determineTm36SplashTargetsUseCase
         self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
         self.__isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
         self.__pixelsDiceMachine: Final[PixelsDiceMachineInterface | None] = pixelsDiceMachine
@@ -845,7 +845,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
-        splashTimeoutTargets = await self.__determineTm36SplashTargetUseCase.invoke(
+        splashTimeoutTargets = await self.__determineTm36SplashTargetsUseCase.invoke(
             timeoutAction = action,
         )
 
