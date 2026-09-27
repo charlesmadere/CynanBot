@@ -2040,7 +2040,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         asplodieStatsRepository = asplodieStatsRepository,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
-        userIdsRepository = userIdsRepository,
     ),
     BanTriviaQuestionChatCommand(
         generalSettingsRepository = generalSettingsRepository,
