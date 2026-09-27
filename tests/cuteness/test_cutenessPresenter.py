@@ -176,7 +176,7 @@ class TestCutenessPresenter:
 
         printOut = await self.presenter.printCuteness(result)
         assert isinstance(printOut, str)
-        assert printOut == 'stashiocat has no cuteness in Jun 2022'
+        assert printOut == '😿 stashiocat has no cuteness in Jun 2022'
 
     @pytest.mark.asyncio
     async def test_printCuteness_with0Cuteness(self):
@@ -188,7 +188,7 @@ class TestCutenessPresenter:
 
         printOut = await self.presenter.printCuteness(result)
         assert isinstance(printOut, str)
-        assert printOut == 'stashiocat has no cuteness in Jun 2022'
+        assert printOut == '😿 stashiocat has no cuteness in Jun 2022'
 
     @pytest.mark.asyncio
     async def test_printCuteness_with10Cuteness(self):
@@ -200,7 +200,7 @@ class TestCutenessPresenter:
 
         printOut = await self.presenter.printCuteness(result)
         assert isinstance(printOut, str)
-        assert printOut == 'stashiocat\'s Jun 2022 cuteness is 10 ✨'
+        assert printOut == '✨ stashiocat\'s Jun 2022 cuteness is 10'
 
     def test_sanity(self):
         assert self.presenter is not None
