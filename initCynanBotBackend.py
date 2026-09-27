@@ -780,7 +780,9 @@ activeChattersRepository: Final[ActiveChattersRepositoryInterface] = ActiveChatt
 #####################################
 
 cutenessPresenter: Final[CutenessPresenterInterface] = CutenessPresenter(
-    twitchUserIdsRepository = twitchUserIdsRepository,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 cutenessRepository: Final[CutenessRepositoryInterface] = CutenessRepository(

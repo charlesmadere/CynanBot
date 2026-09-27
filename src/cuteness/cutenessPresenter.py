@@ -6,19 +6,36 @@ from .cutenessLeaderboardResult import CutenessLeaderboardResult
 from .cutenessPresenterInterface import CutenessPresenterInterface
 from .cutenessResult import CutenessResult
 from ..misc import utils as utils
-from ..twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
+from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from ..twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
 
 class CutenessPresenter(CutenessPresenterInterface):
 
     def __init__(
         self,
-        twitchUserIdsRepository: TwitchUserIdsRepositoryInterface,
+        twitchHandleProvider: TwitchHandleProviderInterface,
+        twitchTokensRepository: TwitchTokensRepositoryInterface,
+        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
-        if not isinstance(twitchUserIdsRepository, TwitchUserIdsRepositoryInterface):
-            raise TypeError(f'twitchUserIdsRepository argument is malformed: \"{twitchUserIdsRepository}\"')
+        if not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
+            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
+            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
+            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
-        self.__twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = twitchUserIdsRepository
+        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
+        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
+
+    async def __getSelfTwitchAccessToken(self) -> str | None:
+        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
+
+        return await self.__twitchTokensRepository.getAccessToken(
+            twitchChannel = twitchHandle,
+        )
 
     async def printCuteness(
         self,
@@ -27,9 +44,12 @@ class CutenessPresenter(CutenessPresenterInterface):
         if not isinstance(result, CutenessResult):
             raise TypeError(f'result argument is malformed: \"{result}\"')
 
-        chatterUserData = await self.__twitchUserIdsRepository.requireById(result.userId)
+        chatterUserData = await self.__twitchUserIdsHelper.requireById(
+            userId = result.userId,
+            twitchAccessToken = await self.__getSelfTwitchAccessToken(),
+        )
 
-        if utils.isValidInt(result.cuteness) and result.cuteness >= 1:
+        if utils.isValidInt(result.cuteness) and result.requireCuteness() >= 1:
             return f'{chatterUserData.userName}\'s {result.cutenessDate.getHumanString()} cuteness is {result.cutenessStr} ✨'
         else:
             return f'{chatterUserData.userName} has no cuteness in {result.cutenessDate.getHumanString()}'
@@ -71,8 +91,9 @@ class CutenessPresenter(CutenessPresenterInterface):
         specificLookupText: str | None = None
 
         if result.specificLookupCutenessResult is not None:
-            lookupUserData = await self.__twitchUserIdsRepository.requireById(
+            lookupUserData = await self.__twitchUserIdsHelper.requireById(
                 userId = result.specificLookupCutenessResult.userId,
+                twitchAccessToken = await self.__getSelfTwitchAccessToken(),
             )
 
             cutenessStr = result.specificLookupCutenessResult.cutenessStr
@@ -105,5 +126,9 @@ class CutenessPresenter(CutenessPresenterInterface):
             case 3: rankStr = '🥉'
             case _: rankStr = f'#{entry.rankStr}'
 
-        chatterUserData = await self.__twitchUserIdsRepository.requireById(entry.userId)
+        chatterUserData = await self.__twitchUserIdsHelper.requireById(
+            userId = entry.userId,
+            twitchAccessToken = await self.__getSelfTwitchAccessToken(),
+        )
+
         return f'{rankStr} {chatterUserData.userName} ({entry.cutenessStr})'
