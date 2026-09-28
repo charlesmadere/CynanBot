@@ -1,8 +1,9 @@
-import random
+from typing import Final
 
 from .toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
 from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -10,20 +11,24 @@ class ToxicTriviaHelper:
 
     def __init__(
         self,
+        randomUtils: RandomUtilsInterface,
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface,
         timber: TimberInterface,
         triviaSettings: TriviaSettingsInterface,
     ):
-        if not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
+        if not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
+        elif not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
             raise TypeError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaSettings, TriviaSettingsInterface):
             raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
 
-        self.__toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = toxicTriviaOccurencesRepository
-        self.__timber: TimberInterface = timber
-        self.__triviaSettings: TriviaSettingsInterface = triviaSettings
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
+        self.__toxicTriviaOccurencesRepository: Final[ToxicTriviaOccurencesRepositoryInterface] = toxicTriviaOccurencesRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
 
     async def isToxicSuperTriviaQuestion(self, twitchChannelId: str) -> bool:
         if not utils.isValidStr(twitchChannelId):
@@ -33,12 +38,12 @@ class ToxicTriviaHelper:
             return False
 
         probability = await self.__triviaSettings.getToxicProbability()
-        randomNumber = random.uniform(0, 1)
+        randomNumber = self.__randomUtils.float()
 
         if randomNumber > probability:
             return False
 
-        self.__timber.log('ToxicTriviaHelper', f'A toxic super trivia question was encountered in {twitchChannelId}!')
+        self.__timber.log('ToxicTriviaHelper', f'A toxic super trivia question was encountered ({randomNumber=}) ({probability=}) ({twitchChannelId=})')
         return True
 
     async def toxicTriviaWin(

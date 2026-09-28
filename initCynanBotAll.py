@@ -2002,6 +2002,7 @@ queuedTriviaGameStore: Final[QueuedTriviaGameStoreInterface] = QueuedTriviaGameS
 
 shinyTriviaHelper: Final[ShinyTriviaHelper] = ShinyTriviaHelper(
     cutenessRepository = cutenessRepository,
+    randomUtils = randomUtils,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     timber = timber,
     timeZoneRepository = timeZoneRepository,
@@ -2014,6 +2015,7 @@ superTriviaCooldownHelper: Final[SuperTriviaCooldownHelperInterface] = SuperTriv
 )
 
 toxicTriviaHelper: Final[ToxicTriviaHelper] = ToxicTriviaHelper(
+    randomUtils = randomUtils,
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     timber = timber,
     triviaSettings = triviaSettings,
