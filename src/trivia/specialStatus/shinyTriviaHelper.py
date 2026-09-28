@@ -1,5 +1,5 @@
-import random
 from datetime import datetime, timedelta
+from typing import Final
 
 from frozendict import frozendict
 
@@ -8,6 +8,7 @@ from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ...cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -16,6 +17,7 @@ class ShinyTriviaHelper:
     def __init__(
         self,
         cutenessRepository: CutenessRepositoryInterface,
+        randomUtils: RandomUtilsInterface,
         shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
@@ -24,6 +26,8 @@ class ShinyTriviaHelper:
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface):
             raise TypeError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -35,14 +39,15 @@ class ShinyTriviaHelper:
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
-        self.__shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = shinyTriviaOccurencesRepository
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
-        self.__triviaSettings: TriviaSettingsInterface = triviaSettings
-        self.__cooldown: timedelta = cooldown
+        self.__cutenessRepository: Final[CutenessRepositoryInterface] = cutenessRepository
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
+        self.__shinyTriviaOccurencesRepository: Final[ShinyTriviaOccurencesRepositoryInterface] = shinyTriviaOccurencesRepository
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
+        self.__cooldown: Final[timedelta] = cooldown
 
-        self.__rankToProbabilityDict: frozendict[int, float] = frozendict({
+        self.__rankToProbabilityDict: Final[frozendict[int, float]] = frozendict({
             1: 0.500,
             2: 0.550,
             3: 0.600,
@@ -108,11 +113,12 @@ class ShinyTriviaHelper:
         )
 
         probability = await self.__triviaSettings.getShinyProbability()
+        randomNumber = self.__randomUtils.float()
 
         if userPlacementOnLeaderboard is not None and userPlacementOnLeaderboard in self.__rankToProbabilityDict:
             probability = probability * self.__rankToProbabilityDict[userPlacementOnLeaderboard]
 
-        if random.uniform(0, 1) > probability:
+        if randomNumber > probability:
             return False
 
         details = await self.__shinyTriviaOccurencesRepository.fetchDetails(
@@ -148,12 +154,12 @@ class ShinyTriviaHelper:
             return False
 
         probability = await self.__triviaSettings.getShinyProbability()
-        randomNumber = random.uniform(0, 1)
+        randomNumber = self.__randomUtils.float()
 
         if randomNumber > probability:
             return False
 
-        self.__timber.log('ShinyTriviaHelper', f'A shiny super trivia question was encountered in {twitchChannelId}!')
+        self.__timber.log('ShinyTriviaHelper', f'A shiny super trivia question was encountered ({randomNumber=}) ({probability=}) ({twitchChannelId=})')
         return True
 
     async def shinyTriviaWin(
