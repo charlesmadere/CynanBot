@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any, MutableSequence
 
 
 class RandomUtilsInterface(ABC):
@@ -9,6 +10,10 @@ class RandomUtilsInterface(ABC):
 
     @abstractmethod
     def float(self) -> float:
+        pass
+
+    @abstractmethod
+    def shuffle(self, collection: MutableSequence[Any]):
         pass
 
     @abstractmethod

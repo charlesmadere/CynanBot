@@ -1,7 +1,7 @@
 import random
 import re
 import uuid
-from typing import Final, Pattern
+from typing import Any, Final, MutableSequence, Pattern
 
 from .randomUtilsInterface import RandomUtilsInterface
 
@@ -16,6 +16,9 @@ class RandomUtils(RandomUtilsInterface):
 
     def float(self) -> float:
         return random.random()
+
+    def shuffle(self, collection: MutableSequence[Any]):
+        random.shuffle(collection)
 
     def uuid(self) -> str:
         randomUuid = str(uuid.uuid4())

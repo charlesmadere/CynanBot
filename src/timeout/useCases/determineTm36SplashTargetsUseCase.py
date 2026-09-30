@@ -1,4 +1,3 @@
-import random
 from typing import Collection, Final
 
 from frozenlist import FrozenList
@@ -79,7 +78,7 @@ class DetermineTm36SplashTargetsUseCase(DetermineTm36SplashTargetsUseCaseInterfa
             return splashTargets
 
         randomlySortedChatters: list[ActiveChatter] = list(vulnerableChatters.values())
-        random.shuffle(randomlySortedChatters)
+        self.__randomUtils.shuffle(randomlySortedChatters)
 
         rollAgain = True
         maxTargets = await self.__timeoutActionSettings.getTm36MaxSplashDamageTargets()
