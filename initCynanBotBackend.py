@@ -1198,6 +1198,7 @@ bannedTriviaIdsRepository: Final[BannedTriviaIdsRepositoryInterface] = BannedTri
 )
 
 queuedTriviaGameStore: Final[QueuedTriviaGameStoreInterface] = QueuedTriviaGameStore(
+    randomUtils = randomUtils,
     timber = timber,
     triviaIdGenerator = triviaIdGenerator,
     triviaSettings = triviaSettings,
