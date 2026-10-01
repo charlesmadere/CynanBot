@@ -1729,6 +1729,7 @@ calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface]
 
 determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCaseInterface] = DetermineAirStrikeTargetsUseCase(
     activeChattersRepository = activeChattersRepository,
+    randomUtils = randomUtils,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
