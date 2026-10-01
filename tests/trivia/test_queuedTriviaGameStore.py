@@ -1,5 +1,9 @@
+from typing import Final
+
 import pytest
 
+from src.misc.randomUtils import RandomUtils
+from src.misc.randomUtilsInterface import RandomUtilsInterface
 from src.storage.jsonStaticReader import JsonStaticReader
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
@@ -18,18 +22,21 @@ from src.trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 
 class TestQueuedTriviaGameStore1:
 
-    timber: TimberInterface = TimberStub()
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
 
-    triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+    timber: Final[TimberInterface] = TimberStub()
 
-    triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
+    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
 
-    triviaSettings: TriviaSettingsInterface = TriviaSettings(
+    triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
+
+    triviaSettings: Final[TriviaSettingsInterface] = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
         triviaSourceParser = triviaSourceParser,
     )
 
-    queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
+    queuedTriviaGameStore: Final[QueuedTriviaGameStoreInterface] = QueuedTriviaGameStore(
+        randomUtils = randomUtils,
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettings = triviaSettings,
@@ -53,8 +60,8 @@ class TestQueuedTriviaGameStore1:
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             twitchChannelId = 'c',
-            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
-        )
+            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED,
+        ),
     )
 
     startNewSuperTriviaGameAction2 = StartNewSuperTriviaGameAction(
@@ -75,8 +82,8 @@ class TestQueuedTriviaGameStore1:
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             twitchChannelId = 'c',
-            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
-        )
+            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED,
+        ),
     )
 
     startNewSuperTriviaGameAction3 = StartNewSuperTriviaGameAction(
@@ -97,8 +104,8 @@ class TestQueuedTriviaGameStore1:
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             twitchChannelId = 'c',
-            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
-        )
+            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED,
+        ),
     )
 
     startNewSuperTriviaGameAction4 = StartNewSuperTriviaGameAction(
@@ -119,8 +126,8 @@ class TestQueuedTriviaGameStore1:
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'stashiocat',
             twitchChannelId = 's',
-            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
-        )
+            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED,
+        ),
     )
 
     @pytest.mark.asyncio
@@ -179,18 +186,21 @@ class TestQueuedTriviaGameStore1:
 
 class TestQueuedTriviaGameStore2:
 
-    timber: TimberInterface = TimberStub()
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
 
-    triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+    timber: Final[TimberInterface] = TimberStub()
 
-    triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
+    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
 
-    triviaSettings: TriviaSettingsInterface = TriviaSettings(
+    triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
+
+    triviaSettings: Final[TriviaSettingsInterface] = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
         triviaSourceParser = triviaSourceParser,
     )
 
-    queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
+    queuedTriviaGameStore: Final[QueuedTriviaGameStoreInterface] = QueuedTriviaGameStore(
+        randomUtils = randomUtils,
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettings = triviaSettings,
@@ -208,18 +218,21 @@ class TestQueuedTriviaGameStore2:
 
 class TestQueuedTriviaGameStore3:
 
-    timber: TimberInterface = TimberStub()
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
 
-    triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+    timber: Final[TimberInterface] = TimberStub()
 
-    triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
+    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
 
-    triviaSettings: TriviaSettingsInterface = TriviaSettings(
+    triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
+
+    triviaSettings: Final[TriviaSettingsInterface] = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
         triviaSourceParser = triviaSourceParser,
     )
 
-    queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
+    queuedTriviaGameStore: Final[QueuedTriviaGameStoreInterface] = QueuedTriviaGameStore(
+        randomUtils = randomUtils,
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettings = triviaSettings,
@@ -238,18 +251,21 @@ class TestQueuedTriviaGameStore3:
 
 class TestQueuedTriviaGameStore4:
 
-    timber: TimberInterface = TimberStub()
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
 
-    triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+    timber: Final[TimberInterface] = TimberStub()
 
-    triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
+    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
 
-    triviaSettings: TriviaSettingsInterface = TriviaSettings(
+    triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
+
+    triviaSettings: Final[TriviaSettingsInterface] = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
         triviaSourceParser = triviaSourceParser,
     )
 
-    queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
+    queuedTriviaGameStore: Final[QueuedTriviaGameStoreInterface] = QueuedTriviaGameStore(
+        randomUtils = randomUtils,
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettings = triviaSettings,
@@ -298,18 +314,21 @@ class TestQueuedTriviaGameStore4:
 
 class TestQueuedTriviaGameStore5:
 
-    timber: TimberInterface = TimberStub()
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
 
-    triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+    timber: Final[TimberInterface] = TimberStub()
 
-    triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
+    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
 
-    triviaSettings: TriviaSettingsInterface = TriviaSettings(
+    triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
+
+    triviaSettings: Final[TriviaSettingsInterface] = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
         triviaSourceParser = triviaSourceParser,
     )
 
-    queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
+    queuedTriviaGameStore: Final[QueuedTriviaGameStoreInterface] = QueuedTriviaGameStore(
+        randomUtils = randomUtils,
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettings = triviaSettings,
@@ -358,18 +377,21 @@ class TestQueuedTriviaGameStore5:
 
 class TestQueuedTriviaGameStore6:
 
-    timber: TimberInterface = TimberStub()
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
 
-    triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+    timber: Final[TimberInterface] = TimberStub()
 
-    triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
+    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
 
-    triviaSettings: TriviaSettingsInterface = TriviaSettings(
+    triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
+
+    triviaSettings: Final[TriviaSettingsInterface] = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
         triviaSourceParser = triviaSourceParser,
     )
 
-    queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
+    queuedTriviaGameStore: Final[QueuedTriviaGameStoreInterface] = QueuedTriviaGameStore(
+        randomUtils = randomUtils,
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettings = triviaSettings,
@@ -439,18 +461,21 @@ class TestQueuedTriviaGameStore6:
 
 class TestQueuedTriviaGameStore7:
 
-    timber: TimberInterface = TimberStub()
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
 
-    triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+    timber: Final[TimberInterface] = TimberStub()
 
-    triviaSourceParser: TriviaSourceParserInterface = TriviaSourceParser()
+    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
 
-    triviaSettings: TriviaSettingsInterface = TriviaSettings(
+    triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
+
+    triviaSettings: Final[TriviaSettingsInterface] = TriviaSettings(
         settingsJsonReader = JsonStaticReader(dict()),
         triviaSourceParser = triviaSourceParser,
     )
 
-    queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
+    queuedTriviaGameStore: Final[QueuedTriviaGameStoreInterface] = QueuedTriviaGameStore(
+        randomUtils = randomUtils,
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettings = triviaSettings,

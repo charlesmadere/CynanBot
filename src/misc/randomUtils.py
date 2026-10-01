@@ -17,7 +17,20 @@ class RandomUtils(RandomUtilsInterface):
     def float(self) -> float:
         return random.random()
 
+    def int(self, low: int, high: int) -> int:
+        if not isinstance(low, int):
+            raise TypeError(f'low argument is malformed: \"{low}\"')
+        elif not isinstance(high, int):
+            raise TypeError(f'high argument is malformed: \"{high}\"')
+        elif high < low:
+            raise ValueError(f'high argument can\'t be less than low ({high=}) ({low=})')
+
+        return random.randint(low, high)
+
     def shuffle(self, collection: MutableSequence[Any]):
+        if not isinstance(collection, MutableSequence):
+            raise TypeError(f'collection argument is malformed: \"{collection}\"')
+
         random.shuffle(collection)
 
     def uuid(self) -> str:

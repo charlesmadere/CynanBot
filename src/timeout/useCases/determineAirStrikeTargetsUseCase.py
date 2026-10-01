@@ -1,5 +1,4 @@
 import math
-import random
 import traceback
 from typing import Final
 
@@ -11,6 +10,7 @@ from ..models.actions.airStrikeTimeoutAction import AirStrikeTimeoutAction
 from ..models.timeoutTarget import TimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.activeChatters.activeChatter import ActiveChatter
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
@@ -26,6 +26,7 @@ class DetermineAirStrikeTargetsUseCase(DetermineAirStrikeTargetsUseCaseInterface
     def __init__(
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
+        randomUtils: RandomUtilsInterface,
         timber: TimberInterface,
         timeoutActionSettings: TimeoutActionSettingsInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
@@ -35,6 +36,8 @@ class DetermineAirStrikeTargetsUseCase(DetermineAirStrikeTargetsUseCaseInterface
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
@@ -51,6 +54,7 @@ class DetermineAirStrikeTargetsUseCase(DetermineAirStrikeTargetsUseCaseInterface
             raise ValueError(f'targetReducerScale argument is out of bounds: {targetReducerScale}')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionSettings: Final[TimeoutActionSettingsInterface] = timeoutActionSettings
         self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
@@ -84,7 +88,7 @@ class DetermineAirStrikeTargetsUseCase(DetermineAirStrikeTargetsUseCaseInterface
             raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
 
         additionalReverseProbability = await self.__timeoutActionSettings.getGrenadeAdditionalReverseProbability()
-        randomReverseNumber = random.random()
+        randomReverseNumber = self.__randomUtils.float()
 
         airStrikeTargets: FrozenList[TimeoutTarget] = FrozenList()
 
@@ -116,7 +120,10 @@ class DetermineAirStrikeTargetsUseCase(DetermineAirStrikeTargetsUseCaseInterface
             airStrikeTargets.freeze()
             return airStrikeTargets
 
-        airStrikeTargetCount = random.randint(timeoutAction.minTimeoutTargets, timeoutAction.maxTimeoutTargets)
+        airStrikeTargetCount = self.__randomUtils.int(
+            low = timeoutAction.minTimeoutTargets,
+            high = timeoutAction.maxTimeoutTargets,
+        )
 
         if airStrikeTargetCount >= len(vulnerableChatters) or float(airStrikeTargetCount) / float(len(vulnerableChatters)) >= self.__targetReducerScale:
             # Let's check to see if the number of air strike targets we are trying to hit is
@@ -130,7 +137,7 @@ class DetermineAirStrikeTargetsUseCase(DetermineAirStrikeTargetsUseCaseInterface
             return airStrikeTargets
 
         randomlySortedChatters: list[ActiveChatter] = list(vulnerableChatters.values())
-        random.shuffle(randomlySortedChatters)
+        self.__randomUtils.shuffle(randomlySortedChatters)
 
         while len(randomlySortedChatters) >= 1 and len(airStrikeTargets) < airStrikeTargetCount:
             randomChatter = randomlySortedChatters.pop()

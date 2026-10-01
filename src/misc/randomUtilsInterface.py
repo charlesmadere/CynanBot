@@ -13,6 +13,10 @@ class RandomUtilsInterface(ABC):
         pass
 
     @abstractmethod
+    def int(self, low: int, high: int) -> int:
+        pass
+
+    @abstractmethod
     def shuffle(self, collection: MutableSequence[Any]):
         pass
 

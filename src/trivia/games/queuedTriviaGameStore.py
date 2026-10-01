@@ -1,5 +1,4 @@
 import queue
-import random
 from collections import defaultdict
 from typing import Final
 
@@ -12,6 +11,7 @@ from ..clearQueuedGamesResult import ClearQueuedGamesResult
 from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -19,22 +19,21 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
 
     def __init__(
         self,
+        randomUtils: RandomUtilsInterface,
         timber: TimberInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
         triviaSettings: TriviaSettingsInterface,
-        queueTimeoutSeconds: float = 3,
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
             raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif not isinstance(triviaSettings, TriviaSettingsInterface):
             raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
-        elif not utils.isValidNum(queueTimeoutSeconds):
-            raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
-        elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
-            raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__timber: Final[TimberInterface] = timber
         self.__triviaIdGenerator: Final[TriviaIdGeneratorInterface] = triviaIdGenerator
         self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
@@ -116,8 +115,8 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
 
             return False
 
-        if shouldShuffle() and oldQueueSize > 0:
-            random.shuffle(queuedSuperGames)
+        if shouldShuffle() and oldQueueSize >= 1:
+            self.__randomUtils.shuffle(queuedSuperGames)
 
         return AddQueuedGamesResult(
             amountAdded = amountAdded,

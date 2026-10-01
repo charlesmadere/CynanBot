@@ -1995,6 +1995,7 @@ bannedTriviaIdsRepository: Final[BannedTriviaIdsRepositoryInterface] = BannedTri
 )
 
 queuedTriviaGameStore: Final[QueuedTriviaGameStoreInterface] = QueuedTriviaGameStore(
+    randomUtils = randomUtils,
     timber = timber,
     triviaIdGenerator = triviaIdGenerator,
     triviaSettings = triviaSettings,
@@ -2473,6 +2474,7 @@ calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface]
 
 determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCaseInterface] = DetermineAirStrikeTargetsUseCase(
     activeChattersRepository = activeChattersRepository,
+    randomUtils = randomUtils,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
