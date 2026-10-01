@@ -7,7 +7,10 @@ from ...misc import utils as utils
 
 class TriviaSourceParser(TriviaSourceParserInterface):
 
-    async def parse(self, triviaSource: str | Any | None) -> TriviaSource:
+    async def parse(
+        self,
+        triviaSource: str | Any | None,
+    ) -> TriviaSource:
         if not utils.isValidStr(triviaSource):
             raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
@@ -32,7 +35,10 @@ class TriviaSourceParser(TriviaSourceParserInterface):
             case 'wwtbam': return TriviaSource.WWTBAM
             case _: raise ValueError(f'Encountered unknown TriviaSource value: \"{triviaSource}\"')
 
-    async def serialize(self, triviaSource: TriviaSource) -> str:
+    async def serialize(
+        self,
+        triviaSource: TriviaSource,
+    ) -> str:
         if not isinstance(triviaSource, TriviaSource):
             raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
