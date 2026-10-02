@@ -475,13 +475,16 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
             return newTokensDetails
 
-        await self.__setExpirationTime(
-            expirationTime = validationResponse.expiresAt,
-            twitchChannelId = twitchChannelId,
-        )
+        else:
+            self.__timber.log('TwitchTokensRepository', f'Validated Twitch tokens ({validationResponse=}) ({twitchChannelId=})')
 
-        return TwitchTokensDetails(
-            expirationTime = validationResponse.expiresAt,
-            accessToken = tokensDetails.accessToken,
-            refreshToken = tokensDetails.refreshToken,
-        )
+            await self.__setExpirationTime(
+                expirationTime = validationResponse.expiresAt,
+                twitchChannelId = twitchChannelId,
+            )
+
+            return TwitchTokensDetails(
+                expirationTime = validationResponse.expiresAt,
+                accessToken = tokensDetails.accessToken,
+                refreshToken = tokensDetails.refreshToken,
+            )
