@@ -49,6 +49,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
         self.__voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = voicemailSettingsRepository
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!play(?:\s+|_|-)?cass?ett?e\b', re.IGNORECASE),
             re.compile(r'^\s*!play(?:\s+|_|-)?voicemail\b', re.IGNORECASE),
         })
 

@@ -4,6 +4,7 @@ from typing import Generic, TypeVar
 
 T = TypeVar('T')
 
+
 class Stack(Generic[T]):
 
     def __init__(self):

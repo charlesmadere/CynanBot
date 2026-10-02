@@ -3,6 +3,8 @@ from typing import Final
 
 import pytest
 
+from src.misc.randomUtils import RandomUtils
+from src.misc.randomUtilsInterface import RandomUtilsInterface
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 from src.timeout.models.exactTimeoutDuration import ExactTimeoutDuration
@@ -14,7 +16,11 @@ from src.timeout.useCases.calculateTimeoutDurationUseCaseInterface import Calcul
 
 class TestCalculateTimeoutDurationUseCase:
 
-    useCase: Final[CalculateTimeoutDurationUseCaseInterface] = CalculateTimeoutDurationUseCase()
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
+
+    useCase: Final[CalculateTimeoutDurationUseCaseInterface] = CalculateTimeoutDurationUseCase(
+        randomUtils = randomUtils,
+    )
 
     timber: Final[TimberInterface] = TimberStub()
 

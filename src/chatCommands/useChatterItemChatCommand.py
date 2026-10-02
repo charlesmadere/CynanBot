@@ -54,6 +54,8 @@ class UseChatterItemChatCommand(AbsChatCommand):
         if not chatMessage.twitchUser.isChatterInventoryEnabled:
             return ChatCommandResult.IGNORED
 
+        requestId = await self.__chatterInventoryIdGenerator.generateRequestId()
+
         # As it is currently written, this chat command does not specify an item type. Instead,
         # there is some logic within the UseChatterItemHelper class that will parse the user's
         # message and determine which item to use.
@@ -64,7 +66,7 @@ class UseChatterItemChatCommand(AbsChatCommand):
             bits = 0,
             chatMessage = chatMessage.text,
             chatterUserId = chatMessage.chatterUserId,
-            requestId = await self.__chatterInventoryIdGenerator.generateRequestId(),
+            requestId = requestId,
             twitchChannelId = chatMessage.twitchChannelId,
             twitchChatMessageId = chatMessage.twitchChatMessageId,
             user = chatMessage.twitchUser,
@@ -92,5 +94,5 @@ class UseChatterItemChatCommand(AbsChatCommand):
                 # this case is intentionally empty
                 pass
 
-        self.__timber.log(self.commandName, f'Consumed ({result=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({result=}) ({requestId=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED

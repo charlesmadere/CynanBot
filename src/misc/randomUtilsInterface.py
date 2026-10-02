@@ -1,11 +1,17 @@
 from abc import ABC, abstractmethod
-from typing import Any, MutableSequence
+from typing import Any, MutableSequence, Sequence, TypeVar
+
+T = TypeVar('T')
 
 
 class RandomUtilsInterface(ABC):
 
     @abstractmethod
     def bool(self) -> bool:
+        pass
+
+    @abstractmethod
+    def choice(self, collection: Sequence[T]) -> T:
         pass
 
     @abstractmethod

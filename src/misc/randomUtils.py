@@ -1,9 +1,11 @@
 import random
 import re
 import uuid
-from typing import Any, Final, MutableSequence, Pattern
+from typing import Any, Final, MutableSequence, Sequence, Pattern, TypeVar
 
 from .randomUtilsInterface import RandomUtilsInterface
+
+T = TypeVar('T')
 
 
 class RandomUtils(RandomUtilsInterface):
@@ -13,6 +15,14 @@ class RandomUtils(RandomUtilsInterface):
 
     def bool(self) -> bool:
         return bool(random.getrandbits(1))
+
+    def choice(self, collection: Sequence[T]) -> T:
+        if not isinstance(collection, Sequence):
+            raise TypeError(f'collection argument is malformed: \"{collection}\"')
+        if len(collection) == 0:
+            raise IndexError("Cannot choose from an empty sequence")
+
+        return random.choice(collection)
 
     def float(self) -> float:
         return random.random()

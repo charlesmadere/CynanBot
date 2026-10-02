@@ -1,5 +1,6 @@
 import re
 import traceback
+from dataclasses import dataclass
 from typing import Collection, Final, Pattern
 
 from .absChatCommand import AbsChatCommand
@@ -17,6 +18,10 @@ from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
 
 class EnableCheerActionChatCommand(AbsChatCommand):
+
+    @dataclass(frozen = True, slots = True)
+    class Arguments:
+        bits: int
 
     def __init__(
         self,
@@ -40,8 +45,10 @@ class EnableCheerActionChatCommand(AbsChatCommand):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!enablecheeraction\b', re.IGNORECASE),
+            re.compile(r'^\s*!enablecheer(?:action)?\b', re.IGNORECASE),
         })
+
+        self.__argumentsPattern: Final[Pattern] = re.compile(r'^\s*!\w+\s+(\d+)', re.IGNORECASE)
 
     @property
     def commandName(self) -> str:
@@ -57,78 +64,82 @@ class EnableCheerActionChatCommand(AbsChatCommand):
         elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
-        splits = utils.getCleanedSplits(chatMessage.text)
-        if len(splits) < 2:
+        arguments = await self.__parseArguments(
+            chatMessage = chatMessage,
+        )
+
+        if arguments is None:
             self.__twitchChatMessenger.send(
-                text = f'⚠ Bits amount argument is necessary for the !enablecheeraction command. Example: !enablecheeraction 100',
+                text = f'⚠ Invalid arguments! Example use: !enablecheeraction 100',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
-            return ChatCommandResult.CONSUMED
 
-        bitsString = splits[1]
-
-        try:
-            bits = int(bitsString)
-        except Exception as e:
-            self.__timber.log(self.commandName, f'Bits amount is malformed ({bitsString=}) ({chatMessage=})', e, traceback.format_exc())
-
-            self.__twitchChatMessenger.send(
-                text = f'⚠ Bits amount argument is malformed. Example: !enablecheeraction 100',
-                twitchChannelId = chatMessage.twitchChannelId,
-                replyMessageId = chatMessage.twitchChatMessageId,
-            )
-            return ChatCommandResult.CONSUMED
-
-        if bits < 1 or bits > utils.getIntMaxSafeSize():
-            self.__timber.log(self.commandName, f'Bits amount is out of bounds ({bits=}) ({bitsString=}) ({chatMessage=})')
-
-            self.__twitchChatMessenger.send(
-                text = f'⚠ Bits amount argument is out of bounds. Example: !enablecheeraction 100',
-                twitchChannelId = chatMessage.twitchChannelId,
-                replyMessageId = chatMessage.twitchChatMessageId,
-            )
+            self.__timber.log(self.commandName, f'Invalid arguments ({arguments=}) ({chatMessage=})')
             return ChatCommandResult.CONSUMED
 
         result = await self.__cheerActionsRepository.enableAction(
-            bits = bits,
+            bits = arguments.bits,
             twitchChannelId = chatMessage.twitchChannelId,
         )
 
         if isinstance(result, AlreadyEnabledEditCheerActionResult):
             self.__twitchChatMessenger.send(
-                text = f'ⓘ Cheer action {bits} is already enabled: {result.cheerAction.printOut()}',
+                text = f'ⓘ Cheer action {arguments.bits} is already enabled: {result.cheerAction.printOut()}',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
         elif isinstance(result, NotFoundEditCheerActionResult):
             self.__twitchChatMessenger.send(
-                text = f'⚠ Found no corresponding cheer action for bit amount {bits}',
+                text = f'⚠ Found no corresponding cheer action for bit amount {arguments.bits}',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
         elif isinstance(result, SuccessfullyEnabledEditCheerActionResult):
             self.__twitchChatMessenger.send(
-                text = f'ⓘ Cheer action {bits} is now enabled: {result.cheerAction.printOut()}',
+                text = f'ⓘ Cheer action {arguments.bits} is now enabled: {result.cheerAction.printOut()}',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
         else:
-            self.__timber.log(self.commandName, f'An unknown error occurred when trying to enable cheer action ({result=}) ({bits=}) ({chatMessage=})')
+            self.__timber.log(self.commandName, f'An unknown error occurred when trying to enable cheer action ({result=}) ({arguments=}) ({chatMessage=})')
 
             self.__twitchChatMessenger.send(
-                text = f'⚠ An unknown error occurred when trying to enable cheer action {bits}',
+                text = f'⚠ An unknown error occurred when trying to enable cheer action {arguments.bits}',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log(self.commandName, f'Handled ({result=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({result=}) ({arguments=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
         isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+
         isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
+
         return isStreamer or isAdministrator
+
+    async def __parseArguments(self, chatMessage: TwitchChatMessage) -> Arguments | None:
+        argumentsMatch = self.__argumentsPattern.match(chatMessage.text)
+        if argumentsMatch is None:
+            return None
+
+        bitsString = argumentsMatch.group(1)
+
+        try:
+            bits = int(bitsString)
+        except Exception as e:
+            self.__timber.log(self.commandName, f'Failed to parse bitsString into an int ({bitsString=}) ({argumentsMatch=}) ({chatMessage=})', e, traceback.format_exc())
+            return None
+
+        if bits <= 0 or bits > utils.getIntMaxSafeSize():
+            self.__timber.log(self.commandName, f'The bits value is out of bounds ({bits=}) ({bitsString=}) ({argumentsMatch=}) ({chatMessage=})')
+            return None
+
+        return EnableCheerActionChatCommand.Arguments(
+            bits = bits,
+        )

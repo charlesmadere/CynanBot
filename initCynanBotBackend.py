@@ -1595,7 +1595,9 @@ chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = StubChatterInve
     twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
-calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface] = CalculateTimeoutDurationUseCase()
+calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface] = CalculateTimeoutDurationUseCase(
+    randomUtils = randomUtils,
+)
 
 determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCaseInterface] = DetermineAirStrikeTargetsUseCase(
     activeChattersRepository = activeChattersRepository,
@@ -1609,6 +1611,7 @@ determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCaseInterfac
 
 determineBananaTargetUseCase: Final[DetermineBananaTargetUseCaseInterface] = DetermineBananaTargetUseCase(
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
+    randomUtils = randomUtils,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
 )

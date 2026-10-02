@@ -20,7 +20,7 @@ from src.chatActions.absChatAction import AbsChatAction
 from src.chatActions.crowdMicrophoneChatAction import CrowdMicrophoneChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
-from src.chatActions.watchStreakAnnounceChatAction import WatchStreakAnnounceChatAction
+from src.chatActions.watchStreakChatAction import WatchStreakChatAction
 from src.chatCommands.absChatCommand import AbsChatCommand
 from src.chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
 from src.chatCommands.chatterInventoryChatCommand import ChatterInventoryChatCommand
@@ -1555,10 +1555,11 @@ compositeTtsManagerProvider: Final[CompositeTtsManagerProviderInterface] = Compo
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     commodoreSamTtsManagerProvider = commodoreSamTtsManagerProvider,
     decTalkTtsManagerProvider = decTalkTtsManagerProvider,
+    unrestrictedDecTalkTtsManagerProvider = unrestrictedDecTalkTtsManagerProvider,
     googleTtsManagerProvider = googleTtsManagerProvider,
     halfLifeTtsManagerProvider = halfLifeTtsManagerProvider,
     microsoftSamTtsManagerProvider = microsoftSamTtsManagerProvider,
-    unrestrictedDecTalkTtsManagerProvider = unrestrictedDecTalkTtsManagerProvider,
+    randomUtils = randomUtils,
     streamElementsTtsManagerProvider = streamElementsTtsManagerProvider,
     timber = timber,
     ttsMonsterTtsManagerProvider = ttsMonsterTtsManagerProvider,
@@ -1725,7 +1726,9 @@ chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = ChatterInventor
     twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
-calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface] = CalculateTimeoutDurationUseCase()
+calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface] = CalculateTimeoutDurationUseCase(
+    randomUtils = randomUtils,
+)
 
 determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCaseInterface] = DetermineAirStrikeTargetsUseCase(
     activeChattersRepository = activeChattersRepository,
@@ -1739,6 +1742,7 @@ determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCaseInterfac
 
 determineBananaTargetUseCase: Final[DetermineBananaTargetUseCaseInterface] = DetermineBananaTargetUseCase(
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
+    randomUtils = randomUtils,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
 )
@@ -2175,7 +2179,7 @@ chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
         voicemailHelper = voicemailHelper,
         voicemailSettingsRepository = voicemailSettingsRepository,
     ),
-    WatchStreakAnnounceChatAction(
+    WatchStreakChatAction(
         timber = timber,
         watchStreaksHelper = watchStreaksHelper,
     ),

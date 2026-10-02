@@ -1,4 +1,3 @@
-import random
 from typing import Final
 
 from .determineBananaTargetUseCaseInterface import DetermineBananaTargetUseCaseInterface
@@ -9,6 +8,7 @@ from ..models.timeoutDiceRoll import TimeoutDiceRoll
 from ..models.timeoutDiceRollFailureData import TimeoutDiceRollFailureData
 from ..models.timeoutTarget import TimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.localModels.twitchUserInterface import TwitchUserInterface
 
@@ -18,23 +18,31 @@ class DetermineBananaTargetUseCase(DetermineBananaTargetUseCaseInterface):
     def __init__(
         self,
         guaranteedTimeoutUsersRepository: GuaranteedTimeoutUsersRepositoryInterface,
+        randomUtils: RandomUtilsInterface,
         timber: TimberInterface,
         timeoutActionSettings: TimeoutActionSettingsInterface,
     ):
         if not isinstance(guaranteedTimeoutUsersRepository, GuaranteedTimeoutUsersRepositoryInterface):
             raise TypeError(f'guaranteedTimeoutUsersRepository argument is malformed: \"{guaranteedTimeoutUsersRepository}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
             raise TypeError(f'timeoutActionSettings argument is malformed: \"{timeoutActionSettings}\"')
 
         self.__guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = guaranteedTimeoutUsersRepository
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionSettings: Final[TimeoutActionSettingsInterface] = timeoutActionSettings
 
     async def __generateDiceRoll(self) -> TimeoutDiceRoll:
         dieSize = await self.__timeoutActionSettings.getDieSize()
-        roll = random.randint(1, dieSize)
+
+        roll = self.__randomUtils.int(
+            low = 1,
+            high = dieSize,
+        )
 
         return TimeoutDiceRoll(
             dieSize = dieSize,
