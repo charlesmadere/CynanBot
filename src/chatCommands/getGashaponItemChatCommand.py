@@ -56,8 +56,10 @@ class GetGashaponItemChatCommand(AbsChatCommand):
         if not chatMessage.twitchUser.isChatterInventoryEnabled:
             return ChatCommandResult.IGNORED
 
+        actionId = await self.__chatterInventoryIdGenerator.generateActionId()
+
         self.__chatterInventoryMachine.submitAction(RequestGashaponRewardAction(
-            actionId = await self.__chatterInventoryIdGenerator.generateActionId(),
+            actionId = actionId,
             chatMessage = chatMessage.text,
             chatterUserId = chatMessage.chatterUserId,
             twitchChannelId = chatMessage.twitchChannelId,
@@ -65,5 +67,5 @@ class GetGashaponItemChatCommand(AbsChatCommand):
             user = chatMessage.twitchUser,
         ))
 
-        self.__timber.log(self.commandName, f'Handled ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({actionId=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED

@@ -20,7 +20,7 @@ from src.chatActions.absChatAction import AbsChatAction
 from src.chatActions.crowdMicrophoneChatAction import CrowdMicrophoneChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
-from src.chatActions.watchStreakAnnounceChatAction import WatchStreakAnnounceChatAction
+from src.chatActions.watchStreakChatAction import WatchStreakChatAction
 from src.chatCommands.absChatCommand import AbsChatCommand
 from src.chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
 from src.chatCommands.chatterInventoryChatCommand import ChatterInventoryChatCommand
@@ -2179,7 +2179,7 @@ chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
         voicemailHelper = voicemailHelper,
         voicemailSettingsRepository = voicemailSettingsRepository,
     ),
-    WatchStreakAnnounceChatAction(
+    WatchStreakChatAction(
         timber = timber,
         watchStreaksHelper = watchStreaksHelper,
     ),

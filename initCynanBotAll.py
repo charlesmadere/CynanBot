@@ -50,7 +50,7 @@ from src.chatActions.recurringActionsWizardChatAction import RecurringActionsWiz
 from src.chatActions.saveMostRecentAnivMessageChatAction import SaveMostRecentAnivMessageChatAction
 from src.chatActions.supStreamerChatAction import SupStreamerChatAction
 from src.chatActions.voicemailChatAction import VoicemailChatAction
-from src.chatActions.watchStreakAnnounceChatAction import WatchStreakAnnounceChatAction
+from src.chatActions.watchStreakChatAction import WatchStreakChatAction
 from src.chatCommands.absChatCommand import AbsChatCommand
 from src.chatCommands.addBannedTriviaControllerChatCommand import AddBannedTriviaControllerChatCommand
 from src.chatCommands.addGameShuffleAutomatorChatCommand import AddGameShuffleAutomatorChatCommand
@@ -3187,7 +3187,7 @@ chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
         voicemailHelper = voicemailHelper,
         voicemailSettingsRepository = voicemailSettingsRepository,
     ),
-    WatchStreakAnnounceChatAction(
+    WatchStreakChatAction(
         timber = timber,
         watchStreaksHelper = watchStreaksHelper,
     ),

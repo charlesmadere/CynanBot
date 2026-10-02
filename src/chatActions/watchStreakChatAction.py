@@ -9,7 +9,7 @@ from ..watchStreaks.helper.watchStreaksHelperInterface import WatchStreaksHelper
 from ..watchStreaks.models.watchStreakTtsAnnouncementResult import WatchStreakTtsAnnouncementResult
 
 
-class WatchStreakAnnounceChatAction(AbsChatAction):
+class WatchStreakChatAction(AbsChatAction):
 
     def __init__(
         self,
@@ -26,7 +26,7 @@ class WatchStreakAnnounceChatAction(AbsChatAction):
 
     @property
     def actionName(self) -> str:
-        return 'WatchStreakAnnounceChatAction'
+        return 'WatchStreakChatAction'
 
     async def handleChatAction(
         self,
