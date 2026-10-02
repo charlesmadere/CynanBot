@@ -1,4 +1,4 @@
-import random
+from typing import Final
 
 from .calculateTimeoutDurationUseCaseInterface import CalculateTimeoutDurationUseCaseInterface
 from ..models.absTimeoutDuration import AbsTimeoutDuration
@@ -7,9 +7,16 @@ from ..models.exactTimeoutDuration import ExactTimeoutDuration
 from ..models.randomExponentialTimeoutDuration import RandomExponentialTimeoutDuration
 from ..models.randomLinearTimeoutDuration import RandomLinearTimeoutDuration
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 
 
 class CalculateTimeoutDurationUseCase(CalculateTimeoutDurationUseCaseInterface):
+
+    def __init__(self, randomUtils: RandomUtilsInterface):
+        if not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
+
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
 
     async def __calculateExactTimeoutDurationSeconds(
         self,
@@ -29,7 +36,7 @@ class CalculateTimeoutDurationUseCase(CalculateTimeoutDurationUseCaseInterface):
 
         maxSeconds = float(timeoutDuration.maximumSeconds)
         minSeconds = float(timeoutDuration.minimumSeconds)
-        randomScale = random.random()
+        randomScale = self.__randomUtils.float()
 
         timeoutDurationSeconds = pow(randomScale, timeoutDuration.exponent) * (maxSeconds - minSeconds) + minSeconds
         return int(round(timeoutDurationSeconds))
@@ -41,7 +48,10 @@ class CalculateTimeoutDurationUseCase(CalculateTimeoutDurationUseCaseInterface):
         if not isinstance(timeoutDuration, RandomLinearTimeoutDuration):
             raise TypeError(f'timeoutDuration argument is malformed: \"{timeoutDuration}\"')
 
-        return random.randint(timeoutDuration.minimumSeconds, timeoutDuration.maximumSeconds)
+        return self.__randomUtils.int(
+            low = timeoutDuration.minimumSeconds,
+            high = timeoutDuration.maximumSeconds,
+        )
 
     async def invoke(
         self,

@@ -1869,10 +1869,11 @@ compositeTtsManagerProvider: Final[CompositeTtsManagerProviderInterface] = Compo
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
     commodoreSamTtsManagerProvider = commodoreSamTtsManagerProvider,
     decTalkTtsManagerProvider = decTalkTtsManagerProvider,
+    unrestrictedDecTalkTtsManagerProvider = unrestrictedDecTalkTtsManagerProvider,
     googleTtsManagerProvider = googleTtsManagerProvider,
     halfLifeTtsManagerProvider = halfLifeTtsManagerProvider,
     microsoftSamTtsManagerProvider = microsoftSamTtsManagerProvider,
-    unrestrictedDecTalkTtsManagerProvider= unrestrictedDecTalkTtsManagerProvider,
+    randomUtils = randomUtils,
     streamElementsTtsManagerProvider = streamElementsTtsManagerProvider,
     timber = timber,
     ttsMonsterTtsManagerProvider = ttsMonsterTtsManagerProvider,
@@ -2470,7 +2471,9 @@ chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = ChatterInventor
     twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
-calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface] = CalculateTimeoutDurationUseCase()
+calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface] = CalculateTimeoutDurationUseCase(
+    randomUtils = randomUtils,
+)
 
 determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCaseInterface] = DetermineAirStrikeTargetsUseCase(
     activeChattersRepository = activeChattersRepository,
@@ -2484,6 +2487,7 @@ determineAirStrikeTargetsUseCase: Final[DetermineAirStrikeTargetsUseCaseInterfac
 
 determineBananaTargetUseCase: Final[DetermineBananaTargetUseCaseInterface] = DetermineBananaTargetUseCase(
     guaranteedTimeoutUsersRepository = guaranteedTimeoutUsersRepository,
+    randomUtils = randomUtils,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
 )

@@ -22,7 +22,7 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
             TtsMonsterVoice.SPONGEBOB: 34,
             TtsMonsterVoice.SHADOW: 36,
         }),
-        defaultVoiceVolume: int | None = 50,
+        defaultVoiceVolume: int | None = 42,
         defaultDonationPrefixConfig: TtsMonsterDonationPrefixConfig = TtsMonsterDonationPrefixConfig.IF_MESSAGE_IS_BLANK,
         defaultVoice: TtsMonsterVoice = TtsMonsterVoice.BRIAN,
     ):

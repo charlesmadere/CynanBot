@@ -1,11 +1,11 @@
 import html
-import math
 import random
 import re
 from datetime import datetime
 from typing import Any, Final, Generator, Pattern, Sized, TypeVar, overload
 from urllib.parse import urlparse
 
+import math
 from frozendict import frozendict
 from typing_extensions import TypeGuard
 

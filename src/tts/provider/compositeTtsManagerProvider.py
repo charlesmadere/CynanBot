@@ -14,6 +14,7 @@ from ..ttsMonster.ttsMonsterTtsManagerProviderInterface import TtsMonsterTtsMana
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -29,6 +30,7 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
         googleTtsManagerProvider: GoogleTtsManagerProviderInterface,
         halfLifeTtsManagerProvider: HalfLifeTtsManagerProviderInterface,
         microsoftSamTtsManagerProvider: MicrosoftSamTtsManagerProviderInterface,
+        randomUtils: RandomUtilsInterface,
         streamElementsTtsManagerProvider: StreamElementsTtsManagerProviderInterface,
         timber: TimberInterface,
         ttsMonsterTtsManagerProvider: TtsMonsterTtsManagerProviderInterface,
@@ -50,6 +52,8 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
             raise TypeError(f'halfLifeTtsManagerProvider argument is malformed: \"{halfLifeTtsManagerProvider}\"')
         elif not isinstance(microsoftSamTtsManagerProvider, MicrosoftSamTtsManagerProviderInterface):
             raise TypeError(f'microsoftSamTtsManagerProvider argument is malformed: \"{microsoftSamTtsManagerProvider}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(streamElementsTtsManagerProvider, StreamElementsTtsManagerProviderInterface):
             raise TypeError(f'streamElementsTtsManagerProvider argument is malformed: \"{streamElementsTtsManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
@@ -67,6 +71,7 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
         self.__googleTtsManagerProvider: Final[GoogleTtsManagerProviderInterface] = googleTtsManagerProvider
         self.__halfLifeTtsManagerProvider: Final[HalfLifeTtsManagerProviderInterface] = halfLifeTtsManagerProvider
         self.__microsoftSamTtsManagerProvider: Final[MicrosoftSamTtsManagerProviderInterface] = microsoftSamTtsManagerProvider
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__streamElementsTtsManagerProvider: Final[StreamElementsTtsManagerProviderInterface] = streamElementsTtsManagerProvider
         self.__timber: Final[TimberInterface] = timber
         self.__ttsMonsterTtsManagerProvider: Final[TtsMonsterTtsManagerProviderInterface] = ttsMonsterTtsManagerProvider
@@ -122,6 +127,7 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
             googleTtsManager = googleTtsManager,
             halfLifeTtsManager = halfLifeTtsManager,
             microsoftSamTtsManager = microsoftSamTtsManager,
+            randomUtils = self.__randomUtils,
             streamElementsTtsManager = streamElementsTtsManager,
             timber = self.__timber,
             ttsMonsterTtsManager = ttsMonsterTtsManager,
@@ -152,6 +158,7 @@ class CompositeTtsManagerProvider(CompositeTtsManagerProviderInterface):
             googleTtsManager = googleTtsManager,
             halfLifeTtsManager = halfLifeTtsManager,
             microsoftSamTtsManager = microsoftSamTtsManager,
+            randomUtils = self.__randomUtils,
             streamElementsTtsManager = streamElementsTtsManager,
             timber = self.__timber,
             ttsMonsterTtsManager = ttsMonsterTtsManager,

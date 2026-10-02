@@ -1,4 +1,3 @@
-import random
 from typing import Final
 
 from frozendict import frozendict
@@ -21,6 +20,7 @@ from .ttsManagerInterface import TtsManagerInterface
 from .ttsMonster.ttsMonsterTtsManagerInterface import TtsMonsterTtsManagerInterface
 from ..chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ..misc.randomUtilsInterface import RandomUtilsInterface
 from ..timber.timberInterface import TimberInterface
 
 
@@ -36,6 +36,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         googleTtsManager: GoogleTtsManagerInterface | None,
         halfLifeTtsManager: HalfLifeTtsManagerInterface | None,
         microsoftSamTtsManager: MicrosoftSamTtsManagerInterface | None,
+        randomUtils: RandomUtilsInterface,
         streamElementsTtsManager: StreamElementsTtsManagerInterface | None,
         timber: TimberInterface,
         ttsMonsterTtsManager: TtsMonsterTtsManagerInterface | None,
@@ -57,6 +58,8 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
             raise TypeError(f'halfLifeTtsManager argument is malformed: \"{halfLifeTtsManager}\"')
         elif microsoftSamTtsManager is not None and not isinstance(microsoftSamTtsManager, MicrosoftSamTtsManagerInterface):
             raise TypeError(f'microsoftSamTtsManager argument is malformed: \"{microsoftSamTtsManager}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif streamElementsTtsManager is not None and not isinstance(streamElementsTtsManager, StreamElementsTtsManagerInterface):
             raise TypeError(f'streamElementsTtsManager argument is malformed: \"{streamElementsTtsManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -68,6 +71,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface | None] = chatterPreferredTtsHelper
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__timber: Final[TimberInterface] = timber
         self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
@@ -107,7 +111,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
                     availableProviders.add(provider)
 
             if len(availableProviders) >= 1:
-                chosenProvider = random.choice(list(availableProviders))
+                chosenProvider = self.__randomUtils.choice(list(availableProviders))
                 self.__timber.log('CompositeTtsManager', f'Chatter uses random preferred TTS ({chosenProvider=}) ({preferredTts=}) ({event=})')
                 return chosenProvider
 
@@ -194,7 +198,7 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
         chosenProviders: list[TtsProvider] = list()
 
         while len(chosenProviders) < parameters.amount and len(availableProviders) >= 1:
-            chosenProvider = random.choice(availableProviders)
+            chosenProvider = self.__randomUtils.choice(availableProviders)
             chosenProviders.append(chosenProvider)
             availableProviders.remove(chosenProvider)
 
@@ -228,10 +232,14 @@ class CompositeTtsManager(CompositeTtsManagerInterface):
                 availableProviders.append(provider)
 
         chosenProviders: list[TtsProvider] = list()
-        chosenAmount = random.randint(parameters.minAmount, parameters.maxAmount)
+
+        chosenAmount = self.__randomUtils.int(
+            low = parameters.minAmount,
+            high = parameters.maxAmount,
+        )
 
         while len(chosenProviders) < chosenAmount and len(availableProviders) >= 1:
-            chosenProvider = random.choice(availableProviders)
+            chosenProvider = self.__randomUtils.choice(availableProviders)
             chosenProviders.append(chosenProvider)
             availableProviders.remove(chosenProvider)
 
