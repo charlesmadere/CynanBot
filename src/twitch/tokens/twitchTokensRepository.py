@@ -465,7 +465,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
                 raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to refresh Twitch tokens ({twitchChannelId=})')
             except TwitchPasswordChangedException as e:
                 self.__timber.log('TwitchTokensRepository', f'Encountered network error caused by password change when trying to refresh Twitch tokens ({twitchChannelId=})', e, traceback.format_exc())
-                await self.removeUserById(twitchChannelId)
+                await self.removeUserById(twitchChannelId = twitchChannelId)
                 raise TwitchPasswordChangedException(f'TwitchTokensRepository encountered network error caused by password change when trying to refresh Twitch tokens ({twitchChannelId=})')
 
             await self.__setTokensDetails(
