@@ -453,6 +453,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             pass
 
         if validationResponse is not None:
+            self.__timber.log('TwitchTokensRepository', f'Validated Twitch tokens ({validationResponse=}) ({twitchChannelId=})')
             self.__twitchChannelIdToValidationTime[twitchChannelId] = validationResponse.expiresAt
 
         if validationResponse is None or validationResponse.expiresAt + self.__tokensExpirationBuffer > nowDateTime:
@@ -476,8 +477,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             return newTokensDetails
 
         else:
-            self.__timber.log('TwitchTokensRepository', f'Validated Twitch tokens ({validationResponse=}) ({twitchChannelId=})')
-
             await self.__setExpirationTime(
                 expirationTime = validationResponse.expiresAt,
                 twitchChannelId = twitchChannelId,
