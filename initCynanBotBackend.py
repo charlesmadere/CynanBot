@@ -2481,5 +2481,5 @@ cynanBot: Final[CynanBot] = CynanBot(
 ## Section for starting the actual bot ##
 #########################################
 
-timber.log('initCynanBotBackup', 'Starting CynanBot...')
+timber.log('initCynanBotBackend', 'Starting CynanBot...')
 cynanBot.run()
