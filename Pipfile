@@ -10,7 +10,7 @@ aiosqlite = "0.22.1"
 asyncpg = "0.31.0"
 audioplayer = { version = "0.6", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
 bleak = { version = "3.0.2", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
-charset-normalizer = "3.5.1"
+charset-normalizer = "3.5.2"
 cryptography = "50.0.2"
 emoji = "2.16.0"
 frozendict = "2.4.7"
@@ -22,11 +22,11 @@ num2words = "0.5.14"
 polyleven = "0.11.0"
 psutil = "7.2.2"
 pygame = { version = "2.6.1", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
-pyjwt = "2.15.0"
+pyjwt = "2.15.1"
 pytest = "9.1.1"
 pytest-asyncio = "1.4.0"
 python-vlc = { version = "3.0.21203", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
-pytz = "2026.3.post1"
+pytz = "2026.4"
 pywin32 = { version = "312", markers = "sys_platform == 'win32'" }
 requests = "2.34.2"
 roman = "5.2"
