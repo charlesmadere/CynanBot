@@ -10,6 +10,10 @@ class CutenessSettingsInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getHistoryLeaderboardSize(self) -> int:
+        pass
+
+    @abstractmethod
     async def getLeaderboardSize(self) -> int:
         pass
 

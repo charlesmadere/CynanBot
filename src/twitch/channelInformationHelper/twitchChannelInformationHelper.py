@@ -22,7 +22,8 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        setThenFetchDelaySeconds: float = 0.5,
+        setThenFetchDelaySeconds: float = 1,
+        setThenFetchRetryAttempts: int = 3,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -34,11 +35,16 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
             raise TypeError(f'setThenFetchDelaySeconds argument is malformed: \"{setThenFetchDelaySeconds}\"')
         elif setThenFetchDelaySeconds < 0.125 or setThenFetchDelaySeconds > 3:
             raise ValueError(f'setThenFetchDelaySeconds argument is out of bounds: {setThenFetchDelaySeconds}')
+        elif not utils.isValidInt(setThenFetchRetryAttempts):
+            raise TypeError(f'setThenFetchRetryAttempts argument is malformed: \"{setThenFetchRetryAttempts}\"')
+        elif setThenFetchRetryAttempts < 1 or setThenFetchRetryAttempts > 8:
+            raise ValueError(f'setThenFetchRetryAttempts argument is out of bounds: {setThenFetchRetryAttempts}')
 
         self.__timber: Final[TimberInterface] = timber
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__setThenFetchDelaySeconds: Final[float] = setThenFetchDelaySeconds
+        self.__setThenFetchRetryAttempts: Final[int] = setThenFetchRetryAttempts
 
     async def __fetchChannelInformation(
         self,
@@ -149,7 +155,7 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
                 gameId = game.gameId,
                 title = None,
                 twitchChannelId = twitchChannelId,
-            )
+            ),
         )
 
         await asyncio.sleep(self.__setThenFetchDelaySeconds)
@@ -184,17 +190,22 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
                 gameId = None,
                 title = title,
                 twitchChannelId = twitchChannelId,
+            ),
+        )
+
+        attempts = 0
+        channelInformation: TwitchChannelInformation | None = None
+
+        for _ in range(self.__setThenFetchRetryAttempts):
+            await asyncio.sleep(self.__setThenFetchDelaySeconds)
+            attempts += 1
+
+            channelInformation = await self.__fetchChannelInformation(
+                twitchAccessToken = twitchAccessToken,
+                twitchChannelId = twitchChannelId,
             )
-        )
 
-        await asyncio.sleep(self.__setThenFetchDelaySeconds)
+            if utils.isValidStr(channelInformation.title) and title == channelInformation.title:
+                return channelInformation.title
 
-        channelInformation = await self.__fetchChannelInformation(
-            twitchAccessToken = twitchAccessToken,
-            twitchChannelId = twitchChannelId,
-        )
-
-        if not utils.isValidStr(channelInformation.title):
-            raise FailedToSetTwitchChannelTitleException(f'Failed to set Twitch channel title ({channelInformation=}) ({title=})')
-
-        return channelInformation.title
+        raise FailedToSetTwitchChannelTitleException(f'Failed to set Twitch channel title ({channelInformation=}) ({attempts=}) ({title=}) ({twitchChannelId=})')

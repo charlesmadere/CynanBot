@@ -22,6 +22,10 @@ class CutenessSettings(CutenessSettingsInterface):
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'historySize', fallback = 5)
 
+    async def getHistoryLeaderboardSize(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'historyLeaderboardSize', fallback = 5)
+
     async def getLeaderboardSize(self) -> int:
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'leaderboardSize', fallback = 10)

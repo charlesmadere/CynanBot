@@ -2,36 +2,36 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from .cutenessEntry import CutenessEntry
-from .cutenessResult import CutenessResult
+from .incrementedCutenessResult import IncrementedCutenessResult
 from ...twitch.localModels.twitchUserInterface import TwitchUserInterface
 
 
 @dataclass(frozen = True, slots = True)
-class PreparedCutenessResult(CutenessEntry, TwitchUserInterface):
-    cutenessResult: CutenessResult
+class PreparedIncrementedCutenessResult(CutenessEntry, TwitchUserInterface):
+    incrementedCutenessResult: IncrementedCutenessResult
     chatterUserLogin: str
     chatterUserName: str
 
     @property
     def chatterUserId(self) -> str:
-        return self.cutenessResult.chatterUserId
+        return self.incrementedCutenessResult.chatterUserId
 
     @property
     def cutenessDate(self) -> datetime:
-        return self.cutenessResult.cutenessDate
+        return self.incrementedCutenessResult.cutenessDate
 
     @property
     def cutenessStr(self) -> str:
-        return self.cutenessResult.cutenessStr
+        return self.incrementedCutenessResult.cutenessStr
 
     def getChatterUserId(self) -> str:
-        return self.chatterUserId
+        return self.incrementedCutenessResult.getChatterUserId()
 
     def getCuteness(self) -> int:
-        return self.cutenessResult.getCuteness()
+        return self.incrementedCutenessResult.getCuteness()
 
     def getTwitchChannelId(self) -> str:
-        return self.cutenessResult.getTwitchChannelId()
+        return self.incrementedCutenessResult.getTwitchChannelId()
 
     def getUserId(self) -> str:
         return self.chatterUserId
@@ -42,9 +42,10 @@ class PreparedCutenessResult(CutenessEntry, TwitchUserInterface):
     def getUserName(self) -> str:
         return self.chatterUserName
 
-    def requireCuteness(self) -> int:
-        return self.cutenessResult.requireCuteness()
+    @property
+    def previousCutenessStr(self) -> str:
+        return self.incrementedCutenessResult.previousCutenessStr
 
     @property
     def twitchChannelId(self) -> str:
-        return self.cutenessResult.twitchChannelId
+        return self.incrementedCutenessResult.twitchChannelId
