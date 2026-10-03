@@ -8,6 +8,7 @@ from .specialStatus.specialTriviaStatus import SpecialTriviaStatus
 from .specialStatus.toxicTriviaPunishmentResult import ToxicTriviaPunishmentResult
 from .specialStatus.toxicTriviaResult import ToxicTriviaResult
 from ..cuteness.incrementedCutenessResult import IncrementedCutenessResult
+from ..cuteness.models.preparedIncrementedCutenessResult import PreparedIncrementedCutenessResult
 from ..users.userInterface import UserInterface
 
 
@@ -21,7 +22,7 @@ class TriviaUtilsInterface(ABC):
     async def getCorrectAnswerReveal(
         self,
         question: AbsTriviaQuestion,
-        newCuteness: IncrementedCutenessResult,
+        newCuteness: PreparedIncrementedCutenessResult,
         celebratoryEmote: str | None,
         emote: str,
         userNameThatRedeemed: str,
