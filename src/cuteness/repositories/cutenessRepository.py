@@ -114,6 +114,7 @@ class CutenessRepository(CutenessRepositoryInterface):
             '''
                 SELECT userid, SUM(cuteness) AS totalcuteness FROM cuteness
                 WHERE twitchchannelid = $1 AND userid != $2
+                GROUP BY userid
                 ORDER BY totalcuteness DESC
                 LIMIT $3
             ''',
