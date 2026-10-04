@@ -78,6 +78,8 @@ class GashaponItemUseCase(GashaponItemUseCaseInterface):
         if len(enabledItemTypes) == 0:
             return GashaponItemUseCaseInterface.GashaponItemDisabledResult()
         elif len(enabledItemTypes) == 1 and ChatterItemType.GASHAPON in enabledItemTypes:
+            # this handles a weird case where the only enabled item type is gashapon, which is a
+            # pretty nonsensical scenario but whatever
             return GashaponItemUseCaseInterface.GashaponItemDisabledResult()
         elif ChatterItemType.GASHAPON not in enabledItemTypes:
             return GashaponItemUseCaseInterface.GashaponItemDisabledResult()
