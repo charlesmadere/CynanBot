@@ -1,3 +1,4 @@
+import locale
 from datetime import datetime
 
 from .cutenessPresenterInterface import CutenessPresenterInterface
@@ -98,7 +99,13 @@ class CutenessPresenter(CutenessPresenterInterface):
         specificLookupText: str | None = None
 
         if result.specificLookupCutenessResult is not None:
-            cutenessStr = result.specificLookupCutenessResult.cutenessStr
+            cutenessStr: str
+
+            if result.specificLookupCutenessResult.cuteness is None:
+                cutenessStr = locale.format_string("%d", 0, grouping = True)
+            else:
+                cutenessStr = result.specificLookupCutenessResult.cutenessStr
+
             specificLookupText = f'@{result.specificLookupCutenessResult.chatterUserName} your cuteness is {cutenessStr}'
 
         entryStrings: list[str] = list()
