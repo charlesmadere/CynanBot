@@ -420,7 +420,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             bitsBadgeTier = await self.__twitchJsonMapper.parseBitsBadgeTier(eventJson.get('bits_badge_tier'))
 
         bitsUseType: TwitchBitsUseType | None = None
-        if 'type' in eventJson and utils.isValidStr(eventJson.get('type')):
+        if 'type' in eventJson:
             bitsUseType = await self.__twitchJsonMapper.parseBitsUseType(eventJson.get('type'))
 
         channelPointsVoting: TwitchChannelPointsVoting | None = None
@@ -432,7 +432,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             chatMessage = await self.__twitchJsonMapper.parseChatMessage(eventJson.get('message'))
 
         chatMessageType: TwitchChatMessageType | None = None
-        if 'message_type' in eventJson and utils.isValidStr(eventJson.get('message_type')):
+        if 'message_type' in eventJson:
             chatMessageType = await self.__twitchJsonMapper.parseChatMessageType(eventJson.get('message_type'))
 
         cheer: TwitchCheerMetadata | None = None
@@ -479,9 +479,8 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             sharedChatGiftedDropsSummary = await self.__twitchJsonMapper.parseGiftedDropsSummary(eventJson.get('shared_chat_gifted_drops_summary'))
 
         hypeTrainType: TwitchHypeTrainType | None = None
-        if 'type' in eventJson and utils.isValidStr(eventJson.get('type')):
-            hypeTrainTypeString = utils.getStrFromDict(eventJson, 'type')
-            hypeTrainType = await self.__twitchJsonMapper.parseHypeTrainType(hypeTrainTypeString)
+        if 'type' in eventJson:
+            hypeTrainType = await self.__twitchJsonMapper.parseHypeTrainType(eventJson.get('type'))
 
         modiversary: TwitchModiversary | None = None
         if 'modiversary' in eventJson:
@@ -572,7 +571,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             sharedChatSubGift = await self.__twitchJsonMapper.parseSubGift(eventJson.get('shared_chat_sub_gift'))
 
         tier: TwitchSubscriberTier | None = None
-        if 'tier' in eventJson and utils.isValidStr(eventJson.get('tier')):
+        if 'tier' in eventJson:
             tier = await self.__twitchJsonMapper.parseSubscriberTier(eventJson.get('tier'))
 
         watchStreak: TwitchWatchStreak | None = None
