@@ -43,6 +43,14 @@ class PreparedIncrementedCutenessResult(CutenessEntry, TwitchUserInterface):
         return self.chatterUserName
 
     @property
+    def newCuteness(self) -> int:
+        return self.incrementedCutenessResult.newCuteness
+
+    @property
+    def newCutenessStr(self) -> str:
+        return self.incrementedCutenessResult.newCutenessStr
+
+    @property
     def previousCutenessStr(self) -> str:
         return self.incrementedCutenessResult.previousCutenessStr
 

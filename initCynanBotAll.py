@@ -226,10 +226,14 @@ from src.crowdControl.utils.crowdControlUserInputUtils import CrowdControlUserIn
 from src.crowdControl.utils.crowdControlUserInputUtilsInterface import CrowdControlUserInputUtilsInterface
 from src.cuteness.cutenessPresenter import CutenessPresenter
 from src.cuteness.cutenessPresenterInterface import CutenessPresenterInterface
-from src.cuteness.cutenessRepository import CutenessRepository
-from src.cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
-from src.cuteness.cutenessUtils import CutenessUtils
-from src.cuteness.cutenessUtilsInterface import CutenessUtilsInterface
+from src.cuteness.helpers.cutenessHelper import CutenessHelper
+from src.cuteness.helpers.cutenessHelperInterface import CutenessHelperInterface
+from src.cuteness.mappers.cutenessMapper import CutenessMapper
+from src.cuteness.mappers.cutenessMapperInterface import CutenessMapperInterface
+from src.cuteness.repositories.cutenessRepository import CutenessRepository
+from src.cuteness.repositories.cutenessRepositoryInterface import CutenessRepositoryInterface
+from src.cuteness.settings.cutenessSettings import CutenessSettings
+from src.cuteness.settings.cutenessSettingsInterface import CutenessSettingsInterface
 from src.cynanBot import CynanBot
 from src.decTalk.apiService.decTalkApiService import DecTalkApiService
 from src.decTalk.apiService.decTalkApiServiceInterface import DecTalkApiServiceInterface
@@ -1059,18 +1063,34 @@ activeChattersRepository: Final[ActiveChattersRepositoryInterface] = ActiveChatt
 ## Cuteness initialization section ##
 #####################################
 
-cutenessPresenter: Final[CutenessPresenterInterface] = CutenessPresenter(
-    twitchHandleProvider = authRepository,
-    twitchTokensRepository = twitchTokensRepository,
-    twitchUserIdsHelper = twitchUserIdsHelper,
+cutenessMapper: Final[CutenessMapperInterface] = CutenessMapper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+cutenessPresenter: Final[CutenessPresenterInterface] = CutenessPresenter()
+
+cutenessSettings: Final[CutenessSettingsInterface] = CutenessSettings(
+    settingsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/cutenessSettings.json',
+    ),
 )
 
 cutenessRepository: Final[CutenessRepositoryInterface] = CutenessRepository(
     backingDatabase = backingDatabase,
+    cutenessMapper = cutenessMapper,
+    cutenessSettings = cutenessSettings,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
 )
 
-cutenessUtils: Final[CutenessUtilsInterface] = CutenessUtils(
-    twitchUserIdsRepository = twitchUserIdsRepository,
+cutenessHelper: Final[CutenessHelperInterface] = CutenessHelper(
+    cutenessRepository = cutenessRepository,
+    cutenessSettings = cutenessSettings,
+    timber = timber,
+    twitchTokensUtils = twitchTokensUtils,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 
@@ -2090,7 +2110,6 @@ triviaUtils: Final[TriviaUtilsInterface] = TriviaUtils(
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
     triviaQuestionPresenter = triviaQuestionPresenter,
-    twitchTokensRepository = twitchTokensRepository,
     twitchUserIdsRepository = twitchUserIdsRepository,
 )
 
@@ -2327,7 +2346,7 @@ triviaEventHandler: Final[TriviaEventListener] = TriviaEventHandler(
 
 triviaGameMachine: Final[TriviaGameMachineInterface] = TriviaGameMachine(
     backgroundTaskHelper = backgroundTaskHelper,
-    cutenessRepository = cutenessRepository,
+    cutenessHelper = cutenessHelper,
     queuedTriviaGameStore = queuedTriviaGameStore,
     shinyTriviaHelper = shinyTriviaHelper,
     superTriviaCooldownHelper = superTriviaCooldownHelper,
@@ -2343,7 +2362,6 @@ triviaGameMachine: Final[TriviaGameMachineInterface] = TriviaGameMachine(
     triviaScoreRepository = triviaScoreRepository,
     triviaSettings = triviaSettings,
     triviaTwitchEmoteHelper = triviaTwitchEmoteHelper,
-    twitchTokensUtils = twitchTokensUtils,
     twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
@@ -2720,7 +2738,7 @@ recurringActionsEventListener: Final[RecurringActionsEventListener] = RecurringA
 
 recurringActionsMachine: Final[RecurringActionsMachineInterface] = RecurringActionsMachine(
     backgroundTaskHelper = backgroundTaskHelper,
-    cutenessRepository = cutenessRepository,
+    cutenessHelper = cutenessHelper,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     locationsRepository = locationsRepository,
     mostRecentRecurringActionRepository = mostRecentRecurringActionRepository,
@@ -3073,7 +3091,7 @@ pointRedemptions: Final[Collection[AbsChannelPointRedemption | None]] = frozense
         twitchChatMessenger = twitchChatMessenger,
     ),
     CutenessPointRedemption(
-        cutenessRepository = cutenessRepository,
+        cutenessHelper = cutenessHelper,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
@@ -3295,22 +3313,24 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
     ),
     CutenessChampionsChatCommand(
+        cutenessHelper = cutenessHelper,
         cutenessPresenter = cutenessPresenter,
-        cutenessRepository = cutenessRepository,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),
     CutenessChatCommand(
+        cutenessHelper = cutenessHelper,
         cutenessPresenter = cutenessPresenter,
-        cutenessRepository = cutenessRepository,
+        cutenessSettings = cutenessSettings,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,
         twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     CutenessHistoryChatCommand(
-        cutenessRepository = cutenessRepository,
-        cutenessUtils = cutenessUtils,
+        cutenessHelper = cutenessHelper,
+        cutenessPresenter = cutenessPresenter,
+        cutenessSettings = cutenessSettings,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,
@@ -3438,7 +3458,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     GiveCutenessChatCommand(
-        cutenessRepository = cutenessRepository,
+        cutenessHelper = cutenessHelper,
         timber = timber,
         triviaUtils = triviaUtils,
         twitchHandleProvider = authRepository,
@@ -3459,8 +3479,8 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
     ),
     MyCutenessChatCommand(
-        cutenessRepository = cutenessRepository,
-        cutenessUtils = cutenessUtils,
+        cutenessHelper = cutenessHelper,
+        cutenessPresenter = cutenessPresenter,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
     ),

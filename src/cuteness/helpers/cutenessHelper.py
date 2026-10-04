@@ -5,6 +5,8 @@ from frozenlist import FrozenList
 from .cutenessHelperInterface import CutenessHelperInterface
 from ..exceptions import CutenessFeatureIsDisabledException
 from ..models.preparedCutenessChampionsResult import PreparedCutenessChampionsResult
+from ..models.preparedCutenessHistoryEntry import PreparedCutenessHistoryEntry
+from ..models.preparedCutenessHistoryResult import PreparedCutenessHistoryResult
 from ..models.preparedCutenessLeaderboardEntry import PreparedCutenessLeaderboardEntry
 from ..models.preparedCutenessLeaderboardHistoryResult import PreparedCutenessLeaderboardHistoryResult
 from ..models.preparedCutenessLeaderboardResult import PreparedCutenessLeaderboardResult
@@ -117,6 +119,59 @@ class CutenessHelper(CutenessHelperInterface):
         return PreparedCutenessChampionsResult(
             champions = champions,
             twitchChannelId = twitchChannelId,
+        )
+
+    async def fetchCutenessHistory(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str,
+    ) -> PreparedCutenessHistoryResult:
+        if not utils.isValidStr(chatterUserId):
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        if not await self.__cutenessSettings.isEnabled():
+            raise CutenessFeatureIsDisabledException()
+
+        cutenessHistoryResult = await self.__cutenessRepository.fetchCutenessHistory(
+            chatterUserId = chatterUserId,
+            twitchChannelId = twitchChannelId,
+        )
+
+        chatterUserData = await self.__twitchUserIdsHelper.requireById(
+            userId = chatterUserId,
+            twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
+                twitchChannelId = twitchChannelId,
+            ),
+        )
+
+        historyEntries: FrozenList[PreparedCutenessHistoryEntry] = FrozenList()
+
+        for index, historyEntry in enumerate(cutenessHistoryResult.historyEntries):
+            historyEntries.append(PreparedCutenessHistoryEntry(
+                cutenessHistoryEntry = historyEntry,
+                chatterUserLogin = chatterUserData.userLogin,
+                chatterUserName = chatterUserData.userName,
+            ))
+
+        historyEntries.freeze()
+
+        bestCuteness: PreparedCutenessHistoryEntry | None = None
+
+        if cutenessHistoryResult.bestCuteness is not None:
+            bestCuteness = PreparedCutenessHistoryEntry(
+                cutenessHistoryEntry = cutenessHistoryResult.bestCuteness,
+                chatterUserLogin = chatterUserData.userLogin,
+                chatterUserName = chatterUserData.userName,
+            )
+
+        return PreparedCutenessHistoryResult(
+            cutenessHistoryResult = cutenessHistoryResult,
+            historyEntries = historyEntries,
+            bestCuteness = bestCuteness,
+            chatterUserLogin = chatterUserData.userLogin,
+            chatterUserName = chatterUserData.userName,
         )
 
     async def fetchCutenessIncrementedBy(

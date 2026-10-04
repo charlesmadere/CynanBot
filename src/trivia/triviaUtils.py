@@ -17,11 +17,10 @@ from .specialStatus.toxicTriviaPunishmentResult import ToxicTriviaPunishmentResu
 from .specialStatus.toxicTriviaResult import ToxicTriviaResult
 from .triviaQuestionPresenterInterface import TriviaQuestionPresenterInterface
 from .triviaUtilsInterface import TriviaUtilsInterface
-from ..cuteness.incrementedCutenessResult import IncrementedCutenessResult
+from ..cuteness.models.preparedIncrementedCutenessResult import PreparedIncrementedCutenessResult
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
-from ..twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from ..twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
 
@@ -36,7 +35,6 @@ class TriviaUtils(TriviaUtilsInterface):
         triviaGameControllersRepository: TriviaGameControllersRepositoryInterface,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface,
         triviaQuestionPresenter: TriviaQuestionPresenterInterface,
-        twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUserIdsRepository: TwitchUserIdsRepositoryInterface,
         celebratoryEmote: str = '🎉',
     ):
@@ -52,8 +50,6 @@ class TriviaUtils(TriviaUtilsInterface):
             raise TypeError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
         elif not isinstance(triviaQuestionPresenter, TriviaQuestionPresenterInterface):
             raise TypeError(f'triviaQuestionPresenter argument is malformed: \"{triviaQuestionPresenter}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUserIdsRepository, TwitchUserIdsRepositoryInterface):
             raise TypeError(f'twitchUserIdsRepository argument is malformed: \"{twitchUserIdsRepository}\"')
         elif not utils.isValidStr(celebratoryEmote):
@@ -65,7 +61,6 @@ class TriviaUtils(TriviaUtilsInterface):
         self.__triviaGameControllersRepository: Final[TriviaGameControllersRepositoryInterface] = triviaGameControllersRepository
         self.__triviaGameGlobalControllersRepository: Final[TriviaGameGlobalControllersRepositoryInterface] = triviaGameGlobalControllersRepository
         self.__triviaQuestionPresenter: Final[TriviaQuestionPresenterInterface] = triviaQuestionPresenter
-        self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = twitchUserIdsRepository
         self.__celebratoryEmote: Final[str] = celebratoryEmote
 
@@ -81,7 +76,7 @@ class TriviaUtils(TriviaUtilsInterface):
     async def getCorrectAnswerReveal(
         self,
         question: AbsTriviaQuestion,
-        newCuteness: IncrementedCutenessResult,
+        newCuteness: PreparedIncrementedCutenessResult,
         celebratoryEmote: str | None,
         emote: str,
         userNameThatRedeemed: str,
@@ -91,7 +86,7 @@ class TriviaUtils(TriviaUtilsInterface):
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
-        elif not isinstance(newCuteness, IncrementedCutenessResult):
+        elif not isinstance(newCuteness, PreparedIncrementedCutenessResult):
             raise TypeError(f'newCuteness argument is malformed: \"{newCuteness}\"')
         elif celebratoryEmote is not None and not isinstance(celebratoryEmote, str):
             raise TypeError(f'celebratoryEmote argument is malformed: \"{celebratoryEmote}\"')
@@ -173,7 +168,7 @@ class TriviaUtils(TriviaUtilsInterface):
         question: AbsTriviaQuestion,
         emote: str,
         userNameThatRedeemed: str,
-        specialTriviaStatus: SpecialTriviaStatus | None = None
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
@@ -207,7 +202,7 @@ class TriviaUtils(TriviaUtilsInterface):
         emotePrompt: str,
         toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult,
         bucketDelimiter: str = '; ',
-        delimiter: str = ', '
+        delimiter: str = ', ',
     ) -> str:
         if not utils.isValidStr(emotePrompt):
             raise TypeError(f'emotePrompt argument is malformed: \"{emotePrompt}\"')
@@ -221,7 +216,7 @@ class TriviaUtils(TriviaUtilsInterface):
         punishmentAmountToUserNames: dict[int, list[str]] = defaultdict(lambda: list())
 
         for punishment in toxicTriviaPunishmentResult.toxicTriviaPunishments:
-            punishmentAmountToUserNames[punishment.punishedByPoints].append(punishment.userName)
+            punishmentAmountToUserNames[punishment.punishedByPoints].append(punishment.getUserName())
 
         sortedKeys: list[int] = list(punishmentAmountToUserNames.keys())
         sortedKeys.sort(key = lambda punishmentAmount: punishmentAmount)
@@ -296,7 +291,7 @@ class TriviaUtils(TriviaUtilsInterface):
         punishmentAmountToUserNames: dict[int, list[str]] = defaultdict(lambda: list())
 
         for punishment in toxicTriviaPunishmentResult.toxicTriviaPunishments:
-            punishmentAmountToUserNames[punishment.punishedByPoints].append(punishment.userName)
+            punishmentAmountToUserNames[punishment.punishedByPoints].append(punishment.getUserName())
 
         sortedKeys: list[int] = list(punishmentAmountToUserNames.keys())
         sortedKeys.sort(key = lambda punishmentAmount: punishmentAmount)
@@ -318,8 +313,8 @@ class TriviaUtils(TriviaUtilsInterface):
     async def getSuperTriviaCorrectAnswerReveal(
         self,
         question: AbsTriviaQuestion,
-        newCuteness: IncrementedCutenessResult,
         points: int,
+        newCuteness: PreparedIncrementedCutenessResult,
         celebratoryEmote: str | None,
         emote: str,
         userName: str,
@@ -329,10 +324,10 @@ class TriviaUtils(TriviaUtilsInterface):
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
-        elif not isinstance(newCuteness, IncrementedCutenessResult):
-            raise TypeError(f'newCuteness argument is malformed: \"{newCuteness}\"')
         elif not utils.isValidInt(points):
             raise TypeError(f'points argument is malformed: \"{points}\"')
+        elif not isinstance(newCuteness, PreparedIncrementedCutenessResult):
+            raise TypeError(f'newCuteness argument is malformed: \"{newCuteness}\"')
         elif celebratoryEmote is not None and not isinstance(celebratoryEmote, str):
             raise TypeError(f'celebratoryEmote argument is malformed: \"{celebratoryEmote}\"')
         elif not utils.isValidStr(emote):
@@ -468,16 +463,16 @@ class TriviaUtils(TriviaUtilsInterface):
 
     async def getToxicTriviaPunishmentMessage(
         self,
-        toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None,
         emote: str,
+        toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None,
         twitchUser: UserInterface,
         bucketDelimiter: str = '; ',
         delimiter: str = ', '
     ) -> str | None:
-        if toxicTriviaPunishmentResult is not None and not isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult):
-            raise TypeError(f'toxicTriviaPunishmentResult argument is malformed: \"{toxicTriviaPunishmentResult}\"')
-        elif not utils.isValidStr(emote):
+        if not utils.isValidStr(emote):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
+        elif toxicTriviaPunishmentResult is not None and not isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult):
+            raise TypeError(f'toxicTriviaPunishmentResult argument is malformed: \"{toxicTriviaPunishmentResult}\"')
         elif not isinstance(twitchUser, UserInterface):
             raise TypeError(f'twitchUser argument is malformed: \"{twitchUser}\"')
         elif not isinstance(bucketDelimiter, str):

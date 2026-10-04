@@ -7,7 +7,6 @@ from .specialStatus.shinyTriviaResult import ShinyTriviaResult
 from .specialStatus.specialTriviaStatus import SpecialTriviaStatus
 from .specialStatus.toxicTriviaPunishmentResult import ToxicTriviaPunishmentResult
 from .specialStatus.toxicTriviaResult import ToxicTriviaResult
-from ..cuteness.incrementedCutenessResult import IncrementedCutenessResult
 from ..cuteness.models.preparedIncrementedCutenessResult import PreparedIncrementedCutenessResult
 from ..users.userInterface import UserInterface
 
@@ -70,8 +69,8 @@ class TriviaUtilsInterface(ABC):
     async def getSuperTriviaCorrectAnswerReveal(
         self,
         question: AbsTriviaQuestion,
-        newCuteness: IncrementedCutenessResult,
         points: int,
+        newCuteness: PreparedIncrementedCutenessResult,
         celebratoryEmote: str | None,
         emote: str,
         userName: str,
@@ -112,8 +111,8 @@ class TriviaUtilsInterface(ABC):
     @abstractmethod
     async def getToxicTriviaPunishmentMessage(
         self,
-        toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None,
         emote: str,
+        toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None,
         twitchUser: UserInterface,
         bucketDelimiter: str = '; ',
         delimiter: str = ', ',

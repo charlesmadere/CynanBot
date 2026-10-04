@@ -1,10 +1,12 @@
 import re
+import traceback
 from typing import Collection, Final, Pattern
 
 from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
-from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
-from ..cuteness.cutenessUtilsInterface import CutenessUtilsInterface
+from ..cuteness.cutenessPresenterInterface import CutenessPresenterInterface
+from ..cuteness.exceptions import CutenessFeatureIsDisabledException
+from ..cuteness.helpers.cutenessHelperInterface import CutenessHelperInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
@@ -14,22 +16,22 @@ class MyCutenessChatCommand(AbsChatCommand):
 
     def __init__(
         self,
-        cutenessRepository: CutenessRepositoryInterface,
-        cutenessUtils: CutenessUtilsInterface,
+        cutenessHelper: CutenessHelperInterface,
+        cutenessPresenter: CutenessPresenterInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
-        if not isinstance(cutenessRepository, CutenessRepositoryInterface):
-            raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif not isinstance(cutenessUtils, CutenessUtilsInterface):
-            raise TypeError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
+        if not isinstance(cutenessHelper, CutenessHelperInterface):
+            raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessHelper}\"')
+        elif not isinstance(cutenessPresenter, CutenessPresenterInterface):
+            raise TypeError(f'cutenessPresenter argument is malformed: \"{cutenessPresenter}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
-        self.__cutenessRepository: Final[CutenessRepositoryInterface] = cutenessRepository
-        self.__cutenessUtils: Final[CutenessUtilsInterface] = cutenessUtils
+        self.__cutenessHelper: Final[CutenessHelperInterface] = cutenessHelper
+        self.__cutenessPresenter: Final[CutenessPresenterInterface] = cutenessPresenter
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
@@ -49,15 +51,17 @@ class MyCutenessChatCommand(AbsChatCommand):
         if not chatMessage.twitchUser.isCutenessEnabled:
             return ChatCommandResult.IGNORED
 
-        result = await self.__cutenessRepository.fetchCutenessHistory(
-            twitchChannel = chatMessage.twitchChannel,
-            twitchChannelId = chatMessage.twitchChannelId,
-            userId = chatMessage.chatterUserId,
-        )
+        try:
+            result = await self.__cutenessHelper.fetchCutenessHistory(
+                chatterUserId = chatMessage.chatterUserId,
+                twitchChannelId = chatMessage.twitchChannelId,
+            )
+        except CutenessFeatureIsDisabledException as e:
+            self.__timber.log(self.commandName, f'Failed to fetch history as the feature is disabled ({chatMessage=})', e, traceback.format_exc())
+            return ChatCommandResult.IGNORED
 
-        printOut = self.__cutenessUtils.getCutenessHistory(
+        printOut = self.__cutenessPresenter.printCutenessHistory(
             result = result,
-            chatterUserName = chatMessage.chatterUserName,
         )
 
         self.__twitchChatMessenger.send(
