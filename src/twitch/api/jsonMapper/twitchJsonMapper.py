@@ -58,6 +58,8 @@ from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
 from ..models.twitchGame import TwitchGame
 from ..models.twitchGamesResponse import TwitchGamesResponse
+from ..models.twitchGiftPaidUpgrade import TwitchGiftPaidUpgrade
+from ..models.twitchGiftedDropsSummary import TwitchGiftedDropsSummary
 from ..models.twitchHypeTrainType import TwitchHypeTrainType
 from ..models.twitchModeratorUser import TwitchModeratorUser
 from ..models.twitchModeratorsResponse import TwitchModeratorsResponse
@@ -1091,7 +1093,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseContribution(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchContribution | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1100,7 +1102,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         userId = utils.getStrFromDict(jsonResponse, 'user_id')
         userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
         userName = utils.getStrFromDict(jsonResponse, 'user_name')
-        contributionType = await self.requireContributionType(utils.getStrFromDict(jsonResponse, 'type'))
+        contributionType = await self.parseContributionType(utils.getStrFromDict(jsonResponse, 'type'))
 
         return TwitchContribution(
             total = total,
@@ -1496,6 +1498,42 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             data = data,
         )
 
+    async def parseGiftPaidUpgrade(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchGiftPaidUpgrade | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        gifterIsAnonymous = utils.getBoolFromDict(jsonResponse, 'gifter_is_anonymous')
+
+        gifterUserId: str | None = None
+        if 'gifter_user_id' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_user_id')):
+            gifterUserId = utils.getStrFromDict(jsonResponse, 'gifter_user_id')
+
+        gifterUserName: str | None = None
+        if 'gifter_user_name' in jsonResponse and utils.isValidStr(jsonResponse.get('gifter_user_name')):
+            gifterUserName = utils.getStrFromDict(jsonResponse, 'gifter_user_name')
+
+        return TwitchGiftPaidUpgrade(
+            gifterIsAnonymous = gifterIsAnonymous,
+            gifterUserId = gifterUserId,
+            gifterUserName = gifterUserName,
+        )
+
+    async def parseGiftedDropsSummary(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchGiftedDropsSummary | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        recipientCount = utils.getIntFromDict(jsonResponse, 'recipient_count')
+
+        return TwitchGiftedDropsSummary(
+            recipientCount = recipientCount,
+        )
+
     async def parseHypeTrainType(
         self,
         hypeTrainType: str | Any | None,
@@ -1584,6 +1622,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'charity_donation': return TwitchNoticeType.CHARITY_DONATION
             case 'community_sub_gift': return TwitchNoticeType.COMMUNITY_SUB_GIFT
             case 'gift_paid_upgrade':  return TwitchNoticeType.GIFT_PAID_UPGRADE
+            case 'gifted_drops_summary': return TwitchNoticeType.GIFTED_DROPS_SUMMARY
             case 'modiversary': return TwitchNoticeType.MODIVERSARY
             case 'pay_it_forward': return TwitchNoticeType.PAY_IT_FORWARD
             case 'prime_paid_upgrade': return TwitchNoticeType.PRIME_PAID_UPGRADE
@@ -1592,6 +1631,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'shared_chat_announcement': return TwitchNoticeType.SHARED_CHAT_ANNOUNCEMENT
             case 'shared_chat_community_sub_gift': return TwitchNoticeType.SHARED_CHAT_COMMUNITY_SUB_GIFT
             case 'shared_chat_gift_paid_upgrade': return TwitchNoticeType.SHARED_CHAT_GIFT_PAID_UPGRADE
+            case 'shared_chat_gifted_drops_summary': return TwitchNoticeType.SHARED_CHAT_GIFTED_DROPS_SUMMARY
             case 'shared_chat_modiversary': return TwitchNoticeType.SHARED_CHAT_MODIVERSARY
             case 'shared_chat_pay_it_forward': return TwitchNoticeType.SHARED_CHAT_PAY_IT_FORWARD
             case 'shared_chat_prime_paid_upgrade': return TwitchNoticeType.SHARED_CHAT_PRIME_PAID_UPGRADE
@@ -1750,7 +1790,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parsePollStatus(
         self,
-        pollStatus: str | Any | None
+        pollStatus: str | Any | None,
     ) -> TwitchPollStatus | None:
         if not utils.isValidStr(pollStatus):
             return None
@@ -1824,7 +1864,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parsePredictionStatus(
         self,
-        predictionStatus: str | Any | None
+        predictionStatus: str | Any | None,
     ) -> TwitchPredictionStatus | None:
         if not utils.isValidStr(predictionStatus):
             return None
@@ -2034,7 +2074,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseRewardRedemptionStatus(
         self,
-        rewardRedemptionStatus: str | Any | None
+        rewardRedemptionStatus: str | Any | None,
     ) -> TwitchRewardRedemptionStatus | None:
         if not utils.isValidStr(rewardRedemptionStatus):
             return None
@@ -2857,17 +2897,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         if result is None:
             raise ValueError(f'Unable to parse \"{connectionStatus}\" into TwitchWebsocketConnectionStatus value!')
-
-        return result
-
-    async def requireContributionType(
-        self,
-        contributionType: str | Any | None
-    ) -> TwitchContributionType:
-        result = await self.parseContributionType(contributionType)
-
-        if result is None:
-            raise ValueError(f'Unable to parse \"{contributionType}\" into TwitchContributionType value!')
 
         return result
 

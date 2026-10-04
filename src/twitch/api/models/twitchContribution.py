@@ -9,4 +9,4 @@ class TwitchContribution:
     userId: str
     userLogin: str
     userName: str
-    contributionType: TwitchContributionType
+    contributionType: TwitchContributionType | None
