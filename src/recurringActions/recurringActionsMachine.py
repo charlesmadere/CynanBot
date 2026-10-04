@@ -23,7 +23,8 @@ from .mostRecentRecurringActionRepositoryInterface import MostRecentRecurringAct
 from .recurringActionsEventListener import RecurringActionsEventListener
 from .recurringActionsMachineInterface import RecurringActionsMachineInterface
 from .recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
-from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
+from ..cuteness.exceptions import CutenessFeatureIsDisabledException
+from ..cuteness.helpers.cutenessHelperInterface import CutenessHelperInterface
 from ..language.wordOfTheDay.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
 from ..location.exceptions import NoSuchLocationException
 from ..location.locationsRepositoryInterface import LocationsRepositoryInterface
@@ -47,7 +48,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        cutenessRepository: CutenessRepositoryInterface | None,
+        cutenessHelper: CutenessHelperInterface | None,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         locationsRepository: LocationsRepositoryInterface,
         mostRecentRecurringActionRepository: MostRecentRecurringActionRepositoryInterface,
@@ -69,8 +70,8 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif cutenessRepository is not None and not isinstance(cutenessRepository, CutenessRepositoryInterface):
-            raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif cutenessHelper is not None and not isinstance(cutenessHelper, CutenessHelperInterface):
+            raise TypeError(f'cutenessHelper argument is malformed: \"{cutenessHelper}\"')
         elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif not isinstance(locationsRepository, LocationsRepositoryInterface):
@@ -117,7 +118,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
-        self.__cutenessRepository: Final[CutenessRepositoryInterface | None] = cutenessRepository
+        self.__cutenessHelper: Final[CutenessHelperInterface | None] = cutenessHelper
         self.__isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
         self.__locationsRepository: Final[LocationsRepositoryInterface] = locationsRepository
         self.__mostRecentRecurringActionsRepository: Final[MostRecentRecurringActionRepositoryInterface] = mostRecentRecurringActionRepository
@@ -204,7 +205,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
                 else:
                     minutesBetweenInt = action.minutesBetween
 
-                    if not utils.isValidInt(minutesBetweenInt):
+                    if minutesBetweenInt is None:
                         minutesBetweenInt = action.actionType.defaultRecurringActionTimingMinutes
 
                     minutesBetween = timedelta(minutes = minutesBetweenInt)
@@ -219,13 +220,16 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         user: UserInterface,
         action: CutenessRecurringAction,
     ) -> bool:
-        if self.__cutenessRepository is None:
+        if self.__cutenessHelper is None:
             return False
 
-        leaderboard = await self.__cutenessRepository.fetchCutenessLeaderboard(
-            twitchChannel = user.handle,
-            twitchChannelId = action.twitchChannelId,
-        )
+        try:
+            leaderboard = await self.__cutenessHelper.fetchCutenessLeaderboard(
+                twitchChannelId = action.twitchChannelId,
+            )
+        except CutenessFeatureIsDisabledException as e:
+            self.__timber.log('RecurringActionsMachine', f'Cuteness feature is disabled ({user=}) ({action=})', e, traceback.format_exc())
+            return False
 
         await self.__submitEvent(CutenessRecurringEvent(
             leaderboard = leaderboard,
@@ -386,7 +390,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             )
 
             if not utils.isValidStr(twitchChannelId):
-                self.__timber.log('RecurringActionsMachine', f'Unable to find Twitch user ID for \"{user.handle}\" when refreshing recurring actions')
+                self.__timber.log('RecurringActionsMachine', f'Unable to find Twitch user ID when refreshing recurring actions ({twitchChannelId=}) ({user=})')
                 continue
 
             action = await self.__findDueRecurringAction(

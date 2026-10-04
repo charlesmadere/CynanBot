@@ -1,16 +1,24 @@
 import locale
 from dataclasses import dataclass
 
-from ...cuteness.incrementedCutenessResult import IncrementedCutenessResult
+from ...cuteness.models.preparedIncrementedCutenessResult import PreparedIncrementedCutenessResult
+from ...twitch.localModels.twitchUserInterface import TwitchUserInterface
 
 
 @dataclass(frozen = True, slots = True)
-class ToxicTriviaPunishment:
-    cutenessResult: IncrementedCutenessResult
+class ToxicTriviaPunishment(TwitchUserInterface):
     numberOfPunishments: int
     punishedByPoints: int
-    userId: str
-    userName: str
+    cutenessResult: PreparedIncrementedCutenessResult
+
+    def getUserId(self) -> str:
+        return self.cutenessResult.getUserId()
+
+    def getUserLogin(self) -> str:
+        return self.cutenessResult.getUserLogin()
+
+    def getUserName(self) -> str:
+        return self.cutenessResult.getUserName()
 
     @property
     def numberOfPunishmentsStr(self) -> str:

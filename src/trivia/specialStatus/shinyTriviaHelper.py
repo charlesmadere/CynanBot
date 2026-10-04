@@ -5,7 +5,7 @@ from frozendict import frozendict
 
 from .shinyTriviaOccurencesRepositoryInterface import ShinyTriviaOccurencesRepositoryInterface
 from ..settings.triviaSettingsInterface import TriviaSettingsInterface
-from ...cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
+from ...cuteness.repositories.cutenessRepositoryInterface import CutenessRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.randomUtilsInterface import RandomUtilsInterface
@@ -74,7 +74,6 @@ class ShinyTriviaHelper:
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         cutenessLeaderboard = await self.__cutenessRepository.fetchCutenessLeaderboard(
-            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
         )
 
@@ -82,7 +81,7 @@ class ShinyTriviaHelper:
             return None
 
         for entry in cutenessLeaderboard.entries:
-            if entry.userId == userId:
+            if entry.chatterUserId == userId:
                 return entry.rank
 
         return None

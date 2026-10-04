@@ -21,6 +21,10 @@ class PreparedCutenessResult(CutenessEntry, TwitchUserInterface):
         return self.cutenessResult.cutenessDate
 
     @property
+    def cuteness(self) -> int | None:
+        return self.cutenessResult.cuteness
+
+    @property
     def cutenessStr(self) -> str:
         return self.cutenessResult.cutenessStr
 

@@ -7,7 +7,7 @@ from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..score.triviaScoreResult import TriviaScoreResult
 from ..specialStatus.specialTriviaStatus import SpecialTriviaStatus
 from ..specialStatus.toxicTriviaPunishmentResult import ToxicTriviaPunishmentResult
-from ...cuteness.incrementedCutenessResult import IncrementedCutenessResult
+from ...cuteness.models.preparedIncrementedCutenessResult import PreparedIncrementedCutenessResult
 from ...misc import utils as utils
 
 
@@ -16,11 +16,11 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
     def __init__(
         self,
         triviaQuestion: AbsTriviaQuestion,
-        cutenessResult: IncrementedCutenessResult,
         pointsForWinning: int,
         remainingQueueSize: int,
-        toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None,
+        cutenessResult: PreparedIncrementedCutenessResult,
         specialTriviaStatus: SpecialTriviaStatus | None,
+        toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None,
         actionId: str,
         answer: str,
         celebratoryTwitchEmote: str | None,
@@ -41,8 +41,6 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif not isinstance(cutenessResult, IncrementedCutenessResult):
-            raise TypeError(f'cutenessResult argument is malformed: \"{cutenessResult}\"')
         elif not utils.isValidInt(pointsForWinning):
             raise TypeError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
         elif pointsForWinning < 1 or pointsForWinning > utils.getIntMaxSafeSize():
@@ -51,10 +49,12 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
             raise TypeError(f'remainingQueueSize argument is malformed: \"{remainingQueueSize}\"')
         elif remainingQueueSize < 0 or remainingQueueSize > utils.getIntMaxSafeSize():
             raise ValueError(f'remainingQueueSize argument is out of bounds: {remainingQueueSize}')
-        elif toxicTriviaPunishmentResult is not None and not isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult):
-            raise TypeError(f'toxicTriviaPunishmentResult argument is out of bounds: {toxicTriviaPunishmentResult}')
+        elif not isinstance(cutenessResult, PreparedIncrementedCutenessResult):
+            raise TypeError(f'cutenessResult argument is malformed: \"{cutenessResult}\"')
         elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
             raise TypeError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
+        elif toxicTriviaPunishmentResult is not None and not isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult):
+            raise TypeError(f'toxicTriviaPunishmentResult argument is out of bounds: {toxicTriviaPunishmentResult}')
         elif not utils.isValidStr(answer):
             raise TypeError(f'answer argument is malformed: \"{answer}\"')
         elif celebratoryTwitchEmote is not None and not isinstance(celebratoryTwitchEmote, str):
@@ -77,11 +77,11 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
             raise TypeError(f'triviaScoreResult argument is malformed: \"{triviaScoreResult}\"')
 
         self.__triviaQuestion: Final[AbsTriviaQuestion] = triviaQuestion
-        self.__cutenessResult: Final[IncrementedCutenessResult] = cutenessResult
         self.__pointsForWinning: Final[int] = pointsForWinning
         self.__remainingQueueSize: Final[int] = remainingQueueSize
-        self.__toxicTriviaPunishmentResult: Final[ToxicTriviaPunishmentResult | None] = toxicTriviaPunishmentResult
+        self.__cutenessResult: Final[PreparedIncrementedCutenessResult] = cutenessResult
         self.__specialTriviaStatus: Final[SpecialTriviaStatus | None] = specialTriviaStatus
+        self.__toxicTriviaPunishmentResult: Final[ToxicTriviaPunishmentResult | None] = toxicTriviaPunishmentResult
         self.__answer: Final[str] = answer
         self.__celebratoryTwitchEmote: Final[str | None] = celebratoryTwitchEmote
         self.__emote: Final[str] = emote
@@ -102,7 +102,7 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         return self.__celebratoryTwitchEmote
 
     @property
-    def cutenessResult(self) -> IncrementedCutenessResult:
+    def cutenessResult(self) -> PreparedIncrementedCutenessResult:
         return self.__cutenessResult
 
     @property

@@ -57,12 +57,11 @@ from .triviaExceptions import (TooManyTriviaFetchAttemptsException,
 from .triviaGameMachineInterface import TriviaGameMachineInterface
 from .triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from .triviaRepositories.triviaRepositoryInterface import TriviaRepositoryInterface
-from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
+from ..cuteness.helpers.cutenessHelperInterface import CutenessHelperInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..timber.timberInterface import TimberInterface
-from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
 
@@ -71,7 +70,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
-        cutenessRepository: CutenessRepositoryInterface,
+        cutenessHelper: CutenessHelperInterface,
         queuedTriviaGameStore: QueuedTriviaGameStoreInterface,
         shinyTriviaHelper: ShinyTriviaHelper,
         superTriviaCooldownHelper: SuperTriviaCooldownHelperInterface,
@@ -87,15 +86,14 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         triviaScoreRepository: TriviaScoreRepositoryInterface,
         triviaSettings: TriviaSettingsInterface,
         triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface,
-        twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         sleepTimeSeconds: float = 0.5,
         queueTimeoutSeconds: int = 3,
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(cutenessRepository, CutenessRepositoryInterface):
-            raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif not isinstance(cutenessHelper, CutenessHelperInterface):
+            raise TypeError(f'cutenessHelper argument is malformed: \"{cutenessHelper}\"')
         elif not isinstance(queuedTriviaGameStore, QueuedTriviaGameStoreInterface):
             raise TypeError(f'queuedTriviaGameStore argument is malformed: \"{queuedTriviaGameStore}\"')
         elif not isinstance(shinyTriviaHelper, ShinyTriviaHelper):
@@ -126,8 +124,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not isinstance(triviaTwitchEmoteHelper, TriviaTwitchEmoteHelperInterface):
             raise TypeError(f'triviaTwitchEmoteHelper argument is malformed: \"{triviaTwitchEmoteHelper}\"')
-        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
-            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
             raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
@@ -140,7 +136,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
-        self.__cutenessRepository: Final[CutenessRepositoryInterface] = cutenessRepository
+        self.__cutenessHelper: Final[CutenessHelperInterface] = cutenessHelper
         self.__queuedTriviaGameStore: Final[QueuedTriviaGameStoreInterface] = queuedTriviaGameStore
         self.__shinyTriviaHelper: Final[ShinyTriviaHelper] = shinyTriviaHelper
         self.__superTriviaCooldownHelper: Final[SuperTriviaCooldownHelperInterface] = superTriviaCooldownHelper
@@ -156,7 +152,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self.__triviaScoreRepository: Final[TriviaScoreRepositoryInterface] = triviaScoreRepository
         self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
         self.__triviaTwitchEmoteHelper: Final[TriviaTwitchEmoteHelperInterface] = triviaTwitchEmoteHelper
-        self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
@@ -188,10 +183,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         if action is not None:
             answeredUserIds.pop(action.userId, None)
 
-        twitchAccessToken = await self.__twitchTokensUtils.getAccessTokenByIdOrFallback(
-            twitchChannelId = state.getTwitchChannelId(),
-        )
-
         toxicTriviaPunishments: list[ToxicTriviaPunishment] = list()
         totalPointsStolen = 0
 
@@ -199,24 +190,16 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             punishedByPoints = -1 * answerCount * toxicTriviaPunishmentMultiplier * state.regularTriviaPointsForWinning
             totalPointsStolen = totalPointsStolen + abs(punishedByPoints)
 
-            userData = await self.__twitchUserIdsHelper.requireById(
-                userId = userId,
-                twitchAccessToken = twitchAccessToken,
-            )
-
-            cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
+            cutenessResult = await self.__cutenessHelper.fetchCutenessIncrementedBy(
                 incrementAmount = punishedByPoints,
-                twitchChannel = state.getTwitchChannel(),
+                chatterUserId = userId,
                 twitchChannelId = state.getTwitchChannelId(),
-                userId = userId,
             )
 
             toxicTriviaPunishments.append(ToxicTriviaPunishment(
-                cutenessResult = cutenessResult,
                 numberOfPunishments = answerCount,
                 punishedByPoints = punishedByPoints,
-                userId = userId,
-                userName = userData.userLogin,
+                cutenessResult = cutenessResult,
             ))
 
         self.__timber.log('TriviaGameMachine', f'Applied toxic trivia punishments to {len(toxicTriviaPunishments)} user(s) in \"{state.getTwitchChannel()}\" for a total punishment of {totalPointsStolen} point(s)')
@@ -225,7 +208,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             return None
 
         toxicTriviaPunishments.sort(
-            key = lambda punishment: (punishment.punishedByPoints, punishment.userName.casefold()),
+            key = lambda punishment: (punishment.punishedByPoints, punishment.getUserName().casefold()),
         )
 
         frozenToxicTriviaPunishments: FrozenList[ToxicTriviaPunishment] = FrozenList(toxicTriviaPunishments)
@@ -404,11 +387,10 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 userName = action.userName,
             )
 
-        cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
+        cutenessResult = await self.__cutenessHelper.fetchCutenessIncrementedBy(
             incrementAmount = state.pointsForWinning,
-            twitchChannel = state.getTwitchChannel(),
+            chatterUserId = action.userId,
             twitchChannelId = state.getTwitchChannelId(),
-            userId = action.userId,
         )
 
         triviaScoreResult = await self.__triviaScoreRepository.incrementTriviaWins(
@@ -524,11 +506,10 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
                 pointsForWinning = pointsForWinning + toxicTriviaPunishmentResult.totalPointsStolen
 
-        cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
+        cutenessResult = await self.__cutenessHelper.fetchCutenessIncrementedBy(
             incrementAmount = pointsForWinning,
-            twitchChannel = state.getTwitchChannel(),
+            chatterUserId = action.userId,
             twitchChannelId = state.getTwitchChannelId(),
-            userId = action.userId,
         )
 
         remainingQueueSize = await self.__queuedTriviaGameStore.getQueuedSuperGamesSize(
@@ -545,11 +526,11 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
         await self.__submitEvent(CorrectSuperAnswerTriviaEvent(
             triviaQuestion = state.triviaQuestion,
-            cutenessResult = cutenessResult,
             pointsForWinning = pointsForWinning,
             remainingQueueSize = remainingQueueSize,
-            toxicTriviaPunishmentResult = toxicTriviaPunishmentResult,
+            cutenessResult = cutenessResult,
             specialTriviaStatus = state.specialTriviaStatus,
+            toxicTriviaPunishmentResult = toxicTriviaPunishmentResult,
             actionId = action.actionId,
             answer = action.requireAnswer(),
             celebratoryTwitchEmote = celebratoryTwitchEmote,

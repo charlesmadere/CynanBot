@@ -6,7 +6,7 @@ from .triviaEventType import TriviaEventType
 from ..questions.absTriviaQuestion import AbsTriviaQuestion
 from ..score.triviaScoreResult import TriviaScoreResult
 from ..specialStatus.specialTriviaStatus import SpecialTriviaStatus
-from ...cuteness.incrementedCutenessResult import IncrementedCutenessResult
+from ...cuteness.models.preparedIncrementedCutenessResult import PreparedIncrementedCutenessResult
 from ...misc import utils as utils
 
 
@@ -15,8 +15,8 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
     def __init__(
         self,
         triviaQuestion: AbsTriviaQuestion,
-        cutenessResult: IncrementedCutenessResult,
         pointsForWinning: int,
+        cutenessResult: PreparedIncrementedCutenessResult,
         specialTriviaStatus: SpecialTriviaStatus | None,
         actionId: str,
         answer: str,
@@ -38,12 +38,12 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif not isinstance(cutenessResult, IncrementedCutenessResult):
-            raise TypeError(f'cutenessResult argument is malformed: \"{cutenessResult}\"')
         elif not utils.isValidInt(pointsForWinning):
             raise TypeError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
         elif pointsForWinning < 1 or pointsForWinning > utils.getIntMaxSafeSize():
             raise ValueError(f'pointsForWinning argument is out of bounds: {pointsForWinning}')
+        elif not isinstance(cutenessResult, PreparedIncrementedCutenessResult):
+            raise TypeError(f'cutenessResult argument is malformed: \"{cutenessResult}\"')
         elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
             raise TypeError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not utils.isValidStr(answer):
@@ -68,8 +68,8 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
             raise TypeError(f'triviaScoreResult argument is malformed: \"{triviaScoreResult}\"')
 
         self.__triviaQuestion: Final[AbsTriviaQuestion] = triviaQuestion
-        self.__cutenessResult: Final[IncrementedCutenessResult] = cutenessResult
         self.__pointsForWinning: Final[int] = pointsForWinning
+        self.__cutenessResult: Final[PreparedIncrementedCutenessResult] = cutenessResult
         self.__specialTriviaStatus: Final[SpecialTriviaStatus | None] = specialTriviaStatus
         self.__answer: Final[str] = answer
         self.__celebratoryTwitchEmote: Final[str | None] = celebratoryTwitchEmote
@@ -77,7 +77,7 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
         self.__gameId: Final[str] = gameId
         self.__twitchChannel: Final[str] = twitchChannel
         self.__twitchChannelId: Final[str] = twitchChannelId
-        self.__twitchChatMessageId: Final[str] = twitchChatMessageId
+        self.__twitchChatMessageId: Final[str | None] = twitchChatMessageId
         self.__userId: Final[str] = userId
         self.__userName: Final[str] = userName
         self.__triviaScoreResult: Final[TriviaScoreResult] = triviaScoreResult
@@ -91,7 +91,7 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
         return self.__celebratoryTwitchEmote
 
     @property
-    def cutenessResult(self) -> IncrementedCutenessResult:
+    def cutenessResult(self) -> PreparedIncrementedCutenessResult:
         return self.__cutenessResult
 
     @property
@@ -141,7 +141,7 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
         return self.__twitchChannelId
 
     @property
-    def twitchChatMessageId(self) -> str:
+    def twitchChatMessageId(self) -> str | None:
         return self.__twitchChatMessageId
 
     @property
