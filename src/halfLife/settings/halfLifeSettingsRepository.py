@@ -19,7 +19,7 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
             HalfLifeVoice.BARNEY: 32,
             HalfLifeVoice.INTERCOM: 20,
             HalfLifeVoice.SCIENTIST: 20,
-            HalfLifeVoice.SOLDIER: 12,
+            HalfLifeVoice.SOLDIER: 10,
         }),
         defaultVoice: HalfLifeVoice = HalfLifeVoice.ALL,
     ):
