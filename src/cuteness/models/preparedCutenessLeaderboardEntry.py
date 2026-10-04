@@ -38,5 +38,13 @@ class PreparedCutenessLeaderboardEntry(CutenessEntry, TwitchUserInterface):
         return self.chatterUserName
 
     @property
+    def rank(self) -> int:
+        return self.cutenessLeaderboardEntry.rank
+
+    @property
+    def rankStr(self) -> str:
+        return self.cutenessLeaderboardEntry.rankStr
+
+    @property
     def twitchChannelId(self) -> str:
         return self.getTwitchChannelId()

@@ -336,8 +336,8 @@ class TriviaEventHandler(TriviaEventListener):
         )
 
         toxicTriviaPunishmentPrompt = await self.__triviaUtils.getToxicTriviaPunishmentMessage(
-            toxicTriviaPunishmentResult = event.toxicTriviaPunishmentResult,
             emote = event.emote,
+            toxicTriviaPunishmentResult = event.toxicTriviaPunishmentResult,
             twitchUser = twitchUser,
         )
 
@@ -375,8 +375,8 @@ class TriviaEventHandler(TriviaEventListener):
         )
 
         toxicTriviaPunishmentPrompt = await self.__triviaUtils.getToxicTriviaPunishmentMessage(
-            toxicTriviaPunishmentResult = event.toxicTriviaPunishmentResult,
             emote = event.emote,
+            toxicTriviaPunishmentResult = event.toxicTriviaPunishmentResult,
             twitchUser = twitchUser,
         )
 

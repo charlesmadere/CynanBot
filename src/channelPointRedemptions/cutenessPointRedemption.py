@@ -1,8 +1,10 @@
+import traceback
 from typing import Final
 
 from .absChannelPointsRedemption import AbsChannelPointRedemption
 from .pointsRedemptionResult import PointsRedemptionResult
-from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
+from ..cuteness.exceptions import CutenessFeatureIsDisabledException
+from ..cuteness.helpers.cutenessHelperInterface import CutenessHelperInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChannelPointsRedemption import TwitchChannelPointsRedemption
@@ -13,18 +15,18 @@ class CutenessPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
-        cutenessRepository: CutenessRepositoryInterface,
+        cutenessHelper: CutenessHelperInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
-        if not isinstance(cutenessRepository, CutenessRepositoryInterface):
-            raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        if not isinstance(cutenessHelper, CutenessHelperInterface):
+            raise TypeError(f'cutenessHelper argument is malformed: \"{cutenessHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
-        self.__cutenessRepository: Final[CutenessRepositoryInterface] = cutenessRepository
+        self.__cutenessHelper: Final[CutenessHelperInterface] = cutenessHelper
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
@@ -44,14 +46,17 @@ class CutenessPointRedemption(AbsChannelPointRedemption):
         if cutenessBoosterPack is None:
             return PointsRedemptionResult.IGNORED
 
-        await self.__cutenessRepository.fetchCutenessIncrementedBy(
-            incrementAmount = cutenessBoosterPack.amount,
-            twitchChannel = pointsRedemption.twitchChannel,
-            twitchChannelId = pointsRedemption.twitchChannelId,
-            userId = pointsRedemption.redemptionUserId,
-        )
+        try:
+            result = await self.__cutenessHelper.fetchCutenessIncrementedBy(
+                incrementAmount = cutenessBoosterPack.amount,
+                chatterUserId = pointsRedemption.redemptionUserId,
+                twitchChannelId = pointsRedemption.twitchChannelId,
+            )
+        except CutenessFeatureIsDisabledException as e:
+            self.__timber.log(self.pointsRedemptionName, f'Failed to increase cuteness as the feature is disabled ({cutenessBoosterPack=}) ({pointsRedemption=})', e, traceback.format_exc())
+            return PointsRedemptionResult.IGNORED
 
-        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({cutenessBoosterPack=}) ({pointsRedemption=})')
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({result=}) ({cutenessBoosterPack=}) ({pointsRedemption=})')
         return PointsRedemptionResult.CONSUMED
 
     @property

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from ..models.preparedCutenessChampionsResult import PreparedCutenessChampionsResult
+from ..models.preparedCutenessHistoryResult import PreparedCutenessHistoryResult
 from ..models.preparedCutenessLeaderboardHistoryResult import PreparedCutenessLeaderboardHistoryResult
 from ..models.preparedCutenessLeaderboardResult import PreparedCutenessLeaderboardResult
 from ..models.preparedCutenessResult import PreparedCutenessResult
@@ -22,6 +23,14 @@ class CutenessHelperInterface(ABC):
         self,
         twitchChannelId: str,
     ) -> PreparedCutenessChampionsResult:
+        pass
+
+    @abstractmethod
+    async def fetchCutenessHistory(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str,
+    ) -> PreparedCutenessHistoryResult:
         pass
 
     @abstractmethod

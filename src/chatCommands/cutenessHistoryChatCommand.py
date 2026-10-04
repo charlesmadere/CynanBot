@@ -5,8 +5,9 @@ from typing import Collection, Final, Pattern
 
 from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
-from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
-from ..cuteness.cutenessUtilsInterface import CutenessUtilsInterface
+from ..cuteness.cutenessPresenterInterface import CutenessPresenterInterface
+from ..cuteness.helpers.cutenessHelperInterface import CutenessHelperInterface
+from ..cuteness.settings.cutenessSettingsInterface import CutenessSettingsInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
@@ -24,17 +25,20 @@ class CutenessHistoryChatCommand(AbsChatCommand):
 
     def __init__(
         self,
-        cutenessRepository: CutenessRepositoryInterface,
-        cutenessUtils: CutenessUtilsInterface,
+        cutenessHelper: CutenessHelperInterface,
+        cutenessPresenter: CutenessPresenterInterface,
+        cutenessSettings: CutenessSettingsInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
-        if not isinstance(cutenessRepository, CutenessRepositoryInterface):
-            raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif not isinstance(cutenessUtils, CutenessUtilsInterface):
-            raise TypeError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
+        if not isinstance(cutenessHelper, CutenessHelperInterface):
+            raise TypeError(f'cutenessHelper argument is malformed: \"{cutenessHelper}\"')
+        elif not isinstance(cutenessPresenter, CutenessPresenterInterface):
+            raise TypeError(f'cutenessPresenter argument is malformed: \"{cutenessPresenter}\"')
+        elif not isinstance(cutenessSettings, CutenessSettingsInterface):
+            raise TypeError(f'cutenessSettings argument is malformed: \"{cutenessSettings}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
@@ -44,8 +48,9 @@ class CutenessHistoryChatCommand(AbsChatCommand):
         elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
             raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
-        self.__cutenessRepository: Final[CutenessRepositoryInterface] = cutenessRepository
-        self.__cutenessUtils: Final[CutenessUtilsInterface] = cutenessUtils
+        self.__cutenessHelper: Final[CutenessHelperInterface] = cutenessHelper
+        self.__cutenessPresenter: Final[CutenessPresenterInterface] = cutenessPresenter
+        self.__cutenessSettings: Final[CutenessSettingsInterface] = cutenessSettings
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
@@ -68,6 +73,8 @@ class CutenessHistoryChatCommand(AbsChatCommand):
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
         if not chatMessage.twitchUser.isCutenessEnabled:
             return ChatCommandResult.IGNORED
+        elif not await self.__cutenessSettings.isEnabled():
+            return ChatCommandResult.IGNORED
 
         arguments = await self.__parseArguments(
             chatMessage = chatMessage,
@@ -84,12 +91,11 @@ class CutenessHistoryChatCommand(AbsChatCommand):
             return ChatCommandResult.CONSUMED
 
         if chatMessage.chatterUserId == arguments.chatterUserId:
-            result = await self.__cutenessRepository.fetchCutenessLeaderboardHistory(
-                twitchChannel = chatMessage.twitchChannel,
+            result = await self.__cutenessHelper.fetchCutenessLeaderboardHistory(
                 twitchChannelId = chatMessage.twitchChannelId,
             )
 
-            printOut = await self.__cutenessUtils.getCutenessLeaderboardHistory(
+            printOut = await self.__cutenessPresenter.printLeaderboardHistory(
                 result = result,
             )
 
@@ -99,15 +105,13 @@ class CutenessHistoryChatCommand(AbsChatCommand):
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
         else:
-            result = await self.__cutenessRepository.fetchCutenessHistory(
-                twitchChannel = chatMessage.twitchChannel,
+            result = await self.__cutenessHelper.fetchCutenessHistory(
+                chatterUserId = chatMessage.chatterUserId,
                 twitchChannelId = chatMessage.twitchChannelId,
-                userId = arguments.chatterUserId,
             )
 
-            printOut = self.__cutenessUtils.getCutenessHistory(
+            printOut = self.__cutenessPresenter.printCutenessHistory(
                 result = result,
-                chatterUserName = arguments.chatterUserName,
             )
 
             self.__twitchChatMessenger.send(

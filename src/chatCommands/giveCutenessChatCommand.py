@@ -5,7 +5,7 @@ from typing import Collection, Final, Pattern
 
 from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
-from ..cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
+from ..cuteness.helpers.cutenessHelperInterface import CutenessHelperInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
@@ -27,7 +27,7 @@ class GiveCutenessChatCommand(AbsChatCommand):
 
     def __init__(
         self,
-        cutenessRepository: CutenessRepositoryInterface,
+        cutenessHelper: CutenessHelperInterface,
         timber: TimberInterface,
         triviaUtils: TriviaUtilsInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
@@ -35,8 +35,8 @@ class GiveCutenessChatCommand(AbsChatCommand):
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
-        if not isinstance(cutenessRepository, CutenessRepositoryInterface):
-            raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        if not isinstance(cutenessHelper, CutenessHelperInterface):
+            raise TypeError(f'cutenessHelper argument is malformed: \"{cutenessHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
@@ -50,7 +50,7 @@ class GiveCutenessChatCommand(AbsChatCommand):
         elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
             raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
-        self.__cutenessRepository: Final[CutenessRepositoryInterface] = cutenessRepository
+        self.__cutenessHelper: Final[CutenessHelperInterface] = cutenessHelper
         self.__timber: Final[TimberInterface] = timber
         self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
@@ -93,11 +93,10 @@ class GiveCutenessChatCommand(AbsChatCommand):
             return ChatCommandResult.CONSUMED
 
         try:
-            result = await self.__cutenessRepository.fetchCutenessIncrementedBy(
+            result = await self.__cutenessHelper.fetchCutenessIncrementedBy(
                 incrementAmount = arguments.giveAmount,
-                twitchChannel = chatMessage.twitchChannel,
+                chatterUserId = arguments.chatterUserId,
                 twitchChannelId = chatMessage.twitchChannelId,
-                userId = arguments.chatterUserId,
             )
         except (OverflowError, ValueError) as e:
             self.__twitchChatMessenger.send(
