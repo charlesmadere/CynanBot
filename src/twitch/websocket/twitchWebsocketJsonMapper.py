@@ -170,6 +170,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'viewers' in eventJson and utils.isValidInt(eventJson.get('viewers')):
             viewers = utils.getIntFromDict(eventJson, 'viewers')
 
+        cooldownEndsAt: datetime | None = None
+        if 'cooldown_ends_at' in eventJson and utils.isValidStr(eventJson.get('cooldown_ends_at')):
+            cooldownEndsAt = utils.getDateTimeFromDict(eventJson, 'cooldown_ends_at')
+
         endedAt: datetime | None = None
         if 'ended_at' in eventJson and utils.isValidStr(eventJson.get('ended_at')):
             endedAt = utils.getDateTimeFromDict(eventJson, 'ended_at')
@@ -584,6 +588,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             isGift = isGift,
             isSharedTrain = isSharedTrain,
             isSourceOnly = isSourceOnly,
+            cooldownEndsAt = cooldownEndsAt,
             endedAt = endedAt,
             endsAt = endsAt,
             expiresAt = expiresAt,

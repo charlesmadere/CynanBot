@@ -46,6 +46,7 @@ class TwitchWebsocketEvent:
     isGift: bool | None = None
     isSharedTrain: bool | None = None
     isSourceOnly: bool | None = None
+    cooldownEndsAt: datetime | None = None
     endedAt: datetime | None = None
     endsAt: datetime | None = None
     expiresAt: datetime | None = None
