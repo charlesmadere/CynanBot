@@ -370,7 +370,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseContribution(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchContribution | None:
         pass
 
@@ -848,13 +848,6 @@ class TwitchJsonMapperInterface(ABC):
         self,
         connectionStatus: str | Any | None
     ) -> TwitchWebsocketConnectionStatus:
-        pass
-
-    @abstractmethod
-    async def requireContributionType(
-        self,
-        contributionType: str | Any | None
-    ) -> TwitchContributionType:
         pass
 
     @abstractmethod

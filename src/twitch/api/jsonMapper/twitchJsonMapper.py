@@ -1093,7 +1093,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseContribution(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchContribution | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -1102,7 +1102,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         userId = utils.getStrFromDict(jsonResponse, 'user_id')
         userLogin = utils.getStrFromDict(jsonResponse, 'user_login')
         userName = utils.getStrFromDict(jsonResponse, 'user_name')
-        contributionType = await self.requireContributionType(utils.getStrFromDict(jsonResponse, 'type'))
+        contributionType = await self.parseContributionType(utils.getStrFromDict(jsonResponse, 'type'))
 
         return TwitchContribution(
             total = total,
@@ -2897,17 +2897,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         if result is None:
             raise ValueError(f'Unable to parse \"{connectionStatus}\" into TwitchWebsocketConnectionStatus value!')
-
-        return result
-
-    async def requireContributionType(
-        self,
-        contributionType: str | Any | None
-    ) -> TwitchContributionType:
-        result = await self.parseContributionType(contributionType)
-
-        if result is None:
-            raise ValueError(f'Unable to parse \"{contributionType}\" into TwitchContributionType value!')
 
         return result
 
