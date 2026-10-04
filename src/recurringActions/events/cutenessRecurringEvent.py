@@ -2,13 +2,13 @@ from dataclasses import dataclass
 
 from .recurringEvent import RecurringEvent
 from .recurringEventType import RecurringEventType
-from ...cuteness.cutenessLeaderboardResult import CutenessLeaderboardResult
+from ...cuteness.models.preparedCutenessLeaderboardResult import PreparedCutenessLeaderboardResult
 from ...users.userInterface import UserInterface
 
 
 @dataclass(frozen = True, slots = True)
 class CutenessRecurringEvent(RecurringEvent):
-    leaderboard: CutenessLeaderboardResult
+    leaderboard: PreparedCutenessLeaderboardResult
     twitchChannelId: str
     twitchUser: UserInterface
 
