@@ -5,6 +5,7 @@ from ..api.models.twitchWebsocketDataBundle import TwitchWebsocketDataBundle
 from ..chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..localModels.mapper.twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
 from ..localModels.twitchHypeTrainState import TwitchHypeTrainState
+from ..localModels.twitchHypeTrainType import TwitchHypeTrainType
 from ...misc import utils as utils
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
@@ -120,12 +121,19 @@ class TwitchHypeTrainHandler(AbsTwitchHypeTrainHandler):
             return
 
         if user.isTtsEnabled:
+            ttsMessage: str
+
+            match hypeTrainData.hypeTrainType:
+                case TwitchHypeTrainType.GOLDEN_KAPPA: ttsMessage = 'A golden kappa train has begun!'
+                case TwitchHypeTrainType.REGULAR: ttsMessage = 'A hype train has begun!'
+                case TwitchHypeTrainType.TREASURE: ttsMessage = 'A treasure train has begun!'
+
             self.__streamAlertsManager.submitAlert(StreamAlert(
                 soundAlert = SoundAlert.HYPE_TRAIN,
                 twitchChannel = user.handle,
                 twitchChannelId = hypeTrainData.twitchChannelId,
                 ttsEvent = TtsEvent(
-                    message = f'A hype train has begun!',
+                    message = ttsMessage,
                     twitchChannel = user.handle,
                     twitchChannelId = hypeTrainData.twitchChannelId,
                     userId = hypeTrainData.twitchChannelId,
@@ -138,8 +146,18 @@ class TwitchHypeTrainHandler(AbsTwitchHypeTrainHandler):
                 ),
             ))
 
+        chatMessage: str
+
+        match hypeTrainData.hypeTrainType:
+            case TwitchHypeTrainType.GOLDEN_KAPPA:
+                chatMessage = f'{hypeTrainData.hypeEmoji} A golden kappa train has begun! {hypeTrainData.hypeEmoji}'
+            case TwitchHypeTrainType.REGULAR:
+                chatMessage = f'{hypeTrainData.hypeEmoji} A hype train has begun! {hypeTrainData.hypeEmoji}'
+            case TwitchHypeTrainType.TREASURE:
+                chatMessage = f'{hypeTrainData.hypeEmoji} A treasure train has begun! {hypeTrainData.hypeEmoji}'
+
         self.__twitchChatMessenger.send(
-            text = f'{hypeTrainData.hypeEmoji} A hype train has begun! {hypeTrainData.hypeEmoji}',
+            text = chatMessage,
             twitchChannelId = hypeTrainData.twitchChannelId,
         )
 
