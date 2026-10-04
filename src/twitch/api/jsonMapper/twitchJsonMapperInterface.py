@@ -54,6 +54,8 @@ from ..models.twitchFollower import TwitchFollower
 from ..models.twitchFollowersResponse import TwitchFollowersResponse
 from ..models.twitchGame import TwitchGame
 from ..models.twitchGamesResponse import TwitchGamesResponse
+from ..models.twitchGiftPaidUpgrade import TwitchGiftPaidUpgrade
+from ..models.twitchGiftedDropsSummary import TwitchGiftedDropsSummary
 from ..models.twitchHypeTrainType import TwitchHypeTrainType
 from ..models.twitchModeratorUser import TwitchModeratorUser
 from ..models.twitchModeratorsResponse import TwitchModeratorsResponse
@@ -471,6 +473,20 @@ class TwitchJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseGiftPaidUpgrade(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchGiftPaidUpgrade | None:
+        pass
+
+    @abstractmethod
+    async def parseGiftedDropsSummary(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchGiftedDropsSummary | None:
+        pass
+
+    @abstractmethod
     async def parseHypeTrainType(
         self,
         hypeTrainType: str | Any | None,
@@ -550,7 +566,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parsePollStatus(
         self,
-        pollStatus: str | Any | None
+        pollStatus: str | Any | None,
     ) -> TwitchPollStatus | None:
         pass
 
@@ -578,7 +594,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parsePredictionStatus(
         self,
-        predictionStatus: str | Any | None
+        predictionStatus: str | Any | None,
     ) -> TwitchPredictionStatus | None:
         pass
 
@@ -634,7 +650,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseRewardRedemptionStatus(
         self,
-        rewardRedemptionStatus: str | Any | None
+        rewardRedemptionStatus: str | Any | None,
     ) -> TwitchRewardRedemptionStatus | None:
         pass
 

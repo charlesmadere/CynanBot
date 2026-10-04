@@ -18,6 +18,8 @@ from ..api.models.twitchCommunitySubGift import TwitchCommunitySubGift
 from ..api.models.twitchContribution import TwitchContribution
 from ..api.models.twitchCustomPowerUp import TwitchCustomPowerUp
 from ..api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData
+from ..api.models.twitchGiftPaidUpgrade import TwitchGiftPaidUpgrade
+from ..api.models.twitchGiftedDropsSummary import TwitchGiftedDropsSummary
 from ..api.models.twitchHypeTrainType import TwitchHypeTrainType
 from ..api.models.twitchModiversary import TwitchModiversary
 from ..api.models.twitchNoticeType import TwitchNoticeType
@@ -409,6 +411,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'announcement' in eventJson:
             announcement = await self.__twitchJsonMapper.parseAnnouncement(eventJson.get('announcement'))
 
+        sharedChatAnnouncement: TwitchAnnouncement | None = None
+        if 'shared_chat_announcement' in eventJson:
+            sharedChatAnnouncement = await self.__twitchJsonMapper.parseAnnouncement(eventJson.get('shared_chat_announcement'))
+
         bitsBadgeTier: TwitchBitsBadgeTier | None = None
         if 'bits_badge_tier' in eventJson:
             bitsBadgeTier = await self.__twitchJsonMapper.parseBitsBadgeTier(eventJson.get('bits_badge_tier'))
@@ -437,6 +443,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'community_sub_gift' in eventJson:
             communitySubGift = await self.__twitchJsonMapper.parseCommunitySubGift(eventJson.get('community_sub_gift'))
 
+        sharedChatCommunitySubGift: TwitchCommunitySubGift | None = None
+        if 'shared_chat_community_sub_gift' in eventJson:
+            sharedChatCommunitySubGift = await self.__twitchJsonMapper.parseCommunitySubGift(eventJson.get('shared_chat_community_sub_gift'))
+
         customPowerUp: TwitchCustomPowerUp | None = None
         customPowerUpData: TwitchCustomPowerUpData | None = None
         if 'custom_power_up' in eventJson:
@@ -452,6 +462,22 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
                 # these exception types can be safely ignored
                 pass
 
+        giftPaidUpgrade: TwitchGiftPaidUpgrade | None = None
+        if 'gift_paid_upgrade' in eventJson:
+            giftPaidUpgrade = await self.__twitchJsonMapper.parseGiftPaidUpgrade(eventJson.get('gift_paid_upgrade'))
+
+        sharedChatGiftPaidUpgrade: TwitchGiftPaidUpgrade | None = None
+        if 'shared_chat_gift_paid_upgrade' in eventJson:
+            sharedChatGiftPaidUpgrade = await self.__twitchJsonMapper.parseGiftPaidUpgrade(eventJson.get('shared_chat_gift_paid_upgrade'))
+
+        giftedDropsSummary: TwitchGiftedDropsSummary | None = None
+        if 'gifted_drops_summary' in eventJson:
+            giftedDropsSummary = await self.__twitchJsonMapper.parseGiftedDropsSummary(eventJson.get('gifted_drops_summary'))
+
+        sharedChatGiftedDropsSummary: TwitchGiftedDropsSummary | None = None
+        if 'shared_chat_gifted_drops_summary' in eventJson:
+            sharedChatGiftedDropsSummary = await self.__twitchJsonMapper.parseGiftedDropsSummary(eventJson.get('shared_chat_gifted_drops_summary'))
+
         hypeTrainType: TwitchHypeTrainType | None = None
         if 'type' in eventJson and utils.isValidStr(eventJson.get('type')):
             hypeTrainTypeString = utils.getStrFromDict(eventJson, 'type')
@@ -461,36 +487,49 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'modiversary' in eventJson:
             modiversary = await self.__twitchJsonMapper.parseModiversary(eventJson.get('modiversary'))
 
+        sharedChatModiversary: TwitchModiversary | None = None
+        if 'shared_chat_modiversary' in eventJson:
+            sharedChatModiversary = await self.__twitchJsonMapper.parseModiversary(eventJson.get('shared_chat_modiversary'))
+
         noticeType: TwitchNoticeType | None = None
-        if 'notice_type' in eventJson and utils.isValidStr(eventJson.get('notice_type')):
-            noticeTypeString = utils.getStrFromDict(eventJson, 'notice_type')
-            noticeType = await self.__twitchJsonMapper.parseNoticeType(noticeTypeString)
+        if 'notice_type' in eventJson:
+            noticeType = await self.__twitchJsonMapper.parseNoticeType(eventJson.get('notice_type'))
 
         payItForward: TwitchPayItForward | None = None
         if 'pay_it_forward' in eventJson:
             payItForward = await self.__twitchJsonMapper.parsePayItForward(eventJson.get('pay_it_forward'))
 
+        sharedChatPayItForward: TwitchPayItForward | None = None
+        if 'shared_chat_pay_it_forward' in eventJson:
+            sharedChatPayItForward = await self.__twitchJsonMapper.parsePayItForward(eventJson.get('shared_chat_pay_it_forward'))
+
         pollStatus: TwitchPollStatus | None = None
-        if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
-            pollStatusString = utils.getStrFromDict(eventJson, 'status')
-            pollStatus = await self.__twitchJsonMapper.parsePollStatus(pollStatusString)
+        if 'status' in eventJson:
+            pollStatus = await self.__twitchJsonMapper.parsePollStatus(eventJson.get('status'))
 
         powerUp: TwitchPowerUp | None = None
         if 'power_up' in eventJson:
             powerUp = await self.__twitchJsonMapper.parsePowerUp(eventJson.get('power_up'))
 
         predictionStatus: TwitchPredictionStatus | None = None
-        if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
-            predictionStatusString = utils.getStrFromDict(eventJson, 'status')
-            predictionStatus = await self.__twitchJsonMapper.parsePredictionStatus(predictionStatusString)
+        if 'status' in eventJson:
+            predictionStatus = await self.__twitchJsonMapper.parsePredictionStatus(eventJson.get('status'))
 
         primePaidUpgrade: TwitchPrimePaidUpgrade | None = None
         if 'prime_paid_upgrade' in eventJson:
             primePaidUpgrade = await self.__twitchJsonMapper.parsePrimePaidUpgrade(eventJson.get('prime_paid_upgrade'))
 
+        sharedChatPrimePaidUpgrade: TwitchPrimePaidUpgrade | None = None
+        if 'shared_chat_prime_paid_upgrade' in eventJson:
+            sharedChatPrimePaidUpgrade = await self.__twitchJsonMapper.parsePrimePaidUpgrade(eventJson.get('shared_chat_prime_paid_upgrade'))
+
         raid: TwitchRaid | None = None
         if 'raid' in eventJson:
             raid = await self.__twitchJsonMapper.parseRaid(eventJson.get('raid'))
+
+        sharedChatRaid: TwitchRaid | None = None
+        if 'shared_chat_raid' in eventJson:
+            sharedChatRaid = await self.__twitchJsonMapper.parseRaid(eventJson.get('shared_chat_raid'))
 
         reply: TwitchReply | None = None
         if 'reply' in eventJson:
@@ -499,6 +538,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         resub: TwitchResub | None = None
         if 'resub' in eventJson:
             resub = await self.__twitchJsonMapper.parseResub(eventJson.get('resub'))
+
+        sharedChatResub: TwitchResub | None = None
+        if 'shared_chat_resub' in eventJson:
+            sharedChatResub = await self.__twitchJsonMapper.parseResub(eventJson.get('shared_chat_resub'))
 
         resubscriptionMessage: TwitchResubscriptionMessage | None = None
         if 'message' in eventJson:
@@ -509,17 +552,24 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             reward = await self.__twitchJsonMapper.parseReward(eventJson.get('reward'))
 
         rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
-        if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
-            rewardRedemptionStatusString = utils.getStrFromDict(eventJson, 'status')
-            rewardRedemptionStatus = await self.__twitchJsonMapper.parseRewardRedemptionStatus(rewardRedemptionStatusString)
+        if 'status' in eventJson:
+            rewardRedemptionStatus = await self.__twitchJsonMapper.parseRewardRedemptionStatus(eventJson.get('status'))
 
         sub: TwitchSub | None = None
         if 'sub' in eventJson:
             sub = await self.__twitchJsonMapper.parseSub(eventJson.get('sub'))
 
+        sharedChatSub: TwitchSub | None = None
+        if 'shared_chat_sub' in eventJson:
+            sharedChatSub = await self.__twitchJsonMapper.parseSub(eventJson.get('shared_chat_sub'))
+
         subGift: TwitchSubGift | None = None
         if 'sub_gift' in eventJson:
             subGift = await self.__twitchJsonMapper.parseSubGift(eventJson.get('sub_gift'))
+
+        sharedChatSubGift: TwitchSubGift | None = None
+        if 'shared_chat_sub_gift' in eventJson:
+            sharedChatSubGift = await self.__twitchJsonMapper.parseSubGift(eventJson.get('shared_chat_sub_gift'))
 
         tier: TwitchSubscriberTier | None = None
         if 'tier' in eventJson and utils.isValidStr(eventJson.get('tier')):
@@ -591,6 +641,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userName = userName,
             winningOutcomeId = winningOutcomeId,
             announcement = announcement,
+            sharedChatAnnouncement = sharedChatAnnouncement,
             bitsBadgeTier = bitsBadgeTier,
             bitsUseType = bitsUseType,
             channelPointsVoting = channelPointsVoting,
@@ -598,24 +649,36 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             chatMessageType = chatMessageType,
             cheer = cheer,
             communitySubGift = communitySubGift,
+            sharedChatCommunitySubGift = sharedChatCommunitySubGift,
             customPowerUp = customPowerUp,
             customPowerUpData = customPowerUpData,
+            giftPaidUpgrade = giftPaidUpgrade,
+            sharedChatGiftPaidUpgrade = sharedChatGiftPaidUpgrade,
+            giftedDropsSummary = giftedDropsSummary,
+            sharedChatGiftedDropsSummary = sharedChatGiftedDropsSummary,
             hypeTrainType = hypeTrainType,
             modiversary = modiversary,
+            sharedChatModiversary = sharedChatModiversary,
             noticeType = noticeType,
             payItForward = payItForward,
+            sharedChatPayItForward = sharedChatPayItForward,
             pollStatus = pollStatus,
             powerUp = powerUp,
             predictionStatus = predictionStatus,
             primePaidUpgrade = primePaidUpgrade,
+            sharedChatPrimePaidUpgrade = sharedChatPrimePaidUpgrade,
             raid = raid,
+            sharedChatRaid = sharedChatRaid,
             reply = reply,
             resub = resub,
+            sharedChatResub = sharedChatResub,
             resubscriptionMessage = resubscriptionMessage,
             reward = reward,
             rewardRedemptionStatus = rewardRedemptionStatus,
             sub = sub,
+            sharedChatSub = sharedChatSub,
             subGift = subGift,
+            sharedChatSubGift = sharedChatSubGift,
             tier = tier,
             watchStreak = watchStreak,
         )

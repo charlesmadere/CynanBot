@@ -35,6 +35,7 @@ from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from src.twitch.api.models.twitchEmoteImageScale import TwitchEmoteImageScale
 from src.twitch.api.models.twitchEmoteType import TwitchEmoteType
 from src.twitch.api.models.twitchEventSubRequest import TwitchEventSubRequest
+from src.twitch.api.models.twitchGiftedDropsSummary import TwitchGiftedDropsSummary
 from src.twitch.api.models.twitchHypeTrainType import TwitchHypeTrainType
 from src.twitch.api.models.twitchModeratorUser import TwitchModeratorUser
 from src.twitch.api.models.twitchModiversary import TwitchModiversary
@@ -1222,6 +1223,39 @@ class TestTwitchJsonMapper:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseGiftPaidUpgrade_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseGiftPaidUpgrade(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseGiftPaidUpgrade_withNone(self):
+        result = await self.jsonMapper.parseGiftPaidUpgrade(None)
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseGiftedDropsSummary(self):
+        giftedDropsSummary = TwitchGiftedDropsSummary(
+            recipientCount = 5,
+        )
+
+        result = await self.jsonMapper.parseGiftedDropsSummary({
+            'recipient_count': giftedDropsSummary.recipientCount,
+        })
+
+        assert isinstance(result, TwitchGiftedDropsSummary)
+        assert result == giftedDropsSummary
+
+    @pytest.mark.asyncio
+    async def test_parseGiftedDropsSummary_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseGiftedDropsSummary(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseGiftedDropsSummary_withNone(self):
+        result = await self.jsonMapper.parseGiftedDropsSummary(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseHypeTrainType_withEmptyString(self):
         result = await self.jsonMapper.parseHypeTrainType('')
         assert result is None
@@ -1324,14 +1358,19 @@ class TestTwitchJsonMapper:
         assert result is TwitchNoticeType.COMMUNITY_SUB_GIFT
 
     @pytest.mark.asyncio
+    async def test_parseNoticeType_withEmptyString(self):
+        result = await self.jsonMapper.parseNoticeType('')
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseNoticeType_withGiftPaidUpgradeString(self):
         result = await self.jsonMapper.parseNoticeType('gift_paid_upgrade')
         assert result is TwitchNoticeType.GIFT_PAID_UPGRADE
 
     @pytest.mark.asyncio
-    async def test_parseNoticeType_withEmptyString(self):
-        result = await self.jsonMapper.parseNoticeType('')
-        assert result is None
+    async def test_parseNoticeType_withGiftedDropsSummaryString(self):
+        result = await self.jsonMapper.parseNoticeType('gifted_drops_summary')
+        assert result is TwitchNoticeType.GIFTED_DROPS_SUMMARY
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withModiversaryString(self):
@@ -1377,6 +1416,11 @@ class TestTwitchJsonMapper:
     async def test_parseNoticeType_withSharedChatGiftPaidUpgradeString(self):
         result = await self.jsonMapper.parseNoticeType('shared_chat_gift_paid_upgrade')
         assert result is TwitchNoticeType.SHARED_CHAT_GIFT_PAID_UPGRADE
+
+    @pytest.mark.asyncio
+    async def test_parseNoticeType_withSharedChatGiftedDropsSummaryString(self):
+        result = await self.jsonMapper.parseNoticeType('shared_chat_gifted_drops_summary')
+        assert result is TwitchNoticeType.SHARED_CHAT_GIFTED_DROPS_SUMMARY
 
     @pytest.mark.asyncio
     async def test_parseNoticeType_withSharedChatModiversaryString(self):
@@ -2600,11 +2644,6 @@ class TestTwitchJsonMapper:
         assert result is TwitchNoticeType.COMMUNITY_SUB_GIFT
 
     @pytest.mark.asyncio
-    async def test_requireNoticeType_withGiftPaidUpgradeString(self):
-        result = await self.jsonMapper.requireNoticeType('gift_paid_upgrade')
-        assert result is TwitchNoticeType.GIFT_PAID_UPGRADE
-
-    @pytest.mark.asyncio
     async def test_requireNoticeType_withEmptyString(self):
         result: TwitchNoticeType | None = None
 
@@ -2612,6 +2651,21 @@ class TestTwitchJsonMapper:
             result = await self.jsonMapper.requireNoticeType('')
 
         assert result is None
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withGiftPaidUpgradeString(self):
+        result = await self.jsonMapper.requireNoticeType('gift_paid_upgrade')
+        assert result is TwitchNoticeType.GIFT_PAID_UPGRADE
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withGiftedDropsSummaryString(self):
+        result = await self.jsonMapper.requireNoticeType('gifted_drops_summary')
+        assert result is TwitchNoticeType.GIFTED_DROPS_SUMMARY
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withModiversaryString(self):
+        result = await self.jsonMapper.requireNoticeType('modiversary')
+        assert result is TwitchNoticeType.MODIVERSARY
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withNone(self):
@@ -2643,6 +2697,61 @@ class TestTwitchJsonMapper:
         assert result is TwitchNoticeType.RE_SUB
 
     @pytest.mark.asyncio
+    async def test_requireNoticeType_withSharedChatAnnouncementString(self):
+        result = await self.jsonMapper.requireNoticeType('shared_chat_announcement')
+        assert result is TwitchNoticeType.SHARED_CHAT_ANNOUNCEMENT
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withSharedChatCommunitySubGiftString(self):
+        result = await self.jsonMapper.requireNoticeType('shared_chat_community_sub_gift')
+        assert result is TwitchNoticeType.SHARED_CHAT_COMMUNITY_SUB_GIFT
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withSharedChatGiftPaidUpgradeString(self):
+        result = await self.jsonMapper.requireNoticeType('shared_chat_gift_paid_upgrade')
+        assert result is TwitchNoticeType.SHARED_CHAT_GIFT_PAID_UPGRADE
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withSharedChatGiftedDropsSummaryString(self):
+        result = await self.jsonMapper.requireNoticeType('shared_chat_gifted_drops_summary')
+        assert result is TwitchNoticeType.SHARED_CHAT_GIFTED_DROPS_SUMMARY
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withSharedChatModiversaryString(self):
+        result = await self.jsonMapper.requireNoticeType('shared_chat_modiversary')
+        assert result is TwitchNoticeType.SHARED_CHAT_MODIVERSARY
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withSharedChatPayItForwardString(self):
+        result = await self.jsonMapper.requireNoticeType('shared_chat_pay_it_forward')
+        assert result is TwitchNoticeType.SHARED_CHAT_PAY_IT_FORWARD
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withSharedChatPrimePaidUpgradeString(self):
+        result = await self.jsonMapper.requireNoticeType('shared_chat_prime_paid_upgrade')
+        assert result is TwitchNoticeType.SHARED_CHAT_PRIME_PAID_UPGRADE
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withSharedChatRaidString(self):
+        result = await self.jsonMapper.requireNoticeType('shared_chat_raid')
+        assert result is TwitchNoticeType.SHARED_CHAT_RAID
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withSharedChatResubString(self):
+        result = await self.jsonMapper.requireNoticeType('shared_chat_resub')
+        assert result is TwitchNoticeType.SHARED_CHAT_RE_SUB
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withSharedChatSubString(self):
+        result = await self.jsonMapper.requireNoticeType('shared_chat_sub')
+        assert result is TwitchNoticeType.SHARED_CHAT_SUB
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withSharedChatSubGiftString(self):
+        result = await self.jsonMapper.requireNoticeType('shared_chat_sub_gift')
+        assert result is TwitchNoticeType.SHARED_CHAT_SUB_GIFT
+
+    @pytest.mark.asyncio
     async def test_requireNoticeType_withSubString(self):
         result = await self.jsonMapper.requireNoticeType('sub')
         assert result is TwitchNoticeType.SUB
@@ -2653,14 +2762,19 @@ class TestTwitchJsonMapper:
         assert result is TwitchNoticeType.SUB_GIFT
 
     @pytest.mark.asyncio
-    async def test_requireNoticeType_withWatchStreakString(self):
-        result = await self.jsonMapper.requireNoticeType('watch_streak')
-        assert result is TwitchNoticeType.WATCH_STREAK
+    async def test_requireNoticeType_withUnknownString(self):
+        result = await self.jsonMapper.requireNoticeType('unknown')
+        assert result is TwitchNoticeType.UNKNOWN
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withUnraidString(self):
         result = await self.jsonMapper.requireNoticeType('unraid')
         assert result is TwitchNoticeType.UN_RAID
+
+    @pytest.mark.asyncio
+    async def test_requireNoticeType_withWatchStreakString(self):
+        result = await self.jsonMapper.requireNoticeType('watch_streak')
+        assert result is TwitchNoticeType.WATCH_STREAK
 
     @pytest.mark.asyncio
     async def test_requireNoticeType_withWhitespaceString(self):

@@ -15,6 +15,8 @@ from .twitchCommunitySubGift import TwitchCommunitySubGift
 from .twitchContribution import TwitchContribution
 from .twitchCustomPowerUp import TwitchCustomPowerUp
 from .twitchCustomPowerUpData import TwitchCustomPowerUpData
+from .twitchGiftPaidUpgrade import TwitchGiftPaidUpgrade
+from .twitchGiftedDropsSummary import TwitchGiftedDropsSummary
 from .twitchHypeTrainType import TwitchHypeTrainType
 from .twitchModiversary import TwitchModiversary
 from .twitchNoticeType import TwitchNoticeType
@@ -100,6 +102,7 @@ class TwitchWebsocketEvent:
     userName: str | None = None
     winningOutcomeId: str | None = None
     announcement: TwitchAnnouncement | None = None
+    sharedChatAnnouncement: TwitchAnnouncement | None = None
     bitsBadgeTier: TwitchBitsBadgeTier | None = None
     bitsUseType: TwitchBitsUseType | None = None
     channelPointsVoting: TwitchChannelPointsVoting | None = None
@@ -107,23 +110,35 @@ class TwitchWebsocketEvent:
     chatMessageType: TwitchChatMessageType | None = None
     cheer: TwitchCheerMetadata | None = None
     communitySubGift: TwitchCommunitySubGift | None = None
+    sharedChatCommunitySubGift: TwitchCommunitySubGift | None = None
     customPowerUp: TwitchCustomPowerUp | None = None
     customPowerUpData: TwitchCustomPowerUpData | None = None
+    giftPaidUpgrade: TwitchGiftPaidUpgrade | None = None
+    sharedChatGiftPaidUpgrade: TwitchGiftPaidUpgrade | None = None
+    giftedDropsSummary: TwitchGiftedDropsSummary | None = None
+    sharedChatGiftedDropsSummary: TwitchGiftedDropsSummary | None = None
     hypeTrainType: TwitchHypeTrainType | None = None
     modiversary: TwitchModiversary | None = None
+    sharedChatModiversary: TwitchModiversary | None = None
     noticeType: TwitchNoticeType | None = None
     payItForward: TwitchPayItForward | None = None
+    sharedChatPayItForward: TwitchPayItForward | None = None
     pollStatus: TwitchPollStatus | None = None
     powerUp: TwitchPowerUp | None = None
     predictionStatus: TwitchPredictionStatus | None = None
     primePaidUpgrade: TwitchPrimePaidUpgrade | None = None
+    sharedChatPrimePaidUpgrade: TwitchPrimePaidUpgrade | None = None
     raid: TwitchRaid | None = None
+    sharedChatRaid: TwitchRaid | None = None
     reply: TwitchReply | None = None
     resub: TwitchResub | None = None
+    sharedChatResub: TwitchResub | None = None
     resubscriptionMessage: TwitchResubscriptionMessage | None = None
     reward: TwitchReward | None = None
     rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
     sub: TwitchSub | None = None
+    sharedChatSub: TwitchSub | None = None
     subGift: TwitchSubGift | None = None
+    sharedChatSubGift: TwitchSubGift | None = None
     tier: TwitchSubscriberTier | None = None
     watchStreak: TwitchWatchStreak | None = None
