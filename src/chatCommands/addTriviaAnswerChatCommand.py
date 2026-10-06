@@ -132,7 +132,7 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Attempted to handle command, but an invalid additional answer was given ({additionalAnswer=}) ({reference=}) ({emote=}) ({normalizedEmote=}) ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         try:
             result = await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswer(
@@ -150,8 +150,6 @@ class AddTriviaAnswerChatCommand(AbsChatCommand):
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
-
-            self.__timber.log(self.commandName, f'Added additional trivia answer ({additionalAnswer=}) ({reference=}) ({emote=}) ({normalizedEmote=}) ({splits=}) ({chatMessage=})')
         except AdditionalTriviaAnswerAlreadyExistsException as e:
             self.__twitchChatMessenger.send(
                 text = f'{reference.emote} Unable to add additional trivia answer for {reference.triviaSource.toStr()}:{reference.triviaId} as it already exists',
