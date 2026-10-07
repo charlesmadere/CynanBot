@@ -87,7 +87,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
                 except Exception as e:
                     self.__timber.log('WebsocketConnectionServer', f'Failed to send websocket event ({serverConnection=}) ({event=}) ({index=})', e, traceback.format_exc())
             else:
-                self.__timber.log('WebsocketConnectionServer', f'Discarded websocket event as it is too old ({serverConnection=}) ({event=}) ({index=})')
+                self.__timber.log('WebsocketConnectionServer', f'Discarded websocket event as it is too old ({serverConnection=}) ({event=}) ({index=}) ({eventTimeToLive=})')
 
     async def __serializeEventToJson(self, event: WebsocketEvent) -> str:
         if not isinstance(event, WebsocketEvent):

@@ -88,10 +88,12 @@ class RemoveRecurringCutenessActionChatCommand(AbsChatCommand):
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log(self.commandName, f'Handled ({recurringAction=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({recurringAction=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
         isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+
         isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
+
         return isStreamer or isAdministrator

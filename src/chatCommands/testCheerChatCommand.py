@@ -55,7 +55,10 @@ class TestCheerChatCommand(AbsChatCommand):
         if chatMessage.twitchChannelId != chatMessage.chatterUserId:
             return ChatCommandResult.IGNORED
 
-        arguments = await self.__parseArguments(chatMessage)
+        arguments = await self.__parseArguments(
+            chatMessage = chatMessage,
+        )
+
         if arguments is None:
             self.__twitchChatMessenger.send(
                 text = f'⚠ Invalid arguments given. Example: !testcheer 100 Hello, World!',

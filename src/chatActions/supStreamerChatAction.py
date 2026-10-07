@@ -1,4 +1,3 @@
-import random
 from datetime import datetime, timedelta
 from typing import Final
 
@@ -8,6 +7,7 @@ from ..chatterPreferredName.helpers.chatterPreferredNameHelperInterface import C
 from ..chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
+from ..misc.randomUtilsInterface import RandomUtilsInterface
 from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..streamAlertsManager.streamAlert import StreamAlert
 from ..streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
@@ -29,6 +29,7 @@ class SupStreamerChatAction(AbsChatAction):
         self,
         chatterPreferredNameHelper: ChatterPreferredNameHelperInterface,
         chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface,
+        randomUtils: RandomUtilsInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         supStreamerHelper: SupStreamerHelperInterface,
         supStreamerRepository: SupStreamerRepositoryInterface,
@@ -42,6 +43,8 @@ class SupStreamerChatAction(AbsChatAction):
             raise TypeError(f'chatterPreferredNameHelper argument is malformed: \"{chatterPreferredNameHelper}\"')
         elif not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(supStreamerHelper, SupStreamerHelperInterface):
@@ -61,6 +64,7 @@ class SupStreamerChatAction(AbsChatAction):
 
         self.__chatterPreferredNameHelper: Final[ChatterPreferredNameHelperInterface] = chatterPreferredNameHelper
         self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = chatterPreferredTtsHelper
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__supStreamerHelper: Final[SupStreamerHelperInterface] = supStreamerHelper
         self.__supStreamerRepository: Final[SupStreamerRepositoryInterface] = supStreamerRepository
@@ -124,7 +128,7 @@ class SupStreamerChatAction(AbsChatAction):
             return ChatActionResult.IGNORED
 
         shuffledBoosterPacks: list[SupStreamerBoosterPack] = list(supStreamerBoosterPacks)
-        random.shuffle(shuffledBoosterPacks)
+        self.__randomUtils.shuffle(shuffledBoosterPacks)
 
         for supStreamerBoosterPack in shuffledBoosterPacks:
             if await self.__isSupMessage(

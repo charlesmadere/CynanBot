@@ -72,5 +72,5 @@ class RemoveChatterPreferredNameChatCommand(AbsChatCommand):
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log(self.commandName, f'Handled ({preferredNameData=}) ({chatMessage})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({preferredNameData=}) ({chatMessage})')
+        return ChatCommandResult.CONSUMED

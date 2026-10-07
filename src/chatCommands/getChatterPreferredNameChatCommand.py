@@ -70,5 +70,5 @@ class GetChatterPreferredNameChatCommand(AbsChatCommand):
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log(self.commandName, f'Handled ({preferredNameData=})')
+        self.__timber.log(self.commandName, f'Consumed ({preferredNameData=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED

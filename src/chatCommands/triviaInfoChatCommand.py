@@ -98,7 +98,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
 
     async def __getRelativeTimeString(self, dateTime: datetime) -> str:
         now = self.__timeZoneRepository.getNow()
-        questionDateTimeVersusNowSeconds = round((now - dateTime).total_seconds())
+        questionDateTimeVersusNowSeconds = int(round((now - dateTime).total_seconds()))
 
         if questionDateTimeVersusNowSeconds <= 3:
             return 'just now'

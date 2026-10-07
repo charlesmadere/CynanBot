@@ -15,7 +15,7 @@ class MouseCursorHelper(MouseCursorHelperInterface):
         self,
         timber: TimberInterface,
         websocketConnectionServer: WebsocketConnectionServerInterface,
-        visibilityDuration: timedelta = timedelta(seconds = 20),
+        visibilityDuration: timedelta = timedelta(seconds = 24),
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -41,8 +41,10 @@ class MouseCursorHelper(MouseCursorHelperInterface):
         if not twitchUser.isMouseCursorEnabled:
             return False
 
+        visibilityDurationSeconds = int(round(self.__visibilityDuration.total_seconds()))
+
         eventData: dict[str, Any] = {
-            'visibilityDurationSeconds': self.__visibilityDuration.total_seconds(),
+            'visibilityDurationSeconds': visibilityDurationSeconds,
         }
 
         self.__websocketConnectionServer.submitEvent(

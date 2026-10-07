@@ -64,5 +64,5 @@ class AsplodieStatsChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({asplodieStats=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({asplodieStats=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
