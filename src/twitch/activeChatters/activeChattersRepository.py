@@ -13,7 +13,7 @@ from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..exceptions import TwitchJsonException, TwitchStatusCodeException
 from ..handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
-from ..userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
+from ..userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...network.exceptions import GenericNetworkException
@@ -56,7 +56,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         twitchApiService: TwitchApiServiceInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
+        twitchUserIdsRepository: TwitchUserIdsRepositoryInterface,
         maxActiveChattersSize: int = 256,
         maxActiveChattersTimeToLive: timedelta = timedelta(hours = 1),
     ):
@@ -70,8 +70,8 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
-            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
+        elif not isinstance(twitchUserIdsRepository, TwitchUserIdsRepositoryInterface):
+            raise TypeError(f'twitchUserIdsRepository argument is malformed: \"{twitchUserIdsRepository}\"')
         elif not utils.isValidInt(maxActiveChattersSize):
             raise TypeError(f'cacheSize argument is malformed: \"{maxActiveChattersSize}\"')
         elif maxActiveChattersSize < 16 or maxActiveChattersSize > 512:
@@ -84,7 +84,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         self.__twitchApiService: Final[TwitchApiServiceInterface] = twitchApiService
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
-        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
+        self.__twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = twitchUserIdsRepository
         self.__maxActiveChattersSize: Final[int] = maxActiveChattersSize
         self.__maxActiveChattersTimeToLive: Final[timedelta] = maxActiveChattersTimeToLive
 
@@ -170,10 +170,10 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
     ) -> list[ActiveChatter]:
         entry.setChattersHaveBeenFetched()
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        twitchId = await self.__twitchUserIdsHelper.getIdByLoginOrName(twitchHandle)
+        selfUserId = await self.__twitchUserIdsRepository.getIdByLoginOrName(twitchHandle)
         twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
 
-        if not utils.isValidStr(twitchId) or not utils.isValidStr(twitchAccessToken):
+        if not utils.isValidStr(selfUserId) or not utils.isValidStr(twitchAccessToken):
             # these should be impossible here but let's just be overly careful
             return entry.chatters
 
@@ -186,7 +186,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
                 chattersRequest = TwitchChattersRequest(
                     first = first,
                     broadcasterId = twitchChannelId,
-                    moderatorId = twitchId,
+                    moderatorId = selfUserId,
                 ),
             )
         except (GenericNetworkException, TwitchJsonException, TwitchStatusCodeException) as e:

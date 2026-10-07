@@ -1055,7 +1055,7 @@ activeChattersRepository: Final[ActiveChattersRepositoryInterface] = ActiveChatt
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
-    twitchUserIdsHelper = twitchUserIdsHelper,
+    twitchUserIdsRepository = twitchUserIdsRepository,
 )
 
 
