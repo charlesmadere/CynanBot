@@ -1,4 +1,3 @@
-import random
 import re
 from dataclasses import dataclass
 from datetime import timedelta
@@ -17,6 +16,7 @@ from ..settings.anivSettingsInterface import AnivSettingsInterface
 from ...aniv.models.whichAnivUser import WhichAnivUser
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...timber.timberInterface import TimberInterface
 from ...timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
 from ...timeout.machine.timeoutActionMachineInterface import TimeoutActionMachineInterface
@@ -45,6 +45,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         anivSettings: AnivSettingsInterface,
         anivUserIdsRepository: AnivUserIdsRepositoryInterface,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface,
+        randomUtils: RandomUtilsInterface,
         timber: TimberInterface,
         timeoutActionMachine: TimeoutActionMachineInterface,
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
@@ -63,6 +64,8 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             raise TypeError(f'anivUserIdsRepository argument is malformed: \"{anivUserIdsRepository}\"')
         elif not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
             raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
@@ -86,6 +89,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         self.__anivSettings: Final[AnivSettingsInterface] = anivSettings
         self.__anivUserIdsRepository: Final[AnivUserIdsRepositoryInterface] = anivUserIdsRepository
         self.__mostRecentAnivMessageRepository: Final[MostRecentAnivMessageRepositoryInterface] = mostRecentAnivMessageRepository
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
@@ -170,13 +174,13 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
             return False
 
-        moderatorUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(
+        selfUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(
             userLoginOrName = await self.__twitchHandleProvider.getTwitchHandle(),
             twitchAccessToken = userTwitchAccessToken,
         )
 
-        moderatorTwitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
-            twitchChannelId = moderatorUserId,
+        selfTwitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
+            twitchChannelId = selfUserId,
         )
 
         timeoutDuration = await self.__determineTimeoutDuration(
@@ -185,14 +189,14 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
 
         actionId = await self.__timeoutIdGenerator.generateActionId()
 
-        self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Timing out a user for copying an aniv message... ({actionId=}) ({timeoutDuration=}) ({moderatorUserId=}) ({timeoutRng=}) ({anivUserId=}) ({copiedAnivMessage=}) ({chatterUserId=}) ({chatterUserName=}) ({user=}) ({twitchChannelId=})')
+        self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Timing out a user for copying an aniv message... ({actionId=}) ({timeoutDuration=}) ({selfUserId=}) ({timeoutRng=}) ({anivUserId=}) ({copiedAnivMessage=}) ({chatterUserId=}) ({chatterUserName=}) ({user=}) ({twitchChannelId=})')
 
         self.__timeoutActionMachine.submitAction(CopyAnivMessageTimeoutAction(
             timeoutDuration = timeoutDuration,
             actionId = actionId,
             anivUserId = anivUserId,
-            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
-            moderatorUserId = moderatorUserId,
+            moderatorTwitchAccessToken = selfTwitchAccessToken,
+            moderatorUserId = selfUserId,
             targetUserId = chatterUserId,
             twitchChannelId = twitchChannelId,
             userTwitchAccessToken = userTwitchAccessToken,
@@ -231,8 +235,10 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         if not utils.isValidNum(timeoutProbability):
             timeoutProbability = await self.__anivSettings.getCopyMessageTimeoutProbability()
 
+        randomNumber = self.__randomUtils.float()
+
         return MostRecentAnivMessageTimeoutHelper.TimeoutRoll(
-            randomNumber = random.random(),
+            randomNumber = randomNumber,
             timeoutProbability = timeoutProbability,
         )
 
