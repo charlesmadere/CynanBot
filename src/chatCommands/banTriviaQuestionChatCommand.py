@@ -90,10 +90,7 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return ChatCommandResult.IGNORED
-        elif not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannelId = chatMessage.twitchChannelId,
-            userId = chatMessage.chatterUserId,
-        ):
+        elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
         splits = utils.getCleanedSplits(chatMessage.text)
@@ -150,5 +147,13 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({result=}) ({reference=}) ({emote=}) ({normalizedEmote=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({result=}) ({reference=}) ({emote=}) ({normalizedEmote=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
+
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        isPrivilegedTriviaUser = await self.__triviaUtils.isPrivilegedTriviaUser(
+            twitchChannelId = chatMessage.twitchChannelId,
+            userId = chatMessage.chatterUserId,
+        )
+
+        return isPrivilegedTriviaUser
