@@ -12,6 +12,7 @@ from ..models.halfLifeSoundFile import HalfLifeSoundFile
 from ..models.halfLifeVoice import HalfLifeVoice
 from ..settings.halfLifeSettingsRepositoryInterface import HalfLifeSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...timber.timberInterface import TimberInterface
 
 
@@ -21,17 +22,21 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
         self,
         eventLoop: AbstractEventLoop,
         halfLifeSettingsRepository: HalfLifeSettingsRepositoryInterface,
+        randomUtils: RandomUtilsInterface,
         timber: TimberInterface,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         elif not isinstance(halfLifeSettingsRepository, HalfLifeSettingsRepositoryInterface):
             raise TypeError(f'halfLifeSettingsRepository argument is malformed: \"{halfLifeSettingsRepository}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__eventLoop: Final[AbstractEventLoop] = eventLoop
         self.__halfLifeSettingsRepository: Final[HalfLifeSettingsRepositoryInterface] = halfLifeSettingsRepository
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__timber: Final[TimberInterface] = timber
 
         self.__soundFileNameRegEx: Final[Pattern] = re.compile(r'^(.+)\.(?:(?:mp3)|(?:wav))$', re.IGNORECASE)
@@ -88,7 +93,7 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
     ) -> HalfLifeSoundFile | None:
         # shuffle the voice order to introduce more random/organic/fun voice selections
         shuffledVoices: list[HalfLifeVoice] = list(voices)
-        random.shuffle(shuffledVoices)
+        self.__randomUtils.shuffle(shuffledVoices)
 
         for voice in shuffledVoices:
             path = await self.__scanDirectoryForFile(

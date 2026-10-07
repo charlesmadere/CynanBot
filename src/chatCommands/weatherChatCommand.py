@@ -100,5 +100,5 @@ class WeatherChatCommand(AbsChatCommand):
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log(self.commandName, f'Handled ({weatherReport=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({weatherReport=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED

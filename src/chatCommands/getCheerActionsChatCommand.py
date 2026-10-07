@@ -80,7 +80,7 @@ class GetCheerActionsChatCommand(AbsChatCommand):
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
-        self.__timber.log(self.commandName, f'Handled ({actions=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({enabledOrDisabledState=}) ({actions=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:

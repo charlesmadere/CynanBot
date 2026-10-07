@@ -118,6 +118,7 @@ class RemoveGlobalTriviaControllerChatCommand(AbsChatCommand):
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
         isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
+
         return isAdministrator
 
     async def __parseArguments(self, chatMessage: TwitchChatMessage) -> Arguments | None:

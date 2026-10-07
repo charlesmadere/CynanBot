@@ -1342,6 +1342,7 @@ halfLifeSettingsRepository: Final[HalfLifeSettingsRepositoryInterface] = HalfLif
 halfLifeTtsService: Final[HalfLifeTtsServiceInterface] = HalfLifeTtsService(
     eventLoop = eventLoop,
     halfLifeSettingsRepository = halfLifeSettingsRepository,
+    randomUtils = randomUtils,
     timber = timber,
 )
 
@@ -2164,6 +2165,7 @@ chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
     SupStreamerChatAction(
         chatterPreferredNameHelper = chatterPreferredNameHelper,
         chatterPreferredTtsHelper = chatterPreferredTtsHelper,
+        randomUtils = randomUtils,
         streamAlertsManager = streamAlertsManager,
         supStreamerHelper = supStreamerHelper,
         supStreamerRepository = supStreamerRepository,

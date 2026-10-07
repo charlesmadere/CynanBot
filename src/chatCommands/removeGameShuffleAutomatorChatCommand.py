@@ -76,10 +76,12 @@ class RemoveGameShuffleAutomatorChatCommand(AbsChatCommand):
             case _:
                 raise RuntimeError(f'Unknown CrowdControlAutomatorRemovalResult: \"{result}\"')
 
-        self.__timber.log(self.commandName, f'Handled ({result=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({result=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
         isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+
         isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
+
         return isStreamer or isAdministrator

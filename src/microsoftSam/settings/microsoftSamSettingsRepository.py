@@ -13,18 +13,28 @@ class MicrosoftSamSettingsRepository(MicrosoftSamSettingsRepositoryInterface):
         self,
         microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
         settingsJsonReader: JsonReaderInterface,
+        defaultMediaPlayerVolume: int = 36,
         defaultVoice: MicrosoftSamVoice = MicrosoftSamVoice.SAM,
+        defaultFileExtension: str = 'wav',
     ):
         if not isinstance(microsoftSamJsonParser, MicrosoftSamJsonParserInterface):
             raise TypeError(f'microsoftSamJsonParser argument is malformed: \"{microsoftSamJsonParser}\"')
         elif not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+        elif not utils.isValidInt(defaultMediaPlayerVolume):
+            raise TypeError(f'defaultMediaPlayerVolume argument is malformed: \"{defaultMediaPlayerVolume}\"')
+        elif defaultMediaPlayerVolume < 1 or defaultMediaPlayerVolume > 100:
+            raise ValueError(f'defaultMediaPlayerVolume argument is out of bounds: {defaultMediaPlayerVolume}')
         elif not isinstance(defaultVoice, MicrosoftSamVoice):
             raise TypeError(f'defaultVoice argument is malformed: \"{defaultVoice}\"')
+        elif not utils.isValidStr(defaultFileExtension):
+            raise TypeError(f'defaultFileExtension argument is malformed: \"{defaultFileExtension}\"')
 
         self.__microsoftSamJsonParser: Final[MicrosoftSamJsonParserInterface] = microsoftSamJsonParser
         self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
+        self.__defaultMediaPlayerVolume: Final[int] = defaultMediaPlayerVolume
         self.__defaultVoice: Final[MicrosoftSamVoice] = defaultVoice
+        self.__defaultFileExtension: Final[str] = defaultFileExtension
 
         self.__cache: dict[str, Any] | None = None
 
@@ -44,11 +54,21 @@ class MicrosoftSamSettingsRepository(MicrosoftSamSettingsRepositoryInterface):
 
     async def getFileExtension(self) -> str:
         jsonContents = await self.__readJson()
-        return utils.getStrFromDict(jsonContents, 'fileExtension', fallback = 'wav')
+
+        return utils.getStrFromDict(
+            d = jsonContents,
+            key = 'fileExtension',
+            fallback = self.__defaultFileExtension,
+        )
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 32)
+
+        return utils.getIntFromDict(
+            d = jsonContents,
+            key = 'mediaPlayerVolume',
+            fallback = self.__defaultMediaPlayerVolume,
+        )
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
@@ -69,4 +89,9 @@ class MicrosoftSamSettingsRepository(MicrosoftSamSettingsRepositoryInterface):
 
     async def useDonationPrefix(self) -> bool:
         jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'useDonationPrefix', fallback = True)
+
+        return utils.getBoolFromDict(
+            d = jsonContents,
+            key = 'useDonationPrefix',
+            fallback = True,
+        )

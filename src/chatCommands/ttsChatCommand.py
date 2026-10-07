@@ -127,6 +127,7 @@ class TtsChatCommand(AbsChatCommand):
             return ChatCommandResult.IGNORED
         elif not await self.__hasPermissions(chatMessage):
             await self.__displayTtsCheerAmounts(chatMessage)
+            self.__timber.log(self.commandName, f'Consumed ({chatMessage=})')
             return ChatCommandResult.CONSUMED
 
         splits = utils.getCleanedSplits(chatMessage.text)

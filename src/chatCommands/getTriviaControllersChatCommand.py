@@ -61,7 +61,7 @@ class GetTriviaControllersChatCommand(AbsChatCommand):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return ChatCommandResult.IGNORED
-        elif chatMessage.chatterUserId != chatMessage.twitchChannelId and chatMessage.chatterUserId != await self.__administratorProvider.getAdministratorUserId():
+        elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
         controllers = await self.__triviaGameControllersRepository.getControllers(
@@ -78,5 +78,12 @@ class GetTriviaControllersChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({printOut=}) ({controllers=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({printOut=}) ({controllers=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED
+
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+
+        isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
+
+        return isStreamer or isAdministrator

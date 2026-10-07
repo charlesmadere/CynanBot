@@ -20,7 +20,7 @@ class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
             TtsMonsterVoice.GLADOS: 34,
             TtsMonsterVoice.JAZZ: 32,
             TtsMonsterVoice.SPONGEBOB: 34,
-            TtsMonsterVoice.SHADOW: 36,
+            TtsMonsterVoice.SHADOW: 32,
         }),
         defaultVoiceVolume: int | None = 42,
         defaultDonationPrefixConfig: TtsMonsterDonationPrefixConfig = TtsMonsterDonationPrefixConfig.IF_MESSAGE_IS_BLANK,

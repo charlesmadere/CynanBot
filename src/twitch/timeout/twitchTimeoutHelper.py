@@ -186,7 +186,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as this user is already timed out ({twitchChannelId=}) ({userIdToTimeout=}) ({userDataToTimeout=}) ({durationSeconds=}) ({reason=}) ({user=})')
             return TwitchTimeoutResult.ALREADY_TIMED_OUT
 
-        cynanBotUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(
+        selfUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(
             userLoginOrName = await self.__twitchHandleProvider.getTwitchHandle(),
             twitchAccessToken = twitchAccessToken,
         )
@@ -213,8 +213,8 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         if not await self.__timeout(
             isMod = isMod,
             durationSeconds = durationSeconds,
-            cynanBotUserId = cynanBotUserId,
             reason = reason,
+            selfUserId = selfUserId,
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
             userDataToTimeout = userDataToTimeout,
@@ -242,8 +242,8 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         self,
         isMod: bool,
         durationSeconds: int,
-        cynanBotUserId: str,
         reason: str | None,
+        selfUserId: str,
         twitchAccessToken: str,
         twitchChannelId: str,
         userDataToTimeout: TwitchUserData,
@@ -252,7 +252,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         banRequest = TwitchBanRequest(
             duration = durationSeconds,
             broadcasterUserId = twitchChannelId,
-            moderatorUserId = cynanBotUserId,
+            moderatorUserId = selfUserId,
             reason = reason,
             userIdToBan = userDataToTimeout.userId,
         )

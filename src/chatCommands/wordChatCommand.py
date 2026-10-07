@@ -90,7 +90,7 @@ class WordChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Error retrieving LanguageEntry ({language=})', e, traceback.format_exc())
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         wordOfTheDayResponse: WordOfTheDayResponse | None = None
 
@@ -118,5 +118,5 @@ class WordChatCommand(AbsChatCommand):
 
             self.__timber.log(self.commandName, f'Error fetching Word Of The Day ({wordOfTheDayResponse=}) ({languageEntry=}) ({chatMessage=})', e, traceback.format_exc())
 
-        self.__timber.log(self.commandName, f'Handled ({wordOfTheDayResponse=}) ({languageEntry=}) ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({wordOfTheDayResponse=}) ({languageEntry=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED

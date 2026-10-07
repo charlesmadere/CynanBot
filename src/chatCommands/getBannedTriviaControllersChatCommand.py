@@ -67,8 +67,8 @@ class GetBannedTriviaControllersChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({printOut=}) ({controllers=}) ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({printOut=}) ({controllers=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
         isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
