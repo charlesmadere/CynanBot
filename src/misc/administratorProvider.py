@@ -32,10 +32,7 @@ class AdministratorProvider(AdministratorProviderInterface):
             return administratorUserId
 
         userLoginOrName = await self.getAdministratorUserName()
-
-        administratorUserId = await self.__twitchUserIdsRepository.requireIdByLoginOrName(
-            userLoginOrName = userLoginOrName,
-        )
+        administratorUserId = await self.__twitchUserIdsRepository.requireIdByLoginOrName(userLoginOrName)
 
         self.__administratorUserId = administratorUserId
         return administratorUserId
