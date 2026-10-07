@@ -74,7 +74,7 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
 
     async def __getRelativeTimeString(self, dateTime: datetime) -> str:
         now = self.__timeZoneRepository.getNow()
-        questionDateTimeVersusNowSeconds = round((now - dateTime).total_seconds())
+        questionDateTimeVersusNowSeconds = int(round((now - dateTime).total_seconds()))
 
         if questionDateTimeVersusNowSeconds <= 30:
             # if the question was asked about 30 seconds ago or less, let's just say it was just now

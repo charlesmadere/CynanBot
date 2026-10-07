@@ -40,7 +40,7 @@ class EccoHelper(EccoHelperInterface):
             raise EccoFailedToFetchTimeRemaining(f'Failed to fetch Ecco timer: {e}')
 
         now = self.__timeZoneRepository.getNow()
-        remainingSeconds = math.floor((timerDateTime - now).total_seconds())
+        remainingSeconds = int(math.floor((timerDateTime - now).total_seconds()))
 
         if remainingSeconds <= 10:
             return EccoReleased()
