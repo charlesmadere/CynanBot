@@ -37,6 +37,7 @@ class SuperAnswerChatCommand(AbsChatCommand):
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
             re.compile(r'^\s*!s(?:uper)?a(?:nswer)?\b', re.IGNORECASE),
+            re.compile(r'^\s*!s(?:uper)?ta?\b', re.IGNORECASE),
         })
 
     @property
