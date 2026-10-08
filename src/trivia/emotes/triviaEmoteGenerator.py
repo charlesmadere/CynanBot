@@ -36,125 +36,124 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         #
         # If a set is either None or empty, then the given emoji has no equivalent.
 
-        emotesDict: dict[str, frozenset[str] | None] = dict()
-        emotesDict['🧮'] = None
-        emotesDict['👽'] = None
-        emotesDict['👾'] = None
-        emotesDict['🎨'] = None
-        emotesDict['🥑'] = None
-        emotesDict['🥓'] = None
-        emotesDict['🎒'] = None
-        emotesDict['🍌'] = None
-        emotesDict['📊'] = None
-        emotesDict['🔋'] = frozenset({ '🪫' })
-        emotesDict['🏖️'] = frozenset({ '⛱️', '☂️', '☔' })
-        emotesDict['🦫'] = None
-        emotesDict['🫑'] = None
-        emotesDict['🐦'] = frozenset({ '🐤' })
-        emotesDict['🎂'] = frozenset({ '🍰' })
-        emotesDict['🫐'] = None
-        emotesDict['📚'] = None
-        emotesDict['💼'] = None
-        emotesDict['🥦'] = None
-        emotesDict['🚌'] = None
-        emotesDict['🐪'] = frozenset({ '🐫' })
-        emotesDict['🍬'] = frozenset({ '🍭' })
-        emotesDict['📇'] = None
-        emotesDict['🎏'] = None
-        emotesDict['🖼️'] = frozenset({ '🏞️' })
-        emotesDict['🥕'] = None
-        emotesDict['🧀'] = None
-        emotesDict['🍒'] = None
-        emotesDict['🥢'] = None
-        emotesDict['🏛️'] = frozenset({ '🏦' })
-        emotesDict['📋'] = None
-        emotesDict['💽'] = frozenset({ '📀', '💿' })
-        emotesDict['🍪'] = frozenset({ '🥠' })
-        emotesDict['🐄'] = frozenset({ '🐮', '🐂', '🐃' })
-        emotesDict['🦀'] = None
-        emotesDict['🖍️'] = None
-        emotesDict['🧁'] = None
-        emotesDict['🍛'] = None
-        emotesDict['🖥️'] = frozenset({ '💻' })
-        emotesDict['🧬'] = None
-        emotesDict['🐬'] = frozenset({ '🦈' })
-        emotesDict['🐉'] = frozenset({ '🐲', '🦖' })
-        emotesDict['🔌'] = frozenset({ '⚡' })
-        emotesDict['🐘'] = frozenset({ '𓃰' })
-        emotesDict['🧐'] = None
-        emotesDict['🚒'] = None
-        emotesDict['🐟'] = frozenset({ '🐡', '🎣', '🐠' })
-        emotesDict['💾'] = None
-        emotesDict['🐸'] = None
-        emotesDict['💎'] = frozenset({ '💍' })
-        emotesDict['👻'] = None
-        emotesDict['🍇'] = None
-        emotesDict['🍏'] = None
-        emotesDict['🚁'] = None
-        emotesDict['🐎'] = frozenset({ '🐴' })
-        emotesDict['🌶️'] = None
-        emotesDict['🎃'] = None
-        emotesDict['📒'] = frozenset({ '📔', '🗒️' })
-        emotesDict['💡'] = None
-        emotesDict['🦁'] = None
-        emotesDict['🕰️'] = None
-        emotesDict['🍈'] = frozenset({ '🍉' })
-        emotesDict['🔬'] = frozenset({ '⚗️' })
-        emotesDict['🗿'] = None
-        emotesDict['🐒'] = frozenset({ '🐵' })
-        emotesDict['🍄'] = None
-        emotesDict['🤓'] = None
-        emotesDict['📓'] = None
-        emotesDict['📦'] = frozenset({ '🪤' })
-        emotesDict['📎'] = None
-        emotesDict['🍐'] = None
-        emotesDict['🐧'] = None
-        emotesDict['🥧'] = None
-        emotesDict['🐖'] = frozenset({ '🐷', '🐗' })
-        emotesDict['🍍'] = None
-        emotesDict['🍕'] = None
-        emotesDict['🍿'] = frozenset({ '🌽' })
-        emotesDict['🥔'] = None
-        emotesDict['🥨'] = None
-        emotesDict['🧩'] = None
-        emotesDict['🌈'] = None
-        emotesDict['🍎'] = None
-        emotesDict['🏮'] = None
-        emotesDict['🍙'] = None
-        emotesDict['🍠'] = None
-        emotesDict['🤖'] = None
-        emotesDict['🚀'] = None
-        emotesDict['🎢'] = None
-        emotesDict['🏫'] = None
-        emotesDict['🦭'] = None
-        emotesDict['🦐'] = frozenset({ '🍤' })
-        emotesDict['🧦'] = None
-        emotesDict['🐚'] = None
-        emotesDict['🦑'] = frozenset({ '🐙' })
-        emotesDict['📏'] = None
-        emotesDict['🍓'] = None
-        emotesDict['🍊'] = None
-        emotesDict['🔭'] = None
-        emotesDict['🤔'] = None
-        emotesDict['💭'] = None
-        emotesDict['🐅'] = frozenset({ '🐯' })
-        emotesDict['🎩'] = None
-        emotesDict['📐'] = None
-        emotesDict['🎺'] = frozenset({ '📯' })
-        emotesDict['🌷'] = frozenset({ '🌹' })
-        emotesDict['🐢'] = None
-        emotesDict['📼'] = None
-        emotesDict['🌊'] = frozenset({ '💧', '💦' })
-        emotesDict['🐋'] = frozenset({ '🐳' })
-
-        return frozendict(emotesDict)
+        return frozendict({
+            '🧮': None,
+            '👽': None,
+            '👾': None,
+            '🎨': None,
+            '🥑': None,
+            '🥓': None,
+            '🎒': None,
+            '🍌': None,
+            '📊': None,
+            '🔋': frozenset({'🪫'}),
+            '🏖️': frozenset({'⛱️', '☂️', '☔'}),
+            '🦫': None,
+            '🫑': None,
+            '🐦': frozenset({'🐤'}),
+            '🎂': frozenset({'🍰'}),
+            '🫐': None,
+            '📚': None,
+            '💼': None,
+            '🥦': None,
+            '🚌': None,
+            '🐪': frozenset({'🐫'}),
+            '🍬': frozenset({'🍭'}),
+            '📇': None,
+            '🎏': None,
+            '🖼️': frozenset({'🏞️'}),
+            '🥕': None,
+            '🧀': None,
+            '🍒': None,
+            '🥢': None,
+            '🏛️': frozenset({'🏦'}),
+            '📋': None,
+            '💽': frozenset({'📀', '💿'}),
+            '🍪': frozenset({'🥠'}),
+            '🐄': frozenset({'🐮', '🐂', '🐃'}),
+            '🦀': None,
+            '🖍️': None,
+            '🧁': None,
+            '🍛': None,
+            '🖥️': frozenset({'💻'}),
+            '🧬': None,
+            '🐬': frozenset({'🦈'}),
+            '🐉': frozenset({'🐲', '🦖'}),
+            '🔌': frozenset({'⚡'}),
+            '🐘': frozenset({'𓃰'}),
+            '🧐': None,
+            '🚒': None,
+            '🐟': frozenset({'🐡', '🎣', '🐠'}),
+            '💾': None,
+            '🐸': None,
+            '💎': frozenset({'💍'}),
+            '👻': None,
+            '🍇': None,
+            '🍏': None,
+            '🚁': None,
+            '🐎': frozenset({'🐴'}),
+            '🌶️': None,
+            '🎃': None,
+            '📒': frozenset({'📔', '🗒️'}),
+            '💡': None,
+            '🦁': None,
+            '🕰️': None,
+            '🍈': frozenset({'🍉'}),
+            '🔬': frozenset({'⚗️'}),
+            '🗿': None,
+            '🐒': frozenset({'🐵'}),
+            '🍄': None,
+            '🤓': None,
+            '📓': None,
+            '📦': frozenset({'🪤'}),
+            '📎': None,
+            '🍐': None,
+            '🐧': None,
+            '🥧': None,
+            '🐖': frozenset({'🐷', '🐗'}),
+            '🍍': None,
+            '🍕': None,
+            '🍿': frozenset({'🌽'}),
+            '🥔': None,
+            '🥨': None,
+            '🧩': None,
+            '🌈': None,
+            '🍎': None,
+            '🏮': None,
+            '🍙': None,
+            '🍠': None,
+            '🤖': None,
+            '🚀': None,
+            '🎢': None,
+            '🏫': None,
+            '🦭': None,
+            '🦐': frozenset({'🍤'}),
+            '🧦': None,
+            '🐚': None,
+            '🦑': frozenset({'🐙'}),
+            '📏': None,
+            '🍓': None,
+            '🍊': None,
+            '🔭': None,
+            '🤔': None,
+            '💭': None,
+            '🐅': frozenset({'🐯'}),
+            '🎩': None,
+            '📐': None,
+            '🎺': frozenset({'📯'}),
+            '🌷': frozenset({'🌹'}),
+            '🐢': None,
+            '📼': None,
+            '🌊': frozenset({'💧', '💦'}),
+            '🐋': frozenset({'🐳'}),
+        })
 
     async def getCurrentEmoteFor(self, twitchChannelId: str) -> str:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        emoteIndex = await self.__getCurrentEmoteIndexFor(twitchChannelId)
-        return self.__emojiEquivalents[emoteIndex]
+        currentEmoteIndex = await self.__getCurrentEmoteIndexFor(twitchChannelId)
+        return self.__emojiEquivalents[currentEmoteIndex]
 
     async def __getCurrentEmoteIndexFor(self, twitchChannelId: str) -> int:
         if not utils.isValidStr(twitchChannelId):
@@ -162,8 +161,8 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
 
         emoteIndex = await self.__triviaEmoteRepository.getEmoteIndexFor(twitchChannelId)
 
-        if not utils.isValidInt(emoteIndex) or emoteIndex < 0 or emoteIndex >= len(self.__emojiEquivalents):
-            self.__timber.log('TriviaEmoteGenerator', f'emoteIndex value for {twitchChannelId=} is out of bounds or uninitialized ({emoteIndex=})')
+        if emoteIndex is None or emoteIndex < 0 or emoteIndex >= len(self.__emojiEquivalents):
+            self.__timber.log('TriviaEmoteGenerator', f'The emoteIndex value is out of bounds or uninitialized ({emoteIndex=}) ({twitchChannelId=})')
             emoteIndex = 0
 
         return emoteIndex
