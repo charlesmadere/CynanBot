@@ -49,11 +49,12 @@ class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption):
             self.__timber.log(self.pointsRedemptionName, f'Preferred name feature is disabled ({pointsRedemption=})', e, traceback.format_exc())
             return PointsRedemptionResult.IGNORED
         except ChatterPreferredNameIsInvalidException as e:
-            self.__timber.log(self.pointsRedemptionName, f'The given preferred name is invalid ({pointsRedemption=})', e, traceback.format_exc())
             self.__twitchChatMessenger.send(
                 text = f'⚠ @{pointsRedemption.redemptionUserName} unable to set your preferred name! Please check your input and try again.',
                 twitchChannelId = pointsRedemption.twitchChannelId,
             )
+
+            self.__timber.log(self.pointsRedemptionName, f'The given preferred name is invalid ({pointsRedemption=})', e, traceback.format_exc())
             return PointsRedemptionResult.IGNORED
 
         self.__twitchChatMessenger.send(
@@ -61,7 +62,7 @@ class ChatterPreferredNamePointRedemption(AbsChannelPointRedemption):
             twitchChannelId = pointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({pointsRedemption=}) ({preferredNameData=})')
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({preferredNameData=}) ({pointsRedemption=})')
         return PointsRedemptionResult.CONSUMED
 
     @property

@@ -1,4 +1,3 @@
-import random
 from typing import Final
 
 import emoji
@@ -8,6 +7,7 @@ from .emojiData import EmojiData
 from .emojiHelperInterface import EmojiHelperInterface
 from .emojiRepositoryInterface import EmojiRepositoryInterface
 from ..misc import utils as utils
+from ..misc.randomUtilsInterface import RandomUtilsInterface
 
 
 class EmojiHelper(EmojiHelperInterface):
@@ -15,11 +15,15 @@ class EmojiHelper(EmojiHelperInterface):
     def __init__(
         self,
         emojiRepository: EmojiRepositoryInterface,
+        randomUtils: RandomUtilsInterface,
     ):
         if not isinstance(emojiRepository, EmojiRepositoryInterface):
             raise TypeError(f'emojiRepository argument is malformed: \"{emojiRepository}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
 
         self.__emojiRepository: Final[EmojiRepositoryInterface] = emojiRepository
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
 
     async def getHumanNameForEmoji(self, emoji: str | None) -> str | None:
         if not utils.isValidStr(emoji):
@@ -56,7 +60,7 @@ class EmojiHelper(EmojiHelperInterface):
         if len(frozenCategoryEmoji) == 0:
             raise RuntimeError(f'Failed to find any category emoji ({category=}) ({frozenCategoryEmoji=})')
 
-        return random.choice(frozenCategoryEmoji)
+        return self.__randomUtils.choice(frozenCategoryEmoji)
 
     async def getRandomFoodAndDrinkEmoji(self) -> EmojiData:
         return await self.__getRandomCategoryEmoji(

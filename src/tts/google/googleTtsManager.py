@@ -1,5 +1,4 @@
 import asyncio
-import random
 import traceback
 from typing import Final
 
@@ -18,6 +17,7 @@ from ...google.models.absGoogleVoicePreset import AbsGoogleVoicePreset
 from ...google.models.googleTtsFileReference import GoogleTtsFileReference
 from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...language.languageEntry import LanguageEntry
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -31,6 +31,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         googleTtsHelper: GoogleTtsHelperInterface,
         googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface,
         googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface,
+        randomUtils: RandomUtilsInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
@@ -46,6 +47,8 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
             raise TypeError(f'googleTtsMessageCleaner argument is malformed: \"{googleTtsMessageCleaner}\"')
         elif not isinstance(googleTtsVoicesHelper, GoogleTtsVoicesHelperInterface):
             raise TypeError(f'googleTtsVoicesHelper argument is malformed: \"{googleTtsVoicesHelper}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -60,6 +63,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         self.__googleTtsHelper: Final[GoogleTtsHelperInterface] = googleTtsHelper
         self.__googleTtsMessageCleaner: Final[GoogleTtsMessageCleanerInterface] = googleTtsMessageCleaner
         self.__googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = googleTtsVoicesHelper
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__soundPlayerManager: Final[SoundPlayerManagerInterface] = soundPlayerManager
         self.__timber: Final[TimberInterface] = timber
         self.__ttsCommandBuilder: Final[TtsCommandBuilderInterface] = ttsCommandBuilder
@@ -92,7 +96,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
                 if await self.__googleTtsVoicesHelper.getVoiceForLanguage(languageEntry) is not None:
                     languageEntriesWithVoices.append(languageEntry)
 
-            chosenLanguageEntry = random.choice(languageEntriesWithVoices)
+            chosenLanguageEntry = self.__randomUtils.choice(languageEntriesWithVoices)
             return await self.__googleTtsVoicesHelper.getVoiceForLanguage(chosenLanguageEntry)
         else:
             self.__timber.log('GoogleTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')

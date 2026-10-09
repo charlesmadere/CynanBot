@@ -8,6 +8,8 @@ from src.emojiHelper.emojiHelper import EmojiHelper
 from src.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from src.emojiHelper.emojiRepository import EmojiRepository
 from src.emojiHelper.emojiRepositoryInterface import EmojiRepositoryInterface
+from src.misc.randomUtils import RandomUtils
+from src.misc.randomUtilsInterface import RandomUtilsInterface
 from src.storage.jsonStaticReader import JsonStaticReader
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
@@ -20,6 +22,8 @@ from src.tts.settings.ttsSettingsRepositoryInterface import TtsSettingsRepositor
 class TestDecTalkMessageCleaner:
 
     timber: Final[TimberInterface] = TimberStub()
+
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
 
     emojiRepository: Final[EmojiRepositoryInterface] = EmojiRepository(
         emojiJsonReader = JsonStaticReader(
@@ -60,7 +64,8 @@ class TestDecTalkMessageCleaner:
     )
 
     emojiHelper: Final[EmojiHelperInterface] = EmojiHelper(
-        emojiRepository = emojiRepository
+        emojiRepository = emojiRepository,
+        randomUtils = randomUtils,
     )
 
     ttsJsonMapper: Final[TtsJsonMapperInterface] = TtsJsonMapper(

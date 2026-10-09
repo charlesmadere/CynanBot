@@ -1,4 +1,3 @@
-import random
 from typing import Final
 
 from frozenlist import FrozenList
@@ -24,6 +23,7 @@ from ...halfLife.models.halfLifeVoice import HalfLifeVoice
 from ...language.languageEntry import LanguageEntry
 from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...streamElements.models.streamElementsVoice import StreamElementsVoice
 from ...timber.timberInterface import TimberInterface
 from ...tts.models.ttsProvider import TtsProvider
@@ -41,6 +41,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         chatterPreferredTtsSettingsRepository: ChatterPreferredTtsSettingsRepositoryInterface,
         chatterPreferredTtsUserMessageHelper: ChatterPreferredTtsUserMessageHelperInterface,
         googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface,
+        randomUtils: RandomUtilsInterface,
         timber: TimberInterface,
         twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
@@ -53,6 +54,8 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsUserMessageHelper argument is malformed: \"{chatterPreferredTtsUserMessageHelper}\"')
         elif not isinstance(googleTtsVoicesHelper, GoogleTtsVoicesHelperInterface):
             raise TypeError(f'googleTtsVoicesHelper argument is malformed: \"{googleTtsVoicesHelper}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchSubscriptionsRepository, TwitchSubscriptionsRepositoryInterface):
@@ -64,6 +67,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         self.__chatterPreferredTtsSettingsRepository: Final[ChatterPreferredTtsSettingsRepositoryInterface] = chatterPreferredTtsSettingsRepository
         self.__chatterPreferredTtsUserMessageHelper: Final[ChatterPreferredTtsUserMessageHelperInterface] = chatterPreferredTtsUserMessageHelper
         self.__googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = googleTtsVoicesHelper
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__timber: Final[TimberInterface] = timber
         self.__twitchSubscriptionsRepository: Final[TwitchSubscriptionsRepositoryInterface] = twitchSubscriptionsRepository
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
@@ -91,7 +95,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         if len(randomChoiceEnabledTtsProviders) == 0:
             raise NoEnabledTtsProvidersException(f'Can\'t randomly apply a preferred TTS as there are no random choice TTS Providers available ({randomChoiceEnabledTtsProviders=}) ({chatterUserId=}) ({twitchChannelId=})')
 
-        ttsProvider = random.choice(randomChoiceEnabledTtsProviders)
+        ttsProvider = self.__randomUtils.choice(randomChoiceEnabledTtsProviders)
         properties: AbsTtsProperties | None = None
 
         match ttsProvider:
@@ -193,7 +197,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
 
     async def __chooseRandomDecTalkProperties(self) -> DecTalkTtsProperties:
         voices: list[DecTalkVoice] = list(DecTalkVoice)
-        voice = random.choice(voices)
+        voice = self.__randomUtils.choice(voices)
 
         return DecTalkTtsProperties(
             voice = voice,
@@ -211,7 +215,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
         if len(languageEntries) == 0:
             raise RuntimeError(f'Failed to find any LanguageEntry with an associated GoogleVoicePreset ({languageEntries=})')
 
-        languageEntry = random.choice(languageEntries)
+        languageEntry = self.__randomUtils.choice(languageEntries)
 
         return GoogleTtsProperties(
             languageEntry = languageEntry,
@@ -219,7 +223,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
 
     async def __chooseRandomHalfLifeProperties(self) -> HalfLifeTtsProperties:
         voices: list[HalfLifeVoice] = list(HalfLifeVoice)
-        voice = random.choice(voices)
+        voice = self.__randomUtils.choice(voices)
 
         return HalfLifeTtsProperties(
             voice = voice,
@@ -227,7 +231,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
 
     async def __chooseRandomMicrosoftSamProperties(self) -> MicrosoftSamTtsProperties:
         voices: list[MicrosoftSamVoice] = list(MicrosoftSamVoice)
-        voice = random.choice(voices)
+        voice = self.__randomUtils.choice(voices)
 
         return MicrosoftSamTtsProperties(
             voice = voice,
@@ -235,7 +239,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
 
     async def __chooseRandomStreamElementsProperties(self) -> StreamElementsTtsProperties:
         voices: list[StreamElementsVoice] = list(StreamElementsVoice)
-        voice = random.choice(voices)
+        voice = self.__randomUtils.choice(voices)
 
         return StreamElementsTtsProperties(
             voice = voice,
@@ -243,7 +247,7 @@ class ChatterPreferredTtsHelper(ChatterPreferredTtsHelperInterface):
 
     async def __chooseRandomTtsMonsterProperties(self) -> TtsMonsterTtsProperties:
         voices: list[TtsMonsterVoice] = list(TtsMonsterVoice)
-        voice = random.choice(voices)
+        voice = self.__randomUtils.choice(voices)
 
         return TtsMonsterTtsProperties(
             voice = voice,
