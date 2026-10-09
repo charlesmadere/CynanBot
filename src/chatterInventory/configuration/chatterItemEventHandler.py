@@ -514,7 +514,7 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         toChatterQuantityString = locale.format_string("%d", toChatterQuantity, grouping = True)
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ New {event.getItemType().humanName} counts — @{event.fromChatterUserData.getUserName()} {fromChatterQuantityString}, @{event.toChatterUserData.getUserName()} {toChatterQuantityString}',
+            text = f'🔄 New {event.getItemType().humanName} counts — @{event.fromChatterUserData.getUserName()} {fromChatterQuantityString} — @{event.toChatterUserData.getUserName()} {toChatterQuantityString}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
