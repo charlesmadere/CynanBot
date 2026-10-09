@@ -857,6 +857,7 @@ emojiRepository: Final[EmojiRepositoryInterface] = EmojiRepository(
 
 emojiHelper: Final[EmojiHelperInterface] = EmojiHelper(
     emojiRepository = emojiRepository,
+    randomUtils = randomUtils,
 )
 
 globalTwitchConstants: Final[GlobalTwitchConstantsInterface] = GlobalTwitchConstants()

@@ -11,6 +11,7 @@ from ...google.helpers.googleTtsHelperInterface import GoogleTtsHelperInterface
 from ...google.helpers.googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
 from ...google.settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
@@ -25,6 +26,7 @@ class GoogleTtsManagerProvider(GoogleTtsManagerProviderInterface):
         googleTtsHelper: GoogleTtsHelperInterface,
         googleTtsMessageCleaner: GoogleTtsMessageCleanerInterface,
         googleTtsVoicesHelper: GoogleTtsVoicesHelperInterface,
+        randomUtils: RandomUtilsInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
@@ -40,6 +42,8 @@ class GoogleTtsManagerProvider(GoogleTtsManagerProviderInterface):
             raise TypeError(f'googleTtsMessageCleaner argument is malformed: \"{googleTtsMessageCleaner}\"')
         elif not isinstance(googleTtsVoicesHelper, GoogleTtsVoicesHelperInterface):
             raise TypeError(f'googleTtsVoicesHelper argument is malformed: \"{googleTtsVoicesHelper}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
@@ -54,6 +58,7 @@ class GoogleTtsManagerProvider(GoogleTtsManagerProviderInterface):
         self.__googleTtsHelper: Final[GoogleTtsHelperInterface] = googleTtsHelper
         self.__googleTtsMessageCleaner: Final[GoogleTtsMessageCleanerInterface] = googleTtsMessageCleaner
         self.__googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = googleTtsVoicesHelper
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
         self.__timber: Final[TimberInterface] = timber
         self.__ttsCommandBuilder: Final[TtsCommandBuilderInterface] = ttsCommandBuilder
@@ -81,6 +86,7 @@ class GoogleTtsManagerProvider(GoogleTtsManagerProviderInterface):
             googleTtsHelper = self.__googleTtsHelper,
             googleTtsMessageCleaner = self.__googleTtsMessageCleaner,
             googleTtsVoicesHelper = self.__googleTtsVoicesHelper,
+            randomUtils = self.__randomUtils,
             soundPlayerManager = soundPlayerManager,
             timber = self.__timber,
             ttsCommandBuilder = self.__ttsCommandBuilder,

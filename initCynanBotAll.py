@@ -1133,6 +1133,7 @@ emojiRepository: Final[EmojiRepositoryInterface] = EmojiRepository(
 
 emojiHelper: Final[EmojiHelperInterface] = EmojiHelper(
     emojiRepository = emojiRepository,
+    randomUtils = randomUtils,
 )
 
 globalTwitchConstants: Final[GlobalTwitchConstantsInterface] = GlobalTwitchConstants()
@@ -1450,6 +1451,7 @@ chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = ChatterPr
     chatterPreferredTtsSettingsRepository = chatterPreferredTtsSettingsRepository,
     chatterPreferredTtsUserMessageHelper = chatterPreferredTtsUserMessageHelper,
     googleTtsVoicesHelper = googleTtsVoicesHelper,
+    randomUtils = randomUtils,
     timber = timber,
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,
     twitchTokensRepository = twitchTokensRepository,
@@ -1654,6 +1656,7 @@ googleTtsManagerProvider: Final[GoogleTtsManagerProviderInterface] = GoogleTtsMa
     googleTtsHelper = googleTtsHelper,
     googleTtsMessageCleaner = googleTtsMessageCleaner,
     googleTtsVoicesHelper = googleTtsVoicesHelper,
+    randomUtils = randomUtils,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,

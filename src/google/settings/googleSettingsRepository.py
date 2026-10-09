@@ -14,6 +14,7 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
         googleJsonMapper: GoogleJsonMapperInterface,
         settingsJsonReader: JsonReaderInterface,
         defaultVoiceAudioEncoding: GoogleVoiceAudioEncoding = GoogleVoiceAudioEncoding.MP3,
+        defaultMediaPlayerVolume: int = 38,
     ):
         if not isinstance(googleJsonMapper, GoogleJsonMapperInterface):
             raise TypeError(f'googleJsonMapper argument is malformed: \"{googleJsonMapper}\"')
@@ -21,10 +22,15 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
         elif not isinstance(defaultVoiceAudioEncoding, GoogleVoiceAudioEncoding):
             raise TypeError(f'defaultVoiceAudioEncoding argument is malformed: \"{defaultVoiceAudioEncoding}\"')
+        elif not utils.isValidInt(defaultMediaPlayerVolume):
+            raise TypeError(f'defaultMediaPlayerVolume argument is malformed: \"{defaultMediaPlayerVolume}\"')
+        elif defaultMediaPlayerVolume < 1 or defaultMediaPlayerVolume > 100:
+            raise ValueError(f'defaultMediaPlayerVolume argument is out of bounds: {defaultMediaPlayerVolume}')
 
         self.__googleJsonMapper: Final[GoogleJsonMapperInterface] = googleJsonMapper
         self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
         self.__defaultVoiceAudioEncoding: Final[GoogleVoiceAudioEncoding] = defaultVoiceAudioEncoding
+        self.__defaultMediaPlayerVolume: Final[int] = defaultMediaPlayerVolume
 
         self.__cache: dict[str, Any] | None = None
 
@@ -37,7 +43,12 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'mediaPlayerVolume', fallback = 32)
+
+        return utils.getIntFromDict(
+            d = jsonContents,
+            key = 'mediaPlayerVolume',
+            fallback = self.__defaultMediaPlayerVolume,
+        )
 
     async def getVoiceAudioEncoding(self) -> GoogleVoiceAudioEncoding:
         jsonContents = await self.__readJson()
