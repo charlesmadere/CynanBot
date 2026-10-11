@@ -32,8 +32,8 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
 
     @dataclass(frozen = True, slots = True)
     class GoogleSpeechRequestData:
-        voicePreset: AbsGoogleVoicePreset
         synthesizeRequest: GoogleTextSynthesizeRequest
+        voicePreset: GoogleVoicePreset
         fullMessage: str
 
     def __init__(
@@ -138,8 +138,8 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         )
 
         return GoogleTtsHelper.GoogleSpeechRequestData(
-            voicePreset = voicePreset,
             synthesizeRequest = synthesizeRequest,
+            voicePreset = voicePreset,
             fullMessage = fullMessage,
         )
 
