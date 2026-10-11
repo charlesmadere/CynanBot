@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 aiofiles = "25.1.0"
-aiohttp = "3.14.4"
+aiohttp = "3.14.5"
 aiosqlite = "0.22.1"
 asyncpg = "0.32.0"
 audioplayer = { version = "0.6", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
@@ -26,7 +26,7 @@ pyjwt = "2.15.1"
 pytest = "9.1.1"
 pytest-asyncio = "1.4.0"
 python-vlc = { version = "3.0.21203", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
-pytz = "2026.4"
+pytz = "2026.5"
 pywin32 = { version = "312", markers = "sys_platform == 'win32'" }
 requests = "2.34.2"
 roman = "5.2"
