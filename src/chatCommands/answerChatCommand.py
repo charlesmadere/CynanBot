@@ -69,6 +69,7 @@ class AnswerChatCommand(AbsChatCommand):
             twitchChannelId = chatMessage.twitchChannelId,
             twitchChatMessageId = chatMessage.twitchChatMessageId,
             userId = chatMessage.chatterUserId,
+            userLogin = chatMessage.chatterUserLogin,
             userName = chatMessage.chatterUserName,
         ))
 

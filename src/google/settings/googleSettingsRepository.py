@@ -14,6 +14,7 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
         googleJsonMapper: GoogleJsonMapperInterface,
         settingsJsonReader: JsonReaderInterface,
         defaultVoiceAudioEncoding: GoogleVoiceAudioEncoding = GoogleVoiceAudioEncoding.MP3,
+        defaultMaxConsecutiveEmojis: int = 8,
         defaultMediaPlayerVolume: int = 38,
     ):
         if not isinstance(googleJsonMapper, GoogleJsonMapperInterface):
@@ -22,6 +23,10 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
         elif not isinstance(defaultVoiceAudioEncoding, GoogleVoiceAudioEncoding):
             raise TypeError(f'defaultVoiceAudioEncoding argument is malformed: \"{defaultVoiceAudioEncoding}\"')
+        elif not utils.isValidInt(defaultMaxConsecutiveEmojis):
+            raise TypeError(f'defaultMaxConsecutiveEmojis argument is malformed: \"{defaultMaxConsecutiveEmojis}\"')
+        elif defaultMaxConsecutiveEmojis < 3 or defaultMaxConsecutiveEmojis > utils.getIntMaxSafeSize():
+            raise ValueError(f'defaultMaxConsecutiveEmojis argument is out of bounds: {defaultMaxConsecutiveEmojis}')
         elif not utils.isValidInt(defaultMediaPlayerVolume):
             raise TypeError(f'defaultMediaPlayerVolume argument is malformed: \"{defaultMediaPlayerVolume}\"')
         elif defaultMediaPlayerVolume < 1 or defaultMediaPlayerVolume > 100:
@@ -30,6 +35,7 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
         self.__googleJsonMapper: Final[GoogleJsonMapperInterface] = googleJsonMapper
         self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
         self.__defaultVoiceAudioEncoding: Final[GoogleVoiceAudioEncoding] = defaultVoiceAudioEncoding
+        self.__defaultMaxConsecutiveEmojis: Final[int] = defaultMaxConsecutiveEmojis
         self.__defaultMediaPlayerVolume: Final[int] = defaultMediaPlayerVolume
 
         self.__cache: dict[str, Any] | None = None
@@ -40,6 +46,15 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
 
     async def clearCaches(self):
         self.__cache = None
+
+    async def getMaxConsecutiveEmojis(self) -> int:
+        jsonContents = await self.__readJson()
+
+        return utils.getIntFromDict(
+            d = jsonContents,
+            key = 'maxConsecutiveEmojis',
+            fallback = self.__defaultMaxConsecutiveEmojis,
+        )
 
     async def getMediaPlayerVolume(self) -> int | None:
         jsonContents = await self.__readJson()

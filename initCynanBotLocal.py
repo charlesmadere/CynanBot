@@ -1297,6 +1297,7 @@ googleApiService: Final[GoogleApiServiceInterface] = GoogleApiService(
 googleFileExtensionHelper: Final[GoogleFileExtensionHelperInterface] = GoogleFileExtensionHelper()
 
 googleTtsMessageCleaner: Final[GoogleTtsMessageCleanerInterface] = GoogleTtsMessageCleaner(
+    googleSettingsRepository = googleSettingsRepository,
     ttsSettingsRepository = ttsSettingsRepository,
 )
 

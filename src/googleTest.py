@@ -208,7 +208,6 @@ async def main():
     for voicePreset in voicePresets:
         fileReference = await googleTtsHelper.generateTts(
             voicePreset = voicePreset,
-            allowMultiSpeaker = False,
             donationPrefix = None,
             message = message,
             twitchChannelId = twitchChannelId,

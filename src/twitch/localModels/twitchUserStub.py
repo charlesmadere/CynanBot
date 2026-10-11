@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 
 from .twitchUserInterface import TwitchUserInterface
 
@@ -9,6 +10,12 @@ class TwitchUserStub(TwitchUserInterface):
     userLogin: str
     userName: str
 
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, TwitchUserInterface):
+            return False
+
+        return self.userId == other.getUserId()
+
     def getUserId(self) -> str:
         return self.userId
 
@@ -17,3 +24,6 @@ class TwitchUserStub(TwitchUserInterface):
 
     def getUserName(self) -> str:
         return self.userName
+
+    def __hash__(self) -> int:
+        return hash(self.userId)

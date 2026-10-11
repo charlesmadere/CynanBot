@@ -1611,6 +1611,7 @@ unrestrictedDecTalkTtsManagerProvider: Final[DecTalkTtsManagerProviderInterface]
 googleFileExtensionHelper: Final[GoogleFileExtensionHelperInterface] = GoogleFileExtensionHelper()
 
 googleTtsMessageCleaner: Final[GoogleTtsMessageCleanerInterface] = GoogleTtsMessageCleaner(
+    googleSettingsRepository = googleSettingsRepository,
     ttsSettingsRepository = ttsSettingsRepository,
 )
 
