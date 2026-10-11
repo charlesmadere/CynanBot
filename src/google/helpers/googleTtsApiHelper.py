@@ -34,7 +34,9 @@ class GoogleTtsApiHelper(GoogleTtsApiHelperInterface):
             raise TypeError(f'request argument is malformed: \"{request}\"')
 
         try:
-            response = await self.__googleApiService.textToSpeech(request)
+            response = await self.__googleApiService.textToSpeech(
+                request = request,
+            )
         except (GenericNetworkException, GoogleCloudProjectIdUnavailableException) as e:
             self.__timber.log('GoogleTtsApiHelper', f'Failed to fetch Google text to speech ({request=})', e, traceback.format_exc())
             return None
