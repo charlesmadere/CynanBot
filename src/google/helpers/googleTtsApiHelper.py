@@ -42,7 +42,7 @@ class GoogleTtsApiHelper(GoogleTtsApiHelperInterface):
         try:
             return base64.b64decode(
                 s = response.audioContent,
-                validate = True
+                validate = True,
             )
         except binascii.Error as e:
             self.__timber.log('GoogleTtsApiHelper', f'Unable to decode base64 string into bytes due to bad characters ({request=}) ({response=})', e, traceback.format_exc())
