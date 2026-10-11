@@ -587,6 +587,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 twitchChannel = action.getTwitchChannel(),
                 twitchChannelId = action.getTwitchChannelId(),
                 userId = action.getUserId(),
+                userLogin = action.userLogin,
                 userName = action.getUserName(),
             ))
             return
