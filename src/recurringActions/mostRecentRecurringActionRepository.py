@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Final
 
 from .actions.recurringAction import RecurringAction
 from .jsonParser.recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
@@ -30,10 +31,10 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__recurringActionsJsonParser: RecurringActionsJsonParserInterface = recurringActionsJsonParser
-        self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__recurringActionsJsonParser: Final[RecurringActionsJsonParserInterface] = recurringActionsJsonParser
+        self.__timber: Final[TimberInterface] = timber
+        self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
 
         self.__isDatabaseReady: bool = False
 
