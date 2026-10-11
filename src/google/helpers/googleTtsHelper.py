@@ -7,7 +7,6 @@ from typing import Final, Pattern
 import aiofiles
 import aiofiles.os
 import aiofiles.ospath
-from frozenlist import FrozenList
 
 from .googleFileExtensionHelperInterface import GoogleFileExtensionHelperInterface
 from .googleTtsApiHelperInterface import GoogleTtsApiHelperInterface
@@ -34,7 +33,6 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
     @dataclass(frozen = True, slots = True)
     class GoogleSpeechRequestData:
         voicePreset: AbsGoogleVoicePreset
-        messageSentences: FrozenList[str]
         synthesizeRequest: GoogleTextSynthesizeRequest
         fullMessage: str
 
@@ -123,9 +121,6 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         if voicePreset is None or not isinstance(voicePreset, GoogleVoicePreset):
             voicePreset = await self.__googleTtsVoicesHelper.getEnglishVoice()
 
-        messageSentences: FrozenList[str] = FrozenList()
-        messageSentences.freeze()
-
         synthesisInput = GoogleTextSynthesisInput(
             text = fullMessage,
         )
@@ -144,7 +139,6 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
 
         return GoogleTtsHelper.GoogleSpeechRequestData(
             voicePreset = voicePreset,
-            messageSentences = messageSentences,
             synthesizeRequest = synthesizeRequest,
             fullMessage = fullMessage,
         )
