@@ -1,5 +1,5 @@
 import json
-from typing import Any
+from typing import Any, Final
 
 from .recurringActionsJsonParserInterface import RecurringActionsJsonParserInterface
 from ..actions.cutenessRecurringAction import CutenessRecurringAction
@@ -19,15 +19,15 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
     def __init__(
         self,
         languagesRepository: LanguagesRepositoryInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
-        self.__timber: TimberInterface = timber
+        self.__languagesRepository: Final[LanguagesRepositoryInterface] = languagesRepository
+        self.__timber: Final[TimberInterface] = timber
 
     async def __cutenessToJson(self, action: CutenessRecurringAction) -> str:
         if not isinstance(action, CutenessRecurringAction):
@@ -38,7 +38,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
 
     async def parseActionType(
         self,
-        actionType: str | Any | None
+        actionType: str | Any | None,
     ) -> RecurringActionType | None:
         if not utils.isValidStr(actionType):
             return None
@@ -60,7 +60,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         minutesBetween: int | None,
         jsonString: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> CutenessRecurringAction | None:
         if not utils.isValidStr(jsonString):
             return None
@@ -69,7 +69,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
             enabled = enabled,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            minutesBetween = minutesBetween
+            minutesBetween = minutesBetween,
         )
 
     async def parseSuperTrivia(
@@ -78,7 +78,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         minutesBetween: int | None,
         jsonString: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> SuperTriviaRecurringAction | None:
         if not utils.isValidStr(jsonString):
             return None
@@ -87,7 +87,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
             enabled = enabled,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            minutesBetween = minutesBetween
+            minutesBetween = minutesBetween,
         )
 
     async def parseWeather(
@@ -96,7 +96,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         minutesBetween: int | None,
         jsonString: str | None,
         twitchChannel: str,
-        twitchChannelId: str
+        twitchChannelId: str,
     ) -> WeatherRecurringAction | None:
         if not utils.isValidStr(jsonString):
             return None
@@ -106,7 +106,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         alertsOnly = utils.getBoolFromDict(
             d = jsonContents,
             key = 'alertsOnly',
-            fallback = True
+            fallback = True,
         )
 
         return WeatherRecurringAction(
@@ -114,7 +114,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
             enabled = enabled,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            minutesBetween = minutesBetween
+            minutesBetween = minutesBetween,
         )
 
     async def parseWordOfTheDay(
@@ -133,13 +133,15 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         wotdApiCode = utils.getStrFromDict(
             d = jsonContents,
             key = 'languageEntry',
-            fallback = ''
+            fallback = '',
         )
 
         languageEntry: LanguageEntry | None = None
 
         if utils.isValidStr(wotdApiCode):
-            languageEntry = await self.__languagesRepository.getLanguageForWotdApiCode(wotdApiCode)
+            languageEntry = await self.__languagesRepository.getLanguageForWotdApiCode(
+                wotdApiCode = wotdApiCode,
+            )
 
             if languageEntry is None:
                 self.__timber.log('RecurringActionsJsonParser', f'Unable to find language for Word of the Day API code ({wotdApiCode=}) ({jsonContents=})')
@@ -149,12 +151,12 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
             minutesBetween = minutesBetween,
-            languageEntry = languageEntry
+            languageEntry = languageEntry,
         )
 
     async def requireActionType(
         self,
-        actionType: str | Any | None
+        actionType: str | Any | None,
     ) -> RecurringActionType:
         result = await self.parseActionType(actionType)
 
@@ -165,7 +167,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
 
     async def serializeActionType(
         self,
-        actionType: RecurringActionType
+        actionType: RecurringActionType,
     ) -> str:
         if not isinstance(actionType, RecurringActionType):
             raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
@@ -204,7 +206,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
         jsonContents: dict[str, Any] = {
-            'alertsOnly': action.isAlertsOnly
+            'alertsOnly': action.isAlertsOnly,
         }
 
         return json.dumps(jsonContents)

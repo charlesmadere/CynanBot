@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 from frozenlist import FrozenList
 
@@ -23,7 +23,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         recurringActionsJsonParser: RecurringActionsJsonParserInterface,
-        timber: TimberInterface
+        timber: TimberInterface,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -32,9 +32,9 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__recurringActionsJsonParser: RecurringActionsJsonParserInterface = recurringActionsJsonParser
-        self.__timber: TimberInterface = timber
+        self.__backingDatabase: Final[BackingDatabase] = backingDatabase
+        self.__recurringActionsJsonParser: Final[RecurringActionsJsonParserInterface] = recurringActionsJsonParser
+        self.__timber: Final[TimberInterface] = timber
 
         self.__isDatabaseReady: bool = False
 
