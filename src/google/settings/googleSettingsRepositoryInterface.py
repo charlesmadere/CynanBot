@@ -11,6 +11,10 @@ class GoogleSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getMaxConsecutiveEmojis(self) -> int:
+        pass
+
+    @abstractmethod
     async def getMediaPlayerVolume(self) -> int | None:
         pass
 
