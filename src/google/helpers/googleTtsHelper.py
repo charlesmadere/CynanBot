@@ -144,11 +144,14 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
         )
 
     async def __createGoogleVoiceAudioConfig(self) -> GoogleVoiceAudioConfig:
+        volumeGainDb = await self.__googleSettingsRepository.getVolumeGainDb()
+        audioEncoding = await self.__googleSettingsRepository.getVoiceAudioEncoding()
+
         return GoogleVoiceAudioConfig(
             pitch = None,
             speakingRate = None,
-            volumeGainDb = await self.__googleSettingsRepository.getVolumeGainDb(),
-            audioEncoding = await self.__googleSettingsRepository.getVoiceAudioEncoding(),
+            volumeGainDb = volumeGainDb,
+            audioEncoding = audioEncoding,
             sampleRateHertz = None,
         )
 
