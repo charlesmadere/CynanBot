@@ -98,10 +98,10 @@ class DetermineBananaTargetUseCase(DetermineBananaTargetUseCaseInterface):
                 diceRollFailureData = None,
             )
 
-        isGuaranteedTimeoutTarget = await self.__guaranteedTimeoutUsersRepository.isGuaranteed(timeoutTarget.userId)
+        isGuaranteedTimeout = await self.__guaranteedTimeoutUsersRepository.isGuaranteed(timeoutTarget.userId)
         isTryingToTimeoutThemselves = timeoutTarget.userId == timeoutAction.instigatorUserId
 
-        if isGuaranteedTimeoutTarget or isTryingToTimeoutThemselves or not timeoutAction.isRandomChanceEnabled:
+        if isGuaranteedTimeout or isTryingToTimeoutThemselves or not timeoutAction.isRandomChanceEnabled:
             return DetermineBananaTargetUseCase.ResultData(
                 timeoutTarget = timeoutTarget,
                 isReverse = False,
