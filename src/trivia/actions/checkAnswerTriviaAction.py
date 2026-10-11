@@ -15,6 +15,7 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
         twitchChannelId: str,
         twitchChatMessageId: str | None,
         userId: str,
+        userLogin: str,
         userName: str,
     ):
         super().__init__(actionId = actionId)
@@ -29,6 +30,8 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
             raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
+        elif not utils.isValidStr(userLogin):
+            raise TypeError(f'userLogin argument is malformed: \"{userLogin}\"')
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
@@ -37,6 +40,7 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
         self.__twitchChannelId: Final[str] = twitchChannelId
         self.__twitchChatMessageId: Final[str | None] = twitchChatMessageId
         self.__userId: Final[str] = userId
+        self.__userLogin: Final[str] = userLogin
         self.__userName: Final[str] = userName
 
     @property
@@ -60,6 +64,7 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
             'twitchChannelId': self.__twitchChannelId,
             'twitchChatMessageId': self.__twitchChatMessageId,
             'userId': self.__userId,
+            'userLogin': self.__userLogin,
             'userName': self.__userName,
         }
 
@@ -82,6 +87,10 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
     @property
     def userId(self) -> str:
         return self.__userId
+
+    @property
+    def userLogin(self) -> str:
+        return self.__userLogin
 
     @property
     def userName(self) -> str:
