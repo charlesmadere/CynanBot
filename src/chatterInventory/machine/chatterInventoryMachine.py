@@ -516,7 +516,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
 
         emote: str
 
-        if action.changeAmount > 1:
+        if action.changeAmount > 0:
             emote = await self.__trollmojiHelper.getThumbsUpEmoteOrBackup()
         else:
             emote = await self.__trollmojiHelper.getThumbsDownEmoteOrBackup()
