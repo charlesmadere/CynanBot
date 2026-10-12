@@ -2222,7 +2222,8 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     FreeGiveChatterItemChatCommand(
         administratorProvider = administratorProvider,
-        chatterInventoryHelper = chatterInventoryHelper,
+        chatterInventoryIdGenerator = chatterInventoryIdGenerator,
+        chatterInventoryMachine = chatterInventoryMachine,
         chatterInventoryMapper = chatterInventoryMapper,
         chatterInventorySettings = chatterInventorySettings,
         timber = timber,
