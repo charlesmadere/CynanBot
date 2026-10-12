@@ -1,7 +1,7 @@
 import asyncio
 import queue
 import traceback
-from datetime import datetime, timedelta
+from datetime import timedelta
 from queue import SimpleQueue
 from typing import Any, Final
 
@@ -573,7 +573,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         elif action.triviaActionType is not TriviaActionType.START_NEW_GAME:
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.START_NEW_GAME}: \"{action.triviaActionType}\"')
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         state = await self.__triviaGameStore.getNormalGame(
             twitchChannelId = action.getTwitchChannelId(),
             userId = action.getUserId(),
@@ -628,7 +628,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             specialTriviaStatus = SpecialTriviaStatus.SHINY
             pointsForWinning = pointsForWinning * action.shinyMultiplier
 
-        endTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = action.secondsToLive)
+        endTime = self.__timeZoneRepository.getNow() + timedelta(seconds = action.secondsToLive)
 
         state = TriviaGameState(
             triviaQuestion = triviaQuestion,
@@ -669,7 +669,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         elif action.triviaActionType is not TriviaActionType.START_NEW_SUPER_GAME:
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.START_NEW_SUPER_GAME}: \"{action.triviaActionType}\"')
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         superTriviaFirstQuestionDelay = timedelta(
             seconds = await self.__triviaSettings.getSuperTriviaFirstQuestionDelaySeconds(),
@@ -754,7 +754,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             specialTriviaStatus = SpecialTriviaStatus.TOXIC
             pointsForWinning = pointsForWinning * action.toxicMultiplier
 
-        endTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = action.secondsToLive)
+        endTime = self.__timeZoneRepository.getNow() + timedelta(seconds = action.secondsToLive)
 
         state = SuperTriviaGameState(
             triviaQuestion = triviaQuestion,
@@ -793,7 +793,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         await self.__beginQueuedTriviaGames()
 
     async def __removeDeadTriviaGames(self):
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         gameStates = await self.__triviaGameStore.getAll()
         gameStatesToRemove: list[AbsTriviaGameState] = list()
 
