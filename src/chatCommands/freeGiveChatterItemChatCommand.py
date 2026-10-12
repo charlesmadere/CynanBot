@@ -1,4 +1,3 @@
-import locale
 import random
 import re
 import traceback
@@ -7,9 +6,11 @@ from typing import Collection, Final, Pattern
 
 from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
-from ..chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
+from ..chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
+from ..chatterInventory.machine.chatterInventoryMachineInterface import ChatterInventoryMachineInterface
 from ..chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from ..chatterInventory.models.chatterItemType import ChatterItemType
+from ..chatterInventory.models.giveChatterItemAction import GiveChatterItemAction
 from ..chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
@@ -34,7 +35,8 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
-        chatterInventoryHelper: ChatterInventoryHelperInterface,
+        chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface,
+        chatterInventoryMachine: ChatterInventoryMachineInterface,
         chatterInventoryMapper: ChatterInventoryMapperInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
         timber: TimberInterface,
@@ -45,8 +47,10 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(chatterInventoryHelper, ChatterInventoryHelperInterface):
-            raise TypeError(f'chatterInventoryHelper argument is malformed: \"{chatterInventoryHelper}\"')
+        elif not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
+            raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
+        elif not isinstance(chatterInventoryMachine, ChatterInventoryMachineInterface):
+            raise TypeError(f'chatterInventoryMachine argument is malformed: \"{chatterInventoryMachine}\"')
         elif not isinstance(chatterInventoryMapper, ChatterInventoryMapperInterface):
             raise TypeError(f'chatterInventoryMapper argument is malformed: \"{chatterInventoryMapper}\"')
         elif not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
@@ -63,7 +67,8 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
             raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
-        self.__chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = chatterInventoryHelper
+        self.__chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = chatterInventoryIdGenerator
+        self.__chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = chatterInventoryMachine
         self.__chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = chatterInventoryMapper
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__timber: Final[TimberInterface] = timber
@@ -117,43 +122,19 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
             self.__timber.log(self.commandName, f'Invalid arguments ({arguments=}) ({chatMessage=})')
             return ChatCommandResult.CONSUMED
 
-        updatedInventory = await self.__chatterInventoryHelper.give(
+        actionId = await self.__chatterInventoryIdGenerator.generateActionId()
+
+        self.__chatterInventoryMachine.submitAction(GiveChatterItemAction(
             itemType = arguments.itemType,
-            giveAmount = arguments.giveAmount,
+            changeAmount = arguments.giveAmount,
+            actionId = actionId,
             chatterUserId = arguments.chatterUserId,
             twitchChannelId = chatMessage.twitchChannelId,
-        )
+            twitchChatMessageId = chatMessage.twitchChatMessageId,
+            user = chatMessage.twitchUser,
+        ))
 
-        inventoryStrings: list[str] = list()
-
-        for itemType in ChatterItemType:
-            if itemType not in await self.__chatterInventorySettings.getEnabledItemTypes():
-                continue
-
-            amount = updatedInventory[itemType]
-            amountString = locale.format_string("%d", amount, grouping = True)
-
-            if amount == 0:
-                continue
-            elif amount == 1:
-                inventoryStrings.append(f'{amountString} {itemType.humanName}')
-            else:
-                inventoryStrings.append(f'{amountString} {itemType.pluralHumanName}')
-
-        inventoryString: str
-
-        if len(inventoryStrings) == 0:
-            inventoryString = f'inventory is empty 😿'
-        else:
-            inventoryString = ', '.join(inventoryStrings)
-
-        self.__twitchChatMessenger.send(
-            text = f'ⓘ Updated inventory for @{updatedInventory.chatterUserData.getUserName()} — {inventoryString}',
-            twitchChannelId = chatMessage.twitchChannelId,
-            replyMessageId = chatMessage.twitchChatMessageId,
-        )
-
-        self.__timber.log(self.commandName, f'Consumed ({updatedInventory=}) ({arguments=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({actionId=}) ({arguments=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
@@ -206,7 +187,7 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
                 self.__timber.log(self.commandName, f'Failed to parse giveAmountString into an int ({giveAmountString=}) ({itemTypeString=}) ({chatterUserData=}) ({chatterUserName=}) ({argumentsMatch=}) ({chatMessage=})', e, traceback.format_exc())
                 return None
 
-            if giveAmount < utils.getShortMinSafeSize() or giveAmount > utils.getShortMaxSafeSize():
+            if giveAmount == 0 or giveAmount < utils.getShortMinSafeSize() or giveAmount > utils.getShortMaxSafeSize():
                 self.__timber.log(self.commandName, f'The giveAmount value is out of bounds ({giveAmount=}) ({giveAmountString=}) ({itemTypeString=}) ({chatterUserData=}) ({chatterUserName=}) ({argumentsMatch=}) ({chatMessage=})')
                 return None
 

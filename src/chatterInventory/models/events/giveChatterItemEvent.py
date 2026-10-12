@@ -12,6 +12,7 @@ class GiveChatterItemEvent(AbsChatterItemEvent):
     updatedInventory: ChatterInventoryData
     originatingAction: GiveChatterItemAction
     changeAmount: int
+    emote: str
     eventId: str
     chatterUserData: TwitchUserInterface
 

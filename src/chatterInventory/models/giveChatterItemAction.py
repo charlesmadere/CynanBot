@@ -10,7 +10,6 @@ class GiveChatterItemAction(AbsChatterItemAction):
     itemType: ChatterItemType
     changeAmount: int
     actionId: str
-    chatMessage: str | None
     chatterUserId: str
     twitchChannelId: str
     twitchChatMessageId: str | None

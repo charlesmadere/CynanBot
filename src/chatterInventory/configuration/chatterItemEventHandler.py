@@ -454,15 +454,16 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         self,
         event: GiveChatterItemEvent,
     ):
-        awardedItemsString: str
+        newItemAmount = event.updatedInventory[event.getItemType()]
+        newItemAmountString = locale.format_string("%d", newItemAmount, grouping = True)
 
-        if event.changeAmount == 1:
-            awardedItemsString = f'{event.changeAmountString} {event.getItemType().humanName}'
+        if newItemAmount == 1:
+            pluralizedItemString = event.getItemType().humanName
         else:
-            awardedItemsString = f'{event.changeAmountString} {event.getItemType().pluralHumanName}'
+            pluralizedItemString = event.getItemType().pluralHumanName
 
         self.__twitchChatMessenger.send(
-            text = f'🪎 @{event.chatterUserData.getUserName()} you received {awardedItemsString}',
+            text = f'{event.emote} @{event.chatterUserData.getUserName()} you now have {newItemAmountString} {pluralizedItemString}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )

@@ -195,18 +195,18 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             twitchChannelId = twitchChannelId,
         )
 
-        moderatorUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(
+        selfUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(
             userLoginOrName = await self.__twitchHandleProvider.getTwitchHandle(),
             twitchAccessToken = userTwitchAccessToken,
         )
 
-        moderatorTwitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
-            twitchChannelId = moderatorUserId,
+        selfTwitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
+            twitchChannelId = selfUserId,
         )
 
         return ChatterInventoryMachine.TokensAndDetails(
-            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
-            moderatorUserId = moderatorUserId,
+            moderatorTwitchAccessToken = selfTwitchAccessToken,
+            moderatorUserId = selfUserId,
             userTwitchAccessToken = userTwitchAccessToken,
         )
 
@@ -514,9 +514,17 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             ),
         )
 
+        emote: str
+
+        if action.changeAmount > 1:
+            emote = await self.__trollmojiHelper.getThumbsUpEmoteOrBackup()
+        else:
+            emote = await self.__trollmojiHelper.getThumbsDownEmoteOrBackup()
+
         await self.__submitEvent(GiveChatterItemEvent(
             updatedInventory = updatedInventory,
             changeAmount = action.changeAmount,
+            emote = emote,
             eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
             chatterUserData = chatterUserData,
             originatingAction = action,
