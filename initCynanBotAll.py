@@ -2367,7 +2367,6 @@ triviaGameMachine: Final[TriviaGameMachineInterface] = TriviaGameMachine(
     triviaScoreRepository = triviaScoreRepository,
     triviaSettings = triviaSettings,
     triviaTwitchEmoteHelper = triviaTwitchEmoteHelper,
-    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 

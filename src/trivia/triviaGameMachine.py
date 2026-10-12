@@ -62,7 +62,6 @@ from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..timber.timberInterface import TimberInterface
-from ..twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
 
 class TriviaGameMachine(TriviaGameMachineInterface):
@@ -86,7 +85,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         triviaScoreRepository: TriviaScoreRepositoryInterface,
         triviaSettings: TriviaSettingsInterface,
         triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface,
-        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         sleepTimeSeconds: float = 0.5,
         queueTimeoutSeconds: int = 3,
     ):
@@ -124,8 +122,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not isinstance(triviaTwitchEmoteHelper, TriviaTwitchEmoteHelperInterface):
             raise TypeError(f'triviaTwitchEmoteHelper argument is malformed: \"{triviaTwitchEmoteHelper}\"')
-        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
-            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 0.125 or sleepTimeSeconds > 3:
@@ -152,7 +148,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self.__triviaScoreRepository: Final[TriviaScoreRepositoryInterface] = triviaScoreRepository
         self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
         self.__triviaTwitchEmoteHelper: Final[TriviaTwitchEmoteHelperInterface] = triviaTwitchEmoteHelper
-        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
