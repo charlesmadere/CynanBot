@@ -85,7 +85,12 @@ class CalculateTimeoutDurationUseCase(CalculateTimeoutDurationUseCaseInterface):
             includeMinutesAndSeconds = True,
         )
 
+        shorthandMessage = utils.secondsToShorthandDurationMessage(
+            secondsDuration = durationSeconds,
+        )
+
         return CalculatedTimeoutDuration(
             seconds = durationSeconds,
             message = message,
+            shorthandMessage = shorthandMessage,
         )

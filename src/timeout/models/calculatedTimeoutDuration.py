@@ -7,6 +7,7 @@ from dataclasses import dataclass
 class CalculatedTimeoutDuration:
     seconds: int
     message: str
+    shorthandMessage: str
 
     @property
     def secondsStr(self) -> str:

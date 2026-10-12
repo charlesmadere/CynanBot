@@ -1,11 +1,11 @@
 import html
+import math
 import random
 import re
 from datetime import datetime
 from typing import Any, Final, Generator, Pattern, Sized, TypeVar, overload
 from urllib.parse import urlparse
 
-import math
 from frozendict import frozendict
 from typing_extensions import TypeGuard
 
@@ -516,6 +516,59 @@ def secondsToDurationMessage(
 
     result = f'{yearsString} {weeksString} {daysString} {hoursString} {minutesString} {secondsString}'
     return EXTRA_WHITE_SPACE_REG_EX.sub(' ', result).strip()
+
+def secondsToShorthandDurationMessage(
+    secondsDuration: int,
+) -> str:
+    if not isValidInt(secondsDuration):
+        raise TypeError(f'secondsDuration argument is malformed: \"{secondsDuration}\"')
+    elif secondsDuration < 0 or secondsDuration > getLongMaxSafeSize():
+        raise ValueError(f'secondsDuration argument is out of bounds: {secondsDuration}')
+
+    if secondsDuration == 0:
+        return '0s'
+
+    years = math.floor(secondsDuration / YEAR_IN_SECONDS)
+    if years >= 1: secondsDuration = secondsDuration - (years * YEAR_IN_SECONDS)
+
+    weeks = math.floor(secondsDuration / WEEK_IN_SECONDS)
+    if weeks >= 1: secondsDuration = secondsDuration - (weeks * WEEK_IN_SECONDS)
+
+    days = math.floor(secondsDuration / DAY_IN_SECONDS)
+    if days >= 1: secondsDuration = secondsDuration - (days * DAY_IN_SECONDS)
+
+    hours = math.floor(secondsDuration / HOUR_IN_SECONDS)
+    if hours >= 1: secondsDuration = secondsDuration - (hours * HOUR_IN_SECONDS)
+
+    minutes = math.floor(secondsDuration / MINUTE_IN_SECONDS)
+    if minutes >= 1: secondsDuration = secondsDuration - (minutes * MINUTE_IN_SECONDS)
+
+    # the only value now remaining in secondsDuration is the number of seconds
+    seconds = secondsDuration
+
+    yearsString = ''
+    if years >= 1: yearsString = f'{years}y'
+
+    weeksString = ''
+    if weeks >= 1: weeksString = f'{weeks}w'
+
+    daysString = ''
+    if days >= 1: daysString = f'{days}d'
+
+    hoursString = ''
+    if hours >= 1: hoursString = f'{hours}h'
+
+    minutesString = ''
+    if minutes >= 1: minutesString = f'{minutes}m'
+
+    secondsString = ''
+    if seconds >= 1:
+        if years != 0 or weeks != 0 or days != 0 or hours != 0 or minutes != 0:
+            secondsString = f'{seconds:02}s'
+        else:
+            secondsString = f'{seconds}s'
+
+    return f'{yearsString}{weeksString}{daysString}{hoursString}{minutesString}{secondsString}'
 
 def splitLongStringIntoMessages(
     maxMessages: int,
