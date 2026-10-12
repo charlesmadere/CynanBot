@@ -463,7 +463,7 @@ class ChatterItemEventHandler(ChatterItemEventListener):
             pluralizedItemString = event.getItemType().pluralHumanName
 
         self.__twitchChatMessenger.send(
-            text = f'{event.emote} @{event.chatterUserData.getUserName()} you now have {newItemAmountString} {pluralizedItemString}',
+            text = f'{event.emote} @{event.chatterUserData.getUserName()} now has {newItemAmountString} {pluralizedItemString}',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )
