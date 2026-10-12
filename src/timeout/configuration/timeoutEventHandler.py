@@ -646,7 +646,7 @@ class TimeoutEventHandler(TimeoutEventListener):
             ))
 
         self.__twitchChatMessenger.send(
-            text = f'{event.explodedEmote} @{event.targetUserData.getUserName()} used {ChatterItemType.TM_36.humanName}, its self destruct! {event.bombEmote}',
+            text = f'{event.explodedEmote} @{event.targetUserData.getUserName()} used {ChatterItemType.TM_36.humanName}, it\'s self destruct! ({event.timeoutDuration.shorthandMessage}) {event.bombEmote}',
             twitchChannelId = event.twitchChannelId,
         )
 

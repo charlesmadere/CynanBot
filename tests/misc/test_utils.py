@@ -745,6 +745,34 @@ class TestUtils:
         result = utils.secondsToDurationMessage(604800 * 2)
         assert result == '2 weeks'
 
+    def test_secondsToShorthandDurationMessage_with2Minutes(self):
+        result = utils.secondsToShorthandDurationMessage(60 * 2)
+        assert result == '2m'
+
+    def test_secondsToShorthandDurationMessage_with5Minutes5seconds(self):
+        result = utils.secondsToShorthandDurationMessage((60 * 5) + 5)
+        assert result == '5m05s'
+
+    def test_secondsToShorthandDurationMessage_with0Seconds(self):
+        result = utils.secondsToShorthandDurationMessage(0)
+        assert result == '0s'
+
+    def test_secondsToShorthandDurationMessage_with1Second(self):
+        result = utils.secondsToShorthandDurationMessage(1)
+        assert result == '1s'
+
+    def test_secondsToShorthandDurationMessage_with2Seconds(self):
+        result = utils.secondsToShorthandDurationMessage(2)
+        assert result == '2s'
+
+    def test_secondsToShorthandDurationMessage_with1Week3Days35Minutes11Seconds(self):
+        result = utils.secondsToShorthandDurationMessage(604800 + (86400 * 3) + 60 + 11)
+        assert result == '1w3d1m11s'
+
+    def test_secondsToShorthandDurationMessage_with2Weeks(self):
+        result = utils.secondsToShorthandDurationMessage(604800 * 2)
+        assert result == '2w'
+
     def test_splitLongStringIntoMessages_withEmptyMessage(self):
         result = utils.splitLongStringIntoMessages(
             maxMessages = 50,
