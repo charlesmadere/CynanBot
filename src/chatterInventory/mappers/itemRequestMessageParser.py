@@ -27,6 +27,12 @@ class ItemRequestMessageParser:
         # meant to match various item type style commands: !airstrike, !grenade, etc
         self.__itemTypeCommandRegEx: Final[Pattern] = re.compile(r'^\s*!\s*([\w_-]+)\b', re.IGNORECASE)
 
+        # meant to match: !open grenade, !open airstrike, etc
+        self.__openCommandRegEx: Final[Pattern] = re.compile(r'^\s*(?:!\s*open\s+)?([\w_-]+)\b', re.IGNORECASE)
+
+        # meant to match: !open air strike, !use banana peel, etc
+        self.__openCommandTwoWordsRegEx: Final[Pattern] = re.compile(r'^\s*(?:!\s*open\s+)?([\w_-]+\s+[\w_-]+)\b', re.IGNORECASE)
+
         # meant to match: !use grenade, !use airstrike, etc
         self.__useCommandRegEx: Final[Pattern] = re.compile(r'^\s*(?:!\s*use\s+)?([\w_-]+)\b', re.IGNORECASE)
 
@@ -55,6 +61,16 @@ class ItemRequestMessageParser:
             return result
 
         match = self.__useCommandRegEx.match(chatMessage)
+        result = await self.__parseMatch(match = match, chatMessage = chatMessage)
+        if result is not None:
+            return result
+
+        match = self.__openCommandTwoWordsRegEx.match(chatMessage)
+        result = await self.__parseMatch(match = match, chatMessage = chatMessage)
+        if result is not None:
+            return result
+
+        match = self.__openCommandRegEx.match(chatMessage)
         result = await self.__parseMatch(match = match, chatMessage = chatMessage)
         if result is not None:
             return result

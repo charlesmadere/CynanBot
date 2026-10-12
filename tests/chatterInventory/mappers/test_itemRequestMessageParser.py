@@ -129,6 +129,46 @@ class TestItemRequestMessageParser:
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parse_withOpenCommandAndAirStrikeItemType(self):
+        result = await self.parser.parse('!open air_strike')
+        assert result is not None
+        assert result.itemType is ChatterItemType.AIR_STRIKE
+        assert result.argument is None
+        assert result.originalChatMessage == '!open air_strike'
+
+        result = await self.parser.parse('!open air-strike')
+        assert result is not None
+        assert result.itemType is ChatterItemType.AIR_STRIKE
+        assert result.argument is None
+        assert result.originalChatMessage == '!open air-strike'
+
+        result = await self.parser.parse('!open airstrike')
+        assert result is not None
+        assert result.itemType is ChatterItemType.AIR_STRIKE
+        assert result.argument is None
+        assert result.originalChatMessage == '!open airstrike'
+
+        result = await self.parser.parse('!open air strike')
+        assert result is not None
+        assert result.itemType is ChatterItemType.AIR_STRIKE
+        assert result.argument is None
+        assert result.originalChatMessage == '!open air strike'
+
+    @pytest.mark.asyncio
+    async def test_parse_withOpenCommandAndGashaponItemType(self):
+        result = await self.parser.parse('!open gashapon')
+        assert result is not None
+        assert result.itemType is ChatterItemType.GASHAPON
+        assert result.argument is None
+        assert result.originalChatMessage == '!open gashapon'
+
+        result = await self.parser.parse('!open gachi')
+        assert result is not None
+        assert result.itemType is ChatterItemType.GASHAPON
+        assert result.argument is None
+        assert result.originalChatMessage == '!open gachi'
+
+    @pytest.mark.asyncio
     async def test_parse_withUseCommandAndAirStrikeItemType(self):
         result = await self.parser.parse('!use air_strike')
         assert result is not None
