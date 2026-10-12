@@ -15,6 +15,7 @@ class GameAlreadyInProgressTriviaEvent(AbsTriviaEvent):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
+        userLogin: str,
         userName: str,
     ):
         super().__init__(
@@ -30,6 +31,8 @@ class GameAlreadyInProgressTriviaEvent(AbsTriviaEvent):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
+        elif not utils.isValidStr(userLogin):
+            raise TypeError(f'userLogin argument is malformed: \"{userLogin}\"')
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
@@ -37,6 +40,7 @@ class GameAlreadyInProgressTriviaEvent(AbsTriviaEvent):
         self.__twitchChannel: Final[str] = twitchChannel
         self.__twitchChannelId: Final[str] = twitchChannelId
         self.__userId: Final[str] = userId
+        self.__userLogin: Final[str] = userLogin
         self.__userName: Final[str] = userName
 
     @property
@@ -58,6 +62,10 @@ class GameAlreadyInProgressTriviaEvent(AbsTriviaEvent):
     @property
     def userId(self) -> str:
         return self.__userId
+
+    @property
+    def userLogin(self) -> str:
+        return self.__userLogin
 
     @property
     def userName(self) -> str:

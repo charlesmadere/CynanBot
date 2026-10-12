@@ -1,7 +1,7 @@
 import asyncio
 import queue
 import traceback
-from datetime import datetime, timedelta
+from datetime import timedelta
 from queue import SimpleQueue
 from typing import Any, Final
 
@@ -62,7 +62,6 @@ from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
 from ..misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ..timber.timberInterface import TimberInterface
-from ..twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
 
 class TriviaGameMachine(TriviaGameMachineInterface):
@@ -86,7 +85,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         triviaScoreRepository: TriviaScoreRepositoryInterface,
         triviaSettings: TriviaSettingsInterface,
         triviaTwitchEmoteHelper: TriviaTwitchEmoteHelperInterface,
-        twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         sleepTimeSeconds: float = 0.5,
         queueTimeoutSeconds: int = 3,
     ):
@@ -124,8 +122,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not isinstance(triviaTwitchEmoteHelper, TriviaTwitchEmoteHelperInterface):
             raise TypeError(f'triviaTwitchEmoteHelper argument is malformed: \"{triviaTwitchEmoteHelper}\"')
-        elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
-            raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 0.125 or sleepTimeSeconds > 3:
@@ -152,7 +148,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self.__triviaScoreRepository: Final[TriviaScoreRepositoryInterface] = triviaScoreRepository
         self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
         self.__triviaTwitchEmoteHelper: Final[TriviaTwitchEmoteHelperInterface] = triviaTwitchEmoteHelper
-        self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__sleepTimeSeconds: Final[float] = sleepTimeSeconds
         self.__queueTimeoutSeconds: Final[int] = queueTimeoutSeconds
 
@@ -573,7 +568,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         elif action.triviaActionType is not TriviaActionType.START_NEW_GAME:
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.START_NEW_GAME}: \"{action.triviaActionType}\"')
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         state = await self.__triviaGameStore.getNormalGame(
             twitchChannelId = action.getTwitchChannelId(),
             userId = action.getUserId(),
@@ -587,6 +582,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 twitchChannel = action.getTwitchChannel(),
                 twitchChannelId = action.getTwitchChannelId(),
                 userId = action.getUserId(),
+                userLogin = action.userLogin,
                 userName = action.getUserName(),
             ))
             return
@@ -627,7 +623,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             specialTriviaStatus = SpecialTriviaStatus.SHINY
             pointsForWinning = pointsForWinning * action.shinyMultiplier
 
-        endTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = action.secondsToLive)
+        endTime = self.__timeZoneRepository.getNow() + timedelta(seconds = action.secondsToLive)
 
         state = TriviaGameState(
             triviaQuestion = triviaQuestion,
@@ -668,7 +664,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         elif action.triviaActionType is not TriviaActionType.START_NEW_SUPER_GAME:
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.START_NEW_SUPER_GAME}: \"{action.triviaActionType}\"')
 
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         superTriviaFirstQuestionDelay = timedelta(
             seconds = await self.__triviaSettings.getSuperTriviaFirstQuestionDelaySeconds(),
@@ -753,7 +749,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             specialTriviaStatus = SpecialTriviaStatus.TOXIC
             pointsForWinning = pointsForWinning * action.toxicMultiplier
 
-        endTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = action.secondsToLive)
+        endTime = self.__timeZoneRepository.getNow() + timedelta(seconds = action.secondsToLive)
 
         state = SuperTriviaGameState(
             triviaQuestion = triviaQuestion,
@@ -792,7 +788,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         await self.__beginQueuedTriviaGames()
 
     async def __removeDeadTriviaGames(self):
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
         gameStates = await self.__triviaGameStore.getAll()
         gameStatesToRemove: list[AbsTriviaGameState] = list()
 

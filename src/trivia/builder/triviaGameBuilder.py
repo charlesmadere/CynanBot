@@ -82,6 +82,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
             twitchChannel = twitchUser.handle,
             twitchChannelId = twitchChannelId,
             userId = chatterUserId,
+            userLogin = chatterUserLogin,
             userName = chatterUserName,
             triviaFetchOptions = triviaFetchOptions,
         )

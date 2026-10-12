@@ -161,7 +161,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
             question.triviaId, triviaSource, triviaType, twitchChannelId,
         )
 
-        nowDateTime = datetime.now(self.__timeZoneRepository.getDefault())
+        nowDateTime = self.__timeZoneRepository.getNow()
         nowDateTimeStr = nowDateTime.isoformat()
 
         if record is None or len(record) == 0:

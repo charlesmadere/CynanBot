@@ -18,6 +18,7 @@ class StartNewTriviaGameAction(AbsTriviaAction):
         twitchChannel: str,
         twitchChannelId: str,
         userId: str,
+        userLogin: str,
         userName: str,
         triviaFetchOptions: TriviaFetchOptions,
     ):
@@ -43,6 +44,8 @@ class StartNewTriviaGameAction(AbsTriviaAction):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
+        elif not utils.isValidStr(userLogin):
+            raise TypeError(f'userLogin argument is malformed: \"{userLogin}\"')
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
         elif not isinstance(triviaFetchOptions, TriviaFetchOptions):
@@ -55,6 +58,7 @@ class StartNewTriviaGameAction(AbsTriviaAction):
         self.__twitchChannel: Final[str] = twitchChannel
         self.__twitchChannelId: Final[str] = twitchChannelId
         self.__userId: Final[str] = userId
+        self.__userLogin: Final[str] = userLogin
         self.__userName: Final[str] = userName
         self.__triviaFetchOptions: Final[TriviaFetchOptions] = triviaFetchOptions
 
@@ -92,3 +96,7 @@ class StartNewTriviaGameAction(AbsTriviaAction):
     @property
     def triviaFetchOptions(self) -> TriviaFetchOptions:
         return self.__triviaFetchOptions
+
+    @property
+    def userLogin(self) -> str:
+        return self.__userLogin

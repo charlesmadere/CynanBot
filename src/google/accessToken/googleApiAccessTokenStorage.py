@@ -40,8 +40,8 @@ class GoogleApiAccessTokenStorage(GoogleApiAccessTokenStorageInterface):
         if (now + self.__expireTimeBuffer) < expireTime:
             return accessToken
 
-        self.__timber.log('GoogleApiAccessTokenStorage', f'Erasing persisted access token, as it is now too old to use ({accessToken=})')
         self.__accessToken = None
+        self.__timber.log('GoogleApiAccessTokenStorage', f'Erased persisted access token, as it is has become old to use ({accessToken=})')
         return None
 
     async def setAccessToken(self, accessToken: GoogleAccessToken | None):
@@ -50,4 +50,4 @@ class GoogleApiAccessTokenStorage(GoogleApiAccessTokenStorageInterface):
 
         oldAccessToken = self.__accessToken
         self.__accessToken = accessToken
-        self.__timber.log('GoogleApiAccessTokenStorage', f'Updating access token ({oldAccessToken=}) ({accessToken=})')
+        self.__timber.log('GoogleApiAccessTokenStorage', f'Updated access token ({oldAccessToken=}) ({accessToken=})')
