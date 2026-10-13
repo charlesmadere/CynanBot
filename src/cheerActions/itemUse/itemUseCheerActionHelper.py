@@ -1,4 +1,3 @@
-import locale
 from typing import Final
 
 from frozendict import frozendict
@@ -6,15 +5,12 @@ from frozendict import frozendict
 from .itemUseCheerAction import ItemUseCheerAction
 from .itemUseCheerActionHelperInterface import ItemUseCheerActionHelperInterface
 from ..absCheerAction import AbsCheerAction
-from ...chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from ...chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
 from ...chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
 from ...chatterInventory.models.useChatterItemRequest import UseChatterItemRequest
 from ...chatterInventory.models.useChatterItemResult import UseChatterItemResult
 from ...chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ...misc import utils as utils
-from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
-from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ...users.userInterface import UserInterface
 
 
@@ -22,64 +18,20 @@ class ItemUseCheerActionHelper(ItemUseCheerActionHelperInterface):
 
     def __init__(
         self,
-        chatterInventoryHelper: ChatterInventoryHelperInterface,
         chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
-        trollmojiHelper: TrollmojiHelperInterface,
-        twitchChatMessenger: TwitchChatMessengerInterface,
         useChatterItemHelper: UseChatterItemHelperInterface,
     ):
-        if not isinstance(chatterInventoryHelper, ChatterInventoryHelperInterface):
-            raise TypeError(f'chatterInventoryHelper argument is malformed: \"{chatterInventoryHelper}\"')
-        elif not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
+        if not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
             raise TypeError(f'chatterInventoryIdGenerator argument is malformed: \"{chatterInventoryIdGenerator}\"')
         elif not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
-        elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
-            raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
-        elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
-            raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(useChatterItemHelper, UseChatterItemHelperInterface):
             raise TypeError(f'useChatterItemHelper argument is malformed: \"{useChatterItemHelper}\"')
 
-        self.__chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = chatterInventoryHelper
         self.__chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = chatterInventoryIdGenerator
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
-        self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
-        self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__useChatterItemHelper: Final[UseChatterItemHelperInterface] = useChatterItemHelper
-
-    async def __awardItem(
-        self,
-        action: ItemUseCheerAction,
-        cheerUserId: str,
-        twitchChannelId: str,
-        twitchChatMessageId: str | None,
-    ):
-        result = await self.__chatterInventoryHelper.give(
-            itemType = action.itemType,
-            giveAmount = 1,
-            chatterUserId = cheerUserId,
-            twitchChannelId = twitchChannelId,
-        )
-
-        newAmount = result[action.itemType]
-        newAmountString = locale.format_string("%d", newAmount, grouping = True)
-
-        pluralizedName: str
-
-        if newAmount == 1:
-            pluralizedName = action.itemType.humanName
-        else:
-            pluralizedName = action.itemType.pluralHumanName
-
-        hypeEmote = await self.__trollmojiHelper.getHypeEmoteOrBackup()
-
-        self.__twitchChatMessenger.send(
-            text = f'{hypeEmote} You got a {action.itemType.humanName}! You now have {newAmountString} {pluralizedName}',
-            twitchChannelId = twitchChannelId,
-            replyMessageId = twitchChatMessageId,
-        )
 
     async def handleItemUseCheerAction(
         self,

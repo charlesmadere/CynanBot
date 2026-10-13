@@ -2030,11 +2030,8 @@ cheerActionsRepository: Final[CheerActionsRepositoryInterface] = CheerActionsRep
 )
 
 itemUseCheerActionHelper: Final[ItemUseCheerActionHelperInterface] = ItemUseCheerActionHelper(
-    chatterInventoryHelper = chatterInventoryHelper,
     chatterInventoryIdGenerator = chatterInventoryIdGenerator,
     chatterInventorySettings = chatterInventorySettings,
-    trollmojiHelper = trollmojiHelper,
-    twitchChatMessenger = twitchChatMessenger,
     useChatterItemHelper = useChatterItemHelper,
 )
 
