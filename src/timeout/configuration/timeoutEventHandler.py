@@ -1,6 +1,5 @@
 import asyncio
 import locale
-import random
 from typing import Final
 
 from frozenlist import FrozenList
@@ -38,6 +37,7 @@ from ..models.events.voreTimeoutFailedTimeoutEvent import VoreTimeoutFailedTimeo
 from ...chatterInventory.models.chatterItemType import ChatterItemType
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
@@ -54,6 +54,7 @@ class TimeoutEventHandler(TimeoutEventListener):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
+        randomUtils: RandomUtilsInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
@@ -61,6 +62,8 @@ class TimeoutEventHandler(TimeoutEventListener):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
@@ -71,6 +74,7 @@ class TimeoutEventHandler(TimeoutEventListener):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
@@ -633,7 +637,7 @@ class TimeoutEventHandler(TimeoutEventListener):
             SoundAlert.GRENADE_3,
         ])
         soundAlerts.freeze()
-        return random.choice(soundAlerts)
+        return self.__randomUtils.choice(soundAlerts)
 
     async def __handleTm36TimeoutEvent(
         self,
