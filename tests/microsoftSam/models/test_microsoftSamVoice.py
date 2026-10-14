@@ -20,16 +20,24 @@ class TestMicrosoftSamVoice:
         assert result == 'Sam'
 
     def test_humanName_withAll(self):
-        humanNames: list[str] = list()
+        humanNames: set[str] = set()
 
         for voice in MicrosoftSamVoice:
-            humanNames.append(voice.humanName)
+            humanNames.add(voice.humanName)
 
         assert len(humanNames) == len(MicrosoftSamVoice)
 
     def test_humanName_withBonziBuddy(self):
         result = MicrosoftSamVoice.BONZI_BUDDY.humanName
         assert result == 'Bonzi Buddy'
+
+    def test_humanName_withMary(self):
+        result = MicrosoftSamVoice.MARY.humanName
+        assert result == 'Mary'
+
+    def test_humanName_withMike(self):
+        result = MicrosoftSamVoice.MIKE.humanName
+        assert result == 'Mike'
 
     def test_humanName_withSam(self):
         result = MicrosoftSamVoice.SAM.humanName
