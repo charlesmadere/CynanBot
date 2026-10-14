@@ -888,6 +888,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
             splashTimeoutTargets = successfullyHitSplashTargets,
+            splashTimeoutDurationSeconds = splashTimeoutDurationSeconds,
             bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup(),
             eventId = await self.__timeoutIdGenerator.generateEventId(),
             explodedEmote = await self.__trollmojiHelper.getExplodedEmoteOrBackup(),

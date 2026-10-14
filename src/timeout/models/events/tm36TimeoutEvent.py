@@ -17,6 +17,7 @@ class Tm36TimeoutEvent(AbsTimeoutEvent):
     timeoutDuration: CalculatedTimeoutDuration
     updatedInventory: ChatterItemGiveResult | None
     splashTimeoutTargets: FrozenList[TimeoutTarget]
+    splashTimeoutDurationSeconds: int
     bombEmote: str
     eventId: str
     explodedEmote: str
