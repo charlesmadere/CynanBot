@@ -169,12 +169,12 @@ class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):
             MicrosoftSamVoice.ROBO_4: robo4,
             MicrosoftSamVoice.ROBO_5: robo5,
             MicrosoftSamVoice.ROBO_6: robo6,
-            MicrosoftSamVoice.SAM: sam
+            MicrosoftSamVoice.SAM: sam,
         })
 
     async def parseVoice(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> MicrosoftSamVoice | None:
         if not utils.isValidStr(string):
             return None
@@ -188,7 +188,7 @@ class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):
 
     async def requireVoice(
         self,
-        string: str | Any | None
+        string: str | Any | None,
     ) -> MicrosoftSamVoice:
         result = await self.parseVoice(string)
 
@@ -199,7 +199,7 @@ class MicrosoftSamJsonParser(MicrosoftSamJsonParserInterface):
 
     async def serializeVoice(
         self,
-        voice: MicrosoftSamVoice
+        voice: MicrosoftSamVoice,
     ) -> str:
         if not isinstance(voice, MicrosoftSamVoice):
             raise TypeError(f'voice argument is malformed: \"{voice}\"')
