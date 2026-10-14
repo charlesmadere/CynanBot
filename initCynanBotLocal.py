@@ -2035,7 +2035,7 @@ itemUseCheerActionHelper: Final[ItemUseCheerActionHelperInterface] = ItemUseChee
     useChatterItemHelper = useChatterItemHelper,
 )
 
-soundAlertCheerActionHelper: SoundAlertCheerActionHelperInterface = SoundAlertCheerActionHelper(
+soundAlertCheerActionHelper: Final[SoundAlertCheerActionHelperInterface] = SoundAlertCheerActionHelper(
     backgroundTaskHelper = backgroundTaskHelper,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
