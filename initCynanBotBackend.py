@@ -1667,6 +1667,7 @@ anivCopyMessageTimeoutScoreRepository: Final[AnivCopyMessageTimeoutScoreReposito
 
 timeoutEventListener: Final[TimeoutEventListener] = TimeoutEventHandler(
     backgroundTaskHelper = backgroundTaskHelper,
+    randomUtils = randomUtils,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
