@@ -1,19 +1,12 @@
 import re
-from dataclasses import dataclass
 from typing import Any, Final, Match, Pattern
 
 from .chatterInventoryMapperInterface import ChatterInventoryMapperInterface
-from ..models.chatterItemType import ChatterItemType
+from .itemRequestMessageParserInterface import ItemRequestMessageParserInterface
 from ...misc import utils as utils
 
 
-class ItemRequestMessageParser:
-
-    @dataclass(frozen = True, slots = True)
-    class Result:
-        itemType: ChatterItemType
-        argument: str | None
-        originalChatMessage: str
+class ItemRequestMessageParser(ItemRequestMessageParserInterface):
 
     def __init__(
         self,
@@ -42,7 +35,7 @@ class ItemRequestMessageParser:
     async def parse(
         self,
         chatMessage: str | Any | None,
-    ) -> Result | None:
+    ) -> ItemRequestMessageParserInterface.Result | None:
         if not utils.isValidStr(chatMessage):
             return None
 
@@ -81,7 +74,7 @@ class ItemRequestMessageParser:
         self,
         match: Match[str] | None,
         chatMessage: str,
-    ) -> Result | None:
+    ) -> ItemRequestMessageParserInterface.Result | None:
         if match is None:
             return None
 
@@ -93,7 +86,7 @@ class ItemRequestMessageParser:
         if utils.isValidStr(utils.cleanStr(chatMessage[match.end(1):])):
             argument = utils.cleanStr(chatMessage[match.end(1):])
 
-        return ItemRequestMessageParser.Result(
+        return ItemRequestMessageParserInterface.Result(
             itemType = itemType,
             argument = argument,
             originalChatMessage = chatMessage,

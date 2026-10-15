@@ -66,6 +66,7 @@ from src.chatterInventory.machine.chatterInventoryMachineInterface import Chatte
 from src.chatterInventory.mappers.chatterInventoryMapper import ChatterInventoryMapper
 from src.chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from src.chatterInventory.mappers.itemRequestMessageParser import ItemRequestMessageParser
+from src.chatterInventory.mappers.itemRequestMessageParserInterface import ItemRequestMessageParserInterface
 from src.chatterInventory.repositories.chatterInventoryRepository import ChatterInventoryRepository
 from src.chatterInventory.repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
 from src.chatterInventory.repositories.gashaponRewardHistoryRepository import GashaponRewardHistoryRepository
@@ -79,6 +80,9 @@ from src.chatterInventory.useCases.gashaponItemUseCase import GashaponItemUseCas
 from src.chatterInventory.useCases.gashaponItemUseCaseInterface import GashaponItemUseCaseInterface
 from src.chatterInventory.useCases.gashaponRewardUseCase import GashaponRewardUseCase
 from src.chatterInventory.useCases.gashaponRewardUseCaseInterface import GashaponRewardUseCaseInterface
+from src.chatterInventory.useCases.refreshCrowdMicrophonesUseCase import RefreshCrowdMicrophonesUseCase
+from src.chatterInventory.useCases.refreshCrowdMicrophonesUseCaseInterface import \
+    RefreshCrowdMicrophonesUseCaseInterface
 from src.chatterPreferredName.helpers.chatterPreferredNameHelper import ChatterPreferredNameHelper
 from src.chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
 from src.chatterPreferredName.helpers.chatterPreferredNameStringCleaner import ChatterPreferredNameStringCleaner
@@ -1864,6 +1868,13 @@ gashaponRewardUseCase: Final[GashaponRewardUseCaseInterface] = GashaponRewardUse
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,
 )
 
+refreshCrowdMicrophonesUseCase: Final[RefreshCrowdMicrophonesUseCaseInterface] = RefreshCrowdMicrophonesUseCase(
+    chatterInventorySettings = chatterInventorySettings,
+    crowdMicrophoneHelper = crowdMicrophoneHelper,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
 chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInventoryMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     cassetteTapeItemUseCase = cassetteTapeItemUseCase,
@@ -1875,6 +1886,7 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     emojiHelper = emojiHelper,
     gashaponItemUseCase = gashaponItemUseCase,
     gashaponRewardUseCase = gashaponRewardUseCase,
+    refreshCrowdMicrophonesUseCase = refreshCrowdMicrophonesUseCase,
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
     timeoutIdGenerator = timeoutIdGenerator,
@@ -1885,7 +1897,7 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
-itemRequestMessageParser = ItemRequestMessageParser(
+itemRequestMessageParser: Final[ItemRequestMessageParserInterface] = ItemRequestMessageParser(
     chatterInventoryMapper = chatterInventoryMapper,
 )
 

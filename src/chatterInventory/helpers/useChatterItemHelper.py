@@ -3,7 +3,7 @@ from typing import Final
 from .useChatterItemHelperInterface import UseChatterItemHelperInterface
 from ..idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
 from ..machine.chatterInventoryMachineInterface import ChatterInventoryMachineInterface
-from ..mappers.itemRequestMessageParser import ItemRequestMessageParser
+from ..mappers.itemRequestMessageParserInterface import ItemRequestMessageParserInterface
 from ..models.useChatterItemAction import UseChatterItemAction
 from ..models.useChatterItemRequest import UseChatterItemRequest
 from ..models.useChatterItemResult import UseChatterItemResult
@@ -18,7 +18,7 @@ class UseChatterItemHelper(UseChatterItemHelperInterface):
         chatterInventoryIdGenerator: ChatterInventoryIdGeneratorInterface,
         chatterInventoryMachine: ChatterInventoryMachineInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
-        itemRequestMessageParser: ItemRequestMessageParser,
+        itemRequestMessageParser: ItemRequestMessageParserInterface,
         timber: TimberInterface,
     ):
         if not isinstance(chatterInventoryIdGenerator, ChatterInventoryIdGeneratorInterface):
@@ -27,7 +27,7 @@ class UseChatterItemHelper(UseChatterItemHelperInterface):
             raise TypeError(f'chatterInventoryMachine argument is malformed: \"{chatterInventoryMachine}\"')
         elif not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
-        elif not isinstance(itemRequestMessageParser, ItemRequestMessageParser):
+        elif not isinstance(itemRequestMessageParser, ItemRequestMessageParserInterface):
             raise TypeError(f'itemRequestMessageParser argument is malformed: \"{itemRequestMessageParser}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -35,7 +35,7 @@ class UseChatterItemHelper(UseChatterItemHelperInterface):
         self.__chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = chatterInventoryIdGenerator
         self.__chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = chatterInventoryMachine
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
-        self.__itemRequestMessageParser: Final[ItemRequestMessageParser] = itemRequestMessageParser
+        self.__itemRequestMessageParser: Final[ItemRequestMessageParserInterface] = itemRequestMessageParser
         self.__timber: Final[TimberInterface] = timber
 
     async def useItem(self, request: UseChatterItemRequest) -> UseChatterItemResult:

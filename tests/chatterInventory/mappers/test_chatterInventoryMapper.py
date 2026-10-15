@@ -811,6 +811,20 @@ class TestChatterInventoryMapper:
         assert result is ChatterItemType.AIR_STRIKE
 
     @pytest.mark.asyncio
+    async def test_parseItemType_withVoicemail(self):
+        result = await self.mapper.parseItemType('voicemail')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.parseItemType('voice_mail')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.parseItemType('voice-mail')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.parseItemType('voice mail')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+    @pytest.mark.asyncio
     async def test_parseItemType_withVore(self):
         result = await self.mapper.parseItemType('vore')
         assert result is ChatterItemType.VORE
@@ -1188,6 +1202,20 @@ class TestChatterInventoryMapper:
 
         result = await self.mapper.requireItemType('tnt\'s')
         assert result is ChatterItemType.AIR_STRIKE
+
+    @pytest.mark.asyncio
+    async def test_requireItemType_withVoicemail(self):
+        result = await self.mapper.requireItemType('voicemail')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.requireItemType('voice_mail')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.requireItemType('voice-mail')
+        assert result is ChatterItemType.CASSETTE_TAPE
+
+        result = await self.mapper.requireItemType('voice mail')
+        assert result is ChatterItemType.CASSETTE_TAPE
 
     @pytest.mark.asyncio
     async def test_requireItemType_withVore(self):

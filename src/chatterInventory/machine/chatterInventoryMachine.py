@@ -64,6 +64,7 @@ from ..settings.chatterInventorySettingsInterface import ChatterInventorySetting
 from ..useCases.cassetteTapeItemUseCaseInterface import CassetteTapeItemUseCaseInterface
 from ..useCases.gashaponItemUseCaseInterface import GashaponItemUseCaseInterface
 from ..useCases.gashaponRewardUseCaseInterface import GashaponRewardUseCaseInterface
+from ..useCases.refreshCrowdMicrophonesUseCaseInterface import RefreshCrowdMicrophonesUseCaseInterface
 from ...emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -106,6 +107,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         emojiHelper: EmojiHelperInterface,
         gashaponItemUseCase: GashaponItemUseCaseInterface,
         gashaponRewardUseCase: GashaponRewardUseCaseInterface,
+        refreshCrowdMicrophonesUseCase: RefreshCrowdMicrophonesUseCaseInterface,
         timber: TimberInterface,
         timeoutActionMachine: TimeoutActionMachineInterface,
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
@@ -137,6 +139,8 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             raise TypeError(f'gashaponItemUseCase argument is malformed: \"{gashaponItemUseCase}\"')
         elif not isinstance(gashaponRewardUseCase, GashaponRewardUseCaseInterface):
             raise TypeError(f'gashaponRewardUseCase argument is malformed: \"{gashaponRewardUseCase}\"')
+        elif not isinstance(refreshCrowdMicrophonesUseCase, RefreshCrowdMicrophonesUseCaseInterface):
+            raise TypeError(f'refreshCrowdMicrophonesUseCase argument is malformed: \"{refreshCrowdMicrophonesUseCase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
@@ -172,6 +176,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         self.__emojiHelper: Final[EmojiHelperInterface] = emojiHelper
         self.__gashaponItemUseCase: Final[GashaponItemUseCaseInterface] = gashaponItemUseCase
         self.__gashaponRewardUseCase: Final[GashaponRewardUseCaseInterface] = gashaponRewardUseCase
+        self.__refreshCrowdMicrophonesUseCase: Final[RefreshCrowdMicrophonesUseCaseInterface] = refreshCrowdMicrophonesUseCase
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
@@ -881,24 +886,15 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         ))
 
     async def __refreshCrowdMicrophones(self):
-        deadMicrophones = await self.__crowdMicrophoneHelper.getAllDeadMicrophones()
+        result = await self.__refreshCrowdMicrophonesUseCase.invoke()
 
-        if len(deadMicrophones) == 0:
-            return
-
-        for deadMicrophone in deadMicrophones:
-            await self.__crowdMicrophoneHelper.stopMicrophone(
-                twitchChannelId = deadMicrophone.twitchChannelId,
-            )
-
+        for deadMicrophone in result.deadMicrophones:
             await self.__submitEvent(CrowdMicEndedItemEvent(
                 deadMicrophone = deadMicrophone,
                 eventId = await self.__timeoutIdGenerator.generateEventId(),
                 singingEmote = await self.__trollmojiHelper.getSingingEmoteOrBackup(),
                 originatingAction = deadMicrophone.originatingAction,
             ))
-
-        self.__timber.log('ChatterInventoryMachine', f'Finished removing {len(deadMicrophones)} dead microphone(s)')
 
     def start(self):
         if self.__isStarted:

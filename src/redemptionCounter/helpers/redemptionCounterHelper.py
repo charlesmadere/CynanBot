@@ -119,5 +119,6 @@ class RedemptionCounterHelper(RedemptionCounterHelperInterface):
 
         return PreparedRedemptionCount(
             redemptionCount = redemptionCount,
+            chatterUserLogin = chatterUserData.userLogin,
             chatterUserName = chatterUserData.userName,
         )

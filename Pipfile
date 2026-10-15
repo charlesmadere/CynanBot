@@ -19,7 +19,7 @@ librosa = { version = "1.0.0", markers = "sys_platform == 'darwin' or sys_platfo
 lru-dict = "1.4.1"
 lxml = "6.1.3"
 num2words = "0.5.14"
-polyleven = "0.11.0"
+polyleven = "0.12.0"
 psutil = "7.2.2"
 pygame = { version = "2.6.1", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
 pyjwt = "2.15.1"

@@ -91,7 +91,7 @@ class CrowdMicrophoneHelper(CrowdMicrophoneHelperInterface):
 
         if currentMicrophone is not None:
             raise CrowdMicrophoneAlreadyStartedException(
-                currentMicrophone= currentMicrophone,
+                currentMicrophone = currentMicrophone,
             )
 
         now = self.__timeZoneRepository.getNow()

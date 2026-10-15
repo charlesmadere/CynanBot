@@ -117,7 +117,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
                             userid text NOT NULL,
                             PRIMARY KEY (twitchchannelid, userid)
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -128,7 +128,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
                             userid TEXT NOT NULL,
                             PRIMARY KEY (twitchchannelid, userid)
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:

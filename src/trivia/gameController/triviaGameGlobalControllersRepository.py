@@ -49,7 +49,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
                 VALUES ($1)
                 ON CONFLICT (userid) DO NOTHING
             ''',
-            userId
+            userId,
         )
 
         await connection.close()
@@ -70,7 +70,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
         records = await connection.fetchRows(
             '''
                 SELECT userid FROM triviagameglobalcontrollers
-            '''
+            ''',
         )
 
         await connection.close()
@@ -102,7 +102,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
                         CREATE TABLE IF NOT EXISTS triviagameglobalcontrollers (
                             userid text NOT NULL PRIMARY KEY
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -111,7 +111,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
                         CREATE TABLE IF NOT EXISTS triviagameglobalcontrollers (
                             userid TEXT NOT NULL PRIMARY KEY
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:
@@ -139,7 +139,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
                 DELETE FROM triviagameglobalcontrollers
                 WHERE userid = $1
             ''',
-            userId
+            userId,
         )
 
         await connection.close()
