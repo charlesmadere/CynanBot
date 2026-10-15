@@ -2537,7 +2537,6 @@ startables: Final[Collection[Startable | None]] = frozenset({
 #####################################
 
 cynanBot: Final[CynanBot] = CynanBot(
-    eventLoop = eventLoop,
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     chatLogger = chatLogger,
@@ -2555,4 +2554,11 @@ cynanBot: Final[CynanBot] = CynanBot(
 #########################################
 
 timber.log('initCynanBotLocal', 'Starting CynanBot...')
-cynanBot.run()
+cynanBot.start()
+
+try:
+    eventLoop.run_forever()
+except KeyboardInterrupt:
+    timber.log('CynanBot', 'Keyboard interrupt detected. Shutting down...')
+finally:
+    eventLoop.close()

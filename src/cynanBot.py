@@ -1,11 +1,7 @@
 import traceback
-from asyncio import AbstractEventLoop
 from typing import Any, Collection, Final
 
 from frozenlist import FrozenList
-from twitchio.ext import commands
-from twitchio.ext.commands import Context
-from twitchio.ext.commands.errors import CommandNotFound
 
 from .chatLogger.chatLoggerInterface import ChatLoggerInterface
 from .misc.authRepository import AuthRepository
@@ -20,14 +16,10 @@ from .twitch.websocket.listener.twitchWebsocketConnectionsFinishedListener impor
 from .twitch.websocket.twitchWebsocketClientInterface import TwitchWebsocketClientInterface
 
 
-class CynanBot(
-    commands.Bot,
-    TwitchWebsocketConnectionsFinishedListener,
-):
+class CynanBot(Startable, TwitchWebsocketConnectionsFinishedListener):
 
     def __init__(
         self,
-        eventLoop: AbstractEventLoop,
         authRepository: AuthRepository,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         chatLogger: ChatLoggerInterface,
@@ -38,20 +30,7 @@ class CynanBot(
         twitchWebsocketClient: TwitchWebsocketClientInterface,
         startables: Collection[Startable | Any | None] | None,
     ):
-        super().__init__(
-            client_secret = authRepository.getAll().requireTwitchClientSecret(),
-            initial_channels = list(),
-            loop = eventLoop,
-            nick = authRepository.getAll().requireTwitchHandle(),
-            prefix = '!',
-            retain_cache = True,
-            token = authRepository.getAll().requireTwitchIrcAuthToken(),
-            heartbeat = 15,
-        )
-
-        if not isinstance(eventLoop, AbstractEventLoop):
-            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
-        elif not isinstance(authRepository, AuthRepository):
+        if not isinstance(authRepository, AuthRepository):
             raise TypeError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -108,20 +87,9 @@ class CynanBot(
         validStartables.freeze()
         return validStartables
 
-    async def event_channel_join_failure(self, channel: str):
-        self.__timber.log('CynanBot', f'Encountered channel join failure ({channel=})')
-
-    async def event_command_error(self, context: Context, error: Exception):
-        if isinstance(error, CommandNotFound):
-            return
-        else:
-            raise error
-
-    async def event_ready(self):
-        await self.wait_for_ready()
-
-        twitchHandle = await self.__authRepository.getTwitchHandle()
-        self.__timber.log('CynanBot', f'Bot \"{twitchHandle}\" is ready!')
+    def start(self):
+        twitchHandle = self.__authRepository.getAll().requireTwitchHandle()
+        self.__timber.log('CynanBot', f'Bot \"{twitchHandle}\" is ready and starting components!')
 
         self.__timber.start()
         self.__twitchTokensRepository.start()
@@ -131,9 +99,6 @@ class CynanBot(
 
         self.__twitchWebsocketClient.setConnectionsFinishedListener(self)
         self.__twitchWebsocketClient.start()
-
-    async def event_reconnect(self):
-        self.__timber.log('CynanBot', f'Received IRC RECONNECT event')
 
     async def onWebsocketConnectionsFinished(self, userIds: Collection[str]):
         self.__timber.log('CynanBot', f'Finished establishing Twitch websocket connections ({userIds=})')
