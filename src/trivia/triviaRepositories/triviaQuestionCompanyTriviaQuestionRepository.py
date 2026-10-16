@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Final
 
 import aiofiles
 import aiofiles.ospath
@@ -38,9 +38,9 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
         elif not utils.isValidStr(triviaDatabaseFile):
             raise TypeError(f'triviaDatabaseFile argument is malformed: \"{triviaDatabaseFile}\"')
 
-        self.__timber: TimberInterface = timber
-        self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
-        self.__triviaDatabaseFile: str = triviaDatabaseFile
+        self.__timber: Final[TimberInterface] = timber
+        self.__triviaQuestionCompiler: Final[TriviaQuestionCompilerInterface] = triviaQuestionCompiler
+        self.__triviaDatabaseFile: Final[str] = triviaDatabaseFile
 
         self.__hasQuestionSetAvailable: bool | None = None
 
