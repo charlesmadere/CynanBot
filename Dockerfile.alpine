@@ -1,4 +1,4 @@
-FROM python:3.12-alpine
+FROM python:3.14-alpine
 
 LABEL maintainer="CynanBot Dev Team"
 LABEL org.opencontainers.image.authors="CynanBot Dev Team"
