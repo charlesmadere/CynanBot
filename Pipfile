@@ -21,7 +21,7 @@ lxml = "6.1.3"
 num2words = "0.5.14"
 polyleven = "0.12.0"
 psutil = "7.2.2"
-pygame = { version = "2.6.1", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
+pygame-ce = { version = "2.5.8", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
 pyjwt = "2.15.1"
 pytest = "9.1.1"
 pytest-asyncio = "1.4.0"
@@ -30,7 +30,6 @@ pytz = "2026.5"
 pywin32 = { version = "312", markers = "sys_platform == 'win32'" }
 requests = "2.34.2"
 roman = "5.2"
-twitchio = "2.10.0"
 typing_extensions = "4.16.0"
 websockets = "17.2"
 xmltodict = "1.0.4"
@@ -39,4 +38,4 @@ xmltodict = "1.0.4"
 
 
 [requires]
-python_version = "3.12"
+python_version = "3.14"
