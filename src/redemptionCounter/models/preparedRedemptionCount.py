@@ -6,7 +6,12 @@ from .redemptionCount import RedemptionCount
 @dataclass(frozen = True, slots = True)
 class PreparedRedemptionCount:
     redemptionCount: RedemptionCount
+    chatterUserLogin: str
     chatterUserName: str
+
+    @property
+    def chatterUserId(self) -> str:
+        return self.redemptionCount.chatterUserId
 
     @property
     def count(self) -> int:
@@ -15,10 +20,6 @@ class PreparedRedemptionCount:
     @property
     def countStr(self) -> str:
         return self.redemptionCount.countStr
-
-    @property
-    def chatterUserId(self) -> str:
-        return self.redemptionCount.chatterUserId
 
     @property
     def counterName(self) -> str:

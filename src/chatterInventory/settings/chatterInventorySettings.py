@@ -35,7 +35,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         ),
         defaultBananaItemDetails: BananaItemDetails = BananaItemDetails(
             randomChanceEnabled = True,
-            durationSeconds = 90, # 1 minute 30 seconds
+            durationSeconds = 45,
         ),
         defaultCrowdMicItemDetails: CrowdMicItemDetails = CrowdMicItemDetails(
             durationSeconds = 210, # 3 minutes 30 seconds
@@ -99,7 +99,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         defaultDaysBetweenGashaponRewards: int = 21,
         defaultTm36ItemDetails: Tm36ItemDetails = Tm36ItemDetails(
             maxDurationSeconds = 300, # 5 minutes
-            minDurationSeconds = 180, # 3 minutes
+            minDurationSeconds = 150, # 2 minutes 30 seconds
         ),
         defaultVoreItemDetails: VoreItemDetails = VoreItemDetails(
             timeoutDurationSeconds = 1800, # 30 minutes

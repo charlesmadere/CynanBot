@@ -44,6 +44,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         cassetteTape: FrozenList[Pattern] = FrozenList()
         cassetteTape.append(re.compile(r'^\s*cass?ett?es?\s*$', re.IGNORECASE))
         cassetteTape.append(re.compile(r'^\s*cass?ett?es?(?:\s+|_|-)?tapes?\s*$', re.IGNORECASE))
+        cassetteTape.append(re.compile(r'^\s*voice(?:\s+|_|-)?mail\s*$', re.IGNORECASE))
         cassetteTape.freeze()
 
         crowdMics: FrozenList[Pattern] = FrozenList()

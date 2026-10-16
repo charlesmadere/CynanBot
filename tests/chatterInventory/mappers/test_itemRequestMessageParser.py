@@ -5,6 +5,7 @@ import pytest
 from src.chatterInventory.mappers.chatterInventoryMapper import ChatterInventoryMapper
 from src.chatterInventory.mappers.chatterInventoryMapperInterface import ChatterInventoryMapperInterface
 from src.chatterInventory.mappers.itemRequestMessageParser import ItemRequestMessageParser
+from src.chatterInventory.mappers.itemRequestMessageParserInterface import ItemRequestMessageParserInterface
 from src.chatterInventory.models.chatterItemType import ChatterItemType
 
 
@@ -12,7 +13,7 @@ class TestItemRequestMessageParser:
 
     chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = ChatterInventoryMapper()
 
-    parser: Final[ItemRequestMessageParser] = ItemRequestMessageParser(
+    parser: Final[ItemRequestMessageParserInterface] = ItemRequestMessageParser(
         chatterInventoryMapper = chatterInventoryMapper,
     )
 
@@ -313,3 +314,4 @@ class TestItemRequestMessageParser:
     def test_sanity(self):
         assert self.parser is not None
         assert isinstance(self.parser, ItemRequestMessageParser)
+        assert isinstance(self.parser, ItemRequestMessageParserInterface)
