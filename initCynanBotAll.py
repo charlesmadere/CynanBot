@@ -3899,7 +3899,7 @@ cynanBot.start()
 
 try:
     eventLoop.run_forever()
-except KeyboardInterrupt:
-    timber.log('CynanBot', 'Keyboard interrupt detected. Shutting down...')
+except KeyboardInterrupt as e:
+    timber.log('initCynanBotAll', f'Shutting down... {e}')
 finally:
     eventLoop.close()
