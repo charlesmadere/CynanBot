@@ -127,7 +127,7 @@ class WwtbamTriviaQuestionRepository(AbsTriviaQuestionRepository):
             'responseB': row[3],
             'responseC': row[4],
             'responseD': row[5],
-            'triviaId': row[6]
+            'triviaId': row[6],
         }
 
         await cursor.close()
