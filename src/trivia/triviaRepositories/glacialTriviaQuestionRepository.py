@@ -106,11 +106,11 @@ class GlacialTriviaQuestionRepository(
             '''
                 SELECT EXISTS(
                     SELECT 1 FROM glacialQuestions
-                    WHERE originalTriviaSource = $1 AND triviaId = $2
+                    WHERE originalTriviaSource = ? AND triviaId = ?
                     LIMIT 1
                 )
             ''',
-            (question.triviaSource.toStr(), question.triviaId, ),
+            ( question.triviaSource.toStr(), question.triviaId, ),
         )
 
         row = await cursor.fetchone()
@@ -136,7 +136,7 @@ class GlacialTriviaQuestionRepository(
                     triviaType TEXT NOT NULL,
                     PRIMARY KEY (originalTriviaSource, triviaId)
                 ) STRICT
-            '''
+            ''',
         )
         await cursor.close()
 
@@ -147,7 +147,7 @@ class GlacialTriviaQuestionRepository(
                     originalTriviaSource TEXT NOT NULL,
                     triviaId TEXT NOT NULL
                 ) STRICT
-            '''
+            ''',
         )
         await cursor.close()
 
@@ -158,7 +158,7 @@ class GlacialTriviaQuestionRepository(
                     originalTriviaSource TEXT NOT NULL,
                     triviaId TEXT NOT NULL
                 ) STRICT
-            '''
+            ''',
         )
         await cursor.close()
 
@@ -176,9 +176,9 @@ class GlacialTriviaQuestionRepository(
         cursor = await connection.execute(
             '''
                 SELECT category, categoryId, originalTriviaSource, question, triviaDifficulty, triviaId FROM glacialQuestions
-                WHERE triviaType = $1
+                WHERE triviaType = ?
             ''',
-            (TriviaQuestionType.QUESTION_ANSWER.toStr(), )
+            ( TriviaQuestionType.QUESTION_ANSWER.toStr(), )
         )
 
         rows = await cursor.fetchall()
@@ -241,7 +241,7 @@ class GlacialTriviaQuestionRepository(
                 SELECT category, categoryId, originalTriviaSource, question, triviaDifficulty, triviaId, triviaType FROM glacialQuestions
                 ORDER BY RANDOM()
                 LIMIT 1
-            '''
+            ''',
         )
 
         row = await cursor.fetchone()
@@ -339,11 +339,11 @@ class GlacialTriviaQuestionRepository(
         cursor = await connection.execute(
             '''
                 SELECT category, categoryId, originalTriviaSource, question, triviaDifficulty, triviaId, triviaType FROM glacialQuestions
-                WHERE triviaType = $1 OR triviaType = $2
+                WHERE triviaType = ? OR triviaType = ?
                 ORDER BY RANDOM()
                 LIMIT 1
             ''',
-            (TriviaQuestionType.MULTIPLE_CHOICE.toStr(), TriviaQuestionType.TRUE_FALSE.toStr(), )
+            ( TriviaQuestionType.MULTIPLE_CHOICE.toStr(), TriviaQuestionType.TRUE_FALSE.toStr(), ),
         )
 
         row = await cursor.fetchone()
@@ -422,11 +422,11 @@ class GlacialTriviaQuestionRepository(
         cursor = await connection.execute(
             '''
                 SELECT category, categoryId, originalTriviaSource, question, triviaDifficulty, triviaId FROM glacialQuestions
-                WHERE triviaType = $1
+                WHERE triviaType = ?
                 ORDER BY RANDOM()
                 LIMIT 1
             ''',
-            (TriviaQuestionType.QUESTION_ANSWER.toStr(), )
+            ( TriviaQuestionType.QUESTION_ANSWER.toStr(), ),
         )
 
         row = await cursor.fetchone()
@@ -518,9 +518,9 @@ class GlacialTriviaQuestionRepository(
         cursor = await connection.execute(
             '''
                 SELECT answer FROM glacialAnswers
-                WHERE originalTriviaSource = $1 AND triviaId = $2
+                WHERE originalTriviaSource = ? AND triviaId = ?
             ''',
-            (originalTriviaSource.toStr(), triviaId, ),
+            ( originalTriviaSource.toStr(), triviaId, ),
         )
 
         rows = await cursor.fetchall()
@@ -558,9 +558,9 @@ class GlacialTriviaQuestionRepository(
         cursor = await connection.execute(
             '''
                 SELECT response FROM glacialResponses
-                WHERE originalTriviaSource = $1 AND triviaId = $2
+                WHERE originalTriviaSource = ? AND triviaId = ?
             ''',
-            (originalTriviaSource.toStr(), triviaId, ),
+            ( originalTriviaSource.toStr(), triviaId, ),
         )
 
         rows = await cursor.fetchall()
@@ -635,27 +635,27 @@ class GlacialTriviaQuestionRepository(
         cursor = await connection.execute(
             '''
                 DELETE FROM glacialAnswers
-                WHERE originalTriviaSource = $1 AND triviaId = $2
+                WHERE originalTriviaSource = ? AND triviaId = ?
             ''',
-            (originalTriviaSource.toStr(), triviaId, ),
+            ( originalTriviaSource.toStr(), triviaId, ),
         )
         await cursor.close()
 
         cursor = await connection.execute(
             '''
                 DELETE FROM glacialQuestions
-                WHERE originalTriviaSource = $1 AND triviaId = $2
+                WHERE originalTriviaSource = ? AND triviaId = ?
             ''',
-            (originalTriviaSource.toStr(), triviaId, ),
+            ( originalTriviaSource.toStr(), triviaId, ),
         )
         await cursor.close()
 
         cursor = await connection.execute(
             '''
                 DELETE FROM glacialResponses
-                WHERE originalTriviaSource = $1 AND triviaId = $2
+                WHERE originalTriviaSource = ? AND triviaId = ?
             ''',
-            (originalTriviaSource.toStr(), triviaId, ),
+            ( originalTriviaSource.toStr(), triviaId, ),
         )
         await cursor.close()
 
@@ -728,9 +728,9 @@ class GlacialTriviaQuestionRepository(
         await connection.execute_insert(
             '''
                 INSERT INTO glacialQuestions (category, categoryId, originalTriviaSource, question, triviaDifficulty, triviaId, triviaType)
-                VALUES ($1, $2, $3, $4, $5, $6, $7)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             ''',
-            (question.category, question.categoryId, question.triviaSource.toStr(), question.question, question.triviaDifficulty.toStr(), question.triviaId, question.triviaType.toStr(), ),
+            ( question.category, question.categoryId, question.triviaSource.toStr(), question.question, question.triviaDifficulty.toStr(), question.triviaId, question.triviaType.toStr(), ),
         )
 
     async def __storeMultipleChoiceTriviaQuestion(
@@ -749,18 +749,18 @@ class GlacialTriviaQuestionRepository(
             await connection.execute_insert(
                 '''
                     INSERT INTO glacialAnswers (answer, originalTriviaSource, triviaId)
-                    VALUES ($1, $2, $3)
+                    VALUES (?, ?, ?)
                 ''',
-                (correctAnswer, question.triviaSource.toStr(), question.triviaId, ),
+                ( correctAnswer, question.triviaSource.toStr(), question.triviaId, ),
             )
 
         for response in question.responses:
             await connection.execute_insert(
                 '''
                     INSERT INTO glacialResponses (response, originalTriviaSource, triviaId)
-                    VALUES ($1, $2, $3)
+                    VALUES (?, ?, ?)
                 ''',
-                (response, question.triviaSource.toStr(), question.triviaId, ),
+                ( response, question.triviaSource.toStr(), question.triviaId, ),
             )
 
     async def __storeQuestionAnswerTriviaQuestion(
@@ -779,9 +779,9 @@ class GlacialTriviaQuestionRepository(
             await connection.execute_insert(
                 '''
                     INSERT INTO glacialAnswers (answer, originalTriviaSource, triviaId)
-                    VALUES ($1, $2, $3)
+                    VALUES (?, ?, ?)
                 ''',
-                (answer, question.triviaSource.toStr(), question.triviaId, ),
+                ( answer, question.triviaSource.toStr(), question.triviaId, ),
             )
 
     async def __storeTrueFalseTriviaQuestion(
@@ -801,9 +801,9 @@ class GlacialTriviaQuestionRepository(
         await connection.execute_insert(
             '''
                 INSERT INTO glacialAnswers (answer, originalTriviaSource, triviaId)
-                VALUES ($1, $2, $3)
+                VALUES (?, ?, ?)
             ''',
-            (correctAnswer, question.triviaSource.toStr(), question.triviaId, ),
+            ( correctAnswer, question.triviaSource.toStr(), question.triviaId, ),
         )
 
     @property

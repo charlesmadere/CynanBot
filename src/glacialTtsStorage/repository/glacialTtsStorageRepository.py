@@ -83,7 +83,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         await connection.execute_insert(
             '''
                 INSERT INTO glacialTtsStorage
-                VALUES ($1, $2, $3, $4, $5)
+                VALUES (?, ?, ?, ?, ?)
                 ON CONFLICT (glacialId, provider) DO NOTHING
             ''',
             ( storeDateTime.isoformat(), glacialId, message, providerString, voice, ),
@@ -125,7 +125,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
             cursor = await connection.execute(
                 '''
                     SELECT storeDateTime, glacialId FROM glacialTtsStorage
-                    WHERE message = $1 AND provider = $2 AND voice = $3
+                    WHERE message = ? AND provider = ? AND voice = ?
                     LIMIT 1
                 ''',
                 ( message, providerString, voice, ),
@@ -134,7 +134,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
             cursor = await connection.execute(
                 '''
                     SELECT storeDateTime, glacialId FROM glacialTtsStorage
-                    WHERE message = $1 AND provider = $2 AND voice is NULL
+                    WHERE message = ? AND provider = ? AND voice is NULL
                     LIMIT 1
                 ''',
                 ( message, providerString, ),
@@ -203,7 +203,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         cursor = await connection.execute(
             '''
                 SELECT storeDateTime, message, voice FROM glacialTtsStorage
-                WHERE glacialId = $1 AND provider = $2
+                WHERE glacialId = ? AND provider = ?
                 LIMIT 1
             ''',
             ( glacialId, providerString, ),
@@ -228,7 +228,7 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
             await connection.execute(
                 '''
                     DELETE FROM glacialTtsStorage
-                    WHERE glacialId = $1 AND provider = $2
+                    WHERE glacialId = ? AND provider = ?
                 ''',
                 ( glacialId, providerString, ),
             )
