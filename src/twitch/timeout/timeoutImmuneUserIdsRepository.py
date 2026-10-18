@@ -93,8 +93,10 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         twitchUserId = self.__twitchUserId
 
         if twitchUserId is None:
-            twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-            twitchUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(twitchHandle)
+            twitchUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(
+                userLoginOrName = await self.__twitchHandleProvider.getTwitchHandle(),
+            )
+
             self.__twitchUserId = twitchUserId
 
         return twitchUserId

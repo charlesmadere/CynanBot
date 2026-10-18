@@ -1,5 +1,4 @@
 import math
-import random
 import traceback
 from typing import Final
 
@@ -15,6 +14,7 @@ from ..tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ..userIds.exceptions import NoTwitchUserDataFoundException
 from ..userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...soundPlayerManager.soundAlert import SoundAlert
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
@@ -32,6 +32,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
     def __init__(
         self,
         officialTwitchAccountUserIdProvider: OfficialTwitchAccountUserIdProviderInterface,
+        randomUtils: RandomUtilsInterface,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface | None,
@@ -45,6 +46,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
     ):
         if not isinstance(officialTwitchAccountUserIdProvider, OfficialTwitchAccountUserIdProviderInterface):
             raise TypeError(f'officialTwitchAccountUserIdProvider argument is malformed: \"{officialTwitchAccountUserIdProvider}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -67,6 +70,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
         self.__officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderInterface] = officialTwitchAccountUserIdProvider
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface | None] = triviaGameBuilder
@@ -187,13 +191,11 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         else:
             recipientUserId = subscriptionData.subGift.recipientUserId
 
-        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-
-        twitchId = await self.__twitchUserIdsHelper.getIdByLoginOrName(
-            userLoginOrName = twitchHandle,
+        selfUserId = await self.__twitchUserIdsHelper.getIdByLoginOrName(
+            userLoginOrName = await self.__twitchHandleProvider.getTwitchHandle(),
         )
 
-        if not utils.isValidStr(twitchId) or twitchId != recipientUserId:
+        if not utils.isValidStr(selfUserId) or selfUserId != recipientUserId:
             return
 
         viableEmoteNames = await self.__twitchEmotesHelper.fetchViableSubscriptionEmoteNames(
@@ -204,8 +206,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         allViableEmotes.update(viableEmoteNames)
 
         viableEmotesList: list[str] = list(allViableEmotes)
-        emoji1 = random.choice(viableEmotesList)
-        emoji2 = random.choice(viableEmotesList)
+        emoji1 = self.__randomUtils.choice(viableEmotesList)
+        emoji2 = self.__randomUtils.choice(viableEmotesList)
 
         self.__twitchChatMessenger.send(
             text = f'{emoji1} thanks for the sub!!! {emoji2}',

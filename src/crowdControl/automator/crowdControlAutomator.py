@@ -108,8 +108,9 @@ class CrowdControlAutomator(CrowdControlAutomatorInterface):
         if len(twitchChannelIds) == 0:
             return
 
-        selfHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        selfUserData = await self.__twitchUserIdsRepository.requireByLoginOrName(selfHandle)
+        selfUserData = await self.__twitchUserIdsRepository.requireByLoginOrName(
+            userLoginOrName = await self.__twitchHandleProvider.getTwitchHandle(),
+        )
 
         for twitchChannelId in twitchChannelIds:
             await self.__submitGameShuffleAction(
