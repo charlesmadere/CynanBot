@@ -40,10 +40,6 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         self.__timber: Final[TimberInterface] = timber
 
     async def __buildRaidMessage(self, raidData: AbsTwitchRaidHandler.RaidData) -> str:
-        # Not sure if I'll keep this method, but I wanted to try out some things that may work a
-        # bit better with Google MultiSpeaker TTS. And so, some of this is hardcoded a bit more
-        # than I would really want if I ever make this a more long term feature.
-
         viewers = raidData.viewers
         fromUserName = raidData.raidUserName
 
@@ -117,7 +113,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         fromUserLogin = event.fromBroadcasterUserLogin
         fromUserName = event.fromBroadcasterUserName
 
-        if not utils.isValidInt(viewers) or viewers < 1 or not utils.isValidStr(fromUserId) or not utils.isValidStr(fromUserLogin) or not utils.isValidStr(fromUserName):
+        if viewers is None or viewers < 1 or not utils.isValidStr(fromUserId) or not utils.isValidStr(fromUserLogin) or not utils.isValidStr(fromUserName):
             self.__timber.log('TwitchRaidHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({viewers=}) ({fromUserId=}) ({fromUserLogin=}) ({fromUserName=})')
             return
 
@@ -138,8 +134,6 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         user = raidData.user
 
         if not user.isTtsEnabled:
-            return
-        elif raidData.viewers < 1:
             return
         elif not user.isNotifyOfRaidEnabled:
             return

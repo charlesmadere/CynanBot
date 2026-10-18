@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from ..models.absGoogleVoicePreset import AbsGoogleVoicePreset
 from ..models.googleTtsFileReference import GoogleTtsFileReference
+from ..models.googleVoicePreset import GoogleVoicePreset
 
 
 class GoogleTtsHelperInterface(ABC):
@@ -9,7 +9,7 @@ class GoogleTtsHelperInterface(ABC):
     @abstractmethod
     async def generateTts(
         self,
-        voicePreset: AbsGoogleVoicePreset | None,
+        voicePreset: GoogleVoicePreset | None,
         donationPrefix: str | None,
         message: str | None,
         twitchChannelId: str,

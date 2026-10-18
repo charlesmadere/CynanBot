@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from .absGoogleVoicePreset import AbsGoogleVoicePreset
+from .googleVoicePreset import GoogleVoicePreset
 
 
 @dataclass(frozen = True, slots = True)
 class GoogleTtsFileReference:
-    voicePreset: AbsGoogleVoicePreset
     storeDateTime: datetime
+    voicePreset: GoogleVoicePreset
     filePath: str

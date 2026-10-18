@@ -27,9 +27,5 @@ class GoogleSettingsRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
-    async def isMultiSpeakerEnabled(self) -> bool:
-        pass
-
-    @abstractmethod
     async def useDonationPrefix(self) -> bool:
         pass

@@ -64,7 +64,7 @@ class TwitchBitsHandler(AbsTwitchBitsHandler):
         bitsUseType = await self.__twitchLocalModelsMapper.mapBitsUseType(event.bitsUseType)
         customPowerUpData = await self.__twitchLocalModelsMapper.mapCustomPowerUpData(event.customPowerUpData)
 
-        if bits is None or not utils.isValidStr(bitsUserId) or not utils.isValidStr(bitsUserLogin) or not utils.isValidStr(bitsUserName) or bitsUseType is None:
+        if bits is None or bits < 1 or not utils.isValidStr(bitsUserId) or not utils.isValidStr(bitsUserLogin) or not utils.isValidStr(bitsUserName) or bitsUseType is None:
             self.__timber.log('TwitchBitsHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({bits=}) ({bitsUserId=}) ({bitsUserLogin=}) ({bitsUserName=}) ({bitsUseType=}) ({customPowerUpData=})')
             return
 

@@ -276,10 +276,6 @@ class TwitchChatHandler(AbsTwitchChatHandler):
         cheerMetadata = await self.__twitchLocalModelsMapper.mapCheerMetadata(event.cheer)
         watchStreak = await self.__twitchLocalModelsMapper.mapWatchStreak(event.watchStreak)
 
-        if event.customPowerUp is not None or event.customPowerUpData is not None:
-            # just including this for testing/debug purposes for the time being
-            self.__timber.log('TwitchChatHandler', f'This event has custom power up data ({user=}) ({twitchChannelId=}) ({dataBundle=})')
-
         chatMessage = TwitchChatMessage(
             messageFragments = messageFragments,
             chatterUserId = chatterUserId,

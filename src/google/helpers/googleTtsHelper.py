@@ -14,7 +14,6 @@ from .googleTtsHelperInterface import GoogleTtsHelperInterface
 from .googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
 from ..exceptions import GoogleFailedToCreateDirectoriesException
 from ..jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
-from ..models.absGoogleVoicePreset import AbsGoogleVoicePreset
 from ..models.googleTextSynthesisInput import GoogleTextSynthesisInput
 from ..models.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
 from ..models.googleTtsFileReference import GoogleTtsFileReference
@@ -115,26 +114,34 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
 
     async def __createGoogleSpeechRequestData(
         self,
-        voicePreset: AbsGoogleVoicePreset | None,
+        voicePreset: GoogleVoicePreset | None,
         fullMessage: str,
     ) -> GoogleSpeechRequestData:
-        if voicePreset is None or not isinstance(voicePreset, GoogleVoicePreset):
+        if voicePreset is None:
             voicePreset = await self.__googleTtsVoicesHelper.getEnglishVoice()
 
         synthesisInput = GoogleTextSynthesisInput(
             text = fullMessage,
         )
 
-        voiceAudioConfig = await self.__createGoogleVoiceAudioConfig()
+        audioConfig = GoogleVoiceAudioConfig(
+            pitch = None,
+            speakingRate = None,
+            volumeGainDb = await self.__googleSettingsRepository.getVolumeGainDb(),
+            audioEncoding = await self.__googleSettingsRepository.getVoiceAudioEncoding(),
+            sampleRateHertz = None,
+        )
 
-        voiceSelectionParams = await self.__createGoogleVoiceSelectionParams(
-            voicePreset = voicePreset,
+        voice = GoogleVoiceSelectionParams(
+            gender = None,
+            languageCode = voicePreset.languageCode,
+            name = voicePreset.fullName,
         )
 
         synthesizeRequest = GoogleTextSynthesizeRequest(
             synthesisInput = synthesisInput,
-            audioConfig = voiceAudioConfig,
-            voice = voiceSelectionParams,
+            audioConfig = audioConfig,
+            voice = voice,
         )
 
         return GoogleTtsHelper.GoogleSpeechRequestData(
@@ -143,36 +150,14 @@ class GoogleTtsHelper(GoogleTtsHelperInterface):
             fullMessage = fullMessage,
         )
 
-    async def __createGoogleVoiceAudioConfig(self) -> GoogleVoiceAudioConfig:
-        volumeGainDb = await self.__googleSettingsRepository.getVolumeGainDb()
-        audioEncoding = await self.__googleSettingsRepository.getVoiceAudioEncoding()
-
-        return GoogleVoiceAudioConfig(
-            pitch = None,
-            speakingRate = None,
-            volumeGainDb = volumeGainDb,
-            audioEncoding = audioEncoding,
-            sampleRateHertz = None,
-        )
-
-    async def __createGoogleVoiceSelectionParams(
-        self,
-        voicePreset: AbsGoogleVoicePreset,
-    ) -> GoogleVoiceSelectionParams:
-        return GoogleVoiceSelectionParams(
-            gender = None,
-            languageCode = voicePreset.languageCode,
-            name = voicePreset.fullName,
-        )
-
     async def generateTts(
         self,
-        voicePreset: AbsGoogleVoicePreset | None,
+        voicePreset: GoogleVoicePreset | None,
         donationPrefix: str | None,
         message: str | None,
         twitchChannelId: str,
     ) -> GoogleTtsFileReference | None:
-        if voicePreset is not None and not isinstance(voicePreset, AbsGoogleVoicePreset):
+        if voicePreset is not None and not isinstance(voicePreset, GoogleVoicePreset):
             raise TypeError(f'voicePreset argument is malformed: \"{voicePreset}\"')
         elif donationPrefix is not None and not isinstance(donationPrefix, str):
             raise TypeError(f'donationPrefix argument is malformed: \"{donationPrefix}\"')
