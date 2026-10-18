@@ -92,15 +92,13 @@ class GlacialTtsStorageRepository(GlacialTtsStorageRepositoryInterface):
         await connection.commit()
         await connection.close()
 
-        glacialTtsData = GlacialTtsData(
+        return GlacialTtsData(
             storeDateTime = storeDateTime,
             glacialId = glacialId,
             message = message,
             voice = voice,
             provider = provider,
         )
-
-        return glacialTtsData
 
     async def get(
         self,
