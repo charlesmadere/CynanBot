@@ -10,6 +10,7 @@ from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
+from src.network.aioHttp.aioHttpCookieJarProviderInterface import AioHttpCookieJarProviderInterface
 from src.network.networkClientProvider import NetworkClientProvider
 from src.soundPlayerManager.audioPlayer.audioPlayerSoundPlayerManager import AudioPlayerSoundPlayerManager
 from src.soundPlayerManager.settings.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
@@ -67,7 +68,7 @@ timber: Final[TimberInterface] = TimberStub()
 
 timeZoneRepository: Final[TimeZoneRepositoryInterface] = TimeZoneRepository()
 
-aioHttpCookieJarProvider = AioHttpCookieJarProvider(
+aioHttpCookieJarProvider: Final[AioHttpCookieJarProviderInterface] = AioHttpCookieJarProvider(
     eventLoop = eventLoop,
 )
 
@@ -86,47 +87,47 @@ ttsJsonMapper: Final[TtsJsonMapperInterface] = TtsJsonMapper(
     timber = timber,
 )
 
-ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
+ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = TtsSettingsRepository(
     settingsJsonReader = JsonStaticReader(dict()),
     ttsJsonMapper = ttsJsonMapper,
 )
 
-streamElementsMessageCleaner: StreamElementsMessageCleanerInterface = StreamElementsMessageCleaner(
+streamElementsMessageCleaner: Final[StreamElementsMessageCleanerInterface] = StreamElementsMessageCleaner(
     ttsSettingsRepository = ttsSettingsRepository,
 )
 
-streamElementsApiService: StreamElementsApiServiceInterface = StreamElementsApiService(
+streamElementsApiService: Final[StreamElementsApiServiceInterface] = StreamElementsApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
 )
 
-streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
+streamElementsJsonParser: Final[StreamElementsJsonParserInterface] = StreamElementsJsonParser()
 
-streamElementsMessageVoiceParser: StreamElementsMessageVoiceParserInterface = StreamElementsMessageVoiceParser(
+streamElementsMessageVoiceParser: Final[StreamElementsMessageVoiceParserInterface] = StreamElementsMessageVoiceParser(
     streamElementsJsonParser = streamElementsJsonParser,
 )
 
-streamElementsSettingsRepository: StreamElementsSettingsRepositoryInterface = StreamElementsSettingsRepository(
+streamElementsSettingsRepository: Final[StreamElementsSettingsRepositoryInterface] = StreamElementsSettingsRepository(
     settingsJsonReader = JsonStaticReader(dict()),
     streamElementsJsonParser = streamElementsJsonParser,
 )
 
-streamElementsUserKeyRepository: StreamElementsUserKeyRepositoryInterface = FakeStreamElementsUserKeyRepository()
+streamElementsUserKeyRepository: Final[StreamElementsUserKeyRepositoryInterface] = FakeStreamElementsUserKeyRepository()
 
-streamElementsApiHelper: StreamElementsApiHelperInterface = StreamElementsApiHelper(
+streamElementsApiHelper: Final[StreamElementsApiHelperInterface] = StreamElementsApiHelper(
     streamElementsApiService = streamElementsApiService,
     streamElementsUserKeyRepository = streamElementsUserKeyRepository,
     timber = timber,
 )
 
-ttsDirectoryProvider: TtsDirectoryProviderInterface = TtsDirectoryProvider()
+ttsDirectoryProvider: Final[TtsDirectoryProviderInterface] = TtsDirectoryProvider()
 
-glacialTtsFileRetriever: GlacialTtsFileRetrieverInterface = StubGlacialTtsFileRetriever(
+glacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = StubGlacialTtsFileRetriever(
     timeZoneRepository = timeZoneRepository,
     ttsDirectoryProvider = ttsDirectoryProvider,
 )
 
-streamElementsHelper: StreamElementsHelperInterface = StreamElementsHelper(
+streamElementsHelper: Final[StreamElementsHelperInterface] = StreamElementsHelper(
     eventLoop = eventLoop,
     glacialTtsFileRetriever = glacialTtsFileRetriever,
     streamElementsApiHelper = streamElementsApiHelper,
