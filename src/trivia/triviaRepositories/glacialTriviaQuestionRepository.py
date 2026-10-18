@@ -582,12 +582,12 @@ class GlacialTriviaQuestionRepository(
     async def __getTwitchChannelId(self) -> str:
         twitchChannelId = self.__twitchChannelId
 
-        if twitchChannelId is not None:
-            return twitchChannelId
+        if twitchChannelId is None:
+            twitchChannelId = await self.__twitchUserIdsRepository.requireIdByLoginOrName(
+                userLoginOrName = await self.__twitchHandleProvider.getTwitchHandle(),
+            )
 
-        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        twitchChannelId = await self.__twitchUserIdsRepository.requireIdByLoginOrName(twitchHandle)
-        self.__twitchChannelId = twitchChannelId
+            self.__twitchChannelId = twitchChannelId
 
         return twitchChannelId
 
@@ -600,17 +600,17 @@ class GlacialTriviaQuestionRepository(
         hasQuestionSetAvailable = await self.__triviaDatabaseFileExists()
 
         if hasQuestionSetAvailable:
-            twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
+            twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
             twitchChannelId = await self.__getTwitchChannelId()
 
             multipleChoiceOrTrueFalse = await self.__fetchMultipleChoiceOrTrueFalseTriviaQuestion(TriviaFetchOptions(
-                twitchChannel = twitchChannel,
+                twitchChannel = twitchHandle,
                 twitchChannelId = twitchChannelId,
                 questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED,
             ))
 
             questionAnswer = await self.__fetchQuestionAnswerTriviaQuestion(TriviaFetchOptions(
-                twitchChannel = twitchChannel,
+                twitchChannel = twitchHandle,
                 twitchChannelId = twitchChannelId,
                 questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED,
             ))

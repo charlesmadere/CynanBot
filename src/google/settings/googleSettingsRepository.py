@@ -91,10 +91,6 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
 
         return volumeGainDb
 
-    async def isMultiSpeakerEnabled(self) -> bool:
-        jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'multiSpeakerEnabled', fallback = False)
-
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
             return self.__cache

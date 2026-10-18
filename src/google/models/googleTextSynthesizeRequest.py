@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 
-from .absGoogleTextSynthesisInput import AbsGoogleTextSynthesisInput
+from .googleTextSynthesisInput import GoogleTextSynthesisInput
 from .googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from .googleVoiceSelectionParams import GoogleVoiceSelectionParams
 
 
 @dataclass(frozen = True, slots = True)
 class GoogleTextSynthesizeRequest:
-    synthesisInput: AbsGoogleTextSynthesisInput
+    synthesisInput: GoogleTextSynthesisInput
     audioConfig: GoogleVoiceAudioConfig
     voice: GoogleVoiceSelectionParams

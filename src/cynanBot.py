@@ -58,8 +58,6 @@ class CynanBot(Startable, TwitchWebsocketConnectionsFinishedListener):
         self.__twitchWebsocketClient: Final[TwitchWebsocketClientInterface] = twitchWebsocketClient
         self.__startables: Final[FrozenList[Startable]] = self.__buildStartablesCollection(startables)
 
-        self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireTwitchHandle()}')
-
     def __buildStartablesCollection(
         self,
         startables: Collection[Startable | Any | None] | None,
@@ -103,7 +101,11 @@ class CynanBot(Startable, TwitchWebsocketConnectionsFinishedListener):
     async def onWebsocketConnectionsFinished(self, userIds: Collection[str]):
         self.__timber.log('CynanBot', f'Finished establishing Twitch websocket connections ({userIds=})')
 
-        for startable in self.__startables:
-            startable.start()
+        for index, startable in enumerate(self.__startables):
+            try:
+                startable.start()
+            except Exception as e:
+                self.__timber.log('CynanBot', f'Failed to start {startable} at index {index} ({userIds=}) ({self.__startables=})', e, traceback.format_exc())
+                raise e
 
         self.__timber.log('CynanBot', f'Finished starting all {len(self.__startables)} startable(s)')

@@ -373,12 +373,12 @@ class TriviaRepository(TriviaRepositoryInterface):
     async def __getTwitchChannelId(self) -> str:
         twitchChannelId = self.__twitchChannelId
 
-        if twitchChannelId is not None:
-            return twitchChannelId
+        if twitchChannelId is None:
+            twitchChannelId = await self.__twitchUserIdsRepository.requireIdByLoginOrName(
+                userLoginOrName = await self.__twitchHandleProvider.getTwitchHandle(),
+            )
 
-        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        twitchChannelId = await self.__twitchUserIdsRepository.requireIdByLoginOrName(twitchHandle)
-        self.__twitchChannelId = twitchChannelId
+            self.__twitchChannelId = twitchChannelId
 
         return twitchChannelId
 

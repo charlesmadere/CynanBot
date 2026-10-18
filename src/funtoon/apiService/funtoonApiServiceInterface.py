@@ -7,7 +7,10 @@ from ..funtoonTriviaQuestion import FuntoonTriviaQuestion
 class FuntoonApiServiceInterface(ABC):
 
     @abstractmethod
-    async def banTriviaQuestion(self, triviaId: str) -> bool:
+    async def banTriviaQuestion(
+        self,
+        triviaId: str,
+    ) -> bool:
         pass
 
     @abstractmethod

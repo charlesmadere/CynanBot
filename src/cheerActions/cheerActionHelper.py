@@ -93,13 +93,13 @@ class CheerActionHelper(CheerActionHelperInterface):
             twitchChannelId = cheerInfo.twitchChannelId,
         )
 
-        moderatorUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(
+        selfUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(
             userLoginOrName = await self.__twitchHandleProvider.getTwitchHandle(),
             twitchAccessToken = userTwitchAccessToken,
         )
 
         moderatorTwitchAccessToken = await self.__twitchTokensRepository.requireAccessTokenById(
-            twitchChannelId = moderatorUserId,
+            twitchChannelId = selfUserId,
         )
 
         actions = await self.__cheerActionsRepository.getActions(
@@ -116,7 +116,7 @@ class CheerActionHelper(CheerActionHelperInterface):
             cheerUserName = cheerInfo.cheerUserName,
             message = cheerInfo.message,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
-            moderatorUserId = moderatorUserId,
+            moderatorUserId = selfUserId,
             twitchChannelId = cheerInfo.twitchChannelId,
             twitchChatMessageId = cheerInfo.twitchChatMessageId,
             userTwitchAccessToken = userTwitchAccessToken,
@@ -143,7 +143,7 @@ class CheerActionHelper(CheerActionHelperInterface):
             cheerUserName = cheerInfo.cheerUserName,
             message = cheerInfo.message,
             moderatorTwitchAccessToken = moderatorTwitchAccessToken,
-            moderatorUserId = moderatorUserId,
+            moderatorUserId = selfUserId,
             twitchChannelId = cheerInfo.twitchChannelId,
             userTwitchAccessToken = userTwitchAccessToken,
             user = cheerInfo.twitchUser,

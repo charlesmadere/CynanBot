@@ -61,13 +61,9 @@ class TwitchPowerUpRedemptionHandler(AbsTwitchPowerUpRedemptionHandler):
         redemptionUserName = event.userName
         customPowerUp = await self.__twitchLocalModelsMapper.mapCustomPowerUp(event.customPowerUp)
 
-        if not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin) or not utils.isValidStr(redemptionUserName) or customPowerUp is None:
+        if not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin) or not utils.isValidStr(redemptionUserName) or customPowerUp is None or customPowerUp.bits < 1:
             self.__timber.log('TwitchPowerUpRedemptionHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({redemptionUserId=}) ({redemptionUserLogin=}) ({redemptionUserName=}) ({customPowerUp=})')
             return
-
-        if event.chatMessage is not None:
-            # just including this for testing/debug purposes for the time being
-            self.__timber.log('TwitchPowerUpRedemptionHandler', f'This event has a chat message ({user=}) ({twitchChannelId=}) ({dataBundle=}) ({redemptionUserId=}) ({redemptionUserLogin=}) ({redemptionUserName=}) ({customPowerUp=})')
 
         powerUpRedemption = TwitchPowerUpRedemption(
             eventId = dataBundle.metadata.messageId,
@@ -88,8 +84,6 @@ class TwitchPowerUpRedemptionHandler(AbsTwitchPowerUpRedemptionHandler):
         if self.__cheerActionHelper is None:
             return
         elif not powerUpRedemption.twitchUser.areCheerActionsEnabled:
-            return
-        elif powerUpRedemption.bits < 1:
             return
 
         self.__cheerActionHelper.submitCheer(CheerActionHelperInterface.CheerInfo(

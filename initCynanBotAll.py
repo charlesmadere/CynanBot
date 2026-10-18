@@ -3807,6 +3807,7 @@ twitchRaidHandler: Final[AbsTwitchRaidHandler] = TwitchRaidHandler(
 
 twitchSubscriptionHandler: Final[AbsTwitchSubscriptionHandler] = TwitchSubscriptionHandler(
     officialTwitchAccountUserIdProvider = officialTwitchAccountUserIdProvider,
+    randomUtils = randomUtils,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,

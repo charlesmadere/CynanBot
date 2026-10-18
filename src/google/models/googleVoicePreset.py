@@ -1,9 +1,7 @@
 from enum import Enum, auto
 
-from .absGoogleVoicePreset import AbsGoogleVoicePreset
 
-
-class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
+class GoogleVoicePreset(Enum):
 
     AFRIKAANS_SOUTH_AFRICA_STANDARD_A = auto()
     ARABIC_STANDARD_A = auto()
@@ -656,3 +654,7 @@ class GoogleVoicePreset(AbsGoogleVoicePreset, Enum):
             case GoogleVoicePreset.VIETNAMESE_VIETNAM_STANDARD_C: return 'vi-VN-Standard-C'
             case GoogleVoicePreset.VIETNAMESE_VIETNAM_STANDARD_D: return 'vi-VN-Standard-D'
             case _: raise ValueError(f'Unknown GoogleVoicePreset value: \"{self}\"')
+
+    @property
+    def languageCode(self) -> str:
+        return '-'.join(self.fullName.split('-')[:2])

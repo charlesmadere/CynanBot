@@ -29,7 +29,10 @@ class FuntoonApiService(FuntoonApiServiceInterface):
         self.__networkClientProvider: Final[NetworkClientProvider] = networkClientProvider
         self.__timber: Final[TimberInterface] = timber
 
-    async def banTriviaQuestion(self, triviaId: str) -> bool:
+    async def banTriviaQuestion(
+        self,
+        triviaId: str,
+    ) -> bool:
         if not utils.isValidStr(triviaId):
             raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
 

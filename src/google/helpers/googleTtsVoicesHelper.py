@@ -2,7 +2,6 @@ import random
 from typing import Final
 
 from .googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
-from ..models.googleMultiSpeakerVoicePreset import GoogleMultiSpeakerVoicePreset
 from ..models.googleVoicePreset import GoogleVoicePreset
 from ..settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...language.languageEntry import LanguageEntry
@@ -126,9 +125,6 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
                 }
 
         return frozenset(voicePresets)
-
-    async def getEnglishMultiSpeakerVoice(self) -> GoogleMultiSpeakerVoicePreset:
-        return GoogleMultiSpeakerVoicePreset.ENGLISH_US_STUDIO_MULTI_SPEAKER
 
     async def getEnglishVoice(self) -> GoogleVoicePreset:
         voice = await self.getVoiceForLanguage(

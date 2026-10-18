@@ -1,5 +1,5 @@
 import traceback
-from typing import Any
+from typing import Any, Final
 
 from .apiService.funtoonApiServiceInterface import FuntoonApiServiceInterface
 from .exceptions import NoFuntoonTokenException
@@ -30,10 +30,10 @@ class FuntoonHelper(FuntoonHelperInterface):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__funtoonApiService: FuntoonApiServiceInterface = funtoonApiService
-        self.__funtoonJsonMapper: FuntoonJsonMapperInterface = funtoonJsonMapper
-        self.__funtoonTokensRepository: FuntoonTokensRepositoryInterface = funtoonTokensRepository
-        self.__timber: TimberInterface = timber
+        self.__funtoonApiService: Final[FuntoonApiServiceInterface] = funtoonApiService
+        self.__funtoonJsonMapper: Final[FuntoonJsonMapperInterface] = funtoonJsonMapper
+        self.__funtoonTokensRepository: Final[FuntoonTokensRepositoryInterface] = funtoonTokensRepository
+        self.__timber: Final[TimberInterface] = timber
 
     async def banTriviaQuestion(self, triviaId: str) -> bool:
         if not utils.isValidStr(triviaId):
@@ -42,7 +42,9 @@ class FuntoonHelper(FuntoonHelperInterface):
         successfullyBanned = False
 
         try:
-            successfullyBanned = await self.__funtoonApiService.banTriviaQuestion(triviaId = triviaId)
+            successfullyBanned = await self.__funtoonApiService.banTriviaQuestion(
+                triviaId = triviaId,
+            )
         except GenericNetworkException as e:
             self.__timber.log('FuntoonHelper', f'Encountered network error when banning trivia question ({triviaId=})', e, traceback.format_exc())
 
@@ -112,7 +114,9 @@ class FuntoonHelper(FuntoonHelperInterface):
         if funtoonPkmnCatchType is None:
             data = userThatRedeemed
         else:
-            catchType = await self.__funtoonJsonMapper.serializePkmnCatchType(funtoonPkmnCatchType)
+            catchType = await self.__funtoonJsonMapper.serializePkmnCatchType(
+                pkmnCatchType = funtoonPkmnCatchType,
+            )
 
             data = {
                 'who': userThatRedeemed,

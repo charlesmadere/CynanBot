@@ -2,11 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Any, Collection
 
 from ..accessToken.googleAccessToken import GoogleAccessToken
-from ..models.absGoogleTextSynthesisInput import AbsGoogleTextSynthesisInput
-from ..models.absGoogleVoicePreset import AbsGoogleVoicePreset
-from ..models.googleMultiSpeakerMarkup import GoogleMultiSpeakerMarkup
-from ..models.googleMultiSpeakerMarkupTurn import GoogleMultiSpeakerMarkupTurn
 from ..models.googleScope import GoogleScope
+from ..models.googleTextSynthesisInput import GoogleTextSynthesisInput
 from ..models.googleTextSynthesisResponse import GoogleTextSynthesisResponse
 from ..models.googleTextSynthesizeRequest import GoogleTextSynthesizeRequest
 from ..models.googleTranslateTextGlossaryConfig import GoogleTranslateTextGlossaryConfig
@@ -17,6 +14,7 @@ from ..models.googleTranslationRequest import GoogleTranslationRequest
 from ..models.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from ..models.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from ..models.googleVoiceGender import GoogleVoiceGender
+from ..models.googleVoicePreset import GoogleVoicePreset
 from ..models.googleVoiceSelectionParams import GoogleVoiceSelectionParams
 
 
@@ -82,7 +80,7 @@ class GoogleJsonMapperInterface(ABC):
     async def parseVoicePreset(
         self,
         jsonString: str | Any | None,
-    ) -> AbsGoogleVoicePreset | None:
+    ) -> GoogleVoicePreset | None:
         pass
 
     @abstractmethod
@@ -96,27 +94,13 @@ class GoogleJsonMapperInterface(ABC):
     async def requireVoicePreset(
         self,
         jsonString: str | Any | None,
-    ) -> AbsGoogleVoicePreset:
+    ) -> GoogleVoicePreset:
         pass
 
     @abstractmethod
     async def serializeGlossaryConfig(
         self,
         glossaryConfig: GoogleTranslateTextGlossaryConfig,
-    ) -> dict[str, Any]:
-        pass
-
-    @abstractmethod
-    async def serializeMultiSpeakerMarkupTurn(
-        self,
-        markupTurn: GoogleMultiSpeakerMarkupTurn,
-    ) -> dict[str, Any]:
-        pass
-
-    @abstractmethod
-    async def serializeMultiSpeakerMarkup(
-        self,
-        markup: GoogleMultiSpeakerMarkup,
     ) -> dict[str, Any]:
         pass
 
@@ -137,7 +121,7 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def serializeTextSynthesisInput(
         self,
-        synthesisInput: AbsGoogleTextSynthesisInput,
+        synthesisInput: GoogleTextSynthesisInput,
     ) -> dict[str, Any]:
         pass
 
@@ -186,7 +170,7 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def serializeVoicePreset(
         self,
-        voicePreset: AbsGoogleVoicePreset,
+        voicePreset: GoogleVoicePreset,
     ) -> str:
         pass
 
