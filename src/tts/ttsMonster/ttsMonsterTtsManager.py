@@ -16,7 +16,7 @@ from ...timber.timberInterface import TimberInterface
 from ...ttsMonster.helpers.ttsMonsterHelperInterface import TtsMonsterHelperInterface
 from ...ttsMonster.models.ttsMonsterFileReference import TtsMonsterFileReference
 from ...ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
-from ...ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from ...ttsMonster.settings.ttsMonsterSettingsInterface import TtsMonsterSettingsInterface
 from ...ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
 
 
@@ -30,7 +30,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsMonsterHelper: TtsMonsterHelperInterface,
         ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface,
-        ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
+        ttsMonsterSettings: TtsMonsterSettingsInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
@@ -45,8 +45,8 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
             raise TypeError(f'ttsMonsterHelper argument is malformed: \"{ttsMonsterHelper}\"')
         elif not isinstance(ttsMonsterMessageCleaner, TtsMonsterMessageCleanerInterface):
             raise TypeError(f'ttsMonsterMessageCleaner argument is malformed: \"{ttsMonsterMessageCleaner}\"')
-        elif not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
-            raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
+        elif not isinstance(ttsMonsterSettings, TtsMonsterSettingsInterface):
+            raise TypeError(f'ttsMonsterSettings argument is malformed: \"{ttsMonsterSettings}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
@@ -56,7 +56,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
         self.__ttsCommandBuilder: Final[TtsCommandBuilderInterface] = ttsCommandBuilder
         self.__ttsMonsterMessageCleaner: Final[TtsMonsterMessageCleanerInterface] = ttsMonsterMessageCleaner
         self.__ttsMonsterHelper: Final[TtsMonsterHelperInterface] = ttsMonsterHelper
-        self.__ttsMonsterSettingsRepository: Final[TtsMonsterSettingsRepositoryInterface] = ttsMonsterSettingsRepository
+        self.__ttsMonsterSettings: Final[TtsMonsterSettingsInterface] = ttsMonsterSettings
         self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
         self.__isLoadingOrPlaying: bool = False
@@ -84,7 +84,7 @@ class TtsMonsterTtsManager(TtsMonsterTtsManagerInterface):
 
     async def __determineVolume(self, fileReference: TtsMonsterFileReference) -> int | None:
         minimumVolume: int | None = None
-        voiceVolumes = await self.__ttsMonsterSettingsRepository.getVoiceVolumes()
+        voiceVolumes = await self.__ttsMonsterSettings.getVoiceVolumes()
 
         for voice in fileReference.allVoices:
             voiceVolume = voiceVolumes.get(voice, None)

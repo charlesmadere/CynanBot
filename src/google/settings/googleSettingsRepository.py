@@ -15,7 +15,7 @@ class GoogleSettingsRepository(GoogleSettingsRepositoryInterface):
         settingsJsonReader: JsonReaderInterface,
         defaultVoiceAudioEncoding: GoogleVoiceAudioEncoding = GoogleVoiceAudioEncoding.MP3,
         defaultMaxConsecutiveEmojis: int = 8,
-        defaultMediaPlayerVolume: int = 38,
+        defaultMediaPlayerVolume: int = 42,
     ):
         if not isinstance(googleJsonMapper, GoogleJsonMapperInterface):
             raise TypeError(f'googleJsonMapper argument is malformed: \"{googleJsonMapper}\"')

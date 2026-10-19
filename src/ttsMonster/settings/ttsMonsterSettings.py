@@ -2,7 +2,7 @@ from typing import Any, Final
 
 from frozendict import frozendict
 
-from .ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from .ttsMonsterSettingsInterface import TtsMonsterSettingsInterface
 from ..mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMonsterPrivateApiJsonMapperInterface
 from ..models.ttsMonsterDonationPrefixConfig import TtsMonsterDonationPrefixConfig
 from ..models.ttsMonsterVoice import TtsMonsterVoice
@@ -10,19 +10,19 @@ from ...misc import utils as utils
 from ...storage.jsonReaderInterface import JsonReaderInterface
 
 
-class TtsMonsterSettingsRepository(TtsMonsterSettingsRepositoryInterface):
+class TtsMonsterSettings(TtsMonsterSettingsInterface):
 
     def __init__(
         self,
         settingsJsonReader: JsonReaderInterface,
         ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface,
         defaultVoiceVolumes: frozendict[TtsMonsterVoice, int | None] = frozendict({
-            TtsMonsterVoice.GLADOS: 34,
+            TtsMonsterVoice.GLADOS: 36,
             TtsMonsterVoice.JAZZ: 32,
-            TtsMonsterVoice.SPONGEBOB: 34,
-            TtsMonsterVoice.SHADOW: 32,
+            TtsMonsterVoice.SPONGEBOB: 36,
+            TtsMonsterVoice.SHADOW: 34,
         }),
-        defaultVoiceVolume: int | None = 42,
+        defaultVoiceVolume: int | None = 46,
         defaultDonationPrefixConfig: TtsMonsterDonationPrefixConfig = TtsMonsterDonationPrefixConfig.IF_MESSAGE_IS_BLANK,
         defaultVoice: TtsMonsterVoice = TtsMonsterVoice.BRIAN,
     ):

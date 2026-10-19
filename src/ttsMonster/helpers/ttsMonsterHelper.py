@@ -17,7 +17,7 @@ from ..models.ttsMonsterDonationPrefixConfig import TtsMonsterDonationPrefixConf
 from ..models.ttsMonsterFileReference import TtsMonsterFileReference
 from ..models.ttsMonsterMessageChunk import TtsMonsterMessageChunk
 from ..models.ttsMonsterVoice import TtsMonsterVoice
-from ..settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from ..settings.ttsMonsterSettingsInterface import TtsMonsterSettingsInterface
 from ...glacialTtsStorage.fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
@@ -39,7 +39,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         timber: TimberInterface,
         ttsMonsterMessageChunkParser: TtsMonsterMessageChunkParserInterface,
         ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface,
-        ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
+        ttsMonsterSettings: TtsMonsterSettingsInterface,
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -51,15 +51,15 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             raise TypeError(f'ttsMonsterMessageChunkParser argument is malformed: \"{ttsMonsterMessageChunkParser}\"')
         elif not isinstance(ttsMonsterPrivateApiHelper, TtsMonsterPrivateApiHelperInterface):
             raise TypeError(f'ttsMonsterPrivateApiHelper argument is malformed: \"{ttsMonsterPrivateApiHelper}\"')
-        elif not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
-            raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
+        elif not isinstance(ttsMonsterSettings, TtsMonsterSettingsInterface):
+            raise TypeError(f'ttsMonsterSettings argument is malformed: \"{ttsMonsterSettings}\"')
 
         self.__eventLoop: Final[AbstractEventLoop] = eventLoop
         self.__glacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = glacialTtsFileRetriever
         self.__timber: Final[TimberInterface] = timber
         self.__ttsMonsterMessageChunkParser: Final[TtsMonsterMessageChunkParserInterface] = ttsMonsterMessageChunkParser
         self.__ttsMonsterPrivateApiHelper: Final[TtsMonsterPrivateApiHelperInterface] = ttsMonsterPrivateApiHelper
-        self.__ttsMonsterSettingsRepository: Final[TtsMonsterSettingsRepositoryInterface] = ttsMonsterSettingsRepository
+        self.__ttsMonsterSettings: Final[TtsMonsterSettingsInterface] = ttsMonsterSettings
 
         self.__directoryTreeRegEx: Final[Pattern] = re.compile(r'^((\.{1,2})?[\w+|\/]+)\/\w+\.\w+$', re.IGNORECASE)
 
@@ -90,7 +90,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
         donationPrefix: str | None,
         message: str | None,
     ) -> str | None:
-        donationPrefixConfig = await self.__ttsMonsterSettingsRepository.getDonationPrefixConfig()
+        donationPrefixConfig = await self.__ttsMonsterSettings.getDonationPrefixConfig()
 
         match donationPrefixConfig:
             case TtsMonsterDonationPrefixConfig.DISABLED:
@@ -123,7 +123,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
     async def __determineMessageVoices(self, message: str) -> MessageVoices:
         messageChunks = await self.__ttsMonsterMessageChunkParser.parse(
             message = message,
-            defaultVoice = await self.__ttsMonsterSettingsRepository.getDefaultVoice(),
+            defaultVoice = await self.__ttsMonsterSettings.getDefaultVoice(),
         )
 
         allVoices: set[TtsMonsterVoice] = set()
@@ -135,7 +135,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
 
             primaryVoice = messageChunks[0].voice
         else:
-            primaryVoice = await self.__ttsMonsterSettingsRepository.getDefaultVoice()
+            primaryVoice = await self.__ttsMonsterSettings.getDefaultVoice()
 
         return TtsMonsterHelper.MessageVoices(
             messageChunks = messageChunks,
@@ -202,7 +202,7 @@ class TtsMonsterHelper(TtsMonsterHelperInterface):
             return None
 
         glacialFile = await self.__glacialTtsFileRetriever.saveFile(
-            fileExtension = await self.__ttsMonsterSettingsRepository.getFileExtension(),
+            fileExtension = await self.__ttsMonsterSettings.getFileExtension(),
             message = fullMessage,
             voice = None,
             provider = TtsProvider.TTS_MONSTER,
