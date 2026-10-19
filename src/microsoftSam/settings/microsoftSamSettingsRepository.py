@@ -13,7 +13,7 @@ class MicrosoftSamSettingsRepository(MicrosoftSamSettingsRepositoryInterface):
         self,
         microsoftSamJsonParser: MicrosoftSamJsonParserInterface,
         settingsJsonReader: JsonReaderInterface,
-        defaultMediaPlayerVolume: int = 36,
+        defaultMediaPlayerVolume: int = 40,
         defaultVoice: MicrosoftSamVoice = MicrosoftSamVoice.SAM,
         defaultFileExtension: str = 'wav',
     ):
