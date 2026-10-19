@@ -11,7 +11,7 @@ from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import S
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 from ...ttsMonster.helpers.ttsMonsterHelperInterface import TtsMonsterHelperInterface
-from ...ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from ...ttsMonster.settings.ttsMonsterSettingsInterface import TtsMonsterSettingsInterface
 from ...ttsMonster.ttsMonsterMessageCleanerInterface import TtsMonsterMessageCleanerInterface
 
 
@@ -25,7 +25,7 @@ class TtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsMonsterHelper: TtsMonsterHelperInterface,
         ttsMonsterMessageCleaner: TtsMonsterMessageCleanerInterface,
-        ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface,
+        ttsMonsterSettings: TtsMonsterSettingsInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
@@ -40,8 +40,8 @@ class TtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
             raise TypeError(f'ttsMonsterHelper argument is malformed: \"{ttsMonsterHelper}\"')
         elif not isinstance(ttsMonsterMessageCleaner, TtsMonsterMessageCleanerInterface):
             raise TypeError(f'ttsMonsterMessageCleaner argument is malformed: \"{ttsMonsterMessageCleaner}\"')
-        elif not isinstance(ttsMonsterSettingsRepository, TtsMonsterSettingsRepositoryInterface):
-            raise TypeError(f'ttsMonsterSettingsRepository argument is malformed: \"{ttsMonsterSettingsRepository}\"')
+        elif not isinstance(ttsMonsterSettings, TtsMonsterSettingsInterface):
+            raise TypeError(f'ttsMonsterSettings argument is malformed: \"{ttsMonsterSettings}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
@@ -51,14 +51,14 @@ class TtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
         self.__ttsCommandBuilder: Final[TtsCommandBuilderInterface] = ttsCommandBuilder
         self.__ttsMonsterHelper: Final[TtsMonsterHelperInterface] = ttsMonsterHelper
         self.__ttsMonsterMessageCleaner: Final[TtsMonsterMessageCleanerInterface] = ttsMonsterMessageCleaner
-        self.__ttsMonsterSettingsRepository: Final[TtsMonsterSettingsRepositoryInterface] = ttsMonsterSettingsRepository
+        self.__ttsMonsterSettings: Final[TtsMonsterSettingsInterface] = ttsMonsterSettings
         self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
         self.__sharedInstance: TtsMonsterTtsManagerInterface | None = None
 
     def constructNewInstance(
         self,
-        useSharedSoundPlayerManager: bool = True
+        useSharedSoundPlayerManager: bool = True,
     ) -> TtsMonsterTtsManagerInterface | None:
         if not utils.isValidBool(useSharedSoundPlayerManager):
             raise TypeError(f'useSharedSoundPlayerManager argument is malformed: \"{useSharedSoundPlayerManager}\"')
@@ -77,7 +77,7 @@ class TtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
             ttsCommandBuilder = self.__ttsCommandBuilder,
             ttsMonsterHelper = self.__ttsMonsterHelper,
             ttsMonsterMessageCleaner = self.__ttsMonsterMessageCleaner,
-            ttsMonsterSettingsRepository = self.__ttsMonsterSettingsRepository,
+            ttsMonsterSettings = self.__ttsMonsterSettings,
             ttsSettingsRepository = self.__ttsSettingsRepository
         )
 

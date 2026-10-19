@@ -6,7 +6,7 @@ class StubTtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
 
     def constructNewInstance(
         self,
-        useSharedSoundPlayerManager: bool = True
+        useSharedSoundPlayerManager: bool = True,
     ) -> TtsMonsterTtsManagerInterface | None:
         return None
 

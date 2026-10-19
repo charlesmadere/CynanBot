@@ -32,8 +32,8 @@ from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParserInterface imp
     TtsMonsterMessageChunkParserInterface
 from src.ttsMonster.models.ttsMonsterTokens import TtsMonsterTokens
 from src.ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
-from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
-from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from src.ttsMonster.settings.ttsMonsterSettings import TtsMonsterSettings
+from src.ttsMonster.settings.ttsMonsterSettingsInterface import TtsMonsterSettingsInterface
 from src.ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \
     TtsMonsterTokensRepositoryInterface
 from src.twitch.friends.twitchFriendsUserIdRepository import TwitchFriendsUserIdRepository
@@ -97,9 +97,9 @@ ttsMonsterPrivateApiHelper: TtsMonsterPrivateApiHelperInterface = TtsMonsterPriv
     ttsMonsterPrivateApiService = ttsMonsterPrivateApiService
 )
 
-ttsMonsterSettingsRepository: TtsMonsterSettingsRepositoryInterface = TtsMonsterSettingsRepository(
+ttsMonsterSettings: TtsMonsterSettingsInterface = TtsMonsterSettings(
     settingsJsonReader = JsonStaticReader(dict()),
-    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
+    ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper,
 )
 
 glacialTtsDataMapper: GlacialTtsDataMapperInterface = GlacialTtsDataMapper()
@@ -128,7 +128,7 @@ ttsMonsterHelper: TtsMonsterHelperInterface = TtsMonsterHelper(
     timber = timber,
     ttsMonsterMessageChunkParser = ttsMonsterMessageChunkParser,
     ttsMonsterPrivateApiHelper = ttsMonsterPrivateApiHelper,
-    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository
+    ttsMonsterSettings = ttsMonsterSettings,
 )
 
 twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface = TwitchFriendsUserIdRepository()

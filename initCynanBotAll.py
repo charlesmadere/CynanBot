@@ -658,8 +658,8 @@ from src.ttsMonster.mapper.ttsMonsterPrivateApiJsonMapperInterface import TtsMon
 from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParser import TtsMonsterMessageChunkParser
 from src.ttsMonster.messageChunkParser.ttsMonsterMessageChunkParserInterface import \
     TtsMonsterMessageChunkParserInterface
-from src.ttsMonster.settings.ttsMonsterSettingsRepository import TtsMonsterSettingsRepository
-from src.ttsMonster.settings.ttsMonsterSettingsRepositoryInterface import TtsMonsterSettingsRepositoryInterface
+from src.ttsMonster.settings.ttsMonsterSettings import TtsMonsterSettings
+from src.ttsMonster.settings.ttsMonsterSettingsInterface import TtsMonsterSettingsInterface
 from src.ttsMonster.tokens.ttsMonsterTokensRepository import TtsMonsterTokensRepository
 from src.ttsMonster.tokens.ttsMonsterTokensRepositoryInterface import \
     TtsMonsterTokensRepositoryInterface
@@ -1832,10 +1832,10 @@ streamElementsTtsManagerProvider: Final[StreamElementsTtsManagerProviderInterfac
 ## TTS Monster initialization section ##
 ########################################
 
-ttsMonsterSettingsRepository: Final[TtsMonsterSettingsRepositoryInterface] = TtsMonsterSettingsRepository(
+ttsMonsterSettings: Final[TtsMonsterSettingsInterface] = TtsMonsterSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = '../config/ttsMonsterSettingsRepository.json',
+        fileName = '../config/ttsMonsterSettings.json',
     ),
     ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper,
 )
@@ -1870,7 +1870,7 @@ ttsMonsterHelper: Final[TtsMonsterHelperInterface] = TtsMonsterHelper(
     timber = timber,
     ttsMonsterMessageChunkParser = ttsMonsterMessageChunkParser,
     ttsMonsterPrivateApiHelper = ttsMonsterPrivateApiHelper,
-    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
+    ttsMonsterSettings = ttsMonsterSettings,
 )
 
 ttsMonsterMessageCleaner: Final[TtsMonsterMessageCleanerInterface] = TtsMonsterMessageCleaner(
@@ -1884,7 +1884,7 @@ ttsMonsterTtsManagerProvider: Final[TtsMonsterTtsManagerProviderInterface] = Tts
     ttsCommandBuilder = ttsCommandBuilder,
     ttsMonsterHelper = ttsMonsterHelper,
     ttsMonsterMessageCleaner = ttsMonsterMessageCleaner,
-    ttsMonsterSettingsRepository = ttsMonsterSettingsRepository,
+    ttsMonsterSettings = ttsMonsterSettings,
     ttsSettingsRepository = ttsSettingsRepository,
 )
 

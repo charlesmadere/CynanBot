@@ -7,7 +7,7 @@ from ..models.ttsMonsterVoice import TtsMonsterVoice
 from ...misc.clearable import Clearable
 
 
-class TtsMonsterSettingsRepositoryInterface(Clearable, ABC):
+class TtsMonsterSettingsInterface(Clearable, ABC):
 
     @abstractmethod
     async def getDefaultVoice(self) -> TtsMonsterVoice:
