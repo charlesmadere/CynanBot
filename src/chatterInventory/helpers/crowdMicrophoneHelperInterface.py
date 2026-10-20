@@ -1,11 +1,17 @@
 from abc import ABC, abstractmethod
 
+from frozendict import frozendict
+
 from .crowdMicrophoneProviderInterface import CrowdMicrophoneProviderInterface
 from ..models.crowdMicrophoneStatus import CrowdMicrophoneStatus
 from ..models.useChatterItemAction import UseChatterItemAction
 
 
 class CrowdMicrophoneHelperInterface(CrowdMicrophoneProviderInterface, ABC):
+
+    @abstractmethod
+    async def getAllActiveMicrophones(self) -> frozendict[str, CrowdMicrophoneStatus]:
+        pass
 
     @abstractmethod
     async def getAllDeadMicrophones(self) -> frozenset[CrowdMicrophoneStatus]:

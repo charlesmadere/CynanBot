@@ -251,7 +251,7 @@ class TimeoutEventHandler(TimeoutEventListener):
         else:
             peoplePluralityString = f'{peopleCountString} chatters hit'
 
-        message = f'{event.explodedEmote} {peoplePluralityString} by @{event.instigatorUserData.getUserName()} with a {event.timeoutDuration.secondsStr}s timeout! {userNamesString} {event.bombEmote}'
+        message = f'{event.explodedEmote} {peoplePluralityString} by @{event.instigatorUserData.getUserName()} with a {event.timeoutDuration.shorthandMessage} timeout! {userNamesString} {event.bombEmote}'
 
         self.__twitchChatMessenger.send(
             text = message,

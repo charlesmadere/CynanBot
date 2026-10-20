@@ -2,6 +2,8 @@ import traceback
 from datetime import timedelta
 from typing import Final
 
+from frozendict import frozendict
+
 from .crowdMicrophoneHelperInterface import CrowdMicrophoneHelperInterface
 from ..exceptions import CrowdMicrophoneAlreadyStartedException
 from ..models.crowdMicrophoneStatus import CrowdMicrophoneStatus
@@ -52,14 +54,22 @@ class CrowdMicrophoneHelper(CrowdMicrophoneHelperInterface):
 
         associatedTtsManagers.append(compositeTtsManager)
 
+    async def getAllActiveMicrophones(self) -> frozendict[str, CrowdMicrophoneStatus]:
+        allActiveMicrophones: dict[str, CrowdMicrophoneStatus] = dict()
+        now = self.__timeZoneRepository.getNow()
+
+        for microphone in self.__crowdMicrophones.values():
+            if microphone is not None and now <= microphone.endTime:
+                allActiveMicrophones[microphone.twitchChannelId] = microphone
+
+        return frozendict(allActiveMicrophones)
+
     async def getAllDeadMicrophones(self) -> frozenset[CrowdMicrophoneStatus]:
         allDeadMicrophones: set[CrowdMicrophoneStatus] = set()
         now = self.__timeZoneRepository.getNow()
 
         for microphone in self.__crowdMicrophones.values():
-            if microphone is None:
-                continue
-            elif now > microphone.endTime:
+            if microphone is not None and now > microphone.endTime:
                 allDeadMicrophones.add(microphone)
 
         return frozenset(allDeadMicrophones)
