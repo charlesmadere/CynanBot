@@ -295,6 +295,8 @@ from src.trivia.emotes.triviaEmoteRepository import TriviaEmoteRepository
 from src.trivia.emotes.triviaEmoteRepositoryInterface import TriviaEmoteRepositoryInterface
 from src.trivia.emotes.twitch.triviaTwitchEmoteHelper import TriviaTwitchEmoteHelper
 from src.trivia.emotes.twitch.triviaTwitchEmoteHelperInterface import TriviaTwitchEmoteHelperInterface
+from src.trivia.gameController.triviaGameControllersHelper import TriviaGameControllersHelper
+from src.trivia.gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from src.trivia.gameController.triviaGameControllersRepository import TriviaGameControllersRepository
 from src.trivia.gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from src.trivia.gameController.triviaGameGlobalControllersRepository import TriviaGameGlobalControllersRepository
@@ -1289,6 +1291,15 @@ triviaGameGlobalControllersRepository: Final[TriviaGameGlobalControllersReposito
     timber = timber,
 )
 
+triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = TriviaGameControllersHelper(
+    timber = timber,
+    triviaGameControllersRepository = triviaGameControllersRepository,
+    triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
+)
+
 triviaDifficultyParser: Final[TriviaDifficultyParserInterface] = TriviaDifficultyParser()
 
 triviaHistoryRepository: Final[TriviaHistoryRepositoryInterface] = TriviaHistoryRepository(
@@ -2167,7 +2178,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         administratorProvider = administratorProvider,
         generalSettingsRepository = generalSettingsRepository,
         timber = timber,
-        triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
@@ -2190,7 +2201,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         administratorProvider = administratorProvider,
         generalSettingsRepository = generalSettingsRepository,
         timber = timber,
-        triviaGameControllersRepository = triviaGameControllersRepository,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),

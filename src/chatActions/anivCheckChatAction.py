@@ -91,24 +91,24 @@ class AnivCheckChatAction(AbsChatAction):
             return ChatActionResult.IGNORED
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        moderatorTwitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
+        selfTwitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
 
-        if not utils.isValidStr(moderatorTwitchAccessToken):
-            self.__timber.log(self.actionName, f'Attempted to timeout for posting bad content, but was unable to fetch a valid Twitch access token for the bot user ({whichAnivUser=}) ({contentCode=}) ({chatMessage=}) ({moderatorTwitchAccessToken=}) ({twitchHandle=})')
+        if not utils.isValidStr(selfTwitchAccessToken):
+            self.__timber.log(self.actionName, f'Attempted to timeout for posting bad content, but was unable to fetch a valid Twitch access token for the bot user ({selfTwitchAccessToken=}) ({twitchHandle=}) ({whichAnivUser=}) ({contentCode=}) ({chatMessage=})')
             return ChatActionResult.IGNORED
+
+        selfUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(
+            userLoginOrName = twitchHandle,
+            twitchAccessToken = selfTwitchAccessToken,
+        )
 
         userTwitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
             twitchChannelId = chatMessage.twitchChannelId,
         )
 
         if not utils.isValidStr(userTwitchAccessToken):
-            self.__timber.log(self.actionName, f'Attempted to timeout for posting bad content, but was unable to fetch a valid Twitch access token for this Twitch channel ({whichAnivUser=}) ({contentCode=}) ({chatMessage=}) ({userTwitchAccessToken=})')
+            self.__timber.log(self.actionName, f'Attempted to timeout for posting bad content, but was unable to fetch a valid Twitch access token for this Twitch channel ({userTwitchAccessToken=}) ({twitchHandle=}) ({whichAnivUser=}) ({contentCode=}) ({chatMessage=})')
             return ChatActionResult.IGNORED
-
-        moderatorUserId = await self.__twitchUserIdsHelper.requireIdByLoginOrName(
-            userLoginOrName = twitchHandle,
-            twitchAccessToken = moderatorTwitchAccessToken,
-        )
 
         timeoutDuration: AbsTimeoutDuration = ExactTimeoutDuration(
             seconds = self.__timeoutDurationSeconds,
@@ -118,9 +118,9 @@ class AnivCheckChatAction(AbsChatAction):
             timeoutDuration = timeoutDuration,
             actionId = await self.__timeoutIdGenerator.generateActionId(),
             chatMessage = None,
-            instigatorUserId = moderatorUserId,
-            moderatorTwitchAccessToken = moderatorTwitchAccessToken,
-            moderatorUserId = moderatorUserId,
+            instigatorUserId = selfUserId,
+            moderatorTwitchAccessToken = selfTwitchAccessToken,
+            moderatorUserId = selfUserId,
             reason = f'Timed out for content code {contentCode}',
             targetUserId = chatMessage.chatterUserId,
             twitchChannelId = chatMessage.twitchChannelId,

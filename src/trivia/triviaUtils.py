@@ -21,6 +21,7 @@ from ..cuteness.models.preparedIncrementedCutenessResult import PreparedIncremen
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
+from ..twitch.localModels.twitchUserInterface import TwitchUserInterface
 from ..twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
 
@@ -523,12 +524,12 @@ class TriviaUtils(TriviaUtilsInterface):
 
     async def getTriviaGameControllers(
         self,
-        gameControllers: Collection[str],
+        gameControllers: Collection[TwitchUserInterface],
     ) -> str:
         if not isinstance(gameControllers, Collection):
             raise TypeError(f'gameControllers argument is malformed: \"{gameControllers}\"')
 
-        frozenGameControllers: FrozenList[str] = FrozenList(gameControllers)
+        frozenGameControllers: FrozenList[TwitchUserInterface] = FrozenList(gameControllers)
         frozenGameControllers.freeze()
 
         if len(frozenGameControllers) == 0:
@@ -536,8 +537,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         userNames: list[str] = list()
         for gameController in frozenGameControllers:
-            userData = await self.__twitchUserIdsRepository.requireById(gameController)
-            userNames.append(userData.getUserName())
+            userNames.append(gameController.getUserName())
 
         userNames.sort(key = lambda userName: userName.casefold())
         gameControllersStr = ', '.join(userNames)
@@ -545,12 +545,12 @@ class TriviaUtils(TriviaUtilsInterface):
 
     async def getTriviaGameGlobalControllers(
         self,
-        gameControllers: Collection[str],
+        gameControllers: Collection[TwitchUserInterface],
     ) -> str:
         if not isinstance(gameControllers, Collection):
             raise TypeError(f'gameControllers argument is malformed: \"{gameControllers}\"')
 
-        frozenGameControllers: FrozenList[str] = FrozenList(gameControllers)
+        frozenGameControllers: FrozenList[TwitchUserInterface] = FrozenList(gameControllers)
         frozenGameControllers.freeze()
 
         if len(frozenGameControllers) == 0:
@@ -558,8 +558,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         userNames: list[str] = list()
         for gameController in frozenGameControllers:
-            userData = await self.__twitchUserIdsRepository.requireById(gameController)
-            userNames.append(userData.getUserName())
+            userNames.append(gameController.getUserName())
 
         userNames.sort(key = lambda userName: userName.casefold())
         gameControllersStr = ', '.join(userNames)
@@ -712,6 +711,7 @@ class TriviaUtils(TriviaUtilsInterface):
             return True
         elif userId in await self.__triviaGameGlobalControllersRepository.getControllers():
             return True
+        elif userId == await self.__administratorProvider.getAdministratorUserId():
+            return True
         else:
-            administratorUserId = await self.__administratorProvider.getAdministratorUserId()
-            return userId == administratorUserId
+            return False

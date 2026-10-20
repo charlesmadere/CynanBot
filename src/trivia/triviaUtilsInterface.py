@@ -8,6 +8,7 @@ from .specialStatus.specialTriviaStatus import SpecialTriviaStatus
 from .specialStatus.toxicTriviaPunishmentResult import ToxicTriviaPunishmentResult
 from .specialStatus.toxicTriviaResult import ToxicTriviaResult
 from ..cuteness.models.preparedIncrementedCutenessResult import PreparedIncrementedCutenessResult
+from ..twitch.localModels.twitchUserInterface import TwitchUserInterface
 from ..users.userInterface import UserInterface
 
 
@@ -129,14 +130,14 @@ class TriviaUtilsInterface(ABC):
     @abstractmethod
     async def getTriviaGameControllers(
         self,
-        gameControllers: Collection[str],
+        gameControllers: Collection[TwitchUserInterface],
     ) -> str:
         pass
 
     @abstractmethod
     async def getTriviaGameGlobalControllers(
         self,
-        gameControllers: Collection[str],
+        gameControllers: Collection[TwitchUserInterface],
     ) -> str:
         pass
 
