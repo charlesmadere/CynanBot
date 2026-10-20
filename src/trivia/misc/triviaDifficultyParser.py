@@ -9,7 +9,7 @@ class TriviaDifficultyParser(TriviaDifficultyParserInterface):
 
     async def parse(
         self,
-        triviaDifficulty: int | str | Any | None
+        triviaDifficulty: int | str | Any | None,
     ) -> TriviaDifficulty:
         result: TriviaDifficulty | None = None
 
