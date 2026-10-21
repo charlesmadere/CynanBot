@@ -71,6 +71,9 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
 
         userData = await self.__twitchUserIdsHelper.requireById(
             userId = userId,
+            twitchAccessToken = await self.__twitchTokensRepository.getAccessTokenById(
+                twitchChannelId = twitchChannelId,
+            ),
         )
 
         return TriviaGameControllersHelperInterface.Added(
