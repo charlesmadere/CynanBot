@@ -3,6 +3,7 @@ from typing import Collection, Final
 
 from frozenlist import FrozenList
 
+from .addTriviaGameControllerResult import AddTriviaGameControllerResult
 from .triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from .triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from .triviaGameGlobalControllersRepositoryInterface import TriviaGameGlobalControllersRepositoryInterface
@@ -45,6 +46,36 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
+
+    async def addChannelController(
+        self,
+        twitchChannelId: str,
+        userId: str,
+    ) -> TriviaGameControllersHelperInterface.AbsAddResult:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+
+        result = await self.__triviaGameControllersRepository.addController(
+            twitchChannelId = twitchChannelId,
+            userId = userId,
+        )
+
+        match result:
+            case AddTriviaGameControllerResult.ALREADY_EXISTS:
+                return TriviaGameControllersHelperInterface.AlreadyExists()
+
+    async def addGlobalController(
+        self,
+        userId: str,
+    ) -> AddTriviaGameControllerResult:
+        if not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+
+        return await self.__triviaGameGlobalControllersRepository.addController(
+            userId = userId,
+        )
 
     async def __buildControllersCollection(
         self,
