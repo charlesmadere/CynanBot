@@ -62,19 +62,49 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
             userId = userId,
         )
 
-        match result:
-            case AddTriviaGameControllerResult.ALREADY_EXISTS:
-                return TriviaGameControllersHelperInterface.AlreadyExists()
+        if result is AddTriviaGameControllerResult.ALREADY_EXISTS:
+            return TriviaGameControllersHelperInterface.AlreadyExists()
+
+        controllers = await self.__triviaGameControllersRepository.getControllers(
+            twitchChannelId = twitchChannelId,
+        )
+
+        userData = await self.__twitchUserIdsHelper.requireById(
+            userId = userId,
+        )
+
+        return TriviaGameControllersHelperInterface.Added(
+            newTotal = len(controllers),
+            userId = userData.getUserId(),
+            userLogin = userData.getUserLogin(),
+            userName = userData.getUserName(),
+        )
 
     async def addGlobalController(
         self,
         userId: str,
-    ) -> AddTriviaGameControllerResult:
+    ) -> TriviaGameControllersHelperInterface.AbsAddResult:
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        return await self.__triviaGameGlobalControllersRepository.addController(
+        result = await self.__triviaGameGlobalControllersRepository.addController(
             userId = userId,
+        )
+
+        if result is AddTriviaGameControllerResult.ALREADY_EXISTS:
+            return TriviaGameControllersHelperInterface.AlreadyExists()
+
+        controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
+
+        userData = await self.__twitchUserIdsHelper.requireById(
+            userId = userId,
+        )
+
+        return TriviaGameControllersHelperInterface.Added(
+            newTotal = len(controllers),
+            userId = userData.getUserId(),
+            userLogin = userData.getUserLogin(),
+            userName = userData.getUserName(),
         )
 
     async def __buildControllersCollection(

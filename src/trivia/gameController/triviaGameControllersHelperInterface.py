@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Collection
 
-from .addTriviaGameControllerResult import AddTriviaGameControllerResult
 from ...twitch.localModels.twitchUserInterface import TwitchUserInterface
 
 
