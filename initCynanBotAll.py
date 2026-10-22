@@ -2098,6 +2098,7 @@ triviaGameGlobalControllersRepository: Final[TriviaGameGlobalControllersReposito
 )
 
 triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = TriviaGameControllersHelper(
+    bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     timber = timber,
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,

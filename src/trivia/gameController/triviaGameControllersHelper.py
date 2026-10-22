@@ -4,9 +4,12 @@ from typing import Collection, Final
 from frozenlist import FrozenList
 
 from .addTriviaGameControllerResult import AddTriviaGameControllerResult
+from .exceptions import TriviaGameControllerAlreadyExistsException
 from .triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from .triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from .triviaGameGlobalControllersRepositoryInterface import TriviaGameGlobalControllersRepositoryInterface
+from ..banned.addBannedTriviaGameControllerResult import AddBannedTriviaGameControllerResult
+from ..banned.bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 from ...twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
@@ -20,6 +23,7 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
 
     def __init__(
         self,
+        bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface,
         timber: TimberInterface,
         triviaGameControllersRepository: TriviaGameControllersRepositoryInterface,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface,
@@ -27,7 +31,9 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepositoryInterface):
+            raise TypeError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
             raise TypeError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
@@ -40,6 +46,7 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
             raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
+        self.__bannedTriviaGameControllersRepository: Final[BannedTriviaGameControllersRepositoryInterface] = bannedTriviaGameControllersRepository
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameControllersRepository: Final[TriviaGameControllersRepositoryInterface] = triviaGameControllersRepository
         self.__triviaGameGlobalControllersRepository: Final[TriviaGameGlobalControllersRepositoryInterface] = triviaGameGlobalControllersRepository
@@ -47,11 +54,41 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
 
+    async def addBannedController(
+        self,
+        userId: str,
+    ) -> TriviaGameControllersHelperInterface.AddedResult:
+        if not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+
+        result = await self.__bannedTriviaGameControllersRepository.addBannedController(
+            userId = userId,
+        )
+
+        if result is AddBannedTriviaGameControllerResult.ALREADY_EXISTS:
+            raise TriviaGameControllerAlreadyExistsException(f'This banned trivia game controller was already added ({userId=})')
+
+        controllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
+
+        userData = await self.__twitchUserIdsHelper.requireById(
+            userId = userId,
+            twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
+                twitchChannel = await self.__twitchHandleProvider.getTwitchHandle(),
+            ),
+        )
+
+        return TriviaGameControllersHelperInterface.AddedResult(
+            newTotal = len(controllers),
+            userId = userData.getUserId(),
+            userLogin = userData.getUserLogin(),
+            userName = userData.getUserName(),
+        )
+
     async def addChannelController(
         self,
         twitchChannelId: str,
         userId: str,
-    ) -> TriviaGameControllersHelperInterface.AbsAddResult:
+    ) -> TriviaGameControllersHelperInterface.AddedResult:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
@@ -63,7 +100,7 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         )
 
         if result is AddTriviaGameControllerResult.ALREADY_EXISTS:
-            return TriviaGameControllersHelperInterface.AlreadyExists()
+            raise TriviaGameControllerAlreadyExistsException(f'This trivia game channel controller was already added ({twitchChannelId=}) ({userId=})')
 
         controllers = await self.__triviaGameControllersRepository.getControllers(
             twitchChannelId = twitchChannelId,
@@ -76,7 +113,7 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
             ),
         )
 
-        return TriviaGameControllersHelperInterface.Added(
+        return TriviaGameControllersHelperInterface.AddedResult(
             newTotal = len(controllers),
             userId = userData.getUserId(),
             userLogin = userData.getUserLogin(),
@@ -86,7 +123,7 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
     async def addGlobalController(
         self,
         userId: str,
-    ) -> TriviaGameControllersHelperInterface.AbsAddResult:
+    ) -> TriviaGameControllersHelperInterface.AddedResult:
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
@@ -95,15 +132,18 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         )
 
         if result is AddTriviaGameControllerResult.ALREADY_EXISTS:
-            return TriviaGameControllersHelperInterface.AlreadyExists()
+            raise TriviaGameControllerAlreadyExistsException(f'This trivia game global controller was already added ({userId=})')
 
         controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
 
         userData = await self.__twitchUserIdsHelper.requireById(
             userId = userId,
+            twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
+                twitchChannel = await self.__twitchHandleProvider.getTwitchHandle(),
+            ),
         )
 
-        return TriviaGameControllersHelperInterface.Added(
+        return TriviaGameControllersHelperInterface.AddedResult(
             newTotal = len(controllers),
             userId = userData.getUserId(),
             userLogin = userData.getUserLogin(),
@@ -133,6 +173,18 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         frozenUsersList.freeze()
 
         return frozenUsersList
+
+    async def getBannedControllers(self) -> Collection[TwitchUserInterface]:
+        userIds = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
+
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
+            twitchChannel = await self.__twitchHandleProvider.getTwitchHandle(),
+        )
+
+        return await self.__buildControllersCollection(
+            userIds = userIds,
+            twitchAccessToken = twitchAccessToken,
+        )
 
     async def getChannelControllers(
         self,
