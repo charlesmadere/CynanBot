@@ -37,6 +37,13 @@ class TriviaGameControllersHelperInterface(ABC):
         pass
 
     @abstractmethod
+    async def getAllLocallyAuthorizedControllerIds(
+        self,
+        twitchChannelId: str,
+    ) -> Collection[str]:
+        pass
+
+    @abstractmethod
     async def getBannedControllers(self) -> Collection[TwitchUserInterface]:
         pass
 

@@ -11,6 +11,7 @@ from .triviaGameGlobalControllersRepositoryInterface import TriviaGameGlobalCont
 from ..banned.addBannedTriviaGameControllerResult import AddBannedTriviaGameControllerResult
 from ..banned.bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
 from ...misc import utils as utils
+from ...misc.administratorProviderInterface import AdministratorProviderInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ...twitch.localModels.twitchUserInterface import TwitchUserInterface
@@ -23,6 +24,7 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
 
     def __init__(
         self,
+        administratorProvider: AdministratorProviderInterface,
         bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface,
         timber: TimberInterface,
         triviaGameControllersRepository: TriviaGameControllersRepositoryInterface,
@@ -31,7 +33,9 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
-        if not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepositoryInterface):
+        if not isinstance(administratorProvider, AdministratorProviderInterface):
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepositoryInterface):
             raise TypeError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -46,6 +50,7 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
             raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
+        self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__bannedTriviaGameControllersRepository: Final[BannedTriviaGameControllersRepositoryInterface] = bannedTriviaGameControllersRepository
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameControllersRepository: Final[TriviaGameControllersRepositoryInterface] = triviaGameControllersRepository
@@ -173,6 +178,31 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         frozenUsersList.freeze()
 
         return frozenUsersList
+
+    async def getAllLocallyAuthorizedControllerIds(
+        self,
+        twitchChannelId: str,
+    ) -> Collection[str]:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        administratorUserId = await self.__administratorProvider.getAdministratorUserId()
+
+        channelControllers = await self.__triviaGameControllersRepository.getControllers(
+            twitchChannelId = twitchChannelId,
+        )
+
+        globalControllers = await self.__triviaGameGlobalControllersRepository.getControllers()
+
+        bannedControllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
+
+        locallyAuthorizedControllers: set[str] = set()
+        locallyAuthorizedControllers.add(twitchChannelId)
+        locallyAuthorizedControllers.add(administratorUserId)
+        locallyAuthorizedControllers.update(channelControllers)
+        locallyAuthorizedControllers.update(globalControllers)
+        locallyAuthorizedControllers.difference_update(bannedControllers)
+        return frozenset(locallyAuthorizedControllers)
 
     async def getBannedControllers(self) -> Collection[TwitchUserInterface]:
         userIds = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
