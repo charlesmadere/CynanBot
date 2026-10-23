@@ -2126,11 +2126,8 @@ triviaScoreRepository: Final[TriviaScoreRepositoryInterface] = TriviaScoreReposi
 triviaQuestionPresenter: Final[TriviaQuestionPresenterInterface] = TriviaQuestionPresenter()
 
 triviaUtils: Final[TriviaUtilsInterface] = TriviaUtils(
-    administratorProvider = administratorProvider,
-    bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     timber = timber,
-    triviaGameControllersRepository = triviaGameControllersRepository,
-    triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
+    triviaGameControllersHelper = triviaGameControllersHelper,
     triviaQuestionPresenter = triviaQuestionPresenter,
     twitchUserIdsRepository = twitchUserIdsRepository,
 )
