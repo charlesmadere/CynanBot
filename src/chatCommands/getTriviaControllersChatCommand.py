@@ -4,7 +4,6 @@ from typing import Collection, Final, Pattern
 from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
-from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
 from ..trivia.gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
@@ -17,7 +16,6 @@ class GetTriviaControllersChatCommand(AbsChatCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
-        generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         triviaGameControllersHelper: TriviaGameControllersHelperInterface,
         triviaUtils: TriviaUtilsInterface,
@@ -25,8 +23,6 @@ class GetTriviaControllersChatCommand(AbsChatCommand):
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameControllersHelper, TriviaGameControllersHelperInterface):
@@ -35,7 +31,6 @@ class GetTriviaControllersChatCommand(AbsChatCommand):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
-        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = triviaGameControllersHelper
         self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
@@ -56,10 +51,6 @@ class GetTriviaControllersChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
         if not chatMessage.twitchUser.isTriviaGameEnabled and not chatMessage.twitchUser.isSuperTriviaGameEnabled:
-            return ChatCommandResult.IGNORED
-
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return ChatCommandResult.IGNORED
         elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED

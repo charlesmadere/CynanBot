@@ -121,13 +121,6 @@ class TriviaUtilsInterface(ABC):
         pass
 
     @abstractmethod
-    async def getTriviaGameBannedControllers(
-        self,
-        bannedControllers: Collection[str],
-    ) -> str:
-        pass
-
-    @abstractmethod
     async def getTriviaGameControllers(
         self,
         gameControllers: Collection[TwitchUserInterface],

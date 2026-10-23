@@ -1323,7 +1323,6 @@ triviaUtils: Final[TriviaUtilsInterface] = TriviaUtils(
     timber = timber,
     triviaGameControllersHelper = triviaGameControllersHelper,
     triviaQuestionPresenter = triviaQuestionPresenter,
-    twitchUserIdsRepository = twitchUserIdsRepository,
 )
 
 bongoJsonParser: Final[BongoJsonParserInterface] = BongoJsonParser(
@@ -2161,9 +2160,8 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     GetBannedTriviaControllersChatCommand(
         administratorProvider = administratorProvider,
-        bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
         timber = timber,
-        triviaUtils = triviaUtils,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         twitchChatMessenger = twitchChatMessenger,
     ),
     GetCheerActionsChatCommand(
@@ -2197,7 +2195,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     GetTriviaControllersChatCommand(
         administratorProvider = administratorProvider,
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         triviaGameControllersHelper = triviaGameControllersHelper,
         triviaUtils = triviaUtils,
