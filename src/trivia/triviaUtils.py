@@ -4,10 +4,7 @@ from typing import Collection, Final
 
 from frozenlist import FrozenList
 
-from .banned.bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
-from .gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
-from .gameController.triviaGameGlobalControllersRepositoryInterface import \
-    TriviaGameGlobalControllersRepositoryInterface
+from .gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from .questions.absTriviaQuestion import AbsTriviaQuestion
 from .questions.triviaQuestionType import TriviaQuestionType
 from .score.triviaScoreResult import TriviaScoreResult
@@ -19,7 +16,6 @@ from .triviaQuestionPresenterInterface import TriviaQuestionPresenterInterface
 from .triviaUtilsInterface import TriviaUtilsInterface
 from ..cuteness.models.preparedIncrementedCutenessResult import PreparedIncrementedCutenessResult
 from ..misc import utils as utils
-from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.localModels.twitchUserInterface import TwitchUserInterface
 from ..twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
@@ -30,25 +26,16 @@ class TriviaUtils(TriviaUtilsInterface):
 
     def __init__(
         self,
-        administratorProvider: AdministratorProviderInterface,
-        bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface,
         timber: TimberInterface,
-        triviaGameControllersRepository: TriviaGameControllersRepositoryInterface,
-        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface,
+        triviaGameControllersHelper: TriviaGameControllersHelperInterface,
         triviaQuestionPresenter: TriviaQuestionPresenterInterface,
         twitchUserIdsRepository: TwitchUserIdsRepositoryInterface,
         celebratoryEmote: str = '🎉',
     ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepositoryInterface):
-            raise TypeError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
-        elif not isinstance(timber, TimberInterface):
+        if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
-            raise TypeError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
-        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
-            raise TypeError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
+        elif not isinstance(triviaGameControllersHelper, TriviaGameControllersHelperInterface):
+            raise TypeError(f'triviaGameControllersHelper argument is malformed: \"{triviaGameControllersHelper}\"')
         elif not isinstance(triviaQuestionPresenter, TriviaQuestionPresenterInterface):
             raise TypeError(f'triviaQuestionPresenter argument is malformed: \"{triviaQuestionPresenter}\"')
         elif not isinstance(twitchUserIdsRepository, TwitchUserIdsRepositoryInterface):
@@ -56,11 +43,8 @@ class TriviaUtils(TriviaUtilsInterface):
         elif not utils.isValidStr(celebratoryEmote):
             raise TypeError(f'celebratoryEmote argument is malformed: \"{celebratoryEmote}\"')
 
-        self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
-        self.__bannedTriviaGameControllersRepository: Final[BannedTriviaGameControllersRepositoryInterface] = bannedTriviaGameControllersRepository
         self.__timber: Final[TimberInterface] = timber
-        self.__triviaGameControllersRepository: Final[TriviaGameControllersRepositoryInterface] = triviaGameControllersRepository
-        self.__triviaGameGlobalControllersRepository: Final[TriviaGameGlobalControllersRepositoryInterface] = triviaGameGlobalControllersRepository
+        self.__triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = triviaGameControllersHelper
         self.__triviaQuestionPresenter: Final[TriviaQuestionPresenterInterface] = triviaQuestionPresenter
         self.__twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = twitchUserIdsRepository
         self.__celebratoryEmote: Final[str] = celebratoryEmote
@@ -703,15 +687,8 @@ class TriviaUtils(TriviaUtilsInterface):
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        if userId in await self.__bannedTriviaGameControllersRepository.getBannedControllers():
-            return False
-        elif userId == twitchChannelId:
-            return True
-        elif userId in await self.__triviaGameControllersRepository.getControllers(twitchChannelId):
-            return True
-        elif userId in await self.__triviaGameGlobalControllersRepository.getControllers():
-            return True
-        elif userId == await self.__administratorProvider.getAdministratorUserId():
-            return True
-        else:
-            return False
+        authorizedControllerIds = await self.__triviaGameControllersHelper.getAllLocallyAuthorizedControllerIds(
+            twitchChannelId = twitchChannelId,
+        )
+
+        return userId in authorizedControllerIds

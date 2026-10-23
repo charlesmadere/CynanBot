@@ -2098,6 +2098,8 @@ triviaGameGlobalControllersRepository: Final[TriviaGameGlobalControllersReposito
 )
 
 triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = TriviaGameControllersHelper(
+    administratorProvider = administratorProvider,
+    bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     timber = timber,
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
@@ -2124,11 +2126,8 @@ triviaScoreRepository: Final[TriviaScoreRepositoryInterface] = TriviaScoreReposi
 triviaQuestionPresenter: Final[TriviaQuestionPresenterInterface] = TriviaQuestionPresenter()
 
 triviaUtils: Final[TriviaUtilsInterface] = TriviaUtils(
-    administratorProvider = administratorProvider,
-    bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     timber = timber,
-    triviaGameControllersRepository = triviaGameControllersRepository,
-    triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
+    triviaGameControllersHelper = triviaGameControllersHelper,
     triviaQuestionPresenter = triviaQuestionPresenter,
     twitchUserIdsRepository = twitchUserIdsRepository,
 )
@@ -3241,10 +3240,9 @@ chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
 chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     AddBannedTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
-        bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
         timber = timber,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         twitchChatMessenger = twitchChatMessenger,
-        twitchHandleProvider = authRepository,
         twitchTokensUtils = twitchTokensUtils,
         twitchUserIdsHelper = twitchUserIdsHelper,
     ),
