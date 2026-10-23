@@ -3243,10 +3243,9 @@ chatActions: Final[Collection[AbsChatAction | None]] = frozenset({
 chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     AddBannedTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
-        bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
         timber = timber,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         twitchChatMessenger = twitchChatMessenger,
-        twitchHandleProvider = authRepository,
         twitchTokensUtils = twitchTokensUtils,
         twitchUserIdsHelper = twitchUserIdsHelper,
     ),
