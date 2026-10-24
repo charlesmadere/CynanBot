@@ -6,7 +6,6 @@ from .chatCommandResult import ChatCommandResult
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..trivia.gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
-from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
@@ -18,7 +17,6 @@ class GetTriviaControllersChatCommand(AbsChatCommand):
         administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
         triviaGameControllersHelper: TriviaGameControllersHelperInterface,
-        triviaUtils: TriviaUtilsInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
@@ -33,12 +31,11 @@ class GetTriviaControllersChatCommand(AbsChatCommand):
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = triviaGameControllersHelper
-        self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!(?:get)?triviacontrollers?\b', re.IGNORECASE),
-            re.compile(r'^\s*!(?:my)?triviacontrollers?\b', re.IGNORECASE),
+            re.compile(r'^\s*!(?:get)?trivia(?:game)?controllers?\b', re.IGNORECASE),
+            re.compile(r'^\s*!(?:my)?trivia(?:game)?controllers?\b', re.IGNORECASE),
         })
 
     @property
@@ -55,21 +52,29 @@ class GetTriviaControllersChatCommand(AbsChatCommand):
         elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
-        gameControllers = await self.__triviaGameControllersHelper.getChannelControllers(
+        controllers = await self.__triviaGameControllersHelper.getChannelControllers(
             twitchChannelId = chatMessage.twitchChannelId,
         )
 
-        printOut = await self.__triviaUtils.getTriviaGameControllers(
-            gameControllers = gameControllers,
-        )
+        userNames: list[str] = list()
+        for controller in controllers:
+            userNames.append(controller.getUserName())
+
+        message: str
+
+        if len(userNames) == 0:
+            message = 'ⓘ Your channel has no trivia game controllers'
+        else:
+            userNamesString = ', '.join(userNames)
+            message = f'ⓘ Your trivia game controllers — {userNamesString}'
 
         self.__twitchChatMessenger.send(
-            text = printOut,
+            text = message,
             twitchChannelId = chatMessage.twitchChannelId,
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Consumed ({gameControllers=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({controllers=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:

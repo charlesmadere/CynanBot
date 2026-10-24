@@ -1,8 +1,6 @@
 import locale
 from collections import defaultdict
-from typing import Collection, Final
-
-from frozenlist import FrozenList
+from typing import Final
 
 from .gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from .questions.absTriviaQuestion import AbsTriviaQuestion
@@ -17,7 +15,6 @@ from .triviaUtilsInterface import TriviaUtilsInterface
 from ..cuteness.models.preparedIncrementedCutenessResult import PreparedIncrementedCutenessResult
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
-from ..twitch.localModels.twitchUserInterface import TwitchUserInterface
 from ..users.userInterface import UserInterface
 
 
@@ -478,48 +475,6 @@ class TriviaUtils(TriviaUtilsInterface):
                 bucketDelimiter = bucketDelimiter,
                 delimiter = delimiter,
             )
-
-    async def getTriviaGameControllers(
-        self,
-        gameControllers: Collection[TwitchUserInterface],
-    ) -> str:
-        if not isinstance(gameControllers, Collection):
-            raise TypeError(f'gameControllers argument is malformed: \"{gameControllers}\"')
-
-        frozenGameControllers: FrozenList[TwitchUserInterface] = FrozenList(gameControllers)
-        frozenGameControllers.freeze()
-
-        if len(frozenGameControllers) == 0:
-            return f'ⓘ Your channel has no trivia game controllers'
-
-        userNames: list[str] = list()
-        for gameController in frozenGameControllers:
-            userNames.append(gameController.getUserName())
-
-        userNames.sort(key = lambda userName: userName.casefold())
-        gameControllersStr = ', '.join(userNames)
-        return f'ⓘ Your trivia game controllers — {gameControllersStr}'
-
-    async def getTriviaGameGlobalControllers(
-        self,
-        gameControllers: Collection[TwitchUserInterface],
-    ) -> str:
-        if not isinstance(gameControllers, Collection):
-            raise TypeError(f'gameControllers argument is malformed: \"{gameControllers}\"')
-
-        frozenGameControllers: FrozenList[TwitchUserInterface] = FrozenList(gameControllers)
-        frozenGameControllers.freeze()
-
-        if len(frozenGameControllers) == 0:
-            return f'ⓘ There are no global trivia game controllers'
-
-        userNames: list[str] = list()
-        for gameController in frozenGameControllers:
-            userNames.append(gameController.getUserName())
-
-        userNames.sort(key = lambda userName: userName.casefold())
-        gameControllersStr = ', '.join(userNames)
-        return f'ⓘ Global trivia game controllers — {gameControllersStr}'
 
     async def getTriviaGameQuestionPrompt(
         self,

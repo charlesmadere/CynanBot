@@ -3435,10 +3435,8 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     GetGlobalTriviaControllersChatCommand(
         administratorProvider = administratorProvider,
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         triviaGameControllersHelper = triviaGameControllersHelper,
-        triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
     GetRecurringActionsChatCommand(
@@ -3467,7 +3465,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         administratorProvider = administratorProvider,
         timber = timber,
         triviaGameControllersHelper = triviaGameControllersHelper,
-        triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
     GiveChatterItemChatCommand(
@@ -3656,7 +3653,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     TriviaInfoChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         timeZoneRepository = timeZoneRepository,
         triviaEmoteGenerator = triviaEmoteGenerator,

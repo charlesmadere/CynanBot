@@ -6,7 +6,6 @@ from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ..misc import utils as utils
-from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..misc.simpleDateTime import SimpleDateTime
 from ..timber.timberInterface import TimberInterface
 from ..trivia.additionalAnswers.additionalTriviaAnswers import AdditionalTriviaAnswers
@@ -27,7 +26,6 @@ class TriviaInfoChatCommand(AbsChatCommand):
     def __init__(
         self,
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface,
-        generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
@@ -38,8 +36,6 @@ class TriviaInfoChatCommand(AbsChatCommand):
     ):
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
             raise TypeError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
@@ -56,7 +52,6 @@ class TriviaInfoChatCommand(AbsChatCommand):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
         self.__additionalTriviaAnswersRepository: Final[AdditionalTriviaAnswersRepositoryInterface] = additionalTriviaAnswersRepository
-        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__triviaEmoteGenerator: Final[TriviaEmoteGeneratorInterface] = triviaEmoteGenerator
@@ -100,7 +95,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
         now = self.__timeZoneRepository.getNow()
         questionDateTimeVersusNowSeconds = int(round((now - dateTime).total_seconds()))
 
-        if questionDateTimeVersusNowSeconds <= 3:
+        if questionDateTimeVersusNowSeconds <= 5:
             return 'just now'
         else:
             durationMessage = utils.secondsToDurationMessage(questionDateTimeVersusNowSeconds)
@@ -109,14 +104,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
         if not chatMessage.twitchUser.isTriviaGameEnabled and not chatMessage.twitchUser.isSuperTriviaGameEnabled:
             return ChatCommandResult.IGNORED
-
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
-            return ChatCommandResult.IGNORED
-        elif not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannelId = chatMessage.twitchChannelId,
-            userId = chatMessage.chatterUserId,
-        ):
+        elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
         splits = utils.getCleanedSplits(chatMessage.text)
@@ -128,7 +116,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Attempted to handle command, but not enough arguments were supplied ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         emote: str | None = splits[1]
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
@@ -141,7 +129,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Attempted to handle command, but an invalid emote argument was given ({emote=}) ({normalizedEmote=}) ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
             emote = normalizedEmote,
@@ -156,7 +144,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
             )
 
             self.__timber.log(self.commandName, f'Attempted to handle command, but no trivia question reference was found ({emote=}) ({normalizedEmote=}) ({reference=}) ({splits=}) ({chatMessage=})')
-            return ChatCommandResult.HANDLED
+            return ChatCommandResult.CONSUMED
 
         additionalTriviaAnswers = await self.__additionalTriviaAnswersRepository.getAdditionalTriviaAnswers(
             triviaId = reference.triviaId,
@@ -182,5 +170,15 @@ class TriviaInfoChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled ({reference=}) ({emote=}) ({normalizedEmote=}) ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({emote=}) ({normalizedEmote=}) ({reference=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED
+
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+
+        isPrivilegedTriviaUser = await self.__triviaUtils.isPrivilegedTriviaUser(
+            twitchChannelId = chatMessage.twitchChannelId,
+            userId = chatMessage.chatterUserId,
+        )
+
+        return isStreamer or isPrivilegedTriviaUser

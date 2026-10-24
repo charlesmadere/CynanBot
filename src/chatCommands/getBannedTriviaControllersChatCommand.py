@@ -34,7 +34,7 @@ class GetBannedTriviaControllersChatCommand(AbsChatCommand):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!(?:get)?bannedtriviacontrollers?\b', re.IGNORECASE),
+            re.compile(r'^\s*!(?:get)?bannedtrivia(?:game)?controllers?\b', re.IGNORECASE),
         })
 
     @property

@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Collection
 
 from .questions.absTriviaQuestion import AbsTriviaQuestion
 from .score.triviaScoreResult import TriviaScoreResult
@@ -8,7 +7,6 @@ from .specialStatus.specialTriviaStatus import SpecialTriviaStatus
 from .specialStatus.toxicTriviaPunishmentResult import ToxicTriviaPunishmentResult
 from .specialStatus.toxicTriviaResult import ToxicTriviaResult
 from ..cuteness.models.preparedIncrementedCutenessResult import PreparedIncrementedCutenessResult
-from ..twitch.localModels.twitchUserInterface import TwitchUserInterface
 from ..users.userInterface import UserInterface
 
 
@@ -118,20 +116,6 @@ class TriviaUtilsInterface(ABC):
         bucketDelimiter: str = '; ',
         delimiter: str = ', ',
     ) -> str | None:
-        pass
-
-    @abstractmethod
-    async def getTriviaGameControllers(
-        self,
-        gameControllers: Collection[TwitchUserInterface],
-    ) -> str:
-        pass
-
-    @abstractmethod
-    async def getTriviaGameGlobalControllers(
-        self,
-        gameControllers: Collection[TwitchUserInterface],
-    ) -> str:
         pass
 
     @abstractmethod

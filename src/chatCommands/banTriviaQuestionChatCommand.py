@@ -151,9 +151,11 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+
         isPrivilegedTriviaUser = await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannelId = chatMessage.twitchChannelId,
             userId = chatMessage.chatterUserId,
         )
 
-        return isPrivilegedTriviaUser
+        return isStreamer or isPrivilegedTriviaUser

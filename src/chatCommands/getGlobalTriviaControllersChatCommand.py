@@ -4,10 +4,8 @@ from typing import Collection, Final, Pattern
 from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
-from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
 from ..trivia.gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
-from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
@@ -17,16 +15,12 @@ class GetGlobalTriviaControllersChatCommand(AbsChatCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
-        generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         triviaGameControllersHelper: TriviaGameControllersHelperInterface,
-        triviaUtils: TriviaUtilsInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise TypeError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameControllersHelper, TriviaGameControllersHelperInterface):
@@ -35,14 +29,12 @@ class GetGlobalTriviaControllersChatCommand(AbsChatCommand):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
-        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = triviaGameControllersHelper
-        self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!(?:get)?globaltriviacontrollers?\b', re.IGNORECASE),
+            re.compile(r'^\s*!(?:get)?globaltrivia(?:game)?controllers?\b', re.IGNORECASE),
         })
 
     @property
@@ -54,25 +46,30 @@ class GetGlobalTriviaControllersChatCommand(AbsChatCommand):
         return self.__commandPatterns
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
-            return ChatCommandResult.IGNORED
-        elif not await self.__hasPermissions(chatMessage):
+        if not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
-        globalControllers = await self.__triviaGameControllersHelper.getGlobalControllers()
+        controllers = await self.__triviaGameControllersHelper.getGlobalControllers()
 
-        printOut = await self.__triviaUtils.getTriviaGameGlobalControllers(
-            gameControllers = globalControllers,
-        )
+        userNames: list[str] = list()
+        for controller in controllers:
+            userNames.append(controller.getUserName())
+
+        message: str
+
+        if len(userNames) == 0:
+            message = 'ⓘ There are no global trivia game controllers'
+        else:
+            userNamesString = ', '.join(userNames)
+            message = f'ⓘ Global trivia controllers — {userNamesString}'
 
         self.__twitchChatMessenger.send(
-            text = printOut,
+            text = message,
             twitchChannelId = chatMessage.twitchChannelId,
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Consumed ({globalControllers=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({controllers=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:

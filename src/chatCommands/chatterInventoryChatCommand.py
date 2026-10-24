@@ -37,6 +37,7 @@ class ChatterInventoryChatCommand(AbsChatCommand):
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
             re.compile(r'^\s*!(?:my)?inv(?:entory)?\b', re.IGNORECASE),
+            re.compile(r'^\s*!(?:my)?scambox\b', re.IGNORECASE),
         })
 
     @property
