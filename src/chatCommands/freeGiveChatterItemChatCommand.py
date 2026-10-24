@@ -1,4 +1,3 @@
-import random
 import re
 import traceback
 from dataclasses import dataclass
@@ -14,6 +13,7 @@ from ..chatterInventory.models.giveChatterItemAction import GiveChatterItemActio
 from ..chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ..misc import utils as utils
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
+from ..misc.randomUtilsInterface import RandomUtilsInterface
 from ..timber.timberInterface import TimberInterface
 from ..twitch.channelEditors.twitchChannelEditorsRepositoryInterface import TwitchChannelEditorsRepositoryInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
@@ -39,6 +39,7 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
         chatterInventoryMachine: ChatterInventoryMachineInterface,
         chatterInventoryMapper: ChatterInventoryMapperInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
+        randomUtils: RandomUtilsInterface,
         timber: TimberInterface,
         twitchChannelEditorsRepository: TwitchChannelEditorsRepositoryInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
@@ -55,6 +56,8 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
             raise TypeError(f'chatterInventoryMapper argument is malformed: \"{chatterInventoryMapper}\"')
         elif not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChannelEditorsRepository, TwitchChannelEditorsRepositoryInterface):
@@ -71,6 +74,7 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
         self.__chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = chatterInventoryMachine
         self.__chatterInventoryMapper: Final[ChatterInventoryMapperInterface] = chatterInventoryMapper
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChannelEditorsRepository: Final[TwitchChannelEditorsRepositoryInterface] = twitchChannelEditorsRepository
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
@@ -87,7 +91,7 @@ class FreeGiveChatterItemChatCommand(AbsChatCommand):
 
     async def __chooseRandomEnabledItemType(self) -> str:
         enabledItemTypes = await self.__chatterInventorySettings.getEnabledItemTypes()
-        randomItemType = random.choice(list(enabledItemTypes))
+        randomItemType = self.__randomUtils.choice(list(enabledItemTypes))
         return await self.__chatterInventoryMapper.serializeItemType(randomItemType)
 
     @property
