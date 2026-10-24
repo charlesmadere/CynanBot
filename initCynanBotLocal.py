@@ -2236,6 +2236,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         chatterInventoryMachine = chatterInventoryMachine,
         chatterInventoryMapper = chatterInventoryMapper,
         chatterInventorySettings = chatterInventorySettings,
+        randomUtils = randomUtils,
         timber = timber,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
         twitchChatMessenger = twitchChatMessenger,
