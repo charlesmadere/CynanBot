@@ -4,12 +4,14 @@ from typing import Collection, Final
 from frozenlist import FrozenList
 
 from .addTriviaGameControllerResult import AddTriviaGameControllerResult
-from .exceptions import TriviaGameControllerAlreadyExistsException, TriviaGameControllerIllegalUserIdException
+from .exceptions import TriviaGameControllerAlreadyExistsException, TriviaGameControllerIllegalUserIdException, \
+    TriviaGameControllerNotAlreadyBannedException
 from .triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from .triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from .triviaGameGlobalControllersRepositoryInterface import TriviaGameGlobalControllersRepositoryInterface
 from ..banned.addBannedTriviaGameControllerResult import AddBannedTriviaGameControllerResult
 from ..banned.bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
+from ..banned.removeBannedTriviaGameControllerResult import RemoveBannedTriviaGameControllerResult
 from ...misc import utils as utils
 from ...misc.administratorProviderInterface import AdministratorProviderInterface
 from ...timber.timberInterface import TimberInterface
@@ -208,14 +210,14 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         return frozenset(locallyAuthorizedControllers)
 
     async def getBannedControllers(self) -> Collection[TwitchUserInterface]:
-        userIds = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
+        controllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
 
         twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
             twitchChannel = await self.__twitchHandleProvider.getTwitchHandle(),
         )
 
         return await self.__buildControllersCollection(
-            userIds = userIds,
+            userIds = controllers,
             twitchAccessToken = twitchAccessToken,
         )
 
@@ -226,7 +228,7 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        userIds = await self.__triviaGameControllersRepository.getControllers(
+        controllers = await self.__triviaGameControllersRepository.getControllers(
             twitchChannelId = twitchChannelId,
         )
 
@@ -235,18 +237,48 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         )
 
         return await self.__buildControllersCollection(
-            userIds = userIds,
+            userIds = controllers,
             twitchAccessToken = twitchAccessToken,
         )
 
     async def getGlobalControllers(self) -> Collection[TwitchUserInterface]:
-        userIds = await self.__triviaGameGlobalControllersRepository.getControllers()
+        controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
 
         twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
             twitchChannel = await self.__twitchHandleProvider.getTwitchHandle(),
         )
 
         return await self.__buildControllersCollection(
-            userIds = userIds,
+            userIds = controllers,
             twitchAccessToken = twitchAccessToken,
+        )
+
+    async def removeBannedController(
+        self,
+        userId: str,
+    ) -> TriviaGameControllersHelperInterface.RemovedResult:
+        if not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+
+        result = await self.__bannedTriviaGameControllersRepository.removeBannedController(
+            userId = userId,
+        )
+
+        if result is RemoveBannedTriviaGameControllerResult.NOT_BANNED:
+            raise TriviaGameControllerNotAlreadyBannedException(f'This trivia game controller isn\'t already banned ({userId=})')
+
+        controllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
+
+        userData = await self.__twitchUserIdsHelper.requireById(
+            userId = userId,
+            twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
+                twitchChannel = await self.__twitchHandleProvider.getTwitchHandle(),
+            ),
+        )
+
+        return TriviaGameControllersHelperInterface.RemovedResult(
+            newTotal = len(controllers),
+            userId = userData.getUserId(),
+            userLogin = userData.getUserLogin(),
+            userName = userData.getUserName(),
         )

@@ -8,11 +8,36 @@ from ...twitch.localModels.twitchUserInterface import TwitchUserInterface
 class TriviaGameControllersHelperInterface(ABC):
 
     @dataclass(frozen = True, slots = True)
-    class AddedResult:
+    class AddedResult(TwitchUserInterface):
         newTotal: int
         userId: str
         userLogin: str
         userName: str
+
+        def getUserId(self) -> str:
+            return self.userId
+
+        def getUserLogin(self) -> str:
+            return self.userLogin
+
+        def getUserName(self) -> str:
+            return self.userName
+
+    @dataclass(frozen = True, slots = True)
+    class RemovedResult(TwitchUserInterface):
+        newTotal: int
+        userId: str
+        userLogin: str
+        userName: str
+
+        def getUserId(self) -> str:
+            return self.userId
+
+        def getUserLogin(self) -> str:
+            return self.userLogin
+
+        def getUserName(self) -> str:
+            return self.userName
 
     @abstractmethod
     async def addBannedController(
@@ -56,4 +81,11 @@ class TriviaGameControllersHelperInterface(ABC):
 
     @abstractmethod
     async def getGlobalControllers(self) -> Collection[TwitchUserInterface]:
+        pass
+
+    @abstractmethod
+    async def removeBannedController(
+        self,
+        userId: str,
+    ) -> RemovedResult:
         pass
