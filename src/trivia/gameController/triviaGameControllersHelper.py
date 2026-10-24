@@ -4,7 +4,7 @@ from typing import Collection, Final
 from frozenlist import FrozenList
 
 from .addTriviaGameControllerResult import AddTriviaGameControllerResult
-from .exceptions import TriviaGameControllerAlreadyExistsException
+from .exceptions import TriviaGameControllerAlreadyExistsException, TriviaGameControllerIllegalUserIdException
 from .triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from .triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from .triviaGameGlobalControllersRepositoryInterface import TriviaGameGlobalControllersRepositoryInterface
@@ -65,6 +65,9 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
     ) -> TriviaGameControllersHelperInterface.AddedResult:
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
+
+        if userId == await self.__administratorProvider.getAdministratorUserId():
+            raise TriviaGameControllerIllegalUserIdException(f'This user ID can\'t be banned ({userId=})')
 
         result = await self.__bannedTriviaGameControllersRepository.addBannedController(
             userId = userId,

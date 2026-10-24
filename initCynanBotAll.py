@@ -3254,7 +3254,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     AddGlobalTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
         timber = timber,
-        triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,
         twitchUserIdsHelper = twitchUserIdsHelper,
@@ -3282,9 +3282,8 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     AddTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
-        triviaGameControllersRepository = triviaGameControllersRepository,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,
         twitchUserIdsHelper = twitchUserIdsHelper,

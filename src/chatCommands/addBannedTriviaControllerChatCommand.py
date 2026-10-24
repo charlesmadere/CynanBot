@@ -7,7 +7,8 @@ from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
-from ..trivia.gameController.exceptions import TriviaGameControllerAlreadyExistsException
+from ..trivia.gameController.exceptions import TriviaGameControllerAlreadyExistsException, \
+    TriviaGameControllerIllegalUserIdException
 from ..trivia.gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
@@ -92,7 +93,17 @@ class AddBannedTriviaControllerChatCommand(AbsChatCommand):
             self.__timber.log(self.commandName, f'Failed to add banned trivia controller as they\'ve already been banned ({arguments=}) ({chatMessage=})', e, traceback.format_exc())
 
             self.__twitchChatMessenger.send(
-                text = f'ⓘ Failed to add {arguments.chatterUserName} as a banned trivia controller as they\'ve already been banned',
+                text = f'⚠ Failed to add {arguments.chatterUserName} as a banned trivia controller as they\'ve already been banned',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
+            )
+
+            return ChatCommandResult.CONSUMED
+        except TriviaGameControllerIllegalUserIdException as e:
+            self.__timber.log(self.commandName,  f'Failed to add banned trivia controller as this user ID is illegal ({arguments=}) ({chatMessage=})', e, traceback.format_exc())
+
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Failed to add {arguments.chatterUserName} as a banned trivia controller as this user ID is illegal',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
