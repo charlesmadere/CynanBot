@@ -1,8 +1,6 @@
 import locale
 from collections import defaultdict
-from typing import Collection, Final
-
-from frozenlist import FrozenList
+from typing import Final
 
 from .gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from .questions.absTriviaQuestion import AbsTriviaQuestion
@@ -17,8 +15,6 @@ from .triviaUtilsInterface import TriviaUtilsInterface
 from ..cuteness.models.preparedIncrementedCutenessResult import PreparedIncrementedCutenessResult
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
-from ..twitch.localModels.twitchUserInterface import TwitchUserInterface
-from ..twitch.userIds.twitchUserIdsRepositoryInterface import TwitchUserIdsRepositoryInterface
 from ..users.userInterface import UserInterface
 
 
@@ -29,7 +25,6 @@ class TriviaUtils(TriviaUtilsInterface):
         timber: TimberInterface,
         triviaGameControllersHelper: TriviaGameControllersHelperInterface,
         triviaQuestionPresenter: TriviaQuestionPresenterInterface,
-        twitchUserIdsRepository: TwitchUserIdsRepositoryInterface,
         celebratoryEmote: str = '🎉',
     ):
         if not isinstance(timber, TimberInterface):
@@ -38,15 +33,12 @@ class TriviaUtils(TriviaUtilsInterface):
             raise TypeError(f'triviaGameControllersHelper argument is malformed: \"{triviaGameControllersHelper}\"')
         elif not isinstance(triviaQuestionPresenter, TriviaQuestionPresenterInterface):
             raise TypeError(f'triviaQuestionPresenter argument is malformed: \"{triviaQuestionPresenter}\"')
-        elif not isinstance(twitchUserIdsRepository, TwitchUserIdsRepositoryInterface):
-            raise TypeError(f'twitchUserIdsRepository argument is malformed: \"{twitchUserIdsRepository}\"')
         elif not utils.isValidStr(celebratoryEmote):
             raise TypeError(f'celebratoryEmote argument is malformed: \"{celebratoryEmote}\"')
 
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = triviaGameControllersHelper
         self.__triviaQuestionPresenter: Final[TriviaQuestionPresenterInterface] = triviaQuestionPresenter
-        self.__twitchUserIdsRepository: Final[TwitchUserIdsRepositoryInterface] = twitchUserIdsRepository
         self.__celebratoryEmote: Final[str] = celebratoryEmote
 
     async def getClearedSuperTriviaQueueMessage(self, numberOfGamesRemoved: int) -> str:
@@ -264,7 +256,7 @@ class TriviaUtils(TriviaUtilsInterface):
         self,
         emotePrompt: str,
         toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult,
-        delimiter: str = ', '
+        delimiter: str = ', ',
     ) -> str:
         if not utils.isValidStr(emotePrompt):
             raise TypeError(f'emotePrompt argument is malformed: \"{emotePrompt}\"')
@@ -452,7 +444,7 @@ class TriviaUtils(TriviaUtilsInterface):
         toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None,
         twitchUser: UserInterface,
         bucketDelimiter: str = '; ',
-        delimiter: str = ', '
+        delimiter: str = ', ',
     ) -> str | None:
         if not utils.isValidStr(emote):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
@@ -474,79 +466,15 @@ class TriviaUtils(TriviaUtilsInterface):
             return await self.__getShortToxicTriviaPunishmentMessage(
                 emotePrompt = emotePrompt,
                 toxicTriviaPunishmentResult = toxicTriviaPunishmentResult,
-                delimiter = delimiter
+                delimiter = delimiter,
             )
         else:
             return await self.__getLongToxicTriviaPunishmentMessage(
                 emotePrompt = emotePrompt,
                 toxicTriviaPunishmentResult = toxicTriviaPunishmentResult,
                 bucketDelimiter = bucketDelimiter,
-                delimiter = delimiter
+                delimiter = delimiter,
             )
-
-    async def getTriviaGameBannedControllers(
-        self,
-        bannedControllers: Collection[str],
-    ) -> str:
-        if not isinstance(bannedControllers, Collection):
-            raise TypeError(f'bannedControllers argument is malformed: \"{bannedControllers}\"')
-
-        frozenBannedControllers: FrozenList[str] = FrozenList(bannedControllers)
-        frozenBannedControllers.freeze()
-
-        if len(frozenBannedControllers) == 0:
-            return f'ⓘ There are no banned trivia game controllers'
-
-        userNames: list[str] = list()
-        for bannedController in frozenBannedControllers:
-            userData = await self.__twitchUserIdsRepository.requireById(bannedController)
-            userNames.append(userData.getUserName())
-
-        userNames.sort(key = lambda userName: userName.casefold())
-        bannedControllersStr = ', '.join(userNames)
-        return f'ⓘ Banned trivia game controllers — {bannedControllersStr}'
-
-    async def getTriviaGameControllers(
-        self,
-        gameControllers: Collection[TwitchUserInterface],
-    ) -> str:
-        if not isinstance(gameControllers, Collection):
-            raise TypeError(f'gameControllers argument is malformed: \"{gameControllers}\"')
-
-        frozenGameControllers: FrozenList[TwitchUserInterface] = FrozenList(gameControllers)
-        frozenGameControllers.freeze()
-
-        if len(frozenGameControllers) == 0:
-            return f'ⓘ Your channel has no trivia game controllers'
-
-        userNames: list[str] = list()
-        for gameController in frozenGameControllers:
-            userNames.append(gameController.getUserName())
-
-        userNames.sort(key = lambda userName: userName.casefold())
-        gameControllersStr = ', '.join(userNames)
-        return f'ⓘ Your trivia game controllers — {gameControllersStr}'
-
-    async def getTriviaGameGlobalControllers(
-        self,
-        gameControllers: Collection[TwitchUserInterface],
-    ) -> str:
-        if not isinstance(gameControllers, Collection):
-            raise TypeError(f'gameControllers argument is malformed: \"{gameControllers}\"')
-
-        frozenGameControllers: FrozenList[TwitchUserInterface] = FrozenList(gameControllers)
-        frozenGameControllers.freeze()
-
-        if len(frozenGameControllers) == 0:
-            return f'ⓘ There are no global trivia game controllers'
-
-        userNames: list[str] = list()
-        for gameController in frozenGameControllers:
-            userNames.append(gameController.getUserName())
-
-        userNames.sort(key = lambda userName: userName.casefold())
-        gameControllersStr = ', '.join(userNames)
-        return f'ⓘ Global trivia game controllers — {gameControllersStr}'
 
     async def getTriviaGameQuestionPrompt(
         self,

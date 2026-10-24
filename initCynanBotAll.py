@@ -2129,7 +2129,6 @@ triviaUtils: Final[TriviaUtilsInterface] = TriviaUtils(
     timber = timber,
     triviaGameControllersHelper = triviaGameControllersHelper,
     triviaQuestionPresenter = triviaQuestionPresenter,
-    twitchUserIdsRepository = twitchUserIdsRepository,
 )
 
 bongoJsonParser: Final[BongoJsonParserInterface] = BongoJsonParser(
@@ -3255,7 +3254,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     AddGlobalTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
         timber = timber,
-        triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,
         twitchUserIdsHelper = twitchUserIdsHelper,
@@ -3283,9 +3282,8 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     AddTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
-        triviaGameControllersRepository = triviaGameControllersRepository,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,
         twitchUserIdsHelper = twitchUserIdsHelper,
@@ -3405,9 +3403,8 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     GetBannedTriviaControllersChatCommand(
         administratorProvider = administratorProvider,
-        bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
         timber = timber,
-        triviaUtils = triviaUtils,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         twitchChatMessenger = twitchChatMessenger,
     ),
     GetChatterPreferredNameChatCommand(
@@ -3437,10 +3434,8 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     GetGlobalTriviaControllersChatCommand(
         administratorProvider = administratorProvider,
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         triviaGameControllersHelper = triviaGameControllersHelper,
-        triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
     GetRecurringActionsChatCommand(
@@ -3467,10 +3462,8 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     GetTriviaControllersChatCommand(
         administratorProvider = administratorProvider,
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         triviaGameControllersHelper = triviaGameControllersHelper,
-        triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
     GiveChatterItemChatCommand(
@@ -3659,7 +3652,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     TriviaInfoChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         timeZoneRepository = timeZoneRepository,
         triviaEmoteGenerator = triviaEmoteGenerator,

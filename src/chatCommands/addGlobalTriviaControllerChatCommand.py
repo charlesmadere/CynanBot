@@ -7,9 +7,8 @@ from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
-from ..trivia.gameController.addTriviaGameControllerResult import AddTriviaGameControllerResult
-from ..trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
-    TriviaGameGlobalControllersRepositoryInterface
+from ..trivia.gameController.exceptions import TriviaGameControllerAlreadyExistsException
+from ..trivia.gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
@@ -28,7 +27,7 @@ class AddGlobalTriviaControllerChatCommand(AbsChatCommand):
         self,
         administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
-        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface,
+        triviaGameControllersHelper: TriviaGameControllersHelperInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUserIdsHelper: TwitchUserIdsHelperInterface,
@@ -37,8 +36,8 @@ class AddGlobalTriviaControllerChatCommand(AbsChatCommand):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
-            raise TypeError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
+        elif not isinstance(triviaGameControllersHelper, TriviaGameControllersHelperInterface):
+            raise TypeError(f'triviaGameControllersHelper argument is malformed: \"{triviaGameControllersHelper}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
@@ -48,7 +47,7 @@ class AddGlobalTriviaControllerChatCommand(AbsChatCommand):
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__timber: Final[TimberInterface] = timber
-        self.__triviaGameGlobalControllersRepository: Final[TriviaGameGlobalControllersRepositoryInterface] = triviaGameGlobalControllersRepository
+        self.__triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = triviaGameControllersHelper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
@@ -85,37 +84,33 @@ class AddGlobalTriviaControllerChatCommand(AbsChatCommand):
             self.__timber.log(self.commandName, f'Invalid arguments ({arguments=}) ({chatMessage=})')
             return ChatCommandResult.CONSUMED
 
-        result = await self.__triviaGameGlobalControllersRepository.addController(
-            userId = arguments.chatterUserId,
+        try:
+            result = await self.__triviaGameControllersHelper.addGlobalController(
+                userId = arguments.chatterUserId,
+            )
+        except TriviaGameControllerAlreadyExistsException as e:
+            self.__timber.log(self.commandName, f'Failed to add global trivia controller as they\'ve already been added ({arguments=}) ({chatMessage=})', e, traceback.format_exc())
+
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Failed to add @{arguments.chatterUserName} as a global trivia controller as they\'ve already been added',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
+            )
+
+            return ChatCommandResult.CONSUMED
+
+        self.__twitchChatMessenger.send(
+            text = f'ⓘ Added @{result.userName} as a global trivia controller. There are now {result.newTotal} global trivia controller(s)',
+            twitchChannelId = chatMessage.twitchChannelId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )
-
-        match result:
-            case AddTriviaGameControllerResult.ADDED:
-                self.__twitchChatMessenger.send(
-                    text = f'ⓘ Added @{arguments.chatterUserLogin} as a global trivia game controller',
-                    twitchChannelId = chatMessage.twitchChannelId,
-                    replyMessageId = chatMessage.twitchChatMessageId,
-                )
-
-            case AddTriviaGameControllerResult.ALREADY_EXISTS:
-                self.__twitchChatMessenger.send(
-                    text = f'⚠ Tried adding @{arguments.chatterUserLogin} as a global trivia game controller, but they already were one',
-                    twitchChannelId = chatMessage.twitchChannelId,
-                    replyMessageId = chatMessage.twitchChatMessageId,
-                )
-
-            case AddTriviaGameControllerResult.ERROR:
-                self.__twitchChatMessenger.send(
-                    text = f'⚠ An error occurred when trying to add @{arguments.chatterUserLogin} as a global trivia game controller!',
-                    twitchChannelId = chatMessage.twitchChannelId,
-                    replyMessageId = chatMessage.twitchChatMessageId,
-                )
 
         self.__timber.log(self.commandName, f'Consumed ({result=}) ({arguments=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
         isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
+
         return isAdministrator
 
     async def __parseArguments(self, chatMessage: TwitchChatMessage) -> Arguments | None:

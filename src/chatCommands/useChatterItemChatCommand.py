@@ -78,8 +78,6 @@ class UseChatterItemChatCommand(AbsChatCommand):
                 pass
 
             case UseChatterItemResult.INVALID_REQUEST:
-                self.__timber.log(self.commandName, f'Encountered an invalid item use request ({result=}) ({chatMessage=})')
-
                 self.__twitchChatMessenger.send(
                     text = f'⚠ Invalid item use request! Please try again',
                     twitchChannelId = chatMessage.twitchChannelId,
