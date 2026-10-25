@@ -163,21 +163,21 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
 
     async def __buildControllersCollection(
         self,
-        userIds: Collection[str],
+        controllerUserIds: Collection[str],
         twitchAccessToken: str | None,
     ) -> Collection[TwitchUserInterface]:
         usersList: list[TwitchUserInterface] = list()
 
-        for index, userId in enumerate(userIds):
+        for index, controllerUserId in enumerate(controllerUserIds):
             try:
                 lookupUserData = await self.__twitchUserIdsHelper.requireById(
-                    userId = userId,
+                    userId = controllerUserId,
                     twitchAccessToken = twitchAccessToken,
                 )
 
                 usersList.append(lookupUserData)
             except NoTwitchUserDataFoundException as e:
-                self.__timber.log('TriviaGameControllersHelper', f'Failed to find user data for controller ({index=}) ({userId=})', e, traceback.format_exc())
+                self.__timber.log('TriviaGameControllersHelper', f'Failed to find user data for controller ({index=}) ({controllerUserId=})', e, traceback.format_exc())
 
         usersList.sort(key = lambda user: user.getUserName().casefold())
         frozenUsersList: FrozenList[TwitchUserInterface] = FrozenList(usersList)
@@ -218,7 +218,7 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         )
 
         return await self.__buildControllersCollection(
-            userIds = controllers,
+            controllerUserIds = controllers,
             twitchAccessToken = twitchAccessToken,
         )
 
@@ -238,7 +238,7 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         )
 
         return await self.__buildControllersCollection(
-            userIds = controllers,
+            controllerUserIds = controllers,
             twitchAccessToken = twitchAccessToken,
         )
 
@@ -250,7 +250,7 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         )
 
         return await self.__buildControllersCollection(
-            userIds = controllers,
+            controllerUserIds = controllers,
             twitchAccessToken = twitchAccessToken,
         )
 
