@@ -3297,7 +3297,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
     ),
     AnswerChatCommand(
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         triviaGameMachine = triviaGameMachine,
         triviaIdGenerator = triviaIdGenerator,
@@ -3606,7 +3605,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
     ),
     SuperAnswerChatCommand(
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         triviaGameMachine = triviaGameMachine,
         triviaIdGenerator = triviaIdGenerator,
