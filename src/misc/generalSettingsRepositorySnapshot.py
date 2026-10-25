@@ -86,15 +86,6 @@ class GeneralSettingsRepositorySnapshot:
     def isPokepediaEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'pokepediaEnabled', True)
 
-    def isPubSubPongLoggingEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'pubSubPongLoggingEnabled', False)
-
-    def isSuperTriviaGameEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'superTriviaGameEnabled', False)
-
-    def isTriviaGameEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'triviaGameEnabled', True)
-
     def requireAdministrator(self) -> str:
         administrator = self.__jsonContents.get('administrator')
 

@@ -6,6 +6,7 @@ from ..actions.startNewSuperTriviaGameAction import StartNewSuperTriviaGameActio
 from ..actions.startNewTriviaGameAction import StartNewTriviaGameAction
 from ..questionAnswerTriviaConditions import QuestionAnswerTriviaConditions
 from ..questions.triviaSource import TriviaSource
+from ..settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..triviaFetchOptions import TriviaFetchOptions
 from ..triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from ...misc import utils as utils
@@ -18,14 +19,18 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         self,
         triviaGameBuilderSettings: TriviaGameBuilderSettingsInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
+        triviaSettings: TriviaSettingsInterface,
     ):
         if not isinstance(triviaGameBuilderSettings, TriviaGameBuilderSettingsInterface):
             raise TypeError(f'triviaGameBuilderSettings argument is malformed: \"{triviaGameBuilderSettings}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
             raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
 
         self.__triviaGameBuilderSettings: Final[TriviaGameBuilderSettingsInterface] = triviaGameBuilderSettings
         self.__triviaIdGenerator: Final[TriviaIdGeneratorInterface] = triviaIdGenerator
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
 
     async def createNewTriviaGame(
         self,
@@ -46,7 +51,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         elif not isinstance(twitchUser, UserInterface):
             raise TypeError(f'twitchUser argument is malformed: \"{twitchUser}\"')
 
-        if not await self.__triviaGameBuilderSettings.isTriviaGameEnabled():
+        if not await self.__triviaSettings.isEnabled():
             return None
         elif not twitchUser.isTriviaGameEnabled:
             return None
@@ -103,7 +108,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         elif numberOfGames < 1 or numberOfGames > utils.getIntMaxSafeSize():
             raise ValueError(f'numberOfGames argument is out of bounds: {numberOfGames}')
 
-        if not await self.__triviaGameBuilderSettings.isSuperTriviaGameEnabled():
+        if not await self.__triviaSettings.isEnabled():
             return None
         elif not twitchUser.isSuperTriviaGameEnabled:
             return None

@@ -133,14 +133,6 @@ class GeneralSettingsRepository(
         snapshot = await self.getAllAsync()
         return snapshot.getWaitForTriviaAnswerDelay()
 
-    async def isSuperTriviaGameEnabled(self) -> bool:
-        snapshot = await self.getAllAsync()
-        return snapshot.isSuperTriviaGameEnabled()
-
-    async def isTriviaGameEnabled(self) -> bool:
-        snapshot = await self.getAllAsync()
-        return snapshot.isTriviaGameEnabled()
-
     def __readJson(self) -> dict[str, Any]:
         if not self.__settingsJsonReader.fileExists():
             raise FileNotFoundError(f'General Settings file not found: \"{self.__settingsJsonReader}\"')
