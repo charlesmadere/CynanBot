@@ -6,10 +6,9 @@ from typing import Collection, Final, Pattern
 from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc.administratorProviderInterface import AdministratorProviderInterface
-from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
-from ..trivia.gameController.removeTriviaGameControllerResult import RemoveTriviaGameControllerResult
-from ..trivia.gameController.triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
+from ..trivia.gameController.exceptions import TriviaGameControllerDoesNotExistException
+from ..trivia.gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
@@ -27,21 +26,18 @@ class RemoveTriviaControllerChatCommand(AbsChatCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
-        generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
-        triviaGameControllersRepository: TriviaGameControllersRepositoryInterface,
+        triviaGameControllersHelper: TriviaGameControllersHelperInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
-            raise TypeError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
+        elif not isinstance(triviaGameControllersHelper, TriviaGameControllersHelperInterface):
+            raise TypeError(f'triviaGameControllersHelper argument is malformed: \"{triviaGameControllersHelper}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
@@ -50,9 +46,8 @@ class RemoveTriviaControllerChatCommand(AbsChatCommand):
             raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
-        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
         self.__timber: Final[TimberInterface] = timber
-        self.__triviaGameControllersRepository: Final[TriviaGameControllersRepositoryInterface] = triviaGameControllersRepository
+        self.__triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = triviaGameControllersHelper
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
@@ -79,10 +74,6 @@ class RemoveTriviaControllerChatCommand(AbsChatCommand):
         elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
-            return ChatCommandResult.IGNORED
-
         arguments = await self.__parseArguments(
             chatMessage = chatMessage,
         )
@@ -97,32 +88,27 @@ class RemoveTriviaControllerChatCommand(AbsChatCommand):
             self.__timber.log(self.commandName, f'Invalid arguments ({arguments=}) ({chatMessage=})')
             return ChatCommandResult.CONSUMED
 
-        result = await self.__triviaGameControllersRepository.removeController(
+        try:
+            result = await self.__triviaGameControllersHelper.removeChannelController(
+                twitchChannelId = chatMessage.twitchChannelId,
+                userId = arguments.chatterUserId,
+            )
+        except TriviaGameControllerDoesNotExistException as e:
+            self.__timber.log(self.commandName, f'Failed to remove channel trivia game controller as they weren\'t already added ({arguments=}) ({chatMessage=})', e, traceback.format_exc())
+
+            self.__twitchChatMessenger.send(
+                text = f'⚠ Failed to remove {arguments.chatterUserName} as a trivia game controller as they weren\'t already added',
+                twitchChannelId = chatMessage.twitchChannelId,
+                replyMessageId = chatMessage.twitchChatMessageId,
+            )
+
+            return ChatCommandResult.CONSUMED
+
+        self.__twitchChatMessenger.send(
+            text = f'ⓘ Removed {arguments.chatterUserName} as a trivia game controller. There are now {result.newTotal} trivia game controller(s)',
             twitchChannelId = chatMessage.twitchChannelId,
-            userId = arguments.chatterUserId,
+            replyMessageId = chatMessage.twitchChatMessageId,
         )
-
-        match result:
-            case RemoveTriviaGameControllerResult.DOES_NOT_EXIST:
-                self.__twitchChatMessenger.send(
-                    text = f'⚠ {arguments.chatterUserName} is not a trivia game controller',
-                    twitchChannelId = chatMessage.twitchChannelId,
-                    replyMessageId = chatMessage.twitchChatMessageId,
-                )
-
-            case RemoveTriviaGameControllerResult.ERROR:
-                self.__twitchChatMessenger.send(
-                    text = f'⚠ An error occurred when trying to remove {arguments.chatterUserName} as a trivia game controller!',
-                    twitchChannelId = chatMessage.twitchChannelId,
-                    replyMessageId = chatMessage.twitchChatMessageId,
-                )
-
-            case RemoveTriviaGameControllerResult.REMOVED:
-                self.__twitchChatMessenger.send(
-                    text = f'ⓘ Removed {arguments.chatterUserName} as a trivia game controller',
-                    twitchChannelId = chatMessage.twitchChannelId,
-                    replyMessageId = chatMessage.twitchChatMessageId,
-                )
 
         self.__timber.log(self.commandName, f'Consumed ({result=}) ({arguments=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED

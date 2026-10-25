@@ -89,3 +89,11 @@ class TriviaGameControllersHelperInterface(ABC):
         userId: str,
     ) -> RemovedResult:
         pass
+
+    @abstractmethod
+    async def removeChannelController(
+        self,
+        twitchChannelId: str,
+        userId: str,
+    ) -> RemovedResult:
+        pass
