@@ -64,12 +64,10 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         category = await self.__triviaQuestionCompiler.compileCategory(category)
         question = await self.__triviaQuestionCompiler.compileQuestion(lotrTriviaQuestion.question)
 
-        allWords: frozenset[str] | None = None
-        if await self._triviaSettings.useNewAnswerCheckingMethod():
-            allWords = await self.__triviaQuestionCompiler.findAllWordsInQuestion(
-                category = category,
-                question = question,
-            )
+        allWords = await self.__triviaQuestionCompiler.findAllWordsInQuestion(
+            category = category,
+            question = question,
+        )
 
         originalCorrectAnswers: list[str] = list()
         originalCorrectAnswers.extend(lotrTriviaQuestion.answers)
