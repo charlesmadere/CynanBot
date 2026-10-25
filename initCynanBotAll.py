@@ -1991,7 +1991,7 @@ triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 triviaSettings: Final[TriviaSettingsInterface] = TriviaSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
-        fileName = 'triviaSettingsRepository.json',
+        fileName = 'triviaSettings.json',
     ),
     triviaSourceParser = triviaSourceParser,
 )
