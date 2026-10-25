@@ -2245,7 +2245,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     RemoveGlobalTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
         timber = timber,
-        triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,
         twitchUserIdsHelper = twitchUserIdsHelper,

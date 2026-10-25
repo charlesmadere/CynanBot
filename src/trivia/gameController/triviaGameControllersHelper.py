@@ -143,7 +143,7 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         )
 
         if result is AddTriviaGameControllerResult.ALREADY_EXISTS:
-            raise TriviaGameControllerAlreadyExistsException(f'This trivia game global controller was already added ({userId=})')
+            raise TriviaGameControllerAlreadyExistsException(f'This global trivia game controller was already added ({userId=})')
 
         controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
 
@@ -305,6 +305,36 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         controllers = await self.__triviaGameControllersRepository.getControllers(
             twitchChannelId = twitchChannelId,
         )
+
+        userData = await self.__twitchUserIdsHelper.requireById(
+            userId = userId,
+            twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
+                twitchChannel = await self.__twitchHandleProvider.getTwitchHandle(),
+            ),
+        )
+
+        return TriviaGameControllersHelperInterface.RemovedResult(
+            newTotal = len(controllers),
+            userId = userData.getUserId(),
+            userLogin = userData.getUserLogin(),
+            userName = userData.getUserName(),
+        )
+
+    async def removeGlobalController(
+        self,
+        userId: str,
+    ) -> TriviaGameControllersHelperInterface.RemovedResult:
+        if not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+
+        result = await self.__triviaGameGlobalControllersRepository.removeController(
+            userId = userId,
+        )
+
+        if result is RemoveTriviaGameControllerResult.DOES_NOT_EXIST:
+            raise TriviaGameControllerDoesNotExistException(f'This global trivia game controller wasn\'t already added ({userId=})')
+
+        controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
 
         userData = await self.__twitchUserIdsHelper.requireById(
             userId = userId,

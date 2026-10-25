@@ -97,3 +97,10 @@ class TriviaGameControllersHelperInterface(ABC):
         userId: str,
     ) -> RemovedResult:
         pass
+
+    @abstractmethod
+    async def removeGlobalController(
+        self,
+        userId: str,
+    ) -> RemovedResult:
+        pass
