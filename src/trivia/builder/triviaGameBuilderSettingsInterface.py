@@ -38,11 +38,3 @@ class TriviaGameBuilderSettingsInterface(ABC):
     @abstractmethod
     async def getWaitForTriviaAnswerDelay(self) -> int:
         pass
-
-    @abstractmethod
-    async def isSuperTriviaGameEnabled(self) -> bool:
-        pass
-
-    @abstractmethod
-    async def isTriviaGameEnabled(self) -> bool:
-        pass

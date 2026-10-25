@@ -16,6 +16,7 @@ from ..trivia.history.triviaHistoryRepositoryInterface import TriviaHistoryRepos
 from ..trivia.history.triviaQuestionOccurrences import TriviaQuestionOccurrences
 from ..trivia.history.triviaQuestionOccurrencesRepositoryInterface import TriviaQuestionOccurrencesRepositoryInterface
 from ..trivia.questions.triviaQuestionReference import TriviaQuestionReference
+from ..trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
@@ -31,6 +32,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
         triviaHistoryRepository: TriviaHistoryRepositoryInterface,
         triviaQuestionOccurrencesRepository: TriviaQuestionOccurrencesRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
         triviaUtils: TriviaUtilsInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
@@ -46,6 +48,8 @@ class TriviaInfoChatCommand(AbsChatCommand):
             raise TypeError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
         elif not isinstance(triviaQuestionOccurrencesRepository, TriviaQuestionOccurrencesRepositoryInterface):
             raise TypeError(f'triviaQuestionOccurrencesRepository argument is malformed: \"{triviaQuestionOccurrencesRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
@@ -57,6 +61,7 @@ class TriviaInfoChatCommand(AbsChatCommand):
         self.__triviaEmoteGenerator: Final[TriviaEmoteGeneratorInterface] = triviaEmoteGenerator
         self.__triviaHistoryRepository: Final[TriviaHistoryRepositoryInterface] = triviaHistoryRepository
         self.__triviaQuestionOccurrencesRepository: Final[TriviaQuestionOccurrencesRepositoryInterface] = triviaQuestionOccurrencesRepository
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
         self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
@@ -102,7 +107,9 @@ class TriviaInfoChatCommand(AbsChatCommand):
             return f'{durationMessage} ago'
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
-        if not chatMessage.twitchUser.isTriviaGameEnabled and not chatMessage.twitchUser.isSuperTriviaGameEnabled:
+        if not await self.__triviaSettings.isEnabled():
+            return ChatCommandResult.IGNORED
+        elif not chatMessage.twitchUser.isTriviaGameEnabled and not chatMessage.twitchUser.isSuperTriviaGameEnabled:
             return ChatCommandResult.IGNORED
         elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED

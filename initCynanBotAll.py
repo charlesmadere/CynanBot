@@ -2079,6 +2079,7 @@ triviaEmoteGenerator: Final[TriviaEmoteGeneratorInterface] = TriviaEmoteGenerato
 triviaGameBuilder: Final[TriviaGameBuilderInterface] = TriviaGameBuilder(
     triviaGameBuilderSettings = generalSettingsRepository,
     triviaIdGenerator = triviaIdGenerator,
+    triviaSettings = triviaSettings,
 )
 
 bannedTriviaGameControllersRepository: Final[BannedTriviaGameControllersRepositoryInterface] = BannedTriviaGameControllersRepository(
@@ -3273,10 +3274,10 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     AddTriviaAnswerChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         triviaEmoteGenerator = triviaEmoteGenerator,
         triviaHistoryRepository = triviaHistoryRepository,
+        triviaSettings = triviaSettings,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
@@ -3309,12 +3310,12 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
     ),
     BanTriviaQuestionChatCommand(
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         timeZoneRepository = timeZoneRepository,
         triviaBanHelper = triviaBanHelper,
         triviaEmoteGenerator = triviaEmoteGenerator,
         triviaHistoryRepository = triviaHistoryRepository,
+        triviaSettings = triviaSettings,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
@@ -3365,10 +3366,10 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     DeleteTriviaAnswersChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         triviaEmoteGenerator = triviaEmoteGenerator,
         triviaHistoryRepository = triviaHistoryRepository,
+        triviaSettings = triviaSettings,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
@@ -3454,10 +3455,10 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     GetTriviaAnswersChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         triviaEmoteGenerator = triviaEmoteGenerator,
         triviaHistoryRepository = triviaHistoryRepository,
+        triviaSettings = triviaSettings,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
@@ -3655,15 +3656,16 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         triviaEmoteGenerator = triviaEmoteGenerator,
         triviaHistoryRepository = triviaHistoryRepository,
         triviaQuestionOccurrencesRepository = triviaQuestionOccurrencesRepository,
+        triviaSettings = triviaSettings,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
     TriviaScoreChatCommand(
-        generalSettingsRepository = generalSettingsRepository,
         shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
         timber = timber,
         toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
         triviaScoreRepository = triviaScoreRepository,
+        triviaSettings = triviaSettings,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,
@@ -3678,11 +3680,11 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
     ),
     UnbanTriviaQuestionChatCommand(
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         triviaBanHelper = triviaBanHelper,
         triviaEmoteGenerator = triviaEmoteGenerator,
         triviaHistoryRepository = triviaHistoryRepository,
+        triviaSettings = triviaSettings,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),

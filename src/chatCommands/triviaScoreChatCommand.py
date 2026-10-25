@@ -5,9 +5,9 @@ from typing import Collection, Final, Pattern
 
 from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
-from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
 from ..trivia.score.triviaScoreRepositoryInterface import TriviaScoreRepositoryInterface
+from ..trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import ShinyTriviaOccurencesRepositoryInterface
 from ..trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import ToxicTriviaOccurencesRepositoryInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
@@ -27,19 +27,17 @@ class TriviaScoreChatCommand(AbsChatCommand):
 
     def __init__(
         self,
-        generalSettingsRepository: GeneralSettingsRepository,
         shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface,
         timber: TimberInterface,
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface,
         triviaScoreRepository: TriviaScoreRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
         triviaUtils: TriviaUtilsInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUserIdsHelper: TwitchUserIdsHelperInterface,
     ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface):
+        if not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface):
             raise TypeError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -47,6 +45,8 @@ class TriviaScoreChatCommand(AbsChatCommand):
             raise TypeError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
         elif not isinstance(triviaScoreRepository, TriviaScoreRepositoryInterface):
             raise TypeError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
@@ -56,11 +56,11 @@ class TriviaScoreChatCommand(AbsChatCommand):
         elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
             raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
-        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
         self.__shinyTriviaOccurencesRepository: Final[ShinyTriviaOccurencesRepositoryInterface] = shinyTriviaOccurencesRepository
         self.__timber: Final[TimberInterface] = timber
         self.__toxicTriviaOccurencesRepository: Final[ToxicTriviaOccurencesRepositoryInterface] = toxicTriviaOccurencesRepository
         self.__triviaScoreRepository: Final[TriviaScoreRepositoryInterface] = triviaScoreRepository
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
         self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
@@ -81,11 +81,9 @@ class TriviaScoreChatCommand(AbsChatCommand):
         return self.__commandPatterns
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
-        if not chatMessage.twitchUser.isTriviaGameEnabled and not chatMessage.twitchUser.isSuperTriviaGameEnabled:
+        if not await self.__triviaSettings.isEnabled():
             return ChatCommandResult.IGNORED
-
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
+        elif not chatMessage.twitchUser.isTriviaGameEnabled and not chatMessage.twitchUser.isSuperTriviaGameEnabled:
             return ChatCommandResult.IGNORED
 
         arguments = await self.__parseArguments(
