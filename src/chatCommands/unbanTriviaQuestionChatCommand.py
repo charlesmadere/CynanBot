@@ -4,12 +4,12 @@ from typing import Collection, Final, Pattern
 from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
-from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..timber.timberInterface import TimberInterface
 from ..trivia.banned.banTriviaQuestionResult import BanTriviaQuestionResult
 from ..trivia.banned.triviaBanHelperInterface import TriviaBanHelperInterface
 from ..trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
 from ..trivia.history.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
+from ..trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
@@ -19,17 +19,15 @@ class UnbanTriviaQuestionChatCommand(AbsChatCommand):
 
     def __init__(
         self,
-        generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         triviaBanHelper: TriviaBanHelperInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
         triviaHistoryRepository: TriviaHistoryRepositoryInterface,
+        triviaSettings: TriviaSettingsInterface,
         triviaUtils: TriviaUtilsInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
+        if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaBanHelper, TriviaBanHelperInterface):
             raise TypeError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
@@ -37,16 +35,18 @@ class UnbanTriviaQuestionChatCommand(AbsChatCommand):
             raise TypeError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
             raise TypeError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
-        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__triviaBanHelper: Final[TriviaBanHelperInterface] = triviaBanHelper
         self.__triviaEmoteGenerator: Final[TriviaEmoteGeneratorInterface] = triviaEmoteGenerator
         self.__triviaHistoryRepository: Final[TriviaHistoryRepositoryInterface] = triviaHistoryRepository
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
         self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
@@ -63,11 +63,9 @@ class UnbanTriviaQuestionChatCommand(AbsChatCommand):
         return self.__commandPatterns
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
-        if not chatMessage.twitchUser.isTriviaGameEnabled and not chatMessage.twitchUser.isSuperTriviaGameEnabled:
+        if not await self.__triviaSettings.isEnabled():
             return ChatCommandResult.IGNORED
-
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
+        elif not chatMessage.twitchUser.isTriviaGameEnabled and not chatMessage.twitchUser.isSuperTriviaGameEnabled:
             return ChatCommandResult.IGNORED
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannelId = chatMessage.twitchChannelId,
