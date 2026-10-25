@@ -93,7 +93,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
             twitchChannel = chatMessage.twitchChannel,
             twitchChannelId = chatMessage.twitchChannelId,
             ttsEvent = TtsEvent(
-                message = f'Playing back voicemail from {voicemail.originatingUserName}... {voicemail.message}',
+                message = f'Playing back voicemail from {voicemail.originatingUserName}… {voicemail.message}',
                 twitchChannel = chatMessage.twitchChannel,
                 twitchChannelId = chatMessage.twitchChannelId,
                 userId = voicemail.originatingUserId,
