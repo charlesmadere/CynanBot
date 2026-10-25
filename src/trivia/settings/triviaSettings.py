@@ -16,14 +16,74 @@ class TriviaSettings(TriviaSettingsInterface):
         self,
         settingsJsonReader: JsonReaderInterface,
         triviaSourceParser: TriviaSourceParserInterface,
+        defaultTriviaSourcesAndProperties: frozendict[TriviaSource, TriviaSourceAndProperties] = frozendict({
+            TriviaSource.BONGO: TriviaSourceAndProperties(
+                isEnabled = True,
+                weight = 10,
+                triviaSource = TriviaSource.BONGO,
+            ),
+            TriviaSource.FUNTOON: TriviaSourceAndProperties(
+                isEnabled = True,
+                weight = 100,
+                triviaSource = TriviaSource.FUNTOON,
+            ),
+            TriviaSource.GLACIAL: TriviaSourceAndProperties(
+                isEnabled = True,
+                weight = 1,
+                triviaSource = TriviaSource.GLACIAL,
+            ),
+            TriviaSource.LORD_OF_THE_RINGS: TriviaSourceAndProperties(
+                isEnabled = True,
+                weight = 10,
+                triviaSource = TriviaSource.LORD_OF_THE_RINGS,
+            ),
+            TriviaSource.MILLIONAIRE: TriviaSourceAndProperties(
+                isEnabled = True,
+                weight = 10,
+                triviaSource = TriviaSource.MILLIONAIRE,
+            ),
+            TriviaSource.OPEN_TRIVIA_DATABASE: TriviaSourceAndProperties(
+                isEnabled = True,
+                weight = 60,
+                triviaSource = TriviaSource.OPEN_TRIVIA_DATABASE,
+            ),
+            TriviaSource.OPEN_TRIVIA_QA: TriviaSourceAndProperties(
+                isEnabled = True,
+                weight = 25,
+                triviaSource = TriviaSource.OPEN_TRIVIA_QA,
+            ),
+            TriviaSource.THE_QUESTION_CO: TriviaSourceAndProperties(
+                isEnabled = True,
+                weight = 50,
+                triviaSource = TriviaSource.THE_QUESTION_CO,
+            ),
+            TriviaSource.TRIVIA_DATABASE: TriviaSourceAndProperties(
+                isEnabled = True,
+                weight = 100,
+                triviaSource = TriviaSource.TRIVIA_DATABASE,
+            ),
+            TriviaSource.WILL_FRY_TRIVIA: TriviaSourceAndProperties(
+                isEnabled = True,
+                weight = 10,
+                triviaSource = TriviaSource.WILL_FRY_TRIVIA,
+            ),
+            TriviaSource.WWTBAM: TriviaSourceAndProperties(
+                isEnabled = True,
+                weight = 10,
+                triviaSource = TriviaSource.WWTBAM,
+            ),
+        }),
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
         elif not isinstance(triviaSourceParser, TriviaSourceParserInterface):
             raise TypeError(f'triviaSourceParser argument is malformed: \"{triviaSourceParser}\"')
+        elif not isinstance(defaultTriviaSourcesAndProperties, frozendict):
+            raise TypeError(f'defaultTriviaSourcesAndProperties argument is malformed: \"{defaultTriviaSourcesAndProperties}\"')
 
         self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
         self.__triviaSourceParser: Final[TriviaSourceParserInterface] = triviaSourceParser
+        self.__defaultTriviaSourcesAndProperties: Final[frozendict[TriviaSource, TriviaSourceAndProperties]] = defaultTriviaSourcesAndProperties
 
         self.__cache: dict[str, Any] | None = None
         self.__cachedTriviaSourcesAndProperties: frozendict[TriviaSource, TriviaSourceAndProperties] | None = None
@@ -145,28 +205,31 @@ class TriviaSettings(TriviaSettingsInterface):
 
         jsonContents = await self.__readJson()
         triviaSourcesJson: dict[str, Any] | Any | None = jsonContents.get('trivia_sources', None)
-        triviaSourcesAndProperties: dict[TriviaSource, TriviaSourceAndProperties] = dict()
+        frozenTriviaSourcesAndProperties: frozendict[TriviaSource, TriviaSourceAndProperties]
 
-        if not isinstance(triviaSourcesJson, dict) or len(triviaSourcesJson) == 0:
+        if triviaSourcesJson is None or not isinstance(triviaSourcesJson, dict):
+            frozenTriviaSourcesAndProperties = frozendict(self.__defaultTriviaSourcesAndProperties)
+        elif len(triviaSourcesJson) == 0:
+            frozenTriviaSourcesAndProperties = frozendict()
+        else:
+            triviaSourcesAndProperties: dict[TriviaSource, TriviaSourceAndProperties] = dict()
+
+            for key, triviaSourceJson in triviaSourcesJson.items():
+                triviaSource = await self.__triviaSourceParser.parse(key)
+                isEnabled = utils.getBoolFromDict(triviaSourceJson, 'is_enabled', fallback = False)
+                weight = utils.getIntFromDict(triviaSourceJson, 'weight', fallback = 1)
+
+                if weight < 1 or weight > utils.getIntMaxSafeSize():
+                    raise ValueError(f'TriviaSource weight value is out of bounds ({triviaSourceJson=}) ({weight=})')
+
+                triviaSourcesAndProperties[triviaSource] = TriviaSourceAndProperties(
+                    isEnabled = isEnabled,
+                    weight = weight,
+                    triviaSource = triviaSource,
+                )
+
             frozenTriviaSourcesAndProperties = frozendict(triviaSourcesAndProperties)
-            self.__cachedTriviaSourcesAndProperties = frozenTriviaSourcesAndProperties
-            return frozenTriviaSourcesAndProperties
 
-        for key, triviaSourceJson in triviaSourcesJson.items():
-            triviaSource = await self.__triviaSourceParser.parse(key)
-            isEnabled = utils.getBoolFromDict(triviaSourceJson, 'is_enabled', False)
-            weight = utils.getIntFromDict(triviaSourceJson, 'weight', 1)
-
-            if weight < 1 or weight > utils.getIntMaxSafeSize():
-                raise ValueError(f'TriviaSource weight value is out of bounds ({triviaSourceJson=}) ({weight=})')
-
-            triviaSourcesAndProperties[triviaSource] = TriviaSourceAndProperties(
-                isEnabled = isEnabled,
-                weight = weight,
-                triviaSource = triviaSource,
-            )
-
-        frozenTriviaSourcesAndProperties = frozendict(triviaSourcesAndProperties)
         self.__cachedTriviaSourcesAndProperties = frozenTriviaSourcesAndProperties
         return frozenTriviaSourcesAndProperties
 
