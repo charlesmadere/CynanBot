@@ -206,7 +206,3 @@ class TriviaSettings(TriviaSettingsInterface):
 
         self.__cache = jsonContents
         return jsonContents
-
-    async def useNewAnswerCheckingMethod(self) -> bool:
-        jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'use_new_answer_checking_method', True)
