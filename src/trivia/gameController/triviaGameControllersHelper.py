@@ -5,7 +5,8 @@ from frozenlist import FrozenList
 
 from .addTriviaGameControllerResult import AddTriviaGameControllerResult
 from .exceptions import TriviaGameControllerAlreadyExistsException, TriviaGameControllerIllegalUserIdException, \
-    TriviaGameControllerNotAlreadyBannedException
+    TriviaGameControllerNotAlreadyBannedException, TriviaGameControllerDoesNotExistException
+from .removeTriviaGameControllerResult import RemoveTriviaGameControllerResult
 from .triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from .triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from .triviaGameGlobalControllersRepositoryInterface import TriviaGameGlobalControllersRepositoryInterface
@@ -268,6 +269,42 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
             raise TriviaGameControllerNotAlreadyBannedException(f'This trivia game controller isn\'t already banned ({userId=})')
 
         controllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
+
+        userData = await self.__twitchUserIdsHelper.requireById(
+            userId = userId,
+            twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
+                twitchChannel = await self.__twitchHandleProvider.getTwitchHandle(),
+            ),
+        )
+
+        return TriviaGameControllersHelperInterface.RemovedResult(
+            newTotal = len(controllers),
+            userId = userData.getUserId(),
+            userLogin = userData.getUserLogin(),
+            userName = userData.getUserName(),
+        )
+
+    async def removeChannelController(
+        self,
+        twitchChannelId: str,
+        userId: str,
+    ) -> TriviaGameControllersHelperInterface.RemovedResult:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+
+        result = await self.__triviaGameControllersRepository.removeController(
+            twitchChannelId = twitchChannelId,
+            userId = userId,
+        )
+
+        if result is RemoveTriviaGameControllerResult.DOES_NOT_EXIST:
+            raise TriviaGameControllerDoesNotExistException(f'This trivia game channel controller wasn\'t already added ({twitchChannelId=}) ({userId=})')
+
+        controllers = await self.__triviaGameControllersRepository.getControllers(
+            twitchChannelId = twitchChannelId,
+        )
 
         userData = await self.__twitchUserIdsHelper.requireById(
             userId = userId,

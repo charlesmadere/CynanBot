@@ -2071,10 +2071,10 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchChatMessenger = twitchChatMessenger,
     ),
     AnswerChatCommand(
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         triviaGameMachine = triviaGameMachine,
         triviaIdGenerator = triviaIdGenerator,
+        triviaSettings = triviaSettings,
     ),
     AsplodieStatsChatCommand(
         asplodieStatsPresenter = asplodieStatsPresenter,
@@ -2265,21 +2265,19 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     RemoveTriviaControllerChatCommand(
         administratorProvider = administratorProvider,
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
-        triviaGameControllersRepository = triviaGameControllersRepository,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,
         twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     SuperAnswerChatCommand(
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         triviaGameMachine = triviaGameMachine,
         triviaIdGenerator = triviaIdGenerator,
+        triviaSettings = triviaSettings,
     ),
     SuperTriviaChatCommand(
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         triviaGameBuilder = triviaGameBuilder,
         triviaGameMachine = triviaGameMachine,
