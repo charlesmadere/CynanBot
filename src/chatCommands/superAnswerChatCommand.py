@@ -6,6 +6,7 @@ from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..trivia.actions.checkSuperAnswerTriviaAction import CheckSuperAnswerTriviaAction
+from ..trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
 from ..trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
@@ -18,6 +19,7 @@ class SuperAnswerChatCommand(AbsChatCommand):
         timber: TimberInterface,
         triviaGameMachine: TriviaGameMachineInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
+        triviaSettings: TriviaSettingsInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -25,10 +27,13 @@ class SuperAnswerChatCommand(AbsChatCommand):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
             raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
 
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameMachine: Final[TriviaGameMachineInterface] = triviaGameMachine
         self.__triviaIdGenerator: Final[TriviaIdGeneratorInterface] = triviaIdGenerator
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
             re.compile(r'^\s*!s(?:uper)?a(?:nswer)?\b', re.IGNORECASE),
@@ -44,7 +49,9 @@ class SuperAnswerChatCommand(AbsChatCommand):
         return self.__commandPatterns
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
-        if not chatMessage.twitchUser.isSuperTriviaGameEnabled:
+        if not await self.__triviaSettings.isEnabled():
+            return ChatCommandResult.IGNORED
+        elif not chatMessage.twitchUser.isSuperTriviaGameEnabled:
             return ChatCommandResult.IGNORED
 
         splits = utils.getCleanedSplits(chatMessage.text)

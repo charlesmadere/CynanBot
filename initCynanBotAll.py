@@ -3300,6 +3300,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         timber = timber,
         triviaGameMachine = triviaGameMachine,
         triviaIdGenerator = triviaIdGenerator,
+        triviaSettings = triviaSettings,
     ),
     AsplodieStatsChatCommand(
         asplodieStatsPresenter = asplodieStatsPresenter,
@@ -3608,9 +3609,9 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         timber = timber,
         triviaGameMachine = triviaGameMachine,
         triviaIdGenerator = triviaIdGenerator,
+        triviaSettings = triviaSettings,
     ),
     SuperTriviaChatCommand(
-        generalSettingsRepository = generalSettingsRepository,
         timber = timber,
         triviaGameBuilder = triviaGameBuilder,
         triviaGameMachine = triviaGameMachine,
