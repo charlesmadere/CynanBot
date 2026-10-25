@@ -204,7 +204,7 @@ class TriviaSettings(TriviaSettingsInterface):
             return cachedTriviaSourcesAndProperties
 
         jsonContents = await self.__readJson()
-        triviaSourcesJson: dict[str, Any] | Any | None = jsonContents.get('trivia_sources', None)
+        triviaSourcesJson: dict[str, dict[str, Any]] | Any | None = jsonContents.get('trivia_sources', None)
         frozenTriviaSourcesAndProperties: frozendict[TriviaSource, TriviaSourceAndProperties]
 
         if triviaSourcesJson is None or not isinstance(triviaSourcesJson, dict):
