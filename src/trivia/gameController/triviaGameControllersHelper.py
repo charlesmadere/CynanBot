@@ -254,6 +254,22 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
             twitchAccessToken = twitchAccessToken,
         )
 
+    async def isController(
+        self,
+        twitchChannelId: str,
+        userId: str,
+    ) -> bool:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+
+        locallyAuthorizedControllerIds = await self.getAllLocallyAuthorizedControllerIds(
+            twitchChannelId = twitchChannelId,
+        )
+
+        return userId in locallyAuthorizedControllerIds
+
     async def removeBannedController(
         self,
         userId: str,

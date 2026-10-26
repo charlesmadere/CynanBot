@@ -106,7 +106,7 @@ class CutenessHistoryChatCommand(AbsChatCommand):
             )
         else:
             result = await self.__cutenessHelper.fetchCutenessHistory(
-                chatterUserId = chatMessage.chatterUserId,
+                chatterUserId = arguments.chatterUserId,
                 twitchChannelId = chatMessage.twitchChannelId,
             )
 
@@ -120,7 +120,7 @@ class CutenessHistoryChatCommand(AbsChatCommand):
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log(self.commandName, f'Consumed ({result=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({result=}) ({arguments=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __parseArguments(self, chatMessage: TwitchChatMessage) -> Arguments | None:

@@ -91,13 +91,14 @@ class TriviaScoreChatCommand(AbsChatCommand):
         )
 
         if arguments is None:
+            self.__timber.log(self.commandName, f'Unable to find target user ID ({arguments=}) ({chatMessage=})')
+
             self.__twitchChatMessenger.send(
                 text = f'⚠ Unable to find trivia score info for the given user',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-            self.__timber.log(self.commandName, f'Unable to find target user ID ({arguments=}) ({chatMessage=})')
             return ChatCommandResult.CONSUMED
 
         shinyResult = await self.__shinyTriviaOccurencesRepository.fetchDetails(
