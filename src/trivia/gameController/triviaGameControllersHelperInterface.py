@@ -84,6 +84,14 @@ class TriviaGameControllersHelperInterface(ABC):
         pass
 
     @abstractmethod
+    async def isController(
+        self,
+        twitchChannelId: str,
+        userId: str,
+    ) -> bool:
+        pass
+
+    @abstractmethod
     async def removeBannedController(
         self,
         userId: str,

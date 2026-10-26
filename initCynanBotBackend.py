@@ -2088,9 +2088,9 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         timeZoneRepository = timeZoneRepository,
         triviaBanHelper = triviaBanHelper,
         triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         triviaHistoryRepository = triviaHistoryRepository,
         triviaSettings = triviaSettings,
-        triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
     ClearSuperTriviaQueueChatCommand(
