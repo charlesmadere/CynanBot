@@ -106,7 +106,7 @@ class CutenessHistoryChatCommand(AbsChatCommand):
             )
         else:
             result = await self.__cutenessHelper.fetchCutenessHistory(
-                chatterUserId = chatMessage.chatterUserId,
+                chatterUserId = arguments.chatterUserId,
                 twitchChannelId = chatMessage.twitchChannelId,
             )
 
