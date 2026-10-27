@@ -107,7 +107,7 @@ class CutenessChatCommand(AbsChatCommand):
             )
         else:
             result = await self.__cutenessHelper.fetchCuteness(
-                chatterUserId = chatMessage.chatterUserId,
+                chatterUserId = arguments.chatterUserId,
                 twitchChannelId = chatMessage.twitchChannelId,
             )
 
