@@ -50,7 +50,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
         )
 
         await connection.close()
-        self.__timber.log('TriviaGameGlobalControllersRepository', f'Added user to trivia game global controllers ({userId=})')
+        self.__timber.log('TriviaGameGlobalControllersRepository', f'Added global trivia game controller ({userId=})')
         return AddTriviaGameControllerResult.ADDED
 
     async def clearCaches(self):
@@ -137,5 +137,5 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
         )
 
         await connection.close()
-        self.__timber.log('TriviaGameGlobalControllersRepository', f'Removed user from trivia game global controllers ({userId=})')
+        self.__timber.log('TriviaGameGlobalControllersRepository', f'Removed user from global trivia game controllers ({userId=})')
         return RemoveTriviaGameControllerResult.REMOVED

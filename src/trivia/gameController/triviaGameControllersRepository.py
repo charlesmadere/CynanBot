@@ -58,7 +58,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         )
 
         await connection.close()
-        self.__timber.log('TriviaGameControllersRepository', f'Added a new trivia game controller ({twitchChannelId=}) ({userId=})')
+        self.__timber.log('TriviaGameControllersRepository', f'Added trivia game controller ({twitchChannelId=}) ({userId=})')
         return AddTriviaGameControllerResult.ADDED
 
     async def clearCaches(self):
@@ -165,5 +165,5 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         )
 
         await connection.close()
-        self.__timber.log('TriviaGameControllersRepository', f'Finished removing trivia game controller ({twitchChannelId=}) ({userId=})')
+        self.__timber.log('TriviaGameControllersRepository', f'Removed user from trivia game controllers ({twitchChannelId=}) ({userId=})')
         return RemoveTriviaGameControllerResult.REMOVED
