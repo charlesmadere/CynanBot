@@ -18,11 +18,11 @@ class TtsMonsterSettings(TtsMonsterSettingsInterface):
         ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface,
         defaultVoiceVolumes: frozendict[TtsMonsterVoice, int | None] = frozendict({
             TtsMonsterVoice.GLADOS: 36,
-            TtsMonsterVoice.JAZZ: 32,
+            TtsMonsterVoice.JAZZ: 28,
             TtsMonsterVoice.SPONGEBOB: 36,
             TtsMonsterVoice.SHADOW: 34,
         }),
-        defaultVoiceVolume: int | None = 46,
+        defaultVoiceVolume: int | None = 56,
         defaultDonationPrefixConfig: TtsMonsterDonationPrefixConfig = TtsMonsterDonationPrefixConfig.IF_MESSAGE_IS_BLANK,
         defaultVoice: TtsMonsterVoice = TtsMonsterVoice.BRIAN,
     ):
