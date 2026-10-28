@@ -1,7 +1,6 @@
 from typing import Final
 
-from .addTriviaGameControllerResult import AddTriviaGameControllerResult
-from .removeTriviaGameControllerResult import RemoveTriviaGameControllerResult
+from .exceptions import TriviaGameControllerAlreadyExistsException, TriviaGameControllerDoesNotExistException
 from .triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
@@ -32,7 +31,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         self,
         twitchChannelId: str,
         userId: str,
-    ) -> AddTriviaGameControllerResult:
+    ):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
@@ -43,7 +42,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         )
 
         if userId in currentControllers:
-            return AddTriviaGameControllerResult.ALREADY_EXISTS
+            raise TriviaGameControllerAlreadyExistsException(f'This trivia game channel controller was already added ({twitchChannelId=}) ({userId=})')
 
         self.__cache.pop(twitchChannelId, None)
 
@@ -59,7 +58,6 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
 
         await connection.close()
         self.__timber.log('TriviaGameControllersRepository', f'Added trivia game controller ({twitchChannelId=}) ({userId=})')
-        return AddTriviaGameControllerResult.ADDED
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -140,7 +138,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         self,
         twitchChannelId: str,
         userId: str,
-    ) -> RemoveTriviaGameControllerResult:
+    ):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
@@ -151,7 +149,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         )
 
         if userId not in currentControllers:
-            return RemoveTriviaGameControllerResult.DOES_NOT_EXIST
+            raise TriviaGameControllerDoesNotExistException(f'This trivia game channel controller wasn\'t already added ({twitchChannelId=}) ({userId=})')
 
         self.__cache.pop(twitchChannelId, None)
 
@@ -166,4 +164,3 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
 
         await connection.close()
         self.__timber.log('TriviaGameControllersRepository', f'Removed user from trivia game controllers ({twitchChannelId=}) ({userId=})')
-        return RemoveTriviaGameControllerResult.REMOVED

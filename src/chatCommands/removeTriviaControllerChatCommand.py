@@ -53,9 +53,9 @@ class RemoveTriviaControllerChatCommand(AbsChatCommand):
         self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!del(?:ete)?triviacontroller\b', re.IGNORECASE),
-            re.compile(r'^\s*!removetriviacontroller\b', re.IGNORECASE),
-            re.compile(r'^\s*!rmtriviacontroller\b', re.IGNORECASE),
+            re.compile(r'^\s*!del(?:ete)?trivia(?:game)?controller\b', re.IGNORECASE),
+            re.compile(r'^\s*!removetrivia(?:game)?controller\b', re.IGNORECASE),
+            re.compile(r'^\s*!rmtrivia(?:game)?controller\b', re.IGNORECASE),
         })
 
         self.__argumentsPattern: Final[Pattern] = re.compile(r'^\s*!\w+\s+@?(\w+)', re.IGNORECASE)
