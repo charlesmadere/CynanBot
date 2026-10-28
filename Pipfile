@@ -23,7 +23,7 @@ polyleven = "0.12.0"
 psutil = "7.2.2"
 pygame-ce = { version = "2.5.8", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
 pyjwt = "2.15.1"
-pytest = "9.1.1"
+pytest = "9.2.0"
 pytest-asyncio = "1.4.1"
 python-vlc = { version = "3.0.21203", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
 pytz = "2026.5"
