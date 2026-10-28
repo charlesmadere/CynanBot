@@ -17,9 +17,9 @@ class HalfLifeSettingsRepository(HalfLifeSettingsRepositoryInterface):
         settingsJsonReader: JsonReaderInterface,
         defaultVoiceVolumes: frozendict[HalfLifeVoice, int | None] = frozendict({
             HalfLifeVoice.BARNEY: 32,
-            HalfLifeVoice.INTERCOM: 20,
+            HalfLifeVoice.INTERCOM: 18,
             HalfLifeVoice.SCIENTIST: 20,
-            HalfLifeVoice.SOLDIER: 10,
+            HalfLifeVoice.SOLDIER: 8,
         }),
         defaultVoice: HalfLifeVoice = HalfLifeVoice.ALL,
     ):

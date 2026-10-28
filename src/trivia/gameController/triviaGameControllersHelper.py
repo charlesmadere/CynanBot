@@ -5,14 +5,12 @@ from frozenlist import FrozenList
 
 from .addTriviaGameControllerResult import AddTriviaGameControllerResult
 from .exceptions import TriviaGameControllerAlreadyExistsException, TriviaGameControllerIllegalUserIdException, \
-    TriviaGameControllerNotAlreadyBannedException, TriviaGameControllerDoesNotExistException
+    TriviaGameControllerDoesNotExistException
 from .removeTriviaGameControllerResult import RemoveTriviaGameControllerResult
 from .triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from .triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from .triviaGameGlobalControllersRepositoryInterface import TriviaGameGlobalControllersRepositoryInterface
-from ..banned.addBannedTriviaGameControllerResult import AddBannedTriviaGameControllerResult
 from ..banned.bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
-from ..banned.removeBannedTriviaGameControllerResult import RemoveBannedTriviaGameControllerResult
 from ...misc import utils as utils
 from ...misc.administratorProviderInterface import AdministratorProviderInterface
 from ...timber.timberInterface import TimberInterface
@@ -72,12 +70,9 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         if userId == await self.__administratorProvider.getAdministratorUserId():
             raise TriviaGameControllerIllegalUserIdException(f'This user ID can\'t be banned ({userId=})')
 
-        result = await self.__bannedTriviaGameControllersRepository.addBannedController(
+        await self.__bannedTriviaGameControllersRepository.addBannedController(
             userId = userId,
         )
-
-        if result is AddBannedTriviaGameControllerResult.ALREADY_EXISTS:
-            raise TriviaGameControllerAlreadyExistsException(f'This banned trivia game controller was already added ({userId=})')
 
         controllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
 
@@ -277,12 +272,9 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        result = await self.__bannedTriviaGameControllersRepository.removeBannedController(
+        await self.__bannedTriviaGameControllersRepository.removeBannedController(
             userId = userId,
         )
-
-        if result is RemoveBannedTriviaGameControllerResult.NOT_BANNED:
-            raise TriviaGameControllerNotAlreadyBannedException(f'This trivia game controller isn\'t already banned ({userId=})')
 
         controllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
 
