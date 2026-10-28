@@ -1,17 +1,12 @@
 from abc import ABC, abstractmethod
 
-from .addBannedTriviaGameControllerResult import AddBannedTriviaGameControllerResult
-from .removeBannedTriviaGameControllerResult import RemoveBannedTriviaGameControllerResult
 from ...misc.clearable import Clearable
 
 
 class BannedTriviaGameControllersRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
-    async def addBannedController(
-        self,
-        userId: str,
-    ) -> AddBannedTriviaGameControllerResult:
+    async def addBannedController(self, userId: str):
         pass
 
     @abstractmethod
@@ -19,8 +14,5 @@ class BannedTriviaGameControllersRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
-    async def removeBannedController(
-        self,
-        userId: str,
-    ) -> RemoveBannedTriviaGameControllerResult:
+    async def removeBannedController(self, userId: str):
         pass

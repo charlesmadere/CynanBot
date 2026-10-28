@@ -81,7 +81,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         records = await connection.fetchRows(
             '''
                 SELECT userid FROM triviagamecontrollers
-                WHERE triviagamecontrollers.twitchchannelid = $1
+                WHERE twitchchannelid = $1
             ''',
             twitchChannelId,
         )

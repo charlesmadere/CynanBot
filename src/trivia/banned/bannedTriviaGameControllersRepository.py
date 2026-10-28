@@ -1,8 +1,8 @@
 from typing import Final
 
-from .addBannedTriviaGameControllerResult import AddBannedTriviaGameControllerResult
 from .bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
-from .removeBannedTriviaGameControllerResult import RemoveBannedTriviaGameControllerResult
+from ..gameController.exceptions import TriviaGameControllerAlreadyBannedException, \
+    TriviaGameControllerNotAlreadyBannedException, TriviaGameControllerIllegalUserIdException
 from ...misc import utils as utils
 from ...misc.administratorProviderInterface import AdministratorProviderInterface
 from ...storage.backingDatabase import BackingDatabase
@@ -33,21 +33,18 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
         self.__isDatabaseReady: bool = False
         self.__cache: frozenset[str] | None = None
 
-    async def addBannedController(
-        self,
-        userId: str,
-    ) -> AddBannedTriviaGameControllerResult:
+    async def addBannedController(self, userId: str):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         if userId == await self.__administratorProvider.getAdministratorUserId():
-            self.__timber.log('BannedTriviaGameControllersRepository', f'Tried to add banned trivia game controller, but this user is the administrator ({userId=})')
-            return AddBannedTriviaGameControllerResult.ERROR
+            self.__timber.log('BannedTriviaGameControllersRepository', f'Tried to ban trivia game controller, but this user is the administrator ({userId=})')
+            raise TriviaGameControllerIllegalUserIdException(f'Tried to ban trivia game controller, but this user is the administrator ({userId=})')
 
         bannedControllers = await self.getBannedControllers()
 
         if userId in bannedControllers:
-            return AddBannedTriviaGameControllerResult.ALREADY_EXISTS
+            raise TriviaGameControllerAlreadyBannedException(f'This trivia game controller was already banned ({userId=})')
 
         self.__cache = None
 
@@ -63,7 +60,6 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
 
         await connection.close()
         self.__timber.log('BannedTriviaGameControllersRepository', f'Added banned trivia game controller ({userId=})')
-        return AddBannedTriviaGameControllerResult.ADDED
 
     async def clearCaches(self):
         self.__cache = None
@@ -128,17 +124,14 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
 
         await connection.close()
 
-    async def removeBannedController(
-        self,
-        userId: str,
-    ) -> RemoveBannedTriviaGameControllerResult:
+    async def removeBannedController(self, userId: str):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         bannedControllers = await self.getBannedControllers()
 
         if userId not in bannedControllers:
-            return RemoveBannedTriviaGameControllerResult.NOT_BANNED
+            raise TriviaGameControllerNotAlreadyBannedException(f'This trivia game controller isn\'t already banned ({userId=})')
 
         self.__cache = None
 
@@ -153,4 +146,3 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
 
         await connection.close()
         self.__timber.log('BannedTriviaGameControllersRepository', f'Removed user from banned trivia game controllers ({userId=})')
-        return RemoveBannedTriviaGameControllerResult.REMOVED

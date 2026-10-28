@@ -28,10 +28,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
         self.__isDatabaseReady: bool = False
         self.__cache: frozenset[str] | None = None
 
-    async def addController(
-        self,
-        userId: str,
-    ) -> AddTriviaGameControllerResult:
+    async def addController(self, userId: str) -> AddTriviaGameControllerResult:
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
@@ -119,10 +116,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
 
         await connection.close()
 
-    async def removeController(
-        self,
-        userId: str,
-    ) -> RemoveTriviaGameControllerResult:
+    async def removeController(self, userId: str) -> RemoveTriviaGameControllerResult:
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
