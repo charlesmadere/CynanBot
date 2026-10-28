@@ -3,10 +3,7 @@ from typing import Collection, Final
 
 from frozenlist import FrozenList
 
-from .addTriviaGameControllerResult import AddTriviaGameControllerResult
-from .exceptions import TriviaGameControllerAlreadyExistsException, TriviaGameControllerIllegalUserIdException, \
-    TriviaGameControllerDoesNotExistException
-from .removeTriviaGameControllerResult import RemoveTriviaGameControllerResult
+from .exceptions import TriviaGameControllerIllegalUserIdException
 from .triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from .triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from .triviaGameGlobalControllersRepositoryInterface import TriviaGameGlobalControllersRepositoryInterface
@@ -100,13 +97,10 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        result = await self.__triviaGameControllersRepository.addController(
+        await self.__triviaGameControllersRepository.addController(
             twitchChannelId = twitchChannelId,
             userId = userId,
         )
-
-        if result is AddTriviaGameControllerResult.ALREADY_EXISTS:
-            raise TriviaGameControllerAlreadyExistsException(f'This trivia game channel controller was already added ({twitchChannelId=}) ({userId=})')
 
         controllers = await self.__triviaGameControllersRepository.getControllers(
             twitchChannelId = twitchChannelId,
@@ -133,12 +127,9 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        result = await self.__triviaGameGlobalControllersRepository.addController(
+        await self.__triviaGameGlobalControllersRepository.addController(
             userId = userId,
         )
-
-        if result is AddTriviaGameControllerResult.ALREADY_EXISTS:
-            raise TriviaGameControllerAlreadyExistsException(f'This global trivia game controller was already added ({userId=})')
 
         controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
 
@@ -203,6 +194,7 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         locallyAuthorizedControllers.update(channelControllers)
         locallyAuthorizedControllers.update(globalControllers)
         locallyAuthorizedControllers.difference_update(bannedControllers)
+
         return frozenset(locallyAuthorizedControllers)
 
     async def getBannedControllers(self) -> Collection[TwitchUserInterface]:
@@ -302,13 +294,10 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        result = await self.__triviaGameControllersRepository.removeController(
+        await self.__triviaGameControllersRepository.removeController(
             twitchChannelId = twitchChannelId,
             userId = userId,
         )
-
-        if result is RemoveTriviaGameControllerResult.DOES_NOT_EXIST:
-            raise TriviaGameControllerDoesNotExistException(f'This trivia game channel controller wasn\'t already added ({twitchChannelId=}) ({userId=})')
 
         controllers = await self.__triviaGameControllersRepository.getControllers(
             twitchChannelId = twitchChannelId,
@@ -335,12 +324,9 @@ class TriviaGameControllersHelper(TriviaGameControllersHelperInterface):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        result = await self.__triviaGameGlobalControllersRepository.removeController(
+        await self.__triviaGameGlobalControllersRepository.removeController(
             userId = userId,
         )
-
-        if result is RemoveTriviaGameControllerResult.DOES_NOT_EXIST:
-            raise TriviaGameControllerDoesNotExistException(f'This global trivia game controller wasn\'t already added ({userId=})')
 
         controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
 

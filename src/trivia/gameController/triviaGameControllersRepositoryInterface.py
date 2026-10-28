@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-from .addTriviaGameControllerResult import AddTriviaGameControllerResult
-from .removeTriviaGameControllerResult import RemoveTriviaGameControllerResult
 from ...misc.clearable import Clearable
 
 
@@ -12,7 +10,7 @@ class TriviaGameControllersRepositoryInterface(Clearable, ABC):
         self,
         twitchChannelId: str,
         userId: str,
-    ) -> AddTriviaGameControllerResult:
+    ):
         pass
 
     @abstractmethod
@@ -27,5 +25,5 @@ class TriviaGameControllersRepositoryInterface(Clearable, ABC):
         self,
         twitchChannelId: str,
         userId: str,
-    ) -> RemoveTriviaGameControllerResult:
+    ):
         pass

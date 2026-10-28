@@ -53,7 +53,7 @@ class AddGlobalTriviaControllerChatCommand(AbsChatCommand):
         self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!addglobaltriviacontroller\b', re.IGNORECASE),
+            re.compile(r'^\s*!addglobaltrivia(?:game)?controller\b', re.IGNORECASE),
         })
 
         self.__argumentsPattern: Final[Pattern] = re.compile(r'^\s*!\w+\s+@?(\w+)', re.IGNORECASE)

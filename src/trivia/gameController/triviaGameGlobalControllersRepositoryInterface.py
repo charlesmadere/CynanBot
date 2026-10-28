@@ -1,14 +1,12 @@
 from abc import ABC, abstractmethod
 
-from .addTriviaGameControllerResult import AddTriviaGameControllerResult
-from .removeTriviaGameControllerResult import RemoveTriviaGameControllerResult
 from ...misc.clearable import Clearable
 
 
 class TriviaGameGlobalControllersRepositoryInterface(Clearable, ABC):
 
     @abstractmethod
-    async def addController(self, userId: str) -> AddTriviaGameControllerResult:
+    async def addController(self, userId: str):
         pass
 
     @abstractmethod
@@ -16,5 +14,5 @@ class TriviaGameGlobalControllersRepositoryInterface(Clearable, ABC):
         pass
 
     @abstractmethod
-    async def removeController(self, userId: str) -> RemoveTriviaGameControllerResult:
+    async def removeController(self, userId: str):
         pass

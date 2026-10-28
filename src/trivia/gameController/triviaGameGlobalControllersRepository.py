@@ -1,7 +1,6 @@
 from typing import Final
 
-from .addTriviaGameControllerResult import AddTriviaGameControllerResult
-from .removeTriviaGameControllerResult import RemoveTriviaGameControllerResult
+from .exceptions import TriviaGameControllerAlreadyExistsException, TriviaGameControllerDoesNotExistException
 from .triviaGameGlobalControllersRepositoryInterface import TriviaGameGlobalControllersRepositoryInterface
 from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
@@ -28,14 +27,14 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
         self.__isDatabaseReady: bool = False
         self.__cache: frozenset[str] | None = None
 
-    async def addController(self, userId: str) -> AddTriviaGameControllerResult:
+    async def addController(self, userId: str):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         currentControllers = await self.getControllers()
 
         if userId in currentControllers:
-            return AddTriviaGameControllerResult.ALREADY_EXISTS
+            raise TriviaGameControllerAlreadyExistsException(f'This global trivia game controller was already added ({userId=})')
 
         self.__cache = None
 
@@ -51,7 +50,6 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
 
         await connection.close()
         self.__timber.log('TriviaGameGlobalControllersRepository', f'Added global trivia game controller ({userId=})')
-        return AddTriviaGameControllerResult.ADDED
 
     async def clearCaches(self):
         self.__cache = None
@@ -116,14 +114,14 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
 
         await connection.close()
 
-    async def removeController(self, userId: str) -> RemoveTriviaGameControllerResult:
+    async def removeController(self, userId: str):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         currentControllers = await self.getControllers()
 
         if userId not in currentControllers:
-            return RemoveTriviaGameControllerResult.DOES_NOT_EXIST
+            raise TriviaGameControllerDoesNotExistException(f'This global trivia game controller wasn\'t already added ({userId=})')
 
         self.__cache = None
 
@@ -138,4 +136,3 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
 
         await connection.close()
         self.__timber.log('TriviaGameGlobalControllersRepository', f'Removed user from global trivia game controllers ({userId=})')
-        return RemoveTriviaGameControllerResult.REMOVED
