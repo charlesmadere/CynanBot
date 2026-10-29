@@ -54,6 +54,7 @@ class AddGlobalTriviaControllerChatCommand(AbsChatCommand):
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
             re.compile(r'^\s*!addglobaltrivia(?:game)?controller\b', re.IGNORECASE),
+            re.compile(r'^\s*!addtriviaglobal(?:game)?controller\b', re.IGNORECASE),
         })
 
         self.__argumentsPattern: Final[Pattern] = re.compile(r'^\s*!\w+\s+@?(\w+)', re.IGNORECASE)

@@ -3274,11 +3274,12 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     AddTriviaAnswerChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
+        administratorProvider = administratorProvider,
         timber = timber,
         triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         triviaHistoryRepository = triviaHistoryRepository,
         triviaSettings = triviaSettings,
-        triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
     AddTriviaControllerChatCommand(
@@ -3366,11 +3367,12 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     DeleteTriviaAnswersChatCommand(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
+        administratorProvider = administratorProvider,
         timber = timber,
         triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         triviaHistoryRepository = triviaHistoryRepository,
         triviaSettings = triviaSettings,
-        triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
     DisableCheerActionChatCommand(
