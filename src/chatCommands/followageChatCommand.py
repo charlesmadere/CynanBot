@@ -86,9 +86,12 @@ class FollowageChatCommand(AbsChatCommand):
         printOut: str
 
         if result is None:
-            printOut = f'ⓘ @{arguments.chatterUserName} is not following'
+            if chatMessage.chatterUserId == arguments.chatterUserId:
+                printOut = f'ⓘ You\'re not following'
+            else:
+                printOut = f'ⓘ @{arguments.chatterUserName} is not following'
         elif chatMessage.chatterUserId == arguments.chatterUserId:
-            printOut = f'🗓️ you\'ve been following for {result.durationMessage}'
+            printOut = f'🗓️ You\'ve been following for {result.durationMessage}'
         else:
             printOut = f'🗓️ @{result.getUserName()} has been following for {result.durationMessage}'
 
