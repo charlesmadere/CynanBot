@@ -45,7 +45,7 @@ class GetStreamGameChatCommand(AbsChatCommand):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
-            re.compile(r'^\s*!get(?:stream)?game\b', re.IGNORECASE),
+            re.compile(r'^\s*!get(?:stream)?game(?:details)?\b', re.IGNORECASE),
         })
 
     @property
@@ -61,20 +61,20 @@ class GetStreamGameChatCommand(AbsChatCommand):
             return ChatCommandResult.IGNORED
 
         try:
-            currentGame = await self.__twitchChannelInformationHelper.getGame(
+            gameDetails = await self.__twitchChannelInformationHelper.getGameDetails(
                 twitchChannelId = chatMessage.twitchChannelId,
             )
         except RequiredTwitchAuthorizationIsMissingException as e:
-            self.__timber.log(self.commandName, f'Can\'t fetch stream game as required Twitch authorization is missing ({chatMessage=})', e, traceback.format_exc())
+            self.__timber.log(self.commandName, f'Can\'t fetch stream game details as required Twitch authorization is missing ({chatMessage=})', e, traceback.format_exc())
             return ChatCommandResult.CONSUMED
         except TwitchStatusCodeException as e:
-            self.__timber.log(self.commandName, f'Can\'t fetch stream game as we encountered a Twitch status code error ({chatMessage=})', e, traceback.format_exc())
+            self.__timber.log(self.commandName, f'Can\'t fetch stream game details as we encountered a Twitch status code error ({chatMessage=})', e, traceback.format_exc())
             return ChatCommandResult.CONSUMED
         except Exception as e:
-            self.__timber.log(self.commandName, f'Failed to fetch stream game ({chatMessage=})', e, traceback.format_exc())
+            self.__timber.log(self.commandName, f'Failed to fetch stream game details ({chatMessage=})', e, traceback.format_exc())
 
             self.__twitchChatMessenger.send(
-                text = '⚠ Failed to fetch stream game',
+                text = '⚠ Failed to fetch stream game details',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
@@ -82,12 +82,12 @@ class GetStreamGameChatCommand(AbsChatCommand):
             return ChatCommandResult.CONSUMED
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ Current stream game — {currentGame}',
+            text = f'ⓘ Current stream game details — {gameDetails.gameName} (game ID: \"{gameDetails.gameId}\")',
             twitchChannelId = chatMessage.twitchChannelId,
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Consumed ({currentGame=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({gameDetails=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:

@@ -1,13 +1,19 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 
 class TwitchChannelInformationHelperInterface(ABC):
 
+    @dataclass(frozen = True, slots = True)
+    class GameDetails:
+        gameId: str | None
+        gameName: str | None
+
     @abstractmethod
-    async def getGame(
+    async def getGameDetails(
         self,
         twitchChannelId: str,
-    ) -> str | None:
+    ) -> GameDetails:
         pass
 
     @abstractmethod
