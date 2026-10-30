@@ -93,7 +93,7 @@ class CutenessChatCommand(AbsChatCommand):
         if chatMessage.chatterUserId == arguments.chatterUserId:
             result = await self.__cutenessHelper.fetchCutenessLeaderboard(
                 twitchChannelId = chatMessage.twitchChannelId,
-                specificLookupUserId = arguments.chatterUserId,
+                specificLookupUserId = chatMessage.chatterUserId,
             )
 
             printOut = await self.__cutenessPresenter.printLeaderboard(
@@ -121,7 +121,7 @@ class CutenessChatCommand(AbsChatCommand):
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
 
-        self.__timber.log('CutenessChatCommand', f'Consumed ({result=}) ({arguments=}) ({chatMessage=})')
+        self.__timber.log(self.commandName, f'Consumed ({result=}) ({arguments=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
     async def __parseArguments(self, chatMessage: TwitchChatMessage) -> Arguments | None:

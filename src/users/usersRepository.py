@@ -167,6 +167,7 @@ class UsersRepository(UsersRepositoryInterface):
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
         isEccoEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ECCO_ENABLED.jsonKey, False)
         isEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ENABLED.jsonKey, True)
+        isFollowageCommandEnabled = utils.getBoolFromDict(userJson, 'followageCommandEnabled', False)
         isGiveCutenessEnabled = utils.getBoolFromDict(userJson, 'giveCutenessEnabled', False)
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
         isLoremIpsumEnabled = utils.getBoolFromDict(userJson, 'loremIpsumEnabled', True)
@@ -389,6 +390,7 @@ class UsersRepository(UsersRepositoryInterface):
             isCutenessEnabled = isCutenessEnabled,
             isEccoEnabled = isEccoEnabled,
             isEnabled = isEnabled,
+            isFollowageCommandEnabled = isFollowageCommandEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
             isJishoEnabled = isJishoEnabled,
             isLoremIpsumEnabled = isLoremIpsumEnabled,

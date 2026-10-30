@@ -44,6 +44,7 @@ class User(UserInterface):
         isCutenessEnabled: bool,
         isEccoEnabled: bool,
         isEnabled: bool,
+        isFollowageCommandEnabled: bool,
         isGiveCutenessEnabled: bool,
         isJishoEnabled: bool,
         isLoremIpsumEnabled: bool,
@@ -177,6 +178,8 @@ class User(UserInterface):
             raise TypeError(f'isEccoEnabled argument is malformed: \"{isEccoEnabled}\"')
         elif not utils.isValidBool(isEnabled):
             raise TypeError(f'isEnabled argument is malformed: \"{isEnabled}\"')
+        elif not utils.isValidBool(isFollowageCommandEnabled):
+            raise TypeError(f'isFollowageCommandEnabled argument is malformed: \"{isFollowageCommandEnabled}\"')
         elif not utils.isValidBool(isGiveCutenessEnabled):
             raise TypeError(f'isGiveCutenessEnabled argument is malformed: \"{isGiveCutenessEnabled}\"')
         elif not utils.isValidBool(isJishoEnabled):
@@ -372,6 +375,7 @@ class User(UserInterface):
         self.__isCutenessEnabled: Final[bool] = isCutenessEnabled
         self.__isEccoEnabled: Final[bool] = isEccoEnabled
         self.__isEnabled: Final[bool] = isEnabled
+        self.__isFollowageCommandEnabled: Final[bool] = isFollowageCommandEnabled
         self.__isGiveCutenessEnabled: Final[bool] = isGiveCutenessEnabled
         self.__isJishoEnabled: Final[bool] = isJishoEnabled
         self.__isLoremIpsumEnabled: Final[bool] = isLoremIpsumEnabled
@@ -399,7 +403,7 @@ class User(UserInterface):
         self.__isTtsEnabled: Final[bool] = isTtsEnabled
         self.__isVulnerableChattersEnabled: bool = isVulnerableChattersEnabled
         self.__isWatchStreakTtsAnnounceEnabled: Final[bool] = isWatchStreakTtsAnnounceEnabled
-        self.__isWeatherEnabled: bool = isWeatherEnabled
+        self.__isWeatherEnabled: Final[bool] = isWeatherEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
         self.__anivMessageCopyTimeoutProbability: float | None = anivMessageCopyTimeoutProbability
         self.__superTriviaSubscribeTriggerAmount: float | None = superTriviaSubscribeTriggerAmount
@@ -437,19 +441,19 @@ class User(UserInterface):
         self.__discordUrl: Final[str | None] = discordUrl
         self.__gashaponItemRewardId: Final[str | None] = gashaponItemRewardId
         self.__handle: Final[str] = handle
-        self.__instagram: str | None = instagram
-        self.__locationId: str | None = locationId
-        self.__mastodonUrl: str | None = mastodonUrl
+        self.__instagram: Final[str | None] = instagram
+        self.__locationId: Final[str | None] = locationId
+        self.__mastodonUrl: Final[str | None] = mastodonUrl
         self.__mouseCursorRewardId: Final[str | None] = mouseCursorRewardId
-        self.__pkmnBattleRewardId: str | None = pkmnBattleRewardId
-        self.__pkmnEvolveRewardId: str | None = pkmnEvolveRewardId
-        self.__pkmnShinyRewardId: str | None = pkmnShinyRewardId
-        self.__randomSoundAlertRewardId: str | None = randomSoundAlertRewardId
-        self.__soundAlertRewardId: str | None = soundAlertRewardId
-        self.__speedrunProfile: str | None = speedrunProfile
-        self.__triviaGameRewardId: str | None = triviaGameRewardId
+        self.__pkmnBattleRewardId: Final[str | None] = pkmnBattleRewardId
+        self.__pkmnEvolveRewardId: Final[str | None] = pkmnEvolveRewardId
+        self.__pkmnShinyRewardId: Final[str | None] = pkmnShinyRewardId
+        self.__randomSoundAlertRewardId: Final[str | None] = randomSoundAlertRewardId
+        self.__soundAlertRewardId: Final[str | None] = soundAlertRewardId
+        self.__speedrunProfile: Final[str | None] = speedrunProfile
+        self.__triviaGameRewardId: Final[str | None] = triviaGameRewardId
         self.__updateStreamTitleFoodEmojiRewardId: Final[str | None] = updateStreamTitleFoodEmojiRewardId
-        self.__defaultTtsProvider: TtsProvider = defaultTtsProvider
+        self.__defaultTtsProvider: Final[TtsProvider] = defaultTtsProvider
         self.__crowdControlBoosterPacks: Final[frozendict[str, CrowdControlBoosterPack] | None] = crowdControlBoosterPacks
         self.__cutenessBoosterPacks: Final[frozendict[str, CutenessBoosterPack] | None] = cutenessBoosterPacks
         self.__pkmnCatchBoosterPacks: Final[frozendict[str, PkmnCatchBoosterPack] | None] = pkmnCatchBoosterPacks
@@ -764,6 +768,10 @@ class User(UserInterface):
     @property
     def isEnabled(self) -> bool:
         return self.__isEnabled
+
+    @property
+    def isFollowageCommandEnabled(self) -> bool:
+        return self.__isFollowageCommandEnabled
 
     @property
     def isGiveCutenessEnabled(self) -> bool:

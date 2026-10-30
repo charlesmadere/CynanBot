@@ -63,6 +63,7 @@ from src.chatCommands.deleteTriviaAnswersChatCommand import DeleteTriviaAnswersC
 from src.chatCommands.disableCheerActionChatCommand import DisableCheerActionChatCommand
 from src.chatCommands.eccoChatCommand import EccoChatCommand
 from src.chatCommands.enableCheerActionChatCommand import EnableCheerActionChatCommand
+from src.chatCommands.followageChatCommand import FollowageChatCommand
 from src.chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriviaControllersChatCommand
 from src.chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from src.chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
@@ -447,6 +448,8 @@ from src.twitch.configuration.twitchRaidHandler import TwitchRaidHandler
 from src.twitch.configuration.twitchSubscriptionHandler import TwitchSubscriptionHandler
 from src.twitch.emotes.twitchEmotesHelper import TwitchEmotesHelper
 from src.twitch.emotes.twitchEmotesHelperInterface import TwitchEmotesHelperInterface
+from src.twitch.followingStatus.twitchFollowingStatusHelper import TwitchFollowingStatusHelper
+from src.twitch.followingStatus.twitchFollowingStatusHelperInterface import TwitchFollowingStatusHelperInterface
 from src.twitch.followingStatus.twitchFollowingStatusRepository import TwitchFollowingStatusRepository
 from src.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import \
     TwitchFollowingStatusRepositoryInterface
@@ -720,6 +723,14 @@ twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface]
     backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService,
+)
+
+twitchFollowingStatusHelper: Final[TwitchFollowingStatusHelperInterface] = TwitchFollowingStatusHelper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
 twitchLocalModelsMapper: Final[TwitchLocalModelsMapperInterface] = TwitchLocalModelsMapper()
@@ -2159,6 +2170,13 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         cheerActionsRepository = cheerActionsRepository,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    FollowageChatCommand(
+        timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchFollowingStatusHelper = twitchFollowingStatusHelper,
+        twitchTokensUtils = twitchTokensUtils,
+        twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     GetBannedTriviaControllersChatCommand(
         administratorProvider = administratorProvider,

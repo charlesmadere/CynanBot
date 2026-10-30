@@ -42,5 +42,5 @@ class CynanSourceChatCommand(AbsChatCommand):
             replyMessageId = chatMessage.twitchChatMessageId,
         )
 
-        self.__timber.log(self.commandName, f'Handled')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({chatMessage=})')
+        return ChatCommandResult.CONSUMED
