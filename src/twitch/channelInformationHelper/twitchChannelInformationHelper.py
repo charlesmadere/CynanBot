@@ -1,7 +1,8 @@
 import asyncio
 from typing import Final
 
-from .exceptions import (FailedToFindTwitchChannelInformationException,
+from .exceptions import (FailedToFetchTwitchGameDetailsException,
+                         FailedToFindTwitchChannelInformationException,
                          FailedToFindTwitchGameException,
                          FailedToSetTwitchChannelGameException,
                          FailedToSetTwitchChannelTitleException)
@@ -85,10 +86,10 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
 
         raise FailedToFindTwitchGameException(f'Failed to find corresponding Twitch game ({gameName=}) ({gamesResponse=}) ({categoriesResponse=})')
 
-    async def getGame(
+    async def getGameDetails(
         self,
         twitchChannelId: str,
-    ) -> str | None:
+    ) -> TwitchChannelInformationHelperInterface.GameDetails:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -101,7 +102,13 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
             twitchChannelId = twitchChannelId,
         )
 
-        return channelInformation.gameName
+        if utils.isValidStr(channelInformation.gameId) or utils.isValidStr(channelInformation.gameName):
+            return TwitchChannelInformationHelperInterface.GameDetails(
+                gameId = channelInformation.gameId,
+                gameName = channelInformation.gameName,
+            )
+
+        raise FailedToFetchTwitchGameDetailsException(f'Failed to fetch any Twitch game details ({channelInformation=}) ({twitchChannelId=})')
 
     async def getTitle(
         self,
