@@ -13,7 +13,7 @@ bleak = { version = "3.0.2", markers = "sys_platform == 'darwin' or sys_platform
 charset-normalizer = "3.5.2"
 cryptography = "50.0.2"
 emoji = "2.16.0"
-frozendict = "2.4.7"
+frozendict = "2.5.0"
 frozenlist = "1.8.0"
 librosa = { version = "1.0.0", markers = "sys_platform == 'darwin' or sys_platform == 'win32'" }
 lru-dict = "1.4.1"
