@@ -15,6 +15,7 @@ from src.twitch.api.models.twitchBanRequest import TwitchBanRequest
 from src.twitch.api.models.twitchBitsUseType import TwitchBitsUseType
 from src.twitch.api.models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from src.twitch.api.models.twitchBroadcasterType import TwitchBroadcasterType
+from src.twitch.api.models.twitchCategoryOrGameEntry import TwitchCategoryOrGameEntry
 from src.twitch.api.models.twitchChannelEditor import TwitchChannelEditor
 from src.twitch.api.models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from src.twitch.api.models.twitchChannelPointsVoting import TwitchChannelPointsVoting
@@ -492,8 +493,36 @@ class TestTwitchJsonMapper:
         assert result is TwitchBroadcasterType.NORMAL
 
     @pytest.mark.asyncio
+    async def test_parseCategoryOrGameEntry(self):
+        categoryOrGameEntry = TwitchCategoryOrGameEntry(
+            boxArtUrl = None,
+            categoryOrGameId = 'abc123',
+            categoryOrGameName = 'Super Metroid',
+        )
+
+        result = await self.jsonMapper.parseCategoryOrGameEntry({
+            'id': categoryOrGameEntry.categoryOrGameId,
+            'name': categoryOrGameEntry.categoryOrGameName,
+        })
+
+        assert isinstance(result, TwitchCategoryOrGameEntry)
+        assert categoryOrGameEntry.boxArtUrl == result.boxArtUrl
+        assert categoryOrGameEntry.categoryOrGameId == result.categoryOrGameId
+        assert categoryOrGameEntry.categoryOrGameName == result.categoryOrGameName
+
+    @pytest.mark.asyncio
+    async def test_parseCategoryOrGameEntry_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseCategoryOrGameEntry(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseCategoryOrGameEntry_withNone(self):
+        result = await self.jsonMapper.parseCategoryOrGameEntry(None)
+        assert result is None
+
+    @pytest.mark.asyncio
     async def test_parseChannelEditor(self):
-        createdAt = datetime.now(self.timeZoneRepository.getDefault())
+        createdAt = self.timeZoneRepository.getNow()
         userId = 'abc123'
         userName = 'gaR'
 
@@ -1855,6 +1884,16 @@ class TestTwitchJsonMapper:
     @pytest.mark.asyncio
     async def test_parseRewardRedemptionStatus_withWhitespaceString(self):
         result = await self.jsonMapper.parseRewardRedemptionStatus(' ')
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSearchCategoriesResponse_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseSearchCategoriesResponse(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseSearchCategoriesResponse_withNone(self):
+        result = await self.jsonMapper.parseSearchCategoriesResponse(None)
         assert result is None
 
     @pytest.mark.asyncio
