@@ -380,6 +380,11 @@ class UserInterface(ABC):
 
     @property
     @abstractmethod
+    def isFollowageCommandEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
     def isGiveCutenessEnabled(self) -> bool:
         pass
 
