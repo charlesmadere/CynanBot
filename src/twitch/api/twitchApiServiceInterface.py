@@ -18,6 +18,7 @@ from .models.twitchFollowersResponse import TwitchFollowersResponse
 from .models.twitchGamesResponse import TwitchGamesResponse
 from .models.twitchModeratorsResponse import TwitchModeratorsResponse
 from .models.twitchModifyChannelInformationRequest import TwitchModifyChannelInformationRequest
+from .models.twitchSearchCategoriesResponse import TwitchSearchCategoriesResponse
 from .models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
 from .models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
@@ -189,6 +190,14 @@ class TwitchApiServiceInterface(ABC):
         twitchAccessToken: str,
         userId: str,
     ) -> bool:
+        pass
+
+    @abstractmethod
+    async def searchCategories(
+        self,
+        query: str,
+        twitchAccessToken: str,
+    ) -> TwitchSearchCategoriesResponse:
         pass
 
     @abstractmethod
