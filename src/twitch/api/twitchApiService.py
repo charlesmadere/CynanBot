@@ -1163,9 +1163,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
         clientSession = await self.__networkClientProvider.get()
 
-        queryString = urllib.parse.urlencode({
-            'query': query,
-        })
+        queryString = urllib.parse.quote_plus(query)
 
         try:
             response = await clientSession.get(
