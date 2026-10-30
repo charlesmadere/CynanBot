@@ -7,7 +7,6 @@ from .exceptions import (FailedToFindTwitchChannelInformationException,
                          FailedToSetTwitchChannelTitleException)
 from .twitchChannelInformationHelperInterface import TwitchChannelInformationHelperInterface
 from ..api.models.twitchChannelInformation import TwitchChannelInformation
-from ..api.models.twitchGame import TwitchGame
 from ..api.models.twitchModifyChannelInformationRequest import TwitchModifyChannelInformationRequest
 from ..api.twitchApiServiceInterface import TwitchApiServiceInterface
 from ..tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
@@ -62,21 +61,29 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
 
         raise FailedToFindTwitchChannelInformationException(f'Failed to find corresponding channel information ({twitchChannelId=}) ({response=})')
 
-    async def __fetchGame(
+    async def __fetchGameId(
         self,
         gameName: str,
         twitchAccessToken: str,
-    ) -> TwitchGame:
-        response = await self.__twitchApiService.fetchGames(
+    ) -> str:
+        gamesResponse = await self.__twitchApiService.fetchGames(
             gameName = gameName,
             twitchAccessToken = twitchAccessToken,
         )
 
-        for game in response.data:
+        for game in gamesResponse.data:
             if game.gameName.casefold() == gameName.casefold():
-                return game
+                return game.gameId
 
-        raise FailedToFindTwitchGameException(f'Failed to find corresponding Twitch game ({gameName=}) ({response=})')
+        categoriesResponse = await self.__twitchApiService.searchCategories(
+            query = gameName,
+            twitchAccessToken = twitchAccessToken,
+        )
+
+        if len(categoriesResponse.data) >= 1:
+            return categoriesResponse.data[0].categoryOrGameId
+
+        raise FailedToFindTwitchGameException(f'Failed to find corresponding Twitch game ({gameName=}) ({gamesResponse=}) ({categoriesResponse=})')
 
     async def getGame(
         self,
@@ -144,7 +151,7 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
             twitchChannelId = twitchChannelId,
         )
 
-        game = await self.__fetchGame(
+        gameId = await self.__fetchGameId(
             gameName = gameName,
             twitchAccessToken = twitchAccessToken,
         )
@@ -152,7 +159,7 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
         await self.__twitchApiService.modifyChannelInformation(
             twitchAccessToken = twitchAccessToken,
             modifyChannelInformationRequest = TwitchModifyChannelInformationRequest(
-                gameId = game.gameId,
+                gameId = gameId,
                 title = None,
                 twitchChannelId = twitchChannelId,
             ),
@@ -166,7 +173,7 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
         )
 
         if not utils.isValidStr(channelInformation.gameName):
-            raise FailedToSetTwitchChannelGameException(f'Failed to set Twitch game ({channelInformation=}) ({gameName=})')
+            raise FailedToSetTwitchChannelGameException(f'Failed to set Twitch game ({channelInformation=}) ({gameId=}) ({gameName=})')
 
         return channelInformation.gameName
 
