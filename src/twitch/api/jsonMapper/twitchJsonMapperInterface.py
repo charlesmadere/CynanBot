@@ -15,6 +15,7 @@ from ..models.twitchBitsUseType import TwitchBitsUseType
 from ..models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from ..models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
+from ..models.twitchCategoryOrGameEntry import TwitchCategoryOrGameEntry
 from ..models.twitchChannelEditor import TwitchChannelEditor
 from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from ..models.twitchChannelInformation import TwitchChannelInformation
@@ -81,6 +82,7 @@ from ..models.twitchResubscriptionMessage import TwitchResubscriptionMessage
 from ..models.twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote
 from ..models.twitchReward import TwitchReward
 from ..models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
+from ..models.twitchSearchCategoriesResponse import TwitchSearchCategoriesResponse
 from ..models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
 from ..models.twitchSendChatDropReason import TwitchSendChatDropReason
 from ..models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
@@ -211,6 +213,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         broadcasterType: str | Any | None,
     ) -> TwitchBroadcasterType:
+        pass
+
+    @abstractmethod
+    async def parseCategoryOrGameEntry(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchCategoryOrGameEntry | None:
         pass
 
     @abstractmethod
@@ -652,6 +661,13 @@ class TwitchJsonMapperInterface(ABC):
         self,
         rewardRedemptionStatus: str | Any | None,
     ) -> TwitchRewardRedemptionStatus | None:
+        pass
+
+    @abstractmethod
+    async def parseSearchCategoriesResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchSearchCategoriesResponse | None:
         pass
 
     @abstractmethod

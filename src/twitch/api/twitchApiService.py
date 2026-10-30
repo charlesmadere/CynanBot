@@ -29,6 +29,7 @@ from .models.twitchFollowersResponse import TwitchFollowersResponse
 from .models.twitchGamesResponse import TwitchGamesResponse
 from .models.twitchModeratorsResponse import TwitchModeratorsResponse
 from .models.twitchModifyChannelInformationRequest import TwitchModifyChannelInformationRequest
+from .models.twitchSearchCategoriesResponse import TwitchSearchCategoriesResponse
 from .models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
 from .models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
 from .models.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
@@ -1147,6 +1148,55 @@ class TwitchApiService(TwitchApiServiceInterface):
                     statusCode = responseStatusCode,
                     message = f'TwitchApiService encountered network error when removing moderator ({broadcasterId=}) ({userId=}) ({response=}) ({responseStatusCode=})',
                 )
+
+    async def searchCategories(
+        self,
+        query: str,
+        twitchAccessToken: str,
+    ) -> TwitchSearchCategoriesResponse:
+        if not utils.isValidStr(query):
+            raise TypeError(f'query argument is malformed: \"{query}\"')
+        elif not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+
+        self.__timber.log('TwitchApiService', f'Search categories... ({query=})')
+        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
+        clientSession = await self.__networkClientProvider.get()
+
+        queryString = urllib.parse.urlencode({
+            'query': query,
+        })
+
+        try:
+            response = await clientSession.get(
+                url = f'https://api.twitch.tv/helix/search/categories?{queryString}',
+                headers = {
+                    'Authorization': f'Bearer {twitchAccessToken}',
+                    'Client-Id': twitchClientId,
+                },
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('TwitchApiService', f'Encountered network error when searching categories ({query=})', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when searching categories ({query=}): {e}')
+
+        responseStatusCode = response.statusCode
+        jsonResponse = await response.json()
+        await response.close()
+
+        if responseStatusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when searching categories ({response=}) ({responseStatusCode=}) ({jsonResponse}) ({query=})')
+            raise TwitchStatusCodeException(
+                statusCode = responseStatusCode,
+                message = f'TwitchApiService encountered non-200 HTTP status code when searching categories ({response=}) ({responseStatusCode=}) ({jsonResponse}) ({query=})'
+            )
+
+        searchCategoriesResponse = await self.__twitchJsonMapper.parseSearchCategoriesResponse(jsonResponse)
+
+        if searchCategoriesResponse is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse JSON response when searching categories ({searchCategoriesResponse=}) ({response=}) ({responseStatusCode=}) ({jsonResponse}) ({query=})')
+            raise TwitchJsonException(f'TwitchApiService unable to parse JSON response when searching categories ({searchCategoriesResponse=}) ({response=}) ({responseStatusCode=}) ({jsonResponse}) ({query=})')
+
+        return searchCategoriesResponse
 
     async def sendChatAnnouncement(
         self,

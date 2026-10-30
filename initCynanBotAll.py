@@ -116,6 +116,7 @@ from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from src.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
 from src.chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
+from src.chatCommands.updateStreamGameChatCommand import UpdateStreamGameChatCommand
 from src.chatCommands.updateStreamTitleChatCommand import UpdateStreamTitleChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
 from src.chatCommands.voicemailsChatCommand import VoicemailsChatCommand
@@ -3707,6 +3708,14 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         triviaSettings = triviaSettings,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    UpdateStreamGameChatCommand(
+        administratorProvider = administratorProvider,
+        timber = timber,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+        twitchChannelInformationHelper = twitchChannelInformationHelper,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchModeratorHelper = twitchModeratorHelper,
     ),
     UpdateStreamTitleChatCommand(
         administratorProvider = administratorProvider,

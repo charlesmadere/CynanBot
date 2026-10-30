@@ -19,6 +19,7 @@ from ..models.twitchBitsUseType import TwitchBitsUseType
 from ..models.twitchBroadcasterSubscription import TwitchBroadcasterSubscription
 from ..models.twitchBroadcasterSubscriptionsResponse import TwitchBroadcasterSubscriptionsResponse
 from ..models.twitchBroadcasterType import TwitchBroadcasterType
+from ..models.twitchCategoryOrGameEntry import TwitchCategoryOrGameEntry
 from ..models.twitchChannelEditor import TwitchChannelEditor
 from ..models.twitchChannelEditorsResponse import TwitchChannelEditorsResponse
 from ..models.twitchChannelInformation import TwitchChannelInformation
@@ -85,6 +86,7 @@ from ..models.twitchResubscriptionMessage import TwitchResubscriptionMessage
 from ..models.twitchResubscriptionMessageEmote import TwitchResubscriptionMessageEmote
 from ..models.twitchReward import TwitchReward
 from ..models.twitchRewardRedemptionStatus import TwitchRewardRedemptionStatus
+from ..models.twitchSearchCategoriesResponse import TwitchSearchCategoriesResponse
 from ..models.twitchSendChatAnnouncementRequest import TwitchSendChatAnnouncementRequest
 from ..models.twitchSendChatDropReason import TwitchSendChatDropReason
 from ..models.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
@@ -547,6 +549,26 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case _:
                 self.__timber.log('TwitchJsonMapper', f'Encountered unknown TwitchBroadcasterType value: \"{broadcasterType}\"')
                 return TwitchBroadcasterType.NORMAL
+
+    async def parseCategoryOrGameEntry(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchCategoryOrGameEntry | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        boxArtUrl: str | None = None
+        if 'box_art_url' in jsonResponse and utils.isValidUrl(jsonResponse.get('box_art_url')):
+            boxArtUrl = utils.getStrFromDict(jsonResponse, 'box_art_url')
+
+        categoryOrGameId = utils.getStrFromDict(jsonResponse, 'id')
+        categoryOrGameName = utils.getStrFromDict(jsonResponse, 'name')
+
+        return TwitchCategoryOrGameEntry(
+            boxArtUrl = boxArtUrl,
+            categoryOrGameId = categoryOrGameId,
+            categoryOrGameName = categoryOrGameName,
+        )
 
     async def parseChannelEditor(
         self,
@@ -2088,6 +2110,34 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'unknown': return TwitchRewardRedemptionStatus.UNKNOWN
             case _: return None
 
+    async def parseSearchCategoriesResponse(
+        self,
+        jsonResponse: dict[str, Any] | Any | None,
+    ) -> TwitchSearchCategoriesResponse | None:
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            return None
+
+        dataArray: list[dict[str, Any]] | Any | None = jsonResponse.get('data')
+        data: FrozenList[TwitchCategoryOrGameEntry] = FrozenList()
+
+        if isinstance(dataArray, list) and len(dataArray) >= 1:
+            for index, dataJson in enumerate(dataArray):
+                categoryOrGameEntry = await self.parseCategoryOrGameEntry(dataJson)
+
+                if categoryOrGameEntry is None:
+                    self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} ({categoryOrGameEntry=}) ({jsonResponse=})')
+                else:
+                    data.append(categoryOrGameEntry)
+
+        data.freeze()
+
+        pagination = await self.parsePaginationResponse(jsonResponse.get('pagination'))
+
+        return TwitchSearchCategoriesResponse(
+            data =  data,
+            pagination = pagination,
+        )
+
     async def parseSendChatDropReason(
         self,
         jsonResponse: dict[str, Any] | Any | None
@@ -2283,6 +2333,8 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
                     self.__timber.log('TwitchJsonMapper', f'Unable to parse value at index {index} ({stream=}) ({jsonResponse=})')
                 else:
                     data.append(stream)
+
+        data.freeze()
 
         pagination = await self.parsePaginationResponse(jsonResponse.get('pagination'))
 
