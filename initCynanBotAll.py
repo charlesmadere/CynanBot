@@ -83,6 +83,7 @@ from src.chatCommands.getCheerActionsChatCommand import GetCheerActionsChatComma
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
 from src.chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
 from src.chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
+from src.chatCommands.getStreamGameChatCommand import GetStreamGameChatCommand
 from src.chatCommands.getStreamTitleChatCommand import GetStreamTitleChatCommand
 from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from src.chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
@@ -3465,6 +3466,13 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         administratorProvider = administratorProvider,
         recurringActionsRepository = recurringActionsRepository,
         timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    GetStreamGameChatCommand(
+        administratorProvider = administratorProvider,
+        timber = timber,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+        twitchChannelInformationHelper = twitchChannelInformationHelper,
         twitchChatMessenger = twitchChatMessenger,
     ),
     GetStreamTitleChatCommand(
