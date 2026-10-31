@@ -82,7 +82,7 @@ class GetStreamGameChatCommand(AbsChatCommand):
             return ChatCommandResult.CONSUMED
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ Current stream game details — {gameDetails.gameName} (game ID: \"{gameDetails.gameId}\")',
+            text = f'ⓘ Current stream game details — {gameDetails.gameName} (game ID {gameDetails.gameId})',
             twitchChannelId = chatMessage.twitchChannelId,
             replyMessageId = chatMessage.twitchChatMessageId,
         )
