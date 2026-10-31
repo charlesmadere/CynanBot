@@ -792,8 +792,6 @@ from src.users.soundAlert.soundAlertRedemptionJsonParser import SoundAlertRedemp
 from src.users.soundAlert.soundAlertRedemptionJsonParserInterface import SoundAlertRedemptionJsonParserInterface
 from src.users.supStreamer.supStreamerBoosterPackJsonParser import SupStreamerBoosterPackJsonParser
 from src.users.supStreamer.supStreamerBoosterPackJsonParserInterface import SupStreamerBoosterPackJsonParserInterface
-from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
-from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.ttsBoosterPackParser import TtsBoosterPackParser
 from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
 from src.users.usersRepository import UsersRepository
@@ -1033,8 +1031,6 @@ soundAlertRedemptionJsonParser: Final[SoundAlertRedemptionJsonParserInterface] =
 
 supStreamerBoosterPackJsonParser: Final[SupStreamerBoosterPackJsonParserInterface] = SupStreamerBoosterPackJsonParser()
 
-timeoutBoosterPackJsonParser: Final[TimeoutBoosterPackJsonParserInterface] = TimeoutBoosterPackJsonParser()
-
 ttsJsonMapper: Final[TtsJsonMapperInterface] = TtsJsonMapper(
     timber = timber,
 )
@@ -1052,7 +1048,6 @@ usersRepository: Final[UsersRepositoryInterface] = UsersRepository(
     soundAlertRedemptionJsonParser = soundAlertRedemptionJsonParser,
     supStreamerBoosterPackJsonParser = supStreamerBoosterPackJsonParser,
     timber = timber,
-    timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
     timeZoneRepository = timeZoneRepository,
     ttsBoosterPackParser = ttsBoosterPackParser,
     ttsJsonMapper = ttsJsonMapper,

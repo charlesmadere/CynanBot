@@ -10,7 +10,6 @@ from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .redemptionCounter.redemptionCounterBoosterPack import RedemptionCounterBoosterPack
 from .soundAlert.soundAlertRedemption import SoundAlertRedemption
 from .supStreamer.supStreamerBoosterPack import SupStreamerBoosterPack
-from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
 from ..language.languageEntry import LanguageEntry
 from ..tts.models.ttsProvider import TtsProvider
@@ -56,6 +55,16 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def areCheerActionsEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def areEditStreamGameCommandsEnabled(self) -> bool:
+        pass
+
+    @property
+    @abstractmethod
+    def areEditStreamTitleCommandsEnabled(self) -> bool:
         pass
 
     @property
@@ -556,16 +565,6 @@ class UserInterface(ABC):
     @property
     @abstractmethod
     def soundAlertRedemptions(self) -> frozendict[str, SoundAlertRedemption] | None:
-        pass
-
-    @property
-    @abstractmethod
-    def timeoutActionFollowShieldDays(self) -> int | None:
-        pass
-
-    @property
-    @abstractmethod
-    def timeoutBoosterPacks(self) -> frozendict[str, TimeoutBoosterPack] | None:
         pass
 
     @property

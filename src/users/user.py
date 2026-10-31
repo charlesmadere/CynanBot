@@ -10,7 +10,6 @@ from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from .redemptionCounter.redemptionCounterBoosterPack import RedemptionCounterBoosterPack
 from .soundAlert.soundAlertRedemption import SoundAlertRedemption
 from .supStreamer.supStreamerBoosterPack import SupStreamerBoosterPack
-from .timeout.timeoutBoosterPack import TimeoutBoosterPack
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .userInterface import UserInterface
 from ..language.languageEntry import LanguageEntry
@@ -25,6 +24,8 @@ class User(UserInterface):
         areAsplodieStatsEnabled: bool,
         areBeanStatsEnabled: bool,
         areCheerActionsEnabled: bool,
+        areEditStreamGameCommandsEnabled: bool,
+        areEditStreamTitleCommandsEnabled: bool,
         arePranksEnabled: bool,
         areRecurringActionsEnabled: bool,
         areRedemptionCountersEnabled: bool,
@@ -92,7 +93,6 @@ class User(UserInterface):
         superTriviaGameToxicPunishmentMultiplier: int | None,
         superTriviaPerUserAttempts: int | None,
         superTriviaSubscribeTriggerMaximum: int | None,
-        timeoutActionFollowShieldDays: int | None,
         triviaGamePoints: int | None,
         triviaGameShinyMultiplier: int | None,
         waitForSuperTriviaAnswerDelay: int | None,
@@ -128,7 +128,6 @@ class User(UserInterface):
         pkmnCatchBoosterPacks: frozendict[str, PkmnCatchBoosterPack] | None,
         redemptionCounterBoosterPacks: frozendict[str, RedemptionCounterBoosterPack] | None,
         soundAlertRedemptions: frozendict[str, SoundAlertRedemption] | None,
-        timeoutBoosterPacks: frozendict[str, TimeoutBoosterPack] | None,
         chatBackMessages: FrozenList[str] | None,
         supStreamerBoosterPacks: FrozenList[SupStreamerBoosterPack] | None,
         ttsBoosterPacks: FrozenList[TtsBoosterPack] | None,
@@ -140,6 +139,10 @@ class User(UserInterface):
             raise TypeError(f'areBeanStatsEnabled argument is malformed: \"{areBeanStatsEnabled}\"')
         elif not utils.isValidBool(areCheerActionsEnabled):
             raise TypeError(f'areCheerActionsEnabled argument is malformed: \"{areCheerActionsEnabled}\"')
+        elif not utils.isValidBool(areEditStreamGameCommandsEnabled):
+            raise TypeError(f'areEditStreamGameCommandsEnabled argument is malformed: \"{areEditStreamGameCommandsEnabled}\"')
+        elif not utils.isValidBool(areEditStreamTitleCommandsEnabled):
+            raise TypeError(f'areEditStreamTitleCommandsEnabled argument is malformed: \"{areEditStreamTitleCommandsEnabled}\"')
         elif not utils.isValidBool(arePranksEnabled):
             raise TypeError(f'arePranksEnabled argument is malformed: \"{arePranksEnabled}\"')
         elif not utils.isValidBool(areRecurringActionsEnabled):
@@ -272,8 +275,6 @@ class User(UserInterface):
             raise TypeError(f'superTriviaPeruserAttempts argument is malformed: \"{superTriviaPerUserAttempts}\"')
         elif superTriviaSubscribeTriggerMaximum is not None and not utils.isValidInt(superTriviaSubscribeTriggerMaximum):
             raise TypeError(f'superTriviaSubscribeTriggerMaximum argument is malformed: \"{superTriviaSubscribeTriggerMaximum}\"')
-        elif timeoutActionFollowShieldDays is not None and not utils.isValidInt(timeoutActionFollowShieldDays):
-            raise TypeError(f'timeoutActionFollowShieldDays argument is malformed: \"{timeoutActionFollowShieldDays}\"')
         elif triviaGamePoints is not None and not utils.isValidInt(triviaGamePoints):
             raise TypeError(f'triviaGamePoints argument is malformed: \"{triviaGamePoints}\"')
         elif triviaGameShinyMultiplier is not None and not utils.isValidInt(triviaGameShinyMultiplier):
@@ -342,8 +343,6 @@ class User(UserInterface):
             raise TypeError(f'redemptionCounterBoosterPacks argument is malformed: \"{redemptionCounterBoosterPacks}\"')
         elif soundAlertRedemptions is not None and not isinstance(soundAlertRedemptions, frozendict):
             raise TypeError(f'soundAlertRedemptions argument is malformed: \"{soundAlertRedemptions}\"')
-        elif timeoutBoosterPacks is not None and not isinstance(timeoutBoosterPacks, frozendict):
-            raise TypeError(f'timeoutBoosterPacks argument is malformed: \"{timeoutBoosterPacks}\"')
         elif chatBackMessages is not None and not isinstance(chatBackMessages, FrozenList):
             raise TypeError(f'chatBackMessages argument is malformed: \"{chatBackMessages}\"')
         elif supStreamerBoosterPacks is not None and not isinstance(supStreamerBoosterPacks, FrozenList):
@@ -356,6 +355,8 @@ class User(UserInterface):
         self.__areAsplodieStatsEnabled: Final[bool] = areAsplodieStatsEnabled
         self.__areBeanStatsEnabled: Final[bool] = areBeanStatsEnabled
         self.__areCheerActionsEnabled: Final[bool] = areCheerActionsEnabled
+        self.__areEditStreamGameCommandsEnabled: Final[bool] = areEditStreamGameCommandsEnabled
+        self.__areEditStreamTitleCommandsEnabled: Final[bool] = areEditStreamTitleCommandsEnabled
         self.__arePranksEnabled: Final[bool] = arePranksEnabled
         self.__areRecurringActionsEnabled: Final[bool] = areRecurringActionsEnabled
         self.__areRedemptionCountersEnabled: Final[bool] = areRedemptionCountersEnabled
@@ -423,7 +424,6 @@ class User(UserInterface):
         self.__superTriviaGameToxicPunishmentMultiplier: int | None = superTriviaGameToxicPunishmentMultiplier
         self.__superTriviaPerUserAttempts: int | None = superTriviaPerUserAttempts
         self.__superTriviaSubscribeTriggerMaximum: int | None = superTriviaSubscribeTriggerMaximum
-        self.__timeoutActionFollowShieldDays: int | None = timeoutActionFollowShieldDays
         self.__triviaGamePoints: int | None = triviaGamePoints
         self.__triviaGameShinyMultiplier: int | None = triviaGameShinyMultiplier
         self.__waitForTriviaAnswerDelay: int | None = waitForTriviaAnswerDelay
@@ -459,7 +459,6 @@ class User(UserInterface):
         self.__pkmnCatchBoosterPacks: Final[frozendict[str, PkmnCatchBoosterPack] | None] = pkmnCatchBoosterPacks
         self.__redemptionCounterBoosterPacks: Final[frozendict[str, RedemptionCounterBoosterPack] | None] = redemptionCounterBoosterPacks
         self.__soundAlertRedemptions: Final[frozendict[str, SoundAlertRedemption] | None] = soundAlertRedemptions
-        self.__timeoutBoosterPacks: Final[frozendict[str, TimeoutBoosterPack] | None] = timeoutBoosterPacks
         self.__chatBackMessages: Final[FrozenList[str] | None] = chatBackMessages
         self.__supStreamerBoosterPacks: Final[FrozenList[SupStreamerBoosterPack] | None] = supStreamerBoosterPacks
         self.__ttsBoosterPacks: Final[FrozenList[TtsBoosterPack] | None] = ttsBoosterPacks
@@ -496,6 +495,14 @@ class User(UserInterface):
     @property
     def areCheerActionsEnabled(self) -> bool:
         return self.__areCheerActionsEnabled
+
+    @property
+    def areEditStreamGameCommandsEnabled(self) -> bool:
+        return self.__areEditStreamGameCommandsEnabled
+
+    @property
+    def areEditStreamTitleCommandsEnabled(self) -> bool:
+        return self.__areEditStreamTitleCommandsEnabled
 
     @property
     def arePranksEnabled(self) -> bool:
@@ -915,14 +922,6 @@ class User(UserInterface):
     @property
     def soundAlertRedemptions(self) -> frozendict[str, SoundAlertRedemption] | None:
         return self.__soundAlertRedemptions
-
-    @property
-    def timeoutActionFollowShieldDays(self) -> int | None:
-        return self.__timeoutActionFollowShieldDays
-
-    @property
-    def timeoutBoosterPacks(self) -> frozendict[str, TimeoutBoosterPack] | None:
-        return self.__timeoutBoosterPacks
 
     @property
     def timeZones(self) -> FrozenList[tzinfo] | None:

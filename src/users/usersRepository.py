@@ -48,7 +48,6 @@ class UsersRepository(UsersRepositoryInterface):
         soundAlertRedemptionJsonParser: SoundAlertRedemptionJsonParserInterface,
         supStreamerBoosterPackJsonParser: SupStreamerBoosterPackJsonParserInterface,
         timber: TimberInterface,
-        timeoutBoosterPackJsonParser: TimeoutBoosterPackJsonParserInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         ttsBoosterPackParser: TtsBoosterPackParserInterface,
         ttsJsonMapper: TtsJsonMapperInterface,
@@ -70,8 +69,6 @@ class UsersRepository(UsersRepositoryInterface):
             raise TypeError(f'supStreamerBoosterPackJsonParser argument is malformed: \"{supStreamerBoosterPackJsonParser}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(timeoutBoosterPackJsonParser, TimeoutBoosterPackJsonParserInterface):
-            raise TypeError(f'timeoutBoosterPackJsonParser argument is malformed: \"{timeoutBoosterPackJsonParser}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(ttsBoosterPackParser, TtsBoosterPackParserInterface):
@@ -89,7 +86,6 @@ class UsersRepository(UsersRepositoryInterface):
         self.__soundAlertRedemptionJsonParser: Final[SoundAlertRedemptionJsonParserInterface] = soundAlertRedemptionJsonParser
         self.__supStreamerBoosterPackJsonParser: Final[SupStreamerBoosterPackJsonParserInterface] = supStreamerBoosterPackJsonParser
         self.__timber: Final[TimberInterface] = timber
-        self.__timeoutBoosterPackJsonParser: Final[TimeoutBoosterPackJsonParserInterface] = timeoutBoosterPackJsonParser
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__ttsBoosterPackParser: Final[TtsBoosterPackParserInterface] = ttsBoosterPackParser
         self.__ttsJsonMapper: Final[TtsJsonMapperInterface] = ttsJsonMapper
@@ -148,6 +144,8 @@ class UsersRepository(UsersRepositoryInterface):
         areAsplodieStatsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ASPLODIE_STATS_ENABLED.jsonKey, False)
         areBeanStatsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.BEAN_STATS_ENABLED.jsonKey, False)
         areCheerActionsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHEER_ACTIONS_ENABLED.jsonKey, False)
+        areEditStreamGameCommandsEnabled = utils.getBoolFromDict(userJson, 'editStreamGameCommandsEnabled', False)
+        areEditStreamTitleCommandsEnabled = utils.getBoolFromDict(userJson, 'editStreamTitleCommandsEnabled', False)
         arePranksEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.PRANKS_ENABLED.jsonKey, False)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         areRedemptionCountersEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.REDEMPTION_COUNTERS_ENABLED.jsonKey, False)
@@ -318,13 +316,6 @@ class UsersRepository(UsersRepositoryInterface):
             soundAlertRedemptionsJson: list[dict[str, Any]] | None = userJson.get('soundAlertRedemptions')
             soundAlertRedemptions = self.__soundAlertRedemptionJsonParser.parseRedemptions(soundAlertRedemptionsJson)
 
-        timeoutActionFollowShieldDays: int | None = None
-        if 'timeoutActionFollowShieldDays' in userJson and utils.isValidInt(userJson.get('timeoutActionFollowShieldDays')):
-            timeoutActionFollowShieldDays = utils.getIntFromDict(userJson, 'timeoutActionFollowShieldDays')
-
-        timeoutBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('timeoutBoosterPacks')
-        timeoutBoosterPacks = self.__timeoutBoosterPackJsonParser.parseBoosterPacks(timeoutBoosterPacksJson)
-
         crowdControlButtonPressRewardId: str | None = None
         crowdControlGameShuffleRewardId: str | None = None
         crowdControlBoosterPacks: frozendict[str, CrowdControlBoosterPack] | None = None
@@ -371,6 +362,8 @@ class UsersRepository(UsersRepositoryInterface):
             areAsplodieStatsEnabled = areAsplodieStatsEnabled,
             areBeanStatsEnabled = areBeanStatsEnabled,
             areCheerActionsEnabled = areCheerActionsEnabled,
+            areEditStreamGameCommandsEnabled = areEditStreamGameCommandsEnabled,
+            areEditStreamTitleCommandsEnabled = areEditStreamTitleCommandsEnabled,
             arePranksEnabled = arePranksEnabled,
             areRecurringActionsEnabled = areRecurringActionsEnabled,
             areRedemptionCountersEnabled = areRedemptionCountersEnabled,
@@ -438,7 +431,6 @@ class UsersRepository(UsersRepositoryInterface):
             superTriviaGameToxicPunishmentMultiplier = superTriviaGameToxicPunishmentMultiplier,
             superTriviaPerUserAttempts = superTriviaPerUserAttempts,
             superTriviaSubscribeTriggerMaximum = superTriviaSubscribeTriggerMaximum,
-            timeoutActionFollowShieldDays = timeoutActionFollowShieldDays,
             triviaGamePoints = triviaGamePoints,
             triviaGameShinyMultiplier = triviaGameShinyMultiplier,
             waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
@@ -474,7 +466,6 @@ class UsersRepository(UsersRepositoryInterface):
             pkmnCatchBoosterPacks = pkmnCatchBoosterPacks,
             redemptionCounterBoosterPacks = redemptionCounterBoosterPacks,
             soundAlertRedemptions = soundAlertRedemptions,
-            timeoutBoosterPacks = timeoutBoosterPacks,
             chatBackMessages = chatBackMessages,
             supStreamerBoosterPacks = supStreamerBoosterPacks,
             ttsBoosterPacks = ttsBoosterPacks,
