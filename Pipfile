@@ -31,7 +31,7 @@ pywin32 = { version = "312", markers = "sys_platform == 'win32'" }
 requests = "2.34.2"
 roman = "5.2"
 typing_extensions = "4.16.0"
-websockets = "17.3"
+websockets = "17.4"
 xmltodict = "1.0.4"
 
 [dev-packages]
