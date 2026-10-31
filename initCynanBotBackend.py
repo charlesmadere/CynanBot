@@ -68,6 +68,8 @@ from src.chatCommands.getBannedTriviaControllersChatCommand import GetBannedTriv
 from src.chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from src.chatCommands.getGlobalTriviaControllersChatCommand import GetGlobalTriviaControllersChatCommand
 from src.chatCommands.getRecurringActionsChatCommand import GetRecurringActionsChatCommand
+from src.chatCommands.getStreamGameChatCommand import GetStreamGameChatCommand
+from src.chatCommands.getStreamTitleChatCommand import GetStreamTitleChatCommand
 from src.chatCommands.getTriviaAnswersChatCommand import GetTriviaAnswersChatCommand
 from src.chatCommands.getTriviaControllersChatCommand import GetTriviaControllersChatCommand
 from src.chatCommands.giveCutenessChatCommand import GiveCutenessChatCommand
@@ -2197,6 +2199,20 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         administratorProvider = administratorProvider,
         recurringActionsRepository = recurringActionsRepository,
         timber = timber,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    GetStreamGameChatCommand(
+        administratorProvider = administratorProvider,
+        timber = timber,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+        twitchChannelInformationHelper = twitchChannelInformationHelper,
+        twitchChatMessenger = twitchChatMessenger,
+    ),
+    GetStreamTitleChatCommand(
+        administratorProvider = administratorProvider,
+        timber = timber,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+        twitchChannelInformationHelper = twitchChannelInformationHelper,
         twitchChatMessenger = twitchChatMessenger,
     ),
     GetTriviaAnswersChatCommand(
