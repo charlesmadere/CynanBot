@@ -46,8 +46,6 @@ from src.chatCommands.testCheerChatCommand import TestCheerChatCommand
 from src.chatCommands.testCrowdControlChatCommand import TestCrowdControlChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
-from src.chatCommands.updateStreamGameChatCommand import UpdateStreamGameChatCommand
-from src.chatCommands.updateStreamTitleChatCommand import UpdateStreamTitleChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
 from src.chatCommands.voicemailsChatCommand import VoicemailsChatCommand
 from src.chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
@@ -2368,22 +2366,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         ttsJsonMapper = ttsJsonMapper,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
         twitchChatMessenger = twitchChatMessenger,
-    ),
-    UpdateStreamGameChatCommand(
-        administratorProvider = administratorProvider,
-        timber = timber,
-        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-        twitchChannelInformationHelper = twitchChannelInformationHelper,
-        twitchChatMessenger = twitchChatMessenger,
-        twitchModeratorHelper = twitchModeratorHelper,
-    ),
-    UpdateStreamTitleChatCommand(
-        administratorProvider = administratorProvider,
-        timber = timber,
-        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-        twitchChannelInformationHelper = twitchChannelInformationHelper,
-        twitchChatMessenger = twitchChatMessenger,
-        twitchModeratorHelper = twitchModeratorHelper,
     ),
     UseChatterItemChatCommand(
         chatterInventoryIdGenerator = chatterInventoryIdGenerator,

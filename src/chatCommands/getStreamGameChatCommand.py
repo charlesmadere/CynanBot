@@ -57,7 +57,9 @@ class GetStreamGameChatCommand(AbsChatCommand):
         return self.__commandPatterns
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
-        if not await self.__hasPermissions(chatMessage):
+        if not chatMessage.twitchUser.areEditStreamGameCommandsEnabled:
+            return ChatCommandResult.IGNORED
+        elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
         try:
