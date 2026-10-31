@@ -6,6 +6,7 @@ from typing import Collection, Final, Pattern
 from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..cuteness.helpers.cutenessHelperInterface import CutenessHelperInterface
+from ..cuteness.settings.cutenessSettingsInterface import CutenessSettingsInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
@@ -28,6 +29,7 @@ class GiveCutenessChatCommand(AbsChatCommand):
     def __init__(
         self,
         cutenessHelper: CutenessHelperInterface,
+        cutenessSettings: CutenessSettingsInterface,
         timber: TimberInterface,
         triviaUtils: TriviaUtilsInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
@@ -37,6 +39,8 @@ class GiveCutenessChatCommand(AbsChatCommand):
     ):
         if not isinstance(cutenessHelper, CutenessHelperInterface):
             raise TypeError(f'cutenessHelper argument is malformed: \"{cutenessHelper}\"')
+        elif not isinstance(cutenessSettings, CutenessSettingsInterface):
+            raise TypeError(f'cutenessSettings argument is malformed: \"{cutenessSettings}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
@@ -51,6 +55,7 @@ class GiveCutenessChatCommand(AbsChatCommand):
             raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
         self.__cutenessHelper: Final[CutenessHelperInterface] = cutenessHelper
+        self.__cutenessSettings: Final[CutenessSettingsInterface] = cutenessSettings
         self.__timber: Final[TimberInterface] = timber
         self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
@@ -73,7 +78,9 @@ class GiveCutenessChatCommand(AbsChatCommand):
         return self.__commandPatterns
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
-        if not chatMessage.twitchUser.isCutenessEnabled or not chatMessage.twitchUser.isGiveCutenessEnabled:
+        if not await self.__cutenessSettings.isEnabled():
+            return ChatCommandResult.IGNORED
+        elif not chatMessage.twitchUser.isCutenessEnabled or not chatMessage.twitchUser.isGiveCutenessEnabled:
             return ChatCommandResult.IGNORED
         elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED

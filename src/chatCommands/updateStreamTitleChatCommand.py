@@ -55,8 +55,6 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
             re.compile(r'^\s*!update(?:stream)?title\b', re.IGNORECASE),
         })
 
-        self.__wasPranked: bool = False
-
     @property
     def commandName(self) -> str:
         return 'UpdateStreamTitleChatCommand'
@@ -66,7 +64,9 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
         return self.__commandPatterns
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
-        if not await self.__hasPermissions(chatMessage):
+        if not chatMessage.twitchUser.areEditStreamTitleCommandsEnabled:
+            return ChatCommandResult.IGNORED
+        elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
         splits = utils.getCleanedSplits(chatMessage.text)

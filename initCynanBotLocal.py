@@ -46,8 +46,6 @@ from src.chatCommands.testCheerChatCommand import TestCheerChatCommand
 from src.chatCommands.testCrowdControlChatCommand import TestCrowdControlChatCommand
 from src.chatCommands.testMouseCursorChatCommand import TestMouseCursorChatCommand
 from src.chatCommands.ttsChatCommand import TtsChatCommand
-from src.chatCommands.updateStreamGameChatCommand import UpdateStreamGameChatCommand
-from src.chatCommands.updateStreamTitleChatCommand import UpdateStreamTitleChatCommand
 from src.chatCommands.useChatterItemChatCommand import UseChatterItemChatCommand
 from src.chatCommands.voicemailsChatCommand import VoicemailsChatCommand
 from src.chatCommands.vulnerableChattersChatCommand import VulnerableChattersChatCommand
@@ -521,8 +519,6 @@ from src.users.soundAlert.soundAlertRedemptionJsonParser import SoundAlertRedemp
 from src.users.soundAlert.soundAlertRedemptionJsonParserInterface import SoundAlertRedemptionJsonParserInterface
 from src.users.supStreamer.supStreamerBoosterPackJsonParser import SupStreamerBoosterPackJsonParser
 from src.users.supStreamer.supStreamerBoosterPackJsonParserInterface import SupStreamerBoosterPackJsonParserInterface
-from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
-from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.ttsBoosterPackParser import TtsBoosterPackParser
 from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
 from src.users.usersRepository import UsersRepository
@@ -750,8 +746,6 @@ soundAlertRedemptionJsonParser: Final[SoundAlertRedemptionJsonParserInterface] =
 
 supStreamerBoosterPackJsonParser: Final[SupStreamerBoosterPackJsonParserInterface] = SupStreamerBoosterPackJsonParser()
 
-timeoutBoosterPackJsonParser: Final[TimeoutBoosterPackJsonParserInterface] = TimeoutBoosterPackJsonParser()
-
 ttsJsonMapper: Final[TtsJsonMapperInterface] = TtsJsonMapper(
     timber = timber,
 )
@@ -769,7 +763,6 @@ usersRepository: Final[UsersRepositoryInterface] = UsersRepository(
     soundAlertRedemptionJsonParser = soundAlertRedemptionJsonParser,
     supStreamerBoosterPackJsonParser = supStreamerBoosterPackJsonParser,
     timber = timber,
-    timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
     timeZoneRepository = timeZoneRepository,
     ttsBoosterPackParser = ttsBoosterPackParser,
     ttsJsonMapper = ttsJsonMapper,
@@ -2373,22 +2366,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         ttsJsonMapper = ttsJsonMapper,
         twitchChannelEditorsRepository = twitchChannelEditorsRepository,
         twitchChatMessenger = twitchChatMessenger,
-    ),
-    UpdateStreamGameChatCommand(
-        administratorProvider = administratorProvider,
-        timber = timber,
-        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-        twitchChannelInformationHelper = twitchChannelInformationHelper,
-        twitchChatMessenger = twitchChatMessenger,
-        twitchModeratorHelper = twitchModeratorHelper,
-    ),
-    UpdateStreamTitleChatCommand(
-        administratorProvider = administratorProvider,
-        timber = timber,
-        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-        twitchChannelInformationHelper = twitchChannelInformationHelper,
-        twitchChatMessenger = twitchChatMessenger,
-        twitchModeratorHelper = twitchModeratorHelper,
     ),
     UseChatterItemChatCommand(
         chatterInventoryIdGenerator = chatterInventoryIdGenerator,

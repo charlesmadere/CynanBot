@@ -88,6 +88,8 @@ from src.chatCommands.translateChatCommand import TranslateChatCommand
 from src.chatCommands.triviaInfoChatCommand import TriviaInfoChatCommand
 from src.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from src.chatCommands.unbanTriviaQuestionChatCommand import UnbanTriviaQuestionChatCommand
+from src.chatCommands.updateStreamGameChatCommand import UpdateStreamGameChatCommand
+from src.chatCommands.updateStreamTitleChatCommand import UpdateStreamTitleChatCommand
 from src.chatCommands.weatherChatCommand import WeatherChatCommand
 from src.chatCommands.wordChatCommand import WordChatCommand
 from src.chatLogger.chatLogger import ChatLogger
@@ -532,8 +534,6 @@ from src.users.soundAlert.soundAlertRedemptionJsonParserInterface import SoundAl
 from src.users.soundAlert.stub.stubSoundAlertRedemptionJsonParser import StubSoundAlertRedemptionJsonParser
 from src.users.supStreamer.supStreamerBoosterPackJsonParser import SupStreamerBoosterPackJsonParser
 from src.users.supStreamer.supStreamerBoosterPackJsonParserInterface import SupStreamerBoosterPackJsonParserInterface
-from src.users.timeout.timeoutBoosterPackJsonParser import TimeoutBoosterPackJsonParser
-from src.users.timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from src.users.tts.stub.stubTtsBoosterPackParser import StubTtsBoosterPackParser
 from src.users.tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
 from src.users.usersRepository import UsersRepository
@@ -753,8 +753,6 @@ soundAlertRedemptionJsonParser: Final[SoundAlertRedemptionJsonParserInterface] =
 
 supStreamerBoosterPackJsonParser: Final[SupStreamerBoosterPackJsonParserInterface] = SupStreamerBoosterPackJsonParser()
 
-timeoutBoosterPackJsonParser: Final[TimeoutBoosterPackJsonParserInterface] = TimeoutBoosterPackJsonParser()
-
 ttsJsonMapper: Final[TtsJsonMapperInterface] = TtsJsonMapper(
     timber = timber,
 )
@@ -770,7 +768,6 @@ usersRepository: Final[UsersRepositoryInterface] = UsersRepository(
     soundAlertRedemptionJsonParser = soundAlertRedemptionJsonParser,
     supStreamerBoosterPackJsonParser = supStreamerBoosterPackJsonParser,
     timber = timber,
-    timeoutBoosterPackJsonParser = timeoutBoosterPackJsonParser,
     timeZoneRepository = timeZoneRepository,
     ttsBoosterPackParser = ttsBoosterPackParser,
     ttsJsonMapper = ttsJsonMapper,
@@ -2219,6 +2216,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     GiveCutenessChatCommand(
         cutenessHelper = cutenessHelper,
+        cutenessSettings = cutenessSettings,
         timber = timber,
         triviaUtils = triviaUtils,
         twitchHandleProvider = authRepository,
@@ -2299,11 +2297,12 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         triviaSettings = triviaSettings,
     ),
     SuperTriviaChatCommand(
+        administratorProvider = administratorProvider,
         timber = timber,
         triviaGameBuilder = triviaGameBuilder,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         triviaGameMachine = triviaGameMachine,
         triviaSettings = triviaSettings,
-        triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
     TimeChatCommand(
@@ -2346,6 +2345,22 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         triviaSettings = triviaSettings,
         triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
+    ),
+    UpdateStreamGameChatCommand(
+        administratorProvider = administratorProvider,
+        timber = timber,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+        twitchChannelInformationHelper = twitchChannelInformationHelper,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchModeratorHelper = twitchModeratorHelper,
+    ),
+    UpdateStreamTitleChatCommand(
+        administratorProvider = administratorProvider,
+        timber = timber,
+        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
+        twitchChannelInformationHelper = twitchChannelInformationHelper,
+        twitchChatMessenger = twitchChatMessenger,
+        twitchModeratorHelper = twitchModeratorHelper,
     ),
     WeatherChatCommand(
         locationsRepository = locationsRepository,
