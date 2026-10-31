@@ -18,5 +18,5 @@ pytz==2026.6
 requests==2.34.2
 roman==5.2
 typing_extensions==4.16.0
-websockets==17.3
+websockets==17.4
 xmltodict==1.0.4

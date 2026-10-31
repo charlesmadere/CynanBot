@@ -56,8 +56,8 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
                 ),
                 ChatterItemType.BANANA: GashaponItemPullRate(
                     pullRate = 0.24,
-                    iterations = 2,
-                    maximumPullAmount = 2,
+                    iterations = 1,
+                    maximumPullAmount = 1,
                     minimumPullAmount = 0,
                 ),
                 ChatterItemType.CASSETTE_TAPE: GashaponItemPullRate(
@@ -93,8 +93,8 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             }),
         ),
         defaultGrenadeItemDetails: GrenadeItemDetails = GrenadeItemDetails(
-            maxDurationSeconds = 48,
-            minDurationSeconds = 32,
+            maxDurationSeconds = 32,
+            minDurationSeconds = 24,
         ),
         defaultDaysBetweenGashaponRewards: int = 21,
         defaultTm36ItemDetails: Tm36ItemDetails = Tm36ItemDetails(
