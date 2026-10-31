@@ -32,8 +32,6 @@ from src.chatCommands.getChatterPreferredNameChatCommand import GetChatterPrefer
 from src.chatCommands.getChatterPreferredTtsChatCommand import GetChatterPreferredTtsChatCommand
 from src.chatCommands.getCheerActionsChatCommand import GetCheerActionsChatCommand
 from src.chatCommands.getGashaponItemChatCommand import GetGashaponItemChatCommand
-from src.chatCommands.getStreamGameChatCommand import GetStreamGameChatCommand
-from src.chatCommands.getStreamTitleChatCommand import GetStreamTitleChatCommand
 from src.chatCommands.giveChatterItemChatCommand import GiveChatterItemChatCommand
 from src.chatCommands.playVoicemailChatCommand import PlayVoicemailChatCommand
 from src.chatCommands.removeChatterPreferredNameChatCommand import RemoveChatterPreferredNameChatCommand
@@ -2262,20 +2260,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         chatterInventoryIdGenerator = chatterInventoryIdGenerator,
         chatterInventoryMachine = chatterInventoryMachine,
         timber = timber,
-    ),
-    GetStreamGameChatCommand(
-        administratorProvider = administratorProvider,
-        timber = timber,
-        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-        twitchChannelInformationHelper = twitchChannelInformationHelper,
-        twitchChatMessenger = twitchChatMessenger,
-    ),
-    GetStreamTitleChatCommand(
-        administratorProvider = administratorProvider,
-        timber = timber,
-        twitchChannelEditorsRepository = twitchChannelEditorsRepository,
-        twitchChannelInformationHelper = twitchChannelInformationHelper,
-        twitchChatMessenger = twitchChatMessenger,
     ),
     GiveChatterItemChatCommand(
         chatterInventoryIdGenerator = chatterInventoryIdGenerator,
