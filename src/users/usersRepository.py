@@ -21,7 +21,6 @@ from .soundAlert.soundAlertRedemption import SoundAlertRedemption
 from .soundAlert.soundAlertRedemptionJsonParserInterface import SoundAlertRedemptionJsonParserInterface
 from .supStreamer.supStreamerBoosterPack import SupStreamerBoosterPack
 from .supStreamer.supStreamerBoosterPackJsonParserInterface import SupStreamerBoosterPackJsonParserInterface
-from .timeout.timeoutBoosterPackJsonParserInterface import TimeoutBoosterPackJsonParserInterface
 from .tts.ttsBoosterPack import TtsBoosterPack
 from .tts.ttsBoosterPackParserInterface import TtsBoosterPackParserInterface
 from .user import User
