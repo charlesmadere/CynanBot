@@ -5,12 +5,13 @@ from typing import Collection, Final, Pattern
 from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..misc import utils as utils
+from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..trivia.builder.triviaGameBuilderInterface import TriviaGameBuilderInterface
+from ..trivia.gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from ..trivia.questions.triviaSource import TriviaSource
 from ..trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..trivia.triviaGameMachineInterface import TriviaGameMachineInterface
-from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
@@ -19,31 +20,35 @@ class SuperTriviaChatCommand(AbsChatCommand):
 
     def __init__(
         self,
+        administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface,
+        triviaGameControllersHelper: TriviaGameControllersHelperInterface,
         triviaGameMachine: TriviaGameMachineInterface,
         triviaSettings: TriviaSettingsInterface,
-        triviaUtils: TriviaUtilsInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(administratorProvider, AdministratorProviderInterface):
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
             raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
+        elif not isinstance(triviaGameControllersHelper, TriviaGameControllersHelperInterface):
+            raise TypeError(f'triviaGameControllersHelper argument is malformed: \"{triviaGameControllersHelper}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif not isinstance(triviaSettings, TriviaSettingsInterface):
             raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
-        elif not isinstance(triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
+        self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameBuilder: Final[TriviaGameBuilderInterface] = triviaGameBuilder
+        self.__triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = triviaGameControllersHelper
         self.__triviaGameMachine: Final[TriviaGameMachineInterface] = triviaGameMachine
         self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
-        self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
@@ -66,10 +71,7 @@ class SuperTriviaChatCommand(AbsChatCommand):
             return ChatCommandResult.IGNORED
         elif not chatMessage.twitchUser.isSuperTriviaGameEnabled:
             return ChatCommandResult.IGNORED
-        elif not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannelId = chatMessage.twitchChannelId,
-            userId = chatMessage.chatterUserId,
-        ):
+        elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
         splits = utils.getCleanedSplits(chatMessage.text)
@@ -107,13 +109,6 @@ class SuperTriviaChatCommand(AbsChatCommand):
         if self.__lotrTriviaSourcePattern.match(splits[0]):
             triviaSource = TriviaSource.LORD_OF_THE_RINGS
 
-        if chatMessage.twitchUser.arePranksEnabled and await self.__stopForPrank(
-            chatterUserId = chatMessage.chatterUserId,
-            twitchChannelId = chatMessage.twitchChannelId,
-            triviaSource = triviaSource,
-        ):
-            return ChatCommandResult.CONSUMED
-
         action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannelId = chatMessage.twitchChannelId,
             twitchUser = chatMessage.twitchUser,
@@ -127,11 +122,14 @@ class SuperTriviaChatCommand(AbsChatCommand):
         self.__timber.log(self.commandName, f'Consumed ({action=}) ({triviaSource=}) ({numberOfGames=}) ({splits=}) ({chatMessage=})')
         return ChatCommandResult.CONSUMED
 
-    async def __stopForPrank(
-        self,
-        chatterUserId: str,
-        twitchChannelId: str,
-        triviaSource: TriviaSource | None,
-    ) -> bool:
-        # TODO prank code goes here
-        return False
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+
+        isAdministrator = chatMessage.chatterUserId == await self.__administratorProvider.getAdministratorUserId()
+
+        isPrivilegedTriviaUser = await self.__triviaGameControllersHelper.isController(
+            twitchChannelId = chatMessage.twitchChannelId,
+            userId = chatMessage.chatterUserId,
+        )
+
+        return isStreamer or isAdministrator or isPrivilegedTriviaUser

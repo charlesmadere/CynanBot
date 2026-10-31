@@ -55,8 +55,6 @@ class UpdateStreamTitleChatCommand(AbsChatCommand):
             re.compile(r'^\s*!update(?:stream)?title\b', re.IGNORECASE),
         })
 
-        self.__wasPranked: bool = False
-
     @property
     def commandName(self) -> str:
         return 'UpdateStreamTitleChatCommand'

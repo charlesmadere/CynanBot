@@ -3504,6 +3504,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
     ),
     GiveCutenessChatCommand(
         cutenessHelper = cutenessHelper,
+        cutenessSettings = cutenessSettings,
         timber = timber,
         triviaUtils = triviaUtils,
         twitchHandleProvider = authRepository,
@@ -3637,11 +3638,12 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         triviaSettings = triviaSettings,
     ),
     SuperTriviaChatCommand(
+        administratorProvider = administratorProvider,
         timber = timber,
         triviaGameBuilder = triviaGameBuilder,
+        triviaGameControllersHelper = triviaGameControllersHelper,
         triviaGameMachine = triviaGameMachine,
         triviaSettings = triviaSettings,
-        triviaUtils = triviaUtils,
         twitchChatMessenger = twitchChatMessenger,
     ),
     TestCheerChatCommand(
