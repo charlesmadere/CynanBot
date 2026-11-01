@@ -2246,7 +2246,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         twitchUserIdsHelper = twitchUserIdsHelper,
     ),
     JishoChatCommand(
-        generalSettingsRepository = generalSettingsRepository,
         jishoHelper = jishoHelper,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,

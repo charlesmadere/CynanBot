@@ -6,7 +6,6 @@ from .absChatCommand import AbsChatCommand
 from .chatCommandResult import ChatCommandResult
 from ..language.jishoHelperInterface import JishoHelperInterface
 from ..misc import utils as utils
-from ..misc.generalSettingsRepository import GeneralSettingsRepository
 from ..network.exceptions import GenericNetworkException
 from ..timber.timberInterface import TimberInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
@@ -17,21 +16,17 @@ class JishoChatCommand(AbsChatCommand):
 
     def __init__(
         self,
-        generalSettingsRepository: GeneralSettingsRepository,
         jishoHelper: JishoHelperInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(jishoHelper, JishoHelperInterface):
+        if not isinstance(jishoHelper, JishoHelperInterface):
             raise TypeError(f'jishoHelper argument is malformed: \"{jishoHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
-        self.__generalSettingsRepository: Final[GeneralSettingsRepository] = generalSettingsRepository
         self.__jishoHelper: Final[JishoHelperInterface] = jishoHelper
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
@@ -50,11 +45,6 @@ class JishoChatCommand(AbsChatCommand):
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
         if not chatMessage.twitchUser.isJishoEnabled:
-            return ChatCommandResult.IGNORED
-
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
-        if not generalSettings.isJishoEnabled():
             return ChatCommandResult.IGNORED
 
         splits = utils.getCleanedSplits(chatMessage.text)
