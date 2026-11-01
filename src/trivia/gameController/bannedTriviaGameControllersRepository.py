@@ -1,8 +1,8 @@
 from typing import Final
 
 from .bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
-from ..gameController.exceptions import TriviaGameControllerAlreadyBannedException, \
-    TriviaGameControllerNotAlreadyBannedException, TriviaGameControllerIllegalUserIdException
+from .exceptions import TriviaGameControllerAlreadyBannedException, TriviaGameControllerIllegalUserIdException, \
+    TriviaGameControllerNotAlreadyBannedException
 from ...misc import utils as utils
 from ...misc.administratorProviderInterface import AdministratorProviderInterface
 from ...storage.backingDatabase import BackingDatabase

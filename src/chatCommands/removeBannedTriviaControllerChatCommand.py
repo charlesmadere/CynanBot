@@ -9,6 +9,7 @@ from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..trivia.gameController.exceptions import TriviaGameControllerNotAlreadyBannedException
 from ..trivia.gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
+from ..trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
@@ -28,6 +29,7 @@ class RemoveBannedTriviaControllerChatCommand(AbsChatCommand):
         administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
         triviaGameControllersHelper: TriviaGameControllersHelperInterface,
+        triviaSettings: TriviaSettingsInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUserIdsHelper: TwitchUserIdsHelperInterface,
@@ -38,6 +40,8 @@ class RemoveBannedTriviaControllerChatCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameControllersHelper, TriviaGameControllersHelperInterface):
             raise TypeError(f'triviaGameControllersHelper argument is malformed: \"{triviaGameControllersHelper}\"')
+        elif not isinstance(triviaSettings, TriviaSettingsInterface):
+            raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
@@ -48,6 +52,7 @@ class RemoveBannedTriviaControllerChatCommand(AbsChatCommand):
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = triviaGameControllersHelper
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper

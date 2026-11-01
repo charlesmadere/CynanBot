@@ -9,6 +9,7 @@ from ..misc.administratorProviderInterface import AdministratorProviderInterface
 from ..timber.timberInterface import TimberInterface
 from ..trivia.gameController.exceptions import TriviaGameControllerDoesNotExistException
 from ..trivia.gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
+from ..trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
@@ -28,6 +29,7 @@ class RemoveGlobalTriviaControllerChatCommand(AbsChatCommand):
         administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
         triviaGameControllersHelper: TriviaGameControllersHelperInterface,
+        triviaSettings: TriviaSettingsInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUserIdsHelper: TwitchUserIdsHelperInterface,
@@ -48,6 +50,7 @@ class RemoveGlobalTriviaControllerChatCommand(AbsChatCommand):
         self.__administratorProvider: Final[AdministratorProviderInterface] = administratorProvider
         self.__timber: Final[TimberInterface] = timber
         self.__triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = triviaGameControllersHelper
+        self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
@@ -69,7 +72,9 @@ class RemoveGlobalTriviaControllerChatCommand(AbsChatCommand):
         return self.__commandPatterns
 
     async def handleChatCommand(self, chatMessage: TwitchChatMessage) -> ChatCommandResult:
-        if not await self.__hasPermissions(chatMessage):
+        if not await self.__triviaSettings.isEnabled():
+            return ChatCommandResult.IGNORED
+        elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
         arguments = await self.__parseArguments(

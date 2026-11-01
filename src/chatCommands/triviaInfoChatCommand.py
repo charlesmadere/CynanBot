@@ -12,12 +12,12 @@ from ..trivia.additionalAnswers.additionalTriviaAnswers import AdditionalTriviaA
 from ..trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from ..trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
+from ..trivia.gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from ..trivia.history.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from ..trivia.history.triviaQuestionOccurrences import TriviaQuestionOccurrences
 from ..trivia.history.triviaQuestionOccurrencesRepositoryInterface import TriviaQuestionOccurrencesRepositoryInterface
 from ..trivia.questions.triviaQuestionReference import TriviaQuestionReference
 from ..trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
-from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
@@ -30,10 +30,10 @@ class TriviaInfoChatCommand(AbsChatCommand):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
+        triviaGameControllersHelper: TriviaGameControllersHelperInterface,
         triviaHistoryRepository: TriviaHistoryRepositoryInterface,
         triviaQuestionOccurrencesRepository: TriviaQuestionOccurrencesRepositoryInterface,
         triviaSettings: TriviaSettingsInterface,
-        triviaUtils: TriviaUtilsInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
@@ -44,14 +44,14 @@ class TriviaInfoChatCommand(AbsChatCommand):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(triviaEmoteGenerator, TriviaEmoteGeneratorInterface):
             raise TypeError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
+        elif not isinstance(triviaGameControllersHelper, TriviaGameControllersHelperInterface):
+            raise TypeError(f'triviaGameControllersHelper argument is malformed: \"{triviaGameControllersHelper}\"')
         elif not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
             raise TypeError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
         elif not isinstance(triviaQuestionOccurrencesRepository, TriviaQuestionOccurrencesRepositoryInterface):
             raise TypeError(f'triviaQuestionOccurrencesRepository argument is malformed: \"{triviaQuestionOccurrencesRepository}\"')
         elif not isinstance(triviaSettings, TriviaSettingsInterface):
             raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
-        elif not isinstance(triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
@@ -59,10 +59,10 @@ class TriviaInfoChatCommand(AbsChatCommand):
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__triviaEmoteGenerator: Final[TriviaEmoteGeneratorInterface] = triviaEmoteGenerator
+        self.__triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = triviaGameControllersHelper
         self.__triviaHistoryRepository: Final[TriviaHistoryRepositoryInterface] = triviaHistoryRepository
         self.__triviaQuestionOccurrencesRepository: Final[TriviaQuestionOccurrencesRepositoryInterface] = triviaQuestionOccurrencesRepository
         self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
-        self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
@@ -183,9 +183,9 @@ class TriviaInfoChatCommand(AbsChatCommand):
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
         isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
 
-        isPrivilegedTriviaUser = await self.__triviaUtils.isPrivilegedTriviaUser(
+        isTriviaController = await self.__triviaGameControllersHelper.isController(
             twitchChannelId = chatMessage.twitchChannelId,
             userId = chatMessage.chatterUserId,
         )
 
-        return isStreamer or isPrivilegedTriviaUser
+        return isStreamer or isTriviaController

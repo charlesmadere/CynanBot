@@ -14,7 +14,7 @@ from ..trivia.builder.triviaGameBuilderSettingsInterface import TriviaGameBuilde
 
 class GeneralSettingsRepository(
     Clearable,
-    TriviaGameBuilderSettingsInterface
+    TriviaGameBuilderSettingsInterface,
 ):
 
     def __init__(

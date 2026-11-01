@@ -3,11 +3,11 @@ from typing import Collection, Final
 
 from frozenlist import FrozenList
 
+from .bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
 from .exceptions import TriviaGameControllerIllegalUserIdException
 from .triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from .triviaGameControllersRepositoryInterface import TriviaGameControllersRepositoryInterface
 from .triviaGameGlobalControllersRepositoryInterface import TriviaGameGlobalControllersRepositoryInterface
-from ..banned.bannedTriviaGameControllersRepositoryInterface import BannedTriviaGameControllersRepositoryInterface
 from ...misc import utils as utils
 from ...misc.administratorProviderInterface import AdministratorProviderInterface
 from ...timber.timberInterface import TimberInterface

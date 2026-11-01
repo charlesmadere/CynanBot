@@ -8,9 +8,9 @@ from ..timber.timberInterface import TimberInterface
 from ..trivia.banned.banTriviaQuestionResult import BanTriviaQuestionResult
 from ..trivia.banned.triviaBanHelperInterface import TriviaBanHelperInterface
 from ..trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
+from ..trivia.gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from ..trivia.history.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from ..trivia.settings.triviaSettingsInterface import TriviaSettingsInterface
-from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 
@@ -22,9 +22,9 @@ class UnbanTriviaQuestionChatCommand(AbsChatCommand):
         timber: TimberInterface,
         triviaBanHelper: TriviaBanHelperInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
+        triviaGameControllersHelper: TriviaGameControllersHelperInterface,
         triviaHistoryRepository: TriviaHistoryRepositoryInterface,
         triviaSettings: TriviaSettingsInterface,
-        triviaUtils: TriviaUtilsInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
     ):
         if not isinstance(timber, TimberInterface):
@@ -33,21 +33,21 @@ class UnbanTriviaQuestionChatCommand(AbsChatCommand):
             raise TypeError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
         elif not isinstance(triviaEmoteGenerator, TriviaEmoteGeneratorInterface):
             raise TypeError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
+        elif not isinstance(triviaGameControllersHelper, TriviaGameControllersHelperInterface):
+            raise TypeError(f'triviaGameControllersHelper argument is malformed: \"{triviaGameControllersHelper}\"')
         elif not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
             raise TypeError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
         elif not isinstance(triviaSettings, TriviaSettingsInterface):
             raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
-        elif not isinstance(triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
 
         self.__timber: Final[TimberInterface] = timber
         self.__triviaBanHelper: Final[TriviaBanHelperInterface] = triviaBanHelper
         self.__triviaEmoteGenerator: Final[TriviaEmoteGeneratorInterface] = triviaEmoteGenerator
+        self.__triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = triviaGameControllersHelper
         self.__triviaHistoryRepository: Final[TriviaHistoryRepositoryInterface] = triviaHistoryRepository
         self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
-        self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
@@ -67,10 +67,7 @@ class UnbanTriviaQuestionChatCommand(AbsChatCommand):
             return ChatCommandResult.IGNORED
         elif not chatMessage.twitchUser.isTriviaGameEnabled and not chatMessage.twitchUser.isSuperTriviaGameEnabled:
             return ChatCommandResult.IGNORED
-        elif not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannelId = chatMessage.twitchChannelId,
-            userId = chatMessage.chatterUserId,
-        ):
+        elif not await self.__hasPermissions(chatMessage):
             return ChatCommandResult.IGNORED
 
         splits = utils.getCleanedSplits(chatMessage.text)
@@ -139,5 +136,15 @@ class UnbanTriviaQuestionChatCommand(AbsChatCommand):
                     replyMessageId = chatMessage.twitchChatMessageId,
                 )
 
-        self.__timber.log(self.commandName, f'Handled ({result=}) ({reference=}) ({emote=}) ({normalizedEmote=}) ({chatMessage=})')
-        return ChatCommandResult.HANDLED
+        self.__timber.log(self.commandName, f'Consumed ({result=}) ({reference=}) ({emote=}) ({normalizedEmote=}) ({chatMessage=})')
+        return ChatCommandResult.CONSUMED
+
+    async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
+        isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
+
+        isTriviaController = await self.__triviaGameControllersHelper.isController(
+            twitchChannelId = chatMessage.twitchChannelId,
+            userId = chatMessage.chatterUserId,
+        )
+
+        return isStreamer or isTriviaController
