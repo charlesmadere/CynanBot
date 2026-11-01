@@ -34,7 +34,7 @@ class TriviaSettings(TriviaSettingsInterface):
             ),
             TriviaSource.LORD_OF_THE_RINGS: TriviaSourceAndProperties(
                 isEnabled = True,
-                weight = 10,
+                weight = 1,
                 triviaSource = TriviaSource.LORD_OF_THE_RINGS,
             ),
             TriviaSource.MILLIONAIRE: TriviaSourceAndProperties(
