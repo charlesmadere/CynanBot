@@ -495,9 +495,6 @@ from src.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface imp
     AdditionalTriviaAnswersRepositoryInterface
 from src.trivia.answerChecker.triviaAnswerChecker import TriviaAnswerChecker
 from src.trivia.answerChecker.triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
-from src.trivia.banned.bannedTriviaGameControllersRepository import BannedTriviaGameControllersRepository
-from src.trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
-    BannedTriviaGameControllersRepositoryInterface
 from src.trivia.banned.bannedTriviaIdsRepository import BannedTriviaIdsRepository
 from src.trivia.banned.bannedTriviaIdsRepositoryInterface import BannedTriviaIdsRepositoryInterface
 from src.trivia.banned.triviaBanHelper import TriviaBanHelper
@@ -517,6 +514,9 @@ from src.trivia.emotes.triviaEmoteRepository import TriviaEmoteRepository
 from src.trivia.emotes.triviaEmoteRepositoryInterface import TriviaEmoteRepositoryInterface
 from src.trivia.emotes.twitch.triviaTwitchEmoteHelper import TriviaTwitchEmoteHelper
 from src.trivia.emotes.twitch.triviaTwitchEmoteHelperInterface import TriviaTwitchEmoteHelperInterface
+from src.trivia.gameController.bannedTriviaGameControllersRepository import BannedTriviaGameControllersRepository
+from src.trivia.gameController.bannedTriviaGameControllersRepositoryInterface import \
+    BannedTriviaGameControllersRepositoryInterface
 from src.trivia.gameController.triviaGameControllersHelper import TriviaGameControllersHelper
 from src.trivia.gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from src.trivia.gameController.triviaGameControllersRepository import TriviaGameControllersRepository
