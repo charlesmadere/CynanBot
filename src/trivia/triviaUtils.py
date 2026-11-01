@@ -2,7 +2,6 @@ import locale
 from collections import defaultdict
 from typing import Final
 
-from .gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from .questions.absTriviaQuestion import AbsTriviaQuestion
 from .questions.triviaQuestionType import TriviaQuestionType
 from .score.triviaScoreResult import TriviaScoreResult
@@ -23,21 +22,17 @@ class TriviaUtils(TriviaUtilsInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        triviaGameControllersHelper: TriviaGameControllersHelperInterface,
         triviaQuestionPresenter: TriviaQuestionPresenterInterface,
         celebratoryEmote: str = '🎉',
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameControllersHelper, TriviaGameControllersHelperInterface):
-            raise TypeError(f'triviaGameControllersHelper argument is malformed: \"{triviaGameControllersHelper}\"')
         elif not isinstance(triviaQuestionPresenter, TriviaQuestionPresenterInterface):
             raise TypeError(f'triviaQuestionPresenter argument is malformed: \"{triviaQuestionPresenter}\"')
         elif not utils.isValidStr(celebratoryEmote):
             raise TypeError(f'celebratoryEmote argument is malformed: \"{celebratoryEmote}\"')
 
         self.__timber: Final[TimberInterface] = timber
-        self.__triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = triviaGameControllersHelper
         self.__triviaQuestionPresenter: Final[TriviaQuestionPresenterInterface] = triviaQuestionPresenter
         self.__celebratoryEmote: Final[str] = celebratoryEmote
 
@@ -604,19 +599,3 @@ class TriviaUtils(TriviaUtilsInterface):
                 toxicStr = f'{toxicStr} {toxicResult.newToxicCountStr} toxics'
 
         return f'{introStr}{triviaStr}{superTriviaStr}{shinyStr}{toxicStr}'.strip()
-
-    async def isPrivilegedTriviaUser(
-        self,
-        twitchChannelId: str,
-        userId: str,
-    ) -> bool:
-        if not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not utils.isValidStr(userId):
-            raise TypeError(f'userId argument is malformed: \"{userId}\"')
-
-        authorizedControllerIds = await self.__triviaGameControllersHelper.getAllLocallyAuthorizedControllerIds(
-            twitchChannelId = twitchChannelId,
-        )
-
-        return userId in authorizedControllerIds

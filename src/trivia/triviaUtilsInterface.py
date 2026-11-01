@@ -141,11 +141,3 @@ class TriviaUtilsInterface(ABC):
         triviaResult: TriviaScoreResult,
     ) -> str:
         pass
-
-    @abstractmethod
-    async def isPrivilegedTriviaUser(
-        self,
-        twitchChannelId: str,
-        userId: str,
-    ) -> bool:
-        pass

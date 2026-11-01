@@ -9,7 +9,7 @@ from ..cuteness.helpers.cutenessHelperInterface import CutenessHelperInterface
 from ..cuteness.settings.cutenessSettingsInterface import CutenessSettingsInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
-from ..trivia.triviaUtilsInterface import TriviaUtilsInterface
+from ..trivia.gameController.triviaGameControllersHelperInterface import TriviaGameControllersHelperInterface
 from ..twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
@@ -31,7 +31,7 @@ class GiveCutenessChatCommand(AbsChatCommand):
         cutenessHelper: CutenessHelperInterface,
         cutenessSettings: CutenessSettingsInterface,
         timber: TimberInterface,
-        triviaUtils: TriviaUtilsInterface,
+        triviaGameControllersHelper: TriviaGameControllersHelperInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
@@ -43,8 +43,8 @@ class GiveCutenessChatCommand(AbsChatCommand):
             raise TypeError(f'cutenessSettings argument is malformed: \"{cutenessSettings}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
+        elif not isinstance(triviaGameControllersHelper, TriviaGameControllersHelperInterface):
+            raise TypeError(f'triviaGameControllersHelper argument is malformed: \"{triviaGameControllersHelper}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
@@ -57,7 +57,7 @@ class GiveCutenessChatCommand(AbsChatCommand):
         self.__cutenessHelper: Final[CutenessHelperInterface] = cutenessHelper
         self.__cutenessSettings: Final[CutenessSettingsInterface] = cutenessSettings
         self.__timber: Final[TimberInterface] = timber
-        self.__triviaUtils: Final[TriviaUtilsInterface] = triviaUtils
+        self.__triviaGameControllersHelper: Final[TriviaGameControllersHelperInterface] = triviaGameControllersHelper
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
@@ -127,12 +127,12 @@ class GiveCutenessChatCommand(AbsChatCommand):
     async def __hasPermissions(self, chatMessage: TwitchChatMessage) -> bool:
         isStreamer = chatMessage.chatterUserId == chatMessage.twitchChannelId
 
-        isPrivilegedTriviaUser = await self.__triviaUtils.isPrivilegedTriviaUser(
+        isTriviaController = await self.__triviaGameControllersHelper.isController(
             twitchChannelId = chatMessage.twitchChannelId,
             userId = chatMessage.chatterUserId,
         )
 
-        return isStreamer or isPrivilegedTriviaUser
+        return isStreamer or isTriviaController
 
     async def __parseArguments(self, chatMessage: TwitchChatMessage) -> Arguments | None:
         argumentsMatch = self.__argumentsPattern.match(chatMessage.text)
