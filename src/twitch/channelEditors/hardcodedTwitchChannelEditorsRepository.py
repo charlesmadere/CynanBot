@@ -60,6 +60,7 @@ class HardcodedTwitchChannelEditorsRepository(HardcodedTwitchChannelEditorsRepos
     async def __getHardcodedCharlyEditorIds(self) -> Collection[str | None]:
         return frozenset({
             await self.__officialTwitchAccountUserIdProvider.getCynanBotUserId(),
+            await self.__officialTwitchAccountUserIdProvider.getFuntoonUserId(),
             await self.__twitchFriendsUserIdRepository.getBastionBlueUserId(),
             await self.__twitchFriendsUserIdRepository.getEddieUserId(),
             await self.__twitchFriendsUserIdRepository.getHarleyHardtUserId(),
