@@ -2619,6 +2619,7 @@ gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface]
 gashaponItemUseCase: Final[GashaponItemUseCaseInterface] = GashaponItemUseCase(
     chatterInventoryRepository = chatterInventoryRepository,
     chatterInventorySettings = chatterInventorySettings,
+    randomUtils = randomUtils,
     timber = timber,
     trollmojiHelper = trollmojiHelper,
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,

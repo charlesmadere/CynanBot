@@ -1,4 +1,3 @@
-import random
 from collections import defaultdict
 from typing import Final
 
@@ -11,6 +10,7 @@ from ..models.useChatterItemAction import UseChatterItemAction
 from ..repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
 from ..settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...timber.timberInterface import TimberInterface
 from ...trollmoji.trollmojiHelperInterface import TrollmojiHelperInterface
 from ...twitch.api.models.twitchSubscriberTier import TwitchSubscriberTier
@@ -23,6 +23,7 @@ class GashaponItemUseCase(GashaponItemUseCaseInterface):
         self,
         chatterInventoryRepository: ChatterInventoryRepositoryInterface,
         chatterInventorySettings: ChatterInventorySettingsInterface,
+        randomUtils: RandomUtilsInterface,
         timber: TimberInterface,
         trollmojiHelper: TrollmojiHelperInterface,
         twitchSubscriptionsRepository: TwitchSubscriptionsRepositoryInterface,
@@ -31,6 +32,8 @@ class GashaponItemUseCase(GashaponItemUseCaseInterface):
             raise TypeError(f'chatterInventoryRepository argument is malformed: \"{chatterInventoryRepository}\"')
         elif not isinstance(chatterInventorySettings, ChatterInventorySettingsInterface):
             raise TypeError(f'chatterInventorySettings argument is malformed: \"{chatterInventorySettings}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
@@ -40,6 +43,7 @@ class GashaponItemUseCase(GashaponItemUseCaseInterface):
 
         self.__chatterInventoryRepository: Final[ChatterInventoryRepositoryInterface] = chatterInventoryRepository
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__timber: Final[TimberInterface] = timber
         self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
         self.__twitchSubscriptionsRepository: Final[TwitchSubscriptionsRepositoryInterface] = twitchSubscriptionsRepository
@@ -103,7 +107,7 @@ class GashaponItemUseCase(GashaponItemUseCaseInterface):
             awardedAmount = int(max(0, pullRate.minimumPullAmount))
 
             for _ in range(pullRate.iterations):
-                randomNumber = random.random()
+                randomNumber = self.__randomUtils.float()
 
                 if randomNumber <= pullRate.pullRate:
                     awardedAmount += 1
