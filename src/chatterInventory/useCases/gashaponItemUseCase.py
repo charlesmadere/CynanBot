@@ -137,7 +137,7 @@ class GashaponItemUseCase(GashaponItemUseCaseInterface):
             if changeAmount != 0:
                 await self.__chatterInventoryRepository.update(
                     itemType = itemType,
-                    changeAmount = awardedItems[itemType],
+                    changeAmount = changeAmount,
                     chatterUserId = action.chatterUserId,
                     twitchChannelId = action.twitchChannelId,
                 )
