@@ -8,7 +8,6 @@ from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.airStrikeTimeoutAction import AirStrikeTimeoutAction
 from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ..timeoutTarget import TimeoutTarget
-from ....asplodieStats.models.asplodieStats import AsplodieStats
 from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
 from ....twitch.localModels.twitchUserInterface import TwitchUserInterface
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
@@ -19,7 +18,6 @@ class AirStrikeTimeoutEvent(AbsTimeoutEvent):
     originatingAction: AirStrikeTimeoutAction
     timeoutDuration: CalculatedTimeoutDuration
     updatedInventory: ChatterItemGiveResult | None
-    asplodieStats: frozendict[TimeoutTarget, AsplodieStats]
     timeoutResults: frozendict[TimeoutTarget, TwitchTimeoutResult]
     targets: FrozenList[TimeoutTarget]
     bombEmote: str

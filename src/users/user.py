@@ -21,7 +21,6 @@ class User(UserInterface):
 
     def __init__(
         self,
-        areAsplodieStatsEnabled: bool,
         areBeanStatsEnabled: bool,
         areCheerActionsEnabled: bool,
         areEditStreamGameCommandsEnabled: bool,
@@ -133,9 +132,7 @@ class User(UserInterface):
         ttsBoosterPacks: FrozenList[TtsBoosterPack] | None,
         timeZones: FrozenList[tzinfo] | None,
     ):
-        if not utils.isValidBool(areAsplodieStatsEnabled):
-            raise TypeError(f'areAsplodieStatsEnabled argument is malformed: \"{areAsplodieStatsEnabled}\"')
-        elif not utils.isValidBool(areBeanStatsEnabled):
+        if not utils.isValidBool(areBeanStatsEnabled):
             raise TypeError(f'areBeanStatsEnabled argument is malformed: \"{areBeanStatsEnabled}\"')
         elif not utils.isValidBool(areCheerActionsEnabled):
             raise TypeError(f'areCheerActionsEnabled argument is malformed: \"{areCheerActionsEnabled}\"')
@@ -352,7 +349,6 @@ class User(UserInterface):
         elif timeZones is not None and not isinstance(timeZones, FrozenList):
             raise TypeError(f'timeZones argument is malformed: \"{timeZones}\"')
 
-        self.__areAsplodieStatsEnabled: Final[bool] = areAsplodieStatsEnabled
         self.__areBeanStatsEnabled: Final[bool] = areBeanStatsEnabled
         self.__areCheerActionsEnabled: Final[bool] = areCheerActionsEnabled
         self.__areEditStreamGameCommandsEnabled: Final[bool] = areEditStreamGameCommandsEnabled
@@ -483,10 +479,6 @@ class User(UserInterface):
     @property
     def anivMessageCopyTimeoutProbability(self) -> float | None:
         return self.__anivMessageCopyTimeoutProbability
-
-    @property
-    def areAsplodieStatsEnabled(self) -> bool:
-        return self.__areAsplodieStatsEnabled
 
     @property
     def areBeanStatsEnabled(self) -> bool:

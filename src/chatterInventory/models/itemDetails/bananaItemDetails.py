@@ -5,3 +5,4 @@ from dataclasses import dataclass
 class BananaItemDetails:
     randomChanceEnabled: bool
     durationSeconds: int
+    inventoryMax: int | None

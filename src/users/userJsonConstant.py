@@ -7,7 +7,6 @@ class UserJsonConstant(Enum):
     ANIV_MESSAGE_COPY_RIP_BOZO_EMOTE = auto()
     ANIV_MESSAGE_COPY_TIMEOUT_CHAT_REPORTING_ENABLED = auto()
     ANIV_MESSAGE_COPY_TIMEOUT_ENABLED = auto()
-    ASPLODIE_STATS_ENABLED = auto()
     BEAN_STATS_ENABLED = auto()
     BLUE_SKY_URL = auto()
     CHATTER_INVENTORY_ENABLED = auto()
@@ -45,7 +44,6 @@ class UserJsonConstant(Enum):
             case UserJsonConstant.ANIV_MESSAGE_COPY_RIP_BOZO_EMOTE: return 'anivMessageCopyRipBozoEmote'
             case UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_CHAT_REPORTING_ENABLED: return 'anivMessageCopyTimeoutChatReportingEnabled'
             case UserJsonConstant.ANIV_MESSAGE_COPY_TIMEOUT_ENABLED: return 'anivMessageCopyTimeoutEnabled'
-            case UserJsonConstant.ASPLODIE_STATS_ENABLED: return 'asplodieStatsEnabled'
             case UserJsonConstant.BEAN_STATS_ENABLED: return 'beanStatsEnabled'
             case UserJsonConstant.BLUE_SKY_URL: return 'blueSkyUrl'
             case UserJsonConstant.CHATTER_INVENTORY_ENABLED: return 'chatterInventoryEnabled'

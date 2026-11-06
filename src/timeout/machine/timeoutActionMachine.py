@@ -62,8 +62,6 @@ from ..useCases.determineTimeoutTargetUseCaseInterface import DetermineTimeoutTa
 from ..useCases.determineTm36SplashTargetsUseCaseInterface import DetermineTm36SplashTargetsUseCaseInterface
 from ...aniv.repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
     AnivCopyMessageTimeoutScoreRepositoryInterface
-from ...asplodieStats.models.asplodieStats import AsplodieStats
-from ...asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from ...chatterInventory.helpers.chatterInventoryHelperInterface import ChatterInventoryHelperInterface
 from ...chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
 from ...chatterInventory.models.chatterItemType import ChatterItemType
@@ -88,7 +86,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
     def __init__(
         self,
         anivCopyMessageTimeoutScoreRepository: AnivCopyMessageTimeoutScoreRepositoryInterface,
-        asplodieStatsRepository: AsplodieStatsRepositoryInterface,
         backgroundTaskHelper: BackgroundTaskHelperInterface,
         calculateTimeoutDurationUseCase: CalculateTimeoutDurationUseCaseInterface,
         chatterInventoryHelper: ChatterInventoryHelperInterface,
@@ -112,8 +109,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
     ):
         if not isinstance(anivCopyMessageTimeoutScoreRepository, AnivCopyMessageTimeoutScoreRepositoryInterface):
             raise TypeError(f'anivCopyMessageTimeoutScoreRepository argument is malformed: \"{anivCopyMessageTimeoutScoreRepository}\"')
-        elif not isinstance(asplodieStatsRepository, AsplodieStatsRepositoryInterface):
-            raise TypeError(f'asplodieStatsRepository argument is malformed: \"{asplodieStatsRepository}\"')
         elif not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(calculateTimeoutDurationUseCase, CalculateTimeoutDurationUseCaseInterface):
@@ -160,7 +155,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__anivCopyMessageTimeoutScoreRepository: Final[AnivCopyMessageTimeoutScoreRepositoryInterface] = anivCopyMessageTimeoutScoreRepository
-        self.__asplodieStatsRepository: Final[AsplodieStatsRepositoryInterface] = asplodieStatsRepository
         self.__backgroundTaskHelper: Final[BackgroundTaskHelperInterface] = backgroundTaskHelper
         self.__calculateTimeoutDurationUseCase: Final[CalculateTimeoutDurationUseCaseInterface] = calculateTimeoutDurationUseCase
         self.__chatterInventoryHelper: Final[ChatterInventoryHelperInterface] = chatterInventoryHelper
@@ -256,23 +250,13 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
                 user = action.user,
             )
 
-        frozenTimeoutResults: frozendict[TimeoutTarget, TwitchTimeoutResult] = frozendict(timeoutResults)
         successfulTimeoutTargets: FrozenList[TimeoutTarget] = FrozenList()
-        asplodieStats: dict[TimeoutTarget, AsplodieStats] = dict()
 
         for timeoutTarget, timeoutResult in timeoutResults.items():
             if timeoutResult is TwitchTimeoutResult.SUCCESS:
                 successfulTimeoutTargets.append(timeoutTarget)
 
-                asplodieStats[timeoutTarget] = await self.__asplodieStatsRepository.addAsplodie(
-                    isSelfAsplodie = timeoutTarget.userId == action.instigatorUserId,
-                    durationAsplodiedSeconds = timeoutDuration.seconds,
-                    chatterUserId = timeoutTarget.userId,
-                    twitchChannelId = action.twitchChannelId,
-                )
-
         successfulTimeoutTargets.freeze()
-        frozenAsplodieStats: frozendict[TimeoutTarget, AsplodieStats] = frozendict(asplodieStats)
 
         if len(successfulTimeoutTargets) == 0:
             if action.bits >= 1:
@@ -303,8 +287,7 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             originatingAction = action,
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
-            asplodieStats = frozenAsplodieStats,
-            timeoutResults = frozenTimeoutResults,
+            timeoutResults = frozendict(timeoutResults),
             targets = successfulTimeoutTargets,
             bombEmote = await self.__trollmojiHelper.getBombEmoteOrBackup(),
             eventId = await self.__timeoutIdGenerator.generateEventId(),
@@ -493,13 +476,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
-        asplodieStats = await self.__asplodieStatsRepository.addAsplodie(
-            isSelfAsplodie = timeoutData.timeoutTarget.userId == action.instigatorUserId,
-            durationAsplodiedSeconds = timeoutDuration.seconds,
-            chatterUserId = timeoutData.timeoutTarget.userId,
-            twitchChannelId = action.twitchChannelId,
-        )
-
         updatedInventory: ChatterItemGiveResult | None = None
 
         if not action.ignoreInventory:
@@ -511,7 +487,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             )
 
         await self.__submitEvent(BananaTimeoutEvent(
-            asplodieStats = asplodieStats,
             originatingAction = action,
             isReverse = timeoutData.isReverse,
             timeoutDuration = timeoutDuration,
@@ -719,13 +694,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
-        asplodieStats = await self.__asplodieStatsRepository.addAsplodie(
-            isSelfAsplodie = timeoutTarget.userId == action.instigatorUserId,
-            durationAsplodiedSeconds = timeoutDuration.seconds,
-            chatterUserId = timeoutTarget.userId,
-            twitchChannelId = action.twitchChannelId,
-        )
-
         updatedInventory: ChatterItemGiveResult | None = None
 
         if not action.ignoreInventory:
@@ -737,7 +705,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             )
 
         await self.__submitEvent(GrenadeTimeoutEvent(
-            asplodieStats = asplodieStats,
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,
             originatingAction = action,
@@ -866,13 +833,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             if splashTimeoutResult is TwitchTimeoutResult.SUCCESS:
                 successfullyHitSplashTargets.append(splashTimeoutTarget)
 
-                await self.__asplodieStatsRepository.addAsplodie(
-                    isSelfAsplodie = False,
-                    durationAsplodiedSeconds = timeoutDuration.seconds,
-                    chatterUserId = splashTimeoutTarget.userId,
-                    twitchChannelId = action.twitchChannelId,
-                )
-
         successfullyHitSplashTargets.freeze()
         updatedInventory: ChatterItemGiveResult | None = None
 
@@ -976,13 +936,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             ))
             return
 
-        asplodieStats = await self.__asplodieStatsRepository.addAsplodie(
-            isSelfAsplodie = timeoutTarget.userId == action.instigatorUserId,
-            durationAsplodiedSeconds = timeoutDuration.seconds,
-            chatterUserId = timeoutTarget.userId,
-            twitchChannelId = action.twitchChannelId,
-        )
-
         updatedInventory: ChatterItemGiveResult | None = None
 
         if not action.ignoreInventory:
@@ -994,7 +947,6 @@ class TimeoutActionMachine(TimeoutActionMachineInterface):
             )
 
         await self.__submitEvent(VoreTimeoutEvent(
-            asplodieStats = asplodieStats,
             timeoutTarget = timeoutTarget,
             timeoutDuration = timeoutDuration,
             updatedInventory = updatedInventory,

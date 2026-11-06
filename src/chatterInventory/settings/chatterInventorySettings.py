@@ -25,20 +25,24 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         chatterInventoryMapper: ChatterInventoryMapperInterface,
         settingsJsonReader: JsonReaderInterface,
         defaultAirStrikeItemDetails: AirStrikeItemDetails = AirStrikeItemDetails(
+            inventoryMax = None,
             maxDurationSeconds = 56,
             minDurationSeconds = 42,
             maxTargets = 11,
             minTargets = 8,
         ),
         defaultAnimalPetItemDetails: AnimalPetItemDetails = AnimalPetItemDetails(
+            inventoryMax = None,
             soundDirectory = 'sounds/animalPets',
         ),
         defaultBananaItemDetails: BananaItemDetails = BananaItemDetails(
             randomChanceEnabled = True,
             durationSeconds = 45,
+            inventoryMax = 3,
         ),
         defaultCrowdMicItemDetails: CrowdMicItemDetails = CrowdMicItemDetails(
             durationSeconds = 210, # 3 minutes 30 seconds
+            inventoryMax = None,
         ),
         defaultGashaponItemDetails: GashaponItemDetails = GashaponItemDetails(
             pullRates = frozendict({
@@ -93,15 +97,18 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             }),
         ),
         defaultGrenadeItemDetails: GrenadeItemDetails = GrenadeItemDetails(
+            inventoryMax = 10,
             maxDurationSeconds = 32,
             minDurationSeconds = 24,
         ),
         defaultDaysBetweenGashaponRewards: int = 21,
         defaultTm36ItemDetails: Tm36ItemDetails = Tm36ItemDetails(
+            inventoryMax = None,
             maxDurationSeconds = 300, # 5 minutes
             minDurationSeconds = 150, # 2 minutes 30 seconds
         ),
         defaultVoreItemDetails: VoreItemDetails = VoreItemDetails(
+            inventoryMax = None,
             timeoutDurationSeconds = 1800, # 30 minutes
         ),
         defaultEnabledItemTypes: frozenset[ChatterItemType] = frozenset({

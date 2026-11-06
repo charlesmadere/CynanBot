@@ -23,9 +23,6 @@ from src.aniv.repositories.mostRecentAnivMessageRepository import MostRecentAniv
 from src.aniv.repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from src.aniv.settings.anivSettings import AnivSettings
 from src.aniv.settings.anivSettingsInterface import AnivSettingsInterface
-from src.asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
-from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRepository
-from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from src.channelPointRedemptions.absChannelPointsRedemption import AbsChannelPointRedemption
 from src.channelPointRedemptions.cutenessPointRedemption import CutenessPointRedemption
 from src.channelPointRedemptions.discordPointRedemption import DiscordPointRedemption
@@ -51,7 +48,6 @@ from src.chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatComma
 from src.chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
 from src.chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
 from src.chatCommands.answerChatCommand import AnswerChatCommand
-from src.chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
 from src.chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
 from src.chatCommands.clearSuperTriviaQueueChatCommand import ClearSuperTriviaQueueChatCommand
 from src.chatCommands.commandsChatCommand import CommandsChatCommand
@@ -1591,13 +1587,6 @@ triviaGameMachine: Final[TriviaGameMachineInterface] = TriviaGameMachine(
 ## Timeout initialization section ##
 ####################################
 
-asplodieStatsPresenter: Final[AsplodieStatsPresenter] = AsplodieStatsPresenter()
-
-asplodieStatsRepository: Final[AsplodieStatsRepositoryInterface] = AsplodieStatsRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-)
-
 guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = GuaranteedTimeoutUsersRepository(
     timber = timber,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
@@ -1695,7 +1684,6 @@ timeoutEventListener: Final[TimeoutEventListener] = TimeoutEventHandler(
 
 timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachine(
     anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
-    asplodieStatsRepository = asplodieStatsRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     calculateTimeoutDurationUseCase = calculateTimeoutDurationUseCase,
     chatterInventoryHelper = chatterInventoryHelper,
@@ -2089,12 +2077,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         triviaGameMachine = triviaGameMachine,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettings = triviaSettings,
-    ),
-    AsplodieStatsChatCommand(
-        asplodieStatsPresenter = asplodieStatsPresenter,
-        asplodieStatsRepository = asplodieStatsRepository,
-        timber = timber,
-        twitchChatMessenger = twitchChatMessenger,
     ),
     BanTriviaQuestionChatCommand(
         timber = timber,

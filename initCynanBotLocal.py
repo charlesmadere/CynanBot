@@ -8,9 +8,6 @@ from src.aniv.mapper.anivJsonMapperInterface import AnivJsonMapperInterface
 from src.aniv.repositories.anivCopyMessageTimeoutScoreRepository import AnivCopyMessageTimeoutScoreRepository
 from src.aniv.repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
     AnivCopyMessageTimeoutScoreRepositoryInterface
-from src.asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
-from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRepository
-from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from src.channelPointRedemptions.absChannelPointsRedemption import AbsChannelPointRedemption
 from src.channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
@@ -1609,13 +1606,6 @@ trollmojiHelper: Final[TrollmojiHelperInterface] = TrollmojiHelper(
 ## Timeout initialization section ##
 ####################################
 
-asplodieStatsPresenter: Final[AsplodieStatsPresenter] = AsplodieStatsPresenter()
-
-asplodieStatsRepository: Final[AsplodieStatsRepositoryInterface] = AsplodieStatsRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-)
-
 guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = GuaranteedTimeoutUsersRepository(
     timber = timber,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
@@ -1791,7 +1781,6 @@ timeoutEventListener: Final[TimeoutEventListener] = TimeoutEventHandler(
 
 timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachine(
     anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
-    asplodieStatsRepository = asplodieStatsRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     calculateTimeoutDurationUseCase = calculateTimeoutDurationUseCase,
     chatterInventoryHelper = chatterInventoryHelper,
@@ -1814,7 +1803,6 @@ timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachin
 
 cassetteTapeItemUseCase: Final[CassetteTapeItemUseCaseInterface] = CassetteTapeItemUseCase(
     chatterInventorySettings = chatterInventorySettings,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchUserIdsHelper = twitchUserIdsHelper,
     voicemailHelper = voicemailHelper,
     voicemailSettingsRepository = voicemailSettingsRepository,
