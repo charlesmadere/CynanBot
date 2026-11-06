@@ -95,12 +95,17 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         if not isinstance(itemDetailsJson, dict) or len(itemDetailsJson) == 0:
             return None
 
+        inventoryMax: int | None = None
+        if 'inventoryMax' in itemDetailsJson and utils.isValidInt(itemDetailsJson.get('inventoryMax')):
+            inventoryMax = utils.getIntFromDict(itemDetailsJson, 'inventoryMax')
+
         maxDurationSeconds = utils.getIntFromDict(itemDetailsJson, 'maxDurationSeconds')
         minDurationSeconds = utils.getIntFromDict(itemDetailsJson, 'minDurationSeconds')
         maxTargets = utils.getIntFromDict(itemDetailsJson, 'maxTargets')
         minTargets = utils.getIntFromDict(itemDetailsJson, 'minTargets')
 
         return AirStrikeItemDetails(
+            inventoryMax = inventoryMax,
             maxDurationSeconds = maxDurationSeconds,
             minDurationSeconds = minDurationSeconds,
             maxTargets = maxTargets,
@@ -114,9 +119,14 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         if not isinstance(itemDetailsJson, dict) or len(itemDetailsJson) == 0:
             return None
 
+        inventoryMax: int | None = None
+        if 'inventoryMax' in itemDetailsJson and utils.isValidInt(itemDetailsJson.get('inventoryMax')):
+            inventoryMax = utils.getIntFromDict(itemDetailsJson, 'inventoryMax')
+
         soundDirectory = utils.getStrFromDict(itemDetailsJson, 'soundDirectory')
 
         return AnimalPetItemDetails(
+            inventoryMax = inventoryMax,
             soundDirectory = soundDirectory,
         )
 
@@ -130,9 +140,14 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         randomChanceEnabled = utils.getBoolFromDict(itemDetailsJson, 'randomChanceEnabled')
         durationSeconds = utils.getIntFromDict(itemDetailsJson, 'durationSeconds')
 
+        inventoryMax: int | None = None
+        if 'inventoryMax' in itemDetailsJson and utils.isValidInt(itemDetailsJson.get('inventoryMax')):
+            inventoryMax = utils.getIntFromDict(itemDetailsJson, 'inventoryMax')
+
         return BananaItemDetails(
             randomChanceEnabled = randomChanceEnabled,
             durationSeconds = durationSeconds,
+            inventoryMax = inventoryMax,
         )
 
     async def parseCrowdMicItemDetails(
@@ -144,8 +159,13 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
 
         durationSeconds = utils.getIntFromDict(itemDetailsJson, 'durationSeconds')
 
+        inventoryMax: int | None = None
+        if 'inventoryMax' in itemDetailsJson and utils.isValidInt(itemDetailsJson.get('inventoryMax')):
+            inventoryMax = utils.getIntFromDict(itemDetailsJson, 'inventoryMax')
+
         return CrowdMicItemDetails(
             durationSeconds = durationSeconds,
+            inventoryMax = inventoryMax,
         )
 
     async def parseGashaponItemDetails(
@@ -203,10 +223,15 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         if not isinstance(itemDetailsJson, dict) or len(itemDetailsJson) == 0:
             return None
 
+        inventoryMax: int | None = None
+        if 'inventoryMax' in itemDetailsJson and utils.isValidInt(itemDetailsJson.get('inventoryMax')):
+            inventoryMax = utils.getIntFromDict(itemDetailsJson, 'inventoryMax')
+
         maxDurationSeconds = utils.getIntFromDict(itemDetailsJson, 'maxDurationSeconds')
         minDurationSeconds = utils.getIntFromDict(itemDetailsJson, 'minDurationSeconds')
 
         return GrenadeItemDetails(
+            inventoryMax = inventoryMax,
             maxDurationSeconds = maxDurationSeconds,
             minDurationSeconds = minDurationSeconds,
         )
@@ -252,10 +277,15 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         if not isinstance(itemDetailsJson, dict) or len(itemDetailsJson) == 0:
             return None
 
+        inventoryMax: int | None = None
+        if 'inventoryMax' in itemDetailsJson and utils.isValidInt(itemDetailsJson.get('inventoryMax')):
+            inventoryMax = utils.getIntFromDict(itemDetailsJson, 'inventoryMax')
+
         maxDurationSeconds = utils.getIntFromDict(itemDetailsJson, 'maxDurationSeconds')
         minDurationSeconds = utils.getIntFromDict(itemDetailsJson, 'minDurationSeconds')
 
         return Tm36ItemDetails(
+            inventoryMax = inventoryMax,
             maxDurationSeconds = maxDurationSeconds,
             minDurationSeconds = minDurationSeconds,
         )
@@ -267,9 +297,14 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         if not isinstance(itemDetailsJson, dict) or len(itemDetailsJson) == 0:
             return None
 
+        inventoryMax: int | None = None
+        if 'inventoryMax' in itemDetailsJson and utils.isValidInt(itemDetailsJson.get('inventoryMax')):
+            inventoryMax = utils.getIntFromDict(itemDetailsJson, 'inventoryMax')
+
         timeoutDurationSeconds = utils.getIntFromDict(itemDetailsJson, 'timeoutDurationSeconds')
 
         return VoreItemDetails(
+            inventoryMax = inventoryMax,
             timeoutDurationSeconds = timeoutDurationSeconds,
         )
 

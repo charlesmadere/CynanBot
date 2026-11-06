@@ -24,11 +24,3 @@ class VoicemailSettingsRepositoryInterface(Clearable, ABC):
     @abstractmethod
     async def isEnabled(self) -> bool:
         pass
-
-    @abstractmethod
-    async def targetUserMustBeFollowing(self) -> bool:
-        pass
-
-    @abstractmethod
-    async def targetUserMustNotBeActiveInChat(self) -> bool:
-        pass

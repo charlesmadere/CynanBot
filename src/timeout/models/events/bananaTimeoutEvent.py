@@ -7,7 +7,6 @@ from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ..timeoutDiceRoll import TimeoutDiceRoll
 from ..timeoutDiceRollFailureData import TimeoutDiceRollFailureData
 from ..timeoutTarget import TimeoutTarget
-from ....asplodieStats.models.asplodieStats import AsplodieStats
 from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
 from ....twitch.localModels.twitchUserInterface import TwitchUserInterface
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
@@ -15,7 +14,6 @@ from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 @dataclass(frozen = True, slots = True)
 class BananaTimeoutEvent(AbsTimeoutEvent):
-    asplodieStats: AsplodieStats
     originatingAction: BananaTimeoutAction
     isReverse: bool
     timeoutDuration: CalculatedTimeoutDuration

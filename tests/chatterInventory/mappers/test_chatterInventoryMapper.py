@@ -25,6 +25,7 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_parseAirStrikeItemDetails(self):
         details = AirStrikeItemDetails(
+            inventoryMax = None,
             maxDurationSeconds = 75,
             minDurationSeconds = 55,
             maxTargets = 13,
@@ -32,6 +33,7 @@ class TestChatterInventoryMapper:
         )
 
         result = await self.mapper.parseAirStrikeItemDetails({
+            'inventoryMax': details.inventoryMax,
             'maxDurationSeconds': details.maxDurationSeconds,
             'minDurationSeconds': details.minDurationSeconds,
             'maxTargets': details.maxTargets,
@@ -40,6 +42,7 @@ class TestChatterInventoryMapper:
 
         assert isinstance(result, AirStrikeItemDetails)
         assert result == details
+        assert result.inventoryMax == details.inventoryMax
         assert result.maxDurationSeconds == details.maxDurationSeconds
         assert result.minDurationSeconds == details.minDurationSeconds
         assert result.maxTargets == details.maxTargets
@@ -58,15 +61,18 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_parseAnimalPetItemDetails(self):
         details = AnimalPetItemDetails(
+            inventoryMax = None,
             soundDirectory = 'sounds/animalPets',
         )
 
         result = await self.mapper.parseAnimalPetItemDetails({
+            'inventoryMax': details.inventoryMax,
             'soundDirectory': details.soundDirectory,
         })
 
         assert isinstance(result, AnimalPetItemDetails)
         assert result == details
+        assert result.inventoryMax == details.inventoryMax
         assert result.soundDirectory == details.soundDirectory
 
     @pytest.mark.asyncio
@@ -84,17 +90,20 @@ class TestChatterInventoryMapper:
         details = BananaItemDetails(
             randomChanceEnabled = True,
             durationSeconds = 60,
+            inventoryMax = 3,
         )
 
         result = await self.mapper.parseBananaItemDetails({
             'randomChanceEnabled': details.randomChanceEnabled,
             'durationSeconds': details.durationSeconds,
+            'inventoryMax': details.inventoryMax,
         })
 
         assert isinstance(result, BananaItemDetails)
         assert result == details
         assert result.randomChanceEnabled == details.randomChanceEnabled
         assert result.durationSeconds == details.durationSeconds
+        assert result.inventoryMax == details.inventoryMax
 
     @pytest.mark.asyncio
     async def test_parseBananaItemDetails_withEmptyDictionary(self):
@@ -110,15 +119,18 @@ class TestChatterInventoryMapper:
     async def test_parseCrowdMicItemDetails(self):
         details = CrowdMicItemDetails(
             durationSeconds = 300,
+            inventoryMax = 3,
         )
 
         result = await self.mapper.parseCrowdMicItemDetails({
             'durationSeconds': details.durationSeconds,
+            'inventoryMax': details.inventoryMax,
         })
 
         assert isinstance(result, CrowdMicItemDetails)
         assert result == details
         assert result.durationSeconds == details.durationSeconds
+        assert result.inventoryMax == details.inventoryMax
 
     @pytest.mark.asyncio
     async def test_parseCrowdMicItemDetails_withEmptyDictionary(self):
@@ -368,17 +380,20 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_parseGrenadeItemDetails(self):
         details = GrenadeItemDetails(
+            inventoryMax = 99,
             maxDurationSeconds = 60,
             minDurationSeconds = 30,
         )
 
         result = await self.mapper.parseGrenadeItemDetails({
+            'inventoryMax': details.inventoryMax,
             'maxDurationSeconds': details.maxDurationSeconds,
             'minDurationSeconds': details.minDurationSeconds,
         })
 
         assert isinstance(result, GrenadeItemDetails)
         assert result == details
+        assert result.inventoryMax == details.inventoryMax
         assert result.maxDurationSeconds == details.maxDurationSeconds
         assert result.minDurationSeconds == details.minDurationSeconds
 
@@ -846,17 +861,20 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_parseTm36ItemDetails(self):
         details = Tm36ItemDetails(
+            inventoryMax = 999,
             maxDurationSeconds = 600,
             minDurationSeconds = 300,
         )
 
         result = await self.mapper.parseTm36ItemDetails({
+            'inventoryMax': details.inventoryMax,
             'maxDurationSeconds': details.maxDurationSeconds,
             'minDurationSeconds': details.minDurationSeconds,
         })
 
         assert isinstance(result, Tm36ItemDetails)
         assert result == details
+        assert result.inventoryMax == details.inventoryMax
         assert result.maxDurationSeconds == details.maxDurationSeconds
         assert result.minDurationSeconds == details.minDurationSeconds
 
@@ -873,15 +891,18 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_parseVoreItemDetails(self):
         details = VoreItemDetails(
+            inventoryMax = 1,
             timeoutDurationSeconds = 86400,
         )
 
         result = await self.mapper.parseVoreItemDetails({
+            'inventoryMax': details.inventoryMax,
             'timeoutDurationSeconds': details.timeoutDurationSeconds,
         })
 
         assert isinstance(result, VoreItemDetails)
         assert result == details
+        assert result.inventoryMax == details.inventoryMax
         assert result.timeoutDurationSeconds == details.timeoutDurationSeconds
 
     @pytest.mark.asyncio

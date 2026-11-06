@@ -23,9 +23,6 @@ from src.aniv.repositories.mostRecentAnivMessageRepository import MostRecentAniv
 from src.aniv.repositories.mostRecentAnivMessageRepositoryInterface import MostRecentAnivMessageRepositoryInterface
 from src.aniv.settings.anivSettings import AnivSettings
 from src.aniv.settings.anivSettingsInterface import AnivSettingsInterface
-from src.asplodieStats.asplodieStatsPresenter import AsplodieStatsPresenter
-from src.asplodieStats.repository.asplodieStatsRepository import AsplodieStatsRepository
-from src.asplodieStats.repository.asplodieStatsRepositoryInterface import AsplodieStatsRepositoryInterface
 from src.channelPointRedemptions.absChannelPointsRedemption import AbsChannelPointRedemption
 from src.channelPointRedemptions.casualGamePollPointRedemption import CasualGamePollPointRedemption
 from src.channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
@@ -61,7 +58,6 @@ from src.chatCommands.addTriviaAnswerChatCommand import AddTriviaAnswerChatComma
 from src.chatCommands.addTriviaControllerChatCommand import AddTriviaControllerChatCommand
 from src.chatCommands.anivTimeoutsChatCommand import AnivTimeoutsChatCommand
 from src.chatCommands.answerChatCommand import AnswerChatCommand
-from src.chatCommands.asplodieStatsChatCommand import AsplodieStatsChatCommand
 from src.chatCommands.banTriviaQuestionChatCommand import BanTriviaQuestionChatCommand
 from src.chatCommands.chatterInventoryChatCommand import ChatterInventoryChatCommand
 from src.chatCommands.clearSuperTriviaQueueChatCommand import ClearSuperTriviaQueueChatCommand
@@ -2395,13 +2391,6 @@ triviaGameMachine: Final[TriviaGameMachineInterface] = TriviaGameMachine(
 ## Timeout initialization section ##
 ####################################
 
-asplodieStatsPresenter: Final[AsplodieStatsPresenter] = AsplodieStatsPresenter()
-
-asplodieStatsRepository: Final[AsplodieStatsRepositoryInterface] = AsplodieStatsRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-)
-
 guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = GuaranteedTimeoutUsersRepository(
     timber = timber,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
@@ -2577,7 +2566,6 @@ timeoutEventListener: Final[TimeoutEventListener] = TimeoutEventHandler(
 
 timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachine(
     anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
-    asplodieStatsRepository = asplodieStatsRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     calculateTimeoutDurationUseCase = calculateTimeoutDurationUseCase,
     chatterInventoryHelper = chatterInventoryHelper,
@@ -2600,7 +2588,6 @@ timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachin
 
 cassetteTapeItemUseCase: Final[CassetteTapeItemUseCaseInterface] = CassetteTapeItemUseCase(
     chatterInventorySettings = chatterInventorySettings,
-    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchUserIdsHelper = twitchUserIdsHelper,
     voicemailHelper = voicemailHelper,
     voicemailSettingsRepository = voicemailSettingsRepository,
@@ -2632,6 +2619,7 @@ gashaponRewardHistoryRepository: Final[GashaponRewardHistoryRepositoryInterface]
 gashaponItemUseCase: Final[GashaponItemUseCaseInterface] = GashaponItemUseCase(
     chatterInventoryRepository = chatterInventoryRepository,
     chatterInventorySettings = chatterInventorySettings,
+    randomUtils = randomUtils,
     timber = timber,
     trollmojiHelper = trollmojiHelper,
     twitchSubscriptionsRepository = twitchSubscriptionsRepository,
@@ -3313,12 +3301,6 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         triviaGameMachine = triviaGameMachine,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettings = triviaSettings,
-    ),
-    AsplodieStatsChatCommand(
-        asplodieStatsPresenter = asplodieStatsPresenter,
-        asplodieStatsRepository = asplodieStatsRepository,
-        timber = timber,
-        twitchChatMessenger = twitchChatMessenger,
     ),
     BanTriviaQuestionChatCommand(
         timber = timber,

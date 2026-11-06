@@ -140,7 +140,6 @@ class UsersRepository(UsersRepositoryInterface):
         elif not isinstance(userJson, dict):
             raise TypeError(f'userJson argument is malformed: \"{userJson}\"')
 
-        areAsplodieStatsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.ASPLODIE_STATS_ENABLED.jsonKey, False)
         areBeanStatsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.BEAN_STATS_ENABLED.jsonKey, False)
         areCheerActionsEnabled = utils.getBoolFromDict(userJson, UserJsonConstant.CHEER_ACTIONS_ENABLED.jsonKey, False)
         areEditStreamGameCommandsEnabled = utils.getBoolFromDict(userJson, 'editStreamGameCommandsEnabled', False)
@@ -358,7 +357,6 @@ class UsersRepository(UsersRepositoryInterface):
             mouseCursorRewardId = utils.getStrFromDict(userJson, 'mouseCursorRewardId', '')
 
         user = User(
-            areAsplodieStatsEnabled = areAsplodieStatsEnabled,
             areBeanStatsEnabled = areBeanStatsEnabled,
             areCheerActionsEnabled = areCheerActionsEnabled,
             areEditStreamGameCommandsEnabled = areEditStreamGameCommandsEnabled,

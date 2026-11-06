@@ -5,7 +5,6 @@ from ..actions.absTimeoutAction import AbsTimeoutAction
 from ..actions.grenadeTimeoutAction import GrenadeTimeoutAction
 from ..calculatedTimeoutDuration import CalculatedTimeoutDuration
 from ..timeoutTarget import TimeoutTarget
-from ....asplodieStats.models.asplodieStats import AsplodieStats
 from ....chatterInventory.models.chatterItemGiveResult import ChatterItemGiveResult
 from ....twitch.localModels.twitchUserInterface import TwitchUserInterface
 from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
@@ -13,7 +12,6 @@ from ....twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
 @dataclass(frozen = True, slots = True)
 class GrenadeTimeoutEvent(AbsTimeoutEvent):
-    asplodieStats: AsplodieStats
     timeoutDuration: CalculatedTimeoutDuration
     updatedInventory: ChatterItemGiveResult | None
     originatingAction: GrenadeTimeoutAction
