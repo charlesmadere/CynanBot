@@ -14,6 +14,7 @@ class VoicemailHelperInterface(ABC):
         message: str | None,
         originatingUserId: str,
         targetUserId: str,
+        twitchAccessToken: str,
         twitchChannelId: str,
     ) -> AddVoicemailResult:
         pass

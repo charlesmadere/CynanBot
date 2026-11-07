@@ -9,6 +9,7 @@ from ..models.chatterItemType import ChatterItemType
 from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
 from ..models.itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from ..models.itemDetails.bananaItemDetails import BananaItemDetails
+from ..models.itemDetails.cassetteTapeItemDetails import CassetteTapeItemDetails
 from ..models.itemDetails.crowdMicItemDetails import CrowdMicItemDetails
 from ..models.itemDetails.gashaponItemDetails import GashaponItemDetails
 from ..models.itemDetails.gashaponItemPullRate import GashaponItemPullRate
@@ -147,6 +148,21 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         return BananaItemDetails(
             randomChanceEnabled = randomChanceEnabled,
             durationSeconds = durationSeconds,
+            inventoryMax = inventoryMax,
+        )
+
+    async def parseCassetteTapeItemDetails(
+        self,
+        itemDetailsJson: dict[str, Any] | Any | None,
+    ) -> CassetteTapeItemDetails | None:
+        if not isinstance(itemDetailsJson, dict) or len(itemDetailsJson) == 0:
+            return None
+
+        inventoryMax: int | None = None
+        if 'inventoryMax' in itemDetailsJson and utils.isValidInt(itemDetailsJson.get('inventoryMax')):
+            inventoryMax = utils.getIntFromDict(itemDetailsJson, 'inventoryMax')
+
+        return CassetteTapeItemDetails(
             inventoryMax = inventoryMax,
         )
 

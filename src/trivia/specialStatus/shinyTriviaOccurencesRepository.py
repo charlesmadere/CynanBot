@@ -14,7 +14,7 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
     def __init__(
         self,
         backingDatabase: BackingDatabase,
-        timeZoneRepository: TimeZoneRepositoryInterface
+        timeZoneRepository: TimeZoneRepositoryInterface,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -30,7 +30,7 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> ShinyTriviaResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -46,7 +46,7 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
                 WHERE twitchchannelid = $1 AND userid = $2
                 LIMIT 1
             ''',
-            twitchChannelId, userId
+            twitchChannelId, userId,
         )
 
         shinyCount = 0
@@ -64,7 +64,7 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
             oldShinyCount = shinyCount,
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
@@ -75,7 +75,7 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
         self,
         twitchChannel: str,
         twitchChannelId: str,
-        userId: str
+        userId: str,
     ) -> ShinyTriviaResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -87,25 +87,25 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
         result = await self.fetchDetails(
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
-            userId = userId
+            userId = userId,
         )
 
         newShinyCount = result.oldShinyCount + 1
 
         newResult = ShinyTriviaResult(
-            mostRecent = datetime.now(self.__timeZoneRepository.getDefault()),
+            mostRecent = self.__timeZoneRepository.getNow(),
             newShinyCount = newShinyCount,
             oldShinyCount = result.oldShinyCount,
             twitchChannel = result.twitchChannel,
             twitchChannelId = result.twitchChannelId,
-            userId = result.userId
+            userId = result.userId,
         )
 
         await self.__updateShinyCount(
             newShinyCount = newResult.newShinyCount,
             twitchChannel = newResult.twitchChannel,
             twitchChannelId = newResult.twitchChannelId,
-            userId = newResult.userId
+            userId = newResult.userId,
         )
 
         return newResult

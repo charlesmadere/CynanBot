@@ -8,6 +8,7 @@ from ..models.chatterItemType import ChatterItemType
 from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
 from ..models.itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from ..models.itemDetails.bananaItemDetails import BananaItemDetails
+from ..models.itemDetails.cassetteTapeItemDetails import CassetteTapeItemDetails
 from ..models.itemDetails.crowdMicItemDetails import CrowdMicItemDetails
 from ..models.itemDetails.gashaponItemDetails import GashaponItemDetails
 from ..models.itemDetails.gashaponItemPullRate import GashaponItemPullRate
@@ -39,6 +40,9 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             randomChanceEnabled = True,
             durationSeconds = 45,
             inventoryMax = 3,
+        ),
+        defaultCassetteTapeItemDetails: CassetteTapeItemDetails = CassetteTapeItemDetails(
+            inventoryMax = 2,
         ),
         defaultCrowdMicItemDetails: CrowdMicItemDetails = CrowdMicItemDetails(
             durationSeconds = 210, # 3 minutes 30 seconds
@@ -132,6 +136,8 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             raise TypeError(f'defaultAnimalPetItemDetails argument is malformed: \"{defaultAnimalPetItemDetails}\"')
         elif not isinstance(defaultBananaItemDetails, BananaItemDetails):
             raise TypeError(f'defaultBananaItemDetails argument is malformed: \"{defaultBananaItemDetails}\"')
+        elif not isinstance(defaultCassetteTapeItemDetails, CassetteTapeItemDetails):
+            raise TypeError(f'defaultCassetteTapeItemDetails argument is malformed: \"{defaultCassetteTapeItemDetails}\"')
         elif not isinstance(defaultCrowdMicItemDetails, CrowdMicItemDetails):
             raise TypeError(f'defaultCrowdMicItemDetails argument is malformed: \"{defaultCrowdMicItemDetails}\"')
         elif not isinstance(defaultGashaponItemDetails, GashaponItemDetails):
@@ -154,6 +160,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         self.__defaultAirStrikeItemDetails: Final[AirStrikeItemDetails] = defaultAirStrikeItemDetails
         self.__defaultAnimalPetItemDetails: Final[AnimalPetItemDetails] = defaultAnimalPetItemDetails
         self.__defaultBananaItemDetails: Final[BananaItemDetails] = defaultBananaItemDetails
+        self.__defaultCassetteTapeItemDetails: Final[CassetteTapeItemDetails] = defaultCassetteTapeItemDetails
         self.__defaultCrowdMicItemDetails: Final[CrowdMicItemDetails] = defaultCrowdMicItemDetails
         self.__defaultGashaponItemDetails: Final[GashaponItemDetails] = defaultGashaponItemDetails
         self.__defaultGrenadeItemDetails: Final[GrenadeItemDetails] = defaultGrenadeItemDetails
@@ -202,6 +209,16 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
 
         if itemDetails is None:
             return self.__defaultBananaItemDetails
+        else:
+            return itemDetails
+
+    async def getCassetteTapeItemDetails(self) -> CassetteTapeItemDetails:
+        jsonContents = await self.__readJson()
+        itemDetailsJson = jsonContents.get('cassetteTapeItemDetails')
+        itemDetails = await self.__chatterInventoryMapper.parseCassetteTapeItemDetails(itemDetailsJson)
+
+        if itemDetails is None:
+            return self.__defaultCassetteTapeItemDetails
         else:
             return itemDetails
 

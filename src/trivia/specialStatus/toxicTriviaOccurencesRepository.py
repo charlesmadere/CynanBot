@@ -46,7 +46,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
                 WHERE twitchchannelid = $1 AND userid = $2
                 LIMIT 1
             ''',
-            twitchChannelId, userId
+            twitchChannelId, userId,
         )
 
         toxicCount = 0
@@ -93,7 +93,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
         newToxicCount = result.oldToxicCount + 1
 
         newResult = ToxicTriviaResult(
-            mostRecent = datetime.now(self.__timeZoneRepository.getDefault()),
+            mostRecent = self.__timeZoneRepository.getNow(),
             newToxicCount = newToxicCount,
             oldToxicCount = result.oldToxicCount,
             twitchChannel = result.twitchChannel,
@@ -128,7 +128,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
                             userid text NOT NULL,
                             PRIMARY KEY (twitchchannelid, userid)
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -141,7 +141,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
                             userid TEXT NOT NULL,
                             PRIMARY KEY (twitchchannelid, userid)
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:

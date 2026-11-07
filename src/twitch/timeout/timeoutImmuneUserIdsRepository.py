@@ -114,50 +114,6 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         if utils.isValidStr(aoyamabukiUserId):
             newUserIds.add(aoyamabukiUserId)
 
-        boatWaifuUserId = await self.__twitchFriendsUserIdProvider.getBoatWaifuUserId()
-        if utils.isValidStr(boatWaifuUserId):
-            newUserIds.add(boatWaifuUserId)
-
-        guwuBotUserId = await self.__twitchFriendsUserIdProvider.getGuwuBotUserId()
-        if utils.isValidStr(guwuBotUserId):
-            newUserIds.add(guwuBotUserId)
-
-        kazekiiBotUserId = await self.__twitchFriendsUserIdProvider.getKazekiiBotUserId()
-        if utils.isValidStr(kazekiiBotUserId):
-            newUserIds.add(kazekiiBotUserId)
-
-        kiawaBotUserId = await self.__twitchFriendsUserIdProvider.getKiawaBotUserId()
-        if utils.isValidStr(kiawaBotUserId):
-            newUserIds.add(kiawaBotUserId)
-
-        mandooBotUserId = await self.__twitchFriendsUserIdProvider.getMandooBotUserId()
-        if utils.isValidStr(mandooBotUserId):
-            newUserIds.add(mandooBotUserId)
-
-        oathyBotUserId = await self.__twitchFriendsUserIdProvider.getOathyBotUserId()
-        if utils.isValidStr(oathyBotUserId):
-            newUserIds.add(oathyBotUserId)
-
-        steineBotUserId = await self.__twitchFriendsUserIdProvider.getSteineBotUserId()
-        if utils.isValidStr(steineBotUserId):
-            newUserIds.add(steineBotUserId)
-
-        teaTalkUserId = await self.__twitchFriendsUserIdProvider.getTeaTalkUserId()
-        if utils.isValidStr(teaTalkUserId):
-            newUserIds.add(teaTalkUserId)
-
-        theBinchBotUserId = await self.__twitchFriendsUserIdProvider.getTheBinchBotUserId()
-        if utils.isValidStr(theBinchBotUserId):
-            newUserIds.add(theBinchBotUserId)
-
-        theCatComputerUserId = await self.__twitchFriendsUserIdProvider.getTheCatComputerUserId()
-        if utils.isValidStr(theCatComputerUserId):
-            newUserIds.add(theCatComputerUserId)
-
-        zoiiBotUserId = await self.__twitchFriendsUserIdProvider.getZoiiBotUserId()
-        if utils.isValidStr(zoiiBotUserId):
-            newUserIds.add(zoiiBotUserId)
-
         officialTwitchAccountUserIds = await self.__officialTwitchAccountUserIdProvider.getAllUserIds()
         newUserIds.update(officialTwitchAccountUserIds)
 

@@ -74,6 +74,7 @@ class CassetteTapeItemUseCase(CassetteTapeItemUseCaseInterface):
             message = parsedVoicemailRequest.cleanedMessage,
             originatingUserId = action.chatterUserId,
             targetUserId = parsedVoicemailRequest.targetUserData.getUserId(),
+            twitchAccessToken = twitchAccessToken,
             twitchChannelId = action.twitchChannelId,
         )
 

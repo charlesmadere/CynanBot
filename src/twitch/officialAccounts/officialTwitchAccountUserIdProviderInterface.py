@@ -16,6 +16,10 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
         pass
 
     @abstractmethod
+    async def getBoatWaifuUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getCynanBotUserId(self) -> str | None:
         pass
 
@@ -36,6 +40,18 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
         pass
 
     @abstractmethod
+    async def getGuwuBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getKazekiiBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getMandooBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getMinecraftUserId(self) -> str | None:
         pass
 
@@ -48,6 +64,10 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
         pass
 
     @abstractmethod
+    async def getOathyBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getPuptimeUserId(self) -> str | None:
         pass
 
@@ -57,6 +77,10 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
 
     @abstractmethod
     async def getSoundAlertsUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getSteineBotUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -73,6 +97,18 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
 
     @abstractmethod
     async def getTangiaBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getTeaTalkUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getTheBinchBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getTheCatComputerUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -93,4 +129,8 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
 
     @abstractmethod
     async def getZeldoBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getZoiiBotUserId(self) -> str | None:
         pass

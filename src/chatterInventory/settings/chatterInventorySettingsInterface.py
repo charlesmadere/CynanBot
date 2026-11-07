@@ -4,6 +4,7 @@ from ..models.chatterItemType import ChatterItemType
 from ..models.itemDetails.airStrikeItemDetails import AirStrikeItemDetails
 from ..models.itemDetails.animalPetItemDetails import AnimalPetItemDetails
 from ..models.itemDetails.bananaItemDetails import BananaItemDetails
+from ..models.itemDetails.cassetteTapeItemDetails import CassetteTapeItemDetails
 from ..models.itemDetails.crowdMicItemDetails import CrowdMicItemDetails
 from ..models.itemDetails.gashaponItemDetails import GashaponItemDetails
 from ..models.itemDetails.grenadeItemDetails import GrenadeItemDetails
@@ -28,6 +29,10 @@ class ChatterInventorySettingsInterface(Clearable, ABC):
 
     @abstractmethod
     async def getBananaItemDetails(self) -> BananaItemDetails:
+        pass
+
+    @abstractmethod
+    async def getCassetteTapeItemDetails(self) -> CassetteTapeItemDetails:
         pass
 
     @abstractmethod
