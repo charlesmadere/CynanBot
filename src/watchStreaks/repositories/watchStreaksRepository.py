@@ -72,9 +72,9 @@ class WatchStreaksRepository(WatchStreaksRepositoryInterface):
 
         if record is not None and len(record) >= 1:
             stats = WatchStreakStats(
-                mostRecentUpdate = datetime.fromisoformat(record[1]),
+                mostRecentUpdate = datetime.fromisoformat(record[2]),
                 bestStreak = record[0],
-                currentStreak = record[2],
+                currentStreak = record[1],
                 chatterUserId = chatterUserId,
                 twitchChannelId = twitchChannelId,
             )
