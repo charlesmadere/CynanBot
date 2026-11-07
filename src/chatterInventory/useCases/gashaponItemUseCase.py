@@ -68,6 +68,46 @@ class GashaponItemUseCase(GashaponItemUseCaseInterface):
             case TwitchSubscriberTier.TIER_THREE: return GashaponTier.TIER_THREE
             case _: return GashaponTier.TIER_ONE
 
+    async def __determineInventoryMax(
+        self,
+        itemType: ChatterItemType,
+    ) -> int | None:
+        match itemType:
+            case ChatterItemType.AIR_STRIKE:
+                airStrike = await self.__chatterInventorySettings.getAirStrikeItemDetails()
+                return airStrike.inventoryMax
+
+            case ChatterItemType.ANIMAL_PET:
+                animalPet = await self.__chatterInventorySettings.getAnimalPetItemDetails()
+                return animalPet.inventoryMax
+
+            case ChatterItemType.BANANA:
+                banana = await self.__chatterInventorySettings.getBananaItemDetails()
+                return banana.inventoryMax
+
+            case ChatterItemType.CASSETTE_TAPE:
+                cassetteTape = await self.__chatterInventorySettings.getCassetteTapeItemDetails()
+                return cassetteTape.inventoryMax
+
+            case ChatterItemType.CROWD_MIC:
+                crowdMic = await self.__chatterInventorySettings.getCrowdMicItemDetails()
+                return crowdMic.inventoryMax
+
+            case ChatterItemType.GASHAPON:
+                return None
+
+            case ChatterItemType.GRENADE:
+                grenade = await self.__chatterInventorySettings.getGrenadeItemDetails()
+                return grenade.inventoryMax
+
+            case ChatterItemType.TM_36:
+                tm36 = await self.__chatterInventorySettings.getTm36ItemDetails()
+                return tm36.inventoryMax
+
+            case ChatterItemType.VORE:
+                vore = await self.__chatterInventorySettings.getVoreItemDetails()
+                return vore.inventoryMax
+
     async def invoke(
         self,
         chatterInventory: ChatterInventoryData,
@@ -108,7 +148,7 @@ class GashaponItemUseCase(GashaponItemUseCaseInterface):
                 # for now, let's not allow a gashapon to award another gashapon
                 continue
 
-            awardedAmount = int(max(0, pullRate.minimumPullAmount))
+            awardedAmount = 0
 
             for _ in range(pullRate.iterations):
                 randomNumber = self.__randomUtils.float()
@@ -116,7 +156,7 @@ class GashaponItemUseCase(GashaponItemUseCaseInterface):
                 if randomNumber <= pullRate.pullRate:
                     awardedAmount += 1
 
-            awardedAmount = int(min(awardedAmount, pullRate.maximumPullAmount))
+            awardedAmount = int(min(max(awardedAmount, pullRate.minimumPullAmount), pullRate.maximumPullAmount))
 
             if not itemsWereAwarded and awardedAmount >= 1:
                 itemsWereAwarded = True
@@ -137,6 +177,13 @@ class GashaponItemUseCase(GashaponItemUseCaseInterface):
 
         for itemType in enabledItemTypes:
             changeAmount = awardedItems.get(itemType, 0)
+
+            inventoryMax = await self.__determineInventoryMax(
+                itemType = itemType,
+            )
+
+            if inventoryMax is not None and changeAmount + chatterInventory[itemType] > inventoryMax:
+                changeAmount = int(max(inventoryMax - chatterInventory[itemType], 0))
 
             if changeAmount != 0:
                 await self.__chatterInventoryRepository.update(
