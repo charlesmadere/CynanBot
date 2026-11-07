@@ -63,6 +63,7 @@ class HardcodedTwitchChannelEditorsRepository(HardcodedTwitchChannelEditorsRepos
             await self.__officialTwitchAccountUserIdProvider.getFuntoonUserId(),
             await self.__twitchFriendsUserIdRepository.getBastionBlueUserId(),
             await self.__twitchFriendsUserIdRepository.getEddieUserId(),
+            await self.__twitchFriendsUserIdRepository.getEtucaUserId(),
             await self.__twitchFriendsUserIdRepository.getHarleyHardtUserId(),
             await self.__twitchFriendsUserIdRepository.getImytUserId(),
             await self.__twitchFriendsUserIdRepository.getMerttUserId(),

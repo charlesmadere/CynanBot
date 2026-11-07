@@ -114,10 +114,6 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         if utils.isValidStr(aoyamabukiUserId):
             newUserIds.add(aoyamabukiUserId)
 
-        boatWaifuUserId = await self.__twitchFriendsUserIdProvider.getBoatWaifuUserId()
-        if utils.isValidStr(boatWaifuUserId):
-            newUserIds.add(boatWaifuUserId)
-
         guwuBotUserId = await self.__twitchFriendsUserIdProvider.getGuwuBotUserId()
         if utils.isValidStr(guwuBotUserId):
             newUserIds.add(guwuBotUserId)

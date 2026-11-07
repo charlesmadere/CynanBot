@@ -4,15 +4,7 @@ from abc import ABC, abstractmethod
 class TwitchFriendsUserIdRepositoryInterface(ABC):
 
     @abstractmethod
-    async def getAcacUserId(self) -> str | None:
-        pass
-
-    @abstractmethod
     async def getAlbeeesUserId(self) -> str | None:
-        pass
-
-    @abstractmethod
-    async def getAlbeeevUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -20,15 +12,7 @@ class TwitchFriendsUserIdRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def getAneevUserId(self) -> str | None:
-        pass
-
-    @abstractmethod
     async def getAngieYunaUserId(self) -> str | None:
-        pass
-
-    @abstractmethod
-    async def getAnivUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -41,10 +25,6 @@ class TwitchFriendsUserIdRepositoryInterface(ABC):
 
     @abstractmethod
     async def getBastionBlueUserId(self) -> str | None:
-        pass
-
-    @abstractmethod
-    async def getBoatWaifuUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -65,6 +45,14 @@ class TwitchFriendsUserIdRepositoryInterface(ABC):
 
     @abstractmethod
     async def getEddieUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getEtucaUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getGarUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -137,6 +125,10 @@ class TwitchFriendsUserIdRepositoryInterface(ABC):
 
     @abstractmethod
     async def getPatLanicusUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getSakuraMilkTeaUserId(self) -> str | None:
         pass
 
     @abstractmethod

@@ -4,7 +4,23 @@ from abc import ABC, abstractmethod
 class OfficialTwitchAccountUserIdProviderInterface(ABC):
 
     @abstractmethod
+    async def getAcacUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getAlbeeevUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getAllUserIds(self) -> frozenset[str]:
+        pass
+
+    @abstractmethod
+    async def getAneevUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getAnivUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -13,6 +29,10 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
 
     @abstractmethod
     async def getBlerpUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getBoatWaifuUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -33,6 +53,14 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
 
     @abstractmethod
     async def getFuntoonUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getGuwuBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getKazekiiBotUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -93,4 +121,8 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
 
     @abstractmethod
     async def getZeldoBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getZoiiBotUserId(self) -> str | None:
         pass
