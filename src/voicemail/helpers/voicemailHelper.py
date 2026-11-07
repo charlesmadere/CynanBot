@@ -12,6 +12,7 @@ from ..settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRep
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
+from ...twitch.followingStatus.twitchFollowingStatusRepositoryInterface import TwitchFollowingStatusRepositoryInterface
 from ...twitch.tokens.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from ...twitch.userIds.twitchUserIdsHelperInterface import TwitchUserIdsHelperInterface
 
@@ -22,6 +23,7 @@ class VoicemailHelper(VoicemailHelperInterface):
         self,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
+        twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUserIdsHelper: TwitchUserIdsHelperInterface,
         voicemailsRepository: VoicemailsRepositoryInterface,
@@ -31,6 +33,8 @@ class VoicemailHelper(VoicemailHelperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
+        elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
+            raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(twitchUserIdsHelper, TwitchUserIdsHelperInterface):
@@ -42,6 +46,7 @@ class VoicemailHelper(VoicemailHelperInterface):
 
         self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
+        self.__twitchFollowingStatusRepository: Final[TwitchFollowingStatusRepositoryInterface] = twitchFollowingStatusRepository
         self.__twitchTokensUtils: Final[TwitchTokensUtilsInterface] = twitchTokensUtils
         self.__twitchUserIdsHelper: Final[TwitchUserIdsHelperInterface] = twitchUserIdsHelper
         self.__voicemailsRepository: Final[VoicemailsRepositoryInterface] = voicemailsRepository
@@ -52,6 +57,7 @@ class VoicemailHelper(VoicemailHelperInterface):
         message: str | None,
         originatingUserId: str,
         targetUserId: str,
+        twitchAccessToken: str,
         twitchChannelId: str,
     ) -> AddVoicemailResult:
         if message is not None and not isinstance(message, str):
@@ -60,6 +66,8 @@ class VoicemailHelper(VoicemailHelperInterface):
             raise TypeError(f'originatingUserId argument is malformed: \"{originatingUserId}\"')
         elif not utils.isValidStr(targetUserId):
             raise TypeError(f'targetUserId argument is malformed: \"{targetUserId}\"')
+        elif not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -74,6 +82,12 @@ class VoicemailHelper(VoicemailHelperInterface):
             return AddVoicemailResult.TARGET_USER_IS_ORIGINATING_USER
         elif targetUserId == twitchChannelId:
             return AddVoicemailResult.TARGET_USER_IS_TWITCH_CHANNEL_USER
+        elif not await self.__twitchFollowingStatusRepository.isFollowing(
+            twitchAccessToken = twitchAccessToken,
+            twitchChannelId = twitchChannelId,
+            userId = targetUserId,
+        ):
+            return AddVoicemailResult.TARGET_USER_IS_NOT_FOLLOWING
 
         allTargetUserVoicemails = await self.__voicemailsRepository.getAllForTargetUser(
             targetUserId = targetUserId,
@@ -231,7 +245,7 @@ class VoicemailHelper(VoicemailHelperInterface):
         twitchChannelId: str,
         voicemail: VoicemailData,
     ) -> PreparedVoicemailData | None:
-        now = datetime.now(self.__timeZoneRepository.getDefault())
+        now = self.__timeZoneRepository.getNow()
 
         maximumVoicemailAgeDays = timedelta(
             days = await self.__voicemailSettingsRepository.getMaximumVoicemailAgeDays(),

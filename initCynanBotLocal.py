@@ -1659,6 +1659,7 @@ voicemailsRepository: Final[VoicemailsRepositoryInterface] = VoicemailsRepositor
 voicemailHelper: Final[VoicemailHelperInterface] = VoicemailHelper(
     timber = timber,
     timeZoneRepository = timeZoneRepository,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchTokensUtils = twitchTokensUtils,
     twitchUserIdsHelper = twitchUserIdsHelper,
     voicemailsRepository = voicemailsRepository,
