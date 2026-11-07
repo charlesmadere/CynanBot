@@ -872,6 +872,8 @@ globalTwitchConstants: Final[GlobalTwitchConstantsInterface] = GlobalTwitchConst
 
 officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderInterface] = OfficialTwitchAccountUserIdProvider()
 
+anivUserIdsRepository: Final[AnivUserIdsRepositoryInterface] = AnivUserIdsRepository()
+
 twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = TwitchFriendsUserIdRepository()
 
 hardcodedTwitchChannelEditorsRepository: Final[HardcodedTwitchChannelEditorsRepositoryInterface] = HardcodedTwitchChannelEditorsRepository(
@@ -1588,6 +1590,7 @@ triviaGameMachine: Final[TriviaGameMachineInterface] = TriviaGameMachine(
 ####################################
 
 guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = GuaranteedTimeoutUsersRepository(
+    anivUserIdsRepository = anivUserIdsRepository,
     timber = timber,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
 )
@@ -1709,25 +1712,21 @@ timeoutActionMachine: Final[TimeoutActionMachineInterface] = TimeoutActionMachin
 ## aniv initialization section ##
 #################################
 
-anivSettings: AnivSettingsInterface = AnivSettings(
+anivSettings: Final[AnivSettingsInterface] = AnivSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/anivSettings.json',
     ),
 )
 
-anivCopyMessageTimeoutScoreHelper: AnivCopyMessageTimeoutScoreHelperInterface = AnivCopyMessageTimeoutScoreHelper(
+anivCopyMessageTimeoutScoreHelper: Final[AnivCopyMessageTimeoutScoreHelperInterface] = AnivCopyMessageTimeoutScoreHelper(
     anivCopyMessageTimeoutScoreRepository = anivCopyMessageTimeoutScoreRepository,
     anivSettings = anivSettings,
     twitchTokensUtils = twitchTokensUtils,
     twitchUserIdsHelper = twitchUserIdsHelper,
 )
 
-anivCopyMessageTimeoutScorePresenter: AnivCopyMessageTimeoutScorePresenterInterface = AnivCopyMessageTimeoutScorePresenter()
-
-anivUserIdsRepository: Final[AnivUserIdsRepositoryInterface] = AnivUserIdsRepository(
-    twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
-)
+anivCopyMessageTimeoutScorePresenter: Final[AnivCopyMessageTimeoutScorePresenterInterface] = AnivCopyMessageTimeoutScorePresenter()
 
 anivContentScanner: Final[AnivContentScannerInterface] = AnivContentScanner(
     contentScanner = contentScanner,

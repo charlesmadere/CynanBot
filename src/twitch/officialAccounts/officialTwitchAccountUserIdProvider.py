@@ -8,10 +8,6 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
 
     def __init__(
         self,
-        acacUserId: str | None = '1274825203',
-        albeeevUserId: str | None = '1387490799',
-        aneevUserId: str | None = '1284413302',
-        anivUserId: str | None = '749050409',
         beeblyBoopBotUserId: str | None = '812848264',
         blerpUserId: str | None = '253326823',
         boatWaifuUserId: str | None = '563334759',
@@ -46,15 +42,7 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         zeldoBotUserId: str | None = '54866013',
         zoiiBotUserId: str | None = '188093207',
     ):
-        if acacUserId is not None and not isinstance(acacUserId, str):
-            raise TypeError(f'acacUserId argument is malformed: \"{acacUserId}\"')
-        elif albeeevUserId is not None and not isinstance(albeeevUserId, str):
-            raise TypeError(f'albeeevUserId argument is malformed: \"{albeeevUserId}\"')
-        elif aneevUserId is not None and not isinstance(aneevUserId, str):
-            raise TypeError(f'aneevUserId argument is malformed: \"{aneevUserId}\"')
-        elif anivUserId is not None and not isinstance(anivUserId, str):
-            raise TypeError(f'anivUserId argument is malformed: \"{anivUserId}\"')
-        elif beeblyBoopBotUserId is not None and not isinstance(beeblyBoopBotUserId, str):
+        if beeblyBoopBotUserId is not None and not isinstance(beeblyBoopBotUserId, str):
             raise TypeError(f'beeblyBoopBotUserId argument is malformed: \"{beeblyBoopBotUserId}\"')
         elif blerpUserId is not None and not isinstance(blerpUserId, str):
             raise TypeError(f'blerpUserId argument is malformed: \"{blerpUserId}\"')
@@ -121,10 +109,6 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         elif zoiiBotUserId is not None and not isinstance(zoiiBotUserId, str):
             raise TypeError(f'zoiiBotUserId argument is malformed: \"{zoiiBotUserId}\"')
 
-        self.__acacUserId: Final[str | None] = acacUserId
-        self.__albeeevUserId: Final[str | None] = albeeevUserId
-        self.__aneevUserId: Final[str | None] = aneevUserId
-        self.__anivUserId: Final[str | None] = anivUserId
         self.__beeblyBoopBotUserId: Final[str | None] = beeblyBoopBotUserId
         self.__blerpUserId: Final[str | None] = blerpUserId
         self.__boatWaifuUserId: Final[str | None] = boatWaifuUserId
@@ -157,12 +141,6 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         self.__valorantUserId: Final[str | None] = valorantUserId
         self.__zeldoBotUserId: Final[str | None] = zeldoBotUserId
         self.__zoiiBotUserId: Final[str | None] = zoiiBotUserId
-
-    async def getAcacUserId(self) -> str | None:
-        return self.__acacUserId
-
-    async def getAlbeeevUserId(self) -> str | None:
-        return self.__albeeevUserId
 
     async def getAllUserIds(self) -> frozenset[str]:
         allUserIds: set[str] = set()
@@ -203,6 +181,10 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         if utils.isValidStr(kazekiiBotUserId):
             allUserIds.add(kazekiiBotUserId)
 
+        mandooBotUserId = await self.getMandooBotUserId()
+        if utils.isValidStr(mandooBotUserId):
+            allUserIds.add(mandooBotUserId)
+
         minecraftUserId = await self.getMinecraftUserId()
         if utils.isValidStr(minecraftUserId):
             allUserIds.add(minecraftUserId)
@@ -227,6 +209,10 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         if utils.isValidStr(soundAlertsUserId):
             allUserIds.add(soundAlertsUserId)
 
+        steineBotUserId = await self.getSteineBotUserId()
+        if utils.isValidStr(steineBotUserId):
+            allUserIds.add(steineBotUserId)
+
         streamElementsUserId = await self.getStreamElementsUserId()
         if utils.isValidStr(streamElementsUserId):
             allUserIds.add(streamElementsUserId)
@@ -242,6 +228,18 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
         tangiaBotUserId = await self.getTangiaBotUserId()
         if utils.isValidStr(tangiaBotUserId):
             allUserIds.add(tangiaBotUserId)
+
+        teaTalkUserId = await self.getTeaTalkUserId()
+        if utils.isValidStr(teaTalkUserId):
+            allUserIds.add(teaTalkUserId)
+
+        theBinchBotUserId = await self.getTheBinchBotUserId()
+        if utils.isValidStr(theBinchBotUserId):
+            allUserIds.add(theBinchBotUserId)
+
+        theCatComputerUserId = await self.getTheCatComputerUserId()
+        if utils.isValidStr(theCatComputerUserId):
+            allUserIds.add(theCatComputerUserId)
 
         theRunBotUserId = await self.getTheRunBotUserId()
         if utils.isValidStr(theRunBotUserId):
@@ -266,12 +264,6 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
             allUserIds.add(zoiiBotUserId)
 
         return frozenset(allUserIds)
-
-    async def getAneevUserId(self) -> str | None:
-        return self.__aneevUserId
-
-    async def getAnivUserId(self) -> str | None:
-        return self.__anivUserId
 
     async def getBeeblyBoopBotUserId(self) -> str | None:
         return self.__beeblyBoopBotUserId
@@ -303,6 +295,9 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
     async def getKazekiiBotUserId(self) -> str | None:
         return self.__kazekiiBotUserId
 
+    async def getMandooBotUserId(self) -> str | None:
+        return self.__mandooBotUserId
+
     async def getMinecraftUserId(self) -> str | None:
         return self.__minecraftUserId
 
@@ -312,6 +307,9 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
     async def getNightbotUserId(self) -> str | None:
         return self.__nightBotUserId
 
+    async def getOathyBotUserId(self) -> str | None:
+        return self.__oathyBotUserId
+
     async def getPuptimeUserId(self) -> str | None:
         return self.__puptimeUserId
 
@@ -320,6 +318,9 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
 
     async def getSoundAlertsUserId(self) -> str | None:
         return self.__soundAlertsUserId
+
+    async def getSteineBotUserId(self) -> str | None:
+        return self.__steineBotUserId
 
     async def getStreamElementsUserId(self) -> str | None:
         return self.__streamElementsUserId
@@ -332,6 +333,15 @@ class OfficialTwitchAccountUserIdProvider(OfficialTwitchAccountUserIdProviderInt
 
     async def getTangiaBotUserId(self) -> str | None:
         return self.__tangiaBotUserId
+
+    async def getTeaTalkUserId(self) -> str | None:
+        return self.__teaTalkUserId
+
+    async def getTheBinchBotUserId(self) -> str | None:
+        return self.__theBinchBotUserId
+
+    async def getTheCatComputerUserId(self) -> str | None:
+        return self.__theCatComputerUserId
 
     async def getTheRunBotUserId(self) -> str | None:
         return self.__theRunBotUserId

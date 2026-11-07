@@ -8,6 +8,8 @@ from src.aniv.mapper.anivJsonMapperInterface import AnivJsonMapperInterface
 from src.aniv.repositories.anivCopyMessageTimeoutScoreRepository import AnivCopyMessageTimeoutScoreRepository
 from src.aniv.repositories.anivCopyMessageTimeoutScoreRepositoryInterface import \
     AnivCopyMessageTimeoutScoreRepositoryInterface
+from src.aniv.repositories.anivUserIdsRepository import AnivUserIdsRepository
+from src.aniv.repositories.anivUserIdsRepositoryInterface import AnivUserIdsRepositoryInterface
 from src.channelPointRedemptions.absChannelPointsRedemption import AbsChannelPointRedemption
 from src.channelPointRedemptions.chatterPreferredNamePointRedemption import ChatterPreferredNamePointRedemption
 from src.channelPointRedemptions.chatterPreferredTtsPointRedemption import ChatterPreferredTtsPointRedemption
@@ -829,6 +831,8 @@ globalTwitchConstants: Final[GlobalTwitchConstantsInterface] = GlobalTwitchConst
 
 officialTwitchAccountUserIdProvider: Final[OfficialTwitchAccountUserIdProviderInterface] = OfficialTwitchAccountUserIdProvider()
 
+anivUserIdsRepository: Final[AnivUserIdsRepositoryInterface] = AnivUserIdsRepository()
+
 twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = TwitchFriendsUserIdRepository()
 
 hardcodedTwitchChannelEditorsRepository: Final[HardcodedTwitchChannelEditorsRepositoryInterface] = HardcodedTwitchChannelEditorsRepository(
@@ -1607,6 +1611,7 @@ trollmojiHelper: Final[TrollmojiHelperInterface] = TrollmojiHelper(
 ####################################
 
 guaranteedTimeoutUsersRepository: Final[GuaranteedTimeoutUsersRepositoryInterface] = GuaranteedTimeoutUsersRepository(
+    anivUserIdsRepository = anivUserIdsRepository,
     timber = timber,
     twitchFriendsUserIdRepository = twitchFriendsUserIdRepository,
 )

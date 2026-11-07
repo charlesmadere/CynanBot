@@ -4,23 +4,7 @@ from abc import ABC, abstractmethod
 class OfficialTwitchAccountUserIdProviderInterface(ABC):
 
     @abstractmethod
-    async def getAcacUserId(self) -> str | None:
-        pass
-
-    @abstractmethod
-    async def getAlbeeevUserId(self) -> str | None:
-        pass
-
-    @abstractmethod
     async def getAllUserIds(self) -> frozenset[str]:
-        pass
-
-    @abstractmethod
-    async def getAneevUserId(self) -> str | None:
-        pass
-
-    @abstractmethod
-    async def getAnivUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -64,6 +48,10 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
         pass
 
     @abstractmethod
+    async def getMandooBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getMinecraftUserId(self) -> str | None:
         pass
 
@@ -76,6 +64,10 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
         pass
 
     @abstractmethod
+    async def getOathyBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getPuptimeUserId(self) -> str | None:
         pass
 
@@ -85,6 +77,10 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
 
     @abstractmethod
     async def getSoundAlertsUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getSteineBotUserId(self) -> str | None:
         pass
 
     @abstractmethod
@@ -101,6 +97,18 @@ class OfficialTwitchAccountUserIdProviderInterface(ABC):
 
     @abstractmethod
     async def getTangiaBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getTeaTalkUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getTheBinchBotUserId(self) -> str | None:
+        pass
+
+    @abstractmethod
+    async def getTheCatComputerUserId(self) -> str | None:
         pass
 
     @abstractmethod

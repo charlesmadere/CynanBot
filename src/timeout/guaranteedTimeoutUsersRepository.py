@@ -1,6 +1,7 @@
 from typing import Final
 
 from .guaranteedTimeoutUsersRepositoryInterface import GuaranteedTimeoutUsersRepositoryInterface
+from ..aniv.repositories.anivUserIdsRepositoryInterface import AnivUserIdsRepositoryInterface
 from ..misc import utils as utils
 from ..timber.timberInterface import TimberInterface
 from ..twitch.friends.twitchFriendsUserIdRepositoryInterface import TwitchFriendsUserIdRepositoryInterface
@@ -10,14 +11,18 @@ class GuaranteedTimeoutUsersRepository(GuaranteedTimeoutUsersRepositoryInterface
 
     def __init__(
         self,
+        anivUserIdsRepository: AnivUserIdsRepositoryInterface,
         timber: TimberInterface,
         twitchFriendsUserIdRepository: TwitchFriendsUserIdRepositoryInterface,
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(anivUserIdsRepository, AnivUserIdsRepositoryInterface):
+            raise TypeError(f'anivUserIdsRepository argument is malformed: \"{anivUserIdsRepository}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchFriendsUserIdRepository, TwitchFriendsUserIdRepositoryInterface):
             raise TypeError(f'twitchFriendsUserIdRepository argument is malformed: \"{twitchFriendsUserIdRepository}\"')
 
+        self.__anivUserIdsRepository: Final[AnivUserIdsRepositoryInterface] = anivUserIdsRepository
         self.__timber: Final[TimberInterface] = timber
         self.__twitchFriendsUserIdRepository: Final[TwitchFriendsUserIdRepositoryInterface] = twitchFriendsUserIdRepository
 
@@ -35,25 +40,25 @@ class GuaranteedTimeoutUsersRepository(GuaranteedTimeoutUsersRepositoryInterface
 
         newUserIds: set[str] = set()
 
-        acacUserId = await self.__twitchFriendsUserIdRepository.getAcacUserId()
+        acacUserId = await self.__anivUserIdsRepository.getAcacUserId()
         if utils.isValidStr(acacUserId):
             newUserIds.add(acacUserId)
+
+        albeeevUserId = await self.__anivUserIdsRepository.getAlbeeevUserId()
+        if utils.isValidStr(albeeevUserId):
+            newUserIds.add(albeeevUserId)
+
+        aneevUserId = await self.__anivUserIdsRepository.getAneevUserId()
+        if utils.isValidStr(aneevUserId):
+            newUserIds.add(aneevUserId)
+
+        anivUserId = await self.__anivUserIdsRepository.getAnivUserId()
+        if utils.isValidStr(anivUserId):
+            newUserIds.add(anivUserId)
 
         albeeesUserId = await self.__twitchFriendsUserIdRepository.getAlbeeesUserId()
         if utils.isValidStr(albeeesUserId):
             newUserIds.add(albeeesUserId)
-
-        albeeevUserId = await self.__twitchFriendsUserIdRepository.getAlbeeevUserId()
-        if utils.isValidStr(albeeevUserId):
-            newUserIds.add(albeeevUserId)
-
-        aneevUserId = await self.__twitchFriendsUserIdRepository.getAneevUserId()
-        if utils.isValidStr(aneevUserId):
-            newUserIds.add(aneevUserId)
-
-        anivUserId = await self.__twitchFriendsUserIdRepository.getAnivUserId()
-        if utils.isValidStr(anivUserId):
-            newUserIds.add(anivUserId)
 
         frozenUserIds: frozenset[str] = frozenset(newUserIds)
         self.__userIds = frozenUserIds
