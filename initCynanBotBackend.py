@@ -813,7 +813,6 @@ cutenessRepository: Final[CutenessRepositoryInterface] = CutenessRepository(
     backingDatabase = backingDatabase,
     cutenessMapper = cutenessMapper,
     cutenessSettings = cutenessSettings,
-    timber = timber,
     timeZoneRepository = timeZoneRepository,
 )
 
