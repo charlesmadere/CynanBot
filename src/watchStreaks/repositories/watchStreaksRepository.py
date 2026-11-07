@@ -98,8 +98,8 @@ class WatchStreaksRepository(WatchStreaksRepositoryInterface):
                 await connection.execute(
                     '''
                         CREATE TABLE IF NOT EXISTS watchstreaks (
-                            beststreak int DEFAULT 0 NOT NULL,
-                            currentstreak int DEFAULT 0 NOT NULL,
+                            beststreak integer DEFAULT 0 NOT NULL,
+                            currentstreak integer DEFAULT 0 NOT NULL,
                             chatteruserid text NOT NULL,
                             mostrecentupdate text NOT NULL,
                             twitchchannelid text NOT NULL,
