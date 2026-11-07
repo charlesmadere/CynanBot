@@ -455,7 +455,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         chatterInventory: ChatterInventoryData | None,
         action: UseChatterItemAction,
     ):
-        if action.ignoreInventory:
+        if action.ignoreInventory or chatterInventory is None:
             # this item type just doesn't make any sense in the context of a disabled/ignored inventory
             await self.__submitEvent(DisabledItemTypeChatterItemEvent(
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
@@ -468,6 +468,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         )
 
         result = await self.__gashaponItemUseCase.invoke(
+            chatterInventory = chatterInventory,
             twitchAccessToken = tokensDetails.userTwitchAccessToken,
             action = action,
         )

@@ -4,6 +4,7 @@ from typing import Final
 from frozendict import frozendict
 
 from .gashaponItemUseCaseInterface import GashaponItemUseCaseInterface
+from ..models.chatterInventoryData import ChatterInventoryData
 from ..models.chatterItemType import ChatterItemType
 from ..models.gashaponTier import GashaponTier
 from ..models.useChatterItemAction import UseChatterItemAction
@@ -69,10 +70,13 @@ class GashaponItemUseCase(GashaponItemUseCaseInterface):
 
     async def invoke(
         self,
+        chatterInventory: ChatterInventoryData,
         twitchAccessToken: str,
         action: UseChatterItemAction,
     ) -> GashaponItemUseCaseInterface.AbsResult:
-        if not utils.isValidStr(twitchAccessToken):
+        if not isinstance(chatterInventory, ChatterInventoryData):
+            raise TypeError(f'chatterInventory argument is malformed: \"{chatterInventory}\"')
+        elif not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not isinstance(action, UseChatterItemAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')

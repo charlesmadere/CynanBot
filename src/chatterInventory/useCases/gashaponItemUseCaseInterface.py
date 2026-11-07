@@ -32,6 +32,7 @@ class GashaponItemUseCaseInterface(ABC):
     @abstractmethod
     async def invoke(
         self,
+        chatterInventory: ChatterInventoryData,
         twitchAccessToken: str,
         action: UseChatterItemAction,
     ) -> AbsResult:
