@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 
-class WatchStreakTtsAnnouncementResult(Enum):
+class AnnounceWatchStreakResult(Enum):
 
     NOT_ENABLED = auto()
     SUBMITTED_TTS_EVENT = auto()

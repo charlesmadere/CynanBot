@@ -530,6 +530,8 @@ from src.voicemail.settings.voicemailSettingsRepository import VoicemailSettings
 from src.voicemail.settings.voicemailSettingsRepositoryInterface import VoicemailSettingsRepositoryInterface
 from src.watchStreaks.helper.watchStreaksHelper import WatchStreaksHelper
 from src.watchStreaks.helper.watchStreaksHelperInterface import WatchStreaksHelperInterface
+from src.watchStreaks.repositories.watchStreaksRepository import WatchStreaksRepository
+from src.watchStreaks.repositories.watchStreaksRepositoryInterface import WatchStreaksRepositoryInterface
 from src.watchStreaks.settings.watchStreakSettings import WatchStreakSettings
 from src.watchStreaks.settings.watchStreakSettingsInterface import WatchStreakSettingsInterface
 from src.websocketConnection.mapper.websocketEventTypeMapper import WebsocketEventTypeMapper
@@ -2112,6 +2114,12 @@ mouseCursorHelper: Final[MouseCursorHelperInterface] = MouseCursorHelper(
 ## Watch Streaks initialization section ##
 ##########################################
 
+watchStreaksRepository: Final[WatchStreaksRepositoryInterface] = WatchStreaksRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
 watchStreakSettings: Final[WatchStreakSettingsInterface] = WatchStreakSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
@@ -2123,6 +2131,7 @@ watchStreaksHelper: Final[WatchStreaksHelperInterface] = WatchStreaksHelper(
     chatterPreferredNameHelper = chatterPreferredNameHelper,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
+    watchStreaksRepository = watchStreaksRepository,
     watchStreakSettings = watchStreakSettings,
 )
 

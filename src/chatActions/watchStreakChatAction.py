@@ -6,7 +6,7 @@ from ..mostRecentChat.mostRecentChat import MostRecentChat
 from ..timber.timberInterface import TimberInterface
 from ..twitch.localModels.twitchChatMessage import TwitchChatMessage
 from ..watchStreaks.helper.watchStreaksHelperInterface import WatchStreaksHelperInterface
-from ..watchStreaks.models.watchStreakTtsAnnouncementResult import WatchStreakTtsAnnouncementResult
+from ..watchStreaks.models.announceWatchStreakResult import AnnounceWatchStreakResult
 
 
 class WatchStreakChatAction(AbsChatAction):
@@ -33,12 +33,10 @@ class WatchStreakChatAction(AbsChatAction):
         mostRecentChat: MostRecentChat | None,
         chatMessage: TwitchChatMessage,
     ) -> ChatActionResult:
-        if not chatMessage.twitchUser.isWatchStreakTtsAnnounceEnabled:
-            return ChatActionResult.IGNORED
-        elif chatMessage.watchStreak is None or chatMessage.watchStreak.streakCount < 1:
+        if chatMessage.watchStreak is None or chatMessage.watchStreak.streakCount < 1:
             return ChatActionResult.IGNORED
 
-        result = await self.__watchStreaksHelper.watchStreakTtsAnnounce(
+        announceResult = await self.__watchStreaksHelper.announceWatchStreak(
             watchStreak = chatMessage.watchStreak.streakCount,
             chatterUserId = chatMessage.chatterUserId,
             chatterUserLogin = chatMessage.chatterUserLogin,
@@ -47,8 +45,15 @@ class WatchStreakChatAction(AbsChatAction):
             user = chatMessage.twitchUser,
         )
 
-        if result is not WatchStreakTtsAnnouncementResult.SUBMITTED_TTS_EVENT:
-            return ChatActionResult.IGNORED
+        streakStats = await self.__watchStreaksHelper.updateWatchStreakStats(
+            watchStreak = chatMessage.watchStreak.streakCount,
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
+        )
 
-        self.__timber.log(self.actionName, f'Submitted watch streak TTS announcement ({result=}) ({chatMessage=})')
-        return ChatActionResult.CONSUMED
+        if announceResult is AnnounceWatchStreakResult.SUBMITTED_TTS_EVENT:
+            self.__timber.log(self.actionName, f'Consumed watch streak ({streakStats=}) ({announceResult=}) ({chatMessage=})')
+            return ChatActionResult.CONSUMED
+        else:
+            self.__timber.log(self.actionName, f'Handled watch streak ({streakStats=}) ({announceResult=}) ({chatMessage=})')
+            return ChatActionResult.HANDLED

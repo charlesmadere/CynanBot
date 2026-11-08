@@ -1,13 +1,14 @@
 from abc import ABC, abstractmethod
 
-from ..models.watchStreakTtsAnnouncementResult import WatchStreakTtsAnnouncementResult
+from ..models.announceWatchStreakResult import AnnounceWatchStreakResult
+from ..models.watchStreakStats import WatchStreakStats
 from ...users.userInterface import UserInterface
 
 
 class WatchStreaksHelperInterface(ABC):
 
     @abstractmethod
-    async def watchStreakTtsAnnounce(
+    async def announceWatchStreak(
         self,
         watchStreak: int,
         chatterUserId: str,
@@ -15,5 +16,14 @@ class WatchStreaksHelperInterface(ABC):
         chatterUserName: str,
         twitchChannelId: str,
         user: UserInterface,
-    ) -> WatchStreakTtsAnnouncementResult:
+    ) -> AnnounceWatchStreakResult:
+        pass
+
+    @abstractmethod
+    async def updateWatchStreakStats(
+        self,
+        watchStreak: int,
+        chatterUserId: str,
+        twitchChannelId: str,
+    ) -> WatchStreakStats:
         pass
