@@ -19,7 +19,6 @@ from ...misc import utils as utils
 from ...storage.backingDatabase import BackingDatabase
 from ...storage.databaseConnection import DatabaseConnection
 from ...storage.databaseType import DatabaseType
-from ...timber.timberInterface import TimberInterface
 
 
 class CutenessRepository(CutenessRepositoryInterface):
@@ -29,10 +28,7 @@ class CutenessRepository(CutenessRepositoryInterface):
         backingDatabase: BackingDatabase,
         cutenessMapper: CutenessMapperInterface,
         cutenessSettings: CutenessSettingsInterface,
-        timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        historyLeaderboardSize: int = 5,
-        leaderboardSize: int = 10,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -40,26 +36,13 @@ class CutenessRepository(CutenessRepositoryInterface):
             raise TypeError(f'cutenessMapper argument is malformed: \"{cutenessMapper}\"')
         elif not isinstance(cutenessSettings, CutenessSettingsInterface):
             raise TypeError(f'cutenessSettings argument is malformed: \"{cutenessSettings}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not utils.isValidInt(historyLeaderboardSize):
-            raise TypeError(f'historyLeaderboardSize argument is malformed: \"{historyLeaderboardSize}\"')
-        elif historyLeaderboardSize < 2 or historyLeaderboardSize > 6:
-            raise ValueError(f'historyLeaderboardSize argument is out of bounds: {historyLeaderboardSize}')
-        elif not utils.isValidInt(leaderboardSize):
-            raise TypeError(f'leaderboardSize argument is malformed: \"{leaderboardSize}\"')
-        elif leaderboardSize < 3 or leaderboardSize > 10:
-            raise ValueError(f'leaderboardSize argument is out of bounds: {leaderboardSize}')
 
         self.__backingDatabase: Final[BackingDatabase] = backingDatabase
         self.__cutenessMapper: Final[CutenessMapperInterface] = cutenessMapper
         self.__cutenessSettings: Final[CutenessSettingsInterface] = cutenessSettings
-        self.__timber: Final[TimberInterface] = timber
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
-        self.__historyLeaderboardSize: Final[int] = historyLeaderboardSize
-        self.__leaderboardSize: Final[int] = leaderboardSize
 
         self.__isDatabaseReady: bool = False
 

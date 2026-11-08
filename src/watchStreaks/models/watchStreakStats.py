@@ -7,14 +7,14 @@ import locale
 @dataclass(frozen = True, slots = True)
 class WatchStreakStats:
     mostRecentUpdate: datetime
-    bestEverStreak: int
+    bestStreak: int
     currentStreak: int
     chatterUserId: str
     twitchChannelId: str
 
     @property
-    def bestEverStreakStr(self) -> str:
-        return locale.format_string("%d", self.bestEverStreak, grouping = True)
+    def bestStreakStr(self) -> str:
+        return locale.format_string("%d", self.bestStreak, grouping = True)
 
     @property
     def currentStreakStr(self) -> str:
