@@ -1,8 +1,7 @@
 from typing import Final
 
 from .banTriviaQuestionResult import BanTriviaQuestionResult
-from .bannedTriviaIdsRepositoryInterface import \
-    BannedTriviaIdsRepositoryInterface
+from .bannedTriviaIdsRepositoryInterface import BannedTriviaIdsRepositoryInterface
 from .bannedTriviaQuestion import BannedTriviaQuestion
 from ..misc.triviaSourceParserInterface import TriviaSourceParserInterface
 from ..questions.triviaSource import TriviaSource
@@ -53,10 +52,8 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
         )
 
         if info is not None:
-            self.__timber.log('BannedTriviaIdsRepository', f'Attempted to ban trivia question but it\'s already been banned: {info}')
+            self.__timber.log('BannedTriviaIdsRepository', f'Attempted to ban trivia question but it\'s already been banned ({info=})')
             return BanTriviaQuestionResult.ALREADY_BANNED
-
-        self.__timber.log('BannedTriviaIdsRepository', f'Banning trivia question (triviaId=\"{triviaId}\", userId=\"{userId}\", triviaSource=\"{triviaSource}\")...')
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
@@ -64,11 +61,11 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
                 INSERT INTO bannedtriviaids (triviaid, triviasource, userid)
                 VALUES ($1, $2, $3)
             ''',
-            triviaId, triviaSource.toStr(), userId
+            triviaId, triviaSource.toStr(), userId,
         )
 
         await connection.close()
-        self.__timber.log('BannedTriviaIdsRepository', f'Banned trivia question (triviaId=\"{triviaId}\", userId=\"{userId}\", triviaSource=\"{triviaSource}\")')
+        self.__timber.log('BannedTriviaIdsRepository', f'Banned trivia question ({triviaId=}) ({userId=}) ({triviaSource=})')
 
         return BanTriviaQuestionResult.BANNED
 
@@ -89,12 +86,11 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
-                SELECT bannedtriviaids.triviaid, bannedtriviaids.triviasource, bannedtriviaids.userid, userids.username FROM bannedtriviaids
-                INNER JOIN userids ON bannedtriviaids.userid = userids.userid
-                WHERE bannedtriviaids.triviaid = $1 AND bannedtriviaids.triviasource = $2
+                SELECT triviaid, triviasource, userid FROM bannedtriviaids
+                WHERE triviaid = $1 AND triviasource = $2
                 LIMIT 1
             ''',
-            triviaId, triviaSource.toStr()
+            triviaId, triviaSource.toStr(),
         )
 
         await connection.close()
@@ -105,7 +101,6 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
         return BannedTriviaQuestion(
             triviaId = record[0],
             userId = record[2],
-            userName = record[3],
             triviaSource = await self.__triviaSourceParser.parse(record[1]),
         )
 
@@ -126,7 +121,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
                             userid text NOT NULL,
                             PRIMARY KEY (triviaid, triviasource)
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -138,7 +133,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
                             userid TEXT NOT NULL,
                             PRIMARY KEY (triviaid, triviasource)
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:
@@ -160,7 +155,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
         if info is None:
             return False
 
-        self.__timber.log('BannedTriviaIdsRepository', f'Encountered banned trivia question ({info})')
+        self.__timber.log('BannedTriviaIdsRepository', f'Encountered banned trivia question ({info=})')
         return True
 
     async def unban(
@@ -179,10 +174,8 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
         )
 
         if info is None:
-            self.__timber.log('BannedTriviaIdsRepository', f'Attempted to unban trivia question but it wasn\'t banned (triviaId=\"{triviaId}\", triviaSource=\"{triviaSource}\")')
+            self.__timber.log('BannedTriviaIdsRepository', f'Attempted to unban trivia question but it wasn\'t already banned ({triviaId=}) ({triviaSource=})')
             return BanTriviaQuestionResult.NOT_BANNED
-
-        self.__timber.log('BannedTriviaIdsRepository', f'Unbanning trivia question (triviaId=\"{triviaId}\", triviaSource=\"{triviaSource}\")...')
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
@@ -190,9 +183,10 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
                 DELETE FROM bannedtriviaids
                 WHERE triviaid = $1 AND triviasource = $2
             ''',
-            triviaId, triviaSource.toStr()
+            triviaId, triviaSource.toStr(),
         )
 
         await connection.close()
-        self.__timber.log('BannedTriviaIdsRepository', f'Unbanned trivia question (triviaId=\"{triviaId}\", triviaSource=\"{triviaSource}\")')
+        self.__timber.log('BannedTriviaIdsRepository', f'Unbanned trivia question ({triviaId=}) ({triviaSource=})')
+
         return BanTriviaQuestionResult.UNBANNED
