@@ -52,8 +52,8 @@ class WatchStreakChatAction(AbsChatAction):
         )
 
         if announceResult is AnnounceWatchStreakResult.SUBMITTED_TTS_EVENT:
-            self.__timber.log(self.actionName, f'Consumed watch streak ({streakStats=}) ({announceResult=}) ({chatMessage=})')
+            self.__timber.log(self.actionName, f'Consumed watch streak ({announceResult=}) ({streakStats=}) ({chatMessage=})')
             return ChatActionResult.CONSUMED
         else:
-            self.__timber.log(self.actionName, f'Handled watch streak ({streakStats=}) ({announceResult=}) ({chatMessage=})')
+            self.__timber.log(self.actionName, f'Handled watch streak ({announceResult=}) ({streakStats=}) ({chatMessage=})')
             return ChatActionResult.HANDLED
