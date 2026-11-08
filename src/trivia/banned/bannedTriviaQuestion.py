@@ -7,5 +7,4 @@ from ..questions.triviaSource import TriviaSource
 class BannedTriviaQuestion:
     triviaId: str
     userId: str
-    userName: str
     triviaSource: TriviaSource
