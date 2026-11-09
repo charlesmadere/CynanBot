@@ -40,6 +40,7 @@ class GetGashaponItemChatCommand(AbsChatCommand):
             re.compile(r'^\s*!(?:get\s*)?gat?cha(?:pon)?\b', re.IGNORECASE),
             re.compile(r'^\s*!(?:get\s*)?gat?chi(?:pon)?\b', re.IGNORECASE),
             re.compile(r'^\s*!(?:get\s*)?gasha(?:pon)?\b', re.IGNORECASE),
+            re.compile(r'^\s*!(?:get\s*)?got?cha\b', re.IGNORECASE),
             re.compile(r'^\s*!(?:get\s*)?loot(?:box)?\b', re.IGNORECASE),
             re.compile(r'^\s*!(?:get\s*)?loot(?:crate)?\b', re.IGNORECASE),
         })
