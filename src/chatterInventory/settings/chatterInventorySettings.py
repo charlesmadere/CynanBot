@@ -179,6 +179,14 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             fallback = True,
         )
 
+    async def areWatchStreakRewardsEnabled(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(
+            d = jsonContents,
+            key = 'watchStreakRewardsEnabled',
+            fallback = True,
+        )
+
     async def clearCaches(self):
         self.__cache = None
 

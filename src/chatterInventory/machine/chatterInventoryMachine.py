@@ -57,6 +57,7 @@ from ..models.events.voicemailTargetIsOriginatingUserChatterItemEvent import \
 from ..models.events.voicemailTargetIsStreamerChatterItemEvent import VoicemailTargetIsStreamerChatterItemEvent
 from ..models.giveChatterItemAction import GiveChatterItemAction
 from ..models.requestGashaponRewardAction import RequestGashaponRewardAction
+from ..models.requestWatchStreakRewardAction import RequestWatchStreakRewardAction
 from ..models.tradeChatterItemAction import TradeChatterItemAction
 from ..models.useChatterItemAction import UseChatterItemAction
 from ..repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
@@ -222,7 +223,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
     ):
         itemDetails = await self.__chatterInventorySettings.getAirStrikeItemDetails()
 
-        timeoutDuration: AbsTimeoutDuration = RandomLinearTimeoutDuration(
+        timeoutDuration: Final[AbsTimeoutDuration] = RandomLinearTimeoutDuration(
             maximumSeconds = itemDetails.maxDurationSeconds,
             minimumSeconds = itemDetails.minDurationSeconds,
         )
@@ -286,7 +287,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
     ):
         itemDetails = await self.__chatterInventorySettings.getBananaItemDetails()
 
-        timeoutDuration: AbsTimeoutDuration = ExactTimeoutDuration(
+        timeoutDuration: Final[AbsTimeoutDuration] = ExactTimeoutDuration(
             seconds = itemDetails.durationSeconds,
         )
 
@@ -543,7 +544,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
     ):
         itemDetails = await self.__chatterInventorySettings.getGrenadeItemDetails()
 
-        timeoutDuration: AbsTimeoutDuration = RandomLinearTimeoutDuration(
+        timeoutDuration: Final[AbsTimeoutDuration] = RandomLinearTimeoutDuration(
             maximumSeconds = itemDetails.maxDurationSeconds,
             minimumSeconds = itemDetails.minDurationSeconds,
         )
@@ -590,6 +591,11 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
 
         elif isinstance(action, RequestGashaponRewardAction):
             await self.__handleRequestGashaponRewardAction(
+                action = action,
+            )
+
+        elif isinstance(action, RequestWatchStreakRewardAction):
+            await self.__handleRequestWatchStreakRewardAction(
                 action = action,
             )
 
@@ -655,6 +661,13 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         else:
             raise ValueError(f'Encountered unknown GashaponRewardUseCaseInterface.AbsResult ({result=}) ({action=})')
 
+    async def __handleRequestWatchStreakRewardAction(
+        self,
+        action: RequestWatchStreakRewardAction,
+    ):
+        # TODO
+        pass
+
     async def __handleTm36ItemAction(
         self,
         chatterInventory: ChatterInventoryData | None,
@@ -662,7 +675,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
     ):
         itemDetails = await self.__chatterInventorySettings.getTm36ItemDetails()
 
-        timeoutDuration: AbsTimeoutDuration = RandomLinearTimeoutDuration(
+        timeoutDuration: Final[AbsTimeoutDuration] = RandomLinearTimeoutDuration(
             maximumSeconds = itemDetails.maxDurationSeconds,
             minimumSeconds = itemDetails.minDurationSeconds,
         )
@@ -856,7 +869,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
     ):
         itemDetails = await self.__chatterInventorySettings.getVoreItemDetails()
 
-        timeoutDuration: AbsTimeoutDuration = ExactTimeoutDuration(
+        timeoutDuration: Final[AbsTimeoutDuration] = ExactTimeoutDuration(
             seconds = itemDetails.timeoutDurationSeconds,
         )
 

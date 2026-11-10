@@ -45,6 +45,15 @@ class WatchStreakChatAction(AbsChatAction):
             user = chatMessage.twitchUser,
         )
 
+        requestedReward = await self.__watchStreaksHelper.requestWatchStreakReward(
+            watchStreak = chatMessage.watchStreak.streakCount,
+            chatMessage = chatMessage.text,
+            chatterUserId = chatMessage.chatterUserId,
+            twitchChannelId = chatMessage.twitchChannelId,
+            twitchChatMessageId = chatMessage.twitchChatMessageId,
+            user = chatMessage.twitchUser,
+        )
+
         streakStats = await self.__watchStreaksHelper.updateWatchStreakStats(
             watchStreak = chatMessage.watchStreak.streakCount,
             chatterUserId = chatMessage.chatterUserId,
@@ -52,8 +61,8 @@ class WatchStreakChatAction(AbsChatAction):
         )
 
         if announceResult is AnnounceWatchStreakResult.SUBMITTED_TTS_EVENT:
-            self.__timber.log(self.actionName, f'Consumed watch streak ({announceResult=}) ({streakStats=}) ({chatMessage=})')
+            self.__timber.log(self.actionName, f'Consumed watch streak ({announceResult=}) ({requestedReward=}) ({streakStats=}) ({chatMessage=})')
             return ChatActionResult.CONSUMED
         else:
-            self.__timber.log(self.actionName, f'Handled watch streak ({announceResult=}) ({streakStats=}) ({chatMessage=})')
+            self.__timber.log(self.actionName, f'Handled watch streak ({announceResult=}) ({requestedReward=}) ({streakStats=}) ({chatMessage=})')
             return ChatActionResult.HANDLED

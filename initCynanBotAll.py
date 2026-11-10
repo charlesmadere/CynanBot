@@ -129,6 +129,8 @@ from src.chatterInventory.helpers.crowdMicrophoneHelper import CrowdMicrophoneHe
 from src.chatterInventory.helpers.crowdMicrophoneHelperInterface import CrowdMicrophoneHelperInterface
 from src.chatterInventory.helpers.useChatterItemHelper import UseChatterItemHelper
 from src.chatterInventory.helpers.useChatterItemHelperInterface import UseChatterItemHelperInterface
+from src.chatterInventory.helpers.watchStreakRewardHelper import WatchStreakRewardHelper
+from src.chatterInventory.helpers.watchStreakRewardHelperInterface import WatchStreakRewardHelperInterface
 from src.chatterInventory.idGenerator.chatterInventoryIdGenerator import ChatterInventoryIdGenerator
 from src.chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
 from src.chatterInventory.listeners.chatterItemEventListener import ChatterItemEventListener
@@ -3081,6 +3083,13 @@ watchStreaksRepository: Final[WatchStreaksRepositoryInterface] = WatchStreaksRep
     timeZoneRepository = timeZoneRepository,
 )
 
+watchStreakRewardHelper: Final[WatchStreakRewardHelperInterface] = WatchStreakRewardHelper(
+    chatterInventoryIdGenerator = chatterInventoryIdGenerator,
+    chatterInventoryMachine = chatterInventoryMachine,
+    chatterInventorySettings = chatterInventorySettings,
+    timber = timber,
+)
+
 watchStreakSettings: Final[WatchStreakSettingsInterface] = WatchStreakSettings(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
@@ -3093,6 +3102,7 @@ watchStreaksHelper: Final[WatchStreaksHelperInterface] = WatchStreaksHelper(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     watchStreaksRepository = watchStreaksRepository,
+    watchStreakRewardHelper = watchStreakRewardHelper,
     watchStreakSettings = watchStreakSettings,
 )
 
@@ -3492,6 +3502,7 @@ chatCommands: Final[Collection[AbsChatCommand | None]] = frozenset({
         chatterInventoryMachine = chatterInventoryMachine,
         chatterInventoryMapper = chatterInventoryMapper,
         chatterInventorySettings = chatterInventorySettings,
+        randomUtils = randomUtils,
         timber = timber,
         twitchChatMessenger = twitchChatMessenger,
         twitchTokensUtils = twitchTokensUtils,

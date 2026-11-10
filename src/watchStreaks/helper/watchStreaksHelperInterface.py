@@ -20,6 +20,18 @@ class WatchStreaksHelperInterface(ABC):
         pass
 
     @abstractmethod
+    async def requestWatchStreakReward(
+        self,
+        watchStreak: int,
+        chatMessage: str | None,
+        chatterUserId: str,
+        twitchChannelId: str,
+        twitchChatMessageId: str | None,
+        user: UserInterface,
+    ) -> bool:
+        pass
+
+    @abstractmethod
     async def updateWatchStreakStats(
         self,
         watchStreak: int,

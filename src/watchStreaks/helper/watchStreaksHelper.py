@@ -5,6 +5,7 @@ from ..models.announceWatchStreakResult import AnnounceWatchStreakResult
 from ..models.watchStreakStats import WatchStreakStats
 from ..repositories.watchStreaksRepositoryInterface import WatchStreaksRepositoryInterface
 from ..settings.watchStreakSettingsInterface import WatchStreakSettingsInterface
+from ...chatterInventory.helpers.watchStreakRewardHelperInterface import WatchStreakRewardHelperInterface
 from ...chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
 from ...misc import utils as utils
 from ...streamAlertsManager.streamAlert import StreamAlert
@@ -23,6 +24,7 @@ class WatchStreaksHelper(WatchStreaksHelperInterface):
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         watchStreaksRepository: WatchStreaksRepositoryInterface,
+        watchStreakRewardHelper: WatchStreakRewardHelperInterface,
         watchStreakSettings: WatchStreakSettingsInterface,
     ):
         if not isinstance(chatterPreferredNameHelper, ChatterPreferredNameHelperInterface):
@@ -33,6 +35,8 @@ class WatchStreaksHelper(WatchStreaksHelperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(watchStreaksRepository, WatchStreaksRepositoryInterface):
             raise TypeError(f'watchStreaksRepository argument is malformed: \"{watchStreaksRepository}\"')
+        elif not isinstance(watchStreakRewardHelper, WatchStreakRewardHelperInterface):
+            raise TypeError(f'watchStreakRewardHelper argument is malformed: \"{watchStreakRewardHelper}\"')
         elif not isinstance(watchStreakSettings, WatchStreakSettingsInterface):
             raise TypeError(f'watchStreakSettings argument is malformed: \"{watchStreakSettings}\"')
 
@@ -40,6 +44,7 @@ class WatchStreaksHelper(WatchStreaksHelperInterface):
         self.__streamAlertsManager: Final[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: Final[TimberInterface] = timber
         self.__watchStreaksRepository: Final[WatchStreaksRepositoryInterface] = watchStreaksRepository
+        self.__watchStreakRewardHelper: Final[WatchStreakRewardHelperInterface] = watchStreakRewardHelper
         self.__watchStreakSettings: Final[WatchStreakSettingsInterface] = watchStreakSettings
 
     async def announceWatchStreak(
@@ -120,6 +125,39 @@ class WatchStreaksHelper(WatchStreaksHelperInterface):
             return chatterUserName
         else:
             return preferredNameData.preferredName
+
+    async def requestWatchStreakReward(
+        self,
+        watchStreak: int,
+        chatMessage: str | None,
+        chatterUserId: str,
+        twitchChannelId: str,
+        twitchChatMessageId: str | None,
+        user: UserInterface,
+    ) -> bool:
+        if not utils.isValidInt(watchStreak):
+            raise TypeError(f'watchStreak argument is malformed: \"{watchStreak}\"')
+        elif watchStreak < 0 or watchStreak > utils.getIntMaxSafeSize():
+            raise ValueError(f'watchStreak argument is malformed: {watchStreak}')
+        elif chatMessage is not None and not isinstance(chatMessage, str):
+            raise TypeError(f'chatMessage argument is malformed: \"{chatMessage}\"')
+        elif not utils.isValidStr(chatterUserId):
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif twitchChatMessageId is not None and not isinstance(twitchChatMessageId, str):
+            raise TypeError(f'twitchChatMessageId argument is malformed: \"{twitchChatMessageId}\"')
+        elif not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
+
+        return await self.__watchStreakRewardHelper.requestWatchStreakReward(
+            watchStreak = watchStreak,
+            chatMessage = chatMessage,
+            chatterUserId = chatterUserId,
+            twitchChannelId = twitchChannelId,
+            twitchChatMessageId = twitchChatMessageId,
+            user = user,
+        )
 
     async def updateWatchStreakStats(
         self,
