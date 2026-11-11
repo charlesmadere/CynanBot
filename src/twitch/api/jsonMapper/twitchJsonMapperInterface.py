@@ -673,7 +673,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseSendChatDropReason(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchSendChatDropReason | None:
         pass
 

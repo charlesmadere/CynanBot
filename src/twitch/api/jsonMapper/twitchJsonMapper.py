@@ -2150,7 +2150,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseSendChatDropReason(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchSendChatDropReason | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -2233,7 +2233,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         return TwitchStartCommercialDetails(
             length = length,
             retryAfter = retryAfter,
-            message = message
+            message = message,
         )
 
     async def parseStartCommercialResponse(
