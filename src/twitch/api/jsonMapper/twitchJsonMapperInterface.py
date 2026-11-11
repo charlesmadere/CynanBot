@@ -435,7 +435,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseEmoteType(
         self,
-        emoteType: str | Any | None
+        emoteType: str | Any | None,
     ) -> TwitchEmoteType | None:
         pass
 

@@ -1342,12 +1342,12 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         return TwitchEmotesResponse(
             emoteData = emoteData,
-            template = template
+            template = template,
         )
 
     async def parseEmoteType(
         self,
-        emoteType: str | Any | None
+        emoteType: str | Any | None,
     ) -> TwitchEmoteType | None:
         if not utils.isValidStr(emoteType):
             return None
@@ -1356,8 +1356,18 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         match emoteType:
             case 'bitstier': return TwitchEmoteType.BITS
+            case 'channelpoints': return TwitchEmoteType.CHANNEL_POINTS
             case 'follower': return TwitchEmoteType.FOLLOWER
+            case 'globals': return TwitchEmoteType.GLOBALS
+            case 'hypetrain': return TwitchEmoteType.HYPE_TRAIN
+            case 'limitedtime': return TwitchEmoteType.LIMITED_TIME
+            case 'owl2019': return TwitchEmoteType.OWL_2019
+            case 'prime': return TwitchEmoteType.PRIME
+            case 'rewards': return TwitchEmoteType.REWARDS
+            case 'smilies': return TwitchEmoteType.SMILIES
             case 'subscriptions': return TwitchEmoteType.SUBSCRIPTIONS
+            case 'turbo': return TwitchEmoteType.TURBO
+            case 'twofactor': return TwitchEmoteType.TWO_FACTOR
             case _: return None
 
     async def parseEventSubDetails(

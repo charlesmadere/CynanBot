@@ -1227,6 +1227,11 @@ class TestTwitchJsonMapper:
         assert result is TwitchEmoteType.BITS
 
     @pytest.mark.asyncio
+    async def test_parseEmoteType_withChannelpointsString(self):
+        result = await self.jsonMapper.parseEmoteType('channelpoints')
+        assert result is TwitchEmoteType.CHANNEL_POINTS
+
+    @pytest.mark.asyncio
     async def test_parseEmoteType_withEmptyString(self):
         result = await self.jsonMapper.parseEmoteType('')
         assert result is None
@@ -1237,14 +1242,59 @@ class TestTwitchJsonMapper:
         assert result is TwitchEmoteType.FOLLOWER
 
     @pytest.mark.asyncio
+    async def test_parseEmoteType_withGlobalsString(self):
+        result = await self.jsonMapper.parseEmoteType('globals')
+        assert result is TwitchEmoteType.GLOBALS
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteType_withHypetrainString(self):
+        result = await self.jsonMapper.parseEmoteType('hypetrain')
+        assert result is TwitchEmoteType.HYPE_TRAIN
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteType_withLimitedtimeString(self):
+        result = await self.jsonMapper.parseEmoteType('limitedtime')
+        assert result is TwitchEmoteType.LIMITED_TIME
+
+    @pytest.mark.asyncio
     async def test_parseEmoteType_withNone(self):
         result = await self.jsonMapper.parseEmoteType(None)
         assert result is None
 
     @pytest.mark.asyncio
+    async def test_parseEmoteType_withOwl2019String(self):
+        result = await self.jsonMapper.parseEmoteType('owl2019')
+        assert result is TwitchEmoteType.OWL_2019
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteType_withPrimeString(self):
+        result = await self.jsonMapper.parseEmoteType('prime')
+        assert result is TwitchEmoteType.PRIME
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteType_withRewardsString(self):
+        result = await self.jsonMapper.parseEmoteType('rewards')
+        assert result is TwitchEmoteType.REWARDS
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteType_withSmiliesString(self):
+        result = await self.jsonMapper.parseEmoteType('smilies')
+        assert result is TwitchEmoteType.SMILIES
+
+    @pytest.mark.asyncio
     async def test_parseEmoteType_withSubscriptionsString(self):
         result = await self.jsonMapper.parseEmoteType('subscriptions')
         assert result is TwitchEmoteType.SUBSCRIPTIONS
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteType_withTurboString(self):
+        result = await self.jsonMapper.parseEmoteType('turbo')
+        assert result is TwitchEmoteType.TURBO
+
+    @pytest.mark.asyncio
+    async def test_parseEmoteType_withTwofactorString(self):
+        result = await self.jsonMapper.parseEmoteType('twofactor')
+        assert result is TwitchEmoteType.TWO_FACTOR
 
     @pytest.mark.asyncio
     async def test_parseEmoteType_withWhitespaceString(self):
