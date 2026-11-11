@@ -1769,6 +1769,7 @@ microsoftSamTtsManagerProvider: Final[MicrosoftSamTtsManagerProviderInterface] =
     microsoftSamHelper = microsoftSamHelper,
     microsoftSamMessageCleaner = microsoftSamMessageCleaner,
     microsoftSamSettingsRepository = microsoftSamSettingsRepository,
+    randomUtils = randomUtils,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
@@ -1890,6 +1891,7 @@ ttsMonsterMessageCleaner: Final[TtsMonsterMessageCleanerInterface] = TtsMonsterM
 
 ttsMonsterTtsManagerProvider: Final[TtsMonsterTtsManagerProviderInterface] = TtsMonsterTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
+    randomUtils = randomUtils,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,

@@ -7,6 +7,7 @@ from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterfa
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
@@ -20,6 +21,7 @@ class TtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
     def __init__(
         self,
         chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface,
+        randomUtils: RandomUtilsInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
@@ -30,6 +32,8 @@ class TtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
@@ -46,6 +50,7 @@ class TtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
         self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = chatterPreferredTtsHelper
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
         self.__timber: Final[TimberInterface] = timber
         self.__ttsCommandBuilder: Final[TtsCommandBuilderInterface] = ttsCommandBuilder
@@ -72,6 +77,7 @@ class TtsMonsterTtsManagerProvider(TtsMonsterTtsManagerProviderInterface):
 
         return TtsMonsterTtsManager(
             chatterPreferredTtsHelper = self.__chatterPreferredTtsHelper,
+            randomUtils = self.__randomUtils,
             soundPlayerManager = soundPlayerManager,
             timber = self.__timber,
             ttsCommandBuilder = self.__ttsCommandBuilder,

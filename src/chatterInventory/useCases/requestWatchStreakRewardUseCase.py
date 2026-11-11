@@ -5,6 +5,7 @@ from ..models.chatterItemType import ChatterItemType
 from ..models.requestWatchStreakRewardAction import RequestWatchStreakRewardAction
 from ..repositories.chatterInventoryRepositoryInterface import ChatterInventoryRepositoryInterface
 from ..settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
+from ...misc import utils as utils
 from ...timber.timberInterface import TimberInterface
 
 
@@ -30,9 +31,12 @@ class RequestWatchStreakRewardUseCase(RequestWatchStreakRewardUseCaseInterface):
     async def invoke(
         self,
         action: RequestWatchStreakRewardAction,
+        twitchAccessToken: str,
     ) -> RequestWatchStreakRewardUseCaseInterface.AbsResult:
         if not isinstance(action, RequestWatchStreakRewardAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
+        elif not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
         if not await self.__chatterInventorySettings.areWatchStreakRewardsEnabled():
             return RequestWatchStreakRewardUseCaseInterface.NotEnabledResult()
