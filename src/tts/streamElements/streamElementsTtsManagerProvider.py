@@ -7,6 +7,7 @@ from ..commandBuilder.ttsCommandBuilderInterface import TtsCommandBuilderInterfa
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
@@ -21,6 +22,7 @@ class StreamElementsTtsManagerProvider(StreamElementsTtsManagerProviderInterface
     def __init__(
         self,
         chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface,
+        randomUtils: RandomUtilsInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         streamElementsHelper: StreamElementsHelperInterface,
         streamElementsMessageCleaner: StreamElementsMessageCleanerInterface,
@@ -31,6 +33,8 @@ class StreamElementsTtsManagerProvider(StreamElementsTtsManagerProviderInterface
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(streamElementsHelper, StreamElementsHelperInterface):
@@ -47,6 +51,7 @@ class StreamElementsTtsManagerProvider(StreamElementsTtsManagerProviderInterface
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
         self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = chatterPreferredTtsHelper
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
         self.__streamElementsHelper: Final[StreamElementsHelperInterface] = streamElementsHelper
         self.__streamElementsMessageCleaner: Final[StreamElementsMessageCleanerInterface] = streamElementsMessageCleaner
@@ -73,6 +78,7 @@ class StreamElementsTtsManagerProvider(StreamElementsTtsManagerProviderInterface
 
         return StreamElementsTtsManager(
             chatterPreferredTtsHelper = self.__chatterPreferredTtsHelper,
+            randomUtils = self.__randomUtils,
             soundPlayerManager = soundPlayerManager,
             streamElementsHelper = self.__streamElementsHelper,
             streamElementsMessageCleaner = self.__streamElementsMessageCleaner,
