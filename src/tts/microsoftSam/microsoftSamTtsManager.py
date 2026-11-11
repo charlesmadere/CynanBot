@@ -1,5 +1,4 @@
 import asyncio
-import random
 import traceback
 from typing import Final
 
@@ -16,6 +15,7 @@ from ...microsoftSam.microsoftSamMessageCleanerInterface import MicrosoftSamMess
 from ...microsoftSam.models.microsoftSamFileReference import MicrosoftSamFileReference
 from ...microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from ...microsoftSam.settings.microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -28,6 +28,7 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         microsoftSamHelper: MicrosoftSamHelperInterface,
         microsoftSamMessageCleaner: MicrosoftSamMessageCleanerInterface,
         microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface,
+        randomUtils: RandomUtilsInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
@@ -41,6 +42,8 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
             raise TypeError(f'microsoftSamMessageCleaner argument is malformed: \"{microsoftSamMessageCleaner}\"')
         elif not isinstance(microsoftSamSettingsRepository, MicrosoftSamSettingsRepositoryInterface):
             raise TypeError(f'microsoftSamSettingsRepository argument is malformed: \"{microsoftSamSettingsRepository}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -54,16 +57,18 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         self.__microsoftSamHelper: Final[MicrosoftSamHelperInterface] = microsoftSamHelper
         self.__microsoftSamMessageCleaner: Final[MicrosoftSamMessageCleanerInterface] = microsoftSamMessageCleaner
         self.__microsoftSamSettingsRepository: Final[MicrosoftSamSettingsRepositoryInterface] = microsoftSamSettingsRepository
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__soundPlayerManager: Final[SoundPlayerManagerInterface] = soundPlayerManager
         self.__timber: Final[TimberInterface] = timber
         self.__ttsCommandBuilder: Final[TtsCommandBuilderInterface] = ttsCommandBuilder
         self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
         self.__isLoadingOrPlaying: bool = False
+        self.__isStopped: bool = False
 
     async def __determineVoice(self, event: TtsEvent) -> MicrosoftSamVoice | None:
         if event.provider is TtsProvider.SHOTGUN_TTS:
-            return random.choice(list(MicrosoftSamVoice))
+            return self.__randomUtils.choice(list(MicrosoftSamVoice))
         elif event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return None
 
@@ -77,7 +82,7 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         elif isinstance(preferredTts.properties, MicrosoftSamTtsProperties):
             return preferredTts.properties.voice
         elif preferredTts.provider is TtsProvider.RANDO_TTS:
-            return random.choice(list(MicrosoftSamVoice))
+            return self.__randomUtils.choice(list(MicrosoftSamVoice))
         else:
             self.__timber.log('MicrosoftSamTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
@@ -118,14 +123,19 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
             return
 
         self.__isLoadingOrPlaying = True
+        self.__isStopped = False
         fileReference = await self.__processTtsEvent(event)
 
         if fileReference is None:
             self.__timber.log('MicrosoftSamTtsManager', f'Failed to generate TTS ({event=}) ({fileReference=})')
             self.__isLoadingOrPlaying = False
             return
+        elif self.__isStopped:
+            self.__timber.log('MicrosoftSamTtsManager', f'Stopped TTS ({event=}) ({fileReference=})')
+            self.__isLoadingOrPlaying = False
+            return
 
-        self.__timber.log('MicrosoftSamTtsManager', f'Playing TTS in \"{event.twitchChannel}\"...')
+        self.__timber.log('MicrosoftSamTtsManager', f'Playing TTS ({event=}) ({fileReference=})')
         await self.__executeTts(fileReference)
 
     async def __processTtsEvent(self, event: TtsEvent) -> MicrosoftSamFileReference | None:
@@ -149,6 +159,7 @@ class MicrosoftSamTtsManager(MicrosoftSamTtsManagerInterface):
         if not self.isLoadingOrPlaying:
             return
 
+        self.__isStopped = True
         await self.__soundPlayerManager.stop()
         self.__isLoadingOrPlaying = False
         self.__timber.log('MicrosoftSamTtsManager', f'Stopped TTS event')

@@ -10,6 +10,7 @@ from ...microsoftSam.helper.microsoftSamHelperInterface import MicrosoftSamHelpe
 from ...microsoftSam.microsoftSamMessageCleanerInterface import MicrosoftSamMessageCleanerInterface
 from ...microsoftSam.settings.microsoftSamSettingsRepositoryInterface import MicrosoftSamSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
@@ -23,6 +24,7 @@ class MicrosoftSamTtsManagerProvider(MicrosoftSamTtsManagerProviderInterface):
         microsoftSamHelper: MicrosoftSamHelperInterface,
         microsoftSamMessageCleaner: MicrosoftSamMessageCleanerInterface,
         microsoftSamSettingsRepository: MicrosoftSamSettingsRepositoryInterface,
+        randomUtils: RandomUtilsInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
@@ -36,6 +38,8 @@ class MicrosoftSamTtsManagerProvider(MicrosoftSamTtsManagerProviderInterface):
             raise TypeError(f'microsoftSamMessageCleaner argument is malformed: \"{microsoftSamMessageCleaner}\"')
         elif not isinstance(microsoftSamSettingsRepository, MicrosoftSamSettingsRepositoryInterface):
             raise TypeError(f'microsoftSamSettingsRepository argument is malformed: \"{microsoftSamSettingsRepository}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
@@ -49,6 +53,7 @@ class MicrosoftSamTtsManagerProvider(MicrosoftSamTtsManagerProviderInterface):
         self.__microsoftSamHelper: Final[MicrosoftSamHelperInterface] = microsoftSamHelper
         self.__microsoftSamMessageCleaner: Final[MicrosoftSamMessageCleanerInterface] = microsoftSamMessageCleaner
         self.__microsoftSamSettingsRepository: Final[MicrosoftSamSettingsRepositoryInterface] = microsoftSamSettingsRepository
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
         self.__timber: Final[TimberInterface] = timber
         self.__ttsCommandBuilder: Final[TtsCommandBuilderInterface] = ttsCommandBuilder
@@ -75,6 +80,7 @@ class MicrosoftSamTtsManagerProvider(MicrosoftSamTtsManagerProviderInterface):
             microsoftSamHelper = self.__microsoftSamHelper,
             microsoftSamMessageCleaner = self.__microsoftSamMessageCleaner,
             microsoftSamSettingsRepository = self.__microsoftSamSettingsRepository,
+            randomUtils = self.__randomUtils,
             soundPlayerManager = soundPlayerManager,
             timber = self.__timber,
             ttsCommandBuilder = self.__ttsCommandBuilder,

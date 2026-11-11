@@ -70,6 +70,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
         self.__isLoadingOrPlaying: bool = False
+        self.__isStopped: bool = False
 
     async def __determineVoicePreset(self, event: TtsEvent) -> GoogleVoicePreset | None:
         if event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
@@ -138,14 +139,19 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
             return
 
         self.__isLoadingOrPlaying = True
+        self.__isStopped = False
         fileReference = await self.__processTtsEvent(event)
 
         if fileReference is None:
             self.__timber.log('GoogleTtsManager', f'Failed to generate TTS ({event=}) ({fileReference=})')
             self.__isLoadingOrPlaying = False
             return
+        elif self.__isStopped:
+            self.__timber.log('GoogleTtsManager', f'Stopped TTS ({event=}) ({fileReference=})')
+            self.__isLoadingOrPlaying = False
+            return
 
-        self.__timber.log('GoogleTtsManager', f'Playing TTS in \"{event.twitchChannel}\"...')
+        self.__timber.log('GoogleTtsManager', f'Playing TTS ({event=}) ({fileReference=})')
         await self.__executeTts(fileReference)
 
     async def __processTtsEvent(self, event: TtsEvent) -> GoogleTtsFileReference | None:
@@ -168,6 +174,7 @@ class GoogleTtsManager(GoogleTtsManagerInterface):
         if not self.isLoadingOrPlaying:
             return
 
+        self.__isStopped = True
         await self.__soundPlayerManager.stop()
         self.__isLoadingOrPlaying = False
         self.__timber.log('GoogleTtsManager', f'Stopped TTS event')

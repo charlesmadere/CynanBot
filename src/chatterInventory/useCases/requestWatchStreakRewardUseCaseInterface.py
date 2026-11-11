@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from frozendict import frozendict
 
 from ..models.chatterInventoryData import ChatterInventoryData
-from ..models.chatterItemType import ChatterItemType
+from ..models.gashaponTier import GashaponTier
 from ..models.requestWatchStreakRewardAction import RequestWatchStreakRewardAction
 
 
@@ -24,12 +24,13 @@ class RequestWatchStreakRewardUseCaseInterface(ABC):
     @dataclass(frozen = True, slots = True)
     class RewardedResult(AbsResult):
         chatterInventory: ChatterInventoryData
-        rewardedItems: frozendict[ChatterItemType, int]
+        gashaponsRewarded: frozendict[GashaponTier, int]
         hypeEmote: str
 
     @abstractmethod
     async def invoke(
         self,
         action: RequestWatchStreakRewardAction,
+        twitchAccessToken: str,
     ) -> AbsResult:
         pass
