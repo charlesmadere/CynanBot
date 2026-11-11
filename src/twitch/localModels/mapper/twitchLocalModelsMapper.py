@@ -306,7 +306,6 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
             case ApiPollStatus.ARCHIVED: return LocalPollStatus.ARCHIVED
             case ApiPollStatus.COMPLETED: return LocalPollStatus.COMPLETED
             case ApiPollStatus.INVALID: return LocalPollStatus.INVALID
-            case ApiPollStatus.MODERATED: return LocalPollStatus.MODERATED
             case ApiPollStatus.TERMINATED: return LocalPollStatus.TERMINATED
 
     async def mapPredictionStatus(

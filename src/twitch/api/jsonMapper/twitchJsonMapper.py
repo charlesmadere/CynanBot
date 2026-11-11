@@ -1834,7 +1834,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'archived': return TwitchPollStatus.ARCHIVED
             case 'completed': return TwitchPollStatus.COMPLETED
             case 'invalid': return TwitchPollStatus.INVALID
-            case 'moderated': return TwitchPollStatus.MODERATED
             case 'terminated': return TwitchPollStatus.TERMINATED
             case _: return None
 

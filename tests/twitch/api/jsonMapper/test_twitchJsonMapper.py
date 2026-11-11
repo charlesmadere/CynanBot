@@ -1688,11 +1688,6 @@ class TestTwitchJsonMapper:
         assert result is TwitchPollStatus.INVALID
 
     @pytest.mark.asyncio
-    async def test_parsePollStatus_withModerated(self):
-        result = await self.jsonMapper.parsePollStatus('moderated')
-        assert result is TwitchPollStatus.MODERATED
-
-    @pytest.mark.asyncio
     async def test_parsePollStatus_withNone(self):
         result = await self.jsonMapper.parsePollStatus(None)
         assert result is None
