@@ -1483,6 +1483,7 @@ streamElementsHelper: Final[StreamElementsHelperInterface] = StreamElementsHelpe
 
 streamElementsTtsManagerProvider: Final[StreamElementsTtsManagerProviderInterface] = StreamElementsTtsManagerProvider(
     chatterPreferredTtsHelper = chatterPreferredTtsHelper,
+    randomUtils = randomUtils,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     streamElementsHelper = streamElementsHelper,
     streamElementsMessageCleaner = streamElementsMessageCleaner,

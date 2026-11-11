@@ -7,5 +7,4 @@ class TwitchPollStatus(Enum):
     ARCHIVED = auto()
     COMPLETED = auto()
     INVALID = auto()
-    MODERATED = auto()
     TERMINATED = auto()

@@ -1,5 +1,4 @@
 import asyncio
-import random
 import traceback
 from typing import Final
 
@@ -11,6 +10,7 @@ from ..models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ..settings.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
 from ...chatterPreferredTts.helper.chatterPreferredTtsHelperInterface import ChatterPreferredTtsHelperInterface
 from ...chatterPreferredTts.models.streamElements.streamElementsTtsProperties import StreamElementsTtsProperties
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...streamElements.helper.streamElementsHelperInterface import StreamElementsHelperInterface
 from ...streamElements.models.streamElementsFileReference import StreamElementsFileReference
@@ -26,6 +26,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
     def __init__(
         self,
         chatterPreferredTtsHelper: ChatterPreferredTtsHelperInterface,
+        randomUtils: RandomUtilsInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         streamElementsHelper: StreamElementsHelperInterface,
         streamElementsMessageCleaner: StreamElementsMessageCleanerInterface,
@@ -36,6 +37,8 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
     ):
         if not isinstance(chatterPreferredTtsHelper, ChatterPreferredTtsHelperInterface):
             raise TypeError(f'chatterPreferredTtsHelper argument is malformed: \"{chatterPreferredTtsHelper}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(streamElementsHelper, StreamElementsHelperInterface):
@@ -52,6 +55,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
         self.__chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = chatterPreferredTtsHelper
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__soundPlayerManager: Final[SoundPlayerManagerInterface] = soundPlayerManager
         self.__streamElementsHelper: Final[StreamElementsHelperInterface] = streamElementsHelper
         self.__streamElementsMessageCleaner: Final[StreamElementsMessageCleanerInterface] = streamElementsMessageCleaner
@@ -61,10 +65,11 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         self.__ttsSettingsRepository: Final[TtsSettingsRepositoryInterface] = ttsSettingsRepository
 
         self.__isLoadingOrPlaying: bool = False
+        self.__isStopped: bool = False
 
     async def __determineVoice(self, event: TtsEvent) -> StreamElementsVoice | None:
         if event.provider is TtsProvider.SHOTGUN_TTS:
-            return random.choice(list(StreamElementsVoice))
+            return self.__randomUtils.choice(list(StreamElementsVoice))
         elif event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return None
 
@@ -78,7 +83,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         elif isinstance(preferredTts.properties, StreamElementsTtsProperties):
             return preferredTts.properties.voice
         elif preferredTts.provider is TtsProvider.RANDO_TTS:
-            return random.choice(list(StreamElementsVoice))
+            return self.__randomUtils.choice(list(StreamElementsVoice))
         else:
             self.__timber.log('StreamElementsTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None
@@ -119,14 +124,19 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
             return
 
         self.__isLoadingOrPlaying = True
+        self.__isStopped = False
         fileReference = await self.__processTtsEvent(event)
 
         if fileReference is None:
             self.__timber.log('StreamElementsTtsManager', f'Failed to generate TTS ({event=}) ({fileReference=})')
             self.__isLoadingOrPlaying = False
             return
+        elif self.__isStopped:
+            self.__timber.log('StreamElementsTtsManager', f'Stopped TTS ({event=}) ({fileReference=})')
+            self.__isLoadingOrPlaying = False
+            return
 
-        self.__timber.log('StreamElementsTtsManager', f'Playing TTS in \"{event.twitchChannel}\"...')
+        self.__timber.log('StreamElementsTtsManager', f'Playing TTS ({event=}) ({fileReference=})')
         await self.__executeTts(fileReference)
 
     async def __processTtsEvent(self, event: TtsEvent) -> StreamElementsFileReference | None:
@@ -149,6 +159,7 @@ class StreamElementsTtsManager(StreamElementsTtsManagerInterface):
         if not self.isLoadingOrPlaying:
             return
 
+        self.__isStopped = True
         await self.__soundPlayerManager.stop()
         self.__isLoadingOrPlaying = False
         self.__timber.log('StreamElementsTtsManager', f'Stopped TTS event')

@@ -1342,12 +1342,12 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         return TwitchEmotesResponse(
             emoteData = emoteData,
-            template = template
+            template = template,
         )
 
     async def parseEmoteType(
         self,
-        emoteType: str | Any | None
+        emoteType: str | Any | None,
     ) -> TwitchEmoteType | None:
         if not utils.isValidStr(emoteType):
             return None
@@ -1356,8 +1356,18 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
         match emoteType:
             case 'bitstier': return TwitchEmoteType.BITS
+            case 'channelpoints': return TwitchEmoteType.CHANNEL_POINTS
             case 'follower': return TwitchEmoteType.FOLLOWER
+            case 'globals': return TwitchEmoteType.GLOBALS
+            case 'hypetrain': return TwitchEmoteType.HYPE_TRAIN
+            case 'limitedtime': return TwitchEmoteType.LIMITED_TIME
+            case 'owl2019': return TwitchEmoteType.OWL_2019
+            case 'prime': return TwitchEmoteType.PRIME
+            case 'rewards': return TwitchEmoteType.REWARDS
+            case 'smilies': return TwitchEmoteType.SMILIES
             case 'subscriptions': return TwitchEmoteType.SUBSCRIPTIONS
+            case 'turbo': return TwitchEmoteType.TURBO
+            case 'twofactor': return TwitchEmoteType.TWO_FACTOR
             case _: return None
 
     async def parseEventSubDetails(
@@ -1824,7 +1834,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             case 'archived': return TwitchPollStatus.ARCHIVED
             case 'completed': return TwitchPollStatus.COMPLETED
             case 'invalid': return TwitchPollStatus.INVALID
-            case 'moderated': return TwitchPollStatus.MODERATED
             case 'terminated': return TwitchPollStatus.TERMINATED
             case _: return None
 
@@ -2140,7 +2149,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
 
     async def parseSendChatDropReason(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchSendChatDropReason | None:
         if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             return None
@@ -2223,7 +2232,7 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
         return TwitchStartCommercialDetails(
             length = length,
             retryAfter = retryAfter,
-            message = message
+            message = message,
         )
 
     async def parseStartCommercialResponse(

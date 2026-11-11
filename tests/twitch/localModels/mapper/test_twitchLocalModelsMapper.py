@@ -536,11 +536,6 @@ class TestTwitchLocalModelsMapper:
         assert result is LocalPollStatus.INVALID
 
     @pytest.mark.asyncio
-    async def test_mapPollStatus_withModerated(self):
-        result = await self.mapper.mapPollStatus(ApiPollStatus.MODERATED)
-        assert result is LocalPollStatus.MODERATED
-
-    @pytest.mark.asyncio
     async def test_mapPollStatus_withTerminated(self):
         result = await self.mapper.mapPollStatus(ApiPollStatus.TERMINATED)
         assert result is LocalPollStatus.TERMINATED

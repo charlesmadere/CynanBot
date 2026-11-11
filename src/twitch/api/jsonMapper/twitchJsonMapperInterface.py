@@ -435,7 +435,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseEmoteType(
         self,
-        emoteType: str | Any | None
+        emoteType: str | Any | None,
     ) -> TwitchEmoteType | None:
         pass
 
@@ -673,7 +673,7 @@ class TwitchJsonMapperInterface(ABC):
     @abstractmethod
     async def parseSendChatDropReason(
         self,
-        jsonResponse: dict[str, Any] | Any | None
+        jsonResponse: dict[str, Any] | Any | None,
     ) -> TwitchSendChatDropReason | None:
         pass
 
