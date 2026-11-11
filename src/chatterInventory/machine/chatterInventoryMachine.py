@@ -734,10 +734,10 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             twitchChannelId = action.twitchChannelId,
         )
 
-        # There is a lot of room for exploitation without this fairly obtuse line.
-        # We really, really don't want to allow for anyone to sneak in trade amounts
-        # that could cause item duplications, may cause people to be ripped off, or
-        # for people to end up with negative inventory amounts.
+        # There is a lot of room for exploitation without this fairly obtuse line. We
+        # really, really don't want to allow for anyone to sneak in trade amounts that
+        # could cause item duplications, maybe cause people to be ripped off, or for
+        # people to end up with negative inventory amounts.
         #
         # This line intends to normalize/handle all of these potentially weird
         # interactions by forcing us down to a tradeAmount of 0.
