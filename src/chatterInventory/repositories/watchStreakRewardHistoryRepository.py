@@ -45,7 +45,7 @@ class WatchStreakRewardHistoryRepository(WatchStreakRewardHistoryRepositoryInter
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
-                SELECT watchstreak, mostrecentupdate FROM watchstreakrewardhistory
+                SELECT watchstreak, mostrecentreward FROM watchstreakrewardhistory
                 WHERE chatteruserid = $1 AND twitchchannelid = $2
                 LIMIT 1
             ''',
