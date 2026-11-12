@@ -145,6 +145,9 @@ from src.chatterInventory.repositories.chatterInventoryRepositoryInterface impor
 from src.chatterInventory.repositories.gashaponRewardHistoryRepository import GashaponRewardHistoryRepository
 from src.chatterInventory.repositories.gashaponRewardHistoryRepositoryInterface import \
     GashaponRewardHistoryRepositoryInterface
+from src.chatterInventory.repositories.watchStreakRewardHistoryRepository import WatchStreakRewardHistoryRepository
+from src.chatterInventory.repositories.watchStreakRewardHistoryRepositoryInterface import \
+    WatchStreakRewardHistoryRepositoryInterface
 from src.chatterInventory.settings.chatterInventorySettings import ChatterInventorySettings
 from src.chatterInventory.settings.chatterInventorySettingsInterface import ChatterInventorySettingsInterface
 from src.chatterInventory.useCases.cassetteTapeItemUseCase import CassetteTapeItemUseCase
@@ -156,6 +159,9 @@ from src.chatterInventory.useCases.gashaponRewardUseCaseInterface import Gashapo
 from src.chatterInventory.useCases.refreshCrowdMicrophonesUseCase import RefreshCrowdMicrophonesUseCase
 from src.chatterInventory.useCases.refreshCrowdMicrophonesUseCaseInterface import \
     RefreshCrowdMicrophonesUseCaseInterface
+from src.chatterInventory.useCases.requestWatchStreakRewardUseCase import RequestWatchStreakRewardUseCase
+from src.chatterInventory.useCases.requestWatchStreakRewardUseCaseInterface import \
+    RequestWatchStreakRewardUseCaseInterface
 from src.chatterPreferredName.helpers.chatterPreferredNameHelper import ChatterPreferredNameHelper
 from src.chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
 from src.chatterPreferredName.helpers.chatterPreferredNameStringCleaner import ChatterPreferredNameStringCleaner
@@ -2652,6 +2658,20 @@ refreshCrowdMicrophonesUseCase: Final[RefreshCrowdMicrophonesUseCaseInterface] =
     timeZoneRepository = timeZoneRepository,
 )
 
+watchStreakRewardHistoryRepository: Final[WatchStreakRewardHistoryRepositoryInterface] = WatchStreakRewardHistoryRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+)
+
+requestWatchStreakRewardUseCase: Final[RequestWatchStreakRewardUseCaseInterface] = RequestWatchStreakRewardUseCase(
+    chatterInventoryRepository = chatterInventoryRepository,
+    chatterInventorySettings = chatterInventorySettings,
+    timber = timber,
+    trollmojiHelper = trollmojiHelper,
+    watchStreakRewardHistoryRepository = watchStreakRewardHistoryRepository,
+)
+
 chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInventoryMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     cassetteTapeItemUseCase = cassetteTapeItemUseCase,
@@ -2664,6 +2684,7 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     gashaponItemUseCase = gashaponItemUseCase,
     gashaponRewardUseCase = gashaponRewardUseCase,
     refreshCrowdMicrophonesUseCase = refreshCrowdMicrophonesUseCase,
+    requestWatchStreakRewardUseCase = requestWatchStreakRewardUseCase,
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
     timeoutIdGenerator = timeoutIdGenerator,

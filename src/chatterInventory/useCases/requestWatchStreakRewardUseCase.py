@@ -89,17 +89,17 @@ class RequestWatchStreakRewardUseCase(RequestWatchStreakRewardUseCaseInterface):
             twitchChannelId = action.twitchChannelId,
         )
 
-        chatterInventory = await self.__chatterInventoryRepository.update(
+        updatedInventory = await self.__chatterInventoryRepository.update(
             itemType = ChatterItemType.GASHAPON,
             changeAmount = gashaponsRewarded,
             chatterUserId = action.chatterUserId,
             twitchChannelId = action.twitchChannelId,
         )
 
-        self.__timber.log('RequestWatchStreakRewardUseCase', f'Gave out watch streak reward ({chatterInventory=}) ({gashaponsRewarded=}) ({previousRewardedWatchStreak=}) ({rewardHistory=}) ({rewardInterval=}) ({action=})')
+        self.__timber.log('RequestWatchStreakRewardUseCase', f'Gave out watch streak reward ({updatedInventory=}) ({gashaponsRewarded=}) ({previousRewardedWatchStreak=}) ({rewardHistory=}) ({rewardInterval=}) ({action=})')
 
         return RequestWatchStreakRewardUseCaseInterface.RewardedResult(
-            chatterInventory = chatterInventory,
+            updatedInventory = updatedInventory,
             gashaponsRewarded = gashaponsRewarded,
             hypeEmote = await self.__trollmojiHelper.getHypeEmoteOrBackup(),
         )

@@ -55,6 +55,7 @@ from ..models.events.voicemailMessageIsEmptyChatterItemEvent import VoicemailMes
 from ..models.events.voicemailTargetIsOriginatingUserChatterItemEvent import \
     VoicemailTargetIsOriginatingUserChatterItemEvent
 from ..models.events.voicemailTargetIsStreamerChatterItemEvent import VoicemailTargetIsStreamerChatterItemEvent
+from ..models.events.watchStreakRewardedChatterItemEvent import WatchStreakRewardedChatterItemEvent
 from ..models.giveChatterItemAction import GiveChatterItemAction
 from ..models.requestGashaponRewardAction import RequestGashaponRewardAction
 from ..models.requestWatchStreakRewardAction import RequestWatchStreakRewardAction
@@ -66,6 +67,7 @@ from ..useCases.cassetteTapeItemUseCaseInterface import CassetteTapeItemUseCaseI
 from ..useCases.gashaponItemUseCaseInterface import GashaponItemUseCaseInterface
 from ..useCases.gashaponRewardUseCaseInterface import GashaponRewardUseCaseInterface
 from ..useCases.refreshCrowdMicrophonesUseCaseInterface import RefreshCrowdMicrophonesUseCaseInterface
+from ..useCases.requestWatchStreakRewardUseCaseInterface import RequestWatchStreakRewardUseCaseInterface
 from ...emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -109,6 +111,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         gashaponItemUseCase: GashaponItemUseCaseInterface,
         gashaponRewardUseCase: GashaponRewardUseCaseInterface,
         refreshCrowdMicrophonesUseCase: RefreshCrowdMicrophonesUseCaseInterface,
+        requestWatchStreakRewardUseCase: RequestWatchStreakRewardUseCaseInterface,
         timber: TimberInterface,
         timeoutActionMachine: TimeoutActionMachineInterface,
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
@@ -142,6 +145,8 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             raise TypeError(f'gashaponRewardUseCase argument is malformed: \"{gashaponRewardUseCase}\"')
         elif not isinstance(refreshCrowdMicrophonesUseCase, RefreshCrowdMicrophonesUseCaseInterface):
             raise TypeError(f'refreshCrowdMicrophonesUseCase argument is malformed: \"{refreshCrowdMicrophonesUseCase}\"')
+        elif not isinstance(requestWatchStreakRewardUseCase, RequestWatchStreakRewardUseCaseInterface):
+            raise TypeError(f'requestWatchStreakRewardUseCase argument is malformed: \"{requestWatchStreakRewardUseCase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionMachine, TimeoutActionMachineInterface):
@@ -178,6 +183,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         self.__gashaponItemUseCase: Final[GashaponItemUseCaseInterface] = gashaponItemUseCase
         self.__gashaponRewardUseCase: Final[GashaponRewardUseCaseInterface] = gashaponRewardUseCase
         self.__refreshCrowdMicrophonesUseCase: Final[RefreshCrowdMicrophonesUseCaseInterface] = refreshCrowdMicrophonesUseCase
+        self.__requestWatchStreakRewardUseCase: Final[RequestWatchStreakRewardUseCaseInterface] = requestWatchStreakRewardUseCase
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
@@ -665,8 +671,34 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         self,
         action: RequestWatchStreakRewardAction,
     ):
-        # TODO
-        pass
+        tokensAndDetails = await self.__fetchTokensAndDetails(
+            twitchChannelId = action.twitchChannelId,
+        )
+
+        result = await self.__requestWatchStreakRewardUseCase.invoke(
+            action = action,
+            twitchAccessToken = tokensAndDetails.userTwitchAccessToken,
+        )
+
+        if isinstance(result, RequestWatchStreakRewardUseCaseInterface.NoRewardResult):
+            # this result type is currently intentionally ignored
+            pass
+
+        elif isinstance(result, RequestWatchStreakRewardUseCaseInterface.NotEnabledResult):
+            # this result type is currently intentionally ignored
+            pass
+
+        elif isinstance(result, RequestWatchStreakRewardUseCaseInterface.RewardedResult):
+            await self.__submitEvent(WatchStreakRewardedChatterItemEvent(
+                updatedInventory = result.chatterInventory,
+                gashaponsRewarded = result.gashaponsRewarded,
+                originatingAction = action,
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                hypeEmote = result.hypeEmote,
+            ))
+
+        else:
+            raise ValueError(f'Encountered unknown RequestWatchStreakRewardUseCaseInterface.AbsResult ({result=}) ({action=})')
 
     async def __handleTm36ItemAction(
         self,

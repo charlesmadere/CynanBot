@@ -18,7 +18,6 @@ class WatchStreakRewardHistoryRepository(WatchStreakRewardHistoryRepositoryInter
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        cacheSize: int = 32,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -26,10 +25,6 @@ class WatchStreakRewardHistoryRepository(WatchStreakRewardHistoryRepositoryInter
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not utils.isValidInt(cacheSize):
-            raise TypeError(f'cacheSize argument is malformed: \"{cacheSize}\"')
-        elif cacheSize < 8 or cacheSize > utils.getIntMaxSafeSize():
-            raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
 
         self.__backingDatabase: Final[BackingDatabase] = backingDatabase
         self.__timber: Final[TimberInterface] = timber

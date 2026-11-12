@@ -38,6 +38,7 @@ from ..models.events.voicemailMessageIsEmptyChatterItemEvent import VoicemailMes
 from ..models.events.voicemailTargetIsOriginatingUserChatterItemEvent import \
     VoicemailTargetIsOriginatingUserChatterItemEvent
 from ..models.events.voicemailTargetIsStreamerChatterItemEvent import VoicemailTargetIsStreamerChatterItemEvent
+from ..models.events.watchStreakRewardedChatterItemEvent import WatchStreakRewardedChatterItemEvent
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -221,6 +222,11 @@ class ChatterItemEventHandler(ChatterItemEventListener):
 
         elif isinstance(event, VoicemailTargetIsStreamerChatterItemEvent):
             await self.__handleVoicemailTargetIsStreamerChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, WatchStreakRewardedChatterItemEvent):
+            await self.__handleWatchStreakRewardedChatterItemEvent(
                 event = event,
             )
 
@@ -442,7 +448,7 @@ class ChatterItemEventHandler(ChatterItemEventListener):
 
         if gashaponAmount > 1:
             gashaponAmountString = locale.format_string("%d", gashaponAmount, grouping = True)
-            suffixString = f'You now have {gashaponAmountString} {ChatterItemType.GASHAPON.pluralHumanName}.'
+            suffixString = f'You now have {gashaponAmountString} {ChatterItemType.GASHAPON.pluralHumanName}'
 
         self.__twitchChatMessenger.send(
             text = f'{event.hypeEmote} Congrats, {ChatterItemType.GASHAPON.humanName} get! {suffixString}',
@@ -557,3 +563,24 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         # We don't handle this item use here. Instead, we handle this within the
         # TimeoutEventHandler class. It's a bit of a weird flow but... whatever :P
         pass
+
+    async def __handleWatchStreakRewardedChatterItemEvent(
+        self,
+        event: WatchStreakRewardedChatterItemEvent,
+    ):
+        gashaponsRewarded = locale.format_string("%d", event.gashaponsRewarded, grouping = True)
+
+        gashaponsPluralized: str
+
+        if event.gashaponsRewarded == 1:
+            gashaponsPluralized = ChatterItemType.GASHAPON.humanName
+        else:
+            gashaponsPluralized = ChatterItemType.GASHAPON.pluralHumanName
+
+        watchStreakString = locale.format_string("%d", event.watchStreak, grouping = True)
+
+        self.__twitchChatMessenger.send(
+            text = f'{event.hypeEmote} Nice! Your watch streak of {watchStreakString} rewarded you {gashaponsRewarded} {gashaponsPluralized}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )

@@ -20,7 +20,7 @@ class RequestWatchStreakRewardUseCaseInterface(ABC):
 
     @dataclass(frozen = True, slots = True)
     class RewardedResult(AbsResult):
-        chatterInventory: ChatterInventoryData
+        updatedInventory: ChatterInventoryData
         gashaponsRewarded: int
         hypeEmote: str
 
