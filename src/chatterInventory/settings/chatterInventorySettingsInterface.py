@@ -68,5 +68,9 @@ class ChatterInventorySettingsInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getWatchStreakRewardInterval(self) -> int:
+        pass
+
+    @abstractmethod
     async def isEnabled(self) -> bool:
         pass

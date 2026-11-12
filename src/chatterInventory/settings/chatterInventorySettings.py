@@ -310,9 +310,21 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         else:
             return itemDetails
 
+    async def getWatchStreakRewardInterval(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(
+            d = jsonContents,
+            key = 'watchStreakRewardInterval',
+            fallback = 50,
+        )
+
     async def isEnabled(self) -> bool:
         jsonContents = await self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'enabled', fallback = False)
+        return utils.getBoolFromDict(
+            d = jsonContents,
+            key = 'enabled',
+            fallback = False,
+        )
 
     async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:

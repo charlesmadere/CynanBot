@@ -136,7 +136,7 @@ class WatchStreaksRepository(WatchStreaksRepositoryInterface):
         if not utils.isValidInt(currentStreak):
             raise TypeError(f'currentStreak argument is malformed: \"{currentStreak}\"')
         elif currentStreak < 0 or currentStreak > utils.getIntMaxSafeSize():
-            raise ValueError(f'currentStreak argument is out of bounds" {currentStreak}')
+            raise ValueError(f'currentStreak argument is out of bounds: \"{currentStreak}\"')
         elif not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
