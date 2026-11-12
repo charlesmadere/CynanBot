@@ -1,10 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from frozendict import frozendict
-
 from ..models.chatterInventoryData import ChatterInventoryData
-from ..models.gashaponTier import GashaponTier
 from ..models.requestWatchStreakRewardAction import RequestWatchStreakRewardAction
 
 
@@ -24,7 +21,7 @@ class RequestWatchStreakRewardUseCaseInterface(ABC):
     @dataclass(frozen = True, slots = True)
     class RewardedResult(AbsResult):
         chatterInventory: ChatterInventoryData
-        gashaponsRewarded: frozendict[GashaponTier, int]
+        gashaponsRewarded: int
         hypeEmote: str
 
     @abstractmethod
