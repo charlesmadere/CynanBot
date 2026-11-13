@@ -60,6 +60,10 @@ class ChatterInventorySettingsInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getMaxWatchStreakGashaponRewards(self) -> int:
+        pass
+
+    @abstractmethod
     async def getTm36ItemDetails(self) -> Tm36ItemDetails:
         pass
 

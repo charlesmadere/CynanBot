@@ -55,6 +55,7 @@ class RequestWatchStreakRewardUseCase(RequestWatchStreakRewardUseCaseInterface):
             return RequestWatchStreakRewardUseCaseInterface.NotEnabledResult()
 
         rewardInterval = await self.__chatterInventorySettings.getWatchStreakRewardInterval()
+        maxGashaponRewards = await self.__chatterInventorySettings.getMaxWatchStreakGashaponRewards()
 
         if rewardInterval < 1:
             return RequestWatchStreakRewardUseCaseInterface.NotEnabledResult()
@@ -79,8 +80,10 @@ class RequestWatchStreakRewardUseCase(RequestWatchStreakRewardUseCaseInterface):
         else:
             gashaponsRewarded = int(min(0, math.floor((float(action.watchStreak) - float(previousRewardedWatchStreak)) / float(rewardInterval))))
 
+        gashaponsRewarded = int(min(gashaponsRewarded, maxGashaponRewards))
+
         if gashaponsRewarded < 1:
-            self.__timber.log('RequestWatchStreakRewardUseCase', f'Didn\'t give out watch streak reward ({gashaponsRewarded=}) ({previousRewardedWatchStreak=}) ({rewardHistory=}) ({rewardInterval=}) ({action=})')
+            self.__timber.log('RequestWatchStreakRewardUseCase', f'Didn\'t give out watch streak reward ({gashaponsRewarded=}) ({previousRewardedWatchStreak=}) ({rewardHistory=}) ({maxGashaponRewards=}) ({rewardInterval=}) ({action=})')
             return RequestWatchStreakRewardUseCaseInterface.NoRewardResult()
 
         await self.__watchStreakRewardHistoryRepository.update(
@@ -96,7 +99,7 @@ class RequestWatchStreakRewardUseCase(RequestWatchStreakRewardUseCaseInterface):
             twitchChannelId = action.twitchChannelId,
         )
 
-        self.__timber.log('RequestWatchStreakRewardUseCase', f'Gave out watch streak reward ({updatedInventory=}) ({gashaponsRewarded=}) ({previousRewardedWatchStreak=}) ({rewardHistory=}) ({rewardInterval=}) ({action=})')
+        self.__timber.log('RequestWatchStreakRewardUseCase', f'Gave out watch streak reward ({updatedInventory=}) ({gashaponsRewarded=}) ({previousRewardedWatchStreak=}) ({rewardHistory=}) ({maxGashaponRewards=}) ({rewardInterval=}) ({action=})')
 
         return RequestWatchStreakRewardUseCaseInterface.RewardedResult(
             updatedInventory = updatedInventory,

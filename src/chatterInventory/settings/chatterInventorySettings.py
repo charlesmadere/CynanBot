@@ -106,6 +106,8 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             minDurationSeconds = 24,
         ),
         defaultDaysBetweenGashaponRewards: int = 21,
+        defaultMaxWatchStreakGashaponRewards: int = 3,
+        defaultWatchStreakRewardInterval: int = 50,
         defaultTm36ItemDetails: Tm36ItemDetails = Tm36ItemDetails(
             inventoryMax = None,
             maxDurationSeconds = 300, # 5 minutes
@@ -148,6 +150,14 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             raise TypeError(f'defaultDaysBetweenGashaponRewards argument is malformed: \"{defaultDaysBetweenGashaponRewards}\"')
         elif defaultDaysBetweenGashaponRewards < 1 or defaultDaysBetweenGashaponRewards > utils.getIntMaxSafeSize():
             raise ValueError(f'defaultDaysBetweenGashaponRewards argument is out of bounds: {defaultDaysBetweenGashaponRewards}')
+        elif not utils.isValidInt(defaultMaxWatchStreakGashaponRewards):
+            raise TypeError(f'defaultMaxWatchStreakGashaponRewards argument is malformed: \"{defaultMaxWatchStreakGashaponRewards}\"')
+        elif defaultMaxWatchStreakGashaponRewards < 1 or defaultMaxWatchStreakGashaponRewards > utils.getIntMaxSafeSize():
+            raise ValueError(f'defaultMaxWatchStreakGashaponRewards argument is out of bounds: {defaultMaxWatchStreakGashaponRewards}')
+        elif not utils.isValidInt(defaultWatchStreakRewardInterval):
+            raise TypeError(f'defaultWatchStreakRewardInterval argument is malformed: \"{defaultWatchStreakRewardInterval}\"')
+        elif defaultWatchStreakRewardInterval < 1 or defaultWatchStreakRewardInterval > utils.getIntMaxSafeSize():
+            raise ValueError(f'defaultWatchStreakRewardInterval argument is out of bounds: {defaultWatchStreakRewardInterval}')
         elif not isinstance(defaultTm36ItemDetails, Tm36ItemDetails):
             raise TypeError(f'defaultTm36ItemDetails argument is malformed: \"{defaultTm36ItemDetails}\"')
         elif not isinstance(defaultVoreItemDetails, VoreItemDetails):
@@ -165,6 +175,8 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         self.__defaultGashaponItemDetails: Final[GashaponItemDetails] = defaultGashaponItemDetails
         self.__defaultGrenadeItemDetails: Final[GrenadeItemDetails] = defaultGrenadeItemDetails
         self.__defaultDaysBetweenGashaponRewards: Final[int] = defaultDaysBetweenGashaponRewards
+        self.__defaultMaxWatchStreakGashaponRewards: Final[int] = defaultMaxWatchStreakGashaponRewards
+        self.__defaultWatchStreakRewardInterval: Final[int] = defaultWatchStreakRewardInterval
         self.__defaultTm36ItemDetails: Final[Tm36ItemDetails] = defaultTm36ItemDetails
         self.__defaultVoreItemDetails: Final[VoreItemDetails] = defaultVoreItemDetails
         self.__defaultEnabledItemTypes: Final[frozenset[ChatterItemType]] = defaultEnabledItemTypes
@@ -290,6 +302,14 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         else:
             return itemDetails
 
+    async def getMaxWatchStreakGashaponRewards(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(
+            d = jsonContents,
+            key = 'maxWatchStreakGashaponRewards',
+            fallback = self.__defaultMaxWatchStreakGashaponRewards,
+        )
+
     async def getTm36ItemDetails(self) -> Tm36ItemDetails:
         jsonContents = await self.__readJson()
         itemDetailsJson = jsonContents.get('tm36ItemDetails')
@@ -315,7 +335,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         return utils.getIntFromDict(
             d = jsonContents,
             key = 'watchStreakRewardInterval',
-            fallback = 50,
+            fallback = self.__defaultWatchStreakRewardInterval,
         )
 
     async def isEnabled(self) -> bool:
