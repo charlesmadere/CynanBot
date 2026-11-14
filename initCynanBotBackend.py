@@ -1646,6 +1646,7 @@ determineBananaTargetUseCase: Final[DetermineBananaTargetUseCaseInterface] = Det
 
 determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCaseInterface] = DetermineGrenadeTargetUseCase(
     activeChattersRepository = activeChattersRepository,
+    randomUtils = randomUtils,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,

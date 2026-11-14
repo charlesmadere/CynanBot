@@ -1,4 +1,3 @@
-import random
 from typing import Final
 
 from .googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
@@ -163,7 +162,7 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
         if len(voices) == 0:
             return None
         else:
-            return random.choice(list(voices))
+            return self.__randomUtils.choice(voices)
 
     async def getVoicesForLanguage(
         self,

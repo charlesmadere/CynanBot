@@ -1,6 +1,6 @@
 import math
 import re
-from typing import AbstractSet, Final, Pattern, Sequence
+from typing import AbstractSet, Final, Pattern, Sequence, ValuesView
 
 from src.misc.randomUtils import RandomUtils
 from src.misc.randomUtilsInterface import RandomUtilsInterface
@@ -32,6 +32,14 @@ class TestRandomUtils:
             randomValue = self.randomUtils.choice(sequence)
             assert isinstance(randomValue, int)
             assert randomValue in sequence
+
+    def test_choice_withValuesView(self):
+        valuesView: ValuesView[int] = dict({ 'a': 0, 'b': 1, 'c': 2 }).values()
+
+        for _ in range(100):
+            randomValue = self.randomUtils.choice(valuesView)
+            assert isinstance(randomValue, int)
+            assert randomValue in valuesView
 
     def test_float(self):
         for _ in range(100):
