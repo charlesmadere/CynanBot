@@ -1,5 +1,4 @@
 import asyncio
-import random
 import traceback
 from typing import Final
 
@@ -18,6 +17,7 @@ from ...decTalk.helper.decTalkHelperInterface import DecTalkHelperInterface
 from ...decTalk.models.decTalkFileReference import DecTalkFileReference
 from ...decTalk.models.decTalkVoice import DecTalkVoice
 from ...decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
 
@@ -30,6 +30,7 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         decTalkHelper: DecTalkHelperInterface,
         decTalkMessageCleaner: DecTalkMessageCleanerInterface,
         decTalkSettingsRepository: DecTalkSettingsRepositoryInterface,
+        randomUtils: RandomUtilsInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
@@ -43,6 +44,8 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
             raise TypeError(f'decTalkMessageCleaner argument is malformed: \"{decTalkMessageCleaner}\"')
         elif not isinstance(decTalkSettingsRepository, DecTalkSettingsRepositoryInterface):
             raise TypeError(f'decTalkSettingsRepository argument is malformed: \"{decTalkSettingsRepository}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -56,6 +59,7 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         self.__decTalkHelper: Final[DecTalkHelperInterface] = decTalkHelper
         self.__decTalkMessageCleaner: Final[DecTalkMessageCleanerInterface] = decTalkMessageCleaner
         self.__decTalkSettingsRepository: Final[DecTalkSettingsRepositoryInterface] = decTalkSettingsRepository
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__soundPlayerManager: Final[SoundPlayerManagerInterface] = soundPlayerManager
         self.__timber: Final[TimberInterface] = timber
         self.__ttsCommandBuilder: Final[TtsCommandBuilderInterface] = ttsCommandBuilder
@@ -73,7 +77,7 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         randomVoices.freeze()
 
         if event.provider is TtsProvider.SHOTGUN_TTS:
-            return random.choice(randomVoices)
+            return self.__randomUtils.choice(randomVoices)
         elif event.providerOverridableStatus is not TtsProviderOverridableStatus.CHATTER_OVERRIDABLE:
             return None
 
@@ -87,7 +91,7 @@ class DecTalkTtsManager(DecTalkTtsManagerInterface):
         elif isinstance(preferredTts.properties, DecTalkTtsProperties):
             return preferredTts.properties.voice
         elif preferredTts.provider is TtsProvider.RANDO_TTS:
-            return random.choice(randomVoices)
+            return self.__randomUtils.choice(randomVoices)
         else:
             self.__timber.log('DecTalkTtsManager', f'Encountered bizarre incorrect preferred TTS provider ({event=}) ({preferredTts=})')
             return None

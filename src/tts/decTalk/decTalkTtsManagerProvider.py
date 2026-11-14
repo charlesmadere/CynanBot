@@ -11,6 +11,7 @@ from ...decTalk.decTalkMessageCleanerInterface import DecTalkMessageCleanerInter
 from ...decTalk.helper.decTalkHelperInterface import DecTalkHelperInterface
 from ...decTalk.settings.decTalkSettingsRepositoryInterface import DecTalkSettingsRepositoryInterface
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.soundPlayerManagerInterface import SoundPlayerManagerInterface
 from ...timber.timberInterface import TimberInterface
@@ -24,6 +25,7 @@ class DecTalkTtsManagerProvider(DecTalkTtsManagerProviderInterface):
         decTalkHelper: DecTalkHelperInterface,
         decTalkMessageCleaner: DecTalkMessageCleanerInterface,
         decTalkSettingsRepository: DecTalkSettingsRepositoryInterface,
+        randomUtils: RandomUtilsInterface,
         soundPlayerManagerProvider: SoundPlayerManagerProviderInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
@@ -37,6 +39,8 @@ class DecTalkTtsManagerProvider(DecTalkTtsManagerProviderInterface):
             raise TypeError(f'decTalkMessageCleaner argument is malformed: \"{decTalkMessageCleaner}\"')
         elif not isinstance(decTalkSettingsRepository, DecTalkSettingsRepositoryInterface):
             raise TypeError(f'decTalkSettingsRepository argument is malformed: \"{decTalkSettingsRepository}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(soundPlayerManagerProvider, SoundPlayerManagerProviderInterface):
             raise TypeError(f'soundPlayerManagerProvider argument is malformed: \"{soundPlayerManagerProvider}\"')
         elif not isinstance(timber, TimberInterface):
@@ -50,6 +54,7 @@ class DecTalkTtsManagerProvider(DecTalkTtsManagerProviderInterface):
         self.__decTalkHelper: Final[DecTalkHelperInterface] = decTalkHelper
         self.__decTalkMessageCleaner: Final[DecTalkMessageCleanerInterface] = decTalkMessageCleaner
         self.__decTalkSettingsRepository: Final[DecTalkSettingsRepositoryInterface] = decTalkSettingsRepository
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = soundPlayerManagerProvider
         self.__timber: Final[TimberInterface] = timber
         self.__ttsCommandBuilder: Final[TtsCommandBuilderInterface] = ttsCommandBuilder
@@ -76,6 +81,7 @@ class DecTalkTtsManagerProvider(DecTalkTtsManagerProviderInterface):
             decTalkHelper = self.__decTalkHelper,
             decTalkMessageCleaner = self.__decTalkMessageCleaner,
             decTalkSettingsRepository = self.__decTalkSettingsRepository,
+            randomUtils = self.__randomUtils,
             soundPlayerManager = soundPlayerManager,
             timber = self.__timber,
             ttsCommandBuilder = self.__ttsCommandBuilder,

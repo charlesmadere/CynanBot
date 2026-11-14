@@ -1254,6 +1254,7 @@ decTalkTtsManagerProvider: Final[DecTalkTtsManagerProviderInterface] = DecTalkTt
     decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = decTalkMessageCleaner,
     decTalkSettingsRepository = decTalkSettingsRepository,
+    randomUtils = randomUtils,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
