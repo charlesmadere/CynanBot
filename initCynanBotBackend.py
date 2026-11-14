@@ -1205,7 +1205,9 @@ triviaQuestionCompiler: Final[TriviaQuestionCompilerInterface] = TriviaQuestionC
     timber = timber,
 )
 
-triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
+triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator(
+    randomUtils = randomUtils,
+)
 
 triviaSourceInstabilityHelper: Final[TriviaSourceInstabilityHelper] = TriviaSourceInstabilityHelper(
     timber = timber,

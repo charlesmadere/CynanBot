@@ -1,25 +1,30 @@
 import hashlib
-import re
-import uuid
-from typing import Final, Pattern
+from typing import Final
 
 from .triviaIdGeneratorInterface import TriviaIdGeneratorInterface
 from ..misc import utils as utils
+from ..misc.randomUtilsInterface import RandomUtilsInterface
 
 
 class TriviaIdGenerator(TriviaIdGeneratorInterface):
 
-    def __init__(self):
-        self.__idRegEx: Final[Pattern] = re.compile(r'[^a-z0-9]', re.IGNORECASE)
+    def __init__(
+        self,
+        randomUtils: RandomUtilsInterface,
+    ):
+        if not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
+
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
 
     async def generateActionId(self) -> str:
-        return await self.__generateRandomUuid()
+        return self.__randomUtils.uuid()
 
     async def generateEventId(self) -> str:
-        return await self.__generateRandomUuid()
+        return self.__randomUtils.uuid()
 
     async def generateGameId(self) -> str:
-        return await self.__generateRandomUuid()
+        return self.__randomUtils.uuid()
 
     async def generateQuestionId(
         self,
@@ -44,7 +49,3 @@ class TriviaIdGenerator(TriviaIdGeneratorInterface):
 
         encodedString = string.encode('utf-8')
         return hashlib.sha256(encodedString).hexdigest()
-
-    async def __generateRandomUuid(self) -> str:
-        triviaId = str(uuid.uuid4())
-        return self.__idRegEx.sub('', triviaId)
