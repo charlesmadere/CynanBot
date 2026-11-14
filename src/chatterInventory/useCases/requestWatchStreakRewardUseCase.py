@@ -76,9 +76,9 @@ class RequestWatchStreakRewardUseCase(RequestWatchStreakRewardUseCaseInterface):
             # In this case, the chatter's watch streak is now less than it once was, therefore,
             # let's assume that they're on a new watch streak "chain". In this case, we don't
             # want to subtract out their most recently rewarded watch streak count.
-            gashaponsRewarded = int(min(0, math.floor(float(action.watchStreak) / float(rewardInterval))))
+            gashaponsRewarded = int(max(0, math.floor(float(action.watchStreak) / float(rewardInterval))))
         else:
-            gashaponsRewarded = int(min(0, math.floor((float(action.watchStreak) - float(previousRewardedWatchStreak)) / float(rewardInterval))))
+            gashaponsRewarded = int(max(0, math.floor((float(action.watchStreak) - float(previousRewardedWatchStreak)) / float(rewardInterval))))
 
         gashaponsRewarded = int(min(gashaponsRewarded, maxGashaponRewards))
 

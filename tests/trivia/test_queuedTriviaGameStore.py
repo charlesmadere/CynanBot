@@ -26,7 +26,9 @@ class TestQueuedTriviaGameStore1:
 
     timber: Final[TimberInterface] = TimberStub()
 
-    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
+    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator(
+        randomUtils = randomUtils,
+    )
 
     triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 
@@ -190,7 +192,9 @@ class TestQueuedTriviaGameStore2:
 
     timber: Final[TimberInterface] = TimberStub()
 
-    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
+    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator(
+        randomUtils = randomUtils,
+    )
 
     triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 
@@ -222,7 +226,9 @@ class TestQueuedTriviaGameStore3:
 
     timber: Final[TimberInterface] = TimberStub()
 
-    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
+    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator(
+        randomUtils = randomUtils,
+    )
 
     triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 
@@ -255,7 +261,9 @@ class TestQueuedTriviaGameStore4:
 
     timber: Final[TimberInterface] = TimberStub()
 
-    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
+    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator(
+        randomUtils = randomUtils,
+    )
 
     triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 
@@ -318,7 +326,9 @@ class TestQueuedTriviaGameStore5:
 
     timber: Final[TimberInterface] = TimberStub()
 
-    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
+    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator(
+        randomUtils = randomUtils,
+    )
 
     triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 
@@ -381,7 +391,9 @@ class TestQueuedTriviaGameStore6:
 
     timber: Final[TimberInterface] = TimberStub()
 
-    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
+    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator(
+        randomUtils = randomUtils,
+    )
 
     triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 
@@ -465,7 +477,9 @@ class TestQueuedTriviaGameStore7:
 
     timber: Final[TimberInterface] = TimberStub()
 
-    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
+    triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator(
+        randomUtils = randomUtils,
+    )
 
     triviaSourceParser: Final[TriviaSourceParserInterface] = TriviaSourceParser()
 

@@ -1465,6 +1465,7 @@ googleSettingsRepository: Final[GoogleSettingsRepositoryInterface] = GoogleSetti
 
 googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = GoogleTtsVoicesHelper(
     googleSettingsRepository = googleSettingsRepository,
+    randomUtils = randomUtils,
 )
 
 chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = ChatterPreferredTtsHelper(
@@ -1600,6 +1601,7 @@ decTalkTtsManagerProvider: Final[DecTalkTtsManagerProviderInterface] = DecTalkTt
     decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = decTalkMessageCleaner,
     decTalkSettingsRepository = decTalkSettingsRepository,
+    randomUtils = randomUtils,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
@@ -2022,7 +2024,9 @@ triviaQuestionCompiler: Final[TriviaQuestionCompilerInterface] = TriviaQuestionC
     timber = timber,
 )
 
-triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
+triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator(
+    randomUtils = randomUtils,
+)
 
 triviaSourceInstabilityHelper: Final[TriviaSourceInstabilityHelper] = TriviaSourceInstabilityHelper(
     timber = timber,
@@ -2542,6 +2546,7 @@ determineBananaTargetUseCase: Final[DetermineBananaTargetUseCaseInterface] = Det
 
 determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCaseInterface] = DetermineGrenadeTargetUseCase(
     activeChattersRepository = activeChattersRepository,
+    randomUtils = randomUtils,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
@@ -2609,7 +2614,9 @@ cassetteTapeItemUseCase: Final[CassetteTapeItemUseCaseInterface] = CassetteTapeI
     voicemailSettingsRepository = voicemailSettingsRepository,
 )
 
-chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = ChatterInventoryIdGenerator()
+chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = ChatterInventoryIdGenerator(
+    randomUtils = randomUtils,
+)
 
 chatterItemEventListener: Final[ChatterItemEventListener] = ChatterItemEventHandler(
     backgroundTaskHelper = backgroundTaskHelper,

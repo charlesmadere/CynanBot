@@ -1,18 +1,27 @@
 import re
-from typing import Pattern
+from typing import Final, Pattern
 
 import pytest
 
 from src.chatterInventory.idGenerator.chatterInventoryIdGenerator import ChatterInventoryIdGenerator
 from src.chatterInventory.idGenerator.chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
+from src.misc.randomUtils import RandomUtils
+from src.misc.randomUtilsInterface import RandomUtilsInterface
 
 
 class TestChatterInventoryIdGenerator:
 
-    actionIdRegEx: Pattern = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
-    eventIdRegEx: Pattern = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
-    requestIdRegEx: Pattern = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
-    idGenerator: ChatterInventoryIdGeneratorInterface = ChatterInventoryIdGenerator()
+    actionIdRegEx: Final[Pattern] = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
+
+    eventIdRegEx: Final[Pattern] = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
+
+    requestIdRegEx: Final[Pattern] = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
+
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
+
+    idGenerator: Final[ChatterInventoryIdGeneratorInterface] = ChatterInventoryIdGenerator(
+        randomUtils = randomUtils,
+    )
 
     @pytest.mark.asyncio
     async def test_generateActionId(self):

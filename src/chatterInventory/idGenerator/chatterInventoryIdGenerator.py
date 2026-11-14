@@ -1,25 +1,25 @@
-import re
-import uuid
-from typing import Final, Pattern
+from typing import Final
 
 from .chatterInventoryIdGeneratorInterface import ChatterInventoryIdGeneratorInterface
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 
 
 class ChatterInventoryIdGenerator(ChatterInventoryIdGeneratorInterface):
 
-    def __init__(self):
-        self.__idRegEx: Final[Pattern] = re.compile(r'[^a-z0-9]', re.IGNORECASE)
+    def __init__(
+        self,
+        randomUtils: RandomUtilsInterface,
+    ):
+        if not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
+
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
 
     async def generateActionId(self) -> str:
-        return await self.__generateId()
-
-    async def __generateId(self) -> str:
-        randomUuid = str(uuid.uuid4())
-        randomUuid = self.__idRegEx.sub('', randomUuid)
-        return randomUuid.casefold()
+        return self.__randomUtils.uuid()
 
     async def generateEventId(self) -> str:
-        return await self.__generateId()
+        return self.__randomUtils.uuid()
 
     async def generateRequestId(self) -> str:
-        return await self.__generateId()
+        return self.__randomUtils.uuid()

@@ -1,4 +1,3 @@
-import random
 import traceback
 from typing import Final
 
@@ -7,6 +6,7 @@ from ..exceptions import UnknownTimeoutTargetException
 from ..models.actions.grenadeTimeoutAction import GrenadeTimeoutAction
 from ..models.timeoutTarget import TimeoutTarget
 from ..settings.timeoutActionSettingsInterface import TimeoutActionSettingsInterface
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...timber.timberInterface import TimberInterface
 from ...twitch.activeChatters.activeChatter import ActiveChatter
 from ...twitch.activeChatters.activeChattersRepositoryInterface import ActiveChattersRepositoryInterface
@@ -22,6 +22,7 @@ class DetermineGrenadeTargetUseCase(DetermineGrenadeTargetUseCaseInterface):
     def __init__(
         self,
         activeChattersRepository: ActiveChattersRepositoryInterface,
+        randomUtils: RandomUtilsInterface,
         timber: TimberInterface,
         timeoutActionSettings: TimeoutActionSettingsInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
@@ -30,6 +31,8 @@ class DetermineGrenadeTargetUseCase(DetermineGrenadeTargetUseCaseInterface):
     ):
         if not isinstance(activeChattersRepository, ActiveChattersRepositoryInterface):
             raise TypeError(f'activeChattersRepository argument is malformed: \"{activeChattersRepository}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutActionSettings, TimeoutActionSettingsInterface):
@@ -42,6 +45,7 @@ class DetermineGrenadeTargetUseCase(DetermineGrenadeTargetUseCaseInterface):
             raise TypeError(f'twitchUserIdsHelper argument is malformed: \"{twitchUserIdsHelper}\"')
 
         self.__activeChattersRepository: Final[ActiveChattersRepositoryInterface] = activeChattersRepository
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionSettings: Final[TimeoutActionSettingsInterface] = timeoutActionSettings
         self.__timeoutImmuneUserIdsRepository: Final[TimeoutImmuneUserIdsRepositoryInterface] = timeoutImmuneUserIdsRepository
@@ -74,7 +78,7 @@ class DetermineGrenadeTargetUseCase(DetermineGrenadeTargetUseCaseInterface):
             raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
 
         additionalReverseProbability = await self.__timeoutActionSettings.getGrenadeAdditionalReverseProbability()
-        randomReverseNumber = random.random()
+        randomReverseNumber = self.__randomUtils.float()
 
         if randomReverseNumber <= additionalReverseProbability:
             targetUserData = await self.__fetchUserData(
@@ -104,7 +108,7 @@ class DetermineGrenadeTargetUseCase(DetermineGrenadeTargetUseCaseInterface):
             self.__timber.log('DetermineGrenadeTargetUseCase', f'Attempted to timeout random target, but no active chatter(s) were found ({timeoutAction=}) ({additionalReverseProbability=}) ({randomReverseNumber=}) ({activeChatters=}) ({vulnerableChatters=})')
             return None
 
-        randomChatter = random.choice(list(vulnerableChatters.values()))
+        randomChatter = self.__randomUtils.choice(vulnerableChatters.values())
 
         return TimeoutTarget(
             userId = randomChatter.chatterUserId,

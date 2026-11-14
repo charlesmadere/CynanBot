@@ -1205,7 +1205,9 @@ triviaQuestionCompiler: Final[TriviaQuestionCompilerInterface] = TriviaQuestionC
     timber = timber,
 )
 
-triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator()
+triviaIdGenerator: Final[TriviaIdGeneratorInterface] = TriviaIdGenerator(
+    randomUtils = randomUtils,
+)
 
 triviaSourceInstabilityHelper: Final[TriviaSourceInstabilityHelper] = TriviaSourceInstabilityHelper(
     timber = timber,
@@ -1646,6 +1648,7 @@ determineBananaTargetUseCase: Final[DetermineBananaTargetUseCaseInterface] = Det
 
 determineGrenadeTargetUseCase: Final[DetermineGrenadeTargetUseCaseInterface] = DetermineGrenadeTargetUseCase(
     activeChattersRepository = activeChattersRepository,
+    randomUtils = randomUtils,
     timber = timber,
     timeoutActionSettings = timeoutActionSettings,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,

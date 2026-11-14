@@ -35,6 +35,8 @@ from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from src.misc.backgroundTaskHelper import BackgroundTaskHelper
 from src.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from src.misc.randomUtils import RandomUtils
+from src.misc.randomUtilsInterface import RandomUtilsInterface
 from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.networkClientProvider import NetworkClientProvider
@@ -152,8 +154,11 @@ stubGlacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = StubGlaci
 
 googleFileExtensionHelper: Final[GoogleFileExtensionHelperInterface] = GoogleFileExtensionHelper()
 
+randomUtils: Final[RandomUtilsInterface] = RandomUtils()
+
 googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = GoogleTtsVoicesHelper(
     googleSettingsRepository = googleSettingsRepository,
+    randomUtils = randomUtils,
 )
 
 googleTtsHelper: Final[GoogleTtsHelperInterface] = GoogleTtsHelper(
