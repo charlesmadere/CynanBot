@@ -2609,7 +2609,9 @@ cassetteTapeItemUseCase: Final[CassetteTapeItemUseCaseInterface] = CassetteTapeI
     voicemailSettingsRepository = voicemailSettingsRepository,
 )
 
-chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = ChatterInventoryIdGenerator()
+chatterInventoryIdGenerator: Final[ChatterInventoryIdGeneratorInterface] = ChatterInventoryIdGenerator(
+    randomUtils = randomUtils,
+)
 
 chatterItemEventListener: Final[ChatterItemEventListener] = ChatterItemEventHandler(
     backgroundTaskHelper = backgroundTaskHelper,
