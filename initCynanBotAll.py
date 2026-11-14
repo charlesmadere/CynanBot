@@ -1620,6 +1620,7 @@ unrestrictedDecTalkTtsManagerProvider: Final[DecTalkTtsManagerProviderInterface]
     decTalkHelper = decTalkHelper,
     decTalkMessageCleaner = unrestrictedDecTalkMessageCleaner,
     decTalkSettingsRepository = decTalkSettingsRepository,
+    randomUtils = randomUtils,
     soundPlayerManagerProvider = soundPlayerManagerProvider,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
