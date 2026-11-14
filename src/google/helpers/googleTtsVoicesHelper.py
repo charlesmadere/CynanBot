@@ -5,6 +5,7 @@ from .googleTtsVoicesHelperInterface import GoogleTtsVoicesHelperInterface
 from ..models.googleVoicePreset import GoogleVoicePreset
 from ..settings.googleSettingsRepositoryInterface import GoogleSettingsRepositoryInterface
 from ...language.languageEntry import LanguageEntry
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 
 
 class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
@@ -12,11 +13,15 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
     def __init__(
         self,
         googleSettingsRepository: GoogleSettingsRepositoryInterface,
+        randomUtils: RandomUtilsInterface,
     ):
         if not isinstance(googleSettingsRepository, GoogleSettingsRepositoryInterface):
             raise TypeError(f'googleSettingsRepository argument is malformed: \"{googleSettingsRepository}\"')
+        elif not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
 
         self.__googleSettingsRepository: Final[GoogleSettingsRepositoryInterface] = googleSettingsRepository
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
 
     async def getChirp3VoicesForLanguage(
         self,
@@ -149,7 +154,7 @@ class GoogleTtsVoicesHelper(GoogleTtsVoicesHelperInterface):
             )
 
             if len(chirp3Voices) >= 1:
-                return random.choice(list(chirp3Voices))
+                return self.__randomUtils.choice(chirp3Voices)
 
         voices = await self.getVoicesForLanguage(
             languageEntry = languageEntry,

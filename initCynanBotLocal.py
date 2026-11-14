@@ -1118,6 +1118,7 @@ googleSettingsRepository: Final[GoogleSettingsRepositoryInterface] = GoogleSetti
 
 googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = GoogleTtsVoicesHelper(
     googleSettingsRepository = googleSettingsRepository,
+    randomUtils = randomUtils,
 )
 
 chatterPreferredTtsHelper: Final[ChatterPreferredTtsHelperInterface] = ChatterPreferredTtsHelper(

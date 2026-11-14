@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, MutableSequence, Sequence, TypeVar
+from typing import AbstractSet, Any, MutableSequence, Sequence, TypeVar
 
 T = TypeVar('T')
 
@@ -11,7 +11,7 @@ class RandomUtilsInterface(ABC):
         pass
 
     @abstractmethod
-    def choice(self, collection: Sequence[T]) -> T:
+    def choice(self, collection: AbstractSet[T] | Sequence[T]) -> T:
         pass
 
     @abstractmethod

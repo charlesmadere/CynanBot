@@ -1,6 +1,6 @@
 import math
 import re
-from typing import Final, Pattern
+from typing import AbstractSet, Final, Pattern, Sequence
 
 from src.misc.randomUtils import RandomUtils
 from src.misc.randomUtilsInterface import RandomUtilsInterface
@@ -16,6 +16,22 @@ class TestRandomUtils:
         for _ in range(100):
             randomBool = self.randomUtils.bool()
             assert isinstance(randomBool, bool)
+
+    def test_choice_withAbstractSet(self):
+        abstractSet: AbstractSet[int] = frozenset({ 0, 1, 2, 3, 4, 5 })
+
+        for _ in range(100):
+            randomValue = self.randomUtils.choice(abstractSet)
+            assert isinstance(randomValue, int)
+            assert randomValue in abstractSet
+
+    def test_choice_withSequence(self):
+        sequence: Sequence[int] = list([ 0, 1, 2, 3, 4, 5 ])
+
+        for _ in range(100):
+            randomValue = self.randomUtils.choice(sequence)
+            assert isinstance(randomValue, int)
+            assert randomValue in sequence
 
     def test_float(self):
         for _ in range(100):

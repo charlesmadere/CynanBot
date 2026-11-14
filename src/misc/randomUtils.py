@@ -1,7 +1,7 @@
 import random
 import re
 import uuid
-from typing import Any, Final, MutableSequence, Sequence, Pattern, TypeVar
+from typing import AbstractSet, Any, Final, MutableSequence, Sequence, Pattern, TypeVar
 
 from .randomUtilsInterface import RandomUtilsInterface
 
@@ -16,13 +16,21 @@ class RandomUtils(RandomUtilsInterface):
     def bool(self) -> bool:
         return bool(random.getrandbits(1))
 
-    def choice(self, collection: Sequence[T]) -> T:
-        if not isinstance(collection, Sequence):
+    def choice(self, collection: AbstractSet[T] | Sequence[T]) -> T:
+        if not isinstance(collection, AbstractSet) and not isinstance(collection, Sequence):
             raise TypeError(f'collection argument is malformed: \"{collection}\"')
-        if len(collection) == 0:
+        elif len(collection) == 0:
             raise IndexError("Cannot choose from an empty sequence")
 
-        return random.choice(collection)
+        sequence: Sequence[T]
+
+        if isinstance(collection, AbstractSet):
+            # fixes an annoyance where Python can't do random.shuffle() on a set or frozenset
+            sequence = list(collection)
+        else:
+            sequence = collection
+
+        return random.choice(sequence)
 
     def float(self) -> float:
         return random.random()
