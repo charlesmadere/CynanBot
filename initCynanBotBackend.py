@@ -2527,12 +2527,12 @@ startables: Final[Collection[Startable | None]] = frozenset({
 #####################################
 
 cynanBot: Final[CynanBot] = CynanBot(
-    authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     chatLogger = chatLogger,
     sentMessageLogger = sentMessageLogger,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
+    twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     twitchWebsocketClient = twitchWebsocketClient,
     startables = startables,
@@ -2543,7 +2543,7 @@ cynanBot: Final[CynanBot] = CynanBot(
 ## Section for starting the actual bot ##
 #########################################
 
-timber.log('initCynanBotBackend', 'Starting CynanBot...')
+timber.log('initCynanBotBackend', 'Starting bot...')
 cynanBot.start()
 
 try:
