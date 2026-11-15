@@ -2,13 +2,9 @@ from typing import Any, Final
 
 from .clearable import Clearable
 from .generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
-from ..network.networkClientType import NetworkClientType
-from ..network.networkJsonMapperInterface import NetworkJsonMapperInterface
 from ..soundPlayerManager.jsonMapper.soundPlayerJsonMapperInterface import SoundPlayerJsonMapperInterface
 from ..soundPlayerManager.soundPlayerType import SoundPlayerType
-from ..storage.databaseType import DatabaseType
 from ..storage.jsonReaderInterface import JsonReaderInterface
-from ..storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from ..trivia.builder.triviaGameBuilderSettingsInterface import TriviaGameBuilderSettingsInterface
 
 
@@ -20,34 +16,18 @@ class GeneralSettingsRepository(
     def __init__(
         self,
         settingsJsonReader: JsonReaderInterface,
-        networkJsonMapper: NetworkJsonMapperInterface,
         soundPlayerJsonMapper: SoundPlayerJsonMapperInterface,
-        storageJsonMapper: StorageJsonMapperInterface,
-        defaultDatabaseType: DatabaseType = DatabaseType.SQLITE,
-        defaultNetworkClientType: NetworkClientType = NetworkClientType.AIOHTTP,
         defaultSoundPlayerType: SoundPlayerType = SoundPlayerType.PYGAME,
     ):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
-        elif not isinstance(networkJsonMapper, NetworkJsonMapperInterface):
-            raise TypeError(f'networkJsonMapper argument is malformed: \"{networkJsonMapper}\"')
         elif not isinstance(soundPlayerJsonMapper, SoundPlayerJsonMapperInterface):
             raise TypeError(f'soundPlayerJsonMapper argument is malformed: \"{soundPlayerJsonMapper}\"')
-        elif not isinstance(storageJsonMapper, StorageJsonMapperInterface):
-            raise TypeError(f'storageJsonMapper argument is malformed: \"{storageJsonMapper}\"')
-        elif not isinstance(defaultDatabaseType, DatabaseType):
-            raise TypeError(f'defaultDatabaseType argument is malformed: \"{defaultDatabaseType}\"')
-        elif not isinstance(defaultNetworkClientType, NetworkClientType):
-            raise TypeError(f'defaultNetworkClientType argument is malformed: \"{defaultNetworkClientType}\"')
         elif not isinstance(defaultSoundPlayerType, SoundPlayerType):
             raise TypeError(f'defaultSoundPlayerType argument is malformed: \"{defaultSoundPlayerType}\"')
 
         self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
-        self.__networkJsonMapper: Final[NetworkJsonMapperInterface] = networkJsonMapper
         self.__soundPlayerJsonMapper: Final[SoundPlayerJsonMapperInterface] = soundPlayerJsonMapper
-        self.__storageJsonMapper: Final[StorageJsonMapperInterface] = storageJsonMapper
-        self.__defaultDatabaseType: Final[DatabaseType] = defaultDatabaseType
-        self.__defaultNetworkClientType: Final[NetworkClientType] = defaultNetworkClientType
         self.__defaultSoundPlayerType: Final[SoundPlayerType] = defaultSoundPlayerType
 
         self.__cache: GeneralSettingsRepositorySnapshot | None = None
@@ -66,13 +46,9 @@ class GeneralSettingsRepository(
         jsonContents = self.__readJson()
 
         snapshot = GeneralSettingsRepositorySnapshot(
-            defaultDatabaseType = self.__defaultDatabaseType,
-            defaultNetworkClientType = self.__defaultNetworkClientType,
             jsonContents = jsonContents,
-            networkJsonMapper = self.__networkJsonMapper,
             soundPlayerJsonMapper = self.__soundPlayerJsonMapper,
             defaultSoundPlayerType = self.__defaultSoundPlayerType,
-            storageJsonMapper = self.__storageJsonMapper,
         )
 
         self.__cache = snapshot
@@ -85,13 +61,9 @@ class GeneralSettingsRepository(
         jsonContents = await self.__readJsonAsync()
 
         snapshot = GeneralSettingsRepositorySnapshot(
-            defaultDatabaseType = self.__defaultDatabaseType,
-            defaultNetworkClientType = self.__defaultNetworkClientType,
             jsonContents = jsonContents,
-            networkJsonMapper = self.__networkJsonMapper,
             soundPlayerJsonMapper = self.__soundPlayerJsonMapper,
             defaultSoundPlayerType = self.__defaultSoundPlayerType,
-            storageJsonMapper = self.__storageJsonMapper,
         )
 
         self.__cache = snapshot
