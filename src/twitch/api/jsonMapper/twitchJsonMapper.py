@@ -73,7 +73,6 @@ from ..models.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..models.twitchPaginationResponse import TwitchPaginationResponse
 from ..models.twitchPayItForward import TwitchPayItForward
 from ..models.twitchPollChoice import TwitchPollChoice
-from ..models.twitchPollStatus import TwitchPollStatus
 from ..models.twitchPowerUp import TwitchPowerUp
 from ..models.twitchPowerUpEmote import TwitchPowerUpEmote
 from ..models.twitchPowerUpType import TwitchPowerUpType
@@ -1819,23 +1818,6 @@ class TwitchJsonMapper(TwitchJsonMapperInterface):
             choiceId = choiceId,
             title = title
         )
-
-    async def parsePollStatus(
-        self,
-        pollStatus: str | Any | None,
-    ) -> TwitchPollStatus | None:
-        if not utils.isValidStr(pollStatus):
-            return None
-
-        pollStatus = pollStatus.lower()
-
-        match pollStatus:
-            case 'active': return TwitchPollStatus.ACTIVE
-            case 'archived': return TwitchPollStatus.ARCHIVED
-            case 'completed': return TwitchPollStatus.COMPLETED
-            case 'invalid': return TwitchPollStatus.INVALID
-            case 'terminated': return TwitchPollStatus.TERMINATED
-            case _: return None
 
     async def parsePowerUp(
         self,

@@ -26,7 +26,6 @@ from ..api.models.twitchNoticeType import TwitchNoticeType
 from ..api.models.twitchOutcome import TwitchOutcome
 from ..api.models.twitchPayItForward import TwitchPayItForward
 from ..api.models.twitchPollChoice import TwitchPollChoice
-from ..api.models.twitchPollStatus import TwitchPollStatus
 from ..api.models.twitchPowerUp import TwitchPowerUp
 from ..api.models.twitchPredictionStatus import TwitchPredictionStatus
 from ..api.models.twitchPrimePaidUpgrade import TwitchPrimePaidUpgrade
@@ -506,10 +505,6 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'shared_chat_pay_it_forward' in eventJson:
             sharedChatPayItForward = await self.__twitchJsonMapper.parsePayItForward(eventJson.get('shared_chat_pay_it_forward'))
 
-        pollStatus: TwitchPollStatus | None = None
-        if 'status' in eventJson:
-            pollStatus = await self.__twitchJsonMapper.parsePollStatus(eventJson.get('status'))
-
         powerUp: TwitchPowerUp | None = None
         if 'power_up' in eventJson:
             powerUp = await self.__twitchJsonMapper.parsePowerUp(eventJson.get('power_up'))
@@ -666,7 +661,6 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             noticeType = noticeType,
             payItForward = payItForward,
             sharedChatPayItForward = sharedChatPayItForward,
-            pollStatus = pollStatus,
             powerUp = powerUp,
             predictionStatus = predictionStatus,
             primePaidUpgrade = primePaidUpgrade,

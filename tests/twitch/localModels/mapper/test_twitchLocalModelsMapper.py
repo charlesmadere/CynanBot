@@ -4,8 +4,7 @@ import pytest
 from frozenlist import FrozenList
 
 from src.twitch.api.models.twitchBitsUseType import TwitchBitsUseType as ApiBitsUseType
-from src.twitch.api.models.twitchChatMessageFragment import \
-    TwitchChatMessageFragment as ApiChatMessageFragment
+from src.twitch.api.models.twitchChatMessageFragment import TwitchChatMessageFragment as ApiChatMessageFragment
 from src.twitch.api.models.twitchChatMessageFragmentCheermote import \
     TwitchChatMessageFragmentCheermote as ApiChatMessageFragmentCheermote
 from src.twitch.api.models.twitchChatMessageFragmentEmote import \
@@ -22,7 +21,6 @@ from src.twitch.api.models.twitchCustomPowerUpData import TwitchCustomPowerUpDat
 from src.twitch.api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
 from src.twitch.api.models.twitchHypeTrainType import TwitchHypeTrainType as ApiHypeTrainType
 from src.twitch.api.models.twitchPollChoice import TwitchPollChoice as ApiPollChoice
-from src.twitch.api.models.twitchPollStatus import TwitchPollStatus as ApiPollStatus
 from src.twitch.api.models.twitchPredictionStatus import TwitchPredictionStatus as ApiPredictionStatus
 from src.twitch.api.models.twitchResub import TwitchResub as ApiResub
 from src.twitch.api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
@@ -36,8 +34,7 @@ from src.twitch.api.models.twitchWebsocketSubscriptionType import \
 from src.twitch.localModels.mapper.twitchLocalModelsMapper import TwitchLocalModelsMapper
 from src.twitch.localModels.mapper.twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
 from src.twitch.localModels.twitchBitsUseType import TwitchBitsUseType as LocalBitsUseType
-from src.twitch.localModels.twitchChatMessageFragment import \
-    TwitchChatMessageFragment as LocalChatMessageFragment
+from src.twitch.localModels.twitchChatMessageFragment import TwitchChatMessageFragment as LocalChatMessageFragment
 from src.twitch.localModels.twitchChatMessageFragmentCheermote import \
     TwitchChatMessageFragmentCheermote as LocalChatMessageFragmentCheermote
 from src.twitch.localModels.twitchChatMessageFragmentEmote import \
@@ -56,7 +53,6 @@ from src.twitch.localModels.twitchEmoteImageFormat import TwitchEmoteImageFormat
 from src.twitch.localModels.twitchHypeTrainState import TwitchHypeTrainState as LocalHypeTrainState
 from src.twitch.localModels.twitchHypeTrainType import TwitchHypeTrainType as LocalHypeTrainType
 from src.twitch.localModels.twitchPollChoice import TwitchPollChoice as LocalPollChoice
-from src.twitch.localModels.twitchPollStatus import TwitchPollStatus as LocalPollStatus
 from src.twitch.localModels.twitchPredictionStatus import TwitchPredictionStatus as LocalPredictionStatus
 from src.twitch.localModels.twitchResub import TwitchResub as LocalResub
 from src.twitch.localModels.twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
@@ -503,47 +499,6 @@ class TestTwitchLocalModelsMapper:
         assert isinstance(result, FrozenList)
         assert len(result) == 0
         assert result.frozen
-
-    @pytest.mark.asyncio
-    async def test_mapPollStatus_withAll(self):
-        results: set[LocalPollStatus | None] = set()
-
-        for pollStatus in ApiPollStatus:
-            result = await self.mapper.mapPollStatus(pollStatus)
-            results.add(result)
-
-        assert len(results) == len(LocalPollStatus)
-        assert None not in results
-
-    @pytest.mark.asyncio
-    async def test_mapPollStatus_withActive(self):
-        result = await self.mapper.mapPollStatus(ApiPollStatus.ACTIVE)
-        assert result is LocalPollStatus.ACTIVE
-
-    @pytest.mark.asyncio
-    async def test_mapPollStatus_withArchived(self):
-        result = await self.mapper.mapPollStatus(ApiPollStatus.ARCHIVED)
-        assert result is LocalPollStatus.ARCHIVED
-
-    @pytest.mark.asyncio
-    async def test_mapPollStatus_withCompleted(self):
-        result = await self.mapper.mapPollStatus(ApiPollStatus.COMPLETED)
-        assert result is LocalPollStatus.COMPLETED
-
-    @pytest.mark.asyncio
-    async def test_mapPollStatus_withInvalid(self):
-        result = await self.mapper.mapPollStatus(ApiPollStatus.INVALID)
-        assert result is LocalPollStatus.INVALID
-
-    @pytest.mark.asyncio
-    async def test_mapPollStatus_withTerminated(self):
-        result = await self.mapper.mapPollStatus(ApiPollStatus.TERMINATED)
-        assert result is LocalPollStatus.TERMINATED
-
-    @pytest.mark.asyncio
-    async def test_mapPollStatus_withNone(self):
-        result = await self.mapper.mapPollStatus(None)
-        assert result is None
 
     @pytest.mark.asyncio
     async def test_mapPredictionStatus_withActive(self):

@@ -6,7 +6,6 @@ from ..api.models.twitchWebsocketSubscriptionType import TwitchWebsocketSubscrip
 from ..chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ..localModels.mapper.twitchLocalModelsMapperInterface import TwitchLocalModelsMapperInterface
 from ..localModels.twitchPollChoice import TwitchPollChoice
-from ..localModels.twitchPollStatus import TwitchPollStatus
 from ...misc import utils as utils
 from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
@@ -42,13 +41,10 @@ class TwitchPollHandler(AbsTwitchPollHandler):
     async def __notifyChatOfPollResults(self, pollData: AbsTwitchPollHandler.PollData):
         user = pollData.user
         pollChoices = pollData.choices
-        pollStatus = pollData.pollStatus
 
         if not user.isNotifyOfPollResultsEnabled:
             return
         elif len(pollChoices) == 0:
-            return
-        elif pollStatus is not TwitchPollStatus.COMPLETED:
             return
         elif pollData.subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_POLL_END:
             return
@@ -161,18 +157,16 @@ class TwitchPollHandler(AbsTwitchPollHandler):
 
         choices = await self.__twitchLocalModelsMapper.mapPollChoices(event.choices)
         title = event.title
-        pollStatus = await self.__twitchLocalModelsMapper.mapPollStatus(event.pollStatus)
         subscriptionType = dataBundle.metadata.subscriptionType
 
-        if len(choices) == 0 or not utils.isValidStr(title) or pollStatus is None or subscriptionType is None:
-            self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({choices=}) ({title=}) ({pollStatus=}) ({subscriptionType=})')
+        if len(choices) == 0 or not utils.isValidStr(title) or subscriptionType is None:
+            self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: ({user=}) ({dataBundle=}) ({choices=}) ({title=}) ({subscriptionType=})')
             return
 
         pollData = AbsTwitchPollHandler.PollData(
             choices = choices,
             title = title,
             twitchChannelId = twitchChannelId,
-            pollStatus = pollStatus,
             subscriptionType = subscriptionType,
             user = user,
         )
@@ -200,6 +194,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
                 twitchChannel = user.handle,
                 twitchChannelId = pollData.twitchChannelId,
                 userId = pollData.twitchChannelId,
+                userLogin = user.handle,
                 userName = user.handle,
                 donation = None,
                 provider = user.defaultTtsProvider,

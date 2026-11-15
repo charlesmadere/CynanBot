@@ -374,8 +374,6 @@ from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.aioHttp.aioHttpCookieJarProviderInterface import AioHttpCookieJarProviderInterface
 from src.network.networkClientProvider import NetworkClientProvider
-from src.network.networkJsonMapper import NetworkJsonMapper
-from src.network.networkJsonMapperInterface import NetworkJsonMapperInterface
 from src.openWeather.apiService.openWeatherApiService import OpenWeatherApiService
 from src.openWeather.apiService.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
 from src.openWeather.jsonMapper.openWeatherJsonMapper import OpenWeatherJsonMapper
@@ -429,16 +427,13 @@ from src.soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterfac
 from src.soundPlayerManager.settings.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
 from src.soundPlayerManager.settings.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
+from src.soundPlayerManager.soundPlayerType import SoundPlayerType
 from src.storage.backingDatabase import BackingDatabase
-from src.storage.databaseType import DatabaseType
 from src.storage.jsonFileReader import JsonFileReader
 from src.storage.linesFileReader import LinesFileReader
 from src.storage.psql.psqlBackingDatabase import PsqlBackingDatabase
 from src.storage.psql.psqlCredentialsProvider import PsqlCredentialsProvider
 from src.storage.psql.psqlCredentialsProviderInterface import PsqlCredentialsProviderInterface
-from src.storage.sqlite.sqliteBackingDatabase import SqliteBackingDatabase
-from src.storage.storageJsonMapper import StorageJsonMapper
-from src.storage.storageJsonMapperInterface import StorageJsonMapperInterface
 from src.streamAlertsManager.streamAlertsManager import StreamAlertsManager
 from src.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from src.streamAlertsManager.streamAlertsSettingsRepository import StreamAlertsSettingsRepository
@@ -849,48 +844,29 @@ timber: Final[TimberInterface] = Timber(
     timeZoneRepository = timeZoneRepository,
 )
 
-networkJsonMapper: Final[NetworkJsonMapperInterface] = NetworkJsonMapper()
-
 soundPlayerJsonMapper: Final[SoundPlayerJsonMapperInterface] = SoundPlayerJsonMapper()
-
-storageJsonMapper: Final[StorageJsonMapperInterface] = StorageJsonMapper()
 
 generalSettingsRepository = GeneralSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/generalSettingsRepository.json',
     ),
-    networkJsonMapper = networkJsonMapper,
     soundPlayerJsonMapper = soundPlayerJsonMapper,
-    storageJsonMapper = storageJsonMapper,
+    defaultSoundPlayerType = SoundPlayerType.PYGAME,
 )
 
-generalSettingsSnapshot = generalSettingsRepository.getAll()
+psqlCredentialsProvider: Final[PsqlCredentialsProviderInterface] = PsqlCredentialsProvider(
+    credentialsJsonReader = JsonFileReader(
+        eventLoop = eventLoop,
+        fileName = '../config/psqlCredentials.json',
+    ),
+)
 
-backingDatabase: BackingDatabase
-psqlCredentialsProvider: PsqlCredentialsProviderInterface | None = None
-match generalSettingsSnapshot.requireDatabaseType():
-    case DatabaseType.POSTGRESQL:
-        psqlCredentialsProvider = PsqlCredentialsProvider(
-            credentialsJsonReader = JsonFileReader(
-                eventLoop = eventLoop,
-                fileName = '../config/psqlCredentials.json',
-            ),
-        )
-
-        backingDatabase = PsqlBackingDatabase(
-            eventLoop = eventLoop,
-            psqlCredentialsProvider = psqlCredentialsProvider,
-            timber = timber,
-        )
-
-    case DatabaseType.SQLITE:
-        backingDatabase = SqliteBackingDatabase(
-            eventLoop = eventLoop,
-        )
-
-    case _:
-        raise RuntimeError(f'Unknown/misconfigured DatabaseType: \"{generalSettingsSnapshot.requireDatabaseType()}\"')
+backingDatabase: Final[BackingDatabase] = PsqlBackingDatabase(
+    eventLoop = eventLoop,
+    psqlCredentialsProvider = psqlCredentialsProvider,
+    timber = timber,
+)
 
 aioHttpCookieJarProvider: Final[AioHttpCookieJarProviderInterface] = AioHttpCookieJarProvider(
     eventLoop = eventLoop,

@@ -23,7 +23,6 @@ from .twitchNoticeType import TwitchNoticeType
 from .twitchOutcome import TwitchOutcome
 from .twitchPayItForward import TwitchPayItForward
 from .twitchPollChoice import TwitchPollChoice
-from .twitchPollStatus import TwitchPollStatus
 from .twitchPowerUp import TwitchPowerUp
 from .twitchPredictionStatus import TwitchPredictionStatus
 from .twitchPrimePaidUpgrade import TwitchPrimePaidUpgrade
@@ -124,7 +123,6 @@ class TwitchWebsocketEvent:
     noticeType: TwitchNoticeType | None = None
     payItForward: TwitchPayItForward | None = None
     sharedChatPayItForward: TwitchPayItForward | None = None
-    pollStatus: TwitchPollStatus | None = None
     powerUp: TwitchPowerUp | None = None
     predictionStatus: TwitchPredictionStatus | None = None
     primePaidUpgrade: TwitchPrimePaidUpgrade | None = None

@@ -1,48 +1,28 @@
 from typing import Any, Final
 
-from . import utils as utils
-from ..network.networkClientType import NetworkClientType
-from ..network.networkJsonMapperInterface import NetworkJsonMapperInterface
+import utils as utils
 from ..soundPlayerManager.jsonMapper.soundPlayerJsonMapperInterface import SoundPlayerJsonMapperInterface
 from ..soundPlayerManager.soundPlayerType import SoundPlayerType
-from ..storage.databaseType import DatabaseType
-from ..storage.storageJsonMapperInterface import StorageJsonMapperInterface
 
 
 class GeneralSettingsRepositorySnapshot:
 
     def __init__(
         self,
-        defaultDatabaseType: DatabaseType,
-        defaultNetworkClientType: NetworkClientType,
         jsonContents: dict[str, Any],
-        networkJsonMapper: NetworkJsonMapperInterface,
         soundPlayerJsonMapper: SoundPlayerJsonMapperInterface,
         defaultSoundPlayerType: SoundPlayerType,
-        storageJsonMapper: StorageJsonMapperInterface,
     ):
-        if not isinstance(defaultDatabaseType, DatabaseType):
-            raise TypeError(f'defaultDatabaseType argument is malformed: \"{defaultDatabaseType}\"')
-        elif not isinstance(defaultNetworkClientType, NetworkClientType):
-            raise TypeError(f'defaultNetworkClientType argument is malformed: \"{defaultNetworkClientType}\"')
-        elif not isinstance(jsonContents, dict):
+        if not isinstance(jsonContents, dict):
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
-        elif not isinstance(networkJsonMapper, NetworkJsonMapperInterface):
-            raise TypeError(f'networkJsonMapper argument is malformed: \"{networkJsonMapper}\"')
         elif not isinstance(soundPlayerJsonMapper, SoundPlayerJsonMapperInterface):
             raise TypeError(f'soundPlayerJsonMapper argument is malformed: \"{soundPlayerJsonMapper}\"')
         elif not isinstance(defaultSoundPlayerType, SoundPlayerType):
             raise TypeError(f'defaultSoundPlayerType argument is malformed: \"{defaultSoundPlayerType}\"')
-        elif not isinstance(storageJsonMapper, StorageJsonMapperInterface):
-            raise TypeError(f'storageJsonMapper argument is malformed: \"{storageJsonMapper}\"')
 
-        self.__defaultDatabaseType: Final[DatabaseType] = defaultDatabaseType
-        self.__defaultNetworkClientType: Final[NetworkClientType] = defaultNetworkClientType
         self.__jsonContents: Final[dict[str, Any]] = jsonContents
-        self.__networkJsonMapper: Final[NetworkJsonMapperInterface] = networkJsonMapper
         self.__soundPlayerJsonMapper: Final[SoundPlayerJsonMapperInterface] = soundPlayerJsonMapper
         self.__defaultSoundPlayerType: Final[SoundPlayerType] = defaultSoundPlayerType
-        self.__storageJsonMapper: Final[StorageJsonMapperInterface] = storageJsonMapper
 
     def getSuperTriviaGamePoints(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'superTriviaGamePoints', 25)
@@ -93,22 +73,6 @@ class GeneralSettingsRepositorySnapshot:
             raise ValueError(f'\"administrator\" in General Settings file is malformed: \"{administrator}\"')
 
         return administrator
-
-    def requireDatabaseType(self) -> DatabaseType:
-        databaseType = self.__jsonContents.get('databaseType')
-
-        if utils.isValidStr(databaseType):
-            return self.__storageJsonMapper.parseDatabaseType(databaseType)
-        else:
-            return self.__defaultDatabaseType
-
-    def requireNetworkClientType(self) -> NetworkClientType:
-        networkClientType = self.__jsonContents.get('networkClientType')
-
-        if utils.isValidStr(networkClientType):
-            return self.__networkJsonMapper.parseClientType(networkClientType)
-        else:
-            return self.__defaultNetworkClientType
 
     def requireSoundPlayerType(self) -> SoundPlayerType:
         soundPlayerType = self.__jsonContents.get('soundPlayerType')
