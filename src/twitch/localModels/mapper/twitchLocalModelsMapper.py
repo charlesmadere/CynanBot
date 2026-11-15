@@ -18,7 +18,6 @@ from ..twitchEmoteImageFormat import TwitchEmoteImageFormat as LocalEmoteImageFo
 from ..twitchHypeTrainState import TwitchHypeTrainState as LocalHypeTrainState
 from ..twitchHypeTrainType import TwitchHypeTrainType as LocalHypeTrainType
 from ..twitchPollChoice import TwitchPollChoice as LocalPollChoice
-from ..twitchPollStatus import TwitchPollStatus as LocalPollStatus
 from ..twitchPredictionStatus import TwitchPredictionStatus as LocalPredictionStatus
 from ..twitchResub import TwitchResub as LocalResub
 from ..twitchResubscriptionMessage import TwitchResubscriptionMessage as LocalResubscriptionMessage
@@ -42,7 +41,6 @@ from ...api.models.twitchCustomPowerUpData import TwitchCustomPowerUpData as Api
 from ...api.models.twitchEmoteImageFormat import TwitchEmoteImageFormat as ApiEmoteImageFormat
 from ...api.models.twitchHypeTrainType import TwitchHypeTrainType as ApiHypeTrainType
 from ...api.models.twitchPollChoice import TwitchPollChoice as ApiPollChoice
-from ...api.models.twitchPollStatus import TwitchPollStatus as ApiPollStatus
 from ...api.models.twitchPredictionStatus import TwitchPredictionStatus as ApiPredictionStatus
 from ...api.models.twitchResub import TwitchResub as ApiResub
 from ...api.models.twitchResubscriptionMessage import TwitchResubscriptionMessage as ApiResubscriptionMessage
@@ -293,20 +291,6 @@ class TwitchLocalModelsMapper(TwitchLocalModelsMapperInterface):
 
         choices.freeze()
         return choices
-
-    async def mapPollStatus(
-        self,
-        pollStatus: ApiPollStatus | None,
-    ) -> LocalPollStatus | None:
-        if pollStatus is None:
-            return None
-
-        match pollStatus:
-            case ApiPollStatus.ACTIVE: return LocalPollStatus.ACTIVE
-            case ApiPollStatus.ARCHIVED: return LocalPollStatus.ARCHIVED
-            case ApiPollStatus.COMPLETED: return LocalPollStatus.COMPLETED
-            case ApiPollStatus.INVALID: return LocalPollStatus.INVALID
-            case ApiPollStatus.TERMINATED: return LocalPollStatus.TERMINATED
 
     async def mapPredictionStatus(
         self,

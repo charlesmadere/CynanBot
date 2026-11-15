@@ -69,7 +69,6 @@ from ..models.twitchOutcomePredictor import TwitchOutcomePredictor
 from ..models.twitchPaginationResponse import TwitchPaginationResponse
 from ..models.twitchPayItForward import TwitchPayItForward
 from ..models.twitchPollChoice import TwitchPollChoice
-from ..models.twitchPollStatus import TwitchPollStatus
 from ..models.twitchPowerUp import TwitchPowerUp
 from ..models.twitchPowerUpEmote import TwitchPowerUpEmote
 from ..models.twitchPowerUpType import TwitchPowerUpType
@@ -570,13 +569,6 @@ class TwitchJsonMapperInterface(ABC):
         self,
         jsonResponse: dict[str, Any] | Any | None
     ) -> TwitchPollChoice | None:
-        pass
-
-    @abstractmethod
-    async def parsePollStatus(
-        self,
-        pollStatus: str | Any | None,
-    ) -> TwitchPollStatus | None:
         pass
 
     @abstractmethod
