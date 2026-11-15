@@ -690,7 +690,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
 
         elif isinstance(result, RequestWatchStreakRewardUseCaseInterface.RewardedResult):
             await self.__submitEvent(WatchStreakRewardedChatterItemEvent(
-                updatedInventory = result.chatterInventory,
+                updatedInventory = result.updatedInventory,
                 gashaponsRewarded = result.gashaponsRewarded,
                 originatingAction = action,
                 eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
