@@ -1,6 +1,6 @@
 from typing import Any, Final
 
-import utils as utils
+from . import utils as utils
 from ..soundPlayerManager.jsonMapper.soundPlayerJsonMapperInterface import SoundPlayerJsonMapperInterface
 from ..soundPlayerManager.soundPlayerType import SoundPlayerType
 
