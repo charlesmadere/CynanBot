@@ -24,15 +24,15 @@ class VoicemailSettingsRepository(VoicemailSettingsRepositoryInterface):
 
     async def getMaximumPerOriginatingUser(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'maximumPerOriginatingUser', 3)
+        return utils.getIntFromDict(jsonContents, 'maximumPerOriginatingUser', 10)
 
     async def getMaximumPerTargetUser(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'maximumPerTargetUser', 3)
+        return utils.getIntFromDict(jsonContents, 'maximumPerTargetUser', 10)
 
     async def getMaximumVoicemailAgeDays(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'maximumVoicemailAgeDays', 42)
+        return utils.getIntFromDict(jsonContents, 'maximumVoicemailAgeDays', 60)
 
     async def isEnabled(self) -> bool:
         jsonContents = await self.__readJson()
