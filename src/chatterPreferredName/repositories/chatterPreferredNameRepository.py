@@ -108,7 +108,7 @@ class ChatterPreferredNameRepository(ChatterPreferredNameRepositoryInterface):
                             twitchchannelid text NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -120,7 +120,7 @@ class ChatterPreferredNameRepository(ChatterPreferredNameRepositoryInterface):
                             twitchchannelid TEXT NOT NULL,
                             PRIMARY KEY (chatteruserid, twitchchannelid)
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:
