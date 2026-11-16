@@ -50,7 +50,7 @@ class CasualGamePollPointRedemption(AbsChannelPointRedemption):
             twitchChannelId = pointsRedemption.twitchChannelId,
         )
 
-        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({pointsRedemption=})')
+        self.__timber.log(self.pointsRedemptionName, f'Redeemed ({casualGamePollUrl=}) ({pointsRedemption=})')
         return PointsRedemptionResult.CONSUMED
 
     @property
