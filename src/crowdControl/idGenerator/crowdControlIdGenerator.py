@@ -1,22 +1,22 @@
-import re
-import uuid
-from typing import Final, Pattern
+from typing import Final
 
 from .crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 
 
 class CrowdControlIdGenerator(CrowdControlIdGeneratorInterface):
 
-    def __init__(self):
-        self.__idRegEx: Final[Pattern] = re.compile(r'[^a-z0-9]', re.IGNORECASE)
+    def __init__(
+        self,
+        randomUtils: RandomUtilsInterface,
+    ):
+        if not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
+
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
 
     async def generateActionId(self) -> str:
-        return await self.__generateId()
-
-    async def __generateId(self) -> str:
-        randomUuid = str(uuid.uuid4())
-        randomUuid = self.__idRegEx.sub('', randomUuid)
-        return randomUuid.casefold()
+        return self.__randomUtils.uuid()
 
     async def generateMessageId(self) -> str:
-        return await self.__generateId()
+        return self.__randomUtils.uuid()

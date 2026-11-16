@@ -1647,7 +1647,9 @@ determineTm36SplashTargetsUseCase: Final[DetermineTm36SplashTargetsUseCaseInterf
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
 )
 
-timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = TimeoutIdGenerator()
+timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = TimeoutIdGenerator(
+    randomUtils = randomUtils,
+)
 
 anivCopyMessageTimeoutScoreRepository: Final[AnivCopyMessageTimeoutScoreRepositoryInterface] = AnivCopyMessageTimeoutScoreRepository(
     backingDatabase = backingDatabase,
