@@ -2423,7 +2423,9 @@ voicemailSettingsRepository: Final[VoicemailSettingsRepositoryInterface] = Voice
     ),
 )
 
-voicemailIdGenerator: Final[VoicemailIdGeneratorInterface] = VoicemailIdGenerator()
+voicemailIdGenerator: Final[VoicemailIdGeneratorInterface] = VoicemailIdGenerator(
+    randomUtils = randomUtils,
+)
 
 voicemailsRepository: Final[VoicemailsRepositoryInterface] = VoicemailsRepository(
     backingDatabase = backingDatabase,

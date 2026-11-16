@@ -8,6 +8,8 @@ from src.google.jsonMapper.googleJsonMapper import GoogleJsonMapper
 from src.google.jsonMapper.googleJsonMapperInterface import GoogleJsonMapperInterface
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from src.misc.randomUtils import RandomUtils
+from src.misc.randomUtilsInterface import RandomUtilsInterface
 from src.network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from src.network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from src.network.aioHttp.aioHttpCookieJarProviderInterface import AioHttpCookieJarProviderInterface
@@ -122,7 +124,10 @@ streamElementsApiHelper: Final[StreamElementsApiHelperInterface] = StreamElement
 
 ttsDirectoryProvider: Final[TtsDirectoryProviderInterface] = TtsDirectoryProvider()
 
+randomUtils: Final[RandomUtilsInterface] = RandomUtils()
+
 glacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = StubGlacialTtsFileRetriever(
+    randomUtils = randomUtils,
     timeZoneRepository = timeZoneRepository,
     ttsDirectoryProvider = ttsDirectoryProvider,
 )
