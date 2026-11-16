@@ -3,6 +3,8 @@ from typing import Final, Pattern
 
 import pytest
 
+from src.misc.randomUtils import RandomUtils
+from src.misc.randomUtilsInterface import RandomUtilsInterface
 from src.timeout.idGenerator.timeoutIdGenerator import TimeoutIdGenerator
 from src.timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGeneratorInterface
 
@@ -10,8 +12,14 @@ from src.timeout.idGenerator.timeoutIdGeneratorInterface import TimeoutIdGenerat
 class TestTimeoutIdGenerator:
 
     actionIdRegEx: Final[Pattern] = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
+
     eventIdRegEx: Final[Pattern] = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
-    idGenerator: Final[TimeoutIdGeneratorInterface] = TimeoutIdGenerator()
+
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
+
+    idGenerator: Final[TimeoutIdGeneratorInterface] = TimeoutIdGenerator(
+        randomUtils = randomUtils,
+    )
 
     @pytest.mark.asyncio
     async def test_generateActionId(self):

@@ -1,17 +1,25 @@
 import re
-from typing import Pattern
+from typing import Final, Pattern
 
 import pytest
 
 from src.crowdControl.idGenerator.crowdControlIdGenerator import CrowdControlIdGenerator
 from src.crowdControl.idGenerator.crowdControlIdGeneratorInterface import CrowdControlIdGeneratorInterface
+from src.misc.randomUtils import RandomUtils
+from src.misc.randomUtilsInterface import RandomUtilsInterface
 
 
 class TestCrowdControlIdGenerator:
 
-    actionIdRegEx: Pattern = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
-    messageIdRegEx: Pattern = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
-    idGenerator: CrowdControlIdGeneratorInterface = CrowdControlIdGenerator()
+    actionIdRegEx: Final[Pattern] = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
+
+    messageIdRegEx: Final[Pattern] = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
+
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
+
+    idGenerator: Final[CrowdControlIdGeneratorInterface] = CrowdControlIdGenerator(
+        randomUtils = randomUtils,
+    )
 
     @pytest.mark.asyncio
     async def test_generateActionId(self):
@@ -29,5 +37,5 @@ class TestCrowdControlIdGenerator:
 
     def test_sanity(self):
         assert self.idGenerator is not None
-        assert isinstance(self.idGenerator, CrowdControlIdGeneratorInterface)
         assert isinstance(self.idGenerator, CrowdControlIdGenerator)
+        assert isinstance(self.idGenerator, CrowdControlIdGeneratorInterface)

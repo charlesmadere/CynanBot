@@ -108,7 +108,7 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
                             userkey text NOT NULL,
                             twitchchannelid text NOT NULL PRIMARY KEY
                         )
-                    '''
+                    ''',
                 )
 
             case DatabaseType.SQLITE:
@@ -118,7 +118,7 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
                             userkey TEXT NOT NULL,
                             twitchchannelid TEXT NOT NULL PRIMARY KEY
                         ) STRICT
-                    '''
+                    ''',
                 )
 
             case _:
@@ -167,7 +167,7 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
         )
 
         await connection.close()
-        self.__timber.log('StreamElementsUserKeyRepository', f'Removed Stream Elements user key for \"{twitchChannelId}\"')
+        self.__timber.log('StreamElementsUserKeyRepository', f'Removed Stream Elements user key ({twitchChannelId=})')
 
     async def set(
         self,
@@ -212,4 +212,4 @@ class StreamElementsUserKeyRepository(StreamElementsUserKeyRepositoryInterface):
         )
 
         await connection.close()
-        self.__timber.log('StreamElementsUserKeyRepository', f'Updated Stream Elements user key for \"{twitchChannelId}\"')
+        self.__timber.log('StreamElementsUserKeyRepository', f'Updated Stream Elements user key ({twitchChannelId=})')

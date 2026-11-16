@@ -193,7 +193,7 @@ class TtsMonsterTokensRepository(TtsMonsterTokensRepositoryInterface):
             )
 
             self.__cache[twitchChannelId] = tokens
-            self.__timber.log('TtsMonsterTokensRepository', f'TTS Monster key and user ID has been updated ({tokens=})')
+            self.__timber.log('TtsMonsterTokensRepository', f'TTS Monster key and user ID has been updated ({twitchChannelId=}) ({ttsMonsterUserId=})')
         else:
             await connection.execute(
                 '''

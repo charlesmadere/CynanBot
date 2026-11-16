@@ -1762,7 +1762,9 @@ determineTm36SplashTargetsUseCase: Final[DetermineTm36SplashTargetsUseCaseInterf
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
 )
 
-timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = TimeoutIdGenerator()
+timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = TimeoutIdGenerator(
+    randomUtils = randomUtils,
+)
 
 anivCopyMessageTimeoutScoreRepository: Final[AnivCopyMessageTimeoutScoreRepositoryInterface] = AnivCopyMessageTimeoutScoreRepository(
     backingDatabase = backingDatabase,
@@ -1912,7 +1914,9 @@ useChatterItemHelper: Final[UseChatterItemHelperInterface] = UseChatterItemHelpe
 ## Crowd Control initialization section ##
 ##########################################
 
-crowdControlIdGenerator: Final[CrowdControlIdGeneratorInterface] = CrowdControlIdGenerator()
+crowdControlIdGenerator: Final[CrowdControlIdGeneratorInterface] = CrowdControlIdGenerator(
+    randomUtils = randomUtils,
+)
 
 crowdControlMessagePresenter: Final[CrowdControlMessagePresenterInterface] = CrowdControlMessagePresenter(
     trollmojiHelper = trollmojiHelper,

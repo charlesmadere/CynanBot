@@ -8,9 +8,9 @@ from src.misc.randomUtilsInterface import RandomUtilsInterface
 
 class TestRandomUtils:
 
-    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
-
     uuidRegEx: Final[Pattern] = re.compile(r'^[a-z0-9]+$', re.IGNORECASE)
+
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
 
     def test_bool(self):
         for _ in range(100):
