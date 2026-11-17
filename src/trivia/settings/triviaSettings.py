@@ -193,6 +193,22 @@ class TriviaSettings(TriviaSettingsInterface):
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'super_trivia_first_question_delay_seconds', 4)
 
+    async def getSuperTriviaGamePoints(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'superTriviaGamePoints', 25)
+
+    async def getSuperTriviaGameShinyMultiplier(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'superTriviaGameShinyMultiplier', 3)
+
+    async def getSuperTriviaGameToxicMultiplier(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'superTriviaGameToxicMultiplier', 2)
+
+    async def getSuperTriviaGamePerUserAttempts(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'superTriviaGamePerUserAttempts', 2)
+
     async def getToxicProbability(self) -> float:
         jsonContents = await self.__readJson()
         return utils.getFloatFromDict(jsonContents, 'toxic_probability', 0.01)

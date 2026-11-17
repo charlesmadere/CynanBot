@@ -106,7 +106,10 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        activeChatters = await self.__getCurrentActiveChatters(twitchChannelId)
+        activeChatters = await self.__getCurrentActiveChatters(
+            twitchChannelId = twitchChannelId,
+        )
+
         indexToDelete: int | None = None
 
         for index, activeChatter in enumerate(activeChatters):
@@ -177,7 +180,7 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
             # these should be impossible here but let's just be overly careful
             return entry.chatters
 
-        first = int(max(math.ceil(self.__maxActiveChattersSize * 0.75), 16))
+        first = int(max(math.ceil(float(self.__maxActiveChattersSize) * 0.75), float(16)))
         self.__timber.log('ActiveChattersRepository', f'Fetching currently connected chatters... ({twitchChannelId=}) ({first=})')
 
         try:
@@ -218,7 +221,10 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        activeChatters = await self.__getCurrentActiveChatters(twitchChannelId)
+        activeChatters = await self.__getCurrentActiveChatters(
+            twitchChannelId = twitchChannelId,
+        )
+
         now = self.__timeZoneRepository.getNow()
 
         await self.__clean(
@@ -272,8 +278,11 @@ class ActiveChattersRepository(ActiveChattersRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        activeChatters = await self.get(twitchChannelId = twitchChannelId)
-        return chatterUserId in activeChatters
+        activeChatters = await self.get(
+            twitchChannelId = twitchChannelId,
+        )
+
+        return chatterUserId in activeChatters.keys()
 
     async def remove(
         self,

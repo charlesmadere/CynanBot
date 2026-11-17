@@ -90,6 +90,22 @@ class TriviaSettingsInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getSuperTriviaGamePoints(self) -> int:
+        pass
+
+    @abstractmethod
+    async def getSuperTriviaGameShinyMultiplier(self) -> int:
+        pass
+
+    @abstractmethod
+    async def getSuperTriviaGameToxicMultiplier(self) -> int:
+        pass
+
+    @abstractmethod
+    async def getSuperTriviaGamePerUserAttempts(self) -> int:
+        pass
+
+    @abstractmethod
     async def getToxicProbability(self) -> float:
         pass
 
