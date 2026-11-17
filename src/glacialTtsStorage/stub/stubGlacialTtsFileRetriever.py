@@ -1,5 +1,4 @@
 import re
-import uuid
 from typing import Final, Pattern
 
 from ..fileRetriever.glacialTtsFileRetrieverInterface import GlacialTtsFileRetrieverInterface
@@ -7,6 +6,7 @@ from ..models.glacialTtsData import GlacialTtsData
 from ..models.glacialTtsFileReference import GlacialTtsFileReference
 from ...location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from ...misc import utils as utils
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...tts.directoryProvider.ttsDirectoryProviderInterface import TtsDirectoryProviderInterface
 from ...tts.models.ttsProvider import TtsProvider
 
@@ -15,10 +15,13 @@ class StubGlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
 
     def __init__(
         self,
+        randomUtils: RandomUtilsInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         ttsDirectoryProvider: TtsDirectoryProviderInterface,
         directory: str = '../tts',
     ):
+        if not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
         if not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(ttsDirectoryProvider, TtsDirectoryProviderInterface):
@@ -26,6 +29,7 @@ class StubGlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         elif not utils.isValidStr(directory):
             raise TypeError(f'directory argument is malformed: \"{directory}\"')
 
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__timeZoneRepository: Final[TimeZoneRepositoryInterface] = timeZoneRepository
         self.__ttsDirectoryProvider: Final[TtsDirectoryProviderInterface] = ttsDirectoryProvider
         self.__directory: Final[str] = directory
@@ -42,8 +46,7 @@ class StubGlacialTtsFileRetriever(GlacialTtsFileRetrieverInterface):
         return None
 
     async def __generateRandomId(self) -> str:
-        randomUuid = self.__fileNameRegEx.sub('', str(uuid.uuid4()))
-        return randomUuid.casefold()
+        return self.__randomUtils.uuid()
 
     async def saveFile(
         self,

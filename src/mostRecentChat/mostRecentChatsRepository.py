@@ -21,7 +21,7 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        cacheSize: int = 100,
+        cacheSize: int = 256,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')

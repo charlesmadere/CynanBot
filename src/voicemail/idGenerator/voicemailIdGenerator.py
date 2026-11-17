@@ -1,15 +1,19 @@
-import re
-import uuid
-from typing import Final, Pattern
+from typing import Final
 
 from .voicemailIdGeneratorInterface import VoicemailIdGeneratorInterface
+from ...misc.randomUtilsInterface import RandomUtilsInterface
 
 
 class VoicemailIdGenerator(VoicemailIdGeneratorInterface):
 
-    def __init__(self):
-        self.__idRegEx: Final[Pattern] = re.compile(r'[^a-z0-9]', re.IGNORECASE)
+    def __init__(
+        self,
+        randomUtils: RandomUtilsInterface,
+    ):
+        if not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
+
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
 
     async def generateVoicemailId(self) -> str:
-        voicemailId = str(uuid.uuid4())
-        return self.__idRegEx.sub('', voicemailId)[:3].lower()
+        return self.__randomUtils.uuid()[:3]

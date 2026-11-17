@@ -140,6 +140,8 @@ glacialTtsStorageRepository: Final[GlacialTtsStorageRepositoryInterface] = Glaci
 
 ttsDirectoryProvider: Final[TtsDirectoryProviderInterface] = TtsDirectoryProvider()
 
+randomUtils: Final[RandomUtilsInterface] = RandomUtils()
+
 glacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = GlacialTtsFileRetriever(
     eventLoop = eventLoop,
     glacialTtsStorageRepository = glacialTtsStorageRepository,
@@ -148,13 +150,12 @@ glacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = GlacialTtsFil
 )
 
 stubGlacialTtsFileRetriever: Final[GlacialTtsFileRetrieverInterface] = StubGlacialTtsFileRetriever(
+    randomUtils = randomUtils,
     timeZoneRepository = timeZoneRepository,
     ttsDirectoryProvider = ttsDirectoryProvider,
 )
 
 googleFileExtensionHelper: Final[GoogleFileExtensionHelperInterface] = GoogleFileExtensionHelper()
-
-randomUtils: Final[RandomUtilsInterface] = RandomUtils()
 
 googleTtsVoicesHelper: Final[GoogleTtsVoicesHelperInterface] = GoogleTtsVoicesHelper(
     googleSettingsRepository = googleSettingsRepository,
