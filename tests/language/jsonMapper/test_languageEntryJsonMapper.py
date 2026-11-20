@@ -1,3 +1,5 @@
+from typing import Final
+
 from src.language.jsonMapper.languageEntryJsonMapper import LanguageEntryJsonMapper
 from src.language.jsonMapper.languageEntryJsonMapperInterface import LanguageEntryJsonMapperInterface
 from src.language.languageEntry import LanguageEntry
@@ -5,7 +7,7 @@ from src.language.languageEntry import LanguageEntry
 
 class TestLanguageEntryJsonMapper:
 
-    jsonMapper: LanguageEntryJsonMapperInterface = LanguageEntryJsonMapper()
+    jsonMapper: Final[LanguageEntryJsonMapperInterface] = LanguageEntryJsonMapper()
 
     def test_parseLanguageEntry_withEnglishString(self):
         result = self.jsonMapper.parseLanguageEntry('english')
@@ -30,6 +32,11 @@ class TestLanguageEntryJsonMapper:
     def test_requireLanguageEntry_withSpanishString(self):
         result = self.jsonMapper.requireLanguageEntry('spanish')
         assert result is LanguageEntry.SPANISH
+
+    def test_sanity(self):
+        assert self.jsonMapper is not None
+        assert isinstance(self.jsonMapper, LanguageEntryJsonMapper)
+        assert isinstance(self.jsonMapper, LanguageEntryJsonMapperInterface)
 
     def test_serializeLanguageEntry_withEnglish(self):
         result = self.jsonMapper.serializeLanguageEntry(LanguageEntry.ENGLISH)

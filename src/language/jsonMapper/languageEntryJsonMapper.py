@@ -9,7 +9,7 @@ class LanguageEntryJsonMapper(LanguageEntryJsonMapperInterface):
 
     def parseLanguageEntry(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> LanguageEntry | None:
         if not utils.isValidStr(jsonString):
             return None
@@ -80,7 +80,7 @@ class LanguageEntryJsonMapper(LanguageEntryJsonMapperInterface):
 
     def requireLanguageEntry(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> LanguageEntry:
         result = self.parseLanguageEntry(jsonString)
 
@@ -91,7 +91,7 @@ class LanguageEntryJsonMapper(LanguageEntryJsonMapperInterface):
 
     def serializeLanguageEntry(
         self,
-        languageEntry: LanguageEntry
+        languageEntry: LanguageEntry,
     ) -> str:
         if not isinstance(languageEntry, LanguageEntry):
             raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')

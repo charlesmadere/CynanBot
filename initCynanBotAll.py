@@ -1167,7 +1167,9 @@ isLiveOnTwitchRepository: Final[IsLiveOnTwitchRepositoryInterface] = IsLiveOnTwi
     twitchTokensRepository = twitchTokensRepository,
 )
 
-languagesRepository: Final[LanguagesRepositoryInterface] = LanguagesRepository()
+languagesRepository: Final[LanguagesRepositoryInterface] = LanguagesRepository(
+    randomUtils = randomUtils,
+)
 
 locationsRepository: Final[LocationsRepositoryInterface] = LocationsRepository(
     locationsJsonReader = JsonFileReader(
