@@ -255,7 +255,7 @@ class ChatterItemEventHandler(ChatterItemEventListener):
                 self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundFile(soundAlert))
 
         self.__twitchChatMessenger.send(
-            text = f'You pet a {event.animalEmoji.emoji} {event.animalEmoji.name}! It seems to have enjoyed that!',
+            text = f'You pet a {event.animalEmoji.emoji} {event.animalEmoji.name}! It seems to have really enjoyed that!',
             twitchChannelId = event.twitchChannelId,
             replyMessageId = event.twitchChatMessageId,
         )

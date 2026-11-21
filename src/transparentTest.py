@@ -1,10 +1,13 @@
 import asyncio
 from asyncio import AbstractEventLoop
+from typing import Final
 
 from .language.languagesRepository import LanguagesRepository
 from .language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from .location.timeZoneRepository import TimeZoneRepository
 from .location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from .misc.randomUtils import RandomUtils
+from .misc.randomUtilsInterface import RandomUtilsInterface
 from .network.aioHttp.aioHttpClientProvider import AioHttpClientProvider
 from .network.aioHttp.aioHttpCookieJarProvider import AioHttpCookieJarProvider
 from .network.networkClientProvider import NetworkClientProvider
@@ -20,7 +23,11 @@ asyncio.set_event_loop(eventLoop)
 
 timber: TimberInterface = TimberStub()
 
-languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
+randomUtils: Final[RandomUtilsInterface] = RandomUtils()
+
+languagesRepository: Final[LanguagesRepositoryInterface] = LanguagesRepository(
+    randomUtils = randomUtils,
+)
 
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 

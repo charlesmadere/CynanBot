@@ -5,6 +5,8 @@ import pytest
 
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
+from src.misc.randomUtils import RandomUtils
+from src.misc.randomUtilsInterface import RandomUtilsInterface
 from src.recurringActions.actions.cutenessRecurringAction import CutenessRecurringAction
 from src.recurringActions.actions.recurringActionType import RecurringActionType
 from src.recurringActions.actions.superTriviaRecurringAction import SuperTriviaRecurringAction
@@ -18,7 +20,11 @@ from src.timber.timberStub import TimberStub
 
 class TestRecurringActionsJsonParser:
 
-    languagesRepository: Final[LanguagesRepositoryInterface] = LanguagesRepository()
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
+
+    languagesRepository: Final[LanguagesRepositoryInterface] = LanguagesRepository(
+        randomUtils = randomUtils,
+    )
 
     timber: Final[TimberInterface] = TimberStub()
 

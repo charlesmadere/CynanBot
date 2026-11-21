@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.deepL.deepLJsonMapper import DeepLJsonMapper
@@ -5,18 +7,25 @@ from src.deepL.deepLJsonMapperInterface import DeepLJsonMapperInterface
 from src.deepL.deepLTranslationRequest import DeepLTranslationRequest
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
+from src.misc.randomUtils import RandomUtils
+from src.misc.randomUtilsInterface import RandomUtilsInterface
 from src.timber.timberInterface import TimberInterface
 from src.timber.timberStub import TimberStub
 
 
 class TestDeepLJsonMapper:
 
-    languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
-    timber: TimberInterface = TimberStub()
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
 
-    jsonMapper: DeepLJsonMapperInterface = DeepLJsonMapper(
+    languagesRepository: Final[LanguagesRepositoryInterface] = LanguagesRepository(
+        randomUtils = randomUtils,
+    )
+
+    timber: Final[TimberInterface] = TimberStub()
+
+    jsonMapper: Final[DeepLJsonMapperInterface] = DeepLJsonMapper(
         languagesRepository = languagesRepository,
-        timber = timber
+        timber = timber,
     )
 
     @pytest.mark.asyncio
@@ -38,6 +47,11 @@ class TestDeepLJsonMapper:
     async def test_parseTranslationResponses_withNone(self):
         result = await self.jsonMapper.parseTranslationResponses(None)
         assert result is None
+
+    def test_sanity(self):
+        assert self.jsonMapper is not None
+        assert isinstance(self.jsonMapper, DeepLJsonMapper)
+        assert isinstance(self.jsonMapper, DeepLJsonMapperInterface)
 
     @pytest.mark.asyncio
     async def test_serializeTranslationRequest(self):

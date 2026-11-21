@@ -1,4 +1,3 @@
-import random
 from typing import Collection, Final
 
 from frozenlist import FrozenList
@@ -7,11 +6,20 @@ from .exceptions import NoLanguageEntryFoundForCommandException, NoLanguageEntry
 from .languageEntry import LanguageEntry
 from .languagesRepositoryInterface import LanguagesRepositoryInterface
 from ..misc import utils as utils
+from ..misc.randomUtilsInterface import RandomUtilsInterface
 
 
 class LanguagesRepository(LanguagesRepositoryInterface):
 
-    def __init__(self):
+    def __init__(
+        self,
+        randomUtils: RandomUtilsInterface,
+    ):
+        if not isinstance(randomUtils, RandomUtilsInterface):
+            raise TypeError(f'randomUtils argument is malformed: \"{randomUtils}\"')
+
+        self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
+
         self.__languageList: Final[Collection[LanguageEntry]] = self.__createLanguageList()
 
     def __createLanguageList(self) -> Collection[LanguageEntry]:
@@ -31,7 +39,10 @@ class LanguagesRepository(LanguagesRepositoryInterface):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         wotdApiCodes: list[str] = list()
-        validEntries = await self.__getLanguageEntries(hasWotdApiCode = True)
+
+        validEntries = await self.__getLanguageEntries(
+            hasWotdApiCode = True,
+        )
 
         for entry in validEntries:
             wotdApiCodes.append(entry.primaryCommandName)
@@ -54,13 +65,13 @@ class LanguagesRepository(LanguagesRepositoryInterface):
             hasWotdApiCode = hasWotdApiCode,
         )
 
-        return random.choice(validEntries)
+        return self.__randomUtils.choice(validEntries)
 
     async def __getLanguageEntries(
         self,
         hasIso6391Code: bool | None = None,
         hasWotdApiCode: bool | None = None,
-    ) -> list[LanguageEntry]:
+    ) -> FrozenList[LanguageEntry]:
         if hasIso6391Code is not None and not utils.isValidBool(hasIso6391Code):
             raise TypeError(f'hasIso6391Code argument is malformed: \"{hasIso6391Code}\"')
         elif hasWotdApiCode is not None and not utils.isValidBool(hasWotdApiCode):
@@ -87,7 +98,11 @@ class LanguagesRepository(LanguagesRepositoryInterface):
         if len(validEntries) == 0:
             raise RuntimeError(f'Unable to find a single LanguageEntry with given requirements ({hasIso6391Code=}) ({hasWotdApiCode=})')
 
-        return validEntries
+        validEntries.sort(key = lambda entry: entry.humanName.casefold())
+        frozenValidEntries: FrozenList[LanguageEntry] = FrozenList(validEntries)
+        frozenValidEntries.freeze()
+
+        return frozenValidEntries
 
     async def getLanguageForCommand(
         self,

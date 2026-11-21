@@ -1,23 +1,31 @@
 from datetime import datetime
+from typing import Final
 
 import pytest
 
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from src.language.wordOfTheDay.wordOfTheDayPresenter import WordOfTheDayPresenter
-from src.language.wordOfTheDay.wordOfTheDayPresenterInterface import \
-    WordOfTheDayPresenterInterface
+from src.language.wordOfTheDay.wordOfTheDayPresenterInterface import WordOfTheDayPresenterInterface
 from src.language.wordOfTheDay.wordOfTheDayResponse import WordOfTheDayResponse
 from src.location.timeZoneRepository import TimeZoneRepository
 from src.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
+from src.misc.randomUtils import RandomUtils
+from src.misc.randomUtilsInterface import RandomUtilsInterface
 from src.transparent.transparentResponse import TransparentResponse
 
 
 class TestWordOfTheDayPresenter:
 
-    languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
-    timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
-    presenter: WordOfTheDayPresenterInterface = WordOfTheDayPresenter()
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
+
+    languagesRepository: Final[LanguagesRepositoryInterface] = LanguagesRepository(
+        randomUtils = randomUtils,
+    )
+
+    timeZoneRepository: Final[TimeZoneRepositoryInterface] = TimeZoneRepository()
+
+    presenter: Final[WordOfTheDayPresenterInterface] = WordOfTheDayPresenter()
 
     @pytest.mark.asyncio
     async def test_toString_with(self):

@@ -1,13 +1,21 @@
+from typing import Final
+
 import pytest
 
 from src.language.languageEntry import LanguageEntry
 from src.language.languagesRepository import LanguagesRepository
 from src.language.languagesRepositoryInterface import LanguagesRepositoryInterface
+from src.misc.randomUtils import RandomUtils
+from src.misc.randomUtilsInterface import RandomUtilsInterface
 
 
 class TestLanguagesRepository:
 
-    languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
+
+    languagesRepository: Final[LanguagesRepositoryInterface] = LanguagesRepository(
+        randomUtils = randomUtils,
+    )
 
     @pytest.mark.asyncio
     async def test_getLanguageForCommand_withAllEnglishCommandNames(self):

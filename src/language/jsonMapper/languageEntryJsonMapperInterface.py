@@ -9,20 +9,20 @@ class LanguageEntryJsonMapperInterface(ABC):
     @abstractmethod
     def parseLanguageEntry(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> LanguageEntry | None:
         pass
 
     @abstractmethod
     def requireLanguageEntry(
         self,
-        jsonString: str | Any | None
+        jsonString: str | Any | None,
     ) -> LanguageEntry:
         pass
 
     @abstractmethod
     def serializeLanguageEntry(
         self,
-        languageEntry: LanguageEntry
+        languageEntry: LanguageEntry,
     ) -> str:
         pass

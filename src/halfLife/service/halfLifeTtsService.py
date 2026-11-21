@@ -1,4 +1,3 @@
-import random
 import re
 from asyncio import AbstractEventLoop
 from typing import Collection, Final, Pattern
@@ -145,5 +144,5 @@ class HalfLifeTtsService(HalfLifeTtsServiceInterface):
         if len(matchingFiles) == 0:
             return None
 
-        chosenFile = random.choice(matchingFiles)
+        chosenFile = self.__randomUtils.choice(matchingFiles)
         return f'{directory}/{chosenFile}'

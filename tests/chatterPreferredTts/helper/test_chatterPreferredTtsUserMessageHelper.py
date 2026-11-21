@@ -1,3 +1,5 @@
+from typing import Final
+
 import pytest
 
 from src.chatterPreferredTts.helper.chatterPreferredTtsUserMessageHelper import ChatterPreferredTtsUserMessageHelper
@@ -23,6 +25,8 @@ from src.language.languagesRepositoryInterface import LanguagesRepositoryInterfa
 from src.microsoftSam.models.microsoftSamVoice import MicrosoftSamVoice
 from src.microsoftSam.parser.microsoftSamJsonParser import MicrosoftSamJsonParser
 from src.microsoftSam.parser.microsoftSamJsonParserInterface import MicrosoftSamJsonParserInterface
+from src.misc.randomUtils import RandomUtils
+from src.misc.randomUtilsInterface import RandomUtilsInterface
 from src.streamElements.models.streamElementsVoice import StreamElementsVoice
 from src.streamElements.parser.streamElementsJsonParser import StreamElementsJsonParser
 from src.streamElements.parser.streamElementsJsonParserInterface import StreamElementsJsonParserInterface
@@ -35,30 +39,34 @@ from src.ttsMonster.models.ttsMonsterVoice import TtsMonsterVoice
 
 class TestChatterPreferredTtsUserMessageHelper:
 
-    decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
+    randomUtils: Final[RandomUtilsInterface] = RandomUtils()
 
-    languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
+    decTalkVoiceMapper: Final[DecTalkVoiceMapperInterface] = DecTalkVoiceMapper()
 
-    halfLifeVoiceParser: HalfLifeVoiceParserInterface = HalfLifeVoiceParser()
-
-    microsoftSamJsonParser: MicrosoftSamJsonParserInterface = MicrosoftSamJsonParser()
-
-    streamElementsJsonParser: StreamElementsJsonParserInterface = StreamElementsJsonParser()
-
-    timber: TimberInterface = TimberStub()
-
-    ttsMonsterPrivateApiJsonMapper: TtsMonsterPrivateApiJsonMapperInterface = TtsMonsterPrivateApiJsonMapper(
-        timber = timber
+    languagesRepository: Final[LanguagesRepositoryInterface] = LanguagesRepository(
+        randomUtils = randomUtils,
     )
 
-    helper: ChatterPreferredTtsUserMessageHelperInterface = ChatterPreferredTtsUserMessageHelper(
+    halfLifeVoiceParser: Final[HalfLifeVoiceParserInterface] = HalfLifeVoiceParser()
+
+    microsoftSamJsonParser: Final[MicrosoftSamJsonParserInterface] = MicrosoftSamJsonParser()
+
+    streamElementsJsonParser: Final[StreamElementsJsonParserInterface] = StreamElementsJsonParser()
+
+    timber: Final[TimberInterface] = TimberStub()
+
+    ttsMonsterPrivateApiJsonMapper: Final[TtsMonsterPrivateApiJsonMapperInterface] = TtsMonsterPrivateApiJsonMapper(
+        timber = timber,
+    )
+
+    helper: Final[ChatterPreferredTtsUserMessageHelperInterface] = ChatterPreferredTtsUserMessageHelper(
         decTalkVoiceMapper = decTalkVoiceMapper,
         halfLifeVoiceParser = halfLifeVoiceParser,
         languagesRepository = languagesRepository,
         microsoftSamJsonParser = microsoftSamJsonParser,
         streamElementsJsonParser = streamElementsJsonParser,
         timber = timber,
-        ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper
+        ttsMonsterPrivateApiJsonMapper = ttsMonsterPrivateApiJsonMapper,
     )
 
     @pytest.mark.asyncio
