@@ -87,9 +87,9 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
                     minimumPullAmount = 1,
                 ),
                 ChatterItemType.TM_36: GashaponItemPullRate(
-                    pullRate = 0.60,
-                    iterations = 2,
-                    maximumPullAmount = 2,
+                    pullRate = 0.56,
+                    iterations = 4,
+                    maximumPullAmount = 4,
                     minimumPullAmount = 1,
                 ),
                 ChatterItemType.VORE: GashaponItemPullRate(
