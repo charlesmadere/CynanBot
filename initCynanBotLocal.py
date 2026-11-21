@@ -2551,7 +2551,6 @@ cynanBot: Final[CynanBot] = CynanBot(
     sentMessageLogger = sentMessageLogger,
     timber = timber,
     twitchChatMessenger = twitchChatMessenger,
-    twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     twitchWebsocketClient = twitchWebsocketClient,
     startables = startables,

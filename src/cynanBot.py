@@ -9,7 +9,6 @@ from .misc.startable import Startable
 from .sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from .timber.timberInterface import TimberInterface
 from .twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
-from .twitch.handleProvider.twitchHandleProviderInterface import TwitchHandleProviderInterface
 from .twitch.tokens.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from .twitch.websocket.listener.twitchWebsocketConnectionsFinishedListener import \
     TwitchWebsocketConnectionsFinishedListener
@@ -25,7 +24,6 @@ class CynanBot(Startable, TwitchWebsocketConnectionsFinishedListener):
         sentMessageLogger: SentMessageLoggerInterface,
         timber: TimberInterface,
         twitchChatMessenger: TwitchChatMessengerInterface,
-        twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchWebsocketClient: TwitchWebsocketClientInterface,
         startables: Collection[Startable | Any | None] | None,
@@ -40,8 +38,6 @@ class CynanBot(Startable, TwitchWebsocketConnectionsFinishedListener):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChatMessenger, TwitchChatMessengerInterface):
             raise TypeError(f'twitchChatMessenger argument is malformed: \"{twitchChatMessenger}\"')
-        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
-            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchWebsocketClient, TwitchWebsocketClientInterface):
@@ -53,7 +49,6 @@ class CynanBot(Startable, TwitchWebsocketConnectionsFinishedListener):
         self.__sentMessageLogger: Final[SentMessageLoggerInterface] = sentMessageLogger
         self.__timber: Final[TimberInterface] = timber
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
-        self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchWebsocketClient: Final[TwitchWebsocketClientInterface] = twitchWebsocketClient
         self.__startables: Final[FrozenList[Startable]] = self.__buildStartablesCollection(startables)
@@ -98,8 +93,7 @@ class CynanBot(Startable, TwitchWebsocketConnectionsFinishedListener):
         self.__timber.log('CynanBot', f'Finished starting all {len(self.__startables)} startable(s)')
 
     def start(self):
-        twitchHandle = self.__twitchHandleProvider.getTwitchHandle()
-        self.__timber.log('CynanBot', f'Bot \"{twitchHandle}\" is starting components...')
+        self.__timber.log('CynanBot', f'Bot is starting components...')
 
         self.__timber.start()
         self.__twitchTokensRepository.start()
