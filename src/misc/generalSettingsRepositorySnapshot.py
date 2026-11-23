@@ -1,8 +1,6 @@
 from typing import Any, Final
 
 from . import utils as utils
-from ..soundPlayerManager.jsonMapper.soundPlayerJsonMapperInterface import SoundPlayerJsonMapperInterface
-from ..soundPlayerManager.soundPlayerType import SoundPlayerType
 
 
 class GeneralSettingsRepositorySnapshot:
@@ -10,19 +8,11 @@ class GeneralSettingsRepositorySnapshot:
     def __init__(
         self,
         jsonContents: dict[str, Any],
-        soundPlayerJsonMapper: SoundPlayerJsonMapperInterface,
-        defaultSoundPlayerType: SoundPlayerType,
     ):
         if not isinstance(jsonContents, dict):
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
-        elif not isinstance(soundPlayerJsonMapper, SoundPlayerJsonMapperInterface):
-            raise TypeError(f'soundPlayerJsonMapper argument is malformed: \"{soundPlayerJsonMapper}\"')
-        elif not isinstance(defaultSoundPlayerType, SoundPlayerType):
-            raise TypeError(f'defaultSoundPlayerType argument is malformed: \"{defaultSoundPlayerType}\"')
 
         self.__jsonContents: Final[dict[str, Any]] = jsonContents
-        self.__soundPlayerJsonMapper: Final[SoundPlayerJsonMapperInterface] = soundPlayerJsonMapper
-        self.__defaultSoundPlayerType: Final[SoundPlayerType] = defaultSoundPlayerType
 
     def getSuperTriviaGamePoints(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'superTriviaGamePoints', 25)
@@ -73,11 +63,3 @@ class GeneralSettingsRepositorySnapshot:
             raise ValueError(f'\"administrator\" in General Settings file is malformed: \"{administrator}\"')
 
         return administrator
-
-    def requireSoundPlayerType(self) -> SoundPlayerType:
-        soundPlayerType = self.__jsonContents.get('soundPlayerType')
-
-        if utils.isValidStr(soundPlayerType):
-            return self.__soundPlayerJsonMapper.parseSoundPlayerType(soundPlayerType)
-        else:
-            return self.__defaultSoundPlayerType

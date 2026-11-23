@@ -220,14 +220,11 @@ from src.redemptionCounter.settings.redemptionCounterSettings import RedemptionC
 from src.redemptionCounter.settings.redemptionCounterSettingsInterface import RedemptionCounterSettingsInterface
 from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
-from src.soundPlayerManager.jsonMapper.soundPlayerJsonMapper import SoundPlayerJsonMapper
-from src.soundPlayerManager.jsonMapper.soundPlayerJsonMapperInterface import SoundPlayerJsonMapperInterface
 from src.soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from src.soundPlayerManager.provider.stub.stubSoundPlayerManagerProvider import StubSoundPlayerManagerProvider
 from src.soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
     SoundPlayerRandomizerHelperInterface
 from src.soundPlayerManager.randomizerHelper.stub.stubSoundPlayerRandomizerHelper import StubSoundPlayerRandomizerHelper
-from src.soundPlayerManager.soundPlayerType import SoundPlayerType
 from src.storage.backingDatabase import BackingDatabase
 from src.storage.jsonFileReader import JsonFileReader
 from src.storage.linesFileReader import LinesFileReader
@@ -562,15 +559,11 @@ timber: Final[TimberInterface] = Timber(
     timeZoneRepository = timeZoneRepository,
 )
 
-soundPlayerJsonMapper: Final[SoundPlayerJsonMapperInterface] = SoundPlayerJsonMapper()
-
 generalSettingsRepository = GeneralSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/generalSettingsRepository.json',
     ),
-    soundPlayerJsonMapper = soundPlayerJsonMapper,
-    defaultSoundPlayerType = SoundPlayerType.PYGAME,
 )
 
 psqlCredentialsProvider: Final[PsqlCredentialsProviderInterface] = PsqlCredentialsProvider(
