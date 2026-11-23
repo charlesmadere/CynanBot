@@ -2,33 +2,17 @@ from typing import Any, Final
 
 from .clearable import Clearable
 from .generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
-from ..soundPlayerManager.jsonMapper.soundPlayerJsonMapperInterface import SoundPlayerJsonMapperInterface
-from ..soundPlayerManager.soundPlayerType import SoundPlayerType
 from ..storage.jsonReaderInterface import JsonReaderInterface
 from ..trivia.builder.triviaGameBuilderSettingsInterface import TriviaGameBuilderSettingsInterface
 
 
-class GeneralSettingsRepository(
-    Clearable,
-    TriviaGameBuilderSettingsInterface,
-):
+class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
 
-    def __init__(
-        self,
-        settingsJsonReader: JsonReaderInterface,
-        soundPlayerJsonMapper: SoundPlayerJsonMapperInterface,
-        defaultSoundPlayerType: SoundPlayerType = SoundPlayerType.PYGAME,
-    ):
+    def __init__(self, settingsJsonReader: JsonReaderInterface):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
-        elif not isinstance(soundPlayerJsonMapper, SoundPlayerJsonMapperInterface):
-            raise TypeError(f'soundPlayerJsonMapper argument is malformed: \"{soundPlayerJsonMapper}\"')
-        elif not isinstance(defaultSoundPlayerType, SoundPlayerType):
-            raise TypeError(f'defaultSoundPlayerType argument is malformed: \"{defaultSoundPlayerType}\"')
 
         self.__settingsJsonReader: Final[JsonReaderInterface] = settingsJsonReader
-        self.__soundPlayerJsonMapper: Final[SoundPlayerJsonMapperInterface] = soundPlayerJsonMapper
-        self.__defaultSoundPlayerType: Final[SoundPlayerType] = defaultSoundPlayerType
 
         self.__cache: GeneralSettingsRepositorySnapshot | None = None
 
@@ -47,8 +31,6 @@ class GeneralSettingsRepository(
 
         snapshot = GeneralSettingsRepositorySnapshot(
             jsonContents = jsonContents,
-            soundPlayerJsonMapper = self.__soundPlayerJsonMapper,
-            defaultSoundPlayerType = self.__defaultSoundPlayerType,
         )
 
         self.__cache = snapshot
@@ -62,8 +44,6 @@ class GeneralSettingsRepository(
 
         snapshot = GeneralSettingsRepositorySnapshot(
             jsonContents = jsonContents,
-            soundPlayerJsonMapper = self.__soundPlayerJsonMapper,
-            defaultSoundPlayerType = self.__defaultSoundPlayerType,
         )
 
         self.__cache = snapshot

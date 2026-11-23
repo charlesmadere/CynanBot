@@ -417,17 +417,14 @@ from src.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from src.sentMessageLogger.sentMessageLoggerInterface import SentMessageLoggerInterface
 from src.soundPlayerManager.jsonMapper.soundAlertJsonMapper import SoundAlertJsonMapper
 from src.soundPlayerManager.jsonMapper.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
-from src.soundPlayerManager.jsonMapper.soundPlayerJsonMapper import SoundPlayerJsonMapper
-from src.soundPlayerManager.jsonMapper.soundPlayerJsonMapperInterface import SoundPlayerJsonMapperInterface
-from src.soundPlayerManager.provider.soundPlayerManagerProvider import SoundPlayerManagerProvider
 from src.soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
+from src.soundPlayerManager.pygame.pygameSoundPlayerManagerProvider import PygameSoundPlayerManagerProvider
 from src.soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelper import SoundPlayerRandomizerHelper
 from src.soundPlayerManager.randomizerHelper.soundPlayerRandomizerHelperInterface import \
     SoundPlayerRandomizerHelperInterface
 from src.soundPlayerManager.settings.soundPlayerSettingsRepository import SoundPlayerSettingsRepository
 from src.soundPlayerManager.settings.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
-from src.soundPlayerManager.soundPlayerType import SoundPlayerType
 from src.storage.backingDatabase import BackingDatabase
 from src.storage.jsonFileReader import JsonFileReader
 from src.storage.linesFileReader import LinesFileReader
@@ -844,15 +841,11 @@ timber: Final[TimberInterface] = Timber(
     timeZoneRepository = timeZoneRepository,
 )
 
-soundPlayerJsonMapper: Final[SoundPlayerJsonMapperInterface] = SoundPlayerJsonMapper()
-
 generalSettingsRepository = GeneralSettingsRepository(
     settingsJsonReader = JsonFileReader(
         eventLoop = eventLoop,
         fileName = '../config/generalSettingsRepository.json',
     ),
-    soundPlayerJsonMapper = soundPlayerJsonMapper,
-    defaultSoundPlayerType = SoundPlayerType.PYGAME,
 )
 
 psqlCredentialsProvider: Final[PsqlCredentialsProviderInterface] = PsqlCredentialsProvider(
@@ -1335,13 +1328,11 @@ soundPlayerRandomizerHelper: Final[SoundPlayerRandomizerHelperInterface] = Sound
     timber = timber,
 )
 
-soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = SoundPlayerManagerProvider(
-    backgroundTaskHelper = backgroundTaskHelper,
-    generalSettingsRepository = generalSettingsRepository,
+soundPlayerManagerProvider: Final[SoundPlayerManagerProviderInterface] = PygameSoundPlayerManagerProvider(
+    eventLoop = eventLoop,
     pygameInitializer = pygameInitializer,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber,
-    timeZoneRepository = timeZoneRepository,
 )
 
 
