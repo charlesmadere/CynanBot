@@ -2,7 +2,7 @@ aiofiles==25.1.0
 aiohttp==3.14.5
 aiosqlite==0.22.1
 asyncpg==0.32.0
-charset-normalizer==3.5.2
+charset-normalizer==3.5.3
 cryptography==50.0.2
 emoji==2.16.0
 frozendict==2.5.1
