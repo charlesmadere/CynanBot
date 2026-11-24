@@ -313,7 +313,7 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         event: CrowdMicEndedItemEvent,
     ):
         self.__twitchChatMessenger.send(
-            text = f'{event.singingEmote} Crowd microphone has ended!',
+            text = f'{event.singingEmote} Crowd microphone has ended! {event.singingEmote}',
             twitchChannelId = event.twitchChannelId,
         )
 
