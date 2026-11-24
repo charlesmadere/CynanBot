@@ -20,6 +20,7 @@ class TtsMonsterSettings(TtsMonsterSettingsInterface):
             TtsMonsterVoice.GLADOS: 36,
             TtsMonsterVoice.JAZZ: 28,
             TtsMonsterVoice.NARRATOR: 42,
+            TtsMonsterVoice.PIRATE: 56,
             TtsMonsterVoice.SPONGEBOB: 36,
             TtsMonsterVoice.SHADOW: 36,
         }),
