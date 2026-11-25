@@ -7,6 +7,7 @@ from .additionalTriviaAnswer import AdditionalTriviaAnswer
 from .additionalTriviaAnswers import AdditionalTriviaAnswers
 from .additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
 from ..misc.triviaQuestionTypeParserInterface import TriviaQuestionTypeParserInterface
+from ..misc.triviaSourceParserInterface import TriviaSourceParserInterface
 from ..questions.triviaQuestionType import TriviaQuestionType
 from ..questions.triviaSource import TriviaSource
 from ..settings.triviaSettingsInterface import TriviaSettingsInterface
@@ -30,6 +31,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         timber: TimberInterface,
         triviaQuestionTypeParser: TriviaQuestionTypeParserInterface,
         triviaSettings: TriviaSettingsInterface,
+        triviaSourceParser: TriviaSourceParserInterface,
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -39,11 +41,14 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             raise TypeError(f'triviaQuestionTypeParser argument is malformed: \"{triviaQuestionTypeParser}\"')
         elif not isinstance(triviaSettings, TriviaSettingsInterface):
             raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
+        elif not isinstance(triviaSourceParser, TriviaSourceParserInterface):
+            raise TypeError(f'triviaSourceParser argument is malformed: \"{triviaSourceParser}\"')
 
         self.__backingDatabase: Final[BackingDatabase] = backingDatabase
         self.__timber: Final[TimberInterface] = timber
         self.__triviaQuestionTypeParser: Final[TriviaQuestionTypeParserInterface] = triviaQuestionTypeParser
         self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
+        self.__triviaSourceParser: Final[TriviaSourceParserInterface] = triviaSourceParser
 
         self.__isDatabaseReady: bool = False
 
@@ -114,6 +119,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             )
 
         questionTypeString = await self.__triviaQuestionTypeParser.serialize(triviaQuestionType)
+        triviaSourceString = await self.__triviaSourceParser.serialize(triviaSource)
         connection = await self.__getDatabaseConnection()
         exception: DatabaseOperationalError | None = None
 
@@ -123,7 +129,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                     INSERT INTO additionaltriviaanswers (additionalanswer, triviaid, triviasource, triviatype, userid)
                     VALUES ($1, $2, $3, $4, $5)
                 ''',
-                additionalAnswer, triviaId, triviaSource.toStr(), questionTypeString, userId,
+                additionalAnswer, triviaId, triviaSourceString, questionTypeString, userId,
             )
         except DatabaseOperationalError as e:
             exception = e
@@ -200,10 +206,11 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         )
 
         if reference is None:
-            self.__timber.log('AdditionalTriviaAnswersRepository', f'Attempted to delete additional answers, but there were none ({reference=}) ({triviaSource=}) ({triviaId=})')
+            self.__timber.log('AdditionalTriviaAnswersRepository', f'Attempted to delete additional answers, but there were none ({reference=}) ({triviaId=}) ({triviaQuestionType=}) ({triviaSource=})')
             return None
 
         questionTypeString = await self.__triviaQuestionTypeParser.serialize(triviaQuestionType)
+        triviaSourceString = await self.__triviaSourceParser.serialize(triviaSource)
         connection = await self.__getDatabaseConnection()
 
         await connection.execute(
@@ -211,11 +218,11 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                 DELETE FROM additionaltriviaanswers
                 WHERE triviaid = $1 AND triviasource = $2 AND triviatype = $3
             ''',
-            triviaId, triviaSource.toStr(), questionTypeString,
+            triviaId, triviaSourceString, questionTypeString,
         )
 
         await connection.close()
-        self.__timber.log('AdditionalTriviaAnswersRepository', f'Deleted additional answers ({reference=}) ({triviaSource=}) ({triviaId=})')
+        self.__timber.log('AdditionalTriviaAnswersRepository', f'Deleted additional answers ({reference=}) ({triviaId=}) ({triviaQuestionType=}) ({triviaSource=})')
 
         return reference
 
@@ -236,6 +243,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             return None
 
         questionTypeString = await self.__triviaQuestionTypeParser.serialize(triviaQuestionType)
+        triviaSourceString = await self.__triviaSourceParser.serialize(triviaSource)
         connection = await self.__getDatabaseConnection()
         records: FrozenList[FrozenList[Any]] | None = None
 
@@ -246,10 +254,10 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                     WHERE triviaid = $1 AND triviasource = $2 AND triviatype = $3
                     ORDER BY additionalanswer ASC
                 ''',
-                triviaId, triviaSource.toStr(), questionTypeString,
+                triviaId, triviaSourceString, questionTypeString,
             )
         except DatabaseOperationalError as e:
-            self.__timber.log('AdditionalTriviaAnswersRepository', f'Encountered a database operational error when trying to retrieve additional trivia answers ({triviaId=}) ({triviaSource=}) ({triviaQuestionType=})', e, traceback.format_exc())
+            self.__timber.log('AdditionalTriviaAnswersRepository', f'Encountered a database operational error when trying to retrieve additional trivia answers ({triviaId=}) ({triviaQuestionType=}) ({triviaSource=})', e, traceback.format_exc())
 
         await connection.close()
 
@@ -265,7 +273,6 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             ))
 
         additionalAnswers.sort(key = lambda additionalAnswer: additionalAnswer.answer.casefold())
-
         frozenAnswers: FrozenList[AdditionalTriviaAnswer] = FrozenList(additionalAnswers)
         frozenAnswers.freeze()
 

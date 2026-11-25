@@ -55,13 +55,15 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
             self.__timber.log('BannedTriviaIdsRepository', f'Attempted to ban trivia question but it\'s already been banned ({info=})')
             return BanTriviaQuestionResult.ALREADY_BANNED
 
+        triviaSourceString = await self.__triviaSourceParser.serialize(triviaSource)
+
         connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
                 INSERT INTO bannedtriviaids (triviaid, triviasource, userid)
                 VALUES ($1, $2, $3)
             ''',
-            triviaId, triviaSource.toStr(), userId,
+            triviaId, triviaSourceString, userId,
         )
 
         await connection.close()
@@ -83,6 +85,8 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
         elif not isinstance(triviaSource, TriviaSource):
             raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
+        triviaSourceString = await self.__triviaSourceParser.serialize(triviaSource)
+
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
@@ -90,7 +94,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
                 WHERE triviaid = $1 AND triviasource = $2
                 LIMIT 1
             ''',
-            triviaId, triviaSource.toStr(),
+            triviaId, triviaSourceString,
         )
 
         await connection.close()
@@ -177,13 +181,15 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
             self.__timber.log('BannedTriviaIdsRepository', f'Attempted to unban trivia question but it wasn\'t already banned ({triviaId=}) ({triviaSource=})')
             return BanTriviaQuestionResult.NOT_BANNED
 
+        triviaSourceString = await self.__triviaSourceParser.serialize(triviaSource)
+
         connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
                 DELETE FROM bannedtriviaids
                 WHERE triviaid = $1 AND triviasource = $2
             ''',
-            triviaId, triviaSource.toStr(),
+            triviaId, triviaSourceString,
         )
 
         await connection.close()

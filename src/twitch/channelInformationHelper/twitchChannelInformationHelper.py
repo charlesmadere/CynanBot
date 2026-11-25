@@ -172,17 +172,22 @@ class TwitchChannelInformationHelper(TwitchChannelInformationHelperInterface):
             ),
         )
 
-        await asyncio.sleep(self.__setThenFetchDelaySeconds)
+        attempts = 0
+        channelInformation: TwitchChannelInformation | None = None
 
-        channelInformation = await self.__fetchChannelInformation(
-            twitchAccessToken = twitchAccessToken,
-            twitchChannelId = twitchChannelId,
-        )
+        for _ in range(self.__setThenFetchRetryAttempts):
+            await asyncio.sleep(self.__setThenFetchDelaySeconds)
+            attempts += 1
 
-        if not utils.isValidStr(channelInformation.gameName):
-            raise FailedToSetTwitchChannelGameException(f'Failed to set Twitch game ({channelInformation=}) ({gameId=}) ({gameName=})')
+            channelInformation = await self.__fetchChannelInformation(
+                twitchAccessToken = twitchAccessToken,
+                twitchChannelId = twitchChannelId,
+            )
 
-        return channelInformation.gameName
+            if gameId == channelInformation.gameId and utils.isValidStr(channelInformation.gameName):
+                return channelInformation.gameName
+
+        raise FailedToSetTwitchChannelGameException(f'Failed to set Twitch game ({channelInformation=}) ({attempts=}) ({gameId=}) ({gameName=}) ({twitchChannelId=})')
 
     async def setTitle(
         self,

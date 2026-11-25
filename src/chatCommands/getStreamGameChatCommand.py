@@ -45,6 +45,7 @@ class GetStreamGameChatCommand(AbsChatCommand):
         self.__twitchChatMessenger: Final[TwitchChatMessengerInterface] = twitchChatMessenger
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!get(?:stream)?category(?:details)?\b', re.IGNORECASE),
             re.compile(r'^\s*!get(?:stream)?game(?:details)?\b', re.IGNORECASE),
         })
 

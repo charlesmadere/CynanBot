@@ -75,15 +75,13 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
         jsonResponse = await response.json()
         await response.close()
 
-        if await self._triviaSettings.isDebugLoggingEnabled():
-            self.__timber.log('QuizApiTriviaQuestionRepository', f'{jsonResponse}')
-
-        if not utils.hasItems(jsonResponse) or not isinstance(jsonResponse, list):
+        if not isinstance(jsonResponse, list) or len(jsonResponse) == 0:
             self.__timber.log('QuizApiTriviaQuestionRepository', f'Rejecting Quiz API\'s JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Quiz API JSON data due to null/empty contents: {jsonResponse}')
 
-        triviaJson: dict[str, Any] | None = jsonResponse[0]
-        if not utils.hasItems(triviaJson):
+        triviaJson: dict[str, Any] | Any | None = jsonResponse[0]
+
+        if not isinstance(triviaJson, dict) or len(triviaJson) == 0:
             self.__timber.log('QuizApiTriviaQuestionRepository', f'Rejecting Quiz API\'s JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Quiz API\'s JSON data due to null/empty contents: {jsonResponse}')
 
@@ -110,8 +108,8 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
         correctAnswersList: list[tuple[str, str]] = list(correctAnswersJson.items())
         correctAnswersList.sort(key = lambda entry: entry[0].lower())
 
-        if not utils.hasItems(answersList) or not utils.hasItems(correctAnswersList) or len(answersList) != len(correctAnswersList):
-            raise MalformedTriviaJsonException(f'Rejecting Quiz API\'s data due to malformed \"answers\" and/or \"correct_answers\" data: {jsonResponse}')
+        if len(answersList) == 0 or len(correctAnswersList) == 0 or len(answersList) != len(correctAnswersList):
+            raise MalformedTriviaJsonException(f'Rejecting Quiz API\'s data due to malformed \"answers\" and/or \"correct_answers\" data ({jsonResponse=}) ({answersList=}) ({correctAnswersList=})')
 
         correctAnswers: list[str] = list()
         filteredAnswers: list[str] = list()
@@ -124,12 +122,12 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 if utils.strToBool(correctAnswerPair[1]):
                     correctAnswers.append(pair[1])
 
-        if not utils.hasItems(correctAnswers):
-            raise NoTriviaCorrectAnswersException(f'Rejecting Quiz API\'s JSON data due to there being no correct answers: {jsonResponse}')
+        if len(correctAnswers) == 0 or len(filteredAnswers) == 0:
+            raise NoTriviaCorrectAnswersException(f'Rejecting Quiz API\'s JSON data due to there being no correct answers ({jsonResponse=}) ({correctAnswers=}) ({filteredAnswers=})')
 
         multipleChoiceResponses = await self._buildMultipleChoiceResponsesList(
             correctAnswers = correctAnswers,
-            multipleChoiceResponses = filteredAnswers
+            multipleChoiceResponses = filteredAnswers,
         )
 
         if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
@@ -146,7 +144,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
                     triviaId = triviaId,
                     triviaDifficulty = triviaDifficulty,
                     originalTriviaSource = None,
-                    triviaSource = self.triviaSource
+                    triviaSource = self.triviaSource,
                 )
             else:
                 self.__timber.log('QuizApiTriviaQuestionRepository', 'Encountered a multiple choice question that is better suited for true/false')
@@ -161,7 +159,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = None,
-                triviaSource = self.triviaSource
+                triviaSource = self.triviaSource,
             )
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Quiz API: {jsonResponse}')

@@ -1,7 +1,6 @@
 from typing import Final
 
 from .triviaGameBuilderInterface import TriviaGameBuilderInterface
-from .triviaGameBuilderSettingsInterface import TriviaGameBuilderSettingsInterface
 from ..actions.startNewSuperTriviaGameAction import StartNewSuperTriviaGameAction
 from ..actions.startNewTriviaGameAction import StartNewTriviaGameAction
 from ..questionAnswerTriviaConditions import QuestionAnswerTriviaConditions
@@ -17,18 +16,14 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
 
     def __init__(
         self,
-        triviaGameBuilderSettings: TriviaGameBuilderSettingsInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
         triviaSettings: TriviaSettingsInterface,
     ):
-        if not isinstance(triviaGameBuilderSettings, TriviaGameBuilderSettingsInterface):
-            raise TypeError(f'triviaGameBuilderSettings argument is malformed: \"{triviaGameBuilderSettings}\"')
-        elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
+        if not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
             raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif not isinstance(triviaSettings, TriviaSettingsInterface):
             raise TypeError(f'triviaSettings argument is malformed: \"{triviaSettings}\"')
 
-        self.__triviaGameBuilderSettings: Final[TriviaGameBuilderSettingsInterface] = triviaGameBuilderSettings
         self.__triviaIdGenerator: Final[TriviaIdGeneratorInterface] = triviaIdGenerator
         self.__triviaSettings: Final[TriviaSettingsInterface] = triviaSettings
 
@@ -60,15 +55,15 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
 
         pointsForWinning = twitchUser.triviaGamePoints
         if not utils.isValidInt(pointsForWinning):
-            pointsForWinning = await self.__triviaGameBuilderSettings.getTriviaGamePoints()
+            pointsForWinning = await self.__triviaSettings.getTriviaGamePoints()
 
         secondsToLive = twitchUser.waitForTriviaAnswerDelay
         if not utils.isValidInt(secondsToLive):
-            secondsToLive = await self.__triviaGameBuilderSettings.getWaitForTriviaAnswerDelay()
+            secondsToLive = await self.__triviaSettings.getWaitForTriviaAnswerDelay()
 
         shinyMultiplier = twitchUser.triviaGameShinyMultiplier
         if not utils.isValidInt(shinyMultiplier):
-            shinyMultiplier = await self.__triviaGameBuilderSettings.getTriviaGameShinyMultiplier()
+            shinyMultiplier = await self.__triviaSettings.getTriviaGameShinyMultiplier()
 
         actionId = await self.__triviaIdGenerator.generateActionId()
 
@@ -118,31 +113,31 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
 
         perUserAttempts = twitchUser.superTriviaPerUserAttempts
         if not utils.isValidInt(perUserAttempts):
-            perUserAttempts = await self.__triviaGameBuilderSettings.getSuperTriviaGamePerUserAttempts()
+            perUserAttempts = await self.__triviaSettings.getSuperTriviaGamePerUserAttempts()
 
         pointsForWinning = twitchUser.superTriviaGamePoints
         if not utils.isValidInt(pointsForWinning):
-            pointsForWinning = await self.__triviaGameBuilderSettings.getSuperTriviaGamePoints()
+            pointsForWinning = await self.__triviaSettings.getSuperTriviaGamePoints()
 
         regularTriviaPointsForWinning = twitchUser.triviaGamePoints
         if not utils.isValidInt(regularTriviaPointsForWinning):
-            regularTriviaPointsForWinning = await self.__triviaGameBuilderSettings.getTriviaGamePoints()
+            regularTriviaPointsForWinning = await self.__triviaSettings.getTriviaGamePoints()
 
         secondsToLive = twitchUser.waitForSuperTriviaAnswerDelay
         if not utils.isValidInt(secondsToLive):
-            secondsToLive = await self.__triviaGameBuilderSettings.getWaitForSuperTriviaAnswerDelay()
+            secondsToLive = await self.__triviaSettings.getWaitForSuperTriviaAnswerDelay()
 
         shinyMultiplier = twitchUser.superTriviaGameShinyMultiplier
         if not utils.isValidInt(shinyMultiplier):
-            shinyMultiplier = await self.__triviaGameBuilderSettings.getSuperTriviaGameShinyMultiplier()
+            shinyMultiplier = await self.__triviaSettings.getSuperTriviaGameShinyMultiplier()
 
         toxicMultiplier = twitchUser.superTriviaGameToxicMultiplier
         if not utils.isValidInt(toxicMultiplier):
-            toxicMultiplier = await self.__triviaGameBuilderSettings.getSuperTriviaGameToxicMultiplier()
+            toxicMultiplier = await self.__triviaSettings.getSuperTriviaGameToxicMultiplier()
 
         toxicTriviaPunishmentMultiplier = twitchUser.superTriviaGameToxicPunishmentMultiplier
         if not utils.isValidInt(toxicTriviaPunishmentMultiplier):
-            toxicTriviaPunishmentMultiplier = await self.__triviaGameBuilderSettings.getSuperTriviaGameToxicPunishmentMultiplier()
+            toxicTriviaPunishmentMultiplier = await self.__triviaSettings.getSuperTriviaGameToxicPunishmentMultiplier()
 
         actionId = await self.__triviaIdGenerator.generateActionId()
 

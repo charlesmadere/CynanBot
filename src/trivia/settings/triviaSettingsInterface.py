@@ -102,6 +102,10 @@ class TriviaSettingsInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getSuperTriviaGameToxicPunishmentMultiplier(self) -> int:
+        pass
+
+    @abstractmethod
     async def getSuperTriviaGamePerUserAttempts(self) -> int:
         pass
 
@@ -110,11 +114,27 @@ class TriviaSettingsInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getTriviaGamePoints(self) -> int:
+        pass
+
+    @abstractmethod
+    async def getTriviaGameShinyMultiplier(self) -> int:
+        pass
+
+    @abstractmethod
     async def getTriviaSourcesAndProperties(self) -> frozendict[TriviaSource, TriviaSourceAndProperties]:
         pass
 
     @abstractmethod
     async def getTriviaSourceInstabilityThreshold(self) -> int:
+        pass
+
+    @abstractmethod
+    async def getWaitForSuperTriviaAnswerDelay(self) -> int:
+        pass
+
+    @abstractmethod
+    async def getWaitForTriviaAnswerDelay(self) -> int:
         pass
 
     @abstractmethod

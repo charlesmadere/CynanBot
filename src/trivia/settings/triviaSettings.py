@@ -193,6 +193,10 @@ class TriviaSettings(TriviaSettingsInterface):
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'super_trivia_first_question_delay_seconds', 4)
 
+    async def getSuperTriviaGamePerUserAttempts(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'superTriviaGamePerUserAttempts', 2)
+
     async def getSuperTriviaGamePoints(self) -> int:
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'superTriviaGamePoints', 25)
@@ -205,13 +209,21 @@ class TriviaSettings(TriviaSettingsInterface):
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'superTriviaGameToxicMultiplier', 2)
 
-    async def getSuperTriviaGamePerUserAttempts(self) -> int:
+    async def getSuperTriviaGameToxicPunishmentMultiplier(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'superTriviaGamePerUserAttempts', 2)
+        return utils.getIntFromDict(jsonContents, 'superTriviaGameToxicPunishmentMultiplier', 1)
 
     async def getToxicProbability(self) -> float:
         jsonContents = await self.__readJson()
         return utils.getFloatFromDict(jsonContents, 'toxic_probability', 0.01)
+
+    async def getTriviaGamePoints(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'triviaGamePoints', 5)
+
+    async def getTriviaGameShinyMultiplier(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'triviaGameShinyMultiplier', 5)
 
     async def getTriviaSourcesAndProperties(self) -> frozendict[TriviaSource, TriviaSourceAndProperties]:
         cachedTriviaSourcesAndProperties = self.__cachedTriviaSourcesAndProperties
@@ -252,6 +264,14 @@ class TriviaSettings(TriviaSettingsInterface):
     async def getTriviaSourceInstabilityThreshold(self) -> int:
         jsonContents = await self.__readJson()
         return utils.getIntFromDict(jsonContents, 'trivia_source_instability_threshold', 3)
+
+    async def getWaitForTriviaAnswerDelay(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'waitForSuperTriviaAnswerDelay', 45)
+
+    async def getWaitForSuperTriviaAnswerDelay(self) -> int:
+        jsonContents = await self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'waitForTriviaAnswerDelay', 30)
 
     async def isBanListEnabled(self) -> bool:
         jsonContents = await self.__readJson()

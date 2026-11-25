@@ -51,7 +51,9 @@ class UpdateStreamGameChatCommand(AbsChatCommand):
         self.__twitchModeratorHelper: Final[TwitchModeratorHelperInterface] = twitchModeratorHelper
 
         self.__commandPatterns: Final[Collection[Pattern]] = frozenset({
+            re.compile(r'^\s*!set(?:stream)?category\b', re.IGNORECASE),
             re.compile(r'^\s*!set(?:stream)?game\b', re.IGNORECASE),
+            re.compile(r'^\s*!update(?:stream)?category\b', re.IGNORECASE),
             re.compile(r'^\s*!update(?:stream)?game\b', re.IGNORECASE),
         })
 

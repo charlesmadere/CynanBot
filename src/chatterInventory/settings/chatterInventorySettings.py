@@ -38,7 +38,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         ),
         defaultBananaItemDetails: BananaItemDetails = BananaItemDetails(
             randomChanceEnabled = True,
-            durationSeconds = 45,
+            durationSeconds = 30,
             inventoryMax = 3,
         ),
         defaultCassetteTapeItemDetails: CassetteTapeItemDetails = CassetteTapeItemDetails(
