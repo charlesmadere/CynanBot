@@ -2,8 +2,6 @@ import asyncio
 import locale
 from typing import Final
 
-from frozenlist import FrozenList
-
 from ..listener.timeoutEventListener import TimeoutEventListener
 from ..models.events.absTimeoutEvent import AbsTimeoutEvent
 from ..models.events.airStrikeTimeoutEvent import AirStrikeTimeoutEvent
@@ -40,11 +38,8 @@ from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from ...misc.randomUtilsInterface import RandomUtilsInterface
 from ...soundPlayerManager.provider.soundPlayerManagerProviderInterface import SoundPlayerManagerProviderInterface
 from ...soundPlayerManager.soundAlert import SoundAlert
-from ...streamAlertsManager.streamAlert import StreamAlert
 from ...streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from ...timber.timberInterface import TimberInterface
-from ...tts.models.ttsEvent import TtsEvent
-from ...tts.models.ttsProviderOverridableStatus import TtsProviderOverridableStatus
 from ...twitch.chatMessenger.twitchChatMessengerInterface import TwitchChatMessengerInterface
 from ...twitch.timeout.twitchTimeoutResult import TwitchTimeoutResult
 
@@ -325,48 +320,11 @@ class TimeoutEventHandler(TimeoutEventListener):
             replyMessageId = event.twitchChatMessageId,
         )
 
-        soundAlert: SoundAlert | None = None
         if event.user.areSoundAlertsEnabled:
-            soundAlert = self.__chooseRandomGrenadeSoundAlert()
-
-        ttsEvent: TtsEvent | None = None
-        if event.user.isTtsEnabled:
-            ttsMessage: str
-
-            if event.isReverse:
-                ttsMessage = f'Oh no! @{event.instigatorUserData.getUserName()} got hit with a reverse! What a dumb idiot! Rip bozo!'
-            else:
-                ttsMessage = f'@{event.instigatorUserData.getUserName()} timed out {event.timeoutTarget.userName} for {event.timeoutDuration.message}! Rip bozo!'
-
-            providerOverridableStatus: TtsProviderOverridableStatus
-
-            if event.user.isChatterPreferredTtsEnabled:
-                providerOverridableStatus = TtsProviderOverridableStatus.CHATTER_OVERRIDABLE
-            else:
-                providerOverridableStatus = TtsProviderOverridableStatus.TWITCH_CHANNEL_DISABLED
-
-            ttsEvent = TtsEvent(
-                message = ttsMessage,
-                twitchChannel = event.twitchChannel,
-                twitchChannelId = event.twitchChannelId,
-                userId = event.instigatorUserData.getUserId(),
-                userLogin = event.instigatorUserData.getUserLogin(),
-                userName = event.instigatorUserData.getUserName(),
-                donation = None,
-                provider = event.user.defaultTtsProvider,
-                providerOverridableStatus = providerOverridableStatus,
-                raidInfo = None,
-            )
-
-        if soundAlert is None and ttsEvent is None:
-            return
-
-        self.__streamAlertsManager.submitAlert(StreamAlert(
-            soundAlert = soundAlert,
-            twitchChannel = event.twitchChannel,
-            twitchChannelId = event.twitchChannelId,
-            ttsEvent = ttsEvent,
-        ))
+            soundPlayerManager = self.__soundPlayerManagerProvider.constructNewInstance()
+            self.__backgroundTaskHelper.createTask(soundPlayerManager.playSoundAlert(
+                alert = self.__chooseRandomGrenadeSoundAlert(),
+            ))
 
     async def __handleBananaTimeoutFailedTimeoutEvent(
         self,
@@ -378,14 +336,14 @@ class TimeoutEventHandler(TimeoutEventListener):
                 twitchChannelId = event.twitchChannelId,
                 replyMessageId = event.twitchChatMessageId,
             )
-            return
 
-        if event.timeoutResult is TwitchTimeoutResult.BANNED:
-            # ignore this...
-            return
+        elif event.timeoutResult is TwitchTimeoutResult.BANNED:
+            # this case is being specifically called out and is intentionally ignored
+            pass
 
-        # the rest of these cases are currently intentionally empty
-        pass
+        else:
+            # the rest of these cases are currently intentionally empty, but may be filled in later
+            pass
 
     async def __handleBasicTimeoutEvent(
         self,
@@ -631,12 +589,12 @@ class TimeoutEventHandler(TimeoutEventListener):
         )
 
     def __chooseRandomGrenadeSoundAlert(self) -> SoundAlert:
-        soundAlerts: FrozenList[SoundAlert] = FrozenList([
+        soundAlerts: frozenset[SoundAlert] = frozenset({
             SoundAlert.GRENADE_1,
             SoundAlert.GRENADE_2,
             SoundAlert.GRENADE_3,
-        ])
-        soundAlerts.freeze()
+        })
+
         return self.__randomUtils.choice(soundAlerts)
 
     async def __handleTm36TimeoutEvent(
