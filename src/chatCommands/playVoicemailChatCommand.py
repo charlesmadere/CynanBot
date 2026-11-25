@@ -74,7 +74,7 @@ class PlayVoicemailChatCommand(AbsChatCommand):
 
         if voicemail is None:
             self.__twitchChatMessenger.send(
-                text = f'ⓘ Your voicemail inbox is empty',
+                text = f'☎️ Your voicemail inbox is empty',
                 twitchChannelId = chatMessage.twitchChannelId,
                 replyMessageId = chatMessage.twitchChatMessageId,
             )
