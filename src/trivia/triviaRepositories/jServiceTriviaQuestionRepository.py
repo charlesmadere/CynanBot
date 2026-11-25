@@ -76,14 +76,11 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
         jsonResponse = await response.json()
         await response.close()
 
-        if await self._triviaSettings.isDebugLoggingEnabled():
-            self.__timber.log('JServiceTriviaQuestionRepository', f'{jsonResponse}')
-
         if not isinstance(jsonResponse, list) or len(jsonResponse) == 0:
             self.__timber.log('JServiceTriviaQuestionRepository', f'Rejecting jService\'s JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting jService\'s JSON data due to null/empty contents: {jsonResponse}')
 
-        triviaJson: dict[str, Any] | None = jsonResponse[0]
+        triviaJson: dict[str, Any] | Any | None = jsonResponse[0]
 
         if not isinstance(triviaJson, dict) or len(triviaJson) == 0 or 'category' not in triviaJson:
             self.__timber.log('JServiceTriviaQuestionRepository', f'Rejecting jService\'s JSON data due to null/empty contents: {jsonResponse}')

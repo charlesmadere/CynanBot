@@ -14,36 +14,6 @@ class GeneralSettingsRepositorySnapshot:
 
         self.__jsonContents: Final[dict[str, Any]] = jsonContents
 
-    def getSuperTriviaGamePoints(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'superTriviaGamePoints', 25)
-
-    def getSuperTriviaGameShinyMultiplier(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'superTriviaGameShinyMultiplier', 3)
-
-    def getSuperTriviaGameToxicMultiplier(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'superTriviaGameToxicMultiplier', 2)
-
-    def getSuperTriviaGamePerUserAttempts(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'superTriviaGamePerUserAttempts', 2)
-
-    def getSuperTriviaGameToxicPunishmentMultiplier(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'superTriviaGameToxicPunishmentMultiplier', 1)
-
-    def getTriviaGamePoints(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'triviaGamePoints', 5)
-
-    def getTriviaGameShinyMultiplier(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'triviaGameShinyMultiplier', 5)
-
-    def getWaitForSuperTriviaAnswerDelay(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'waitForSuperTriviaAnswerDelay', 45)
-
-    def getWaitForTriviaAnswerDelay(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'waitForTriviaAnswerDelay', 30)
-
-    def isDebugLoggingEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'debugLoggingEnabled', True)
-
     def isFuntoonApiEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'funtoonApiEnabled', True)
 

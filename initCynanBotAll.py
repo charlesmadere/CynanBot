@@ -2010,6 +2010,7 @@ additionalTriviaAnswersRepository: Final[AdditionalTriviaAnswersRepositoryInterf
     timber = timber,
     triviaQuestionTypeParser = triviaQuestionTypeParser,
     triviaSettings = triviaSettings,
+    triviaSourceParser = triviaSourceParser,
 )
 
 bannedTriviaIdsRepository: Final[BannedTriviaIdsRepositoryInterface] = BannedTriviaIdsRepository(
@@ -2069,7 +2070,6 @@ triviaEmoteGenerator: Final[TriviaEmoteGeneratorInterface] = TriviaEmoteGenerato
 )
 
 triviaGameBuilder: Final[TriviaGameBuilderInterface] = TriviaGameBuilder(
-    triviaGameBuilderSettings = generalSettingsRepository,
     triviaIdGenerator = triviaIdGenerator,
     triviaSettings = triviaSettings,
 )

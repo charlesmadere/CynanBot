@@ -23,6 +23,7 @@ class UpdateStreamTitleFoodEmojiPointRedemption(AbsChannelPointRedemption):
     @dataclass(frozen = True, slots = True)
     class TitleAndEmoji:
         newEmoji: EmojiData
+        attempts: int
         newTitle: str
 
     def __init__(
@@ -48,7 +49,9 @@ class UpdateStreamTitleFoodEmojiPointRedemption(AbsChannelPointRedemption):
 
     async def __determineNextTitleAndEmoji(self, currentTitle: str) -> TitleAndEmoji:
         emojiList: list[Token] = list(emoji.analyze(currentTitle))
+
         newEmoji = await self.__emojiHelper.getRandomFoodAndDrinkEmoji()
+        attempts = 0
         newTitle: str
 
         if len(emojiList) >= 1:
@@ -56,6 +59,7 @@ class UpdateStreamTitleFoodEmojiPointRedemption(AbsChannelPointRedemption):
 
             while newEmoji.emoji == existingEmoji.value.emoji:
                 newEmoji = await self.__emojiHelper.getRandomFoodAndDrinkEmoji()
+                attempts += 1
 
             newTitle = f'{currentTitle[0:existingEmoji.value.start]}{newEmoji.emoji}{currentTitle[existingEmoji.value.end:]}'
         else:
@@ -63,6 +67,7 @@ class UpdateStreamTitleFoodEmojiPointRedemption(AbsChannelPointRedemption):
 
         return UpdateStreamTitleFoodEmojiPointRedemption.TitleAndEmoji(
             newEmoji = newEmoji,
+            attempts = attempts,
             newTitle = newTitle,
         )
 
@@ -100,7 +105,7 @@ class UpdateStreamTitleFoodEmojiPointRedemption(AbsChannelPointRedemption):
             return PointsRedemptionResult.CONSUMED
 
         self.__twitchChatMessenger.send(
-            text = f'ⓘ New stream title food emoji is {nextTitleAndEmoji.newEmoji.emoji} {nextTitleAndEmoji.newEmoji.name}!',
+            text = f'ⓘ New stream title food emoji is {nextTitleAndEmoji.newEmoji.emoji} {nextTitleAndEmoji.newEmoji.name}',
             twitchChannelId = pointsRedemption.twitchChannelId,
         )
 
