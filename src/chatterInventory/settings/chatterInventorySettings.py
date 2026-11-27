@@ -109,6 +109,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         defaultMaxWatchStreakGashaponRewards: int = 3,
         defaultWatchStreakRewardInterval: int = 50,
         defaultTm36ItemDetails: Tm36ItemDetails = Tm36ItemDetails(
+            dudSpecialEffectEnabled = True,
             inventoryMax = None,
             maxDurationSeconds = 300, # 5 minutes
             minDurationSeconds = 150, # 2 minutes 30 seconds
