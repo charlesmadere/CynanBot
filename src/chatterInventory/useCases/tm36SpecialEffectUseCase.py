@@ -21,7 +21,6 @@ class Tm36SpecialEffectUseCase(Tm36SpecialEffectUseCaseInterface):
         randomUtils: RandomUtilsInterface,
         timber: TimberInterface,
         trollmojiHelper: TrollmojiHelperInterface,
-        dudSpecialEffectChance: float = 0.12,
     ):
         if not isinstance(chatterInventoryRepository, ChatterInventoryRepositoryInterface):
             raise TypeError(f'chatterInventoryRepository argument is malformed: \"{chatterInventoryRepository}\"')
@@ -33,15 +32,12 @@ class Tm36SpecialEffectUseCase(Tm36SpecialEffectUseCaseInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
-        elif not utils.isValidNum(dudSpecialEffectChance):
-            raise TypeError(f'dudSpecialEffectChance argument is malformed: \"{dudSpecialEffectChance}\"')
 
         self.__chatterInventoryRepository: Final[ChatterInventoryRepositoryInterface] = chatterInventoryRepository
         self.__chatterInventorySettings: Final[ChatterInventorySettingsInterface] = chatterInventorySettings
         self.__randomUtils: Final[RandomUtilsInterface] = randomUtils
         self.__timber: Final[TimberInterface] = timber
         self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
-        self.__dudSpecialEffectChance: Final[float] = dudSpecialEffectChance
 
     async def invoke(
         self,
@@ -59,8 +55,9 @@ class Tm36SpecialEffectUseCase(Tm36SpecialEffectUseCaseInterface):
             return Tm36SpecialEffectUseCaseInterface.NoSpecialEffect()
 
         randomNumber = self.__randomUtils.float()
+        dudSpecialEffectChance = await self.__chatterInventorySettings.getTm36DudSpecialEffectChance()
 
-        if randomNumber > self.__dudSpecialEffectChance:
+        if randomNumber > dudSpecialEffectChance:
             return Tm36SpecialEffectUseCaseInterface.NoSpecialEffect()
 
         updatedInventory: ChatterInventoryData | None = None
@@ -73,7 +70,7 @@ class Tm36SpecialEffectUseCase(Tm36SpecialEffectUseCaseInterface):
                 twitchChannelId = action.twitchChannelId,
             )
 
-        self.__timber.log('Tm36SpecialEffectUseCase', f'Rolled a dud ({updatedInventory=}) ({randomNumber=}) ({action=}) ({self.__dudSpecialEffectChance=})')
+        self.__timber.log('Tm36SpecialEffectUseCase', f'Rolled a dud ({updatedInventory=}) ({dudSpecialEffectChance=}) ({randomNumber=}) ({action=})')
 
         return Tm36SpecialEffectUseCaseInterface.DudSpecialEffect(
             updatedInventory = updatedInventory,

@@ -48,6 +48,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             durationSeconds = 210, # 3 minutes 30 seconds
             inventoryMax = None,
         ),
+        defaultTm36DudSpecialEffectChance: float = 0.12,
         defaultGashaponItemDetails: GashaponItemDetails = GashaponItemDetails(
             pullRates = frozendict({
                 ChatterItemType.AIR_STRIKE: GashaponItemPullRate(
@@ -143,6 +144,8 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             raise TypeError(f'defaultCassetteTapeItemDetails argument is malformed: \"{defaultCassetteTapeItemDetails}\"')
         elif not isinstance(defaultCrowdMicItemDetails, CrowdMicItemDetails):
             raise TypeError(f'defaultCrowdMicItemDetails argument is malformed: \"{defaultCrowdMicItemDetails}\"')
+        elif not utils.isValidNum(defaultTm36DudSpecialEffectChance):
+            raise TypeError(f'defaultTm36DudSpecialEffectChance argument is malformed: \"{defaultTm36DudSpecialEffectChance}\"')
         elif not isinstance(defaultGashaponItemDetails, GashaponItemDetails):
             raise TypeError(f'defaultGashaponItemDetails argument is malformed: \"{defaultGashaponItemDetails}\"')
         elif not isinstance(defaultGrenadeItemDetails, GrenadeItemDetails):
@@ -173,6 +176,7 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
         self.__defaultBananaItemDetails: Final[BananaItemDetails] = defaultBananaItemDetails
         self.__defaultCassetteTapeItemDetails: Final[CassetteTapeItemDetails] = defaultCassetteTapeItemDetails
         self.__defaultCrowdMicItemDetails: Final[CrowdMicItemDetails] = defaultCrowdMicItemDetails
+        self.__defaultTm36DudSpecialEffectChance: Final[float] = defaultTm36DudSpecialEffectChance
         self.__defaultGashaponItemDetails: Final[GashaponItemDetails] = defaultGashaponItemDetails
         self.__defaultGrenadeItemDetails: Final[GrenadeItemDetails] = defaultGrenadeItemDetails
         self.__defaultDaysBetweenGashaponRewards: Final[int] = defaultDaysBetweenGashaponRewards
@@ -309,6 +313,14 @@ class ChatterInventorySettings(ChatterInventorySettingsInterface):
             d = jsonContents,
             key = 'maxWatchStreakGashaponRewards',
             fallback = self.__defaultMaxWatchStreakGashaponRewards,
+        )
+
+    async def getTm36DudSpecialEffectChance(self) -> float:
+        jsonContents = await self.__readJson()
+        return utils.getFloatFromDict(
+            d = jsonContents,
+            key = 'tm36DudSpecialEffectChance',
+            fallback = self.__defaultTm36DudSpecialEffectChance,
         )
 
     async def getTm36ItemDetails(self) -> Tm36ItemDetails:
