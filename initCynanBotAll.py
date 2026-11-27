@@ -162,6 +162,8 @@ from src.chatterInventory.useCases.refreshCrowdMicrophonesUseCaseInterface impor
 from src.chatterInventory.useCases.requestWatchStreakRewardUseCase import RequestWatchStreakRewardUseCase
 from src.chatterInventory.useCases.requestWatchStreakRewardUseCaseInterface import \
     RequestWatchStreakRewardUseCaseInterface
+from src.chatterInventory.useCases.tm36SpecialEffectUseCase import Tm36SpecialEffectUseCase
+from src.chatterInventory.useCases.tm36SpecialEffectUseCaseInterface import Tm36SpecialEffectUseCaseInterface
 from src.chatterPreferredName.helpers.chatterPreferredNameHelper import ChatterPreferredNameHelper
 from src.chatterPreferredName.helpers.chatterPreferredNameHelperInterface import ChatterPreferredNameHelperInterface
 from src.chatterPreferredName.helpers.chatterPreferredNameStringCleaner import ChatterPreferredNameStringCleaner
@@ -2653,6 +2655,14 @@ requestWatchStreakRewardUseCase: Final[RequestWatchStreakRewardUseCaseInterface]
     watchStreakRewardHistoryRepository = watchStreakRewardHistoryRepository,
 )
 
+tm36SpecialEffectUseCase: Final[Tm36SpecialEffectUseCaseInterface] = Tm36SpecialEffectUseCase(
+    chatterInventoryRepository = chatterInventoryRepository,
+    chatterInventorySettings = chatterInventorySettings,
+    randomUtils = randomUtils,
+    timber = timber,
+    trollmojiHelper = trollmojiHelper,
+)
+
 chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInventoryMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     cassetteTapeItemUseCase = cassetteTapeItemUseCase,
@@ -2669,6 +2679,7 @@ chatterInventoryMachine: Final[ChatterInventoryMachineInterface] = ChatterInvent
     timber = timber,
     timeoutActionMachine = timeoutActionMachine,
     timeoutIdGenerator = timeoutIdGenerator,
+    tm36SpecialEffectUseCase = tm36SpecialEffectUseCase,
     trollmojiHelper = trollmojiHelper,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,

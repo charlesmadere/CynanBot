@@ -42,6 +42,7 @@ from ..models.events.gashaponRewardedChatterItemEvent import GashaponRewardedCha
 from ..models.events.giveChatterItemEvent import GiveChatterItemEvent
 from ..models.events.noGashaponResultsChatterItemEvent import NoGashaponResultsChatterItemEvent
 from ..models.events.notEnoughInventoryChatterItemEvent import NotEnoughInventoryChatterItemEvent
+from ..models.events.tm36DudChatterItemEvent import Tm36DudChatterItemEvent
 from ..models.events.tradeChatterItemEvent import TradeChatterItemEvent
 from ..models.events.tradeChatterItemTypeDisabledItemEvent import TradeChatterItemTypeDisabledItemEvent
 from ..models.events.tradeChatterNotEnoughInventoryItemEvent import TradeChatterNotEnoughInventoryItemEvent
@@ -68,6 +69,7 @@ from ..useCases.gashaponItemUseCaseInterface import GashaponItemUseCaseInterface
 from ..useCases.gashaponRewardUseCaseInterface import GashaponRewardUseCaseInterface
 from ..useCases.refreshCrowdMicrophonesUseCaseInterface import RefreshCrowdMicrophonesUseCaseInterface
 from ..useCases.requestWatchStreakRewardUseCaseInterface import RequestWatchStreakRewardUseCaseInterface
+from ..useCases.tm36SpecialEffectUseCaseInterface import Tm36SpecialEffectUseCaseInterface
 from ...emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from ...misc import utils as utils
 from ...misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
@@ -115,6 +117,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         timber: TimberInterface,
         timeoutActionMachine: TimeoutActionMachineInterface,
         timeoutIdGenerator: TimeoutIdGeneratorInterface,
+        tm36SpecialEffectUseCase: Tm36SpecialEffectUseCaseInterface,
         trollmojiHelper: TrollmojiHelperInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
@@ -153,6 +156,8 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             raise TypeError(f'timeoutActionMachine argument is malformed: \"{timeoutActionMachine}\"')
         elif not isinstance(timeoutIdGenerator, TimeoutIdGeneratorInterface):
             raise TypeError(f'timeoutIdGenerator argument is malformed: \"{timeoutIdGenerator}\"')
+        elif not isinstance(tm36SpecialEffectUseCase, Tm36SpecialEffectUseCaseInterface):
+            raise TypeError(f'tm36SpecialEffectUseCase argument is malformed: \"{tm36SpecialEffectUseCase}\"')
         elif not isinstance(trollmojiHelper, TrollmojiHelperInterface):
             raise TypeError(f'trollmojiHelper argument is malformed: \"{trollmojiHelper}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
@@ -187,6 +192,7 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
         self.__timber: Final[TimberInterface] = timber
         self.__timeoutActionMachine: Final[TimeoutActionMachineInterface] = timeoutActionMachine
         self.__timeoutIdGenerator: Final[TimeoutIdGeneratorInterface] = timeoutIdGenerator
+        self.__tm36SpecialEffectUseCase: Final[Tm36SpecialEffectUseCaseInterface] = tm36SpecialEffectUseCase
         self.__trollmojiHelper: Final[TrollmojiHelperInterface] = trollmojiHelper
         self.__twitchHandleProvider: Final[TwitchHandleProviderInterface] = twitchHandleProvider
         self.__twitchTokensRepository: Final[TwitchTokensRepositoryInterface] = twitchTokensRepository
@@ -716,25 +722,42 @@ class ChatterInventoryMachine(ChatterInventoryMachineInterface):
             twitchChannelId = action.twitchChannelId,
         )
 
-        self.__timeoutActionMachine.submitAction(Tm36TimeoutAction(
-            timeoutDuration = timeoutDuration,
-            ignoreInventory = action.ignoreInventory,
-            actionId = await self.__timeoutIdGenerator.generateActionId(),
-            moderatorTwitchAccessToken = tokensAndDetails.moderatorTwitchAccessToken,
-            moderatorUserId = tokensAndDetails.moderatorUserId,
-            targetUserId = action.chatterUserId,
-            twitchChannelId = action.twitchChannelId,
-            twitchChatMessageId = action.twitchChatMessageId,
-            userTwitchAccessToken = tokensAndDetails.userTwitchAccessToken,
-            streamStatusRequirement = TimeoutStreamStatusRequirement.ANY,
-            user = action.user,
-        ))
+        specialEffect = await self.__tm36SpecialEffectUseCase.invoke(
+            twitchAccessToken = tokensAndDetails.userTwitchAccessToken,
+            action = action,
+        )
 
-        await self.__submitEvent(UseTm36ChatterItemEvent(
-            eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
-            itemDetails = itemDetails,
-            originatingAction = action,
-        ))
+        if isinstance(specialEffect, Tm36SpecialEffectUseCaseInterface.DudSpecialEffect):
+            await self.__submitEvent(Tm36DudChatterItemEvent(
+                chatterInventory = specialEffect.updatedInventory,
+                eventId = await self.__timeoutIdGenerator.generateEventId(),
+                gottemEmote = specialEffect.gottemEmote,
+                originatingAction = action,
+            ))
+
+        elif isinstance(specialEffect, Tm36SpecialEffectUseCaseInterface.NoSpecialEffect):
+            self.__timeoutActionMachine.submitAction(Tm36TimeoutAction(
+                timeoutDuration = timeoutDuration,
+                ignoreInventory = action.ignoreInventory,
+                actionId = await self.__timeoutIdGenerator.generateActionId(),
+                moderatorTwitchAccessToken = tokensAndDetails.moderatorTwitchAccessToken,
+                moderatorUserId = tokensAndDetails.moderatorUserId,
+                targetUserId = action.chatterUserId,
+                twitchChannelId = action.twitchChannelId,
+                twitchChatMessageId = action.twitchChatMessageId,
+                userTwitchAccessToken = tokensAndDetails.userTwitchAccessToken,
+                streamStatusRequirement = TimeoutStreamStatusRequirement.ANY,
+                user = action.user,
+            ))
+
+            await self.__submitEvent(UseTm36ChatterItemEvent(
+                eventId = await self.__chatterInventoryIdGenerator.generateEventId(),
+                itemDetails = itemDetails,
+                originatingAction = action,
+            ))
+
+        else:
+            raise ValueError(f'Encountered unknown Tm36SpecialEffectUseCaseInterface.AbsSpecialEffect ({specialEffect=}) ({action=})')
 
     async def __handleTradeItemAction(self, action: TradeChatterItemAction):
         if not isinstance(action, TradeChatterItemAction):

@@ -861,12 +861,14 @@ class TestChatterInventoryMapper:
     @pytest.mark.asyncio
     async def test_parseTm36ItemDetails(self):
         details = Tm36ItemDetails(
+            dudSpecialEffectEnabled = True,
             inventoryMax = 999,
             maxDurationSeconds = 600,
             minDurationSeconds = 300,
         )
 
         result = await self.mapper.parseTm36ItemDetails({
+            'dudSpecialEffectEnabled': details.dudSpecialEffectEnabled,
             'inventoryMax': details.inventoryMax,
             'maxDurationSeconds': details.maxDurationSeconds,
             'minDurationSeconds': details.minDurationSeconds,
@@ -874,6 +876,7 @@ class TestChatterInventoryMapper:
 
         assert isinstance(result, Tm36ItemDetails)
         assert result == details
+        assert result.dudSpecialEffectEnabled == details.dudSpecialEffectEnabled
         assert result.inventoryMax == details.inventoryMax
         assert result.maxDurationSeconds == details.maxDurationSeconds
         assert result.minDurationSeconds == details.minDurationSeconds

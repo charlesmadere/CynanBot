@@ -27,6 +27,7 @@ from ..models.events.gashaponRewardedChatterItemEvent import GashaponRewardedCha
 from ..models.events.giveChatterItemEvent import GiveChatterItemEvent
 from ..models.events.noGashaponResultsChatterItemEvent import NoGashaponResultsChatterItemEvent
 from ..models.events.notEnoughInventoryChatterItemEvent import NotEnoughInventoryChatterItemEvent
+from ..models.events.tm36DudChatterItemEvent import Tm36DudChatterItemEvent
 from ..models.events.tradeChatterItemEvent import TradeChatterItemEvent
 from ..models.events.useAirStrikeChatterItemEvent import UseAirStrikeChatterItemEvent
 from ..models.events.useBananaChatterItemEvent import UseBananaChatterItemEvent
@@ -172,6 +173,11 @@ class ChatterItemEventHandler(ChatterItemEventListener):
 
         elif isinstance(event, NotEnoughInventoryChatterItemEvent):
             await self.__handleNotEnoughInventoryChatterItemEvent(
+                event = event,
+            )
+
+        elif isinstance(event, Tm36DudChatterItemEvent):
+            await self.__handleTm36DudChatterItemEvent(
                 event = event,
             )
 
@@ -509,6 +515,16 @@ class ChatterItemEventHandler(ChatterItemEventListener):
         # We don't handle this item use here. Instead, we handle this within the
         # TimeoutEventHandler class. It's a bit of a weird flow but... whatever :P
         pass
+
+    async def __handleTm36DudChatterItemEvent(
+        self,
+        event: Tm36DudChatterItemEvent,
+    ):
+        self.__twitchChatMessenger.send(
+            text = f'The {ChatterItemType.TM_36.humanName} went off but… nothing happened? {event.gottemEmote}',
+            twitchChannelId = event.twitchChannelId,
+            replyMessageId = event.twitchChatMessageId,
+        )
 
     async def __handleTradeChatterItemEvent(
         self,

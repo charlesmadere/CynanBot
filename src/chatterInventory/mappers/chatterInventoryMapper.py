@@ -293,6 +293,8 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         if not isinstance(itemDetailsJson, dict) or len(itemDetailsJson) == 0:
             return None
 
+        dudSpecialEffectEnabled = utils.getBoolFromDict(itemDetailsJson, 'dudSpecialEffectEnabled', True)
+
         inventoryMax: int | None = None
         if 'inventoryMax' in itemDetailsJson and utils.isValidInt(itemDetailsJson.get('inventoryMax')):
             inventoryMax = utils.getIntFromDict(itemDetailsJson, 'inventoryMax')
@@ -301,6 +303,7 @@ class ChatterInventoryMapper(ChatterInventoryMapperInterface):
         minDurationSeconds = utils.getIntFromDict(itemDetailsJson, 'minDurationSeconds')
 
         return Tm36ItemDetails(
+            dudSpecialEffectEnabled = dudSpecialEffectEnabled,
             inventoryMax = inventoryMax,
             maxDurationSeconds = maxDurationSeconds,
             minDurationSeconds = minDurationSeconds,
