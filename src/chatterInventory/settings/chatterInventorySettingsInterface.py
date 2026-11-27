@@ -64,6 +64,10 @@ class ChatterInventorySettingsInterface(Clearable, ABC):
         pass
 
     @abstractmethod
+    async def getTm36DudSpecialEffectChance(self) -> float:
+        pass
+
+    @abstractmethod
     async def getTm36ItemDetails(self) -> Tm36ItemDetails:
         pass
 
